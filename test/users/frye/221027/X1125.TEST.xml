@@ -1,0 +1,150 @@
+<!-- ============================================================= -->
+<!-- PreVABS Input File, JAS4-1 Blade -->
+<!-- Authored by: Dana Frye, Date: 10/25/2022 -->
+<!-- ============================================================= -->
+<cross_section name="X1125.0" format="1">
+  <!-- =========================================================== -->
+  <!-- Include Statements -->
+  <!-- =========================================================== -->  
+  <include>
+    <material>material_database</material>
+  </include>
+  <!-- =========================================================== -->
+  <!-- Analysis Model Definition, 0=Classical 1=Timoshenko) -->
+  <!-- =========================================================== -->
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <!-- =========================================================== -->
+  <!-- General Geometry and Mesh Settings (Optional) -->
+  <!-- =========================================================== -->
+  <general>
+    <translate>0 0</translate>
+    <scale>2</scale>
+    <rotate>0</rotate>
+  </general>
+  <!-- =========================================================== -->
+  <!-- Basepoints and Baselines -->
+  <!-- =========================================================== -->
+  <baselines>
+    <basepoints>
+      <include>basepoints_main</include>
+    </basepoints>
+    <!-- -->
+    <baseline name="bsl_ts" type="straight">
+      <points>1:71</points>
+    </baseline>
+    <!-- -->
+    <!-- TS/BS -->
+    <baseline name="bsl_bs" type="straight">
+      <points>71:141,1</points>
+    </baseline> 
+    <!-- -->
+    <point name="p1" on="bsl_ts" by="x2" which="top">0.2</point>
+    <point name="p2" on="bsl_ts" by="x2" which="top">0.35</point>
+    <point name="p3" on="bsl_bs" by="x2" which="top">0.35</point>
+    <point name="p4" on="bsl_bs" by="x2" which="top">0.2</point>
+    <!-- <point name="p5" on="bsl_ts" by="x2" which="top">0.05</point>
+    <point name="p6" on="bsl_bs" by="x2" which="top">0.05</point> -->
+    <!-- -->
+    <baseline name="bsl_spar" type="straight">
+      <points>p1:p2,p3:p4,p1</points>
+    </baseline>
+    <baseline name="bsl_spar_top" type="straight">
+      <points>p1:p2</points>
+    </baseline>
+    <baseline name="bsl_spar_bottom" type="straight">
+      <points>p3:p4</points>
+    </baseline>
+    <baseline name="bsl_spar_te" type="straight">
+      <points>p2,p3</points>
+    </baseline>
+    <baseline name="bsl_spar_le" type="straight">
+      <points>p4,p1</points>
+    </baseline>
+    <!-- -->
+    <baseline name="bsl_le" type="straight">
+      <points>p4:141,1:p1</points>
+    </baseline>
+    <!-- <baseline name="bsl_le_t" type="straight">
+      <points>10:p1</points>
+    </baseline>
+    <baseline name="bsl_le_m" type="straight">
+      <points>130:141,1:10</points>
+    </baseline>
+    <baseline name="bsl_le_b" type="straight">
+      <points>p4:130</points>
+    </baseline> -->
+    <!-- -->
+    <baseline name="bsl_te" type="straight">
+      <points>p2:71,72:p3</points>
+    </baseline>
+    <!-- -->
+  </baselines>
+ <!--
+<line name="line_spar_web_front" type="arc">
+<start>p2</start>
+<end>p1</end>
+<curvature>{kw1=0}</curvature>
+<side>right</side>
+<direction>ccw</direction>
+</line>
+-->
+  <!-- =========================================================== -->
+  <!-- Layup Definition -->
+  <!-- =========================================================== -->
+  <layups>
+    <layup name="lyp_spar">
+      <layer lamina="T650-35 12k/976_0.0052">-20:1</layer>
+      <layer lamina="T650-35 12k/976_0.0052">37:1</layer>
+      <layer lamina="T650-35 12k/976_0.0052">-32:1</layer>
+      <layer lamina="T650-35 12k/976_0.0052">-45:1</layer>
+    </layup>
+  </layups>
+  <!-- =========================================================== -->
+  <!-- Component Definition via Segments (Baseline + Layup) -->
+  <!-- =========================================================== -->  
+  <component name="spar">
+    <!-- <segment>
+      <baseline>bsl_spar</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment> -->
+    <segment>
+      <baseline>bsl_spar_top</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment>
+    <segment>
+      <baseline>bsl_spar_bottom</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment>
+    <segment>
+      <baseline>bsl_spar_le</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment>
+    <segment>
+      <baseline>bsl_spar_te</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment>
+  </component>
+
+
+  <component name="le" depend="spar">
+    <segment>
+      <baseline>bsl_le</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment>
+  </component>
+
+
+  <!-- <component name="te" depend="spar">
+    <segment>
+      <baseline>bsl_te</baseline>
+      <layup direction="right">lyp_spar</layup>
+    </segment>
+  </component> -->
+
+
+<!-- ============================================================= -->
+<!-- End -->
+<!-- ============================================================= --> 
+</cross_section>

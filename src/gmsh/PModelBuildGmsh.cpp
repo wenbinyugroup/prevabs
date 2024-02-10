@@ -1,5 +1,6 @@
 #include "PModel.hpp"
 
+#include "PDCELFace.hpp"
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -14,9 +15,11 @@
 #include "gmsh/MElement.h"
 #include "gmsh/MTriangle.h"
 
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
+#include <utility>
 
 
 void PModel::initGmshModel(Message *pmessage) {
@@ -36,15 +39,25 @@ void PModel::initGmshModel(Message *pmessage) {
 
 void PModel::createGmshVertices(Message *pmessage) {
   PLOG(info) << pmessage->message("creating gmsh vertices");
+
   GVertex *gv;
+
   for (auto v : _dcel->vertices()) {
+
     if (v->gbuild()) {
       gv = _gmodel->addVertex(v->x(), v->y(), v->z(), _global_mesh_size);
+
+      // if (v->onJoint()) {
+      //   gv->tags.push_back("joint");
+      // }
+
       v->setGVertex(gv);
     }
+
   }
 
   return;
+
 }
 
 
@@ -69,10 +82,77 @@ void PModel::createGmshEdges(Message *pmessage) {
         if (he->sign() > 0) {
           ge = _gmodel->addLine(he->source()->gvertex(),
                                 he->target()->gvertex());
-        } else {
+        }
+        else {
           ge = _gmodel->addLine(he->twin()->source()->gvertex(),
                                 he->twin()->target()->gvertex());
         }
+
+        if (_itf_output) {
+          if (!he->onJoint() && !he->twin()->onJoint()) {
+            if (he->face()->material() != nullptr && he->twin()->face()->material() != nullptr) {
+              int mid_f1 = he->face()->material()->id();
+              int mid_f2 = he->twin()->face()->material()->id();
+              double theta1_f1 = he->face()->theta1();
+              double theta1_f2 = he->twin()->face()->theta1();
+              double theta3_f1 = he->face()->theta3();
+              double theta3_f2 = he->twin()->face()->theta3();
+
+              // Check interface criteria
+              if (mid_f1 != mid_f2) {
+                if (std::abs(theta1_f1 - theta1_f2) > _itf_theta1_diff_th) {
+                  if (std::abs(theta3_f1 - theta3_f2) > _itf_theta3_diff_th) {
+
+                    bool found = false;
+
+                    unsigned int i_itf=0;
+
+                    for (i_itf=0; i_itf<_itf_material_pairs.size(); i_itf++) {
+
+                      int mat_p1f1 = _itf_material_pairs[i_itf].first;
+                      int mat_p1f2 = _itf_material_pairs[i_itf].second;
+                      double th1_p1f1 = _itf_theta1_pairs[i_itf].first;
+                      double th1_p1f2 = _itf_theta1_pairs[i_itf].second;
+                      double th3_p1f1 = _itf_theta3_pairs[i_itf].first;
+                      double th3_p1f2 = _itf_theta3_pairs[i_itf].second;
+
+                      if ((mid_f1 == mat_p1f1 && mid_f2 == mat_p1f2) || (mid_f2 == mat_p1f1 && mid_f1 == mat_p1f2)) {
+                        if ((theta1_f1 == th1_p1f1 && theta1_f2 == th1_p1f2) || (theta1_f2 == th1_p1f1 && theta1_f1 == th1_p1f2)) {
+                          if ((theta3_f1 == th3_p1f1 && theta3_f2 == th3_p1f2) || (theta3_f2 == th3_p1f1 && theta3_f1 == th3_p1f2)) {
+                            found = true;
+                            break;
+                          }
+                        }
+                      }
+                    }
+
+                    if (found) {
+                      _itf_halfedges[i_itf].push_back(he);
+                    }
+
+                    else {
+                      std::pair<int, int> mat_pair{mid_f1, mid_f2};
+                      std::pair<double, double> th1_pair{theta1_f1, theta1_f2};
+                      std::pair<double, double> th3_pair{theta3_f1, theta3_f2};
+
+                      _itf_material_pairs.push_back(mat_pair);
+                      _itf_theta1_pairs.push_back(th1_pair);
+                      _itf_theta3_pairs.push_back(th3_pair);
+
+                      std::vector<PDCELHalfEdge *> itf_hes{he};
+                      _itf_halfedges.push_back(itf_hes);
+                    }
+
+                    he->setOnJoint(true);
+
+                  }
+                }
+              }
+
+            }
+          }
+        }
+
       }
       // ges = new GEdgeSigned(he->sign(), ge);
       he->setGEdge(ge);
@@ -234,6 +314,107 @@ void PModel::buildGmsh(Message *pmessage) {
           ge = _gmodel->addLine(he->twin()->source()->gvertex(),
                                 he->twin()->target()->gvertex());
         }
+
+        // Interface
+        if (_itf_output) {
+          // PLOG(info) << pmessage->message("saving interface edges...");
+          // std::cout << "output interface nodes" << std::endl;
+          // std::cout << he->onJoint() << std::endl;
+          // std::cout << he->twin()->onJoint() << std::endl;
+          if (!he->onJoint() && !he->twin()->onJoint()) {
+            if (he->face() != nullptr && he->twin()->face() != nullptr) {
+              // std::cout << he->face()->material() << std::endl;
+              // std::cout << he->twin()->face()->material() << std::endl;
+              if (he->face()->material() != nullptr && he->twin()->face()->material() != nullptr) {
+                int mid_f1 = he->face()->material()->id();
+                int mid_f2 = he->twin()->face()->material()->id();
+                double theta1_f1 = he->face()->theta1();
+                double theta1_f2 = he->twin()->face()->theta1();
+                double theta3_f1 = he->face()->theta3();
+                double theta3_f2 = he->twin()->face()->theta3();
+
+                // std::cout << "mid_f1 = " << mid_f1 << ", mid_f2 = " << mid_f2 << std::endl;
+                // std::cout << "theta1_f1 = " << theta1_f1 << ", theta1_f2 = " << theta1_f2 << std::endl;
+                // std::cout << "theta3_f1 = " << theta3_f1 << ", theta3_f2 = " << theta3_f2 << std::endl;
+
+                // Check interface criteria
+                // std::cout << "checking interface criteria..." << std::endl;
+                bool is_interface = false;
+                if (mid_f1 != mid_f2) {
+                  is_interface = true;
+                }
+                else {
+                  // std::cout << "compare theta3" << std::endl;
+                  // std::cout << std::abs(theta3_f1 - theta3_f2) << std::endl;
+                  // std::cout << _itf_theta3_diff_th << std::endl;
+                  if (std::abs(theta3_f1 - theta3_f2) > _itf_theta3_diff_th) {
+                    is_interface = true;
+                  }
+                  else {
+                    // std::cout << "compare theta1" << std::endl;
+                    // std::cout << std::abs(theta1_f1 - theta1_f2) << std::endl;
+                    // std::cout << _itf_theta1_diff_th << std::endl;
+                    if (std::abs(theta1_f1 - theta1_f2) > _itf_theta1_diff_th) {
+                      is_interface = true;
+                    }
+                  }
+                }
+
+                if (is_interface) {
+
+                  bool found = false;
+
+                  unsigned int i_itf=0;
+
+                  for (i_itf=0; i_itf<_itf_material_pairs.size(); i_itf++) {
+
+                    int mat_p1f1 = _itf_material_pairs[i_itf].first;
+                    int mat_p1f2 = _itf_material_pairs[i_itf].second;
+                    double th1_p1f1 = _itf_theta1_pairs[i_itf].first;
+                    double th1_p1f2 = _itf_theta1_pairs[i_itf].second;
+                    double th3_p1f1 = _itf_theta3_pairs[i_itf].first;
+                    double th3_p1f2 = _itf_theta3_pairs[i_itf].second;
+
+                    if ((mid_f1 == mat_p1f1 && mid_f2 == mat_p1f2) || (mid_f2 == mat_p1f1 && mid_f1 == mat_p1f2)) {
+                      if ((theta1_f1 == th1_p1f1 && theta1_f2 == th1_p1f2) || (theta1_f2 == th1_p1f1 && theta1_f1 == th1_p1f2)) {
+                        if ((theta3_f1 == th3_p1f1 && theta3_f2 == th3_p1f2) || (theta3_f2 == th3_p1f1 && theta3_f1 == th3_p1f2)) {
+                          found = true;
+                          break;
+                        }
+                      }
+                    }
+                  }
+
+                  // std::cout << "found = " << found << std::endl;
+
+                  if (found) {
+                    // std::cout << "i_itf = " << i_itf << std::endl;
+                    _itf_halfedges[i_itf].push_back(he);
+                  }
+
+                  else {
+                    std::pair<int, int> mat_pair{mid_f1, mid_f2};
+                    std::pair<double, double> th1_pair{theta1_f1, theta1_f2};
+                    std::pair<double, double> th3_pair{theta3_f1, theta3_f2};
+
+                    _itf_material_pairs.push_back(mat_pair);
+                    _itf_theta1_pairs.push_back(th1_pair);
+                    _itf_theta3_pairs.push_back(th3_pair);
+
+                    std::vector<PDCELHalfEdge *> itf_hes{he};
+                    _itf_halfedges.push_back(itf_hes);
+                  }
+
+                  he->setOnJoint(true);
+                }
+
+
+
+              }
+            }
+          }
+        }
+
       }
       // ges = new GEdgeSigned(he->sign(), ge);
       he->setGEdge(ge);

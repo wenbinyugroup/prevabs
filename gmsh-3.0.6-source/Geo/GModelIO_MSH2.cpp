@@ -1362,130 +1362,130 @@ int GModel::_writePartitionedMSH2(const std::string &baseName, bool binary,
   return 1;
 }
 
-int GModel::_writeSC2(const std::string &name, double version,
-                      std::vector<std::vector<double>> theta1,
-                      std::vector<int> i_paras, std::vector<double> d_paras,
-                      bool binary, bool saveAll, bool saveParametric,
-                      double scalingFactor, int elementStartNum,
-                      int saveSinglePartition, bool multipleView) {
-  FILE *fp;
-  if (multipleView)
-    fp = Fopen(name.c_str(), binary ? "ab" : "a");
-  else
-    fp = Fopen(name.c_str(), binary ? "wb" : "w");
-  if (!fp) {
-    Msg::Error("Unable to open file '%s'", name.c_str());
-    return 0;
-  }
+// int GModel::_writeSC2(const std::string &name, double version,
+//                       std::vector<std::vector<double>> theta1,
+//                       std::vector<int> i_paras, std::vector<double> d_paras,
+//                       bool binary, bool saveAll, bool saveParametric,
+//                       double scalingFactor, int elementStartNum,
+//                       int saveSinglePartition, bool multipleView) {
+//   FILE *fp;
+//   if (multipleView)
+//     fp = Fopen(name.c_str(), binary ? "ab" : "a");
+//   else
+//     fp = Fopen(name.c_str(), binary ? "wb" : "w");
+//   if (!fp) {
+//     Msg::Error("Unable to open file '%s'", name.c_str());
+//     return 0;
+//   }
 
-  // if there are no physicals we save all the elements
-  if (noPhysicalGroups())
-    saveAll = true;
+//   // if there are no physicals we save all the elements
+//   if (noPhysicalGroups())
+//     saveAll = true;
 
-  // get the number of vertices and index the vertices in a continuous
-  // sequence
-  int numVertices = indexMeshVertices(saveAll, saveSinglePartition);
+//   // get the number of vertices and index the vertices in a continuous
+//   // sequence
+//   int numVertices = indexMeshVertices(saveAll, saveSinglePartition);
 
-  // get the number of elements we need to save
-  int numElements = getNumElementsMSH(this, saveAll, saveSinglePartition);
+//   // get the number of elements we need to save
+//   int numElements = getNumElementsMSH(this, saveAll, saveSinglePartition);
 
-  // -----------------------------------------------------------------
-  // Head
-  if (i_paras[0] == 1) {
-    // vabs
-    fprintf(fp, "%8d%8d\n", 1, i_paras[3]);
-    fprintf(fp, "%8d%8d%8d\n", i_paras[5], 0, i_paras[4]);
-    fprintf(fp, "%8d%8d%8d%8d\n", i_paras[8], i_paras[9], i_paras[6], i_paras[7]);
-    if (i_paras[8] == 1) {
-      // initial curvature
-      fprintf(fp, "%16e%16e%16e\n", d_paras[0], d_paras[1], d_paras[2]);
-    }
-    if (i_paras[9] == 1) {
-      // oblique cross section
-      fprintf(fp, "%16e%16e\n", d_paras[3], d_paras[4]);
-    }
-    fprintf(fp, "%8d%8d%8d\n", numVertices, numElements, i_paras[2]);
-  } else {
-    // swiftcomp
-    fprintf(fp, "%8d\n", i_paras[5]);  // model
-    fprintf(fp, "%16e%16e%16e\n", d_paras[0], d_paras[1], d_paras[2]);  // initial curvatures
-    fprintf(fp, "%16e%16e\n", d_paras[3], d_paras[4]);  // oblique
-    fprintf(fp, "%8d%8d%8d%8d\n", i_paras[4], i_paras[10], 1, i_paras[11]);
-    fprintf(fp, "%8d%8d%8d%8d%8d%8d\n", 2, numVertices, numElements, i_paras[2],
-            i_paras[12], i_paras[3]);
-  }
+//   // -----------------------------------------------------------------
+//   // Head
+//   if (i_paras[0] == 1) {
+//     // vabs
+//     fprintf(fp, "%8d%8d\n", 1, i_paras[3]);
+//     fprintf(fp, "%8d%8d%8d\n", i_paras[5], 0, i_paras[4]);
+//     fprintf(fp, "%8d%8d%8d%8d\n", i_paras[8], i_paras[9], i_paras[6], i_paras[7]);
+//     if (i_paras[8] == 1) {
+//       // initial curvature
+//       fprintf(fp, "%16e%16e%16e\n", d_paras[0], d_paras[1], d_paras[2]);
+//     }
+//     if (i_paras[9] == 1) {
+//       // oblique cross section
+//       fprintf(fp, "%16e%16e\n", d_paras[3], d_paras[4]);
+//     }
+//     fprintf(fp, "%8d%8d%8d\n", numVertices, numElements, i_paras[2]);
+//   } else {
+//     // swiftcomp
+//     fprintf(fp, "%8d\n", i_paras[5]);  // model
+//     fprintf(fp, "%16e%16e%16e\n", d_paras[0], d_paras[1], d_paras[2]);  // initial curvatures
+//     fprintf(fp, "%16e%16e\n", d_paras[3], d_paras[4]);  // oblique
+//     fprintf(fp, "%8d%8d%8d%8d\n", i_paras[4], i_paras[10], 1, i_paras[11]);
+//     fprintf(fp, "%8d%8d%8d%8d%8d%8d\n", 2, numVertices, numElements, i_paras[2],
+//             i_paras[12], i_paras[3]);
+//   }
 
-  fprintf(fp, "\n");
+//   fprintf(fp, "\n");
 
-  // -----------------------------------------------------------------
-  // Node coordinates
-  std::vector<GEntity *> entities;
-  getEntities(entities);
-  for (unsigned int i = 0; i < entities.size(); i++)
-    for (unsigned int j = 0; j < entities[i]->mesh_vertices.size(); j++) {
-      if (entities[i]->mesh_vertices[j]->getIndex() > 0)
-        fprintf(fp, "%8d%16e%16e\n", entities[i]->mesh_vertices[j]->getIndex(),
-                entities[i]->mesh_vertices[j]->x(),
-                entities[i]->mesh_vertices[j]->y());
-      else
-        continue;
-    }
+//   // -----------------------------------------------------------------
+//   // Node coordinates
+//   std::vector<GEntity *> entities;
+//   getEntities(entities);
+//   for (unsigned int i = 0; i < entities.size(); i++)
+//     for (unsigned int j = 0; j < entities[i]->mesh_vertices.size(); j++) {
+//       if (entities[i]->mesh_vertices[j]->getIndex() > 0)
+//         fprintf(fp, "%8d%16e%16e\n", entities[i]->mesh_vertices[j]->getIndex(),
+//                 entities[i]->mesh_vertices[j]->x(),
+//                 entities[i]->mesh_vertices[j]->y());
+//       else
+//         continue;
+//     }
 
-  fprintf(fp, "\n");
+//   fprintf(fp, "\n");
 
-  // -----------------------------------------------------------------
-  // Element connectivities
-  int num = elementStartNum;
+//   // -----------------------------------------------------------------
+//   // Element connectivities
+//   int num = elementStartNum;
 
-  _elementIndexCache.clear();
+//   _elementIndexCache.clear();
 
-  std::vector<std::vector<double>> ele_theta1;
-  std::vector<int> groups;
+//   std::vector<std::vector<double>> ele_theta1;
+//   std::vector<int> groups;
 
-  // points
-  for (viter it = firstVertex(); it != lastVertex(); ++it)
-    writeElementsSC(fp, this, (*it)->points, saveAll, saveSinglePartition,
-                    version, binary, num, (*it)->tag(), (*it)->physicals,
-                    theta1, ele_theta1, i_paras[1], i_paras[0], groups);
-  // lines
-  for (eiter it = firstEdge(); it != lastEdge(); ++it)
-    writeElementsSC(fp, this, (*it)->lines, saveAll, saveSinglePartition,
-                    version, binary, num, (*it)->tag(), (*it)->physicals,
-                    theta1, ele_theta1, i_paras[1], i_paras[0], groups);
-  // triangles
-  for (fiter it = firstFace(); it != lastFace(); ++it)
-    writeElementsSC(fp, this, (*it)->triangles, saveAll, saveSinglePartition,
-                    version, binary, num, (*it)->tag(), (*it)->physicals,
-                    theta1, ele_theta1, i_paras[1], i_paras[0], groups);
+//   // points
+//   for (viter it = firstVertex(); it != lastVertex(); ++it)
+//     writeElementsSC(fp, this, (*it)->points, saveAll, saveSinglePartition,
+//                     version, binary, num, (*it)->tag(), (*it)->physicals,
+//                     theta1, ele_theta1, i_paras[1], i_paras[0], groups);
+//   // lines
+//   for (eiter it = firstEdge(); it != lastEdge(); ++it)
+//     writeElementsSC(fp, this, (*it)->lines, saveAll, saveSinglePartition,
+//                     version, binary, num, (*it)->tag(), (*it)->physicals,
+//                     theta1, ele_theta1, i_paras[1], i_paras[0], groups);
+//   // triangles
+//   for (fiter it = firstFace(); it != lastFace(); ++it)
+//     writeElementsSC(fp, this, (*it)->triangles, saveAll, saveSinglePartition,
+//                     version, binary, num, (*it)->tag(), (*it)->physicals,
+//                     theta1, ele_theta1, i_paras[1], i_paras[0], groups);
 
-  // quads
-  for (fiter it = firstFace(); it != lastFace(); ++it)
-    writeElementsSC(fp, this, (*it)->quadrangles, saveAll, saveSinglePartition,
-                    version, binary, num, (*it)->tag(), (*it)->physicals,
-                    theta1, ele_theta1, i_paras[1], i_paras[0], groups);
-  // polygons
-  for (fiter it = firstFace(); it != lastFace(); it++)
-    writeElementsSC(fp, this, (*it)->polygons, saveAll, saveSinglePartition,
-                    version, binary, num, (*it)->tag(), (*it)->physicals,
-                    theta1, ele_theta1, i_paras[1], i_paras[0], groups);
+//   // quads
+//   for (fiter it = firstFace(); it != lastFace(); ++it)
+//     writeElementsSC(fp, this, (*it)->quadrangles, saveAll, saveSinglePartition,
+//                     version, binary, num, (*it)->tag(), (*it)->physicals,
+//                     theta1, ele_theta1, i_paras[1], i_paras[0], groups);
+//   // polygons
+//   for (fiter it = firstFace(); it != lastFace(); it++)
+//     writeElementsSC(fp, this, (*it)->polygons, saveAll, saveSinglePartition,
+//                     version, binary, num, (*it)->tag(), (*it)->physicals,
+//                     theta1, ele_theta1, i_paras[1], i_paras[0], groups);
 
-  fprintf(fp, "\n");
+//   fprintf(fp, "\n");
 
-  // -----------------------------------------------------------------
-  // Layer angle (theta 1)
-  if (i_paras[0] == 1) {
-    // vabs
-    for (int i = 0; i < ele_theta1.size(); i++)
-      fprintf(fp, "%8d%8d%16e\n", i + 1, groups[i],
-              atan2(ele_theta1[i][1], ele_theta1[i][0]) * 180 / 3.1415926);
-  } else {
-    // swiftcomp
-    for (int i = 0; i < ele_theta1.size(); i++)
-      fprintf(fp, "%8d%16e%16e%16e%16e%16e%16e%16e%16e%16e\n", i + 1, 1.0, 0.0,
-              0.0, 0.0, ele_theta1[i][0], ele_theta1[i][1], 0.0, 0.0, 0.0);
-  }
+//   // -----------------------------------------------------------------
+//   // Layer angle (theta 1)
+//   if (i_paras[0] == 1) {
+//     // vabs
+//     for (int i = 0; i < ele_theta1.size(); i++)
+//       fprintf(fp, "%8d%8d%16e\n", i + 1, groups[i],
+//               atan2(ele_theta1[i][1], ele_theta1[i][0]) * 180 / 3.1415926);
+//   } else {
+//     // swiftcomp
+//     for (int i = 0; i < ele_theta1.size(); i++)
+//       fprintf(fp, "%8d%16e%16e%16e%16e%16e%16e%16e%16e%16e\n", i + 1, 1.0, 0.0,
+//               0.0, 0.0, ele_theta1[i][0], ele_theta1[i][1], 0.0, 0.0, 0.0);
+//   }
 
-  fclose(fp);
+//   fclose(fp);
 
-  return 1;
-}
+//   return 1;
+// }

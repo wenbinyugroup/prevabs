@@ -57,7 +57,7 @@ int Segment::count_tmp = 0;
 int readCrossSection(const std::string &filenameCrossSection,
                      const std::string &filePath, PModel *pmodel, Message *pmessage) {
   pmessage->increaseIndent();
-  i_indent++;
+  // i_indent++;
 
   int material_id = 1;  // Material ID
   int layertype_id = 1; // Layer Type ID
@@ -88,11 +88,17 @@ int readCrossSection(const std::string &filenameCrossSection,
     // std::cout << e.where() << std::endl;
   }
 
-  xml_node<> *nodeCrossSection{xmlDocCrossSection.first_node("cross_section")};
-  std::string csName{nodeCrossSection->first_attribute("name")->value()};
+
+  xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
+  if (!p_xn_sg) {
+    p_xn_sg = xmlDocCrossSection.first_node("sg");
+  }
+
+
+  std::string csName{p_xn_sg->first_attribute("name")->value()};
   std::string cs_type{"general"};
-  if (nodeCrossSection->first_attribute("type")) {
-    cs_type = nodeCrossSection->first_attribute("type")->value();
+  if (p_xn_sg->first_attribute("type")) {
+    cs_type = p_xn_sg->first_attribute("type")->value();
   }
   // std::cout << "cs_type = " << cs_type << std::endl;
 
@@ -106,7 +112,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
 
   double d_fmt{0};
-  xml_attribute<> *p_xa_fmt{nodeCrossSection->first_attribute("format")};
+  xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
   if (p_xa_fmt) {
     std::string ss{p_xa_fmt->value()};
     if (ss[0] != '\0') {
@@ -125,7 +131,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read settings
-  xml_node<> *p_xn_settings{nodeCrossSection->first_node("settings")};
+  xml_node<> *p_xn_settings{p_xn_sg->first_node("settings")};
   if (p_xn_settings) {
     PLOG(debug) << pmessage->message("reading settings...");
 
@@ -151,6 +157,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Read analysis
   PLOG(debug) << pmessage->message("reading analysis...");
 
+  int model_dim = 1; // default 1D beam model
   int model = 0; // default classical model
   int flag_damping = 0;
   int flag_thermal = 0;
@@ -164,8 +171,16 @@ int readCrossSection(const std::string &filenameCrossSection,
   double cos11 = 1.0;
   double cos21 = 0.0;
 
-  xml_node<> *p_xn_analysis{nodeCrossSection->first_node("analysis")};
+  xml_node<> *p_xn_analysis{p_xn_sg->first_node("analysis")};
   if (p_xn_analysis) {
+
+    xml_node<> *p_xn_model_dim{p_xn_analysis->first_node("model_dim")};
+    if (p_xn_model_dim) {
+      std::string ss{p_xn_model_dim->value()};
+      if (ss[0] != '\0') {
+        model_dim = atoi(ss.c_str());
+      }
+    }
 
     xml_node<> *p_xn_model{p_xn_analysis->first_node("model")};
     if (p_xn_model) {
@@ -173,6 +188,13 @@ int readCrossSection(const std::string &filenameCrossSection,
       if (ss[0] != '\0') {
         model = atoi(ss.c_str());
       }
+    }
+
+    xml_node<> *p_xn_physics{p_xn_analysis->first_node("physics")};
+    if (p_xn_physics) {
+      std::string ss{p_xn_physics->value()};
+      int _physics = atoi(ss.c_str());
+      pmodel->setAnalysisPhysics(_physics);
     }
 
     xml_node<> *p_xn_damping{p_xn_analysis->first_node("damping")};
@@ -268,6 +290,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // cs->setFlagTrapeze(flag_trapeze);
   // cs->setFlagVlasov(flag_vlasov);
 
+  pmodel->setAnalysisModelDim(model_dim);
   pmodel->setAnalysisModel(model);
   pmodel->setAnalysisDamping(flag_damping);
   pmodel->setAnalysisThermal(flag_thermal);
@@ -295,7 +318,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   //   std::cout << "\n"
   //             << markInfo << " Read Cross Section General"
   //             << "\n\n";
-  xml_node<> *nodeGeneral{nodeCrossSection->first_node("general")};
+  xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
 
   // Point2 origin{0, 0};
   // SVector3 translate{0, 0, 0};
@@ -373,6 +396,17 @@ int readCrossSection(const std::string &filenameCrossSection,
   pmodel->setElementType(elementtype);
 
 
+  double omega{1.0};
+  xml_node<> *p_xn_omega{nodeGeneral->first_node("omega")};
+  if (p_xn_omega) {
+    std::string stol{p_xn_omega->value()};
+    if (stol[0] != '\0') {
+      omega = atof(stol.c_str());
+    }
+  }
+  pmodel->setOmega(omega);
+
+
   xml_node<> *p_xn_tol{nodeGeneral->first_node("tolerance")};
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
@@ -382,6 +416,44 @@ int readCrossSection(const std::string &filenameCrossSection,
   std::stringstream ss_tol;
   ss_tol << config.tol;
   PLOG(debug) << pmessage->message("tolerance = " + ss_tol.str());
+
+
+  xml_node<> *p_xn_itf;
+
+  bool track_interface;
+  p_xn_itf = nodeGeneral->first_node("track_interface");
+  if (p_xn_itf) {
+    std::string ss{p_xn_itf->value()};
+    if (ss[0] != '\0') {
+      track_interface = atoi(ss.c_str());
+      // std::cout << "track_interface = " << track_interface << std::endl;
+      pmodel->setInterfaceOutput(track_interface);
+      // std::cout << "_itf_output = " << pmodel->interfaceOutput() << std::endl;
+    }
+  }
+
+
+  double itf_t1d_th;
+  p_xn_itf = nodeGeneral->first_node("interface_theta1_diff_threshold");
+  if (p_xn_itf) {
+    std::string ss{p_xn_itf->value()};
+    if (ss[0] != '\0') {
+      itf_t1d_th = atoi(ss.c_str());
+      pmodel->setInterfaceTheta1DiffThreshold(itf_t1d_th);
+    }
+  }
+
+
+  double itf_t3d_th;
+  p_xn_itf = nodeGeneral->first_node("interface_theta3_diff_threshold");
+  if (p_xn_itf) {
+    std::string ss{p_xn_itf->value()};
+    if (ss[0] != '\0') {
+      itf_t3d_th = atoi(ss.c_str());
+      pmodel->setInterfaceTheta3DiffThreshold(itf_t3d_th);
+    }
+  }
+
 
   PLOG(debug) << pmessage->message("finished reading general.");
 
@@ -396,7 +468,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // -----------------------------------------------------------------
   // Read include
   PLOG(debug) << pmessage->message("finding includings...");
-  xml_node<> *nodeInclude{nodeCrossSection->first_node("include")};
+  xml_node<> *nodeInclude{p_xn_sg->first_node("include")};
   xml_node<> *nodeBaselines;
 
 
@@ -464,7 +536,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         // std::cout << "\nreading topology...\n";
         // Box: two straight webs
         // I: one straight webs
-        xml_node<> *nodeTopology{nodeCrossSection->first_node("topology")};
+        xml_node<> *nodeTopology{p_xn_sg->first_node("topology")};
         std::vector<std::pair<double, double>> websArray;
         if (nodeTopology) {
           xml_node<> *nodeLEWeb{nodeTopology->first_node("leading_web")};
@@ -521,7 +593,7 @@ int readCrossSection(const std::string &filenameCrossSection,
             websArray.push_back(std::make_pair(xmM, angM));   
           }
         }
-        xml_node<> *nodeSpar{nodeCrossSection->first_node("spar")};
+        xml_node<> *nodeSpar{p_xn_sg->first_node("spar")};
         if (nodeSpar) {
           xml_attribute<> *p_xa_spar = nodeSpar->first_attribute("type");
           std::string sparType{p_xa_spar->value()};
@@ -564,7 +636,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
 
   // 2: Try to read geometry in the main input file
-  nodeBaselines = nodeCrossSection->first_node("baselines");
+  nodeBaselines = p_xn_sg->first_node("baselines");
 
   if (nodeBaselines) {
 
@@ -577,7 +649,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     // pmessage->print(9, "summary of base lines");
     PLOG(debug) << pmessage->message("summary of base lines (before transformation)");
     for (auto bsl : pmodel->baselines()) {
-      bsl->print(pmessage, 9);
+      bsl->print(pmessage);
       pmessage->printBlank();
     }
   }
@@ -597,7 +669,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     // pmessage->print(9, "summary of base lines");
     PLOG(debug) << pmessage->message("summary of base lines (after transformation)");
     for (auto bsl : pmodel->baselines()) {
-      bsl->print(pmessage, 9);
+      bsl->print(pmessage);
       pmessage->printBlank();
     }
   }
@@ -668,11 +740,18 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   if (fn_material_global != "") {
-    readMaterials(fn_material_global, pmodel, pmessage);
+    readMaterialsFile(fn_material_global, pmodel, pmessage);
   }
+
   if (fn_material_local != "") {
-    readMaterials(fn_material_local, pmodel, pmessage);
+    readMaterialsFile(fn_material_local, pmodel, pmessage);
   }
+
+  xml_node<> *p_xn_materials{p_xn_sg->first_node("materials")};
+  if (p_xn_materials) {
+    readMaterials(p_xn_materials, pmodel, pmessage);
+  }
+
   if (config.debug) {
     pmessage->printBlank();
     pmessage->print(9, "summary of materials");
@@ -681,6 +760,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       pmessage->printBlank();
     }
   }
+
   PLOG(debug) << pmessage->message("finished reading materials.");
 
 
@@ -720,9 +800,15 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
     nodeLayups = xmlDocLayups.first_node("layups");
     readLayups(nodeLayups, pmodel, pmessage);
-  } else if (d_fmt == 1) {
-    nodeLayups = nodeCrossSection->first_node("layups");
-    readLayups(nodeLayups, pmodel, pmessage);
+    PLOG(debug) << pmessage->message("finished reading layups.");
+  }
+
+  else if (d_fmt == 1) {
+    nodeLayups = p_xn_sg->first_node("layups");
+    if (nodeLayups) {
+      readLayups(nodeLayups, pmodel, pmessage);
+      PLOG(debug) << pmessage->message("finished reading layups.");
+    }
   }
 
   // readLayups(filenameLayups, pmodel, pmessage);
@@ -734,7 +820,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   //     pmessage->printBlank();
   //   }
   // }
-  PLOG(debug) << pmessage->message("finished reading layups.");
 
 
 
@@ -755,9 +840,9 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   std::vector<std::vector<std::string>> tmp_dependents_all;
 
-  for (auto xn_component = nodeCrossSection->first_node("component");
+  for (auto xn_component = p_xn_sg->first_node("component");
        xn_component; xn_component = xn_component->next_sibling("component")) {
-    // xml_node<> *nodeSegments{nodeCrossSection->first_node("segments")};
+    // xml_node<> *nodeSegments{p_xn_sg->first_node("segments")};
     // for (auto nodeSegment = nodeSegments->first_node("segment"); nodeSegment;
     PComponent *p_component;
 
@@ -834,7 +919,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   //   pmodel->summary(pmessage);
   // }
 
-  i_indent--;
+  // i_indent--;
   pmessage->decreaseIndent();
 
   return 0;

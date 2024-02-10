@@ -1,0 +1,123 @@
+<sg name="cross" format="1">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>materials</material> -->
+    <!-- <layup>layups</layup> -->
+  </include>
+  <analysis>
+    <model_dim>3</model_dim>
+  </analysis>
+  <general>
+    <!-- <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate> -->
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <point name="p0">0  0</point>
+    <point name="p1">1  1</point>
+    <point name="p2">-1  1</point>
+    <point name="p3">-1  -1</point>
+    <point name="p4">1  -1</point>
+    <line name="l1">
+      <points>p1,p0,p2</points>
+    </line>
+    <line name="l2">
+      <points>p2,p0,p3</points>
+    </line>
+    <line name="l3">
+      <points>p3,p0,p4</points>
+    </line>
+    <line name="l4">
+      <points>p4,p0,p1</points>
+    </line>
+  </baselines>
+
+  <materials>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_iso5_1_02">
+      <material>iso5_1</material>
+      <thickness>0.005</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1" method="ss">
+      <lamina>la_iso5_1_02</lamina>
+      <code>[45:2/-45:2/0:2/90:2]s</code>
+    </layup>
+  </layups>
+
+  <component name="c1">
+    <segment>
+      <baseline>l1</baseline>
+      <layup direction="right">layup1</layup>
+      <trim>
+        <location>head</location>
+        <direction>1 0</direction>
+      </trim>
+      <trim>
+        <location>tail</location>
+        <direction>1 0</direction>
+      </trim>
+    </segment>
+  </component>
+  <component name="c2">
+    <segment>
+      <baseline>l2</baseline>
+      <layup direction="right">layup1</layup>
+      <trim>
+        <location>head</location>
+        <direction>0 1</direction>
+      </trim>
+      <trim>
+        <location>tail</location>
+        <direction>0 1</direction>
+      </trim>
+    </segment>
+  </component>
+  <component name="c3">
+    <segment>
+      <baseline>l3</baseline>
+      <layup direction="right">layup1</layup>
+      <trim>
+        <location>head</location>
+        <direction>1 0</direction>
+      </trim>
+      <trim>
+        <location>tail</location>
+        <direction>1 0</direction>
+      </trim>
+    </segment>
+  </component>
+  <component name="c4">
+    <segment>
+      <baseline>l4</baseline>
+      <layup direction="right">layup1</layup>
+      <trim>
+        <location>head</location>
+        <direction>0 1</direction>
+      </trim>
+      <trim>
+        <location>tail</location>
+        <direction>0 1</direction>
+      </trim>
+    </segment>
+  </component>
+
+</sg>

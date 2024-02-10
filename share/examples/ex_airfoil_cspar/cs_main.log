@@ -1,0 +1,31 @@
+2023-10-10 16:10:26 [info] prevabs start
+2023-10-10 16:10:26 [info] - reading input files
+2023-10-10 16:10:26 [info]     - reading main input file: .\cs_main.xml
+2023-10-10 16:10:26 [info]       - reading airfoil data file: .\sc1095.dat
+2023-10-10 16:10:26 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
+2023-10-10 16:10:26 [info]         - reading materials file: .\material_database_us_ft.xml
+2023-10-10 16:10:26 [info]   - reading input files -- done
+2023-10-10 16:10:26 [info]   - building the shape
+2023-10-10 16:10:26 [info]     - building the cross section, step 1
+2023-10-10 16:10:26 [info]       - building component: spar
+2023-10-10 16:10:26 [info]       - building component: fill_aft
+2023-10-10 16:10:26 [info]     - building the cross section, step 2
+2023-10-10 16:10:26 [info]       - building component details: spar
+2023-10-10 16:10:26 [info]     - fixing geometry
+2023-10-10 16:10:26 [info]   - building the shape -- done
+2023-10-10 16:10:26 [info]   - modeling in Gmsh
+2023-10-10 16:10:26 [info]     - creating gmsh vertices
+2023-10-10 16:10:26 [info]     - creating gmsh edges
+2023-10-10 16:10:26 [info]     - creating gmsh face
+2023-10-10 16:10:26 [info]     - meshing
+2023-10-10 16:10:28 [info]   - modeling in Gmsh -- done
+2023-10-10 16:10:28 [info]   - writing outputs
+2023-10-10 16:10:28 [info]     - writing gmsh .opt file: .\cs_main.opt
+2023-10-10 16:10:28 [info]     - writing gmsh .geo file: .\cs_main.geo
+2023-10-10 16:10:28 [info]     - writing gmsh .msh file: .\cs_main.msh
+2023-10-10 16:10:28 [info]     - writing sg file: .\cs_main.sg
+2023-10-10 16:10:29 [info]   - writing outputs -- done
+2023-10-10 16:10:29 [info]   - running Gmsh for visualization
+2023-10-10 16:10:29 [info]   - running: gmsh .\cs_main.geo .\cs_main.msh .\cs_main.opt
+2023-10-10 16:10:29 [info] prevabs finished
+2023-10-10 16:10:29 [info] total running time: 3.077 sec

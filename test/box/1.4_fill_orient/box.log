@@ -1,24 +1,30 @@
-2021-07-16 23:27:32 [info] prevabs start
-2021-07-16 23:27:32 [info] - reading input files
-2021-07-16 23:27:32 [info]     - reading main input file: share/test/box/1.4_fill_orient/box.xml
-2021-07-16 23:27:32 [info]       - reading materials file: /home/msg/a/tian50/develop/group_git/prevabs/bin/MaterialDB.xml
-2021-07-16 23:27:32 [info]       - reading materials file: share/test/box/1.4_fill_orient/materials.xml
-2021-07-16 23:27:32 [info] - reading input files -- done
-2021-07-16 23:27:32 [info] - building the shape
-2021-07-16 23:27:32 [info]   - building the cross section, step 1
-2021-07-16 23:27:32 [info]     - building component: main
-2021-07-16 23:27:32 [info]     - building component: fill
-2021-07-16 23:27:32 [info]   - building the cross section, step 2
-2021-07-16 23:27:32 [info]     - building component details: main
-2021-07-16 23:27:32 [info] - building the shape -- done
-2021-07-16 23:27:32 [info] - modeling in Gmsh
-2021-07-16 23:27:32 [info]   - creating gmsh vertices
-2021-07-16 23:27:32 [info]   - creating gmsh edges
-2021-07-16 23:27:32 [info]   - creating gmsh face
-2021-07-16 23:27:32 [info]   - meshing
-2021-07-16 23:27:32 [info] - modeling in Gmsh -- done
-2021-07-16 23:27:32 [info] - writing outputs
-2021-07-16 23:27:32 [info]   - writing sg file: share/test/box/1.4_fill_orient/box.sg
-2021-07-16 23:27:32 [info] - writing outputs -- done
-2021-07-16 23:27:32 [info] prevabs finished
-2021-07-16 23:27:32 [info] total running time: 0.61 sec
+2022-09-22 17:52:40 [info] prevabs start
+2022-09-22 17:52:40 [info] - reading input files
+2022-09-22 17:52:40 [info]     - reading main input file: box.xml
+2022-09-22 17:52:40 [info]       - reading materials file: C:\Users\tian50\sall\s99-exe\MaterialDB.xml
+2022-09-22 17:52:40 [info]       - reading materials file: materials.xml
+2022-09-22 17:52:40 [info] - reading input files -- done
+2022-09-22 17:52:40 [info] - building the shape
+2022-09-22 17:52:40 [info]   - building the cross section, step 1
+2022-09-22 17:52:40 [info]     - building component: main
+2022-09-22 17:52:40 [info]     - building component: fill
+2022-09-22 17:52:40 [info]   - building the cross section, step 2
+2022-09-22 17:52:40 [info]     - building component details: main
+2022-09-22 17:52:40 [info]   - fixing geometry
+2022-09-22 17:52:40 [info] - building the shape -- done
+2022-09-22 17:52:40 [info] - modeling in Gmsh
+2022-09-22 17:52:40 [info]   - creating gmsh vertices
+2022-09-22 17:52:40 [info]   - creating gmsh edges
+2022-09-22 17:52:40 [info]   - creating gmsh face
+2022-09-22 17:52:40 [info]   - meshing
+2022-09-22 17:52:41 [info] - modeling in Gmsh -- done
+2022-09-22 17:52:41 [info] - writing outputs
+2022-09-22 17:52:41 [info]   - writing gmsh .opt file: box.opt
+2022-09-22 17:52:41 [info]   - writing gmsh .geo file: box.geo
+2022-09-22 17:52:41 [info]   - writing gmsh .msh file: box.msh
+2022-09-22 17:52:41 [info]   - writing sg file: box.sg
+2022-09-22 17:52:41 [info] - writing outputs -- done
+2022-09-22 17:52:41 [info] - running Gmsh for visualization
+2022-09-22 17:52:41 [info] - running: gmsh box.geo box.msh box.opt
+2022-09-22 17:52:41 [info] prevabs finished
+2022-09-22 17:52:41 [info] total running time: 1.735 sec

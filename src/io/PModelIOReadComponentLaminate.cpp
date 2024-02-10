@@ -45,6 +45,14 @@ int readXMLElementComponentLaminate(
     nseg++;
   }
 
+
+
+
+
+
+
+
+
   // Read segments defined explicitly by a single base line and
   // a single layup in <segment>
   //
@@ -56,7 +64,8 @@ int readXMLElementComponentLaminate(
     xml_attribute<> *p_xa_name{nodeSegment->first_attribute("name")};
     if (p_xa_name) {
       segmentName = nodeSegment->first_attribute("name")->value();
-    } else {
+    }
+    else {
       Segment::count_tmp++;
       segmentName = "sgm_" + std::to_string(Segment::count_tmp);
     }
@@ -105,6 +114,7 @@ int readXMLElementComponentLaminate(
     //   if (it->getName() == layupName) {
     //     p_layup = &(*it);
     p_layup = pmodel->getLayupByName(layupName);
+
     if (p_layup != nullptr) {
       for (auto layer : p_layup->getLayers()) {
         // Layer type has been added to the used list if its id > 0
@@ -125,11 +135,15 @@ int readXMLElementComponentLaminate(
           }
         }
       }
-    } else {
+    }
+    else {
       // Raise exception
       std::cout << "[error] cannot find layup: " << layupName << std::endl;
     }
     p_layups.push_back(p_layup);
+
+
+
 
     // If there is only one segment and trim both ends, then split
     if (depend_names.size() > 0 && nseg == 1 && i_freeend == -1) {
@@ -197,6 +211,8 @@ int readXMLElementComponentLaminate(
         p_sgm_1->setFreeEnd(i_freeend);
       }
       p_sgm_1->setClosed(false);
+      p_sgm_1->setMatOrient1(p_component->getMatOrient1());
+      p_sgm_1->setMatOrient2(p_component->getMatOrient2());
       p_component->addSegment(p_sgm_1);
 
       p_sgm_2 = new Segment(pmodel, name_2, p_bsl_2, p_layup, layupSide, 0);
@@ -204,6 +220,8 @@ int readXMLElementComponentLaminate(
         p_sgm_2->setFreeEnd(i_freeend);
       }
       p_sgm_2->setClosed(false);
+      p_sgm_2->setMatOrient1(p_component->getMatOrient1());
+      p_sgm_2->setMatOrient2(p_component->getMatOrient2());
       p_component->addSegment(p_sgm_2);
 
     }
@@ -214,6 +232,33 @@ int readXMLElementComponentLaminate(
           new Segment(pmodel, segmentName, p_baseline, p_layup, layupSide, 0);
       p_segment->setFreeEnd(i_freeend);
       p_segment->setClosed(false);
+      p_segment->setMatOrient1(p_component->getMatOrient1());
+      p_segment->setMatOrient2(p_component->getMatOrient2());
+
+      // Read trim config
+      for (auto p_xn_trim = nodeSegment->first_node("trim"); p_xn_trim;
+            p_xn_trim = p_xn_trim->next_sibling("trim")) {
+
+        std::string loc;
+        double x2, x3;
+
+        xml_node<> *p_xn_location{p_xn_trim->first_node("location")};
+        if (p_xn_location) {
+          loc = p_xn_location->value();
+        }
+
+        xml_node<> *p_xn_direction{p_xn_trim->first_node("direction")};
+        if (p_xn_direction) {
+          std::stringstream ss{p_xn_direction->value()};
+          ss >> x2 >> x3;
+          if (loc == "head") {
+            p_segment->setPrevBound(0, x2, x3);
+          }
+          else if (loc == "tail") {
+            p_segment->setNextBound(0, x2, x3);
+          }
+        }
+      }
 
       p_component->addSegment(p_segment);
     }
@@ -609,8 +654,45 @@ int readXMLElementComponentLaminate(
       p_sgm->setFreeEnd(i_freeend);
       p_sgm->setClosed(false);
 
+      p_sgm->setMatOrient1(p_component->getMatOrient1());
+      p_sgm->setMatOrient2(p_component->getMatOrient2());
+
       p_component->addSegment(p_sgm);
       // std::cout << p_sgm << std::endl;
+    }
+
+  }
+
+
+  // Read trim config
+  for (auto p_xn_trim = xn_component->first_node("trim"); p_xn_trim;
+        p_xn_trim = p_xn_trim->next_sibling("trim")) {
+
+
+    std::string loc;
+    double x2, x3;
+
+    xml_node<> *p_xn_location{p_xn_trim->first_node("location")};
+    if (p_xn_location) {
+      loc = p_xn_location->value();
+      if (loc == "head") {
+        p_component->setTrimHead(true);
+      }
+      else if (loc == "tail") {
+        p_component->setTrimTail(true);
+      }
+    }
+
+    xml_node<> *p_xn_direction{p_xn_trim->first_node("direction")};
+    if (p_xn_direction) {
+      std::stringstream ss{p_xn_direction->value()};
+      ss >> x2 >> x3;
+      if (loc == "head") {
+        p_component->setTrimHeadVector(x2, x3);
+      }
+      else if (loc == "tail") {
+        p_component->setTrimTailVector(x2, x3);
+      }
     }
 
   }

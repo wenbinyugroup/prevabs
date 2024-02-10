@@ -293,7 +293,7 @@ void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
 
 void CrossSection::build(Message *pmessage) {
-  i_indent++;
+  // i_indent++;
   pmessage->increaseIndent();
 
   // Build the overall shape of the cross section
@@ -351,7 +351,7 @@ void CrossSection::build(Message *pmessage) {
 
 
   // _pmodel->dcel()->print_dcel();
-  i_indent--;
+  // i_indent--;
   pmessage->decreaseIndent();
 
 }

@@ -1,0 +1,35 @@
+2023-03-08 00:01:36 [info] prevabs start
+2023-03-08 00:01:36 [info] - reading input files
+2023-03-08 00:01:36 [info]     - reading main input file: .\uh60_blade_1_cs4.xml
+2023-03-08 00:01:36 [info]       - reading airfoil data file: .\sc94r8m4.dat
+2023-03-08 00:01:36 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2023-03-08 00:01:36 [info]       - reading materials file: .\material_database_us_ft.xml
+2023-03-08 00:01:36 [info] - reading input files -- done
+2023-03-08 00:01:36 [info] - building the shape
+2023-03-08 00:01:36 [info]   - building the cross section, step 1
+2023-03-08 00:01:36 [info]     - building component: skin
+2023-03-08 00:01:36 [info]     - building component: spar
+2023-03-08 00:01:36 [info]     - building component: ns_mass
+2023-03-08 00:01:36 [info]     - building component: fill_back
+2023-03-08 00:01:36 [info]     - building component: fill_te
+2023-03-08 00:01:36 [info]   - building the cross section, step 2
+2023-03-08 00:01:36 [info]     - building component details: skin
+2023-03-08 00:01:36 [info]     - building component details: spar
+2023-03-08 00:01:36 [info]   - fixing geometry
+2023-03-08 00:01:36 [info] - building the shape -- done
+2023-03-08 00:01:36 [info] - modeling in Gmsh
+2023-03-08 00:01:36 [info]   - creating gmsh vertices
+2023-03-08 00:01:36 [info]   - creating gmsh edges
+2023-03-08 00:01:36 [info]   - creating gmsh face
+2023-03-08 00:01:36 [info]   - meshing
+2023-03-08 00:01:37 [info] - modeling in Gmsh -- done
+2023-03-08 00:01:37 [info] - writing outputs
+2023-03-08 00:01:37 [info]   - writing gmsh .opt file: .\uh60_blade_1_cs4.opt
+2023-03-08 00:01:37 [info]   - writing gmsh .geo file: .\uh60_blade_1_cs4.geo
+2023-03-08 00:01:37 [info]   - writing gmsh .msh file: .\uh60_blade_1_cs4.msh
+2023-03-08 00:01:37 [info]   - writing sg file: .\uh60_blade_1_cs4.sg
+2023-03-08 00:01:37 [info] - writing outputs -- done
+2023-03-08 00:01:37 [info] - running Gmsh for visualization
+2023-03-08 00:01:37 [info] - running: gmsh .\uh60_blade_1_cs4.geo .\uh60_blade_1_cs4.msh .\uh60_blade_1_cs4.opt
+2023-03-08 00:01:37 [info] prevabs finished
+2023-03-08 00:01:37 [info] total running time: 1.457 sec

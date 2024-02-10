@@ -1,0 +1,28 @@
+2022-11-18 09:54:39 [info] prevabs start
+2022-11-18 09:54:39 [info] - reading input files
+2022-11-18 09:54:39 [info]     - reading main input file: .\test\end_trim\arc.xml
+2022-11-18 09:54:39 [info]       - reading materials file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\bin\MaterialDB.xml
+2022-11-18 09:54:39 [info] - reading input files -- done
+2022-11-18 09:54:39 [info] - building the shape
+2022-11-18 09:54:39 [info]   - building the cross section, step 1
+2022-11-18 09:54:39 [info]     - building component: in
+2022-11-18 09:54:39 [info]       - building the cross section, step 2
+2022-11-18 09:54:39 [info]         - building component details: in
+2022-11-18 09:54:39 [info]       - fixing geometry
+2022-11-18 09:54:39 [info]     - building the shape -- done
+2022-11-18 09:54:39 [info]     - modeling in Gmsh
+2022-11-18 09:54:39 [info]       - creating gmsh vertices
+2022-11-18 09:54:40 [info]       - creating gmsh edges
+2022-11-18 09:54:40 [info]       - creating gmsh face
+2022-11-18 09:54:40 [info]       - meshing
+2022-11-18 09:54:40 [info]     - modeling in Gmsh -- done
+2022-11-18 09:54:40 [info]     - writing outputs
+2022-11-18 09:54:40 [info]       - writing gmsh .opt file: .\test\end_trim\arc.opt
+2022-11-18 09:54:40 [info]       - writing gmsh .geo file: .\test\end_trim\arc.geo
+2022-11-18 09:54:40 [info]       - writing gmsh .msh file: .\test\end_trim\arc.msh
+2022-11-18 09:54:40 [info]       - writing sg file: .\test\end_trim\arc.sg
+2022-11-18 09:54:40 [info]     - writing outputs -- done
+2022-11-18 09:54:40 [info]     - running Gmsh for visualization
+2022-11-18 09:54:40 [info]     - running: gmsh .\test\end_trim\arc.geo .\test\end_trim\arc.msh .\test\end_trim\arc.opt
+2022-11-18 09:54:40 [info] prevabs finished
+2022-11-18 09:54:40 [info] total running time: 0.672 sec

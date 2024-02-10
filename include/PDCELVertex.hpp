@@ -24,11 +24,13 @@ private:
   SPoint3 _point;
   PDCEL *_dcel; // Indicating if the vertex has been added to the dcel
   PDCELHalfEdge *_incident_edge;
-  GVertex *_gvertex;
-  bool _gbuild;
   int _degenerated;
   PDCELVertex *_link_to = nullptr;
   Baseline *_p_on_line = nullptr;
+  bool _on_joint = false;
+
+  bool _gbuild;
+  GVertex *_gvertex;
 
 public:
   PDCELVertex()
@@ -82,14 +84,12 @@ public:
   void rotate(double);
 
   bool isFinite();
+  bool onJoint() { return _on_joint; }
 
   PDCEL *dcel() { return _dcel; }
   PDCELHalfEdge *edge() { return _incident_edge; }
   int degree();
   PDCELHalfEdge *getEdgeTo(PDCELVertex *);
-
-  bool gbuild() { return _gbuild; }
-  GVertex *gvertex() { return _gvertex; }
 
   int &degenerated() { return _degenerated; }
 
@@ -104,9 +104,14 @@ public:
   void setDCEL(PDCEL *dcel) { _dcel = dcel; }
   void setIncidentEdge(PDCELHalfEdge *);
 
-  void setGBuild(bool build) { _gbuild = build; }
   void setGVertex(GVertex *);
   void resetGVertex() { _gvertex = nullptr; }
+
+  void setOnJoint(bool on_joint) { _on_joint = on_joint; }
+
+  bool gbuild() { return _gbuild; }
+  void setGBuild(bool build) { _gbuild = build; }
+  GVertex *gvertex() { return _gvertex; }
 
   // void setName(std::string name) {_s_name = name; }
 };

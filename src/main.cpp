@@ -43,20 +43,21 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
     std::cout << " Analysis options" << std::endl;
     std::cout << std::string(20, '-') << std::endl;
-    std::cout << " -h      Build cross section and generate VABS/SwiftComp input file for homogenization.\n";
-    std::cout << " -d      Read 1D beam analysis results and update VABS/SwiftComp input file for dehomogenization.\n";
-    std::cout << " -fi     Initial failure indices and strength ratios.\n";
-    std::cout << " -f      Initial failure strength analysis (SwiftComp only).\n";
-    std::cout << " -fe     Initial failure envelope (SwiftComp only).\n";
+    std::cout << " -h        Build cross section and generate VABS/SwiftComp input file for homogenization.\n";
+    std::cout << " -d        Read 1D beam analysis results and update VABS/SwiftComp input file for dehomogenization.\n";
+    std::cout << " -fi       Initial failure indices and strength ratios.\n";
+    std::cout << " -f        Initial failure strength analysis (SwiftComp only).\n";
+    std::cout << " -fe       Initial failure envelope (SwiftComp only).\n";
     std::cout << std::endl;
     std::cout << " Format and execution options" << std::endl;
     std::cout << std::string(20, '-') << std::endl;
-    std::cout << " -vabs   Use VABS format (Default).\n";
-    std::cout << " -sc     Use SwiftComp format.\n";
-    std::cout << " -int    Use integrated solver.\n";
-    std::cout << " -e      Execute VABS/SwiftComp.\n";
-    std::cout << " -v      Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.\n";
-    std::cout << " -debug  Debug mode.\n";
+    std::cout << " -vabs     Use VABS format (Default).\n";
+    std::cout << " -sc       Use SwiftComp format.\n";
+    std::cout << " -ver VER  Format version.\n";
+    std::cout << " -int      Use integrated solver.\n";
+    std::cout << " -e        Execute VABS/SwiftComp.\n";
+    std::cout << " -v        Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.\n";
+    std::cout << " -debug    Debug mode.\n";
     std::cout << std::endl;
     return 0;
   }
@@ -73,6 +74,10 @@ int main(int argc, char *argv[]) {
     if (std::string{argv[i]} == "-sc") {
       config.analysis_tool = 2;
       config.tool_name = "SwiftComp";
+    }
+
+    if (std::string{argv[i]} == "-ver") {
+      config.tool_ver = std::string{argv[i+1]};
     }
 
     if (std::string{argv[i]} == "-int") {

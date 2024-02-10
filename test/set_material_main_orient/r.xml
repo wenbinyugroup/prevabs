@@ -1,0 +1,84 @@
+<cross_section name="r" format="1">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>materials</material> -->
+    <!-- <layup>layups</layup> -->
+  </include>
+  <general>
+    <!-- <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate> -->
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <point name="o">0 0</point>
+    <point name="p11">1 1</point>
+    <point name="lc">-1  0</point>
+    <point name="p1">-0.99  0</point>
+    <point name="p2">-0.98  0</point>
+    <point name="p3">-0.97  0</point>
+    <point name="p4">0.97  0</point>
+    <point name="p5">0.98  0</point>
+    <point name="p6">0.99  0</point>
+    <point name="rc">1  0</point>
+    <line name="bl">
+      <points>o,p11</points>
+      <!-- <points>lc,p1,p2,p3,p4,p5,p6,rc</points> -->
+    </line>
+  </baselines>
+
+  <materials>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_iso5_1_02">
+      <material>iso5_1</material>
+      <thickness>0.005</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1" method="ss">
+      <lamina>la_iso5_1_02</lamina>
+      <code>[45:2/-45:2/0:2/90:2]s</code>
+    </layup>
+  </layups>
+
+  <component name="top">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>layup1</layup>
+      <material_orientation>
+        <e1></e1>
+      </material_orientation>
+      <!-- <trim>
+        <location>head</location>
+        <direction>1 1</direction>
+      </trim> -->
+      <!-- <trim>
+        <location>tail</location>
+        <direction>1 1</direction>
+      </trim> -->
+    </segment>
+  </component>
+  <!-- <component name="bottom">
+    <segment>
+      <baseline>bl</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+
+</cross_section>

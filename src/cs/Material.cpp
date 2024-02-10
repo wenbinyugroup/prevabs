@@ -21,32 +21,32 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
 
 void Material::print(Message *pmessage, int i_type, int i_indent) {
   std::string msg;
-  pmessage->print(i_type, "name: " + mname);
-  pmessage->print(i_type, "density = " + std::to_string(mdensity));
-  pmessage->print(i_type, "type: " + mtype);
+  pmessage->print(i_type, "name: " + _name);
+  pmessage->print(i_type, "density = " + std::to_string(_density));
+  pmessage->print(i_type, "type: " + _type);
 
-  if (mtype == "isotropic") {
-    pmessage->print(i_type, "E = " + std::to_string(melastic[0]));
-    pmessage->print(i_type, "nu = " + std::to_string(melastic[1]));
-  } else if (mtype == "orthotropic") {
-    pmessage->print(i_type, "E1 = " + std::to_string(melastic[0]));
-    pmessage->print(i_type, "E2 = " + std::to_string(melastic[1]));
-    pmessage->print(i_type, "E3 = " + std::to_string(melastic[2]));
-    pmessage->print(i_type, "G12 = " + std::to_string(melastic[3]));
-    pmessage->print(i_type, "G13 = " + std::to_string(melastic[4]));
-    pmessage->print(i_type, "G23 = " + std::to_string(melastic[5]));
-    pmessage->print(i_type, "nu12 = " + std::to_string(melastic[6]));
-    pmessage->print(i_type, "nu13 = " + std::to_string(melastic[7]));
-    pmessage->print(i_type, "nu23 = " + std::to_string(melastic[8]));
-  } else if (mtype == "anisotropic") {
+  if (_type == "isotropic") {
+    pmessage->print(i_type, "E = " + std::to_string(_elastic[0]));
+    pmessage->print(i_type, "nu = " + std::to_string(_elastic[1]));
+  } else if (_type == "orthotropic") {
+    pmessage->print(i_type, "E1 = " + std::to_string(_elastic[0]));
+    pmessage->print(i_type, "E2 = " + std::to_string(_elastic[1]));
+    pmessage->print(i_type, "E3 = " + std::to_string(_elastic[2]));
+    pmessage->print(i_type, "G12 = " + std::to_string(_elastic[3]));
+    pmessage->print(i_type, "G13 = " + std::to_string(_elastic[4]));
+    pmessage->print(i_type, "G23 = " + std::to_string(_elastic[5]));
+    pmessage->print(i_type, "nu12 = " + std::to_string(_elastic[6]));
+    pmessage->print(i_type, "nu13 = " + std::to_string(_elastic[7]));
+    pmessage->print(i_type, "nu23 = " + std::to_string(_elastic[8]));
+  } else if (_type == "anisotropic") {
     for (std::size_t i = 0; i < elasticLabelAniso.size(); ++i) {
-      pmessage->print(i_type, upperString(elasticLabelAniso[i]) + std::to_string(melastic[i]));
+      pmessage->print(i_type, upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]));
     }
   }
 
   // if (mfcriterion > 0) {
   //   pmessage->print(i_type, "failure criterion: " + std::to_string(mfcriterion));
-  //   if (mtype == "isotropic") {
+  //   if (_type == "isotropic") {
   //     if (mfcriterion == 1 || mfcriterion == 2) {
   //       pmessage->print(i_type, "xt = " + std::to_string(mstrength[0]));
   //       pmessage->print(i_type, "xc = " + std::to_string(mstrength[1]));
@@ -55,7 +55,7 @@ void Material::print(Message *pmessage, int i_type, int i_indent) {
   //     } else if (mfcriterion == 5) {
   //       pmessage->print(i_type, "x = " + std::to_string(mstrength[0]));
   //     }
-  //   } else if (mtype == "orthotropic" || mtype == "anisotropic") {
+  //   } else if (_type == "orthotropic" || _type == "anisotropic") {
   //     if (mfcriterion == 1 || mfcriterion == 2 || mfcriterion == 4) {
   //       pmessage->print(i_type, "xt = " + std::to_string(mstrength[0]));
   //       pmessage->print(i_type, "yt = " + std::to_string(mstrength[1]));
@@ -93,11 +93,11 @@ void Material::printMaterial() {
     std::cout << std::scientific;
   }
   std::cout << doubleLine80 << std::endl;
-  std::cout << std::setw(32) << "MATERIAL" << std::setw(32) << mname
+  std::cout << std::setw(32) << "MATERIAL" << std::setw(32) << _name
             << std::endl;
-  std::cout << std::setw(32) << "Density" << std::setw(32) << mdensity
+  std::cout << std::setw(32) << "Density" << std::setw(32) << _density
             << std::endl;
-  std::cout << std::setw(32) << "Type" << std::setw(32) << mtype << std::endl;
+  std::cout << std::setw(32) << "Type" << std::setw(32) << _type << std::endl;
   std::cout << std::setw(32) << "Failure Criterion" << std::setw(32)
             << mfcriterion << std::endl;
   std::cout << std::setw(32) << "Characteristic Length" << std::setw(32)
@@ -106,34 +106,34 @@ void Material::printMaterial() {
 
 
   std::cout << std::setw(32) << "Elastic" << std::endl;
-  if (mtype == "isotropic") {
-    std::cout << std::setw(16) << "E" << std::setw(32) << melastic[0]
+  if (_type == "isotropic") {
+    std::cout << std::setw(16) << "E" << std::setw(32) << _elastic[0]
               << std::endl;
-    std::cout << std::setw(16) << "Nu" << std::setw(32) << melastic[1]
+    std::cout << std::setw(16) << "Nu" << std::setw(32) << _elastic[1]
               << std::endl;
-  } else if (mtype == "orthotropic") {
-    std::cout << std::setw(16) << "E1" << std::setw(32) << melastic[0]
+  } else if (_type == "orthotropic") {
+    std::cout << std::setw(16) << "E1" << std::setw(32) << _elastic[0]
               << std::endl;
-    std::cout << std::setw(16) << "E2" << std::setw(32) << melastic[1]
+    std::cout << std::setw(16) << "E2" << std::setw(32) << _elastic[1]
               << std::endl;
-    std::cout << std::setw(16) << "E3" << std::setw(32) << melastic[2]
+    std::cout << std::setw(16) << "E3" << std::setw(32) << _elastic[2]
               << std::endl;
-    std::cout << std::setw(16) << "G12" << std::setw(32) << melastic[3]
+    std::cout << std::setw(16) << "G12" << std::setw(32) << _elastic[3]
               << std::endl;
-    std::cout << std::setw(16) << "G13" << std::setw(32) << melastic[4]
+    std::cout << std::setw(16) << "G13" << std::setw(32) << _elastic[4]
               << std::endl;
-    std::cout << std::setw(16) << "G23" << std::setw(32) << melastic[5]
+    std::cout << std::setw(16) << "G23" << std::setw(32) << _elastic[5]
               << std::endl;
-    std::cout << std::setw(16) << "Nu12" << std::setw(32) << melastic[6]
+    std::cout << std::setw(16) << "Nu12" << std::setw(32) << _elastic[6]
               << std::endl;
-    std::cout << std::setw(16) << "Nu13" << std::setw(32) << melastic[7]
+    std::cout << std::setw(16) << "Nu13" << std::setw(32) << _elastic[7]
               << std::endl;
-    std::cout << std::setw(16) << "Nu23" << std::setw(32) << melastic[8]
+    std::cout << std::setw(16) << "Nu23" << std::setw(32) << _elastic[8]
               << std::endl;
-  } else if (mtype == "anisotropic") {
+  } else if (_type == "anisotropic") {
     for (std::size_t i = 0; i < elasticLabelAniso.size(); ++i) {
       std::cout << std::setw(16) << upperString(elasticLabelAniso[i])
-                << std::setw(32) << melastic[i] << std::endl;
+                << std::setw(32) << _elastic[i] << std::endl;
     }
   }
 
@@ -180,7 +180,7 @@ void Material::printMaterial() {
     }
 
 
-    // if (mtype == "isotropic") {
+    // if (_type == "isotropic") {
     //   if (mfcriterion == 1 || mfcriterion == 2) {
     //     std::cout << std::setw(16) << "Xt" << std::setw(32) << mstrength[0]
     //               << std::endl;
@@ -193,7 +193,7 @@ void Material::printMaterial() {
     //     std::cout << std::setw(16) << "X" << std::setw(32) << mstrength[0]
     //               << std::endl;
     //   }
-    // } else if (mtype == "orthotropic" || mtype == "anisotropic") {
+    // } else if (_type == "orthotropic" || _type == "anisotropic") {
     //   if (mfcriterion == 1 || mfcriterion == 2 || mfcriterion == 4) {
     //     std::cout << std::setw(16) << "Xt" << std::setw(32) << mstrength[0]
     //               << std::endl;

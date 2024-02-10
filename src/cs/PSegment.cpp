@@ -119,6 +119,35 @@ void Segment::printBaseOffsetLink() {
 
 
 
+void Segment::printBaseOffsetPairs(Message *pmessage) {
+
+  PLOG(debug) << pmessage->message("base vertices -- base_link_to_offset_indices");
+
+  // std::cout << _base_offset_indices_pairs.size() << std::endl;
+  PLOG(debug) << pmessage->message("number of pairs: " + std::to_string(_base_offset_indices_pairs.size()));
+
+  for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
+    // std::cout << "        " << i << ": " << base[i]
+    // << " -- " << link_to_2[i] << std::endl;
+    std::string s = std::to_string(_base_offset_indices_pairs[i][0]) + ": "
+      + _curve_base->vertices()[_base_offset_indices_pairs[i][0]]->printString()
+      + " -- " + std::to_string(_base_offset_indices_pairs[i][1]) + ": "
+      + _curve_offset->vertices()[_base_offset_indices_pairs[i][1]]->printString();
+
+    // std::cout << s << std::endl;
+    PLOG(debug) << pmessage->message(s);
+  }
+
+}
+
+
+
+
+
+
+
+
+
 
 int Segment::layupSide() {
   if (slayupside == "left") {

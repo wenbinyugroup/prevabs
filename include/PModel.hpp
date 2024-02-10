@@ -5,9 +5,13 @@
 #include "PDCEL.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
+
 #include "gmsh/GModel.h"
+
 #include <string>
 #include <vector>
+// #include <map>
+#include <utility>
 
 // class PDCEL;
 // class Basepoint;
@@ -126,6 +130,7 @@ private:
   unsigned int _element_type; // 1: linear, 2: quadratic
 
   // Analysis
+  unsigned int _analysis_model_dim; // model dimension (1: beam, 2: plate/shell, 3: solid)
   unsigned int _analysis_model; // structural model (0: classical, 1: timoshenko)
   unsigned int _analysis_dehomo; // 1: nonlinear, 2: linear
   unsigned int _analysis_damping; // 0: off, 1: on
@@ -136,6 +141,18 @@ private:
   unsigned int _analysis_vlasov;
   std::vector<double> _analysis_curvatures;
   std::vector<double> _analysis_obliques;
+
+  // analysis physics
+  // 0: elastic
+  // 1: thermoelastic
+  // 2: conduction
+  // 3: piezoelectric/piezomagnetic
+  // 4: thermopiezoelectric/thermopiezomagnetic
+  // 5: piezoelectromagnetic
+  // 6: thermopiezoelectromagnetic
+  // 7: viscoelastic
+  // 8: thermoviscoelastic
+  unsigned int _physics{0};
 
   // Repositories
   // std::vector<Material *> _materials;
@@ -154,13 +171,29 @@ private:
   CrossSection *_cross_section;
 
   PMesh *_pmesh;
+  std::vector<std::vector<int>> _node_elements;
 
   std::vector<LocalState *> _local_states;
 
   int debug_plot_count = 0;
 
-  // Helpter functions
-  
+  double _omega = 1.0;  // For SwiftComp. Length/area/volume of the periodic dimensions
+
+  // For supplement files
+  bool _itf_output = false;
+  double _itf_theta1_diff_th = 30;
+  double _itf_theta3_diff_th = 30;
+  // double _itf_radius;
+  std::vector<std::pair<int, int>> _itf_material_pairs;
+  std::vector<std::pair<double, double>> _itf_theta1_pairs;
+  std::vector<std::pair<double, double>> _itf_theta3_pairs;
+  std::vector<std::vector<PDCELVertex *>> _itf_vertices;
+  std::vector<std::vector<PDCELHalfEdge *>> _itf_halfedges;
+  // std::vector<int> _joint_node_ids;
+  // std::vector<int> _joint_element_ids;
+
+public:
+  std::vector<std::vector<int>> node_elements;
 
 public:
   PModel() {}
@@ -178,6 +211,7 @@ public:
   double globalMeshSize() { return _global_mesh_size; }
   unsigned int elementType() { return _element_type; }
 
+  unsigned int analysisModelDim() { return _analysis_model_dim; }
   unsigned int analysisModel() { return _analysis_model; }
   unsigned int analysisDehomo() { return _analysis_dehomo; }
   unsigned int analysisDamping() { return _analysis_damping; }
@@ -186,6 +220,8 @@ public:
   unsigned int analysisOblique() { return _analysis_oblique; }
   unsigned int analysisTrapeze() { return _analysis_trapeze; }
   unsigned int analysisVlasov() { return _analysis_vlasov; }
+
+  unsigned int analysisPhysics() { return _physics; }
 
   std::vector<double> &curvatures() { return _analysis_curvatures; }
   std::vector<double> &obliques() { return _analysis_obliques; }
@@ -199,10 +235,14 @@ public:
   std::vector<LayerType *> &layertypes() { return _layertypes; }
   std::vector<Layup *> &layups() { return _layups; }
 
+  // std::vector<PDCELVertex *> &getJointVertices() { return _joint_vertices; }
+  // std::vector<PDCELHalfEdge *> &getJointHalfEdges() { return _joint_halfedges; }
+
   std::vector<LoadCase> getLoadCases() const { return _load_cases; }
 
   CrossSection *cs() { return _cross_section; }
   PMesh *getMesh() { return _pmesh; }
+  std::vector<std::vector<int>> getNodeElements() { return _node_elements; }
 
   PDCELVertex *getPointByName(std::string);
   Baseline *getBaselineByName(std::string);
@@ -213,6 +253,12 @@ public:
   LayerType *getLayerTypeByMaterialAngle(Material *, double);
   LayerType *getLayerTypeByMaterialNameAngle(std::string, double);
   Layup *getLayupByName(std::string);
+
+  std::vector<std::pair<int, int>> getInterfaceMaterialPairs() { return _itf_material_pairs; }
+  std::vector<std::pair<double, double>> getInterfaceTheta1Pairs() { return _itf_theta1_pairs; }
+  std::vector<std::pair<double, double>> getInterfaceTheta3Pairs() { return _itf_theta3_pairs; }
+  std::vector<std::vector<PDCELVertex *>> getInterfaceVertices() { return _itf_vertices; }
+  std::vector<std::vector<PDCELHalfEdge *>> getInterfaceHalfEdges() { return _itf_halfedges; }
 
   /// Turn and collect integer type parameters for Gmsh writing SG input file
   /*!
@@ -249,12 +295,18 @@ public:
    */
   std::vector<double> &getDoubleParamsForGmsh();
 
+  double getOmega() { return _omega; }
+
+  //
+  bool interfaceOutput() { return _itf_output; }
+
   // =================================================================
   // Setters
 
   void setGlobalMeshSize(double s) { _global_mesh_size = s; }
   void setElementType(int t) { _element_type = t; }
 
+  void setAnalysisModelDim(int a) { _analysis_model_dim = a; }
   void setAnalysisModel(int a) { _analysis_model = a; }
   void setAnalysisDehomo(int a) { _analysis_dehomo = a; }
   void setAnalysisDamping(int a) { _analysis_damping = a; }
@@ -264,12 +316,20 @@ public:
   void setAnalysisTrapeze(int a) { _analysis_trapeze = a; }
   void setAnalysisVlasov(int a) { _analysis_vlasov = a; }
 
+  void setAnalysisPhysics(int a) { _physics = a; }
+
   void setCurvatures(double, double, double);
   void setObliques(double, double);
 
   void setCrossSection(CrossSection *cs) { _cross_section = cs; }
 
   void setMesh(PMesh *mesh) { _pmesh = mesh; }
+
+  void setOmega(double o) { _omega = o; }
+
+  void setInterfaceOutput(bool itf) { _itf_output = itf; }
+  void setInterfaceTheta1DiffThreshold(double t) { _itf_theta1_diff_th = t; }
+  void setInterfaceTheta3DiffThreshold(double t) { _itf_theta3_diff_th = t; }
 
   // =================================================================
   // Adders
@@ -283,8 +343,13 @@ public:
   void addLayerType(std::string name, double a);
   void addLayup(Layup *l) { _layups.push_back(l); }
 
+  // void addJointVertex(PDCELVertex *v) { _joint_vertices.push_back(v); }
+  // void addJointHalfEdge(PDCELHalfEdge *e) { _joint_halfedges.push_back(e); }
+
   void addLoadCase(LoadCase lc) { _load_cases.push_back(lc); }
   void addLocalState(LocalState *ls) { _local_states.push_back(ls); }
+
+  void addNodeElement(int nid, int eid) { _node_elements[nid-1].push_back(eid); }
 
   // =================================================================
   // IO
@@ -308,6 +373,9 @@ public:
    */
   int writeSG(std::string fn, int fmt, Message *);
   int writeGLB(std::string fn, Message *);
+
+  // Write supplement files
+  int writeSupp(Message *);
 
 
   // =================================================================

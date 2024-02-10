@@ -1,0 +1,256 @@
+<cross_section name="iea15_section1" format="1">
+    <include>
+        <material>material_database_us_ft</material>
+    </include>
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <scale>3.998712335</scale>
+        <translate>-0.5286268510 -4.26289E-04</translate>
+        <rotate>-153.96818887881133</rotate>
+        <mesh_size>0.04</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+
+
+    <baselines>
+
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="1" direction="-1" header="0">airfoil13.dat</points>
+            <flip>1</flip>
+            <!-- <reverse>1</reverse> -->
+        </line>
+
+        <point name="p1" on="ln_af" by="x2" which="top">0.826750647</point>
+        <point name="p2" on="ln_af" by="x2" which="bottom">0.81847904</point>
+        <point name="p3" on="ln_af" by="x2" which="top">0.60070275</point>
+        <point name="p4" on="ln_af" by="x2" which="bottom">0.592903107</point>
+
+        <point name="p5" on="ln_af" by="x2" which="top">0.942543679</point>
+        <point name="p6" on="ln_af" by="x2" which="bottom">0.937547607</point>
+
+        <point name="p7" on="ln_af" by="x2" which="top">0.178294987</point>
+        <point name="p8" on="ln_af" by="x2" which="bottom">0.181812474</point>
+
+        <point name="p9" on="ln_af" by="x2" which="top">0.161431189</point>
+        <point name="p10" on="ln_af" by="x2" which="bottom">0.164658218</point>
+
+        <point name="p11" on="ln_af" by="x2" which="top">0.802054626</point>
+        <point name="p12" on="ln_af" by="x2" which="bottom">0.794001358</point>
+
+        <point name="p13" on="ln_af" by="x2" which="top">0.625581798</point>
+        <point name="p14" on="ln_af" by="x2" which="bottom">0.618146437</point>
+
+
+        <!-- Main spar -->
+        <line name="line_spar_top">
+            <points>p1:p3</points>
+        </line>
+        <line name="line_spar_bottom">
+            <points>p4:p2</points>
+        </line>
+
+        <line name="line_spar_web_front" type="arc">
+            <start>p12</start>
+            <end>p11</end>
+            <curvature>0</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+        <line name="line_spar_web_back" type="arc">
+            <start>p13</start>
+            <end>p14</end>
+            <curvature>0</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+
+        <!-- Front part and leading edge -->
+        <baseline name="bsl_le_top">
+            <points>p5:p1</points>
+        </baseline>
+        <baseline name="bsl_le">
+            <points>p6:p5</points>
+        </baseline>
+        <baseline name="bsl_le_bottom">
+            <points>p2:p6</points>
+        </baseline>
+
+        <!-- Back part and trailing edge -->
+        <!-- <baseline name="bsl_pannel_top">
+            <points>p3:p7</points>
+        </baseline> -->
+        <!-- <baseline name="bsl_te_top_inner">
+            <points>p7:p9</points>
+        </baseline> -->
+        <baseline name="bsl_te">
+            <points>p3:p4</points>
+            <!-- <points>p9:p10</points> -->
+        </baseline>
+        <!-- <baseline name="bsl_te_bottom_inner">
+            <points>p10:p8</points>
+        </baseline> -->
+        <!-- <baseline name="bsl_pannel_bottom">
+            <points>p8:p4</points>
+        </baseline> -->
+
+    </baselines>
+
+
+
+    <layups>
+        <layup name="lyp_cap">
+            <layer lamina="CarbonUD_0.029710">-8:1</layer>
+        </layup>
+
+        <layup name="lyp_skin">
+            <layer lamina="glass_uni_0.006">45:1</layer>
+            <layer lamina="glass_uni_0.012">0:1</layer>
+            <layer lamina="glass_uni_0.006">-45:1</layer>
+        </layup>
+
+        <layup name="lyp_uvprot">
+            <layer lamina="Gelcoat_0.001">0:1</layer>
+        </layup>
+
+        <layup name="lyp_innerskin">
+            <layer lamina="glass_uni_0.006">45:1</layer>
+            <layer lamina="glass_uni_0.012">0:1</layer>
+            <layer lamina="glass_uni_0.006">-45:1</layer>
+        </layup>
+
+        <layup name="lyp_web">
+            <layer lamina="glass_uni_0.001">45:1</layer>
+            <layer lamina="glass_uni_0.001">-45:1</layer>
+            <layer lamina="medium_density_foam_0.043">0:1</layer>
+            <layer lamina="glass_uni_0.001">-45:1</layer>
+            <layer lamina="glass_uni_0.001">45:1</layer>
+        </layup>
+
+        <layup name="lyp_pannelfiller">
+            <layer lamina="medium_density_foam_0.059">0:1</layer>
+        </layup>
+
+
+        <layup name="lyp_LEreinforce">
+            <layer lamina="glass_uni_0.003">0:1</layer>
+        </layup>
+
+        <layup name="lyp_TEreinforce">
+            <layer lamina="glass_uni_0.014">0:1</layer>
+        </layup>
+
+
+        <layup name="lyp_te_inner">
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_TEreinforce</layup>
+        </layup>
+
+        <layup name="lyp_te">
+            <layer lamina="Gelcoat_0.001">0:1</layer>
+            <layer lamina="glass_uni_0.006">45:1</layer>
+            <layer lamina="glass_uni_0.012">0:1</layer>
+            <layer lamina="glass_uni_0.006">-45:1</layer>
+            <layer lamina="glass_uni_0.014">0:1</layer>
+            <!-- <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_TEreinforce</layup> -->
+        </layup>
+
+    </layups>
+
+
+
+    <component name="section">
+        <!-- <segments>
+            <baseline>line_spar_top</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_cap</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>bsl_le_top</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_pannelfiller</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>bsl_le</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_LEreinforce</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>bsl_le_bottom</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_pannelfiller</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>line_spar_bottom</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_cap</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>bsl_pannel_bottom</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_pannelfiller</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>bsl_te_bottom_inner</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_TEreinforce</layup>
+        </segments> -->
+        <segments>
+            <baseline>bsl_te</baseline>
+            <layup>lyp_te</layup>
+            <!-- <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_TEreinforce</layup> -->
+        </segments>
+        <!-- <segments>
+            <baseline>bsl_te_top_inner</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_TEreinforce</layup>
+        </segments> -->
+        <!-- <segments>
+            <baseline>bsl_pannel_top</baseline>
+            <layup>lyp_uvprot</layup>
+            <layup>lyp_skin</layup>
+            <layup>lyp_innerskin</layup>
+            <layup>lyp_pannelfiller</layup>
+        </segments> -->
+    </component>
+
+    <!-- <component name="web_front" depend="section">
+        <segment>           
+            <baseline>line_spar_web_front</baseline>
+                   <layup>lyp_web</layup>
+                   </segment>
+        </component> -->
+
+    <!-- <component name="web_back" depend="section">
+       <segment>
+            <baseline>line_spar_web_back</baseline>
+           <layup direction="right">lyp_web</layup>
+                   </segment>
+        </component> -->
+
+
+</cross_section>

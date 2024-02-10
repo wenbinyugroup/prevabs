@@ -47,9 +47,9 @@
 #include <windows.h>
 #endif
 
-int readMaterials(const std::string &fn_material_global, PModel *pmodel, Message *pmessage) {
+int readMaterialsFile(const std::string &fn_material_global, PModel *pmodel, Message *pmessage) {
   pmessage->increaseIndent();
-  
+
   xml_document<> xmlDocMaterials;
   std::ifstream fileMaterials{fn_material_global};
   if (!fileMaterials.is_open()) {
@@ -78,8 +78,24 @@ int readMaterials(const std::string &fn_material_global, PModel *pmodel, Message
   xml_node<> *nodeMaterials{};
   nodeMaterials = xmlDocMaterials.first_node("materials");
 
+  readMaterials(nodeMaterials, pmodel, pmessage);
+
+  pmessage->decreaseIndent();
+
+  return 0;
+}
 
 
+
+
+
+
+
+
+
+int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel, Message *pmessage) {
+  pmessage->increaseIndent();
+  
   // -----------------------------------------------------------------
   // Read material data
   for (xml_node<> *nodeMaterial = nodeMaterials->first_node("material");
@@ -229,7 +245,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       // }
     }
     
-    else if (materialType == "orthotropic") {
+    else if (materialType == "orthotropic" || materialType == "engineering") {
       materialElastic.clear();
       for (std::string label : elasticLabelOrtho) {
         double value{atof(nodeElastic->first_node(label.c_str())->value())};
@@ -300,6 +316,39 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   // for (auto p : materialElastic) {
   //   std::cout << p << std::endl;
   // }
+
+
+
+
+  // Read thermal properties
+  // -----------------------
+  xml_node<> *p_xn_cte = p_xn_material->first_node("cte");
+
+  if (p_xn_cte) {
+    std::vector<double> cte;
+
+    if (materialType == "isotropic") {
+      xml_node<> *p_xn_a = p_xn_cte->first_node("a");
+      double _a = atof(p_xn_a->value());
+      cte.push_back(_a);
+    }
+
+    else if (materialType == "orthotropic" || materialType == "engineering") {
+      for (auto _name : TAG_NAME_CTE_ORTHO) {
+        double _value{atof(p_xn_cte->first_node(_name.c_str())->value())};
+        cte.push_back(_value);
+      }
+    }
+
+    m->setCte(cte);
+
+  }
+
+  xml_node<> *p_xn_sh = p_xn_material->first_node("specific_heat");
+  if (p_xn_sh) {
+    double _sh = atof(p_xn_sh->value());
+    m->setSpecificHeat(_sh);
+  }
 
 
 

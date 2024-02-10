@@ -93,7 +93,7 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
   // Omega for SwiftComp only
   if (config.analysis_tool == 2) {
-    fprintf(fsg, "%16e\n", 1.0);
+    fprintf(fsg, "%16e\n", _omega);
   }
 
   fclose(fsg);
@@ -233,6 +233,9 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
 
 
 
+// Write in VABS format
+// ===================================================================
+
 void writeSettingsVABS(FILE *file, PModel *model) {
   std::vector<unsigned int> inums;
 
@@ -290,19 +293,31 @@ void writeSettingsVABS(FILE *file, PModel *model) {
 
 
 
-void writeNodes(FILE *file, PModel *model) {
+void writeNodes(FILE *file, PModel *pmodel) {
   std::vector<GEntity *> gentities;
-  model->gmodel()->getEntities(gentities);
+  pmodel->gmodel()->getEntities(gentities);
   for (unsigned int i = 0; i < gentities.size(); ++i) {
+
     for (unsigned int j = 0; j < gentities[i]->mesh_vertices.size(); ++j) {
+
       if (gentities[i]->mesh_vertices[j]->getIndex() > 0) {
         fprintf(file, "%8d%16e%16e\n",
                 gentities[i]->mesh_vertices[j]->getIndex(),
                 gentities[i]->mesh_vertices[j]->y(),
                 gentities[i]->mesh_vertices[j]->z());
-      } else {
+
+        if (pmodel->interfaceOutput()) {
+          std::vector<int> eids;
+          // Add an empty vector as a placeholder
+          pmodel->node_elements.push_back(eids);
+        }
+
+      }
+
+      else {
         continue;
       }
+
     }
   }
   fprintf(file, "\n");
@@ -316,17 +331,30 @@ void writeNodes(FILE *file, PModel *model) {
 
 
 
-template <class T> void writeElementVABS(FILE *file, PModel *model, T *elem) {
+template <class T> void writeElementVABS(FILE *file, PModel *pmodel, T *elem) {
   std::vector<int> inums(9, 0);
-  fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
+
+  int eid = pmodel->gmodel()->getMeshElementIndex(elem);
+  fprintf(file, "%8d", eid);
+
   for (int i = 0; i < elem->getNumVertices(); ++i) {
+    int nid = elem->getVertex(i)->getIndex();
+
     if (i < 3) {
-      inums[i] = elem->getVertex(i)->getIndex();
+      inums[i] = nid;
     } else {
-      inums[i + 1] = elem->getVertex(i)->getIndex();
+      inums[i + 1] = nid;
     }
+
+    if (pmodel->interfaceOutput()) {
+      // pmodel->addNodeElement(nid, eid);
+      pmodel->node_elements[nid-1].push_back(eid);
+    }
+
   }
+
   writeNumbers(file, "%8d", inums);
+
 }
 
 
@@ -337,13 +365,13 @@ template <class T> void writeElementVABS(FILE *file, PModel *model, T *elem) {
 
 
 
-void writeElementsVABS(FILE *file, PModel *model) {
+void writeElementsVABS(FILE *file, PModel *pmodel) {
   // Write connectivity for each element
   // for (auto fit = model->firstFace(); fit != model->lastFace(); ++fit) {
-  for (auto f : model->dcel()->faces()) {
+  for (auto f : pmodel->dcel()->faces()) {
     if (f->gface() != nullptr) {
       for (auto elem : f->gface()->triangles) {
-        writeElementVABS(file, model, elem);
+        writeElementVABS(file, pmodel, elem);
       }
     }
   }
@@ -351,11 +379,11 @@ void writeElementsVABS(FILE *file, PModel *model) {
 
   // Wirte layer type and theta_1 for each element
   // for (auto fit = model->firstFace(); fit != model->lastFace(); ++fit) {
-  for (auto f : model->dcel()->faces()) {
+  for (auto f : pmodel->dcel()->faces()) {
     if (f->gface() != nullptr) {
       for (auto elem : f->gface()->triangles) {
         fprintf(file, "%8d%8d%16e\n",
-                model->gmodel()->getMeshElementIndex(elem),
+                pmodel->gmodel()->getMeshElementIndex(elem),
                 // f->gface()->physicals[0],
                 f->layertype()->id(), f->theta1());
       }
@@ -381,7 +409,7 @@ void writeMaterialVABS(FILE *file, Material *m) {
     fprintf(file, "%8d\n", 0);
     fprintf(file, "%16e%16e\n", m->getElastic()[0], m->getElastic()[1]);
   }
-  else if (m->getType() == "orthotropic") {
+  else if (m->getType() == "orthotropic" || m->getType() == "engineering") {
     fprintf(file, "%8d\n", 1);
     int index = 0;
     for (int row = 1; row <= 3; ++row) {
@@ -393,7 +421,7 @@ void writeMaterialVABS(FILE *file, Material *m) {
     }
   }
   else if (m->getType() == "anisotropic") {
-    fprintf(file, "%8d\n", 1);
+    fprintf(file, "%8d\n", 2);
     int index = 0;
     for (int row = 1; row <= 6; ++row) {
       for (int col = 1; col <= (6 - row + 1); ++col) {
@@ -440,7 +468,7 @@ void writeMaterialStrength(FILE *file, Material *m) {
       fprintf(file, "%16e\n", sp.t1);
     }
   }
-  else if ((type == "orthotropic") || (type == "anisotropic")) {
+  else if ((type == "orthotropic") || (type == "engineering") || (type == "anisotropic")) {
     if ((fc == 1) || (fc == 2) || (fc == 4)) {
       fprintf(file, "%8d\n", 9);
       fprintf(file,
@@ -490,41 +518,57 @@ void writeMaterialsVABS(FILE *file, PModel *model) {
 
 
 
+// Write in SwiftComp format
 // ===================================================================
 
 void writeSettingsSC(FILE *file, PModel *model) {
   std::vector<unsigned int> inums;
 
+  if (model->analysisModelDim() == 1) {
+    // Beam model
+    // BM Line 1: submodel
+    unsigned int imodel = model->analysisModel();
+    if (model->analysisVlasov() == 1) {
+      imodel = 2;
+    } else if (model->analysisTrapeze() == 1) {
+      imodel = 3;
+    }
+    fprintf(file, "%8d\n\n", imodel);
+
+    // BM Line 2: curvatures
+    writeNumbers(file, "%16e", model->curvatures());
+    fprintf(file, "\n");
+
+    // BM Line 3: obliques
+    writeNumbers(file, "%16e", model->obliques());
+    fprintf(file, "\n");
+  }
+
+  else if (model->analysisModelDim() == 2) {
+    // Plate/shell model
+  }
+
+
   // Line 1
-  unsigned int imodel = model->analysisModel();
-  if (model->analysisVlasov() == 1) {
-    imodel = 2;
-  } else if (model->analysisTrapeze() == 1) {
-    imodel = 3;
-  }
-  fprintf(file, "%8d\n\n", imodel);
-
-  // Line 2
-  writeNumbers(file, "%16e", model->curvatures());
-  fprintf(file, "\n");
-
-  // Line 3
-  writeNumbers(file, "%16e", model->obliques());
-  fprintf(file, "\n");
-
-  // Line 4
-  unsigned int ianalysis = 0;
-  if (model->analysisThermal() == 1) {
-    ianalysis = 1;
-  }
+  // unsigned int ianalysis = 0;
+  // if (model->analysisThermal() == 1) {
+  //   ianalysis = 1;
+  // }
+  unsigned int ianalysis = model->analysisPhysics();
   unsigned int ielem_flag = 0;
   unsigned int itrans_flag = 1;
   unsigned int itemp_flag = 0;
+  unsigned int iforce_flag = 0;
+  unsigned int isteer_flag = 0;
   inums = {ianalysis, ielem_flag, itrans_flag, itemp_flag};
+  if (config.tool_ver == "2.2") {
+    inums.push_back(iforce_flag);
+    inums.push_back(isteer_flag);
+  }
   writeNumbers(file, "%8d", inums);
   fprintf(file, "\n");
 
-  // Line 5
+  // Line 2
   inums.clear();
   unsigned int insg = 2;
   unsigned int inslave = 0;
@@ -546,6 +590,14 @@ void writeSettingsSC(FILE *file, PModel *model) {
   fprintf(file, "\n");
 }
 
+
+
+
+
+
+
+
+
 template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int mid) {
   std::vector<int> inums(9, 0);
   fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
@@ -558,6 +610,14 @@ template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int m
   }
   writeNumbers(file, "%8d", inums);
 }
+
+
+
+
+
+
+
+
 
 void writeElementsSC(FILE *file, PModel *model) {
   // Write connectivity for each element
@@ -577,7 +637,8 @@ void writeElementsSC(FILE *file, PModel *model) {
       for (auto elem : f->gface()->triangles) {
         fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
         dnums = {
-          1.0, 0.0, 0.0, 
+          // 1.0, 0.0, 0.0, 
+          f->localy1()[0], f->localy1()[1], f->localy1()[2], 
           f->localy2()[0], f->localy2()[1], f->localy2()[2], 
           0.0, 0.0, 0.0
         };
@@ -588,7 +649,15 @@ void writeElementsSC(FILE *file, PModel *model) {
   fprintf(file, "\n");
 }
 
-void writeMaterialSC(FILE *file, Material *m) {
+
+
+
+
+
+
+
+
+void writeMaterialSC(FILE *file, Material *m, unsigned int physics) {
   int intemp = 1;
 
   fprintf(file, "%8d", m->id());
@@ -597,7 +666,13 @@ void writeMaterialSC(FILE *file, Material *m) {
     fprintf(file, "%8d%8d\n", 0, intemp);
     fprintf(file, "%8d%16e\n", 1, m->getDensity());
     fprintf(file, "%16e%16e\n", m->getElastic()[0], m->getElastic()[1]);
-  } else if (m->getType() == "orthotropic") {
+
+    if (physics == 1 || physics == 4 || physics == 6) {
+      fprintf(file, "%16e%16e\n", m->getCte()[0], m->getSpecificHeat());
+    }
+  }
+
+  else if (m->getType() == "orthotropic" || m->getType() == "engineering") {
     fprintf(file, "%8d%8d\n", 1, intemp);
     fprintf(file, "%8d%16e\n", 1, m->getDensity());
     int index = 0;
@@ -608,8 +683,18 @@ void writeMaterialSC(FILE *file, Material *m) {
       }
       fprintf(file, "\n");
     }
-  } else if (m->getType() == "anisotropic") {
-    fprintf(file, "%8d%8d\n", 1, intemp);
+
+    if (physics == 1 || physics == 4 || physics == 6) {
+      fprintf(
+        file,
+        "%16e%16e%16e%16e\n",
+        m->getCte()[0], m->getCte()[1], m->getCte()[2], m->getSpecificHeat()
+      );
+    }
+  }
+
+  else if (m->getType() == "anisotropic") {
+    fprintf(file, "%8d%8d\n", 2, intemp);
     fprintf(file, "%8d%16e\n", 1, m->getDensity());
     int index = 0;
     for (int row = 1; row <= 6; ++row) {
@@ -619,9 +704,26 @@ void writeMaterialSC(FILE *file, Material *m) {
       }
       fprintf(file, "\n");
     }
+
+    if (physics == 1 || physics == 4 || physics == 6) {
+      fprintf(
+        file,
+        "%16e%16e%16e%16e%16e%16e%16e\n",
+        m->getCte()[0], m->getCte()[1], m->getCte()[2],
+        m->getCte()[3], m->getCte()[4], m->getCte()[5], m->getSpecificHeat()
+      );
+    }
   }
-  
+
 }
+
+
+
+
+
+
+
+
 
 void writeMaterialsSC(FILE *file, PModel *model) {
   for (auto lt : model->cs()->getUsedLayerTypes()) {
@@ -630,7 +732,7 @@ void writeMaterialsSC(FILE *file, PModel *model) {
   fprintf(file, "\n");
 
   for (auto m : model->cs()->getUsedMaterials()) {
-    writeMaterialSC(file, m);
+    writeMaterialSC(file, m, model->analysisPhysics());
   }
   fprintf(file, "\n");
 }

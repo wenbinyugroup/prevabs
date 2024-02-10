@@ -1,0 +1,32 @@
+2022-09-22 17:59:29 [info] prevabs start
+2022-09-22 17:59:29 [info] - reading input files
+2022-09-22 17:59:29 [info]     - reading main input file: .\box_fill_two_side.xml
+2022-09-22 17:59:29 [info]       - reading materials file: C:\Users\tian50\sall\s99-exe\MaterialDB.xml
+2022-09-22 17:59:29 [info]       - reading materials file: .\materials.xml
+2022-09-22 17:59:29 [info] - reading input files -- done
+2022-09-22 17:59:29 [info] - building the shape
+2022-09-22 17:59:29 [info]   - building the cross section, step 1
+2022-09-22 17:59:29 [info]     - building component: main
+2022-09-22 17:59:29 [info]     - building component: web
+2022-09-22 17:59:29 [info]     - building component: fill
+2022-09-22 17:59:29 [info]   - building the cross section, step 2
+2022-09-22 17:59:29 [info]     - building component details: main
+2022-09-22 17:59:29 [info]     - building component details: web
+2022-09-22 17:59:29 [info]   - fixing geometry
+2022-09-22 17:59:29 [info] - building the shape -- done
+2022-09-22 17:59:29 [info] - modeling in Gmsh
+2022-09-22 17:59:29 [info]   - creating gmsh vertices
+2022-09-22 17:59:29 [info]   - creating gmsh edges
+2022-09-22 17:59:29 [info]   - creating gmsh face
+2022-09-22 17:59:29 [info]   - meshing
+2022-09-22 17:59:30 [info] - modeling in Gmsh -- done
+2022-09-22 17:59:30 [info] - writing outputs
+2022-09-22 17:59:30 [info]   - writing gmsh .opt file: .\box_fill_two_side.opt
+2022-09-22 17:59:30 [info]   - writing gmsh .geo file: .\box_fill_two_side.geo
+2022-09-22 17:59:30 [info]   - writing gmsh .msh file: .\box_fill_two_side.msh
+2022-09-22 17:59:30 [info]   - writing sg file: .\box_fill_two_side.sg
+2022-09-22 17:59:30 [info] - writing outputs -- done
+2022-09-22 17:59:30 [info] - running Gmsh for visualization
+2022-09-22 17:59:30 [info] - running: gmsh .\box_fill_two_side.geo .\box_fill_two_side.msh .\box_fill_two_side.opt
+2022-09-22 17:59:30 [info] prevabs finished
+2022-09-22 17:59:30 [info] total running time: 1.181 sec

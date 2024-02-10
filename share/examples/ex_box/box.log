@@ -1,0 +1,24 @@
+2023-11-06 12:26:53 [info] prevabs start
+2023-11-06 12:26:53 [info] - reading input files
+2023-11-06 12:26:53 [info]     - reading main input file: .\box.xml
+2023-11-06 12:26:53 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
+2023-11-06 12:26:53 [info]         - reading materials file: .\materials.xml
+2023-11-06 12:26:53 [info]   - reading input files -- done
+2023-11-06 12:26:53 [info]   - building the shape
+2023-11-06 12:26:53 [info]     - building the cross section, step 1
+2023-11-06 12:26:53 [info]       - building component: main
+2023-11-06 12:26:53 [info]     - building the cross section, step 2
+2023-11-06 12:26:53 [info]       - building component details: main
+2023-11-06 12:26:53 [info]     - fixing geometry
+2023-11-06 12:26:53 [info]   - building the shape -- done
+2023-11-06 12:26:53 [info]   - modeling in Gmsh
+2023-11-06 12:26:53 [info]     - creating gmsh vertices
+2023-11-06 12:26:53 [info]     - creating gmsh edges
+2023-11-06 12:26:53 [info]     - creating gmsh face
+2023-11-06 12:26:53 [info]     - meshing
+2023-11-06 12:26:53 [info]   - modeling in Gmsh -- done
+2023-11-06 12:26:53 [info]   - writing outputs
+2023-11-06 12:26:53 [info]     - writing sg file: .\box.sg
+2023-11-06 12:26:53 [info]   - writing outputs -- done
+2023-11-06 12:26:53 [info] prevabs finished
+2023-11-06 12:26:53 [info] total running time: 0.118 sec

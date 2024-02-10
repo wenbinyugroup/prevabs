@@ -26,10 +26,10 @@ private:
   PDCELHalfEdge *_outer;
   std::vector<PDCELHalfEdge *> _inners;
   PArea *_area;
-  Material *_material;
+  Material *_material = nullptr;
   double _theta3, _theta1;
   LayerType *_layertype;
-  SVector3 _y2;
+  SVector3 _y1{1, 0, 0}, _y2{0, 1, 0};
   double _mesh_size = -1;
   std::vector<PDCELVertex *> _embedded_vertices;
 
@@ -54,6 +54,7 @@ public:
   LayerType *layertype() { return _layertype; }
   bool isBlank() { return _material == nullptr ? true : false; }
 
+  SVector3 localy1() { return _y1; }
   SVector3 localy2() { return _y2; }
   double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / PI; }
 
@@ -77,6 +78,7 @@ public:
   void setTheta1(double theta1) { _theta1 = theta1; }
   void setTheta3(double theta3) { _theta3 = theta3; }
 
+  void setLocaly1(SVector3 v) { _y1 = v; }
   void setLocaly2(SVector3 v) { _y2 = v; }
   double calcTheta1Fromy2(SVector3, bool deg = true);
   SVector3 calcy2FromTheta1(double, bool deg = true);

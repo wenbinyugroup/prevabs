@@ -60,6 +60,7 @@ set( SOURCES
   src/io/PModelIOReadCrossSection.cpp
   src/io/PModelIODehomo.cpp
   src/io/PModelIOSG.cpp
+  src/io/PModelIOSupplement.cpp
   src/io/PModelIOPlot.cpp
   src/gmsh/PModelBuildGmsh.cpp
   src/gmsh/PModelIOGmsh.cpp
@@ -119,9 +120,16 @@ if( WIN32 OR CYGWIN OR MINGW )
   find_library( VABS NAMES VABSLIB.dll.a PATHS "${VABS_INSTALL_DIR}" REQUIRED NO_DEFAULT_PATH)
   message( ${VABS} )
   target_link_libraries( ${PROJECTNAME} ${VABS} )
-  # target_link_options( ${PROJECTNAME} PRIVATE "${VABS_INSTALL_DIR}/VABSLIB.dll" )
+
 elseif( UNIX )
-  target_link_options( ${PROJECTNAME} PRIVATE "${VABS_INSTALL_DIR}/VABSLib.so" )
+  # find_library( VABS NAMES VABSLib.so PATHS "${VABS_INSTALL_DIR}" REQUIRED NO_DEFAULT_PATH)
+  # message( ${VABS} )
+  # target_link_libraries( ${PROJECTNAME} ${VABS} )
+  # target_link_options( ${PROJECTNAME} PRIVATE "${VABS_INSTALL_DIR}/VABSLib.so" )
+  # target_link_options( ${PROJECTNAME} PRIVATE "-l:VABSLib.so" )
+  target_link_options( ${PROJECTNAME} PRIVATE "-L${VABS_INSTALL_DIR}" )
+  target_link_options( ${PROJECTNAME} PRIVATE "-l:VABSLib.so" )
+
 endif()
 
 

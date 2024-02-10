@@ -1,0 +1,607 @@
+
+========================================
+
+  PreVABS 1.5.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    > [debug] summary of materials
+    > [debug] name: mtr_aniso
+    > [debug] density = 1664.000000
+    > [debug] type: anisotropic
+    > [debug] C1111.000000
+    > [debug] C1212.000000
+    > [debug] C1313.000000
+    > [debug] C1414.000000
+    > [debug] C1515.000000
+    > [debug] C1616.000000
+    > [debug] C2222.000000
+    > [debug] C2323.000000
+    > [debug] C2424.000000
+    > [debug] C2525.000000
+    > [debug] C2626.000000
+    > [debug] C3333.000000
+    > [debug] C3434.000000
+    > [debug] C3535.000000
+    > [debug] C3636.000000
+    > [debug] C4444.000000
+    > [debug] C4545.000000
+    > [debug] C4646.000000
+    > [debug] C5555.000000
+    > [debug] C5656.000000
+    > [debug] C6666.000000
+    
+    > [debug] name: mat_1
+    > [debug] density = 0.000135
+    > [debug] type: orthotropic
+    > [debug] E1 = 20590000.000000
+    > [debug] E2 = 1420000.000000
+    > [debug] E3 = 1420000.000000
+    > [debug] G12 = 870000.000000
+    > [debug] G13 = 870000.000000
+    > [debug] G23 = 696000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.340000
+    
+    > [debug] name: mtr1
+    > [debug] density = 1068.690000
+    > [debug] type: isotropic
+    > [debug] E = 206843000000.000000
+    > [debug] nu = 0.490000
+    
+    > [debug] name: m0
+    > [debug] density = 1.000000
+    > [debug] type: isotropic
+    > [debug] E = 25000.000000
+    > [debug] nu = 0.300000
+    
+    > [debug] name: m1
+    > [debug] density = 1860.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 37000000000.000000
+    > [debug] E2 = 9000000000.000000
+    > [debug] E3 = 9000000000.000000
+    > [debug] G12 = 4000000000.000000
+    > [debug] G13 = 4000000000.000000
+    > [debug] G23 = 4000000000.000000
+    > [debug] nu12 = 0.280000
+    > [debug] nu13 = 0.280000
+    > [debug] nu23 = 0.280000
+    
+    > [debug] name: m2
+    > [debug] density = 1830.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 10300000000.000000
+    > [debug] E2 = 10300000000.000000
+    > [debug] E3 = 10300000000.000000
+    > [debug] G12 = 8000000000.000000
+    > [debug] G13 = 8000000000.000000
+    > [debug] G23 = 8000000000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: fake
+    > [debug] density = 1.000000
+    > [debug] type: isotropic
+    > [debug] E = 1.000000
+    > [debug] nu = -0.500000
+    
+    > [debug] name: foam
+    > [debug] density = 1.000000
+    > [debug] type: isotropic
+    > [debug] E = 1.000000
+    > [debug] nu = 0.000000
+    
+    > [debug] name: iso_0
+    > [debug] density = 1.000000
+    > [debug] type: isotropic
+    > [debug] E = 25000.000000
+    > [debug] nu = 0.300000
+    
+    > [debug] name: iso5_1
+    > [debug] density = 1860.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 37000000000.000000
+    > [debug] E2 = 9000000000.000000
+    > [debug] E3 = 9000000000.000000
+    > [debug] G12 = 4000000000.000000
+    > [debug] G13 = 4000000000.000000
+    > [debug] G23 = 4000000000.000000
+    > [debug] nu12 = 0.280000
+    > [debug] nu13 = 0.280000
+    > [debug] nu23 = 0.280000
+    
+    > [debug] name: iso5_2
+    > [debug] density = 1830.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 10300000000.000000
+    > [debug] E2 = 10300000000.000000
+    > [debug] E3 = 10300000000.000000
+    > [debug] G12 = 8000000000.000000
+    > [debug] G13 = 8000000000.000000
+    > [debug] G23 = 8000000000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: iso5_3
+    > [debug] density = 1830.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 10.000000
+    > [debug] E2 = 10.000000
+    > [debug] E3 = 10.000000
+    > [debug] G12 = 1.000000
+    > [debug] G13 = 1.000000
+    > [debug] G23 = 1.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: iso5_4
+    > [debug] density = 1664.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 10300000000.000000
+    > [debug] E2 = 10300000000.000000
+    > [debug] E3 = 10300000000.000000
+    > [debug] G12 = 8000000000.000000
+    > [debug] G13 = 8000000000.000000
+    > [debug] G23 = 8000000000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: iso5_5
+    > [debug] density = 128.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 10000000.000000
+    > [debug] E2 = 10000000.000000
+    > [debug] E3 = 10000000.000000
+    > [debug] G12 = 200000.000000
+    > [debug] G13 = 200000.000000
+    > [debug] G23 = 200000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: titanium
+    > [debug] density = 0.162900
+    > [debug] type: isotropic
+    > [debug] E = 14950000.000000
+    > [debug] nu = 0.340000
+    
+    > [debug] name: ti-6al-4v_g5_annealed
+    > [debug] density = 0.160000
+    > [debug] type: isotropic
+    > [debug] E = 16500000.000000
+    > [debug] nu = 0.342000
+    
+    > [debug] name: material_1
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 20590000.000000
+    > [debug] E2 = 1420000.000000
+    > [debug] E3 = 1420000.000000
+    > [debug] G12 = 870000.000000
+    > [debug] G13 = 870000.000000
+    > [debug] G23 = 696000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.340000
+    
+    > [debug] name: t300_5208
+    > [debug] density = 0.057800
+    > [debug] type: orthotropic
+    > [debug] E1 = 26250000.000000
+    > [debug] E2 = 1494000.000000
+    > [debug] E3 = 1494000.000000
+    > [debug] G12 = 1040000.000000
+    > [debug] G13 = 1040000.000000
+    > [debug] G23 = 561600.000000
+    > [debug] nu12 = 0.280000
+    > [debug] nu13 = 0.280000
+    > [debug] nu23 = 0.330000
+    
+    > [debug] name: t300_9543
+    > [debug] density = 0.000001
+    > [debug] type: orthotropic
+    > [debug] E1 = 135600.000000
+    > [debug] E2 = 9960.000000
+    > [debug] E3 = 9960.000000
+    > [debug] G12 = 4200.000000
+    > [debug] G13 = 1000.000000
+    > [debug] G23 = 1000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: honeycomb
+    > [debug] density = 0.002315
+    > [debug] type: orthotropic
+    > [debug] E1 = 28000.000000
+    > [debug] E2 = 28000.000000
+    > [debug] E3 = 28000.000000
+    > [debug] G12 = 47000.000000
+    > [debug] G13 = 47000.000000
+    > [debug] G23 = 10800.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: hexcel_cr_iii-3/16-5052-3.1
+    > [debug] density = 0.001790
+    > [debug] type: orthotropic
+    > [debug] E1 = 28000.000000
+    > [debug] E2 = 28000.000000
+    > [debug] E3 = 28000.000000
+    > [debug] G12 = 47000.000000
+    > [debug] G13 = 47000.000000
+    > [debug] G23 = 10770.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: hta40_pw_fernandez2017
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 75900.000000
+    > [debug] E2 = 75900.000000
+    > [debug] E3 = 7590.000000
+    > [debug] G12 = 3790.000000
+    > [debug] G13 = 379.000000
+    > [debug] G23 = 379.000000
+    > [debug] nu12 = 0.031000
+    > [debug] nu13 = 0.030000
+    > [debug] nu23 = 0.030000
+    
+    > [debug] name: mr60h_ud_fernandez2017
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 174300.000000
+    > [debug] E2 = 8550.000000
+    > [debug] E3 = 8550.000000
+    > [debug] G12 = 3510.000000
+    > [debug] G13 = 3510.000000
+    > [debug] G23 = 351.000000
+    > [debug] nu12 = 0.274000
+    > [debug] nu13 = 0.274000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: mr60h_ud_lee2018
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 164000.000000
+    > [debug] E2 = 8550.000000
+    > [debug] E3 = 8550.000000
+    > [debug] G12 = 3510.000000
+    > [debug] G13 = 3510.000000
+    > [debug] G23 = 351.000000
+    > [debug] nu12 = 0.274000
+    > [debug] nu13 = 0.274000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: hta40_pw_lee2018
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 76500.000000
+    > [debug] E2 = 76500.000000
+    > [debug] E3 = 7650.000000
+    > [debug] G12 = 3790.000000
+    > [debug] G13 = 379.000000
+    > [debug] G23 = 379.000000
+    > [debug] nu12 = 0.031000
+    > [debug] nu13 = 0.030000
+    > [debug] nu23 = 0.030000
+    
+    > [debug] name: aq_pw_lee2018
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 24500.000000
+    > [debug] E2 = 24500.000000
+    > [debug] E3 = 2450.000000
+    > [debug] G12 = 3970.000000
+    > [debug] G13 = 397.000000
+    > [debug] G23 = 397.000000
+    > [debug] nu12 = 0.069000
+    > [debug] nu13 = 0.030000
+    > [debug] nu23 = 0.030000
+    
+    > [debug] name: t300_br_lee2018
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 74700.000000
+    > [debug] E2 = 74700.000000
+    > [debug] E3 = 7470.000000
+    > [debug] G12 = 5570.000000
+    > [debug] G13 = 557.000000
+    > [debug] G23 = 557.000000
+    > [debug] nu12 = 0.027000
+    > [debug] nu13 = 0.030000
+    > [debug] nu23 = 0.030000
+    
+    > [debug] name: s2_ud_lee2018
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 56400.000000
+    > [debug] E2 = 12800.000000
+    > [debug] E3 = 12800.000000
+    > [debug] G12 = 3900.000000
+    > [debug] G13 = 3900.000000
+    > [debug] G23 = 390.000000
+    > [debug] nu12 = 0.285000
+    > [debug] nu13 = 0.285000
+    > [debug] nu23 = 0.030000
+    
+    > [debug] name: hs40_ud_lee2018
+    > [debug] density = 1.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 273100.000000
+    > [debug] E2 = 9090.000000
+    > [debug] E3 = 9090.000000
+    > [debug] G12 = 3880.000000
+    > [debug] G13 = 3880.000000
+    > [debug] G23 = 388.000000
+    > [debug] nu12 = 0.268000
+    > [debug] nu13 = 0.268000
+    > [debug] nu23 = 0.030000
+    
+    > [debug] name: ge
+    > [debug] density = 1860.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 142000000000.000000
+    > [debug] E2 = 10800000000.000000
+    > [debug] E3 = 10800000000.000000
+    > [debug] G12 = 5490000000.000000
+    > [debug] G13 = 5490000000.000000
+    > [debug] G23 = 5490000000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: steel
+    > [debug] density = 15.100000
+    > [debug] type: orthotropic
+    > [debug] E1 = 4280000000.000000
+    > [debug] E2 = 4280000000.000000
+    > [debug] E3 = 4280000000.000000
+    > [debug] G12 = 1610000000.000000
+    > [debug] G13 = 1610000000.000000
+    > [debug] G23 = 1610000000.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: im7_tape
+    > [debug] density = 3.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 2970000000.000000
+    > [debug] E2 = 173000000.000000
+    > [debug] E3 = 173000000.000000
+    > [debug] G12 = 102000000.000000
+    > [debug] G13 = 102000000.000000
+    > [debug] G23 = 102000000.000000
+    > [debug] nu12 = 0.340000
+    > [debug] nu13 = 0.340000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: kevlar49_120
+    > [debug] density = 2.660000
+    > [debug] type: orthotropic
+    > [debug] E1 = 606000000.000000
+    > [debug] E2 = 606000000.000000
+    > [debug] E3 = 606000000.000000
+    > [debug] G12 = 43900000.000000
+    > [debug] G13 = 43900000.000000
+    > [debug] G23 = 43900000.000000
+    > [debug] nu12 = 0.050000
+    > [debug] nu13 = 0.050000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: graphite_fab
+    > [debug] density = 3.000000
+    > [debug] type: orthotropic
+    > [debug] E1 = 1510000000.000000
+    > [debug] E2 = 1510000000.000000
+    > [debug] E3 = 1510000000.000000
+    > [debug] G12 = 137000000.000000
+    > [debug] G13 = 137000000.000000
+    > [debug] G23 = 137000000.000000
+    > [debug] nu12 = 0.077000
+    > [debug] nu13 = 0.077000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: rohacell_70
+    > [debug] density = 0.146000
+    > [debug] type: orthotropic
+    > [debug] E1 = 1890000.000000
+    > [debug] E2 = 1890000.000000
+    > [debug] E3 = 1890000.000000
+    > [debug] G12 = 593000.000000
+    > [debug] G13 = 593000.000000
+    > [debug] G23 = 593000.000000
+    > [debug] nu12 = 0.315000
+    > [debug] nu13 = 0.315000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: plascore_pn2-3/16ox3.0
+    > [debug] density = 0.093500
+    > [debug] type: orthotropic
+    > [debug] E1 = 144000.000000
+    > [debug] E2 = 2880000.000000
+    > [debug] E3 = 144000.000000
+    > [debug] G12 = 504000.000000
+    > [debug] G13 = 144000.000000
+    > [debug] G23 = 835000.000000
+    > [debug] nu12 = 0.010000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.010000
+    
+    > [debug] name: ballast_tungsten
+    > [debug] density = 37.400000
+    > [debug] type: orthotropic
+    > [debug] E1 = 209000.000000
+    > [debug] E2 = 209000.000000
+    > [debug] E3 = 209000.000000
+    > [debug] G12 = 59300.000000
+    > [debug] G13 = 59300.000000
+    > [debug] G23 = 59300.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.300000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: Aluminum 8009
+    > [debug] density = 0.000272
+    > [debug] type: isotropic
+    > [debug] E = 13100000.000000
+    > [debug] nu = 0.330000
+    
+    > [debug] name: lead
+    > [debug] density = 0.001061
+    > [debug] type: isotropic
+    > [debug] E = 0.001000
+    > [debug] nu = 0.000000
+    
+    > [debug] name: Rohacell 70
+    > [debug] density = 0.000007
+    > [debug] type: orthotropic
+    > [debug] E1 = 13125.000000
+    > [debug] E2 = 13125.000000
+    > [debug] E3 = 13125.000000
+    > [debug] G12 = 4118.000000
+    > [debug] G13 = 4118.000000
+    > [debug] G23 = 4118.000000
+    > [debug] nu12 = 0.315000
+    > [debug] nu13 = 0.315000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: Plascore PN2-3/16OX3.0
+    > [debug] density = 0.000005
+    > [debug] type: orthotropic
+    > [debug] E1 = 1000.000000
+    > [debug] E2 = 1000.000000
+    > [debug] E3 = 20000.000000
+    > [debug] G12 = 1000.000000
+    > [debug] G13 = 3500.000000
+    > [debug] G23 = 5799.000000
+    > [debug] nu12 = 0.300000
+    > [debug] nu13 = 0.010000
+    > [debug] nu23 = 0.010000
+    
+    > [debug] name: AS4 12k/E7K8
+    > [debug] density = 0.000146
+    > [debug] type: orthotropic
+    > [debug] E1 = 19300000.000000
+    > [debug] E2 = 1230000.000000
+    > [debug] E3 = 1230000.000000
+    > [debug] G12 = 7310000.000000
+    > [debug] G13 = 7310000.000000
+    > [debug] G23 = 473076.923077
+    > [debug] nu12 = 0.320000
+    > [debug] nu13 = 0.320000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: S2/SP381
+    > [debug] density = 0.000173
+    > [debug] type: orthotropic
+    > [debug] E1 = 7050000.000000
+    > [debug] E2 = 1970000.000000
+    > [debug] E3 = 1970000.000000
+    > [debug] G12 = 590000.000000
+    > [debug] G13 = 590000.000000
+    > [debug] G23 = 757692.307692
+    > [debug] nu12 = 0.263000
+    > [debug] nu13 = 0.263000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: T300 15k/976
+    > [debug] density = 0.000150
+    > [debug] type: orthotropic
+    > [debug] E1 = 19600000.000000
+    > [debug] E2 = 1340000.000000
+    > [debug] E3 = 1340000.000000
+    > [debug] G12 = 910000.000000
+    > [debug] G13 = 910000.000000
+    > [debug] G23 = 515384.615385
+    > [debug] nu12 = 0.348000
+    > [debug] nu13 = 0.348000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: T650-35 12k/976
+    > [debug] density = 0.000149
+    > [debug] type: orthotropic
+    > [debug] E1 = 22000000.000000
+    > [debug] E2 = 1300000.000000
+    > [debug] E3 = 1300000.000000
+    > [debug] G12 = 745000.000000
+    > [debug] G13 = 745000.000000
+    > [debug] G23 = 500000.000000
+    > [debug] nu12 = 0.115000
+    > [debug] nu13 = 0.115000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: E-Glass 7781/EA 9396
+    > [debug] density = 0.000180
+    > [debug] type: orthotropic
+    > [debug] E1 = 3390000.000000
+    > [debug] E2 = 3410000.000000
+    > [debug] E3 = 3410000.000000
+    > [debug] G12 = 758000.000000
+    > [debug] G13 = 758000.000000
+    > [debug] G23 = 1311538.461538
+    > [debug] nu12 = 0.115000
+    > [debug] nu13 = 0.115000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: T650-35 3k 976_fabric
+    > [debug] density = 0.000146
+    > [debug] type: orthotropic
+    > [debug] E1 = 10400000.000000
+    > [debug] E2 = 10000000.000000
+    > [debug] E3 = 10000000.000000
+    > [debug] G12 = 800000.000000
+    > [debug] G13 = 800000.000000
+    > [debug] G23 = 3846153.846154
+    > [debug] nu12 = 0.060000
+    > [debug] nu13 = 0.060000
+    > [debug] nu23 = 0.300000
+    
+    > [debug] name: T700 24K/E765
+    > [debug] density = 0.000145
+    > [debug] type: orthotropic
+    > [debug] E1 = 18710000.000000
+    > [debug] E2 = 1360000.000000
+    > [debug] E3 = 1360000.000000
+    > [debug] G12 = 650000.000000
+    > [debug] G13 = 650000.000000
+    > [debug] G23 = 523076.923077
+    > [debug] nu12 = 0.319000
+    > [debug] nu13 = 0.319000
+    > [debug] nu23 = 0.300000
+    
+
+

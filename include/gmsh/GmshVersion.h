@@ -11,7 +11,7 @@
 #define GMSH_PATCH_VERSION 6
 #define GMSH_EXTRA_VERSION ""
 #define GMSH_VERSION       "3.0.6"
-#define GMSH_DATE          "20220604"
+#define GMSH_DATE          "20231006"
 #define GMSH_HOST          "msg.ecn.purdue.edu"
 #define GMSH_PACKAGER      "unknown"
 #define GMSH_OS            "Linux64"

@@ -284,7 +284,7 @@ void PModel::summary(Message *pmessage) {
   pmessage->printBlank();
   pmessage->print(9, "summary of base lines");
   for (auto bsl : _baselines) {
-    bsl->print(pmessage, 9);
+    bsl->print(pmessage);
     pmessage->printBlank();
   }
 
@@ -804,6 +804,11 @@ void PModel::homogenize(Message *pmessage) {
       }
       writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
 
+      if (_itf_output) {
+        // Write supplement files
+        writeSupp(pmessage);
+      }
+
       PLOG(info) << pmessage->message("writing outputs -- done");
       pmessage->printBlank();
     }
@@ -869,6 +874,7 @@ void PModel::run(Message *pmessage) {
 
   std::vector<std::string> cmd_args;
   if (config.analysis_tool == 1) {
+    // VABS
     if (config.integrated_solver) {
       runIntegratedVABS(config.file_name_vsc, this, pmessage);
     }
@@ -890,8 +896,16 @@ void PModel::run(Message *pmessage) {
   }
 
   else if (config.analysis_tool == 2) {
-
-    cmd_args.push_back("1D");
+    // SwiftComp
+    if (_analysis_model_dim == 1) {
+      cmd_args.push_back("1D");
+    }
+    else if (_analysis_model_dim == 2) {
+      cmd_args.push_back("2D");
+    }
+    else if (_analysis_model_dim == 3) {
+      cmd_args.push_back("3D");
+    }
     cmd_args.push_back(config.sc_option);
     runSC(config.file_name_vsc, cmd_args, pmessage);
 

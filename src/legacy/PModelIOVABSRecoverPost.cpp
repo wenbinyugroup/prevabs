@@ -116,7 +116,7 @@
 
 
 int PModel::postVABS(Message *pmessage) {
-  i_indent++;
+  // i_indent++;
   pmessage->increaseIndent();
 
   bool doonce{false};
@@ -357,7 +357,7 @@ int PModel::postVABS(Message *pmessage) {
   }
   fopt.close();
 
-  i_indent--;
+  // i_indent--;
   pmessage->decreaseIndent();
 
   return 1;

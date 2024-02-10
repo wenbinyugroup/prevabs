@@ -33,6 +33,7 @@ struct PConfig {
   int analysis_tool = 1; // 1: VABS, 2: SC
   std::string tool_name = "VABS";
   bool integrated_solver = false;
+  std::string tool_ver = "0";  // Version of VABS/SC
 
   bool homo = false;
   bool dehomo = false;

@@ -45,6 +45,9 @@ private:
   SVector3 _prev_bound, _next_bound;
   bool _closed;
 
+  std::string _mat_orient_e1{"normal"};
+  std::string _mat_orient_e2{"baseline"};
+
   // excluding vertices on the base curve and offset curve
   std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
   std::vector<int> _prev_bound_indices, _next_bound_indices;
@@ -102,6 +105,7 @@ public:
   friend std::ostream &operator<<(std::ostream &, Segment *);
   void print();
   void printBaseOffsetLink();
+  void printBaseOffsetPairs(Message *);
 
   PModel *pmodel() { return _pmodel; }
   std::string getName() { return _name; }
@@ -116,6 +120,9 @@ public:
   int free() { return _free; }
   int layupSide();
   bool closed() { return _closed; }
+
+  std::string getMatOrient1() { return _mat_orient_e1; }
+  std::string getMatOrient2() { return _mat_orient_e2; }
 
   PDCELVertex *getBeginVertex();
   PDCELVertex *getEndVertex();
@@ -146,6 +153,9 @@ public:
 
   PDCELFace *face() { return _face; }
 
+  void setMatOrient1(std::string orient) { _mat_orient_e1 = orient; }
+  void setMatOrient2(std::string orient) { _mat_orient_e2 = orient; }
+
   void setClosed(bool t) { _closed = t; }
 
   void setCurveBase(Baseline *c) { _curve_base = c; }
@@ -166,6 +176,8 @@ public:
   void setNextSegment(Segment *seg) { _next = seg; }
   void setPrevBound(SVector3 &bound) { _prev_bound = bound; }
   void setNextBound(SVector3 &bound) { _next_bound = bound; }
+  void setPrevBound(double x1, double x2, double x3) { _prev_bound = SVector3(x1, x2, x3); }
+  void setNextBound(double x1, double x2, double x3) { _next_bound = SVector3(x1, x2, x3); }
   void setPrevBoundVertices(std::vector<PDCELVertex *>);
   void setNextBoundVertices(std::vector<PDCELVertex *>);
   void setInnerBoundIndexBegin(int i) { _ib_begin = i; }

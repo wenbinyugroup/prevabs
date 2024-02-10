@@ -28,7 +28,7 @@ Baseline::Baseline(Baseline *bl) {
 
 
 
-void Baseline::print(Message *pmessage, int i_type, int i_indent) {
+void Baseline::print(Message *pmessage) {
   pmessage->increaseIndent();
 
   std::string msg;

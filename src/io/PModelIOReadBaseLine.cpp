@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #ifdef __linux__
 #include <libgen.h>
@@ -112,7 +113,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
       //   p_line = readXMLElementLine(p_xn_prim, nodeBaselines, pmodel, pmessage);
       //   pmodel->addBaseline(p_line);
       // }
-      p_line->print(pmessage, 9);
+      p_line->print(pmessage);
     }
 
   }
@@ -766,6 +767,13 @@ int readLineTypeAirfoil(
     if (_ss[0] != '\0') {flip = atoi(_ss.c_str());}
   }
 
+  int reverse{0};
+  xml_node<> *p_xn_reverse{p_xn_line->first_node("reverse")};
+  if (p_xn_reverse) {
+    std::string _ss{p_xn_reverse->value()};
+    if (_ss[0] != '\0') {reverse = atoi(_ss.c_str());}
+  }
+
 
   // Baseline *line_up = new Baseline(line->getName()+"_up", "straight");
   // Baseline *line_low = new Baseline(line->getName()+"_low", "straight");
@@ -913,6 +921,10 @@ int readLineTypeAirfoil(
     }
   }
 
+  if (reverse) {
+    std::reverse(line->vertices().begin(), line->vertices().end());
+  }
+
   // line_up->print(pmessage, 9);
   // line_low->print(pmessage, 9);
 
@@ -947,7 +959,7 @@ int readLineByJoin(
 
     std::string subline_name = p_xn_subline->value();
     Baseline *subline = findLineByName(subline_name, p_xn_geo, pmodel, pmessage);
-    subline->print(pmessage, 1);
+    subline->print(pmessage);
     sublines.push_back(subline);
 
   }

@@ -48,12 +48,26 @@ int readInputDehomo(const std::string &filenameCrossSection,
 
 
   // ------------------------------
-  xml_node<> *p_xn_cs{xd_cs.first_node("cross_section")};
+  xml_node<> *p_xn_sg{xd_cs.first_node("cross_section")};
+  if (!p_xn_sg) {
+    p_xn_sg = xd_cs.first_node("sg");
+  }
   // std::string s_file_name_glb;
   // s_file_name_glb = config.file_name_vsc + ".glb";
 
   // ------------------------------
-  xml_node<> *p_xn_analysis{p_xn_cs->first_node("analysis")};
+  xml_node<> *p_xn_analysis{p_xn_sg->first_node("analysis")};
+
+  int model_dim = 1;
+  xml_node<> *p_xn_model_dim{p_xn_analysis->first_node("model_dim")};
+  if (p_xn_model_dim) {
+    std::string ss{p_xn_model_dim->value()};
+    if (ss[0] != '\0') {
+      model_dim = atoi(ss.c_str());
+    }
+  }
+  pmodel->setAnalysisModelDim(model_dim);
+
   int model = 0;
   if (p_xn_analysis) {
     xml_node<> *p_xn_model{p_xn_analysis->first_node("model")};
@@ -69,7 +83,7 @@ int readInputDehomo(const std::string &filenameCrossSection,
   // Read load cases
   printInfo(i_indent, "reading structural analysis results");
 
-  xml_node<> *p_xn_global{p_xn_cs->first_node("global")};
+  xml_node<> *p_xn_global{p_xn_sg->first_node("global")};
 
   xml_attribute<> *p_xa_temp = p_xn_global->first_attribute("measure");
   int measure{0};
@@ -83,7 +97,7 @@ int readInputDehomo(const std::string &filenameCrossSection,
   // Will be deprecated
   xml_node<> *p_xn_loads{p_xn_global->first_node("loads")};
   if (p_xn_loads) {
-    LoadCase lc = readXMLElementLoadCase(p_xn_global, measure, model, pmessage);
+    LoadCase lc = readXMLElementLoadCase(p_xn_global, measure, model, pmodel, pmessage);
     pmodel->addLoadCase(lc);
   }
 
@@ -94,13 +108,19 @@ int readInputDehomo(const std::string &filenameCrossSection,
     std::string _name{p_xn_case->name()};
 
     if (_name == "case") {
-      LoadCase lc = readXMLElementLoadCase(p_xn_case, measure, model, pmessage);
+      LoadCase lc = readXMLElementLoadCase(p_xn_case, measure, model, pmodel, pmessage);
       pmodel->addLoadCase(lc);
     }
     else if (_name == "include") {
       readXMLElementLoadCaseInclude(p_xn_case, measure, model, pmodel, pmessage);
     }
 
+  }
+
+  if (pmodel->getLoadCases().size() == 0) {
+    LoadCase lc;
+    lc.measure = measure;
+    pmodel->addLoadCase(lc);
   }
 
   pmessage->decreaseIndent();
@@ -174,7 +194,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
 LoadCase readXMLElementLoadCase(
   const xml_node<> *p_xn_loadcase, const int &measure, const int &model,
-  Message *pmessage
+  PModel *pmodel, Message *pmessage
   ) {
 
   LoadCase loadcase;
@@ -215,18 +235,21 @@ LoadCase readXMLElementLoadCase(
     vd_load = parseNumbersFromString(p_xn_temp->value());
     loadcase.load = vd_load;
   }
-  if (model == 0) {
-    loadcase.force[0] = vd_load[0];
-    loadcase.moment[0] = vd_load[1];
-    loadcase.moment[1] = vd_load[2];
-    loadcase.moment[2] = vd_load[3];
-  } else if (model == 1) {
-    loadcase.force[0] = vd_load[0];
-    loadcase.force[1] = vd_load[1];
-    loadcase.force[2] = vd_load[2];
-    loadcase.moment[0] = vd_load[3];
-    loadcase.moment[1] = vd_load[4];
-    loadcase.moment[2] = vd_load[5];
+
+  if (pmodel->analysisModelDim() == 1) {  // Beam model
+    if (model == 0) {
+      loadcase.force[0] = vd_load[0];
+      loadcase.moment[0] = vd_load[1];
+      loadcase.moment[1] = vd_load[2];
+      loadcase.moment[2] = vd_load[3];
+    } else if (model == 1) {
+      loadcase.force[0] = vd_load[0];
+      loadcase.force[1] = vd_load[1];
+      loadcase.force[2] = vd_load[2];
+      loadcase.moment[0] = vd_load[3];
+      loadcase.moment[1] = vd_load[4];
+      loadcase.moment[2] = vd_load[5];
+    }
   }
 
   xml_node<> *p_xn_distributed{p_xn_loadcase->first_node("distributed")};
@@ -443,6 +466,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
         writeVectorToFile(file, loadcase.rotation[2]);
         fprintf(file, "\n");
       }
+
       fprintf(file, "%8d\n", loadcase.measure);
       fprintf(file, "\n");
 

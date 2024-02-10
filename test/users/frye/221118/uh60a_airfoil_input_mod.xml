@@ -1,0 +1,257 @@
+<cross_section name="uh60a_section" format="1">
+
+  <include>
+    <material>material_database</material>
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <scale>20.76</scale>
+    <mesh_size>0.04</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="0">sc1095_selig_cw.dat</points>
+      <flip>1</flip>
+    </line>
+
+    <point name="p1" on="ln_af" by="x2" which="top">0.9</point>
+    <point name="p2" on="ln_af" by="x2" which="top">0.6</point>
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.6</point>
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.9</point>
+    <point name="p5" on="ln_af" by="x2" which="top">0.98</point>
+    <point name="p6" on="ln_af" by="x2" which="bottom">0.98</point>
+    <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
+    <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
+    <point name="p9" on="ln_af" by="x2" which="top">0.46</point>
+    <point name="p10" on="ln_af" by="x2" which="top">0.25</point>
+    <point name="p11" on="ln_af" by="x2" which="bottom">0.25</point>
+    <point name="p12" on="ln_af" by="x2" which="bottom">0.46</point>
+
+    <point name="p13" on="ln_af" by="x2" which="top">0.53</point>
+    <point name="p14" on="ln_af" by="x2" which="bottom">0.53</point>
+
+    <line name="bsl_spar_top">
+      <points data="line" on="ln_af">p1:p2</points>
+    </line>
+    <line name="bsl_spar_bottom">
+      <points data="line" on="ln_af">p3:p4</points>
+    </line>
+    <line name="bsl_spar_web_te">
+      <points>p2,p3</points>
+    </line>
+    <line name="bsl_spar_web_le">
+      <points>p4,p1</points>
+    </line>
+
+    <line name="bsl_spar2_top">
+      <points data="line" on="ln_af">p9:p10</points>
+    </line>
+    <line name="bsl_spar2_bottom">
+      <points data="line" on="ln_af">p11:p12</points>
+    </line>
+    <line name="bsl_spar2_web_te">
+      <points>p10,p11</points>
+    </line>
+    <line name="bsl_spar2_web_le">
+      <points>p12,p9</points>
+    </line>
+
+    <baseline name="bsl_le_top">
+      <points>p5:p1</points>
+    </baseline>
+    <baseline name="bsl_le">
+      <points>p6:p5</points>
+    </baseline>
+    <baseline name="bsl_le_bottom">
+      <points>p4:p6</points>
+    </baseline>
+
+    <baseline name="bsl_te_top">
+      <points>p10:p7</points>
+    </baseline>
+    <baseline name="bsl_te">
+      <points>p7:p8</points>
+    </baseline>
+    <baseline name="bsl_te_bottom">
+      <points>p8:p11</points>
+    </baseline>
+
+    <baseline name="bsl_mid_top">
+      <points>p2:p9</points>
+    </baseline>
+    <baseline name="bsl_mid_top_1">
+      <points>p2:p13</points>
+    </baseline>
+    <baseline name="bsl_mid_top_2">
+      <points>p13:p9</points>
+    </baseline>
+    <baseline name="bsl_mid_bottom">
+      <points>p12:p3</points>
+    </baseline>
+
+  </baselines>
+
+
+  <layups>
+    <layup name="lyp_steel">
+      <layer lamina="Aluminum 8009_0.01">0:2</layer>
+    </layup>
+
+    <layup name="lyp_skin_graphite">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+    </layup>
+
+    <layup name="lyp_spar">
+      <layer lamina="T700 24K/E765_0.0056">-29:14</layer>
+      <layer lamina="T700 24K/E765_0.0056">31:14</layer>
+      <layer lamina="T700 24K/E765_0.0056">37:14</layer>
+      <layer lamina="T700 24K/E765_0.0056">86:14</layer>
+    </layup>
+
+    <layup name="lyp_le">
+      <layer lamina="AS4 12k/E7K8_0.0054">-37:17</layer>
+    </layup>
+
+    <layup name="lyp_te">
+      <layer lamina="T650-35 12k/976_0.0052">45:5</layer>
+    </layup>
+
+    <layup name="lyp_mid">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+      <layer lamina="AS4 12k/E7K8_0.0054">-37:17</layer>
+    </layup>
+
+  </layups>
+
+
+  <component name="spar">
+    <segments>
+      <baseline>bsl_spar_top</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar_bottom</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar_web_le</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar_web_te</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+  </component>
+
+  <component name="spar2">
+    <segments>
+      <baseline>bsl_spar2_top</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar2_bottom</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar2_web_le</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar2_web_te</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+  </component>
+
+  <!-- <component name="le" depend="spar">
+    <segments>
+      <baseline>bsl_le</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_le_top</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_le_bottom</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+  </component> -->
+
+  <!-- <component name="te" depend="spar2">
+    <segments>
+      <baseline>bsl_te_top</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_te</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_te</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_te_bottom</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_te</layup>
+    </segments>
+  </component> -->
+
+  <component name="mid_top" depend="spar,spar2">
+    <!-- <segment>
+      <baseline>bsl_mid_top_1</baseline>
+      <layup>lyp_mid</layup>
+    </segment> -->
+    <!-- <segment>
+      <baseline>bsl_mid_top_2</baseline>
+      <layup>lyp_mid</layup>
+    </segment> -->
+    <segment>
+      <baseline>bsl_mid_top</baseline>
+      <layup>lyp_mid</layup>
+    </segment>
+    <!-- <segments>
+      <baseline>bsl_mid_top</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments> -->
+  </component>
+  <!-- <component name="mid" depend="spar,spar2">
+    <segments>
+      <baseline>bsl_mid_bottom</baseline>
+      <layup_side>left</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+  </component> -->
+
+</cross_section>

@@ -5,6 +5,7 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
+
 #include "gmsh/GEdge.h"
 #include "gmsh/SVector3.h"
 
@@ -21,9 +22,10 @@ private:
   PDCELVertex *_source;
   PDCELHalfEdge *_twin, *_prev, *_next;
   PDCELHalfEdgeLoop *_loop;
-  PDCELFace *_face;
+  PDCELFace *_face = nullptr;
   PGeoLineSegment *_line_segment;
   int _sign;
+  bool _on_joint = false;
 
   bool _gbuild;
   GEdge *_gedge;
@@ -62,10 +64,9 @@ public:
   PGeoLineSegment *lineSegment() { return _line_segment; }
 
   bool isFinite();
+  bool onJoint() { return _on_joint; }
 
   int sign() { return _sign; }
-  bool gbuild() { return _gbuild; }
-  GEdge *gedge() { return _gedge; }
 
   SVector3 toVector();
   PGeoLineSegment *toLineSegment();
@@ -80,10 +81,15 @@ public:
   void setLoop(PDCELHalfEdgeLoop *);
   void setIncidentFace(PDCELFace *face) { _face = face; }
   void setLineSegment(PGeoLineSegment *line_segment) { _line_segment = line_segment; }
+  void setSign(int sign) { _sign = sign; }
 
   void clearLineSegment() { _line_segment = nullptr; }
-  
-  void setSign(int sign) { _sign = sign; }
+
+  void setOnJoint(bool on_joint) { _on_joint = on_joint; }
+
+  // Gmsh
+  bool gbuild() { return _gbuild; }
+  GEdge *gedge() { return _gedge; }
   void setGBuild(bool build) { _gbuild = build; }
   void setGEdge(GEdge *gedge) { _gedge = gedge; }
   void resetGEdge() { _gedge = nullptr; }

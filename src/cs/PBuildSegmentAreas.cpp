@@ -49,7 +49,7 @@ void Segment::buildAreas(Message *pmessage) {
 
 
   PArea *area, *area_prev = nullptr;
-  PGeoLineSegment *ls, *ls_base, *ls_tt, *ls_offset;
+  PGeoLineSegment *ls, *ls_base, *ls_tt, *ls_offset, *ls_layup;
   PDCELHalfEdge *he, *he_tmp, *he_tmp_prev, *he_tmp_next;
   PDCELVertex *v_layer, *v_layer_prev, *vb_tmp, *vo_tmp, *v1_tmp, *v2_tmp;
   std::list<PDCELFace *> new_faces;
@@ -392,6 +392,8 @@ void Segment::buildAreas(Message *pmessage) {
     PLOG(debug) << pmessage->message("  base vertex: " + vb_tmp->printString());
     PLOG(debug) << pmessage->message("  offset vertex: " + vo_tmp->printString());
 
+    ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
+
     // 2.
     // PLOG(debug) << pmessage->message("  2.2");
     new_faces = _pmodel->dcel()->splitFace(_face, vb_tmp, vo_tmp);
@@ -422,7 +424,18 @@ void Segment::buildAreas(Message *pmessage) {
     }
 
     area->setLineSegmentBase(ls_base);
-    area->setLocaly2(ls_base->toVector());
+
+    if (_mat_orient_e1 == "baseline") {
+      area->setLocaly1(ls_base->toVector());
+    }
+
+    if (_mat_orient_e2 == "baseline") {
+      area->setLocaly2(ls_base->toVector());
+    }
+    else if (_mat_orient_e2 == "layup") {
+      area->setLocaly2(ls_layup->toVector());
+    }
+
     area->face()->setName(_name + "_area_" + std::to_string(count));
     area->setPrevBoundVertices(prev_bound_vertices_tmp);
 
@@ -483,9 +496,21 @@ void Segment::buildAreas(Message *pmessage) {
   // pmessage->print(9, ss.str());
   area->setLineSegmentBase(ls_base);
 
+  ls_layup = new PGeoLineSegment(_curve_base->vertices().back(),
+                                _curve_offset->vertices().back());
+
   // Set y2 of the local layer orientation
   // as the direction of the current line segment of baseline
-  area->setLocaly2(ls_base->toVector());
+  if (_mat_orient_e1 == "baseline") {
+    area->setLocaly1(ls_base->toVector());
+  }
+
+  if (_mat_orient_e2 == "baseline") {
+    area->setLocaly2(ls_base->toVector());
+  }
+  else if (_mat_orient_e2 == "layup") {
+    area->setLocaly2(ls_layup->toVector());
+  }
   // std::cout << "[debug] vector localy2: " << ls_base->toVector() <<
   // std::endl;
 

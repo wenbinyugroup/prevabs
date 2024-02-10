@@ -2,6 +2,13 @@
 
 ## Version 1.5
 
+- 1.5.1 (2022/10/27)
+  - Fixed the issue of reading result of failure analysis of the new format with an extra line of load case label.
+  - Added a new tag name for the root XML element: "sg".
+  - Added a new input for output model dimension (for SwiftComp only).
+  - Updated the writing function for 3D solid model (for SwiftComp only).
+  - Changed the Gmsh plot option for strength ratios.
+
 - 1.5.0 (2022/06/05)
   - Added a new type of line "airfoil", which can accept the file name of a standard airfoil data file.
   - Added new arguments for points defined on an airfoil line.

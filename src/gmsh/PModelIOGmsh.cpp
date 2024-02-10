@@ -80,12 +80,17 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
   // write .msh file
   std::string fn_msh;
   if (config.homo) {
+
     fn_msh = fn_base + ".msh";
     PLOG(info) << pmessage->message("writing gmsh .msh file: " + fn_msh);
     _gmodel->writeMSH(fn_msh, 2.2);
+
   }
+
   else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+
     for (auto state : _local_states) {  // For each laod case
+
       std::string case_name = state->name();
       if (case_name == "") {
         fn_msh = fn_base + "_local_case_" + std::to_string(state->id()) + ".msh";
@@ -119,6 +124,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
       fclose(f_opt);
 
     }
+
   }
 
   config.file_name_msh = fn_msh;

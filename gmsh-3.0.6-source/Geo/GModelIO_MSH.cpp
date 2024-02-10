@@ -907,13 +907,13 @@ int GModel::writePartitionedMSH(const std::string &baseName, double version,
   return 1;
 }
 
-int GModel::writeSC(const std::string &name, double version,
-                    std::vector<std::vector<double>> theta1,
-                    std::vector<int> i_paras, std::vector<double> d_paras,
-                    bool binary, bool saveAll, bool saveParametric,
-                    double scalingFactor, int elementStartNum,
-                    int saveSinglePartition, bool multipleView) {
-  return _writeSC2(name, version, theta1, i_paras, d_paras, binary, saveAll,
-                   saveParametric, scalingFactor, elementStartNum,
-                   saveSinglePartition, multipleView);
-}
+// int GModel::writeSC(const std::string &name, double version,
+//                     std::vector<std::vector<double>> theta1,
+//                     std::vector<int> i_paras, std::vector<double> d_paras,
+//                     bool binary, bool saveAll, bool saveParametric,
+//                     double scalingFactor, int elementStartNum,
+//                     int saveSinglePartition, bool multipleView) {
+//   return _writeSC2(name, version, theta1, i_paras, d_paras, binary, saveAll,
+//                    saveParametric, scalingFactor, elementStartNum,
+//                    saveSinglePartition, multipleView);
+// }

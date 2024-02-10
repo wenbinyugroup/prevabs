@@ -67,13 +67,13 @@ void PArea::addFace(PDCELFace *face) {
   _faces.push_back(face);
 }
 
-void PArea::setLocaly2(SVector3 y2) {
-  _y2 = y2;
-}
+// void PArea::setLocaly2(SVector3 y2) {
+//   _y2 = y2;
+// }
 
-void PArea::setLocaly3(SVector3 y3) {
-  _y3 = y3;
-}
+// void PArea::setLocaly3(SVector3 y3) {
+//   _y3 = y3;
+// }
 
 void PArea::setPrevBound(SVector3 &prev) {
   _prev_bound = prev;
@@ -184,6 +184,7 @@ void PArea::buildLayers(Message *pmessage) {
     // std::cout << "        layer type" << std::endl;
     _faces.back()->setLayerType(layer.getLayerType());
     // std::cout << "        local y2" << std::endl;
+    _faces.back()->setLocaly1(_y1);
     _faces.back()->setLocaly2(_y2);
 
     if (config.analysis_tool == 1) {
@@ -211,6 +212,7 @@ void PArea::buildLayers(Message *pmessage) {
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());
+  _faces.back()->setLocaly1(_y1);
   _faces.back()->setLocaly2(_y2);
   if (config.analysis_tool == 1) {
     _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
