@@ -1,0 +1,34 @@
+2021-07-13 00:28:12 [info] prevabs start
+2021-07-13 00:28:12 [info] - reading input files
+2021-07-13 00:28:12 [info]     - reading main input file: .\uh60a_section.xml
+2021-07-13 00:28:12 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2021-07-13 00:28:12 [info]       - reading materials file: .\material_database.xml
+2021-07-13 00:28:12 [info] - reading input files -- done
+2021-07-13 00:28:12 [info] - building the shape
+2021-07-13 00:28:12 [info]   - building the cross section, step 1
+2021-07-13 00:28:12 [info]     - building component: spar
+2021-07-13 00:28:12 [info]     - building component: le
+2021-07-13 00:28:12 [info]     - building component: te
+2021-07-13 00:28:12 [info]     - building component: nsm
+2021-07-13 00:28:12 [info]     - building component: fill_te
+2021-07-13 00:28:12 [info]     - building component: fill_le
+2021-07-13 00:28:12 [info]   - building the cross section, step 2
+2021-07-13 00:28:12 [info]     - building component details: spar
+2021-07-13 00:28:12 [info]     - building component details: le
+2021-07-13 00:28:12 [info]     - building component details: te
+2021-07-13 00:28:12 [info] - building the shape -- done
+2021-07-13 00:28:12 [info] - modeling in Gmsh
+2021-07-13 00:28:12 [info]   - creating gmsh vertices
+2021-07-13 00:28:12 [info]   - creating gmsh edges
+2021-07-13 00:28:12 [info]   - creating gmsh face
+2021-07-13 00:28:13 [info]   - meshing
+2021-07-13 00:28:13 [info] - modeling in Gmsh -- done
+2021-07-13 00:28:13 [info] - writing outputs
+2021-07-13 00:28:13 [info]   - writing Gmsh .geo file: .\uh60a_section.geo
+2021-07-13 00:28:13 [info]   - writing Gmsh .geo file: .\uh60a_section.msh
+2021-07-13 00:28:13 [info]   - writing Gmsh .opt file: .\uh60a_section.opt
+2021-07-13 00:28:13 [info]   - writing sg file: .\uh60a_section.sg
+2021-07-13 00:28:14 [info] - writing outputs -- done
+2021-07-13 00:28:14 [info] - running Gmsh for visualization
+2021-07-13 00:28:14 [info] prevabs finished
+2021-07-13 00:28:14 [info] total running time: 1.324 sec

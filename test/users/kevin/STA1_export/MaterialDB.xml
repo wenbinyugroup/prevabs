@@ -1,0 +1,80 @@
+<materials>
+  <material name="woven" type="orthotropic">
+    <density>1500</density>    <!-- kg/m^3 -->
+    <elastic>
+      <e1>77000000000</e1>      <!-- Pa -->
+      <e2>77000000000</e2>      <!-- Pa -->
+      <e3>7700000000</e3>      <!-- Pa -->
+      <g12>4000000000</g12>      <!-- Pa -->
+      <g13>4000000000</g13>      <!-- Pa -->
+      <g23>2850000000</g23>      <!-- Pa -->
+      <nu12>0.27</nu12>
+      <nu13>0.27</nu13>
+      <nu23>0.38</nu23>
+    </elastic>
+    <failure_criterion>4</failure_criterion>
+    <strength>
+      <xt>680000000</xt>      <!-- f1tu, Pa -->
+      <xc>370000000</xc>      <!-- f1cu, Pa -->
+      <yt>590000000</yt>      <!-- f2tu, Pa -->
+      <s>49000000</s>      <!-- f12su, Pa -->
+      <yc>400000000</yc>      <!-- f2cu, Pa -->
+      <zt>130000000</zt>      <!-- f3tu, Pa -->
+      <zc>60000000</zc>      <!-- f3cu, Pa -->
+      <t>38000000</t>      <!-- f13su, Pa -->
+      <r>250000000</r>      <!-- f23su, Pa -->      <!-- (yt+yc)/4 -->
+    </strength>
+  </material>
+  <lamina name="la_woven">
+    <material>woven</material>
+    <thickness>0.00014732</thickness>    <!-- m -->
+  </lamina>
+
+
+  <material name="uni" type="orthotropic">
+    <density>1500</density>    <!-- kg/m^3 -->
+    <elastic>
+      <e1>16000000000</e1>      <!-- Pa -->
+      <e2>7800000000</e2>      <!-- Pa -->
+      <e3>7800000000</e3>      <!-- Pa -->
+      <g12>4200000000</g12>      <!-- Pa -->
+      <g13>4200000000</g13>      <!-- Pa -->
+      <g23>2850000000</g23>      <!-- Pa -->
+      <nu12>0.270</nu12>
+      <nu13>0.270</nu13>
+      <nu23>0.380</nu23>
+    </elastic>
+    <failure_criterion>4</failure_criterion>
+    <strength>
+      <xt>1300000000</xt>      <!-- f1tu, Pa -->
+      <xc>950000000</xc>      <!-- f1cu, Pa -->
+      <yt>13000000</yt>      <!-- f2tu, Pa -->
+      <s>62000000</s>      <!-- f12su, Pa -->
+      <yc>61000000</yc>      <!-- f2cu, Pa -->
+      <zt>13000000</zt>      <!-- f3tu, Pa -->
+      <zc>61000000</zc>      <!-- f3cu, Pa -->
+      <t>53000000</t>      <!-- f13su, Pa -->
+      <r>580000000</r>      <!-- f23su, Pa -->      <!-- (yt+yc)/4 -->
+    </strength>
+  </material>
+  <lamina name="la_uni">
+    <material>uni</material>
+    <thickness>0.0003048</thickness>    <!-- m -->
+  </lamina>
+
+
+  <material name="core" type="isotropic">
+    <density>75.0</density>    <!-- kg/m^3 -->
+    <elastic>
+      <e>105000000</e>      <!-- Pa -->
+      <nu>0.25</nu>
+    </elastic>
+    <failure_criterion>1</failure_criterion>
+    <strength>
+      <xt>2200000</xt>      <!-- f1tu, Pa -->
+      <xc>1700000</xc>      <!-- f1cu, Pa -->
+      <yt>2200000</yt>      <!-- f2tu, Pa -->
+      <s>1300000</s>      <!-- f12su, Pa -->
+    </strength>
+  </material>
+</materials>

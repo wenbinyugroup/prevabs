@@ -1,0 +1,10 @@
+<layups>
+  <layup name="layup1" method="ss">
+    <lamina>la_iso5_1_0005</lamina>
+    <code>[0:8/90:8]</code>
+  </layup>
+  <layup name="layup2" method="ss">
+    <lamina>la_iso5_1_0005</lamina>
+    <code>[45:12/-45:12]</code>
+  </layup>
+</layups>

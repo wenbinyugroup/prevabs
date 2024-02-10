@@ -1,0 +1,24 @@
+2021-07-16 23:27:32 [info] prevabs start
+2021-07-16 23:27:32 [info] - reading input files
+2021-07-16 23:27:32 [info]     - reading main input file: share/test/box/1.4_fill_orient/box.xml
+2021-07-16 23:27:32 [info]       - reading materials file: /home/msg/a/tian50/develop/group_git/prevabs/bin/MaterialDB.xml
+2021-07-16 23:27:32 [info]       - reading materials file: share/test/box/1.4_fill_orient/materials.xml
+2021-07-16 23:27:32 [info] - reading input files -- done
+2021-07-16 23:27:32 [info] - building the shape
+2021-07-16 23:27:32 [info]   - building the cross section, step 1
+2021-07-16 23:27:32 [info]     - building component: main
+2021-07-16 23:27:32 [info]     - building component: fill
+2021-07-16 23:27:32 [info]   - building the cross section, step 2
+2021-07-16 23:27:32 [info]     - building component details: main
+2021-07-16 23:27:32 [info] - building the shape -- done
+2021-07-16 23:27:32 [info] - modeling in Gmsh
+2021-07-16 23:27:32 [info]   - creating gmsh vertices
+2021-07-16 23:27:32 [info]   - creating gmsh edges
+2021-07-16 23:27:32 [info]   - creating gmsh face
+2021-07-16 23:27:32 [info]   - meshing
+2021-07-16 23:27:32 [info] - modeling in Gmsh -- done
+2021-07-16 23:27:32 [info] - writing outputs
+2021-07-16 23:27:32 [info]   - writing sg file: share/test/box/1.4_fill_orient/box.sg
+2021-07-16 23:27:32 [info] - writing outputs -- done
+2021-07-16 23:27:32 [info] prevabs finished
+2021-07-16 23:27:32 [info] total running time: 0.61 sec

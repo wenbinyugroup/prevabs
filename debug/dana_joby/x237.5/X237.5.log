@@ -1,0 +1,34 @@
+2021-06-16 00:11:07 [info] prevabs start
+2021-06-16 00:11:07 [info] - reading input files
+2021-06-16 00:11:07 [info]     - reading main input file: .\debug\dana_joby\x237.5\X237.5.xml
+2021-06-16 00:11:07 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2021-06-16 00:11:07 [info]       - reading materials file: .\debug\dana_joby\x237.5\materials.xml
+2021-06-16 00:11:07 [info] - reading input files -- done
+2021-06-16 00:11:07 [info] - building the shape
+2021-06-16 00:11:07 [info]   - building the cross section, step 1
+2021-06-16 00:11:07 [info]     - building component: surface
+2021-06-16 00:11:07 [info]     - building component: web1
+2021-06-16 00:11:07 [info]     - building component: web2
+2021-06-16 00:11:07 [info]     - building component: web3
+2021-06-16 00:11:07 [info]     - building component: web4
+2021-06-16 00:11:07 [info]   - building the cross section, step 2
+2021-06-16 00:11:07 [info]     - building component details: surface
+2021-06-16 00:11:07 [info]     - building component details: web1
+2021-06-16 00:11:07 [info]     - building component details: web2
+2021-06-16 00:11:07 [info]     - building component details: web3
+2021-06-16 00:11:07 [info]     - building component details: web4
+2021-06-16 00:11:07 [info] - building the shape -- done
+2021-06-16 00:11:07 [info] - modeling in Gmsh
+2021-06-16 00:11:07 [info]   - creating gmsh vertices
+2021-06-16 00:11:07 [info]   - creating gmsh edges
+2021-06-16 00:11:07 [info]   - creating gmsh face
+2021-06-16 00:11:08 [info]   - meshing
+2021-06-16 00:11:08 [info] - modeling in Gmsh -- done
+2021-06-16 00:11:08 [info] - writing outputs
+2021-06-16 00:11:08 [info]   - writing sg file: .\debug\dana_joby\x237.5\X237.5.sg
+2021-06-16 00:11:08 [info] - writing outputs -- done
+2021-06-16 00:11:08 [info] - running VABS for homogenization
+2021-06-16 00:11:08 [info] running VABS...
+2021-06-16 00:11:09 [info] - running VABS for homogenization -- done
+2021-06-16 00:11:09 [info] prevabs finished
+2021-06-16 00:11:09 [info] total running time: 2.134 sec

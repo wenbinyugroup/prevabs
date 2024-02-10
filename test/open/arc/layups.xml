@@ -1,0 +1,6 @@
+<layups>
+  <layup name="layup1" method="stack sequence">
+    <lamina>la_iso5_4_005</lamina>
+    <code>[45/-45/0/90]</code>
+  </layup>
+</layups>

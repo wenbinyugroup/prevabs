@@ -1,0 +1,63 @@
+<cross_section name="box" format="1">
+
+
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <layup>layups</layup> -->
+    <material>materials</material>
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+  <baselines>
+    <basepoints>
+      <point name="bl">-0.4765  -0.265</point>
+      <point name="tl">-0.4765   0.265</point>
+      <point name="tr">0.4765   0.265</point>
+      <point name="br">0.4765  -0.265</point>
+    </basepoints>
+    <baseline name="bl_all" type="straight">
+      <points>tl,tr,br,bl,tl</points>
+    </baseline>
+  </baselines>
+
+
+  <layups>
+    <layup name="layup_1">
+      <layer lamina="la_mat_1">-15:6</layer>
+    </layup>
+    <layup name="layup_2">
+      <layer lamina="la_mat_1">-15</layer>
+      <layer lamina="la_mat_1">15</layer>
+      <layer lamina="la_mat_1">-15</layer>
+      <layer lamina="la_mat_1">15</layer>
+      <layer lamina="la_mat_1">-15</layer>
+      <layer lamina="la_mat_1">15</layer>
+    </layup>
+  </layups>
+
+
+  <component name="main">
+    <segment name="sg_all">
+      <baseline>bl_all</baseline>
+      <layup direction="right">layup_1</layup>
+    </segment>
+  </component>
+
+  <global>
+
+    <displacements>1 2 3</displacements>
+    <loads>1 2 3 4 5 6</loads>
+
+  </global>
+
+
+</cross_section>

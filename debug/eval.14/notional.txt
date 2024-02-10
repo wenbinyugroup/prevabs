@@ -1,0 +1,15 @@
+
+========================================
+
+  PreVABS version 1.2.0
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  > [debug] building the overall shape of the cross section
+  - building the cross section, step 1

@@ -1,0 +1,12 @@
+<baselines basepoints="basepoints2">
+    <baseline name="bl1" type="straight">
+        <points>f_pt4,f_pt3</points></baseline>
+	<baseline name="bl2" type="straight">
+        <points>f_pt3,b_pt4,b_pt3,b_pt2,b_pt1,f_pt2</points></baseline>
+	<baseline name="bl3" type="straight">
+        <points>f_pt2,f_pt1</points></baseline>	
+	<baseline name="b14" type="straight">
+        <points>f_pb1,f_pb2</points></baseline>	
+    <baseline name="blweb" type="straight">
+        <point>web_pt</point><angle>90</angle></baseline>
+</baselines>

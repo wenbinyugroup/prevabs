@@ -1,0 +1,18 @@
+<baselines>
+  <basepoints>
+    <point name="p1">1  2</point>
+    <point name="p2">-1  2</point>
+    <point name="p3">0  0</point>
+    <point name="p4">-1  -2</point>
+    <point name="p5">1  -2</point>
+  </basepoints>
+  <baseline name="bl1" type="straight" method="pp">
+    <points>p1,p2</points>
+  </baseline>
+  <baseline name="bl2" type="straight" method="pp">
+    <points>p2,p3,p4</points>
+  </baseline>
+  <baseline name="bl3" type="straight" method="pp">
+    <points>p4,p5</points>
+  </baseline>
+</baselines>

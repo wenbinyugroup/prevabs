@@ -1,0 +1,101 @@
+<materials>
+  <material name="mtr_ns_mass" type="isotropic">
+    <density>1.51E+01</density>
+    <elastic>
+      <e>1e-3</e>
+      <nu>0</nu>
+    </elastic>
+  </material>
+  <material name="steel" type="orthotropic">
+    <density>1.51E+01</density>
+    <elastic>
+      <e1>4.28E+09</e1>
+      <e2>4.28E+09</e2>
+      <e3>4.28E+09</e3>
+      <g12>1.61E+09</g12>
+      <g13>1.61E+09</g13>
+      <g23>1.61E+09</g23>
+      <nu12>3.00E-01</nu12>
+      <nu13>3.00E-01</nu13>
+      <nu23>3.00E-01</nu23>
+    </elastic>
+  </material>
+  <lamina name="la_steel_0.00082">
+    <!--The name is in mm, the value used is in ft-->
+    <material>steel</material>
+    <thickness>0.002690</thickness>
+  </lamina>
+  <material name="im7 tape" type="orthotropic">
+    <density>3.00E+00</density>
+    <elastic>
+      <e1>2.97E+09</e1>
+      <e2>1.73E+08</e2>
+      <e3>1.73E+08</e3>
+      <g12>1.02E+08</g12>
+      <g13>1.02E+08</g13>
+      <g23>1.02E+08</g23>
+      <nu12>3.40E-01</nu12>
+      <nu13>3.40E-01</nu13>
+      <nu23>3.00E-01</nu23>
+    </elastic>
+  </material>
+  <lamina name="la_e_glass_0.00025">
+    <material>e_glass</material>
+    <thickness>0.0008202</thickness>
+  </lamina>
+  <lamina name="la_im7 tape_0.001">
+    <material>im7 tape</material>
+    <thickness>0.003281</thickness>
+  </lamina>
+  <lamina name="la_im7 tape_0.0008">
+    <material>im7 tape</material>
+    <thickness>0.002625</thickness>
+  </lamina>
+  <lamina name="la_im7 tape_0.00135">
+    <material>im7 tape</material>
+    <thickness>0.004429</thickness>
+  </lamina>
+  <lamina name="la_im7 tape_0.00145">
+    <material>im7 tape</material>
+    <thickness>0.004757</thickness>
+  </lamina>
+  <lamina name="la_im7 tape_0.0005">
+    <material>im7 tape</material>
+    <thickness>0.001640</thickness>
+  </lamina>
+  <material name="e_glass" type="isotropic">
+    <density>3.4926E+00</density>
+    <elastic>
+      <e>5.0688E+08</e1>
+      <nu>1.67E-01</nu>
+    </elastic>
+  </material>
+  <material name="Rohacell 70" type="orthotropic">
+    <density>1.46E-01</density>
+    <elastic>
+      <e1>1.89E+06</e1>
+      <e2>1.89E+06</e2>
+      <e3>1.89E+06</e3>
+      <g12>5.93E+05</g12>
+      <g13>5.93E+05</g13>
+      <g23>5.93E+05</g23>
+      <nu12>3.15E-01</nu12>
+      <nu13>3.15E-01</nu13>
+      <nu23>3.00E-01</nu23>
+    </elastic>
+  </material>
+  <material name="Plascore PN2-3/16OX3.0" type="orthotropic">
+    <density>9.35E-02</density>
+    <elastic>
+      <e1>1.44E+05</e1>
+      <e2>2.88E+06</e2>
+      <e3>1.44E+05</e3>
+      <g12>5.04E+05</g12>
+      <g13>1.44E+05</g13>
+      <g23>8.35E+05</g23>
+      <nu12>1.00E-02</nu12>
+      <nu13>3.00E-01</nu13>
+      <nu23>1.00E-02</nu23>
+    </elastic>
+  </material>
+</materials>

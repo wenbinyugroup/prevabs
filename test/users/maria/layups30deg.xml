@@ -1,0 +1,8 @@
+<layups>
+    <layup name="layup1">
+        <layer lamina="la_iso5_1">0</layer>
+    </layup>
+	<layup name="layup2">
+        <layer lamina="la_iso5_1">0</layer>
+    </layup>
+</layups>

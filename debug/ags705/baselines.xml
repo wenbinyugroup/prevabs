@@ -1,0 +1,73 @@
+<baselines>
+  <basepoints>
+    <include>basepoints</include>
+  </basepoints>
+  <baseline name="bl_lps_1" type="straight">
+    <points>le:l12</points>
+  </baseline>
+  <baseline name="bl_lps_2" type="straight">
+    <points>l12:l23</points>
+  </baseline>
+  <baseline name="bl_lps_3" type="straight">
+    <points>l23:l34</points>
+  </baseline>
+  <baseline name="bl_lps_4" type="straight">
+    <points>l34:l45</points>
+  </baseline>
+  <baseline name="bl_lps_5" type="straight">
+    <points>l45:l56</points>
+  </baseline>
+  <baseline name="bl_lps_6" type="straight">
+    <points>l56:l67</points>
+  </baseline>
+  <baseline name="bl_lps_7" type="straight">
+    <points>l67:l78</points>
+  </baseline>
+  <baseline name="bl_lps_8" type="straight">
+    <points>l78:l89</points>
+  </baseline>
+  <baseline name="bl_lps_9" type="straight">
+    <points>l89:l90</points>
+  </baseline>
+  <baseline name="bl_lps_0" type="straight">
+    <points>l90:te</points>
+  </baseline>
+  <baseline name="bl_hps_0" type="straight">
+    <points>te:h90</points>
+  </baseline>
+  <baseline name="bl_hps_9" type="straight">
+    <points>h90:h89</points>
+  </baseline>
+  <baseline name="bl_hps_8" type="straight">
+    <points>h89:h78</points>
+  </baseline>
+  <baseline name="bl_hps_7" type="straight">
+    <points>h78:h67</points>
+  </baseline>
+  <baseline name="bl_hps_6" type="straight">
+    <points>h67:h56</points>
+  </baseline>
+  <baseline name="bl_hps_5" type="straight">
+    <points>h56:h45</points>
+  </baseline>
+  <baseline name="bl_hps_4" type="straight">
+    <points>h45:h34</points>
+  </baseline>
+  <baseline name="bl_hps_3" type="straight">
+    <points>h34:h23,le</points>
+  </baseline>
+  <baseline name="bl_hps_2" type="straight">
+    <points>h23:h12</points>
+  </baseline>
+  <baseline name="bl_hps_1" type="straight">
+    <points>h12:le</points>
+  </baseline>
+  <baseline name="bl_web_1" type="straight">
+    <point>web_right_1</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_web_2" type="straight">
+    <point>web_right_2</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

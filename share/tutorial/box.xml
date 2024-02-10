@@ -1,0 +1,34 @@
+<cross_section name="box">
+  <include>
+    <baseline>baselines</baseline>
+    <layup>layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <mesh_size>0.02</mesh_size>
+  </general>
+  <component name="walls">
+    <segment>
+      <baseline>line1</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+  <component name="web1" depend="walls">
+    <segment>
+      <baseline>line2</baseline>
+      <layup>layup2</layup>
+    </segment>
+  </component>
+  <component name="web2" depend="walls">
+    <segment>
+      <baseline>line3</baseline>
+      <layup direction="right">layup2</layup>
+    </segment>
+  </component>
+  <component name="fill" type="fill" depend="walls,web1,web2">
+    <location>p0</location>
+    <material>m0</material>
+  </component>
+</cross_section>

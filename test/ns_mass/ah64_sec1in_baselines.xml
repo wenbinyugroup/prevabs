@@ -1,0 +1,72 @@
+<baselines>
+  <basepoints>
+    <include>hh02_prevabs</include>
+    <point name="pweb_main">0.475  0.0</point>
+    <point name="pweb_aux">0.065  0.0</point>
+    <point name="pballast">0.05  0.0</point>
+    <!-- <point name="pballast">0.1  0.0</point> -->
+    <point name="pte_fill">0.90  -0.00736</point>
+    <point name="pte_tab">0.94  0.0</point>
+    <point name="p_nsm_c">0.03  0.0</point>
+    <point name="p_nsm_a">0.035  0.0</point>
+  </basepoints>
+  <!-- Leading cap -->
+  <baseline name="bl_cap" type="straight">
+    <points>pb1:79,ptle:pt1</points>
+  </baseline>
+  <!-- Box spar -->
+  <baseline name="bl_top_spar_cap" type="straight">
+    <points>pt1:pt2</points>
+  </baseline>
+  <baseline name="bl_top_spar_main" type="straight">
+    <points>pt2:pt3</points>
+  </baseline>
+  <baseline name="bl_web_main" type="straight">
+    <!-- <point>pweb_main</point> -->
+    <!-- <angle>90</angle> -->
+    <points>pt3,pb3</points>
+  </baseline>
+  <baseline name="bl_bottom_spar_main" type="straight">
+    <points>pb3:pb2</points>
+  </baseline>
+  <baseline name="bl_bottom_spar_cap" type="straight">
+    <points>pb2:pb1</points>
+  </baseline>
+  <baseline name="bl_web_aux" type="straight">
+    <!-- <point>pweb_aux</point>
+    <angle>90</angle> -->
+    <points>pb1,pt1</points>
+  </baseline>
+  <!-- Overwrap -->
+  <baseline name="bl_overwrap" type="straight">
+    <points>pt3:ptte,pbte:pb3</points>
+    <!-- <points>pt3:pt4,pte</points> -->
+  </baseline>
+  <baseline name="bl_top_overwrap" type="straight">
+    <points>pt3:ptte</points>
+    <!-- <points>pt3:pt4,pte</points> -->
+  </baseline>
+  <baseline name="bl_bottom_overwrap" type="straight">
+    <points>pbte:pb3</points>
+    <!-- <points>pte,pb4:pb3</points> -->
+  </baseline>
+  <!-- Fills -->
+  <baseline name="bl_ballast" type="straight">
+    <point>pballast</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_te_fill" type="straight">
+    <point>pte_fill</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_te_tab" type="straight">
+    <point>pte_tab</point>
+    <angle>90</angle>
+  </baseline>
+  <!-- Leading mass -->
+  <baseline name="bsl_ns_mass" type="circle">
+    <center>p_nsm_c</center>
+    <radius>0.005</radius>
+    <!-- <point>p_nsm_a</point> -->
+  </baseline>
+</baselines>

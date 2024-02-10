@@ -1,0 +1,13 @@
+<baselines basepoints="basepoints_sta01">
+
+  <!-- low pressure surface -->
+  <baseline name="bl_lps_1" type="straight">
+    <points>le:104,te</points>
+  </baseline>
+
+  <!-- high pressure surface -->
+  <baseline name="bl_hps_1" type="straight">
+    <points>te:le</points>
+  </baseline>
+
+</baselines>

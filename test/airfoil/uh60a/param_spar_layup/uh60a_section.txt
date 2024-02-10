@@ -1,0 +1,49 @@
+
+========================================
+
+  PreVABS version 1.3.0
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: main_spar
+    - building component: le
+      > [debug] u1 = 0.880600
+      > [debug] u2 = 0.089742
+      > [debug] u1 = 0.066807
+      > [debug] u2 = 0.902066
+  
+  - building the cross section, step 2
+    - building component: main_spar
+    - building component: le
+- building the shape -- done
+
+
+- modeling in Gmsh
+  - creating gmsh vertices
+  - creating gmsh edges
+  - creating gmsh face
+  - meshing
+- modeling in Gmsh -- done
+
+
+- writing outputs
+  - writing sg file: .\share\test\airfoil\uh60a\param_spar_layup\uh60a_section.sg
+- writing outputs -- done
+
+
+- running Gmsh for visualization
+
+========================================
+
+  FINISHED
+  Total running time: 1.893 sec
+
+========================================
+

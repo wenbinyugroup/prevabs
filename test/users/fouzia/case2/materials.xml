@@ -1,0 +1,128 @@
+<materials>
+  <material name="skin" type="Orthotropic">
+    <density>0.056</density>
+    <elastic>
+      <e1>2.1319E+06</e1>
+      <e2>2.1319E+06</e2>
+      <e3>2.1319E+06</e3>
+      <g12>3.84067E+06</g12>
+      <g13>3.84067E+06</g13>
+      <g23>3.84067E+06</g23>
+      <nu12>0.745</nu12>
+      <nu13>0.745</nu13>
+      <nu23>0.745</nu23>
+
+    </elastic>
+  </material>
+  <material name="abrasion_strip" type="Orthotropic">
+    <density>0.286</density>
+    <elastic>
+      <e1>29E+06</e1>
+      <e2>29E+06</e2>
+      <e3>29E+06</e3>
+      <g12>11.2E+06</g12>
+      <g13>11.2E+06</g13>
+      <g23>11.2E+06</g23>
+      <nu12>0.31</nu12>
+      <nu13>0.31</nu13>
+      <nu23>0.31</nu23>
+    </elastic>
+  </material>
+  <material name="spar" type="Orthotropic">
+    <density>0.055</density>
+    <elastic>
+      <e1>1.7745E+07</e1>
+      <e2>1.7745E+07</e2>
+      <e3>1.7745E+07</e3>
+      <g12>4.53E+05</g12>
+      <g13>4.53E+05</g13>
+      <g23>4.53E+05</g23>
+      <nu12>0.323</nu12>
+      <nu13>0.323</nu13>
+      <nu23>0.323</nu23>
+    </elastic>
+  </material>
+  <material name="UpperFiller" type="Orthotropic">
+    <density>0.056</density>
+    <elastic>
+      <e1>8.088E+06</e1>
+      <e2>8.088E+06</e2>
+      <e3>8.088E+06</e3>
+      <g12>4.60E+05</g12>
+      <g13>4.60E+05</g13>
+      <g23>4.60E+05</g23>
+      <nu12>0.042</nu12>
+      <nu13>0.042</nu13>
+      <nu23>0.042</nu23>
+    </elastic>
+  </material>
+  <material name="DoublerStack" type="Orthotropic">
+    <density>0.056</density>
+    <elastic>
+      <e1>2.1319E+06</e1>
+      <e2>2.1319E+06</e2>
+      <e3>2.1319E+06</e3>
+      <g12>3.84067E+06</g12>
+      <g13>3.84067E+06</g13>
+      <g23>3.84067E+06</g23>
+      <nu12>0.7446</nu12>
+      <nu13>0.7446</nu13>
+      <nu23>0.7446</nu23>
+    </elastic>
+  </material>
+  <material name="metal" type="isotropic">
+    <density>0.614</density>
+    <elastic>
+      <e>1e-3</e>
+      <nu>0</nu>
+    </elastic>
+  </material>
+  <lamina name="skin_003">
+    <material>skin</material>
+    <thickness>0.03197</thickness>
+  </lamina>
+  <lamina name="skin_004">
+    <material>skin</material>
+    <thickness>0.000000000000000317</thickness>
+  </lamina>
+  <lamina name="abrasion_strip_002">
+    <material>abrasion_strip</material>
+    <thickness>0.0198</thickness>
+  </lamina>
+  <lamina name="abrasion_strip_003">
+    <material>abrasion_strip</material>
+    <thickness>0.009980</thickness>
+  </lamina>
+  <lamina name="abrasion_strip_004">
+    <material>abrasion_strip</material>
+    <thickness>0.000000000090</thickness>
+  </lamina>
+  <lamina name="spar_003">
+    <material>spar</material>
+    <thickness>0.060</thickness>
+  </lamina>
+  <lamina name="spar_005">
+    <material>spar</material>
+    <thickness>0.0836</thickness>
+  </lamina>
+  <lamina name="spar_004">
+    <material>spar</material>
+    <thickness>0.86</thickness>
+  </lamina>
+  <lamina name="DoublerStack_004">
+    <material>DoublerStack</material>
+    <thickness>0.14381</thickness>
+  </lamina>
+  <lamina name="DoublerStack_005">
+    <material>DoublerStack</material>
+    <thickness>0.06</thickness>
+  </lamina>
+  <lamina name="metal1">
+    <material>metal</material>
+    <thickness>0.05</thickness>
+  </lamina>
+  <lamina name="metal2">
+    <material>metal</material>
+    <thickness>0.07</thickness>
+  </lamina>
+</materials>

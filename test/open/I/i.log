@@ -1,0 +1,33 @@
+2022-03-08 23:03:33 [info] prevabs start
+2022-03-08 23:03:33 [info] - reading input files
+2022-03-08 23:03:33 [info]     - reading main input file: i.xml
+2022-03-08 23:03:33 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2022-03-08 23:03:33 [info] - reading input files -- done
+2022-03-08 23:03:33 [info] - building the shape
+2022-03-08 23:03:33 [info]   - building the cross section, step 1
+2022-03-08 23:03:33 [info]     - building component: top
+2022-03-08 23:03:33 [info]         - building component: bottom
+2022-03-08 23:03:33 [info]             - building component: c_left
+2022-03-08 23:03:33 [info]                 - building component: c_right
+2022-03-08 23:03:33 [info]                   - building the cross section, step 2
+2022-03-08 23:03:33 [info]                     - building component details: top
+2022-03-08 23:03:33 [info]                     - building component details: bottom
+2022-03-08 23:03:33 [info]                     - building component details: c_left
+2022-03-08 23:03:33 [info]                     - building component details: c_right
+2022-03-08 23:03:33 [info]                 - building the shape -- done
+2022-03-08 23:03:33 [info]                 - modeling in Gmsh
+2022-03-08 23:03:33 [info]                   - creating gmsh vertices
+2022-03-08 23:03:33 [info]                   - creating gmsh edges
+2022-03-08 23:03:33 [info]                   - creating gmsh face
+2022-03-08 23:03:33 [info]                   - meshing
+2022-03-08 23:03:33 [info]                 - modeling in Gmsh -- done
+2022-03-08 23:03:33 [info]                 - writing outputs
+2022-03-08 23:03:33 [info]                   - writing gmsh .opt file: i.opt
+2022-03-08 23:03:33 [info]                   - writing gmsh .geo file: i.geo
+2022-03-08 23:03:33 [info]                   - writing gmsh .msh file: i.msh
+2022-03-08 23:03:33 [info]                   - writing sg file: i.sg
+2022-03-08 23:03:33 [info]                 - writing outputs -- done
+2022-03-08 23:03:33 [info]                 - running Gmsh for visualization
+2022-03-08 23:03:33 [info]                 - running: gmsh i.geo i.msh i.opt
+2022-03-08 23:03:34 [info] prevabs finished
+2022-03-08 23:03:34 [info] total running time: 0.667 sec

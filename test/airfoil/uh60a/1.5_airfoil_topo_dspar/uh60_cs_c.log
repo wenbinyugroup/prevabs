@@ -1,0 +1,37 @@
+2022-04-19 13:42:36 [info] prevabs start
+2022-04-19 13:42:36 [info] - reading input files
+2022-04-19 13:42:36 [info]     - reading main input file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.xml
+2022-04-19 13:42:36 [info]       - reading airfoil data file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\SC1095.dat
+2022-04-19 13:42:36 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2022-04-19 13:42:36 [info]       - reading materials file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\material_database_us_ft.xml
+2022-04-19 13:42:36 [info] - reading input files -- done
+2022-04-19 13:42:36 [info] - building the shape
+2022-04-19 13:42:36 [info]   - building the cross section, step 1
+2022-04-19 13:42:36 [info]     - building component: spar
+2022-04-19 13:42:36 [info]         - building component: le
+2022-04-19 13:42:36 [info]         - building component: te
+2022-04-19 13:42:37 [info]         - building component: ns_mass
+2022-04-19 13:42:37 [info]         - building component: fill_aft
+2022-04-19 13:42:37 [info]         - building component: fill_fwd
+2022-04-19 13:42:37 [info]       - building the cross section, step 2
+2022-04-19 13:42:37 [info]         - building component details: spar
+2022-04-19 13:42:37 [info]         - building component details: le
+2022-04-19 13:42:37 [info]         - building component details: te
+2022-04-19 13:42:37 [info]       - fixing geometry
+2022-04-19 13:42:37 [info]     - building the shape -- done
+2022-04-19 13:42:37 [info]     - modeling in Gmsh
+2022-04-19 13:42:37 [info]       - creating gmsh vertices
+2022-04-19 13:42:37 [info]       - creating gmsh edges
+2022-04-19 13:42:37 [info]       - creating gmsh face
+2022-04-19 13:42:37 [info]       - meshing
+2022-04-19 13:42:38 [info]     - modeling in Gmsh -- done
+2022-04-19 13:42:38 [info]     - writing outputs
+2022-04-19 13:42:38 [info]       - writing gmsh .opt file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.opt
+2022-04-19 13:42:38 [info]       - writing gmsh .geo file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.geo
+2022-04-19 13:42:38 [info]       - writing gmsh .msh file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.msh
+2022-04-19 13:42:38 [info]       - writing sg file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.sg
+2022-04-19 13:42:38 [info]     - writing outputs -- done
+2022-04-19 13:42:38 [info]     - running Gmsh for visualization
+2022-04-19 13:42:38 [info]     - running: gmsh .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.geo .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.msh .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_c.opt
+2022-04-19 13:42:38 [info] prevabs finished
+2022-04-19 13:42:38 [info] total running time: 1.822 sec

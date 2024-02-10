@@ -1,0 +1,24 @@
+<baselines basepoints="basepoints">
+  <basepoints>
+    <point name="tl">-1  0</point>
+    <point name="tr">1  0</point>
+    <point name="web">0  -1</point>
+    <point name="webl">-0.14  -1</point>
+    <point name="webr">0.22  -1</point>
+  </basepoints>
+  <baseline name="bl1" type="straight" method="pp">
+    <points>tl,tr</points>
+  </baseline>
+  <baseline name="blweb" type="straight" method="pa">
+    <point loc="begin">web</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="blwebl" type="straight" method="pa">
+    <point loc="begin">webl</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="blwebr" type="straight" method="pa">
+    <point loc="begin">webr</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

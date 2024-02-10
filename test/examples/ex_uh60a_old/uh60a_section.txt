@@ -1,0 +1,24 @@
+
+========================================
+
+  PreVABS version 1.3.0
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: d_spar
+    - building component: web_aux
+    - building component: web_main
+    - building component: ns_mass
+    - building component: fill_ballast
+    - building component: fill_te
+    - building component: fill_te
+  
+  - building the cross section, step 2
+    - building component: d_spar

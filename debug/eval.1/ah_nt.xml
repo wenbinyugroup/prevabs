@@ -1,0 +1,181 @@
+<cross_section name="ah_nt" format="1">
+  <!-- Unit: lb-in-slug-sec -->
+  <include>
+    <material>material_database</material>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.25 0</translate>
+    <!-- <scale>1.75</scale> -->
+    <scale>21</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <!--
+    
+    
+    Basic geometry
+  
+  
+  -->
+  <baselines>
+    <basepoints>
+      <include>hh02_prevabs</include>
+    </basepoints>
+
+    <baseline name="bsl_airfoil" type="straight">
+      <points>1:79,1</points>
+    </baseline>
+    <baseline name="bsl_lps" type="straight">
+      <points>1:40</points>
+    </baseline>
+    <baseline name="bsl_hps" type="straight">
+      <points>41:79,1</points>
+    </baseline>
+
+    <point name="p1" on="bsl_lps" by="x2">-0.1960416595</point>
+    <point name="p2" on="bsl_lps" by="x2">-0.3575309594</point>
+    <point name="p3" on="bsl_hps" by="x2">-0.3575309594</point>
+    <point name="p4" on="bsl_hps" by="x2">-0.1960416595</point>
+
+    <baseline name="bsl_spar_box" type="straight">
+      <!-- <points>18:25,56:63,18</points> -->
+      <points>p1:p2,p3:p4,p1</points>
+    </baseline>
+
+    <baseline name="bsl_le_top" type="straight">
+      <points>1:p1</points>
+    </baseline>
+    <baseline name="bsl_le_bottom" type="straight">
+      <points>p4:79,1</points>
+    </baseline>
+    <baseline name="bsl_te_top" type="straight">
+      <points>p2:35</points>
+    </baseline>
+    <baseline name="bsl_te_bottom" type="straight">
+      <points>46:p3</points>
+    </baseline>
+    <baseline name="bsl_te" type="straight">
+      <points>35:46</points>
+    </baseline>
+  </baselines>
+  <!--
+    
+    
+    Layups
+  
+  
+  -->
+  <layups>
+    <layup name="lyp_steel">
+      <layer lamina="Aluminum 8009_0.01">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_graphite">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_kevlar">
+      <layer lamina="AS4 6k/PR 500_fabric_0.0137">0:2</layer>
+    </layup>
+
+    <layup name="lyp_main_1">
+      <layer lamina="AS4 12k/E7K8_0.0054">72.86705949:3</layer>
+    </layup>
+    <layup name="lyp_main_2">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">70.7823184:2</layer>
+    </layup>
+    <layup name="lyp_main_3">
+      <layer lamina="AS4 12k/E7K8_0.0054">-77.96148226:0</layer>
+    </layup>
+    <layup name="lyp_main_4">
+      <layer lamina="T650-35 12k/976_0.0052">50.19592558:1</layer>
+    </layup>
+    <layup name="lyp_main_5">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-38.87664948:4</layer>
+    </layup>
+    <layup name="lyp_main_6">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-70.83646944:0</layer>
+    </layup>
+    <layup name="lyp_main_7">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-1.581938002:0</layer>
+    </layup>
+    <layup name="lyp_main_8">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-74.758331:0</layer>
+    </layup>
+
+    <layup name="lyp_le_1">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-29.18204991:0</layer>
+    </layup>
+    <layup name="lyp_le_2">
+      <layer lamina="AS4 12k/E7K8_0.0054">-27.1197968:2</layer>
+    </layup>
+
+    <layup name="lyp_te_1">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-50.53733022:0</layer>
+    </layup>
+    <layup name="lyp_te_2">
+      <layer lamina="T650-35 12k/976_0.0052">-75.09801098:0</layer>
+    </layup>
+
+  </layups>
+  <!--
+    
+    
+    Components
+  
+  
+  -->
+  <component name="spar">
+    <segments>
+      <baseline>bsl_spar_box</baseline>
+
+      <layup>lyp_skin_graphite</layup>
+      <layup begin="0.3843155162" end="0.6310784521">lyp_main_1</layup>
+      <layup begin="0.3494522876" end="0.647036091">lyp_main_2</layup>
+      <layup begin="0.3575574374" end="0.7440129812">lyp_main_3</layup>
+      <layup begin="0.104796189" end="0.9675457664">lyp_main_4</layup>
+      <layup begin="0.3347137921" end="0.6393424277">lyp_main_5</layup>
+      <layup begin="0.0570263927" end="0.8301717747">lyp_main_6</layup>
+      <layup begin="0.1727389887" end="0.5301161489">lyp_main_7</layup>
+      <layup begin="0.4761013875" end="0.7049304103">lyp_main_8</layup>
+
+    </segments>
+  </component>
+
+  <component name="le" depend="spar">
+    <segments>
+      <baseline>bsl_le_top</baseline>
+      <layup>lyp_steel</layup>
+      <layup end="0.9677191758">lyp_le_1</layup>
+      <layup end="0.8582902439">lyp_le_2</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_le_bottom</baseline>
+      <layup>lyp_steel</layup>
+      <layup begin="0.2115629367">lyp_le_1</layup>
+      <layup begin="0.2692598299">lyp_le_2</layup>
+    </segments>
+  </component>
+
+  <component name="te" depend="spar">
+    <segments>
+      <baseline>bsl_te_top</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup end="0.4436645918">lyp_te_1</layup>
+      <layup end="0.3006033283">lyp_te_2</layup>
+    </segments>
+    <segment>
+      <baseline>bsl_te</baseline>
+      <layup>lyp_skin_graphite</layup>
+    </segment>
+    <segments>
+      <baseline>bsl_te_bottom</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup begin="0.08469356866">lyp_te_1</layup>
+      <layup begin="0.5430924733">lyp_te_2</layup>
+    </segments>
+  </component>
+</cross_section>

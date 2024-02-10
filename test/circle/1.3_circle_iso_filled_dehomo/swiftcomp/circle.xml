@@ -1,0 +1,74 @@
+<cross_section name="circle" format="1">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+
+
+  <analysis>
+    <model>1</model>
+    <thermal>0</thermal>
+    <trapeze>0</trapeze>
+    <!-- <vlasov>0</vlasov> -->
+    <initial_twist>0</initial_twist>
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+
+
+
+
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.1</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+
+
+  <baselines>
+    <basepoints>
+      <point name="ct">0 0</point>
+    </basepoints>
+
+    <baseline name="bsl_circle" type="circle">
+      <center>ct</center>
+      <radius>1</radius>
+      <discrete by="angle">5</discrete>
+      <direction>ccw</direction>
+    </baseline>
+
+  </baselines>
+
+
+
+
+  <layups>
+  </layups>
+
+
+
+
+  <component name="fill_circle" type="fill">
+    <baseline>bsl_circle</baseline>
+    <location>ct</location>
+    <material>iso1</material>
+  </component>
+
+
+  <dehomo measure="stress">
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <loads>1 0 0 0 0 0</loads>
+  </dehomo>
+
+
+</cross_section>

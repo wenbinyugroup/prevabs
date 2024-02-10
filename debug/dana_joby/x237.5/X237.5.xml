@@ -1,0 +1,189 @@
+<!-- ============================================================= -->
+<!-- PreVABS Input File, JAS4-1 Blade -->
+<!-- X=237.5mm -->
+<!-- Authored by: Dana Frye, Date: 05/15/2021 -->
+<!-- ============================================================= -->
+<cross_section name="X237.5" format="1">
+  <!-- =========================================================== -->
+  <!-- Include Statements -->
+  <!-- =========================================================== -->  
+  <include>
+    <material>materials</material>
+  </include>
+  <!-- =========================================================== -->
+  <!-- Analysis Model Definition, 0=Classical 1=Timoshenko) -->
+  <!-- =========================================================== -->
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <!-- =========================================================== -->
+  <!-- General Geometry and Mesh Settings (Optional) -->
+  <!-- =========================================================== -->
+  <general>
+    <translate>-0.25  0</translate>
+    <scale>0.2349</scale>
+    <rotate>-11</rotate>
+    <mesh_size>0.001</mesh_size>
+    <!-- <mesh_size>0.00025</mesh_size> -->
+    <element_type>linear</element_type>
+  </general>
+  <!-- =========================================================== -->
+  <!-- Basepoints and Baselines -->
+  <!-- =========================================================== -->
+  <baselines>
+    <basepoints>
+      <include>basepoints</include>
+    </basepoints>
+
+    <baseline name="bl_ts_le" type="straight">
+      <points>le:21</points>
+    </baseline>
+    <baseline name="bl_ts_spr" type="straight">
+      <points>21:26</points>
+    </baseline>
+    <baseline name="bl_te" type="straight">
+      <points>26:50,te,52:76</points>
+    </baseline> 
+    <baseline name="bl_bs_spr" type="straight">
+      <points>76:81</points>
+    </baseline>
+    <baseline name="bl_bs_le" type="straight">
+      <points>81:99,le</points>
+    </baseline>
+
+
+
+
+    <!-- MODIFIED -->
+    <!-- Changed how the arc is defined -->
+    <point name="web_ctr">0.25  0.0</point>
+    <point name="web_circle_top">0.25  0.143230</point>
+    <point name="web_circle_bottom">0.25  -0.143230</point>
+
+    <baseline name="bl_web_1" type="arc">
+      <center>web_ctr</center>
+      <start>web_circle_top</start>
+      <end>web_circle_bottom</end>
+      <direction>ccw</direction>
+      <discrete by="number">61</discrete>
+    </baseline>
+    <baseline name="bl_web_2" type="arc">
+      <center>web_ctr</center>
+      <start>web_circle_top</start>
+      <end>web_circle_bottom</end>
+      <direction>cw</direction>
+      <discrete by="number">61</discrete>
+    </baseline>
+    <!-- MODIFIED END -->
+
+
+
+
+    <baseline name="bl_web_3" type="straight">
+      <point>web_right_3</point>
+      <angle>100</angle>
+    </baseline>
+    <baseline name="bl_web_4" type="straight">
+      <point>web_right_4</point>
+      <angle>100</angle>
+    </baseline>
+  </baselines>
+  <!-- =========================================================== -->
+  <!-- Layup Definition -->
+  <!-- =========================================================== -->
+  <layups>
+    <layup name="layup_3ply_fab">
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+    </layup>
+    <layup name="layup_4ply_fab">
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+    </layup>
+    <layup name="layup_8ply_fab">
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+    </layup>
+    <layup name="layup_30ply_hyb">
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <!-- =============================== -->
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t1100_uni">0:6</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t1100_uni">0:6</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t1100_uni">0:6</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+    </layup>
+  </layups>
+  <!-- =========================================================== -->
+  <!-- Component Definition via Segments (Baseline + Layup) -->
+  <!-- =========================================================== -->  
+  <component name="surface">
+    <segment name="sg_ts_le">
+      <baseline>bl_ts_le</baseline>
+      <layup direction="right">layup_4ply_fab</layup>
+    </segment>
+    <segment name="sg_ts_spr">
+      <baseline>bl_ts_spr</baseline>
+      <layup direction="right">layup_30ply_hyb</layup>
+    </segment>
+    <segment name="sg_te">
+      <baseline>bl_te</baseline>
+      <layup direction="right">layup_4ply_fab</layup>
+    </segment>
+    <segment name="sg_bs_spr">
+      <baseline>bl_bs_spr</baseline>
+      <layup direction="right">layup_30ply_hyb</layup>
+    </segment>
+    <segment name="sg_bs_le">
+      <baseline>bl_bs_le</baseline>
+      <layup direction="right">layup_4ply_fab</layup>
+    </segment>
+  </component>
+
+  <component name="web1" depend="surface">
+    <segment name="sg_web_1">
+      <baseline>bl_web_1</baseline>
+      <layup>layup_8ply_fab</layup>
+    </segment>
+  </component>
+ 
+  <component name="web2" depend="surface">
+    <segment name="sg_web_2">
+      <baseline>bl_web_2</baseline>
+      <layup>layup_8ply_fab</layup>
+    </segment>
+  </component>
+
+  <component name="web3" depend="surface">
+    <segment name="sg_web_3">
+      <baseline>bl_web_3</baseline>
+      <layup>layup_3ply_fab</layup>
+    </segment>
+  </component>
+
+  <component name="web4" depend="surface">
+    <segment name="sg_web_4">
+      <baseline>bl_web_4</baseline>
+      <layup>layup_3ply_fab</layup>
+    </segment>
+  </component>
+
+</cross_section>

@@ -1,0 +1,227 @@
+<cross_section name="uh60a_section" format="1">
+  <include>
+    <material>material_database</material>
+  </include>
+  <analysis>
+    <model>1</model>
+    <!-- <trapeze>1</trapeze> -->
+  </analysis>
+  <general>
+    <!-- <translate>0.244457817 -9.27285155e-3</translate> -->
+    <scale>20.76</scale>
+    <mesh_size>0.04</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+
+  <baselines>
+    <!-- <basepoints>
+      <include>sc1095</include>
+    </basepoints> -->
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="2" header="2">sc1095.dat</points>
+      <flip>1</flip>
+    </line>
+  
+    <!-- <baseline name="ln_af_top" type="straight">
+      <points>1:71</points>
+    </baseline>
+    <baseline name="ln_af_bottom" type="straight">
+      <points>72:141,1</points>
+    </baseline> -->
+
+    <point name="p1" on="ln_af_top" by="x2">0.9</point>
+    <point name="p2" on="ln_af_top" by="x2">0.6</point>
+    <point name="p3" on="ln_af_bottom" by="x2">0.6</point>
+    <point name="p4" on="ln_af_bottom" by="x2">0.9</point>
+
+    <point name="p5" on="ln_af_top" by="x2">0.98</point>
+    <point name="p6" on="ln_af_bottom" by="x2">0.98</point>
+
+    <point name="p7" on="ln_af_top" by="x2">0.2</point>
+    <point name="p8" on="ln_af_bottom" by="x2">0.2</point>
+
+    <point name="pfb">0.1  0</point>
+
+    <baseline name="bsl_spar_top">
+      <points>p1:p2</points>
+    </baseline>
+    <baseline name="bsl_spar_bottom">
+      <points>p3:p4</points>
+    </baseline>
+    <baseline name="bsl_spar_web_te">
+      <points>p2,p3</points>
+    </baseline>
+    <baseline name="bsl_spar_web_le">
+      <points>p4,p1</points>
+    </baseline>
+
+    <baseline name="bsl_le_top">
+      <points>p5:p1</points>
+    </baseline>
+    <baseline name="bsl_le">
+      <!-- <points>p6:141,1:p5</points> -->
+      <points>p6:pbottom1,ple,ptop0:p5</points>
+    </baseline>
+    <baseline name="bsl_le_bottom">
+      <points>p4:p6</points>
+    </baseline>
+
+    <baseline name="bsl_te_top">
+      <points>p2:p7</points>
+    </baseline>
+    <baseline name="bsl_te">
+      <!-- <points>p7:71,72:p8</points> -->
+      <points>p7:ptop1,pte,pbottom0:p8</points>
+    </baseline>
+    <baseline name="bsl_te_bottom">
+      <points>p8:p3</points>
+    </baseline>
+
+    <point name="pnsmc">-0.04079029675 0</point>
+    <baseline name="bsl_nsm" type="circle">
+      <center>pnsmc</center>
+      <radius>0.008987640909</radius>
+      <discrete by="angle">9</discrete>
+    </baseline>
+
+    <point name="pfle1">-0.05477793766 0</point>
+    <point name="pfle2">-0.1131872374 0</point>
+    <point name="pfte1">-0.372794274 0</point>
+    <point name="pfte2">-0.9 0</point>
+
+  </baselines>
+
+
+
+
+
+
+
+
+
+  <layups>
+    <layup name="lyp_steel">
+      <layer lamina="Aluminum 8009_0.01">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_graphite">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+    </layup>
+
+    <layup name="lyp_spar">
+      <layer lamina="T700 24K/E765_0.0056">-29:14</layer>
+      <layer lamina="T700 24K/E765_0.0056">31:14</layer>
+      <layer lamina="T700 24K/E765_0.0056">37:14</layer>
+      <layer lamina="T700 24K/E765_0.0056">86:14</layer>
+    </layup>
+
+    <layup name="lyp_le">
+      <layer lamina="AS4 12k/E7K8_0.0054">-37:17</layer>
+    </layup>
+
+    <layup name="lyp_te">
+      <layer lamina="T650-35 12k/976_0.0052">45:5</layer>
+    </layup>
+
+  </layups>
+
+
+
+
+
+
+
+
+
+  <component name="spar">
+    <segments>
+      <baseline>bsl_spar_top</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar_bottom</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar_web_le</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_spar_web_te</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+  </component>
+
+  <component name="le" depend="spar">
+    <segments>
+      <baseline>bsl_le</baseline>
+      <layup>lyp_steel</layup>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_le_top</baseline>
+      <layup>lyp_steel</layup>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+    <segments>
+      <baseline>bsl_le_bottom</baseline>
+      <layup>lyp_steel</layup>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+  </component>
+
+  <component name="te" depend="spar">
+    <segments>
+      <baseline>bsl_te_top</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_te</layup>
+    </segments>
+    <segment>
+      <baseline>bsl_te</baseline>
+      <layup>lyp_skin_graphite</layup>
+    </segment>
+    <segments>
+      <baseline>bsl_te_bottom</baseline>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_te</layup>
+    </segments>
+  </component>
+
+  <component name="nsm" type="fill" depend="le">
+    <baseline>bsl_nsm</baseline>
+    <location>pnsmc</location>
+    <material>lead</material>
+    <mesh_size at="pnsmc">0.3</mesh_size>
+  </component>
+
+  <component name="fill_le" type="fill" depend="spar,le,nsm">
+    <location>pfle1</location>
+    <material>Rohacell 70</material>
+    <mesh_size at="pfle1,pfle2">0.3</mesh_size>
+  </component>
+
+  <component name="fill_te" type="fill" depend="spar,te">
+    <location>pfte1</location>
+    <material>Plascore PN2-3/16OX3.0</material>
+    <mesh_size at="pfte1,pfte2">0.3</mesh_size>
+  </component>
+
+
+
+  <global measure="stress">
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <loads>71425.45 -295.6945 70.72665 -654.6625 -483.3335 1595.95</loads>
+  </global>
+
+
+</cross_section>

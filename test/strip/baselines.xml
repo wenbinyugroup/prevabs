@@ -1,0 +1,9 @@
+<baselines>
+  <basepoints>
+    <point name="lc">-1  0</point>
+    <point name="rc">1  0</point>
+  </basepoints>
+  <baseline name="bl" type="straight">
+    <points>lc,rc</points>
+  </baseline>
+</baselines>

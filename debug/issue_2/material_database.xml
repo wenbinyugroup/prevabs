@@ -1,0 +1,141 @@
+<materials>
+
+  <material name="Aluminum 8009" type="isotropic">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.271959e-3</density>
+    <elastic>
+	    <!--unit:psi -->
+      <e>13.1E+06</e>
+      <nu>3.30E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="Aluminum 8009_0.01">
+    <material>Aluminum 8009</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <material name="lead" type="isotropic">
+	  <!--density unit: lbf.sec^2/in^4 -->
+    <density>1.060957e-3</density>
+    <elastic>
+      <e>1e-3</e>
+      <nu>0</nu>
+    </elastic>
+  </material>
+
+  <material name="Rohacell 70" type="orthotropic">
+    <!-- unit: lbf.sec^2/in^4 -->
+    <density>7.040895e-6</density>
+    <!-- unit: psi -->
+    <elastic>
+      <e1>13.125e3</e1>
+      <e2>13.125e3</e2>
+      <e3>13.125e3</e3>
+      <g12>4.118e3</g12>
+      <g13>4.118e3</g13>
+      <g23>4.118e3</g23>
+      <nu12>3.15E-01</nu12>
+      <nu13>3.15E-01</nu13>
+      <nu23>3.00E-01</nu23>
+    </elastic>
+  </material>
+
+  <material name="Plascore PN2-3/16OX3.0" type="orthotropic">
+    <!-- unit: lbf.sec^2/in^4 -->
+    <density>4.509066e-6</density>
+    <!-- unit: psi -->
+    <elastic>
+      <e1>1e3</e1>
+      <e2>1e3</e2>
+      <e3>20e3</e3>
+      <g12>1e3</g12>
+      <g23>5.799e3</g23>
+      <g13>3.5e3</g13>
+      <nu12>3.00E-01</nu13>
+      <nu13>1.00E-02</nu12>
+      <nu23>1.00E-02</nu23>
+    </elastic>
+  </material>
+
+  <material name="AS4 12k/E7K8" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.145973e-3</density>
+    <elastic>
+	    <!-- unit: psi (lbf/in^2) -->
+      <e1>19.3E+06</e1>
+      <e2>1.23E+06</e2>
+      <g12>7.31E+06</g12>
+      <nu12>3.20E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="AS4 12k/E7K8_0.0054">
+    <material>AS4 12k/E7K8</material>
+    <thickness>0.0054</thickness>
+  </lamina>
+
+  <material name="S2/SP381" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.173109e-3</density>
+    <elastic>
+	    <!--unit:psi -->
+      <e1>7.05E+06</e1>
+      <e2>1.97E+06</e2>
+      <g12>0.59E+06</g12>
+      <nu12>0.263</nu12>
+    </elastic>
+  </material>
+  <lamina name="S2/SP381_0.0092">
+    <material>S2/SP381</material>
+    <thickness>0.0092</thickness>
+  </lamina>
+
+  <material name="T300 15k/976" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.149716e-3</density>
+    <elastic>
+	    <!-- unit: psi -->
+      <e1>19.6E+06</e1>
+      <e2>1.34E+06</e2>
+      <g12>0.91E+06</g12>
+      <nu12>3.48E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T300 15k/976_0.0053">
+    <material>T300 15k/976</material>
+    <thickness>0.0053</thickness>
+  </lamina>
+
+  <material name="T650-35 12k/976" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.148781e-3</density>
+    <elastic>
+	    <!-- unit: lbf/in^2 -->
+      <e1>22.0E+06</e1>
+      <e2>1.30E+06</e2>
+      <g12>0.745E+06</g12>
+      <nu12>1.150E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T650-35 12k/976_0.0052">
+    <material>T650-35 12k/976</material>
+    <thickness>0.0052</thickness>
+  </lamina>
+
+  <material name="T700 24K/E765" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.145037e-3</density>
+    <elastic>
+	    <!--unit:psi -->
+      <e1>18.71E+06</e1>
+      <e2>1.36E+06</e2>
+      <g12>0.65E+06</g12>
+      <nu12>0.319</nu12>
+    </elastic>
+  </material>
+  <lamina name="T700 24K/E765_0.0056">
+    <material>T700 24K/E765</material>
+    <thickness>0.0056</thickness>
+  </lamina>
+
+</materials>

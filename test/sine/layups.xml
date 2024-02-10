@@ -1,0 +1,7 @@
+<layups>
+  <layup name="layup1" method="ss">
+    <!-- <lamina>la_mtr_aniso_001</lamina> -->
+    <lamina>la_mtr1_001</lamina>
+    <code>[0/90/0/90]</code>
+  </layup>
+</layups>

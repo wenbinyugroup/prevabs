@@ -1,0 +1,53 @@
+
+========================================
+
+  PreVABS version 1.2.0
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: main
+    - building component: overwrap
+  
+  - building the cross section, step 2
+    - building component: main
+    - building component: overwrap
+- building the shape -- done
+
+
+- modeling in Gmsh
+  - creating gmsh vertices
+  - creating gmsh edges
+  - creating gmsh face
+  - meshing
+- modeling in Gmsh -- done
+
+
+- writing outputs
+  - writing sg file: vr7.sg
+- writing outputs -- done
+
+
+- running VABS for homogenization
+
+-  [VABS Messages] 
+
+
+-  [VABS Messages End] 
+
+- running VABS for homogenization -- done
+
+
+========================================
+
+  FINISHED
+  Total running time: 1.682 sec
+
+========================================
+

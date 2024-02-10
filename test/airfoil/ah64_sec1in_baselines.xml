@@ -1,0 +1,42 @@
+<baselines>
+  <basepoints>
+    <include scale="0.4725">hh02_prevabs</include>
+    <!-- <point name="pweb_main">0.475  0.0</point> -->
+    <!-- <point name="pweb_aux">0.067  0.0</point> -->
+    <point name="pballast">0.06  0.0</point>
+    <point name="pte_fill">0.89  0.0</point>
+    <point name="pte_tab">0.94  0.0</point>
+  </basepoints>
+  <!-- Main box -->
+  <baseline name="bl_box_top_spar_cap" type="straight">
+    <points>pt1:pt2</points>
+  </baseline>
+  <baseline name="bl_box_top_spar_main" type="straight">
+    <points>pt2:pt3</points>
+  </baseline>
+  <baseline name="bl_box_web_main" type="straight">
+    <points>pt3,pb3</points>
+  </baseline>
+  <baseline name="bl_box_bottom_spar_main" type="straight">
+    <points>pb3:pb2</points>
+  </baseline>
+  <baseline name="bl_box_bottom_spar_cap" type="straight">
+    <points>pb2:pb1</points>
+  </baseline>
+  <baseline name="bl_box_web_aux" type="straight">
+    <points>pb1,pt1</points>
+  </baseline>
+  <!-- Cap -->
+  <baseline name="bl_cap" type="straight">
+    <points>pb1:79,ple:pt1</points>
+  </baseline>
+  <!-- Overwrap -->
+  <baseline name="bl_overwrap" type="straight">
+    <points>pt3:ptte,pbte:pb3</points>
+  </baseline>
+  <!-- Tab left bound -->
+  <baseline name="bl_tab_left" type="straight">
+    <point>tab_rp</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

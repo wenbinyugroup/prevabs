@@ -1,0 +1,718 @@
+2022-03-08 23:53:11 [info] prevabs start
+2022-03-08 23:53:11 [info] - reading input files
+2022-03-08 23:53:11 [info]     - reading main input file: .\test\open\I\ibeam.xml
+2022-03-08 23:53:11 [debug]     - find cross-section: ibeam
+2022-03-08 23:53:11 [debug]     - reading analysis...
+2022-03-08 23:53:11 [debug]     - finished reading analysis.
+2022-03-08 23:53:11 [debug]     - reading general...
+2022-03-08 23:53:11 [debug]     - tolerance = 1e-12
+2022-03-08 23:53:11 [debug]     - finished reading general.
+2022-03-08 23:53:11 [debug]     - finding includings...
+2022-03-08 23:53:11 [debug]     - reading geometry...
+2022-03-08 23:53:11 [debug]     - reading base line file: .\test\open\I\baselines.xml
+2022-03-08 23:53:11 [debug]       - reading line: bl_top
+2022-03-08 23:53:11 [debug]       - reading line: bl_bottom
+2022-03-08 23:53:11 [debug]       - reading line: bl_left_c
+2022-03-08 23:53:11 [debug]       - reading line: bl_right_c
+2022-03-08 23:53:11 [debug]       - reading line: bl_web
+2022-03-08 23:53:11 [debug]     - summary of base lines (before transformation)
+2022-03-08 23:53:11 [debug]       - name: bl_top
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , -1 , 0 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , 0 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 1 , 0 )
+2022-03-08 23:53:11 [debug]       - name: bl_bottom
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , -1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - name: bl_left_c
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , -1 , 0 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , 0 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]       - 4: ( 0 , -1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - name: bl_right_c
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , 1 , 0 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , 0 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]       - 4: ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - name: bl_web
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , 0.04 , -3 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 0.04 , -1 )
+2022-03-08 23:53:11 [debug]     - transforming base geometry
+2022-03-08 23:53:11 [debug]     - summary of base lines (after transformation)
+2022-03-08 23:53:11 [debug]       - name: bl_top
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , -1 , 0 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , 0 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 1 , 0 )
+2022-03-08 23:53:11 [debug]       - name: bl_bottom
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , -1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - name: bl_left_c
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , -1 , 0 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , 0 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]       - 4: ( 0 , -1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - name: bl_right_c
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , 1 , 0 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0 , 0 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]       - 4: ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]       - name: bl_web
+2022-03-08 23:53:11 [debug]       - type: straight
+2022-03-08 23:53:11 [debug]       - point: (x, y, z)
+2022-03-08 23:53:11 [debug]       - 1: ( 0 , 0.04 , -3 )
+2022-03-08 23:53:11 [debug]       - 2: ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]       - 3: ( 0 , 0.04 , -1 )
+2022-03-08 23:53:11 [debug]     - finished reading geometry.
+2022-03-08 23:53:11 [debug]     - reading materials...
+2022-03-08 23:53:11 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2022-03-08 23:53:11 [debug]         - reading material: foam
+2022-03-08 23:53:11 [debug]         - reading material: ge
+2022-03-08 23:53:11 [debug]         - reading material: iso5_1
+2022-03-08 23:53:11 [debug]         - reading material: iso5_2
+2022-03-08 23:53:11 [debug]         - reading material: iso5_3
+2022-03-08 23:53:11 [debug]         - reading material: iso5_4
+2022-03-08 23:53:11 [debug]         - reading material: iso5_5
+2022-03-08 23:53:11 [debug]         - reading material: mtr_1_iso
+2022-03-08 23:53:11 [debug]         - reading material: mtr_2_aniso
+2022-03-08 23:53:11 [debug]         - reading material: titanium
+2022-03-08 23:53:11 [debug]         - reading material: t300_5208
+2022-03-08 23:53:11 [debug]         - reading material: honeycomb
+2022-03-08 23:53:11 [debug]         - reading material: m0
+2022-03-08 23:53:11 [debug]         - reading material: m1
+2022-03-08 23:53:11 [debug]         - reading material: m2
+2022-03-08 23:53:11 [debug]         - reading lamina: la_foam
+2022-03-08 23:53:11 [debug]         - reading lamina: la_ge_025
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_1_000053
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_1_002
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_1_0005
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_2_003
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_3_0000381
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_3_0025
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_4_000051
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_4_005
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_5_0003125
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_5_001
+2022-03-08 23:53:11 [debug]         - reading lamina: la_mtr_1_iso_0001524
+2022-03-08 23:53:11 [debug]         - reading lamina: la_mtr_2_aniso_01
+2022-03-08 23:53:11 [debug]         - reading lamina: la_titanium_004
+2022-03-08 23:53:11 [debug]         - reading lamina: la_t300_5208_002
+2022-03-08 23:53:11 [debug]         - reading lamina: la_t300_5208_004
+2022-03-08 23:53:11 [debug]         - reading lamina: la_t300_5208_007
+2022-03-08 23:53:11 [debug]         - reading lamina: la_hc_1
+2022-03-08 23:53:11 [debug]         - reading lamina: la_hc_2
+2022-03-08 23:53:11 [debug]         - reading lamina: la_m1_002
+2022-03-08 23:53:11 [debug]         - reading lamina: la_m2_005
+2022-03-08 23:53:11 [info]       - reading materials file: .\test\open\I\materials.xml
+2022-03-08 23:53:11 [debug]         - reading material: iso5_1
+2022-03-08 23:53:11 [debug]         - reading material: iso5_2
+2022-03-08 23:53:11 [debug]         - reading material: iso5_3
+2022-03-08 23:53:11 [debug]         - reading material: iso5_4
+2022-03-08 23:53:11 [debug]         - reading material: iso5_5
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_1_003
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_2_005
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_3_0015
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_4_002
+2022-03-08 23:53:11 [debug]         - reading lamina: la_iso5_5_002
+2022-03-08 23:53:11 [debug]     - finished reading materials.
+2022-03-08 23:53:11 [debug]     - reading layups...
+2022-03-08 23:53:11 [debug]       - reading layup: layup_1
+2022-03-08 23:53:11 [debug]       - reading layup: layup_2
+2022-03-08 23:53:11 [debug]       - reading layup: layup_web
+2022-03-08 23:53:11 [debug]     - finished reading layups.
+2022-03-08 23:53:11 [debug]     - reading components...
+2022-03-08 23:53:11 [debug]     - reading component: top
+2022-03-08 23:53:11 [debug]     - reading component: bottom
+2022-03-08 23:53:11 [debug]     - reading component: web
+2022-03-08 23:53:11 [debug]     - finished reading components.
+2022-03-08 23:53:11 [info] - reading input files -- done
+2022-03-08 23:53:11 [info] - building the shape
+2022-03-08 23:53:11 [info]   - building the cross section, step 1
+2022-03-08 23:53:11 [info]     - building component: top
+2022-03-08 23:53:11 [debug]       - offsetting the base curve of segment: sgtop
+2022-03-08 23:53:11 [debug]       - base vertices -- base_link_to_offset_indices
+2022-03-08 23:53:11 [debug]       -   0: ( 0 , -1 , 0 ) -- 0
+2022-03-08 23:53:11 [debug]       -   1: ( 0 , 0 , 0 ) -- 1
+2022-03-08 23:53:11 [debug]       -   2: ( 0 , 1 , 0 ) -- 2
+2022-03-08 23:53:11 [debug]       - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+2022-03-08 23:53:11 [debug]       - offset line: ( 0 , -1 , 0.11 ) -> ( 0 , 1 , 0.11 )
+2022-03-08 23:53:11 [debug]       - making segment end: sgtop 0
+2022-03-08 23:53:11 [debug]         - making segment end: sgtop 1
+2022-03-08 23:53:11 [debug]           - building the overall shape of segment: sgtop
+2022-03-08 23:53:11 [debug]           - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+2022-03-08 23:53:11 [debug]           - creating half edges for the base curve
+2022-03-08 23:53:11 [debug]           - creating half edges for the offset curve
+2022-03-08 23:53:11 [debug]           - creating the half edge loop and face
+2022-03-08 23:53:11 [info]         - creating gmsh vertices
+2022-03-08 23:53:11 [info]         - creating gmsh edges
+2022-03-08 23:53:11 [info]           - writing gmsh .geo file: .\test\open\I\ibeam_debug_1.geo
+2022-03-08 23:53:11 [info]           - writing gmsh .opt file: .\test\open\I\ibeam_debug.opt
+2022-03-08 23:53:11 [info]         - building component: bottom
+2022-03-08 23:53:11 [debug]           - offsetting the base curve of segment: sgbottom
+2022-03-08 23:53:11 [debug]           - base vertices -- base_link_to_offset_indices
+2022-03-08 23:53:11 [debug]           -   0: ( 0 , -1.5 , -3 ) -- 0
+2022-03-08 23:53:11 [debug]           -   1: ( 0 , 0 , -3 ) -- 1
+2022-03-08 23:53:11 [debug]           -   2: ( 0 , 1.5 , -3 ) -- 2
+2022-03-08 23:53:11 [debug]           - base line: ( 0 , -1.5 , -3 ) -> ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]           - offset line: ( 0 , -1.5 , -2.935 ) -> ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:11 [debug]           - making segment end: sgbottom 0
+2022-03-08 23:53:11 [debug]             - making segment end: sgbottom 1
+2022-03-08 23:53:11 [debug]               - building the overall shape of segment: sgbottom
+2022-03-08 23:53:11 [debug]               - base line: ( 0 , -1.5 , -3 ) -> ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]               - creating half edges for the base curve
+2022-03-08 23:53:11 [debug]               - creating half edges for the offset curve
+2022-03-08 23:53:11 [debug]               - creating the half edge loop and face
+2022-03-08 23:53:11 [info]             - creating gmsh vertices
+2022-03-08 23:53:11 [info]             - creating gmsh edges
+2022-03-08 23:53:11 [info]               - writing gmsh .geo file: .\test\open\I\ibeam_debug_2.geo
+2022-03-08 23:53:11 [info]             - building component: web
+2022-03-08 23:53:11 [debug]               - offsetting the base curve of segment: sgm_1_1
+2022-03-08 23:53:11 [debug]               - base line: ( 0 , 0.04 , -3 ) -> ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]               - offset line: ( 0 , -0.04 , -3 ) -> ( 0 , -0.04 , -2 )
+2022-03-08 23:53:11 [debug]               - offsetting the base curve of segment: sgm_1_2
+2022-03-08 23:53:11 [debug]               - base line: ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 )
+2022-03-08 23:53:11 [debug]               - offset line: ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 )
+2022-03-08 23:53:11 [debug]               - joining segments ends: sgm_1_1 1, sgm_1_2 0
+2022-03-08 23:53:11 [debug]                 - in function: getIntersectionLocation
+2022-03-08 23:53:11 [debug]                 - ls_i = 0, u = 1.000000, v1 = ( 0 , -0.04 , -3 ), v2 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:11 [debug]               -   ls_i1 = 1
+2022-03-08 23:53:11 [debug]               -   intersection vertex for sgm_1_1: ( 0 , -0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - in function: getIntersectionLocation
+2022-03-08 23:53:11 [debug]                 - ls_i = 0, u = -0.000000, v1 = ( 0 , -0.04 , -2 ), v2 = ( 0 , -0.04 , -1 )
+2022-03-08 23:53:11 [debug]               -   ls_i2 = 0
+2022-03-08 23:53:11 [debug]               -   intersection vertex for sgm_1_2: ( 0 , -0.04 , -2 )
+2022-03-08 23:53:11 [debug]               -   base -- offset index pairs of segment: sgm_1_1
+2022-03-08 23:53:11 [debug]               -   0 : ( 0 , 0.04 , -3 ) -- 0 : ( 0 , -0.04 , -3 )
+2022-03-08 23:53:11 [debug]               -   1 : ( 0 , 0.04 , -2 ) -- 1 : ( 0 , -0.04 , -2 )
+2022-03-08 23:53:11 [debug]               -   base -- offset index pairs of segment: sgm_1_2
+2022-03-08 23:53:11 [debug]               -   0 : ( 0 , 0.04 , -2 ) -- 0 : ( 0 , -0.04 , -2 )
+2022-03-08 23:53:11 [debug]               -   1 : ( 0 , 0.04 , -1 ) -- 1 : ( 0 , -0.04 , -1 )
+2022-03-08 23:53:11 [debug]               - making segment end: sgm_1_1 0
+2022-03-08 23:53:11 [debug]               - ref vertex: ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]               - step 1: find the outer half edge loop
+2022-03-08 23:53:11 [debug]               - step 2: find all inner half edge loops
+2022-03-08 23:53:11 [debug]               - found half edge loops
+2022-03-08 23:53:11 [debug] direction: inner
+2022-03-08 23:53:11 [debug] keep: no
+2022-03-08 23:53:11 [debug] face: nullptr
+2022-03-08 23:53:11 [debug] half edges:
+2022-03-08 23:53:11 [debug] ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:11 [debug] ( 0 , -1.5 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:11 [debug] ( 0 , 0 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:11 [debug] ( 0 , 1.5 , -2.935 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: nullptr
+2022-03-08 23:53:11 [debug] ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
+2022-03-08 23:53:11 [debug] ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr
+2022-03-08 23:53:11 [debug] adjacent loop:nullptr
+2022-03-08 23:53:11 [debug]               - step 3: calculate intersections
+2022-03-08 23:53:11 [debug]               - step 3.1: for the base curve
+2022-03-08 23:53:11 [debug]                 - in function: findCurvesIntersection
+2022-03-08 23:53:11 [debug]                 - ----------
+2022-03-08 23:53:11 [debug]                 - tmp_ls: ( 0 , -1.5 , -3 ) -- ( 0 , -1.5 , -2.935 )
+2022-03-08 23:53:11 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:11 [debug]                 - ----------
+2022-03-08 23:53:11 [debug]                 - tmp_ls: ( 0 , -1.5 , -2.935 ) -- ( 0 , 0 , -2.935 )
+2022-03-08 23:53:11 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:11 [debug]                 - 0 -- 0.065000 | 0 -- 1.026667
+2022-03-08 23:53:11 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:11 [debug]                   - ls_i = 0, u = 0.065000, v1 = ( 0 , 0.04 , -3 ), v2 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - ls_i = 0
+2022-03-08 23:53:11 [debug]                 - tmp_c_u = 0.065000
+2022-03-08 23:53:11 [debug]                 - tmp_t_u = 1.026667
+2022-03-08 23:53:11 [debug]                 - v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , 0 , -2.935 )
+2022-03-08 23:53:11 [debug]                 - u1 = -inf
+2022-03-08 23:53:11 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:11 [debug]                 - end = 0
+2022-03-08 23:53:11 [debug]                 - tol = 0.000000
+2022-03-08 23:53:11 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:11 [debug]                 - ----------
+2022-03-08 23:53:11 [debug]                 - tmp_ls: ( 0 , 0 , -2.935 ) -- ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:11 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:11 [debug]                 - 0 -- 0.065000 | 0 -- 0.026667
+2022-03-08 23:53:11 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:11 [debug]                   - ls_i = 0, u = 0.065000, v1 = ( 0 , 0.04 , -3 ), v2 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - ls_i = 0
+2022-03-08 23:53:11 [debug]                 - tmp_c_u = 0.065000
+2022-03-08 23:53:11 [debug]                 - tmp_t_u = 0.026667
+2022-03-08 23:53:11 [debug]                 - v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:11 [debug]                 - u1 = -inf
+2022-03-08 23:53:11 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:11 [debug]                 - end = 0
+2022-03-08 23:53:11 [debug]                 - tol = 0.000000
+2022-03-08 23:53:11 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:11 [debug]                 - ----------
+2022-03-08 23:53:11 [debug]                 - tmp_ls: ( 0 , 1.5 , -2.935 ) -- ( 0 , 1.5 , -3 )
+2022-03-08 23:53:11 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:11 [debug]                 - ----------
+2022-03-08 23:53:11 [debug]                 - tmp_ls: ( 0 , 1.5 , -3 ) -- ( 0 , 0 , -3 )
+2022-03-08 23:53:11 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:11 [debug]                 - 0 -- -0.000000 | 0 -- 0.973333
+2022-03-08 23:53:11 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:11 [debug]                   - ls_i = 0, u = -0.000000, v1 = ( 0 , 0.04 , -3 ), v2 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - ls_i = 0
+2022-03-08 23:53:11 [debug]                 - tmp_c_u = -0.000000
+2022-03-08 23:53:11 [debug]                 - tmp_t_u = 0.973333
+2022-03-08 23:53:11 [debug]                 - v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:11 [debug]                 - v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )
+2022-03-08 23:53:12 [debug]                 - u1 = 0.065000
+2022-03-08 23:53:12 [debug]                 - u2 = 0.026667
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0 , -3 ) -- ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- 0.000000 | 0 -- -0.026667
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = 0.000000, v1 = ( 0 , 0.04 , -3 ), v2 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = 0.000000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = -0.026667
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - u1 = 0.065000
+2022-03-08 23:53:12 [debug]                 - u2 = 0.026667
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]               -   u1 = 0.065000
+2022-03-08 23:53:12 [debug]               -   u2 = 0.026667
+2022-03-08 23:53:12 [debug]               -   v_new = ( 0 , 0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]               -   ls_i = 0
+2022-03-08 23:53:12 [debug]               - step 3.2: for the offset curve
+2022-03-08 23:53:12 [debug]                 - in function: findCurvesIntersection
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , -1.5 , -3 ) -- ( 0 , -1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , -1.5 , -2.935 ) -- ( 0 , 0 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- 0.065000 | 0 -- 0.973333
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = 0.065000, v1 = ( 0 , -0.04 , -3 ), v2 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = 0.065000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 0.973333
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , 0 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = -inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.026667
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0 , -2.935 ) -- ( 0 , 0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- 0.065000 | 0 -- -1.000000
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = 0.065000, v1 = ( 0 , -0.04 , -3 ), v2 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = 0.065000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = -1.000000
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = 0.065000
+2022-03-08 23:53:12 [debug]                 - u2 = 0.973333
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0.04 , -2.935 ) -- ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- 0.065000 | 0 -- -0.054795
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = 0.065000, v1 = ( 0 , -0.04 , -3 ), v2 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = 0.065000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = -0.054795
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0.04 , -2.935 ) -> v22 = ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = 0.065000
+2022-03-08 23:53:12 [debug]                 - u2 = 0.973333
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 1.5 , -2.935 ) -- ( 0 , 1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 1.5 , -3 ) -- ( 0 , 0 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -0.000000 | 0 -- 1.026667
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -0.000000, v1 = ( 0 , -0.04 , -3 ), v2 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -0.000000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 1.026667
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )
+2022-03-08 23:53:12 [debug]                 - u1 = 0.065000
+2022-03-08 23:53:12 [debug]                 - u2 = 0.973333
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0 , -3 ) -- ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -0.000000 | 0 -- 0.026667
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -0.000000, v1 = ( 0 , -0.04 , -3 ), v2 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -0.000000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 0.026667
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - u1 = 0.065000
+2022-03-08 23:53:12 [debug]                 - u2 = 0.973333
+2022-03-08 23:53:12 [debug]                 - end = 0
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]               - he: ( 0 , -1.5 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug]               -   u1 = 0.065000
+2022-03-08 23:53:12 [debug]               -   u2 = 0.973333
+2022-03-08 23:53:12 [debug]               -   v_new = ( 0 , -0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]               -   ls_i = 0
+2022-03-08 23:53:12 [debug]               - adjust base-offset linking indices
+2022-03-08 23:53:12 [debug]               -   nv_base = 2
+2022-03-08 23:53:12 [debug]               -   nv_offset = 2
+2022-03-08 23:53:12 [debug]               -   nv_diff = 0
+2022-03-08 23:53:12 [debug]               - base -- offset index pairs
+2022-03-08 23:53:12 [debug]               -   0 : ( 0 , 0.04 , -2.935 ) -- 0 : ( 0 , -0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]               -   1 : ( 0 , 0.04 , -2 ) -- 1 : ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]               - making segment end: sgm_1_2 1
+2022-03-08 23:53:12 [debug]               - ref vertex: ( 0 , 0.04 , -2 )
+2022-03-08 23:53:12 [debug]               - step 1: find the outer half edge loop
+2022-03-08 23:53:12 [debug]               - step 2: find all inner half edge loops
+2022-03-08 23:53:12 [debug]               - found half edge loops
+2022-03-08 23:53:12 [debug] direction: inner
+2022-03-08 23:53:12 [debug] keep: no
+2022-03-08 23:53:12 [debug] face: nullptr
+2022-03-08 23:53:12 [debug] half edges:
+2022-03-08 23:53:12 [debug] ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , 1.5 , -2.935 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr
+2022-03-08 23:53:12 [debug] adjacent loop:nullptr
+2022-03-08 23:53:12 [debug]               - step 3: calculate intersections
+2022-03-08 23:53:12 [debug]               - step 3.1: for the base curve
+2022-03-08 23:53:12 [debug]                 - in function: findCurvesIntersection
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , -1.5 , -3 ) -- ( 0 , -1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , -1.5 , -2.935 ) -- ( 0 , -0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -0.935000 | 0 -- 1.054795
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -0.935000, v1 = ( 0 , 0.04 , -2 ), v2 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -0.935000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 1.054795
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , -0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - end = 1
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , -0.04 , -2.935 ) -- ( 0 , 0 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -0.935000 | 0 -- 2.000000
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -0.935000, v1 = ( 0 , 0.04 , -2 ), v2 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -0.935000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 2.000000
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , -0.04 , -2.935 ) -> v22 = ( 0 , 0 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - end = 1
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0 , -2.935 ) -- ( 0 , 0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -0.935000 | 0 -- 1.000000
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -0.935000, v1 = ( 0 , 0.04 , -2 ), v2 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -0.935000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 1.000000
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - end = 1
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0.04 , -2.935 ) -- ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -0.935000 | 0 -- 0.000000
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -0.935000, v1 = ( 0 , 0.04 , -2 ), v2 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -0.935000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 0.000000
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0.04 , -2.935 ) -> v22 = ( 0 , 1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - u1 = inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - end = 1
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 1.5 , -2.935 ) -- ( 0 , 1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 1.5 , -3 ) -- ( 0 , 0 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -1.000000 | 0 -- 0.973333
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -1.000000, v1 = ( 0 , 0.04 , -2 ), v2 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -1.000000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = 0.973333
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )
+2022-03-08 23:53:12 [debug]                 - u1 = inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - end = 1
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]                 - ----------
+2022-03-08 23:53:12 [debug]                 - tmp_ls: ( 0 , 0 , -3 ) -- ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - c_is -- c_us | t_is -- t_us
+2022-03-08 23:53:12 [debug]                 - 0 -- -1.000000 | 0 -- -0.026667
+2022-03-08 23:53:12 [debug]                   - in function: getIntersectionLocation
+2022-03-08 23:53:12 [debug]                   - ls_i = 0, u = -1.000000, v1 = ( 0 , 0.04 , -2 ), v2 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - ls_i = 0
+2022-03-08 23:53:12 [debug]                 - tmp_c_u = -1.000000
+2022-03-08 23:53:12 [debug]                 - tmp_t_u = -0.026667
+2022-03-08 23:53:12 [debug]                 - v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                 - u1 = inf
+2022-03-08 23:53:12 [debug]                 - u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - end = 1
+2022-03-08 23:53:12 [debug]                 - tol = 0.000000
+2022-03-08 23:53:12 [debug]                 - vertices.size() = 2
+2022-03-08 23:53:12 [debug]               -   u1 = inf
+2022-03-08 23:53:12 [debug]               -   u2 = 0.000000
+2022-03-08 23:53:12 [debug]                 - building the overall shape of segment: sgm_1_1
+2022-03-08 23:53:12 [debug]                 - base line: ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - creating half edges for the base curve
+2022-03-08 23:53:12 [debug]                 - creating half edges for the offset curve
+2022-03-08 23:53:12 [debug]                 - creating the half edge loop and face
+2022-03-08 23:53:12 [info]               - creating gmsh vertices
+2022-03-08 23:53:12 [info]               - creating gmsh edges
+2022-03-08 23:53:12 [info]                 - writing gmsh .geo file: .\test\open\I\ibeam_debug_3.geo
+2022-03-08 23:53:12 [debug]                 - building the overall shape of segment: sgm_1_2
+2022-03-08 23:53:12 [debug]                 - base line: ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 )
+2022-03-08 23:53:12 [debug]                 - creating half edges for the base curve
+2022-03-08 23:53:12 [debug]                 - creating half edges for the offset curve
+2022-03-08 23:53:12 [debug]                 - creating the half edge loop and face
+2022-03-08 23:53:12 [info]               - creating gmsh vertices
+2022-03-08 23:53:12 [info]               - creating gmsh edges
+2022-03-08 23:53:12 [info]                 - writing gmsh .geo file: .\test\open\I\ibeam_debug_4.geo
+2022-03-08 23:53:12 [info]             - creating gmsh vertices
+2022-03-08 23:53:12 [info]             - creating gmsh edges
+2022-03-08 23:53:12 [info]               - writing gmsh .geo file: .\test\open\I\ibeam_debug_5.geo
+2022-03-08 23:53:12 [info]             - building the cross section, step 2
+2022-03-08 23:53:12 [info]               - building component details: top
+2022-03-08 23:53:12 [debug]                 - building areas of segment: sgtop
+2022-03-08 23:53:12 [debug]                 - 1. creating the beginning bound of the first area
+2022-03-08 23:53:12 [debug]                   - open segment
+2022-03-08 23:53:12 [debug]                   - first vertex of the base: ( 0 , -1 , 0 )
+2022-03-08 23:53:12 [debug]                   - first vertex of the offset: ( 0 , -1 , 0.11 )
+2022-03-08 23:53:12 [debug]                     - layer 1
+2022-03-08 23:53:12 [debug]                     - cumu_thk = 0.06
+2022-03-08 23:53:12 [debug]                     - ls_offset: ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 )
+2022-03-08 23:53:12 [debug]                       - 
+2022-03-08 23:53:12 [debug]                       - he_tmp: ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgtop_face
+2022-03-08 23:53:12 [debug]                       - u1_tmp = 0.454545
+2022-03-08 23:53:12 [debug]                       -   case 3: intersect current edge
+2022-03-08 23:53:12 [debug]                       -   v_layer: ( 0 , -1 , 0.06 )
+2022-03-08 23:53:12 [debug]                     - v_layer: ( 0 , -1 , 0.06 )
+2022-03-08 23:53:12 [debug]                 - 2. creating areas
+2022-03-08 23:53:12 [debug]                   - area 1
+2022-03-08 23:53:12 [debug]                   -   base vertex: ( 0 , 0 , 0 )
+2022-03-08 23:53:12 [debug]                   -   offset vertex: ( 0 , 0 , 0.11 )
+2022-03-08 23:53:12 [debug]                 - 3. creating the last area
+2022-03-08 23:53:12 [debug]                     - layer 1
+2022-03-08 23:53:12 [debug]                     - ls_offset: ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 )
+2022-03-08 23:53:12 [debug]                       - 
+2022-03-08 23:53:12 [debug]                       - he_tmp: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: sgtop_area_2
+2022-03-08 23:53:12 [debug]                       - u1_tmp = 0.545455
+2022-03-08 23:53:12 [debug]                       -   case 5: intersect current edge
+2022-03-08 23:53:12 [debug]                     - v_layer: ( 0 , 1 , 0.06 )
+2022-03-08 23:53:12 [debug]                   - building layers for area: sgtop_area_1
+2022-03-08 23:53:12 [debug]                   - building layers for area: sgtop_area_2
+2022-03-08 23:53:12 [info]               - creating gmsh vertices
+2022-03-08 23:53:12 [info]               - creating gmsh edges
+2022-03-08 23:53:12 [info]                 - writing gmsh .geo file: .\test\open\I\ibeam_debug_6.geo
+2022-03-08 23:53:12 [info]               - building component details: bottom
+2022-03-08 23:53:12 [debug]                 - building areas of segment: sgbottom
+2022-03-08 23:53:12 [debug]                 - 1. creating the beginning bound of the first area
+2022-03-08 23:53:12 [debug]                   - open segment
+2022-03-08 23:53:12 [debug]                   - first vertex of the base: ( 0 , -1.5 , -3 )
+2022-03-08 23:53:12 [debug]                   - first vertex of the offset: ( 0 , -1.5 , -2.935 )
+2022-03-08 23:53:12 [debug]                     - layer 1
+2022-03-08 23:53:12 [debug]                     - cumu_thk = 0.045
+2022-03-08 23:53:12 [debug]                     - ls_offset: ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 )
+2022-03-08 23:53:12 [debug]                       - 
+2022-03-08 23:53:12 [debug]                       - he_tmp: ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgbottom_face
+2022-03-08 23:53:12 [debug]                       - u1_tmp = 0.307692
+2022-03-08 23:53:12 [debug]                       -   case 3: intersect current edge
+2022-03-08 23:53:12 [debug]                       -   v_layer: ( 0 , -1.5 , -2.955 )
+2022-03-08 23:53:12 [debug]                     - v_layer: ( 0 , -1.5 , -2.955 )
+2022-03-08 23:53:12 [debug]                 - 2. creating areas
+2022-03-08 23:53:12 [debug]                   - area 1
+2022-03-08 23:53:12 [debug]                   -   base vertex: ( 0 , 0 , -3 )
+2022-03-08 23:53:12 [debug]                   -   offset vertex: ( 0 , 0 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - 3. creating the last area
+2022-03-08 23:53:12 [debug]                     - layer 1
+2022-03-08 23:53:12 [debug]                     - ls_offset: ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 )
+2022-03-08 23:53:12 [debug]                       - 
+2022-03-08 23:53:12 [debug]                       - he_tmp: ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: temp | face: sgbottom_area_2
+2022-03-08 23:53:12 [debug]                       - u1_tmp = 0.692308
+2022-03-08 23:53:12 [debug]                       -   case 5: intersect current edge
+2022-03-08 23:53:12 [debug]                     - v_layer: ( 0 , 1.5 , -2.955 )
+2022-03-08 23:53:12 [debug]                   - building layers for area: sgbottom_area_1
+2022-03-08 23:53:12 [debug]                   - building layers for area: sgbottom_area_2
+2022-03-08 23:53:12 [info]               - creating gmsh vertices
+2022-03-08 23:53:12 [info]               - creating gmsh edges
+2022-03-08 23:53:12 [info]                 - writing gmsh .geo file: .\test\open\I\ibeam_debug_7.geo
+2022-03-08 23:53:12 [info]               - building component details: web
+2022-03-08 23:53:12 [debug]                 - building areas of segment: sgm_1_1
+2022-03-08 23:53:12 [debug]                 - 1. creating the beginning bound of the first area
+2022-03-08 23:53:12 [debug]                   - open segment
+2022-03-08 23:53:12 [debug]                   - first vertex of the base: ( 0 , 0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                   - first vertex of the offset: ( 0 , -0.04 , -2.935 )
+2022-03-08 23:53:12 [debug]                 - 2. creating areas
+2022-03-08 23:53:12 [debug]                 - 3. creating the last area
+2022-03-08 23:53:12 [debug]                   - building layers for area: sgm_1_1_area_1
+2022-03-08 23:53:12 [info]               - creating gmsh vertices
+2022-03-08 23:53:12 [info]               - creating gmsh edges
+2022-03-08 23:53:12 [info]                 - writing gmsh .geo file: .\test\open\I\ibeam_debug_8.geo
+2022-03-08 23:53:12 [debug]                 - building areas of segment: sgm_1_2
+2022-03-08 23:53:12 [debug]                 - 1. creating the beginning bound of the first area
+2022-03-08 23:53:12 [debug]                   - open segment
+2022-03-08 23:53:12 [debug]                   - first vertex of the base: ( 0 , 0.04 , -2 )
+2022-03-08 23:53:12 [debug]                   - first vertex of the offset: ( 0 , -0.04 , -2 )
+2022-03-08 23:53:12 [debug]                 - 2. creating areas
+2022-03-08 23:53:12 [debug]                 - 3. creating the last area
+2022-03-08 23:53:12 [debug]                   - building layers for area: sgm_1_2_area_1
+2022-03-08 23:53:12 [info]               - creating gmsh vertices
+2022-03-08 23:53:12 [info]               - creating gmsh edges
+2022-03-08 23:53:12 [info]                 - writing gmsh .geo file: .\test\open\I\ibeam_debug_9.geo
+2022-03-08 23:53:12 [info]           - building the shape -- done
+2022-03-08 23:53:12 [info]           - modeling in Gmsh
+2022-03-08 23:53:12 [info]             - creating gmsh vertices
+2022-03-08 23:53:12 [info]             - creating gmsh edges
+2022-03-08 23:53:12 [info]             - creating gmsh face
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: background
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgm_1_1_area_1_layer_1
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 5, material: iso5_5, theta_3 = 0.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgm_1_2_area_1_layer_1
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 5, material: iso5_5, theta_3 = 0.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgtop_area_1_layer_2
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 2, material: iso5_2, theta_3 = 0.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgtop_area_1_layer_1
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 1, material: iso5_1, theta_3 = 90.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgtop_area_2_layer_2
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 2, material: iso5_2, theta_3 = 0.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgtop_area_2_layer_1
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 1, material: iso5_1, theta_3 = 90.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgbottom_area_1_layer_2
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 4, material: iso5_4, theta_3 = 90.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgbottom_area_1_layer_1
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 3, material: iso5_3, theta_3 = 0.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgbottom_area_2_layer_2
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 4, material: iso5_4, theta_3 = 90.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [debug]             - 
+2022-03-08 23:53:12 [debug]             -   face: sgbottom_area_2_layer_1
+2022-03-08 23:53:12 [debug]             -   adding outer loop
+2022-03-08 23:53:12 [debug]             -   adding inner loops
+2022-03-08 23:53:12 [debug]             -   adding physical entity
+2022-03-08 23:53:12 [debug]             -   id: 3, material: iso5_3, theta_3 = 0.000000
+2022-03-08 23:53:12 [debug]             -   adding local mesh size
+2022-03-08 23:53:12 [info]               - writing gmsh .geo file: .\test\open\I\ibeam_debug_10.geo
+2022-03-08 23:53:12 [info]             - meshing
+2022-03-08 23:53:12 [info]           - modeling in Gmsh -- done
+2022-03-08 23:53:12 [info]           - writing outputs
+2022-03-08 23:53:12 [info]             - writing sg file: .\test\open\I\ibeam.sg
+2022-03-08 23:53:12 [info]           - writing outputs -- done
+2022-03-08 23:53:12 [info] prevabs finished
+2022-03-08 23:53:12 [info] total running time: 1.09 sec

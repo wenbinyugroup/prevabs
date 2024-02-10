@@ -1,0 +1,19 @@
+
+========================================
+
+  PreVABS version 1.1
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: spar
+    - building component: cap
+  
+  - building the cross section, step 2
+    - building component: spar

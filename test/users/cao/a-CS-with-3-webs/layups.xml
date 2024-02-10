@@ -1,0 +1,69 @@
+<layups>
+  <layup name="layup1">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup2">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Balsa">0:50</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup3">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Cud">0:100</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup4">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Balsa">0:50</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup5">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Gud">0:100</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup6">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Balsa">0:50</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup7">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Gud">0:100</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup8">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Balsa">0:50</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup9">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Gud">0:200</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup10">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Balsa">0:50</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup11">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup_web1">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Pvc">0:80</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup_web2">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Pvc">0:80</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+  <layup name="layup_web3">
+    <layer lamina="Biax">0:18</layer>
+    <layer lamina="Biax">0:18</layer>
+  </layup>
+</layups>

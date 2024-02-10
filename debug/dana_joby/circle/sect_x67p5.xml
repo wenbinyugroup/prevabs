@@ -1,0 +1,100 @@
+<cross_section name="sect_x67p5" format="1">
+  <!-- =========================================================== -->
+  <!-- Include Statements -->
+  <!-- =========================================================== -->
+  <include>
+    <material>material</material>
+  </include>
+  <!-- =========================================================== -->
+  <!-- Analysis Model Definition, 0=Classical 1=Timoshenko) -->
+  <!-- =========================================================== -->
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <!-- =========================================================== -->
+  <!-- General Geometry and Mesh Settings (Optional) -->
+  <!-- =========================================================== -->
+  <general>
+    <translate>0.1 0.1</translate>
+    <scale>1.0</scale>
+    <rotate>1.0</rotate>
+
+
+
+
+    <!-- MODIFIED -->
+    <!-- Added a new input controlling the tolerance used by geometric computation -->
+    <tolerance>1e-10</tolerance>
+    <!-- MODIFIED END -->
+
+
+
+
+    <!-- <mesh_size>0.01</mesh_size> -->
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <!-- =========================================================== -->
+  <!-- Basepoints and Baselines -->
+  <!-- =========================================================== -->
+  <baselines>
+    <basepoints></basepoints>
+    <point name="center">0 0</point>
+    <baseline name="bl_sleeve" type="circle">
+      <center>center</center>
+      <!-- <radius>10</radius> -->
+      <radius>31.75</radius>
+    </baseline>
+  </baselines>
+  <!-- =========================================================== -->
+  <!-- Layup Definition -->
+  <!-- =========================================================== -->
+  <layups>
+    <layup name="layup_1_al">
+      <layer lamina="la_ti6al4v_1">0</layer>
+    </layup>
+    <!-- ========== -->
+    <layup name="layup_8ply_fab">
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+    </layup>
+    <!-- ========== -->
+    <layup name="layup_26ply_hyb">
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t1100_uni">0:6</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t1100_uni">0:6</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t1100_uni">0:6</layer>
+      <layer lamina="la_t800_twill">45</layer>
+      <layer lamina="la_t800_twill">0</layer>
+      <layer lamina="la_t800_twill">45</layer>
+    </layup>
+    <!-- ========== -->
+  </layups>
+  <!-- =========================================================== -->
+  <!-- Component Definition via Segments (Baseline + Layup) -->
+  <!-- =========================================================== -->
+  <component name="cmp_sleeve">
+    <segments name="sg_sleeve">
+      <baseline>bl_sleeve</baseline>
+      <!-- <layup_side>right</layup_side> -->
+      <layup>layup_1_al</layup>
+      <layup begin="-0.1" end="0.1">layup_8ply_fab</layup>
+      <layup begin="0.1" end="0.4">layup_26ply_hyb</layup>
+      <layup begin="0.4" end="0.6">layup_8ply_fab</layup>
+      <layup begin="0.6" end="0.9">layup_26ply_hyb</layup>
+    </segments>
+  </component>
+  <!-- =========================================================== -->
+  <!-- The End -->
+  <!-- =========================================================== -->
+</cross_section>

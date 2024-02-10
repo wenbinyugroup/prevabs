@@ -1,0 +1,70 @@
+<cross_section name="ah64_sec1in">
+  <include>
+    <baseline>ah64_sec1in_baselines</baseline>
+    <!-- <material>materials</material> -->
+    <layup>ah64_sec1in_layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>0.4725</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="main_box" style="2">
+    <segment name="sgm_spar_cap_top">
+      <baseline>bl_box_top_spar_cap</baseline>
+      <layup direction="right">layup_spar_cap</layup>
+    </segment>
+    <segment name="sgm_spar_main_top">
+      <baseline>bl_box_top_spar_main</baseline>
+      <layup direction="right">layup_spar_main</layup>
+    </segment>
+    <segment>
+      <baseline>bl_box_web_main</baseline>
+      <layup direction="right">layup_web_main</layup>
+    </segment>
+    <segment name="sgm_spar_main_bottom">
+      <baseline>bl_box_bottom_spar_main</baseline>
+      <layup direction="right">layup_spar_main</layup>
+    </segment>
+    <segment name="sgm_spar_cap_bottom">
+      <baseline>bl_box_bottom_spar_cap</baseline>
+      <layup direction="right">layup_spar_cap</layup>
+    </segment>
+    <segment>
+      <baseline>bl_box_web_aux</baseline>
+      <layup direction="right">layup_web_aux</layup>
+    </segment>
+    <joint style="1">sgm_spar_cap_top,sgm_spar_main_top</joint>
+    <joint style="1">sgm_spar_cap_bottom,sgm_spar_main_bottom</joint>
+  </component>
+  <component name="cap" depend="main_box">
+    <segment>
+      <baseline>bl_cap</baseline>
+      <layup direction="right">layup_cap</layup>
+    </segment>
+  </component>
+  <component name="overwrap" depend="main_box">
+    <segment>
+      <baseline>bl_overwrap</baseline>
+      <layup direction="right">layup_overwrap</layup>
+    </segment>
+  </component>
+  <component name="ballast" type="fill" depend="main_box,cap">
+    <location>ballast_rp</location>
+    <material>rohacell_70</material>
+  </component>
+  <component name="te_tab" type="fill" depend="main_box,overwrap">
+    <baseline fillside="right">bl_tab_left</baseline>
+    <material>graphite_fab</material>
+  </component>
+  <component name="te_till" type="fill" depend="main_box,overwrap,te_tab">
+    <location>te_fill_rp</location>
+    <material>plascore_pn2-3/16ox3.0</material>
+  </component>
+</cross_section>

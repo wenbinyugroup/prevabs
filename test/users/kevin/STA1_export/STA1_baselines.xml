@@ -1,0 +1,9 @@
+<baselines>
+  <basepoints>
+    <point name="pt_ct">0 0</point>
+  </basepoints>
+  <baseline name="bl_circle" type="circle">
+    <center>pt_ct</center>
+    <radius>0.5</radius>
+  </baseline>
+</baselines>

@@ -1,0 +1,5 @@
+<layups>
+  <layup name="layup1">
+    <layer lamina="la_ge_025">0:2</layer>
+  </layup>
+</layups>

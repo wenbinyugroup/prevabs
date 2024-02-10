@@ -1,0 +1,32 @@
+<cross_section name="uh60a_section" type="airfoil" format="1">
+  <include>
+    <!-- <baseline>uh60a_baseline</baseline> -->
+    <material>uh60a_material</material>
+    <!-- <layup>uh60a_layup</layup> -->
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>0.25 0</translate>
+    <scale>0.4725</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.002</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+
+  <topology name="airfoil_box">
+    <airfoil>sc1095</airfoil>
+
+    <material_assignment>
+    </material_assignment>
+  </topology>
+
+
+
+</cross_section>

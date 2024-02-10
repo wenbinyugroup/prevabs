@@ -1,0 +1,47 @@
+<cross_section name="i">
+  <include>
+    <baseline>baselines</baseline>
+    <!-- <material>materials</material> -->
+    <layup>layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.02</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="top">
+    <segment>
+      <baseline>bl_top</baseline>
+      <layup>layup_1</layup>
+    </segment>
+  </component>
+  <component name="bottom">
+    <segment>
+      <baseline>bl_bottom</baseline>
+      <layup direction="right">layup_2</layup>
+    </segment>
+  </component>
+  <component name="c_left">
+    <segment>
+      <baseline>bl_left_c</baseline>
+      <layup direction="right">layup_web</layup>
+    </segment>
+  </component>
+  <component name="c_right">
+    <segment>
+      <baseline>bl_right_c</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+  <!-- <component name="web" depend="top,bottom">
+    <segment>
+      <baseline>blweb</baseline>
+      <layup>layupweb</layup>
+    </segment>
+  </component> -->
+</cross_section>

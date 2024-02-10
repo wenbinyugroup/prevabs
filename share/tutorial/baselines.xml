@@ -1,0 +1,22 @@
+<baselines>
+  <basepoints>
+    <point name="p0">0  0</point>
+    <point name="p1">2  1</point>
+    <point name="p2">-2  1</point>
+    <point name="p3">-2  -1</point>
+    <point name="p4">2  -1</point>
+    <point name="p5">1  0</point>
+    <point name="p6">-1  0</point>
+  </basepoints>
+  <baseline name="line1" type="straight">
+    <points>p1,p2,p3,p4,p1</points>
+  </baseline>
+  <baseline name="line2" type="straight">
+    <point>p5</point>
+    <angle>100</angle>
+  </baseline>
+  <baseline name="line3" type="straight">
+    <point>p6</point>
+    <angle>80</angle>
+  </baseline>
+</baselines>

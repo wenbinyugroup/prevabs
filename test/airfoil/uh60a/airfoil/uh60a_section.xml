@@ -1,0 +1,411 @@
+<cross_section name="uh60a_section" format="1">
+  <include>
+    <!-- <baseline>uh60a_baseline</baseline> -->
+    <material>uh60a_material</material>
+    <!-- <layup>uh60a_layup</layup> -->
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0 0</translate>
+    <scale>1.73</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <basepoints>
+      <include>basepoints</include>
+      <point name="pballast"> 0.06 0.0 </point>
+      <point name="web_aux"> 0.129098072 0.0 </point>
+      <point name="web_main"> 0.393342223 0.0 </point>
+      <point name="tail_fill">0.92067993 0</point>
+      <point name="p_nsm_c">0.02  0</point>
+    </basepoints>
+    <baseline name="bsl_nsm" type="circle">
+      <center>p_nsm_c</center>
+      <radius>0.006</radius>
+      <discrete by="angle">9</discrete>
+    </baseline>
+    <baseline name="bl_box_top" type="straight">
+      <points>pw2t:pw1t</points>
+    </baseline> 
+    <baseline name="bl_box_bot" type="straight">
+      <points>pw1b:pw2b</points>
+    </baseline> 
+    <baseline name="bl_web_l" type="straight">
+      <points>pw2b,pw2t</points>
+      <!-- <point>web_aux</point>
+      <angle>89.116</angle> -->
+    </baseline>
+    <baseline name="bl_web_t" type="straight">
+      <points>pw1t,pw1b</points>
+      <!-- <point>web_main</point>
+      <angle>89.23744652</angle>   -->
+    </baseline>
+    <baseline name="bl_cap" type="straight">
+      <points>psb8:165,ptle:pst8</points>
+      <!-- <points>pw2b:165,ptle:pw2t</points> -->
+    </baseline>
+    <baseline name="bl_cap_top_7" type="straight">
+      <points>pst8:pst7</points>
+    </baseline>
+    <baseline name="bl_cap_top_6" type="straight">
+      <points>pst7:pst6</points>
+    </baseline>  
+    <baseline name="bl_cap_top_5" type="straight">
+      <points>pst6:pst5</points>
+    </baseline>  
+    <baseline name="bl_cap_top_4" type="straight">
+      <points>pst5:pst4</points>
+    </baseline>  
+    <baseline name="bl_cap_top_3" type="straight">
+      <points>pst4:pst3</points>
+    </baseline>
+    <baseline name="bl_cap_top_2" type="straight">
+      <points>pst3:pst2</points>
+    </baseline>
+    <baseline name="bl_cap_top_1" type="straight">
+      <points>pst2:pst1</points>
+    </baseline> 
+    <baseline name="bl_cap_top_0" type="straight">
+      <points>pst1:pct</points>
+    </baseline>
+    <baseline name="bl_cap_bot_0" type="straight">
+      <points>pcb:psb1</points>
+    </baseline>
+    <baseline name="bl_cap_bot_1" type="straight">
+      <points>psb1:psb2</points>
+    </baseline>
+    <baseline name="bl_cap_bot_2" type="straight">
+      <points>psb2:psb3</points>
+    </baseline>
+    <baseline name="bl_cap_bot_3" type="straight">
+      <points>psb3:psb4</points>
+    </baseline>
+    <baseline name="bl_cap_bot_4" type="straight">
+      <points>psb4:psb5</points>
+    </baseline> 
+    <baseline name="bl_cap_bot_5" type="straight">
+      <points>psb5:psb6</points>
+    </baseline>
+    <baseline name="bl_cap_bot_6" type="straight">
+      <points>psb6:psb7</points>
+    </baseline>
+    <baseline name="bl_cap_bot_7" type="straight">
+      <points>psb7:psb8</points>
+    </baseline>
+    <baseline name="bl_cap_top_end" type="straight">
+      <points>pct:pw2t</points>
+    </baseline>  
+    <baseline name="bl_cap_bot_end" type="straight">
+      <points>pw2b:pcb</points>
+    </baseline>
+    <baseline name="bl_tail_top" type="straight">
+      <points>pw1t:pttet</points>
+    </baseline> 
+    <baseline name="bl_tail_bot" type="straight">
+      <points>ptteb:pw1b</points>
+    </baseline>
+    <baseline name="bl_end" type="straight">
+      <points>pttet:ptteb</points>
+    </baseline> 
+    <baseline name="bl_te_fill" type="straight">
+      <point>tail_fill</point>
+      <angle>89.15849582</angle> 
+    </baseline>
+  </baselines>
+  <layups>
+    <layup name="layup_web_t">
+      <layer lamina="la_im7 tape_0.00135">0</layer>
+      <layer lamina="la_im7 tape_0.00135">45</layer>
+      <layer lamina="la_im7 tape_0.00145">-45</layer>
+      <layer lamina="la_im7 tape_0.0005">90</layer>
+    </layup>
+    <layup name="layup_box">
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.00135">0</layer>
+      <layer lamina="la_im7 tape_0.00135">45</layer>
+      <layer lamina="la_im7 tape_0.00145">-45</layer>
+      <layer lamina="la_im7 tape_0.0005">90</layer>
+    </layup>
+    <layup name="layup_cap_end">
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_0">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_1">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_2">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_3">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_4">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_5">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_6">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap_spar_7">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">- 45</layer>
+    </layup>
+    <layup name="layup_cap">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.001">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">-45</layer>
+    </layup>
+    <layup name="web_aux">
+      <layer lamina="la_im7 tape_0.00135">0</layer>
+      <layer lamina="la_im7 tape_0.00135">45</layer>
+      <layer lamina="la_im7 tape_0.00145">-45</layer>
+      <layer lamina="la_im7 tape_0.0005">90</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">-45</layer>
+    </layup>
+    <layup name="tail">
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+    </layup>
+  </layups>
+
+  <component name="spar">
+    <segment name="sgm_top_box">
+      <baseline>bl_box_top</baseline>
+      <layup direction="right">layup_box</layup>
+    </segment>
+    <segment name="sgm_bot_box">
+      <baseline>bl_box_bot</baseline>
+      <layup direction="right">layup_box</layup>
+    </segment>
+    <segment name="sgm_web_t">
+      <baseline>bl_web_t</baseline>
+      <layup direction="right">layup_web_t</layup>
+    </segment>
+    <segment name="sgm_web_aux">
+      <baseline>bl_web_l</baseline>
+      <layup direction="right">web_aux</layup>
+    </segment>
+  </component>
+  <component name="cap" depend="spar">
+  <!-- <component name="cap"> -->
+    <segment name="sgm_cap">
+      <baseline>bl_cap</baseline>
+      <layup direction="right">layup_cap</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_7">
+      <baseline>bl_cap_top_7</baseline>
+      <layup direction="right">layup_cap_spar_7</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_6">
+      <baseline>bl_cap_top_6</baseline>
+      <layup direction="right">layup_cap_spar_6</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_5">
+      <baseline>bl_cap_top_5</baseline>
+      <layup direction="right">layup_cap_spar_5</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_4">
+      <baseline>bl_cap_top_4</baseline>
+      <layup direction="right">layup_cap_spar_4</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_3">
+      <baseline>bl_cap_top_3</baseline>
+      <layup direction="right">layup_cap_spar_3</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_2">
+      <baseline>bl_cap_top_2</baseline>
+      <layup direction="right">layup_cap_spar_2</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_1">
+      <baseline>bl_cap_top_1</baseline>
+      <layup direction="right">layup_cap_spar_1</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_0">
+      <baseline>bl_cap_top_0</baseline>
+      <layup direction="right">layup_cap_spar_0</layup>
+    </segment>  
+    <segment name="sgm_top_spar_cap_end">
+      <baseline>bl_cap_top_end</baseline>
+      <layup direction="right">layup_cap_end</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_end">
+      <baseline>bl_cap_bot_end</baseline>
+      <layup direction="right">layup_cap_end</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_0">
+      <baseline>bl_cap_bot_0</baseline>
+      <layup direction="right">layup_cap_spar_0</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_1">
+      <baseline>bl_cap_bot_1</baseline>
+      <layup direction="right">layup_cap_spar_1</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_2">
+      <baseline>bl_cap_bot_2</baseline>
+      <layup direction="right">layup_cap_spar_2</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_3">
+      <baseline>bl_cap_bot_3</baseline>
+      <layup direction="right">layup_cap_spar_3</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_4">
+      <baseline>bl_cap_bot_4</baseline>
+      <layup direction="right">layup_cap_spar_4</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_5">
+      <baseline>bl_cap_bot_5</baseline>
+      <layup direction="right">layup_cap_spar_5</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_6">
+      <baseline>bl_cap_bot_6</baseline>
+      <layup direction="right">layup_cap_spar_6</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_7">
+      <baseline>bl_cap_bot_7</baseline>
+      <layup direction="right">layup_cap_spar_7</layup>
+    </segment>
+  </component>
+  <!-- <component name="overwrap" depend="spar">
+    <segment name="sgm_tail_top">
+      <baseline>bl_tail_top</baseline>
+      <layup direction="right">tail</layup>
+    </segment>
+    <segment name="sgm_tail_end">
+      <baseline>bl_end</baseline>
+      <layup direction="right">tail</layup>
+    </segment>
+    <segment name="sgm_tail_bot">
+      <baseline>bl_tail_bot</baseline>
+      <layup direction="right">tail</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="web_aux" depend="d_spar">
+    <segment name="sgm_web_aux">
+      <baseline>bl_web_l</baseline>
+      <layup direction="right">web_aux</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="web_main" depend="d_spar">
+    <segment name="sgm_web_t">
+      <baseline>bl_web_t</baseline>
+      <layup direction="left">layup_web_t</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="ns_mass" type="fill" depend="d_spar">
+    <baseline>bsl_nsm</baseline>
+    <location>p_nsm_c</location>
+    <material>mtr_ns_mass</material>
+  </component> -->
+  <!-- <component name="fill_ballast" type="fill" depend="d_spar,web_aux">
+    <location>pballast</location>
+    <material>Rohacell 70</material>
+  </component> -->
+  <!-- <component name="fill_te" type="fill" depend="d_spar,web_main">
+    <baseline fillside="left">bl_te_fill</baseline>
+    <material>Plascore PN2-3/16OX3.0</material>
+  </component> -->
+  <!-- <component name="fill_te" type="fill" depend="d_spar">
+    <baseline fillside="right">bl_te_fill</baseline>
+    <material>e_glass</material>
+  </component> -->
+</cross_section>

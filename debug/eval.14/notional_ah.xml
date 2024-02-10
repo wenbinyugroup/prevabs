@@ -1,0 +1,121 @@
+<cross_section name="notional_ah" format="1">
+  <!-- Unit: lb-in-slug-sec -->
+  <include>
+    <material>material_database</material>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.25 0</translate>
+    <!-- <scale>1.75</scale> -->
+    <scale>21</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <!--
+    
+    
+    Basic geometry
+  
+  
+  -->
+  <baselines>
+    <basepoints>
+      <include>hh02_prevabs</include>
+      <point name="pt_web1">-0.1927640379  0.0</point>
+      <!-- <point name="pt_web1">-0.19  0.0</point> -->
+      <!-- <point name="pt_web1">-0.193  0.0</point> -->
+      <!-- <point name="pt_web1">-0.2  0.0</point> -->
+    </basepoints>
+    <!-- Leading cap -->
+    <baseline name="bsl_airfoil" type="straight">
+      <points>ple:79,ple</points>
+    </baseline>
+    <baseline name="bsl_web_1" type="straight">
+      <point>pt_web1</point>
+      <angle>90</angle>
+    </baseline>
+  </baselines>
+  <!--
+    
+    
+    Layups
+  
+  
+  -->
+  <layups>
+    <layup name="lyp_steel">
+      <layer lamina="Aluminum 8009_0.01">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_graphite">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_kevlar">
+      <layer lamina="AS4 6k/PR 500_fabric_0.0137">0:2</layer>
+    </layup>
+    <layup name="lyp_main_top_1">
+      <layer lamina="3K70P/NB321 fabric_0.0084">42.8697392:4</layer>
+    </layup>
+    <layup name="lyp_main_top_2">
+      <layer lamina="3K70P/NB321 fabric_0.0084">-68.67084801:5</layer>
+    </layup>
+    <layup name="lyp_main_top_3">
+      <layer lamina="3K70P/NB321 fabric_0.0084">34.60952291:7</layer>
+    </layup>
+    <layup name="lyp_main_top_4">
+      <layer lamina="T700GC-12K-31E_0.0065">57.28103551:6</layer>
+    </layup>
+    <layup name="lyp_main_bottom_1">
+      <layer lamina="G30-500 12K/7740_0.0058">-47.98612398:8</layer>
+    </layup>
+    <layup name="lyp_main_bottom_2">
+      <layer lamina="3K70P/NB321 fabric_0.0084">87.51282873:1</layer>
+    </layup>
+    <layup name="lyp_main_bottom_3">
+      <layer lamina="3K70P/NB321 fabric_0.0084">-72.24605921:7</layer>
+    </layup>
+    <layup name="lyp_main_bottom_4">
+      <layer lamina="S2/SP381_0.0092">73.04530502:2</layer>
+    </layup>
+    <layup name="lyp_web_1_1">
+      <layer lamina="3K70P/NB321 fabric_0.0084">-42.40352207:6</layer>
+      <layer lamina="T700GC-12K-31E_0.0065">-46.04625369:7</layer>
+      <layer lamina="3K70P/NB321 fabric_0.0084">13.043341:1</layer>
+      <layer lamina="S2/SP381_0.0092">-18.10302715:2</layer>
+    </layup>
+  </layups>
+  <!--
+    
+    
+    Components
+  
+  
+  -->
+  <component name="main">
+    <segments>
+      <baseline>bsl_airfoil</baseline>
+      <layup begin="0" end="0.1">lyp_steel</layup>
+      <layup begin="0.9" end="1">lyp_steel</layup>
+      <layup begin="0.1" end="0.3">lyp_skin_graphite</layup>
+      <layup begin="0.7" end="0.9">lyp_skin_graphite</layup>
+      <layup begin="0.3" end="0.7">lyp_skin_kevlar</layup>
+      <layup begin="0.04858427038" end="0.3359879821">lyp_main_top_1</layup>
+      <layup begin="0.1187663663" end="0.2821887073">lyp_main_top_2</layup>
+      <layup begin="0.1808666519" end="0.3241431796">lyp_main_top_3</layup>
+      <layup begin="0.1740474729" end="0.3900969355">lyp_main_top_4</layup>
+      <layup begin="0.7713553503" end="0.8336409555">lyp_main_bottom_1</layup>
+      <layup begin="0.7799777095" end="0.8119835103">lyp_main_bottom_2</layup>
+      <layup begin="0.6464499355" end="0.885744161">lyp_main_bottom_3</layup>
+      <layup begin="0.7012364303" end="0.9717374431">lyp_main_bottom_4</layup>
+    </segments>
+  </component>
+  <component name="web_1" depend="main">
+    <segment>
+      <baseline>bsl_web_1</baseline>
+      <layup>lyp_web_1_1</layup>
+    </segment>
+  </component>
+</cross_section>

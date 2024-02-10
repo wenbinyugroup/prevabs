@@ -1,0 +1,16 @@
+<layups>
+  <!-- <layup name="layup1">
+        <layer lamina="la_iso5_1_02">0</layer>
+        <layer lamina="la_iso5_1_02">90</layer>
+		<layer lamina="la_iso5_1_02">0</layer>
+		<layer lamina="la_iso5_1_02">90</layer>
+		<layer lamina="la_iso5_1_02">90</layer>
+		<layer lamina="la_iso5_1_02">0</layer>
+		<layer lamina="la_iso5_1_02">90</layer>
+		<layer lamina="la_iso5_1_02">0</layer>
+    </layup> -->
+  <layup name="layup1" method="ss">
+    <lamina>la_iso5_1_0005</lamina>
+    <code>[45:2/-45:2/0:2/90:2]s</code>
+  </layup>
+</layups>

@@ -1,0 +1,19 @@
+<baselines>
+  <basepoints>
+    <point name="pt_center">0  0</point>
+    <point name="pt_top">0  2</point>
+    <point name="pt_left">-2  0</point>
+    <point name="pt_web_r">0.1  0.0</point>
+  </basepoints>
+  <baseline name="bl_arc_tl" type="arc">
+    <center>pt_center</center>
+    <start>pt_top</start>
+    <end>pt_left</end>
+    <discrete by="angle">1</discrete>
+    <direction>ccw</direction>
+  </baseline>
+  <baseline name="bl_web" type="straight">
+    <point>pt_web_r</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

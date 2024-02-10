@@ -1,0 +1,27 @@
+2023-08-05 16:16:12 [info] prevabs start
+2023-08-05 16:16:12 [info] - reading input files
+2023-08-05 16:16:12 [info]     - reading main input file: box.xml
+2023-08-05 16:16:12 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
+2023-08-05 16:16:12 [info]         - reading materials file: materials.xml
+2023-08-05 16:16:12 [info]   - reading input files -- done
+2023-08-05 16:16:12 [info]   - building the shape
+2023-08-05 16:16:12 [info]     - building the cross section, step 1
+2023-08-05 16:16:12 [info]       - building component: main
+2023-08-05 16:16:12 [info]     - building the cross section, step 2
+2023-08-05 16:16:12 [info]       - building component details: main
+2023-08-05 16:16:12 [info]     - fixing geometry
+2023-08-05 16:16:12 [info]   - building the shape -- done
+2023-08-05 16:16:12 [info]   - modeling in Gmsh
+2023-08-05 16:16:12 [info]     - creating gmsh vertices
+2023-08-05 16:16:12 [info]     - creating gmsh edges
+2023-08-05 16:16:12 [info]     - creating gmsh face
+2023-08-05 16:16:12 [info]     - meshing
+2023-08-05 16:16:12 [info]   - modeling in Gmsh -- done
+2023-08-05 16:16:12 [info]   - writing outputs
+2023-08-05 16:16:12 [info]     - writing sg file: box.sg
+2023-08-05 16:16:12 [info]   - writing outputs -- done
+2023-08-05 16:16:12 [info]     - running SwiftComp for homogenization
+2023-08-05 16:16:12 [info]     - running: SwfitComp "box.sg" 1D H
+2023-08-05 16:16:13 [info]     - running SwiftComp for homogenization -- done
+2023-08-05 16:16:13 [info] prevabs finished
+2023-08-05 16:16:13 [info] total running time: 1.305 sec

@@ -1,0 +1,12 @@
+2022-02-15 21:43:49 [info] prevabs start
+2022-02-15 21:43:49 [info]   - dehomogenizing...
+2022-02-15 21:43:49 [info]       - reading main input file: STA1.xml
+2022-02-15 21:43:49 [info]         - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2022-02-15 21:43:49 [info]         - reading materials file: MaterialDB.xml
+2022-02-15 21:43:49 [info]       - reading main input data: STA1.xml
+2022-02-15 21:43:49 [info]     - writing glb file: STA1.sg.glb
+2022-02-15 21:43:49 [info]   - running VABS for failure index
+2022-02-15 21:43:49 [info] running VABS...
+2022-02-15 21:43:52 [info]   - running VABS for failure index -- done
+2022-02-15 21:43:52 [info] prevabs finished
+2022-02-15 21:43:52 [info] total running time: 3.098 sec

@@ -1,0 +1,54 @@
+<cross_section name="N" format="1">
+  <include>
+    <material>materials</material>
+  </include>
+  <analysis>
+    <model>1</model>
+    <!-- <thermal>0</thermal> -->
+    <!-- <trapeze>0</trapeze> -->
+    <!-- <vlasov>0</vlasov> -->
+    <!-- <initial_twist>0</initial_twist> -->
+    <!-- <initial_curvature_2></initial_curvature_2> -->
+    <!-- <initial_curvature_3></initial_curvature_3> -->
+    <!-- <oblique_y1></oblique_y1> -->
+    <!-- <oblique_y2></oblique_y2> -->
+  </analysis>
+  <general>
+    <!-- <translate>0.0 0.0</translate> -->
+    <!-- <scale>1.0</scale> -->
+    <!-- <rotate>0.0</rotate> -->
+    <mesh_size>0.02</mesh_size>
+    <!-- <element_type>linear</element_type> -->
+  </general>
+
+  <baselines>
+    <basepoints></basepoints>
+    <point name="p1">0  0</point>
+    <point name="p2">0  1</point>
+    <point name="p3">1  0</point>
+    <point name="p4">1  1</point>
+    <baseline name="bsl_n" type="straight">
+      <points>p1,p2,p3,p4</points>
+    </baseline>
+  </baselines>
+
+  <layups>
+    <layup name="lyp_1">
+      <layer lamina="la_aaa_0.01">0:4</layer>
+      <layer lamina="la_aaa_0.01">90:4</layer>
+    </layup>
+  </layups>
+
+  <component name="left">
+    <segment>
+      <baseline>bsl_n</baseline>
+      <layup>lyp_1</layup>
+    </segment>
+  </component>
+  <!-- <component name="web" depend="in">
+    <segment>
+      <baseline>bl_web</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component> -->
+</cross_section>

@@ -1,0 +1,61 @@
+<materials>
+  <material name="iso5_1" type="orthotropic">
+    <density>1.86E+03</density>
+    <elastic>
+      <e1>3.70E+10</e1>
+      <e2>9.00E+09</e2>
+      <e3>9.00E+09</e3>
+      <g12>4.00E+09</g12>
+      <g13>4.00E+09</g13>
+      <g23>4.00E+09</g23>
+      <nu12>0.28</nu12>
+      <nu13>0.28</nu13>
+      <nu23>0.28</nu23>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <characteristic_length>0</characteristic_length>
+    <strength>
+      <xt>1</xt>
+      <xc>2</xc>
+      <yt>3</yt>
+      <yc>4</yc>
+      <zt>5</zt>
+      <zc>6</zc>
+      <r>7</r>
+      <t>8</t>
+      <s>9</s>
+    </strength>
+  </material>
+  <material name="fake" type="orthotropic">
+    <density>1.86E+03</density>
+    <elastic>
+      <e1>3.70E+10</e1>
+      <e2>9.00E+09</e2>
+      <e3>9.00E+09</e3>
+      <g12>4.00E+09</g12>
+      <g13>4.00E+09</g13>
+      <g23>4.00E+09</g23>
+      <nu12>0.28</nu12>
+      <nu13>0.28</nu13>
+      <nu23>0.28</nu23>
+    </elastic>
+  </material>
+  <material name="fake2" type="orthotropic">
+    <density>1.86E+03</density>
+    <elastic>
+      <e1>3.70E+10</e1>
+      <e2>9.00E+09</e2>
+      <e3>9.00E+09</e3>
+      <g12>4.00E+09</g12>
+      <g13>4.00E+09</g13>
+      <g23>4.00E+09</g23>
+      <nu12>0.28</nu12>
+      <nu13>0.28</nu13>
+      <nu23>0.28</nu23>
+    </elastic>
+  </material>
+  <lamina name="la_iso5_1_02">
+    <material>iso5_1</material>
+    <thickness>0.005</thickness>
+  </lamina>
+</materials>

@@ -1,0 +1,91 @@
+<materials>
+  <!-- =========================================================== -->
+  <material name="t1100_uni" type="orthotropic">
+    <density>1510</density>
+    <elastic>
+      <e1>164E+009</e1>
+      <e2>8E+009</e2>
+      <e3>8E+009</e3>
+      <g12>4E+009</g12>
+      <g13>3E+009</g13>
+      <g23>2.5E+009</g23>
+      <nu12>0.40</nu12>
+      <nu13>0.40</nu13>
+      <nu23>0.40</nu23>
+    </elastic>
+  </material>
+  <!-- =========================================================== -->
+  <material name="t800_twill" type="orthotropic">
+    <density>1470</density>
+    <elastic>
+      <e1>65E+009</e1>
+      <e2>65E+009</e2>
+      <e3>8E+009</e3>
+      <g12>3.72E+009</g12>
+      <g13>2.48E+009</g13>
+      <g23>2.48E+009</g23>
+      <nu12>0.045</nu12>
+      <nu13>0.40</nu13>
+      <nu23>0.40</nu23>
+    </elastic>
+  </material>
+  <!-- =========================================================== -->
+  <material name="ti6al4v_iso" type="isotropic">
+    <density>4429</density>
+    <elastic>
+      <e>116.5E+9</e>
+      <nu>0.31</nu>
+    </elastic>
+  </material>
+  <!-- =========================================================== -->
+  <material name="ti6al4v" type="orthotropic">
+    <density>4420</density>
+    <elastic>
+      <e1>116.5E+009</e1>
+      <e2>116.5E+009</e2>
+      <e3>116.5E+009</e3>
+      <g12>42.7E+009</g12>
+      <g13>42.7E+009</g13>
+      <g23>42.7E+009</g23>
+      <nu12>0.31</nu12>
+      <nu13>0.31</nu13>
+      <nu23>0.31</nu23>
+    </elastic>
+  </material>
+  <!-- =========================================================== -->
+  <lamina name="la_t1100_uni">
+    <material>t1100_uni</material>
+    <thickness>0.000117</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+  <lamina name="la_t800_twill">
+    <material>t800_twill</material>
+    <thickness>0.000224</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+  <lamina name="la_ti6al4v_0.75">
+    <material>ti6al4v</material>
+    <thickness>0.00075</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+  <lamina name="la_ti6al4v_1.0">
+    <material>ti6al4v</material>
+    <thickness>0.001</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+  <lamina name="la_ti6al4v_1.25">
+    <material>ti6al4v</material>
+    <thickness>0.00125</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+  <lamina name="la_ti6al4v_2.57">
+    <material>ti6al4v</material>
+    <thickness>0.00257</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+  <lamina name="la_ti6al4v_3.76">
+    <material>ti6al4v</material>
+    <thickness>0.00376</thickness>
+  </lamina>
+  <!-- =========================================================== -->
+</materials>

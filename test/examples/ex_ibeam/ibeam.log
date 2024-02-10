@@ -1,0 +1,32 @@
+2022-03-08 23:02:27 [info] prevabs start
+2022-03-08 23:02:27 [info] - reading input files
+2022-03-08 23:02:27 [info]     - reading main input file: ibeam.xml
+2022-03-08 23:02:27 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2022-03-08 23:02:27 [info]       - reading materials file: materials.xml
+2022-03-08 23:02:27 [info] - reading input files -- done
+2022-03-08 23:02:27 [info] - building the shape
+2022-03-08 23:02:27 [info]   - building the cross section, step 1
+2022-03-08 23:02:27 [info]     - building component: top
+2022-03-08 23:02:27 [info]         - building component: bottom
+2022-03-08 23:02:27 [info]             - building component: web
+2022-03-08 23:02:27 [info]             - building the cross section, step 2
+2022-03-08 23:02:27 [info]               - building component details: top
+2022-03-08 23:02:27 [info]               - building component details: bottom
+2022-03-08 23:02:27 [info]               - building component details: web
+2022-03-08 23:02:27 [info]           - building the shape -- done
+2022-03-08 23:02:27 [info]           - modeling in Gmsh
+2022-03-08 23:02:27 [info]             - creating gmsh vertices
+2022-03-08 23:02:27 [info]             - creating gmsh edges
+2022-03-08 23:02:27 [info]             - creating gmsh face
+2022-03-08 23:02:27 [info]             - meshing
+2022-03-08 23:02:27 [info]           - modeling in Gmsh -- done
+2022-03-08 23:02:27 [info]           - writing outputs
+2022-03-08 23:02:27 [info]             - writing gmsh .opt file: ibeam.opt
+2022-03-08 23:02:27 [info]             - writing gmsh .geo file: ibeam.geo
+2022-03-08 23:02:27 [info]             - writing gmsh .msh file: ibeam.msh
+2022-03-08 23:02:27 [info]             - writing sg file: ibeam.sg
+2022-03-08 23:02:27 [info]           - writing outputs -- done
+2022-03-08 23:02:27 [info]           - running Gmsh for visualization
+2022-03-08 23:02:27 [info]           - running: gmsh ibeam.geo ibeam.msh ibeam.opt
+2022-03-08 23:02:27 [info] prevabs finished
+2022-03-08 23:02:27 [info] total running time: 0.41 sec

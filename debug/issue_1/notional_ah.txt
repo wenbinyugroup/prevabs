@@ -1,0 +1,41 @@
+
+========================================
+
+  PreVABS version 1.2.0
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: cmp_1
+  
+  - building the cross section, step 2
+    - building component: cmp_1
+- building the shape -- done
+
+
+- modeling in Gmsh
+  - creating gmsh vertices
+  - creating gmsh edges
+  - creating gmsh face
+  - meshing
+- modeling in Gmsh -- done
+
+
+- writing outputs
+  - writing sg file: .\debug\issue_1\notional_ah.sg
+- writing outputs -- done
+
+
+========================================
+
+  FINISHED
+  Total running time: 2.11 sec
+
+========================================
+

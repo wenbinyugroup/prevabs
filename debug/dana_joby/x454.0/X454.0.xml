@@ -1,0 +1,74 @@
+<cross_section name="X454">
+
+
+  <include>
+    <baseline>baselines</baseline>
+    <layup>layups</layup>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>0  0</translate>
+    <!-- <scale>0.7</scale> -->
+    <scale>0.303</scale>
+    <mesh_size>0.01</mesh_size>
+    <!-- <mesh_size>0.001</mesh_size> -->
+    <element_type>linear</element_type>
+  </general>
+
+
+
+
+  <!-- MODIFIED -->
+  <!-- Added a separated segment for the trailing edge -->
+  <component name="surface">
+    <segment name="sg_1">
+      <baseline>bl_1</baseline>
+      <layup direction="right">layup_4ply_fab</layup>
+    </segment>
+    <segment name="sg_te">
+      <baseline>bl_te</baseline>
+      <layup direction="right">layup_4ply_fab</layup>
+    </segment>
+    <segment name="sg_2">
+      <baseline>bl_2</baseline>
+      <layup direction="right">layup_4ply_fab</layup>
+    </segment>
+  </component>
+  <!-- MODIFIED END -->
+
+
+
+
+  <component name="web1" depend="surface">
+    <segment name="sg_web_1">
+      <baseline>bl_web_1</baseline>
+      <layup>layup_4ply_fab</layup>
+    </segment>
+  </component>
+  <component name="web2" depend="surface">
+    <segment name="sg_web_2">
+      <baseline>bl_web_2</baseline>
+      <layup>layup_4ply_fab</layup>
+    </segment>
+  </component>
+  <component name="web3" depend="surface">
+    <segment name="sg_web_1">
+      <baseline>bl_web_3</baseline>
+      <layup>layup_3ply_fab</layup>
+    </segment>
+  </component>
+  <component name="web4" depend="surface">
+    <segment name="sg_web_2">
+      <baseline>bl_web_4</baseline>
+      <layup>layup_3ply_fab</layup>
+    </segment>
+  </component>
+
+</cross_section>

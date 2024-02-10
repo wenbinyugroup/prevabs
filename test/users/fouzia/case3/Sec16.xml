@@ -1,0 +1,119 @@
+<cross_section name="Sec16" type="general">
+  <include>
+    <baseline>baselines</baseline>
+    <material>materials</material>
+    <layup>layups</layup>
+  </include>
+  <general>
+    <origin>0.0138	-0.2314</origin>
+    <scale>1.0</scale>
+    <rotation>0.0</rotation>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <segments>
+    <segment name="sg_hps_1">
+      <baseline>bl_hps_1</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_hps_2">
+      <baseline>bl_hps_2</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_hps_3">
+      <baseline>bl_hps_3</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_hps_4">
+      <baseline>bl_hps_4</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_hps_5">
+      <baseline>bl_hps_5</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_hps_6">
+      <baseline>bl_hps_6</baseline>
+      <layup>layup6</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_hps_7">
+      <baseline>bl_hps_7</baseline>
+      <layup>layup7</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_lps_6">
+      <baseline>bl_lps_6</baseline>
+      <layup>layup6</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_lps_5">
+      <baseline>bl_lps_5</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_lps_4">
+      <baseline>bl_lps_4</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_lps_3">
+      <baseline>bl_lps_3</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_lps_2">
+      <baseline>bl_lps_2</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+    <segment name="sg_lps_1">
+      <baseline>bl_lps_1</baseline>
+      <layup>layup1</layup>
+      <layup_direction>right</layup_direction>
+      <level>1</level>
+    </segment>
+
+    <!--segment name="sg_web_1" level="10">
+			<baseline>bl_web_1</baseline>
+			<layup direction="left">layupWeb1</layup>
+		</segment>
+		<segment name="sg_web_2" level="1">
+			<baseline>bl_web_2</baseline>
+			<layup direction="left">layupWeb2</layup>
+		</segment-->
+  </segments>
+
+  <connections>
+    <connection name="leading_edge">
+      <segment>sg_lps_1</segment>
+      <segment>sg_hps_1</segment>
+    </connection>
+  </connections>
+
+  <!--fillings>
+		<filling name="nose_mass">
+			<baseline>bl_mass_rb</baseline>
+			<material fillside="left">metal</material>
+		</filling>
+	</fillings-->
+
+
+</cross_section>

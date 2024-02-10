@@ -1,0 +1,36 @@
+<cross_section name="ibeam2">
+    <include>
+        <baseline>baselines2</baseline>
+        <material>materials2</material>
+        <layup>layups2</layup>
+    </include>
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.05</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+    <segments>
+        <segment name="sgt1">
+            <baseline>bl1</baseline>
+            <layup direction="right">layup1</layup>
+        </segment>
+        <segment name="sgt2">
+            <baseline>bl2</baseline>
+            <layup direction="right">layup2</layup>
+        </segment>
+        <segment name="sgt3">
+            <baseline>bl3</baseline>
+            <layup direction="right">layup1</layup>
+        </segment>
+		<segment name="sgt4">
+            <baseline>bl4</baseline>
+            <layup direction="right">layup1</layup>
+        </segment>        
+        <segment name="web" level="10">
+            <baseline>blweb</baseline>
+            <layup direction="left">layupweb</layup>
+        </segment>
+    </segments>
+</cross_section>

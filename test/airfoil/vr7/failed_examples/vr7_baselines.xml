@@ -1,0 +1,40 @@
+<baselines>
+  <basepoints>
+    <include>vr7_basepoints</include>
+  </basepoints>
+  <baseline name="lps_bl_1" type="straight">
+    <!-- <points>lps_leading,4:20,lps_seg_1_2</points> -->
+    <points>lps_leading,4:lps_seg_1_2</points>
+  </baseline>
+  <baseline name="lps_bl_2" type="straight">
+    <points>lps_seg_1_2:37</points>
+  </baseline>
+  <baseline name="lps_bl_3" type="straight">
+    <points>37:trailing</points>
+  </baseline>
+  <!-- <baseline name="bl_tl" type="straight">
+    <points>37,lps_trailing,76</points>
+  </baseline> -->
+  <baseline name="hps_bl_3" type="straight">
+    <points>trailing:76</points>
+  </baseline>
+  <baseline name="hps_bl_2" type="straight">
+    <points>76:hps_seg_1_2</points>
+  </baseline>
+  <baseline name="hps_bl_1" type="straight">
+    <!-- <points>hps_seg_1_2,59:43,hps_leading</points> -->
+    <points>hps_seg_1_2:43,hps_leading</points>
+  </baseline>
+  <baseline name="web_bl" type="straight">
+    <point>web_center</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_web_tr" type="straight">
+    <point>web_tr</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="filling_bl" type="straight">
+    <point>filling_rs</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

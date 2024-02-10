@@ -1,0 +1,42 @@
+<cross_section name="circle">
+  <include>
+    <baseline>baselines</baseline>
+    <layup>layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+    <thermal>0</thermal>
+    <trapeze>0</trapeze>
+    <!-- <vlasov>0</vlasov> -->
+    <initial_twist>0</initial_twist>
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.02</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="in">
+    <segment>
+      <baseline>bl_arc_tl</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+  <!-- <component name="out">
+    <segment name="">
+      <baseline>blcircle</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="web" depend="in">
+    <segment>
+      <baseline>bl_web</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component> -->
+</cross_section>

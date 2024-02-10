@@ -1,0 +1,9 @@
+<materials>
+  <material name="iso1" type="isotropic">
+    <density>1e3</density>
+    <elastic>
+      <e>1e9</e>
+      <nu>0.3</nu>
+    </elastic>
+  </material>
+</materials>

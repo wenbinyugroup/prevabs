@@ -1,0 +1,28 @@
+<cross_section name="box">
+    <include>
+        <baseline>baselines</baseline>
+        <material>materials</material>
+        <layup>layups</layup>
+    </include>
+    <general>
+        <translate></translate>
+        <scale></scale>
+        <rotate></rotate>
+        <mesh_size></mesh_size>
+        <element_type></element_type>
+    </general>
+    <segments>
+        <segment name="sg1">
+            <baseline>bl1</baseline>
+            <layup>layup1</layup>
+        </segment>
+        <segment name="sg2">
+            <baseline>bl2</baseline>
+            <layup>layup2</layup>
+        </segment>
+        <segment name="sg3">
+            <baseline>bl3</baseline>
+            <layup>layup3</layup>
+        </segment>
+    </segments>
+</cross_section>

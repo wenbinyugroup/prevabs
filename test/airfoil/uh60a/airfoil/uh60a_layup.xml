@@ -1,0 +1,150 @@
+<layups>
+  <layup name="layup_web_t">
+    <layer lamina="la_im7 tape_0.00135">0</layer>
+    <layer lamina="la_im7 tape_0.00135">45</layer>
+    <layer lamina="la_im7 tape_0.00145">-45</layer>
+    <layer lamina="la_im7 tape_0.0005">90</layer>
+  </layup>
+  <layup name="layup_box">
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.00135">0</layer>
+    <layer lamina="la_im7 tape_0.00135">45</layer>
+    <layer lamina="la_im7 tape_0.00145">-45</layer>
+    <layer lamina="la_im7 tape_0.0005">90</layer>
+  </layup>
+  <layup name="layup_cap_end">
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_0">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_1">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_2">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_3">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_4">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_5">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_6">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap_spar_7">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">- 45</layer>
+  </layup>
+  <layup name="layup_cap">
+    <layer lamina="la_steel_0.00082">0</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_im7 tape_0.001">0</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">-45</layer>
+  </layup>
+  <layup name="web_aux">
+    <layer lamina="la_im7 tape_0.00135">0</layer>
+    <layer lamina="la_im7 tape_0.00135">45</layer>
+    <layer lamina="la_im7 tape_0.00145">-45</layer>
+    <layer lamina="la_im7 tape_0.0005">90</layer>
+    <layer lamina="la_im7 tape_0.0008">45</layer>
+    <layer lamina="la_im7 tape_0.0008">-45</layer>
+  </layup>
+  <layup name="tail">
+    <layer lamina="la_e_glass_0.00025">0</layer>
+    <layer lamina="la_e_glass_0.00025">45</layer>
+    <layer lamina="la_e_glass_0.00025">-45</layer>
+    <layer lamina="la_e_glass_0.00025">0</layer>
+  </layup>
+</layups>

@@ -1,0 +1,27 @@
+{
+  "template_output": {
+    "ah_nt.xml.tmp": "ah_nt.xml"
+  },
+  "prevabs_cmd": "prevabs1.3.0",
+  "solver": "vabs",
+  "analysis": "h",
+  "scrnout": false,
+  "fn_main": "ah_nt.xml",
+  "data_process_functions_file": "data_proc_funcs",
+  "pre_process": [
+    "materialId2Name"
+  ],
+  "ref_center": "sc",
+  "post_process": {
+    "max_err": [
+      ["ear", "gjr", "ei2r", "ei3r", "mpl"],
+      "calcMaxDiff",
+      [260200000, 18999999.999999937, 20600000.000000063, 856160000.0000006, 0.5040007832411258]
+    ],
+    "ea_err": ["ear", "abs_rel_diff", 260200000],
+    "gj_err": ["gjr", "abs_rel_diff", 18999999.999999937],
+    "ei2_err": ["ei2r", "abs_rel_diff", 20600000.000000063],
+    "ei3_err": ["ei3r", "abs_rel_diff", 856160000.0000006],
+    "mpl_err": ["mpl", "abs_rel_diff", 0.5040007832411258]
+  }
+}

@@ -1,0 +1,51 @@
+<baselines basepoints="basepoints">
+  <baseline name="bl_hps_1" type="straight">
+    <points>hle1:h19</points>
+  </baseline>
+  <baseline name="bl_hps_2" type="straight">
+    <points>h19:h40</points>
+  </baseline>
+  <baseline name="bl_hps_3" type="straight">
+    <points>h40:h66</points>
+  </baseline>
+  <baseline name="bl_hps_4" type="straight">
+    <points>h66:h94</points>
+  </baseline>
+  <baseline name="bl_hps_5" type="straight">
+    <points>h94:hte96</points>
+  </baseline>
+  <baseline name="bl_hps_6" type="straight">
+    <points>hte96:lte97</points>
+  </baseline>
+  <baseline name="bl_lps_5" type="straight">
+    <points>lte97:l99</points>
+  </baseline>
+  <baseline name="bl_lps_4" type="straight">
+    <points>l99:l117</points>
+  </baseline>
+  <baseline name="bl_lps_3" type="straight">
+    <points>l117:l136</points>
+  </baseline>
+  <baseline name="bl_lps_2" type="straight">
+    <points>l136:l150</points>
+  </baseline>
+  <baseline name="bl_lps_1" type="straight">
+    <points>l150:lle166</points>
+  </baseline>
+
+  <!--baseline name="bl_web_1" type="straight">
+		<point>web_center_1</point>
+		<angle>90</angle>
+	</baseline>
+	
+	<!--baseline name="bl_web_2" type="straight">
+		<point>web_center_2</point>
+		<angle>90</angle>
+	</baseline-->
+
+  <!--baseline name="bl_mass_rb" type="straight">
+		<point>mass_right</point>
+		<angle>90</angle>
+	</baseline-->
+
+</baselines>

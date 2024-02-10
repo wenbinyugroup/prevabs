@@ -1,0 +1,62 @@
+<baselines>
+  <basepoints>
+    <include>ctm_basepoints</include>
+  </basepoints>
+  <!-- web -->
+  <baseline name="bl_web_l" type="straight">
+    <points>kpe_l,kpt_l</points>
+  </baseline>
+  <baseline name="bl_web_r" type="straight">
+    <points>kpt_r,kpe_r</points>
+  </baseline>
+  <!-- upper half -->
+  <baseline name="bl_uh_arc_l" type="arc">
+    <center>kpc_out_l</center>
+    <start>kpt_l</start>
+    <end>kpt_out_l</end>
+    <direction>ccw</direction>
+    <discrete by="angle">3</discrete>
+  </baseline>
+  <baseline name="bl_uh_arc_m" type="arc">
+    <center>kpc_out_m</center>
+    <start>kpt_out_l</start>
+    <end>kpt_out_r</end>
+    <direction>cw</direction>
+    <discrete by="angle">3</discrete>
+  </baseline>
+  <baseline name="bl_uh_arc_r" type="arc">
+    <center>kpc_out_r</center>
+    <start>kpt_out_r</start>
+    <end>kpt_r</end>
+    <direction>ccw</direction>
+    <discrete by="angle">3</discrete>
+  </baseline>
+  <!-- lower half -->
+  <!-- <baseline name="bl_lh_web_l" type="straight">
+    <points>kpe_l,kpt_l</points>
+  </baseline> -->
+  <baseline name="bl_lh_arc_l" type="arc">
+    <center>kpc_in_l</center>
+    <start>kpt_l</start>
+    <end>kpt_in_l</end>
+    <direction>cw</direction>
+    <discrete by="angle">3</discrete>
+  </baseline>
+  <baseline name="bl_lh_arc_m" type="arc">
+    <center>kpc_in_m</center>
+    <start>kpt_in_l</start>
+    <end>kpt_in_r</end>
+    <direction>ccw</direction>
+    <discrete by="angle">3</discrete>
+  </baseline>
+  <baseline name="bl_lh_arc_r" type="arc">
+    <center>kpc_in_r</center>
+    <start>kpt_in_r</start>
+    <end>kpt_r</end>
+    <direction>cw</direction>
+    <discrete by="angle">3</discrete>
+  </baseline>
+  <!-- <baseline name="bl_lh_web_r" type="straight">
+    <points>kpt_r,kpe_r</points>
+  </baseline> -->
+</baselines>

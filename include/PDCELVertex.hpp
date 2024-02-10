@@ -1,0 +1,114 @@
+#pragma once
+
+#include "declarations.hpp"
+#include "PBaseLine.hpp"
+#include "PDCEL.hpp"
+#include "PDCELHalfEdge.hpp"
+
+#include "gmsh/GVertex.h"
+#include "gmsh/SPoint2.h"
+#include "gmsh/SPoint3.h"
+
+#include <iostream>
+#include <string>
+
+class PDCEL;
+class PDCELHalfEdge;
+
+/** @ingroup geo
+ * A DCEL vertex class.
+ */
+class PDCELVertex {
+private:
+  std::string _s_name;
+  SPoint3 _point;
+  PDCEL *_dcel; // Indicating if the vertex has been added to the dcel
+  PDCELHalfEdge *_incident_edge;
+  GVertex *_gvertex;
+  bool _gbuild;
+  int _degenerated;
+  PDCELVertex *_link_to = nullptr;
+  Baseline *_p_on_line = nullptr;
+
+public:
+  PDCELVertex()
+      : _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+        _degenerated(0) {}
+  PDCELVertex(std::string name)
+      : _s_name(name), _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+        _degenerated(0) {}
+  PDCELVertex(double x, double y, double z)
+      : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+        _degenerated(0) {}
+  PDCELVertex(double x, double y, double z, bool build)
+      : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
+        _gbuild(build), _degenerated(0) {}
+  PDCELVertex(SPoint3 point)
+      : _point(point), _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+        _degenerated(0) {}
+  PDCELVertex(std::string name, double x, double y, double z)
+      : _s_name(name), _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
+        _gbuild(true), _degenerated(0) {}
+  PDCELVertex(std::string name, SPoint3 point)
+      : _s_name(name), _point(point), _dcel(nullptr), _incident_edge(nullptr),
+        _gbuild(true), _degenerated(0) {}
+
+  // void printBasepoint();
+  friend std::ostream &operator<<(std::ostream &, PDCELVertex *);
+  void print();
+  std::string printString();
+  void printWithAddress();
+  void printAllLeavingHalfEdges(const int &direction = 1);
+
+  friend bool operator==(PDCELVertex &, PDCELVertex &);
+  friend bool operator!=(PDCELVertex &, PDCELVertex &);
+  friend bool operator<(PDCELVertex &, PDCELVertex &);
+  friend bool operator>(PDCELVertex &, PDCELVertex &);
+  friend bool operator<=(PDCELVertex &, PDCELVertex &);
+  friend bool operator>=(PDCELVertex &, PDCELVertex &);
+
+  std::string name() const { return _s_name; }
+  SPoint3 point() const { return _point; }
+  SPoint2 point2() const { return SPoint2(_point[1], _point[2]); }
+  inline double x() const { return _point.x(); }
+  inline double y() const { return _point.y(); }
+  inline double z() const { return _point.z(); }
+
+  PDCELVertex *getLinkToVertex() { return _link_to; }
+  Baseline *getOnLine() { return _p_on_line; }
+
+  void translate(double, double, double);
+  void scale(double);
+  void rotate(double);
+
+  bool isFinite();
+
+  PDCEL *dcel() { return _dcel; }
+  PDCELHalfEdge *edge() { return _incident_edge; }
+  int degree();
+  PDCELHalfEdge *getEdgeTo(PDCELVertex *);
+
+  bool gbuild() { return _gbuild; }
+  GVertex *gvertex() { return _gvertex; }
+
+  int &degenerated() { return _degenerated; }
+
+  void setName(const std::string &name) { _s_name = name; }
+
+  void setPosition(double, double, double);
+  void setPoint(SPoint3 &);
+
+  void setLinkToVertex(PDCELVertex *v) { _link_to = v; }
+  void setOnLine(Baseline *l) { _p_on_line = l; }
+
+  void setDCEL(PDCEL *dcel) { _dcel = dcel; }
+  void setIncidentEdge(PDCELHalfEdge *);
+
+  void setGBuild(bool build) { _gbuild = build; }
+  void setGVertex(GVertex *);
+  void resetGVertex() { _gvertex = nullptr; }
+
+  // void setName(std::string name) {_s_name = name; }
+};
+
+bool compareVertices(PDCELVertex *v1, PDCELVertex *v2);

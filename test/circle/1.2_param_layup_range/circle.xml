@@ -1,0 +1,90 @@
+<cross_section name="circle" format="1">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+
+
+  <analysis>
+    <model>1</model>
+    <thermal>0</thermal>
+    <trapeze>0</trapeze>
+    <!-- <vlasov>0</vlasov> -->
+    <initial_twist>0</initial_twist>
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+
+
+
+
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.1</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+
+
+  <baselines>
+    <basepoints>
+      <point name="ct">0 0</point>
+    </basepoints>
+
+    <baseline name="bsl_circle" type="circle">
+      <center>ct</center>
+      <radius>2</radius>
+      <discrete by="angle">5</discrete>
+      <direction>ccw</direction>
+    </baseline>
+
+  </baselines>
+
+
+
+
+  <layups>
+    <layup name="layup1" method="stack sequence">
+      <lamina>la_iso5_4_005</lamina>
+      <code>[0:4]</code>
+    </layup>
+
+    <layup name="layup2" method="stack sequence">
+      <lamina>la_iso5_4_005</lamina>
+      <code>[45:4]</code>
+    </layup>
+
+    <layup name="layup3" method="stack sequence">
+      <lamina>la_iso5_4_005</lamina>
+      <code>[90:4]</code>
+    </layup>
+
+    <layup name="layup4" method="stack sequence">
+      <lamina>la_iso5_4_005</lamina>
+      <code>[-45:4]</code>
+    </layup>
+  </layups>
+
+
+
+
+  <component name="wall">
+    <segments>
+      <baseline>bsl_circle</baseline>
+      <layup>layup1</layup>
+      <layup begin="0.2" end="0.75">layup2</layup>
+      <layup begin="-0.1" end="0.5">layup3</layup>
+      <layup begin="-0.6" end="-0.2">layup4</layup>
+    </segments>
+  </component>
+
+
+</cross_section>

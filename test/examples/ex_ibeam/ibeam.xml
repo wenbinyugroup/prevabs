@@ -1,0 +1,33 @@
+<cross_section name="ibeam">
+  <include>
+    <baseline>baselines</baseline>
+    <layup>layups</layup>
+    <material>materials</material>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <mesh_size>0.02</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="top">
+    <segment>
+      <baseline>bl_top</baseline>
+      <layup direction="right">layup_1</layup>
+    </segment>
+  </component>
+  <component name="bottom">
+    <segment>
+      <baseline>bl_bottom</baseline>
+      <layup direction="right">layup_2</layup>
+    </segment>
+  </component>
+  <component name="web" depend="top,bottom">
+    <segment>
+      <baseline>bl_web</baseline>
+      <layup>layup_web</layup>
+      <split key="id">2</split>
+    </segment>
+  </component>
+</cross_section>

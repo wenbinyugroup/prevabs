@@ -1,0 +1,155 @@
+<layups>
+  <!-- station 1 -->
+  <layup name="layup1">
+    <layer lamina="coating">0</layer>
+    <!-- <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="b2ax808wb36">0</layer>
+    <layer lamina="pastele">0</layer> -->
+  </layup>
+  <layup name="layup2">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pvc10">0</layer>
+  </layup>
+  <layup name="layup3">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ps">0</layer>
+  </layup>
+  <layup name="layup4">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ps">0</layer>
+    <layer lamina="web01sur">0:2</layer>
+    <layer lamina="pasteweb">0</layer>
+  </layup>
+  <layup name="layup5">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ps">0</layer>
+  </layup>
+  <layup name="layup6">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ps">0</layer>
+    <layer lamina="web02sur">0:2</layer>
+    <layer lamina="pasteweb">0</layer>
+  </layup>
+  <layup name="layup7">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ps">0</layer>
+  </layup>
+  <layup name="layup8">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pvc10">0</layer>
+  </layup>
+  <layup name="layup9">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="udte">0</layer>
+  </layup>
+  <layup name="layup0">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="udte">0</layer>
+    <layer lamina="pastete">0</layer>
+  </layup>
+  <layup name="layupWeb01">
+    <layer lamina="web01sur">0</layer>
+    <layer lamina="web01cor">0</layer>
+    <layer lamina="web01sur">0</layer>
+  </layup>
+  <!-- station 2 -->
+  <layup name="layup0h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="udte">0</layer>
+    <layer lamina="pastete">0</layer>
+  </layup>
+  <layup name="layup9h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="udte">0</layer>
+  </layup>
+  <layup name="layup8h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pvc10">0</layer>
+  </layup>
+  <layup name="layup7h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pulss">0</layer>
+    <layer lamina="biax300ss">0</layer>
+  </layup>
+  <layup name="layup6h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ss">0</layer>
+    <layer lamina="web02sur">0:2</layer>
+    <layer lamina="pasteweb">0</layer>
+  </layup>
+  <layup name="layup5h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="cpulps">0</layer>
+    <layer lamina="biax300ss">0</layer>
+  </layup>
+  <layup name="layup4h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pulss">0</layer>
+    <layer lamina="biax300ss">0</layer>
+    <layer lamina="web01sur">0:2</layer>
+    <layer lamina="pasteweb">0</layer>
+  </layup>
+  <layup name="layup3h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pulss">0</layer>
+    <layer lamina="biax300ss">0</layer>
+  </layup>
+  <layup name="layup2h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="pvc10">0</layer>
+  </layup>
+  <layup name="layup1h">
+    <layer lamina="coating">0</layer>
+    <layer lamina="h2ax808r06">0:3</layer>
+    <layer lamina="ud650r043">0:2</layer>
+    <layer lamina="b2ax808wb36">0</layer>
+  </layup>
+  <layup name="layupWeb02">
+    <layer lamina="web02sur">0</layer>
+    <layer lamina="web02cor">0</layer>
+    <layer lamina="web02sur">0</layer>
+  </layup>
+</layups>

@@ -1,0 +1,13 @@
+<layups>
+  <layup name="layup1">
+    <layer lamina="la_m1_002">45</layer>
+    <layer lamina="la_m1_002">-45</layer>
+    <layer lamina="la_m2_005">0</layer>
+    <layer lamina="la_m1_002">0:2</layer>
+  </layup>
+  <layup name="layup2">
+    <layer lamina="la_m2_005"></layer>
+    <layer lamina="la_m1_002">0:3</layer>
+    <layer lamina="la_m2_005"></layer>
+  </layup>
+</layups>

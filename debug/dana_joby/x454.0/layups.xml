@@ -1,0 +1,91 @@
+<layups>
+  <!-- =========================================================== -->
+  <layup name="layup_3ply_fab">
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+  </layup>
+  <!-- =========================================================== -->
+  <layup name="layup_4ply_fab">
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+  </layup>
+  <!-- =========================================================== -->
+  <layup name="layup_8ply_fab">
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+  </layup>
+  <!-- =========================================================== -->
+  <layup name="layup_26ply_hyb">
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <!-- ========= CL LAM ============ -->
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+  </layup>
+    <!-- =========================================================== -->
+  <layup name="layup_30ply_hyb">
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>   
+    <!-- ======= END OF SKIN LAM ========== -->
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <!-- ======= CL SPAR LAM ========== -->
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t1100_uni">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+    <layer lamina="la_t800_twill">0</layer>
+    <layer lamina="la_t800_twill">45</layer>
+  </layup>
+</layups>

@@ -1,0 +1,50 @@
+<cross_section name="s">
+  <include>
+    <baseline>baselines</baseline>
+    <!-- <material>materials</material> -->
+    <layup>layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+    <!-- <thermal>0</thermal> -->
+    <!-- <trapeze>0</trapeze> -->
+    <!-- <vlasov>0</vlasov> -->
+    <!-- <initial_twist>0</initial_twist> -->
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.02</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="main">
+    <segment name="sg1">
+      <baseline>bl1</baseline>
+      <layup direction="left">layup1</layup>
+    </segment>
+    <segment name="sg2">
+      <baseline>bl2</baseline>
+      <layup direction="left">layup2</layup>
+    </segment>
+    <segment name="sg3">
+      <baseline>bl3</baseline>
+      <layup direction="left">layup1</layup>
+    </segment>
+  </component>
+  <!-- <dehomo>
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <strains>1 1 1 1</strains>
+  </dehomo>
+  <failure output="stress">
+    <axis1>e11</axis1>
+    <axis2>k11</axis2>
+    <divisions>10</divisions>
+    <loads>1 1 1 1</loads>
+  </failure> -->
+</cross_section>

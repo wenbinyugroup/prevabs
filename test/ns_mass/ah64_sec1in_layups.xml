@@ -1,0 +1,62 @@
+<layups>
+  <!-- Top surface -->
+  <layup name="layup_top_cap">
+    <layer lamina="la_steel_0.0005588">0</layer>
+    <layer lamina="la_im7 tape_0.000762">0</layer>
+  </layup>
+  <layup name="layup_top_spar_cap">
+    <layer lamina="la_steel_0.0005588">0</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_im7 tape_0.000762">0</layer>
+    <layer lamina="la_graphite fab_0.000882">-45</layer>
+  </layup>
+  <layup name="layup_top_spar_main">
+    <layer lamina="la_graphite fab_0.000882">45</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">-45</layer>
+  </layup>
+  <layup name="layup_top_overwrap">
+    <layer lamina="la_kevlar49 120_0.000882">0</layer>
+  </layup>
+  <!-- Bottom surface -->
+  <layup name="layup_bottom_cap">
+    <layer lamina="la_steel_0.0005588">0</layer>
+    <layer lamina="la_im7 tape_0.000762">0</layer>
+  </layup>
+  <layup name="layup_bottom_spar_cap">
+    <layer lamina="la_steel_0.0005588">0</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_im7 tape_0.000762">0</layer>
+    <layer lamina="la_graphite fab_0.000882">-45</layer>
+  </layup>
+  <layup name="layup_bottom_spar_main">
+    <layer lamina="la_graphite fab_0.000882">45</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">-45</layer>
+  </layup>
+  <layup name="layup_bottom_overwrap">
+    <layer lamina="la_kevlar49 120_0.000882">0</layer>
+  </layup>
+  <!-- Webs -->
+  <layup name="layup_web_main">
+    <layer lamina="la_graphite fab_0.000882">45</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">-45</layer>
+  </layup>
+  <layup name="layup_web_aux">
+    <layer lamina="la_ballast tungsten_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">45</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">0</layer>
+    <layer lamina="la_graphite fab_0.000882">-45</layer>
+  </layup>
+  <!-- <layup name="layup_te_fill">
+    <layer lamina="la_plascore_pn2-3/16ox3.0_fill">0</layer>
+  </layup> -->
+  <!-- <layup name="layup_hc_2">
+    <layer lamina="la_hc_2"></layer>
+  </layup> -->
+</layups>

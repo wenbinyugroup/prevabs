@@ -1,0 +1,31 @@
+<cross_section name="v">
+  <include>
+    <baseline>baselines</baseline>
+    <!-- <material>materials</material> -->
+    <layup>layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.9</scale>
+    <rotate></rotate>
+    <mesh_size>0.004</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="surface">
+    <!-- <segment name="sg_lps_4">
+      <baseline>bl_lps_4</baseline>
+      <layup direction="right">layup4</layup>
+    </segment>
+    <segment name="sg_hps_4">
+      <baseline>bl_hps_4</baseline>
+      <layup direction="right">layup4</layup>
+    </segment> -->
+    <segment name="sg_v">
+      <baseline>bl_v</baseline>
+      <layup direction="right">layup4</layup>
+    </segment>
+  </component>
+</cross_section>

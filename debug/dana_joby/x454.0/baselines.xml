@@ -1,0 +1,44 @@
+<baselines>
+  <basepoints>
+    <include>basepoints</include>
+  </basepoints>
+
+
+
+
+  <!-- MODIFIED -->
+  <!-- Changed the base line definitions -->
+  <baseline name="bl_1" type="straight">
+    <!-- <points>le:te</points> -->
+    <points>le:47</points>
+  </baseline>
+  <baseline name="bl_2" type="straight">
+    <!-- <points>te:100,le</points> -->
+    <points>55:100,le</points>
+  </baseline>
+  <!-- Added a new base line for the separated trailing edge -->
+  <baseline name="bl_te" type="straight">
+    <points>47:55</points>
+  </baseline>
+  <!-- MODIFIED END -->
+
+
+
+
+  <baseline name="bl_web_1" type="straight">
+    <point>web_right_1</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_web_2" type="straight">
+    <point>web_right_2</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_web_3" type="straight">
+    <point>web_right_3</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="bl_web_4" type="straight">
+    <point>web_right_4</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

@@ -1,0 +1,42 @@
+<cross_section name="STA1">
+  <include>
+    <baseline>STA1_baselines</baseline>
+    <layup>STA1_layups</layup>
+    <material>MaterialDB</material>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0 0</translate>
+    <scale>0.044</scale>    <!-- converts 1m unified chord to actual chord in m -->
+    <rotate>0.00</rotate>    <!-- Should be kept at 0 and will be rotated in RCAS-->
+    <mesh_size>4.166666e-4</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="cmp_surface">
+    <segment name="sg_circle">
+      <baseline>bl_circle</baseline>
+      <layup direction="right">layup20ply</layup>
+    </segment>
+  </component>
+  <component name="cmp_foam" type="fill" depend="cmp_surface">
+    <location>pt_ct</location>
+    <material>core</material>
+  </component>
+  <global>
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <loads>6277 -240 1125 -0.07 -744 -148</loads>
+    <distributed>
+      <forces>0 0 0</forces>
+      <forces_d1>0 0 0</forces_d1>
+      <forces_d2>0 0 0</forces_d2>
+      <forces_d3>0 0 0</forces_d3>
+      <moments>0 0 0</moments>
+      <moments_d1>0 0 0</moments_d1>
+      <moments_d2>0 0 0</moments_d2>
+      <moments_d3>0 0 0</moments_d3>
+    </distributed>
+  </global>
+</cross_section>

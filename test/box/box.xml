@@ -1,0 +1,206 @@
+<cross_section name="box" format="1">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>db_material</material> -->
+    <material>materials</material>
+    <!-- <layup>layups</layup> -->
+  </include>
+  <analysis>
+    <model>1</model>
+    <!-- <thermal>0</thermal> -->
+    <!-- <trapeze>0</trapeze> -->
+    <!-- <vlasov>0</vlasov> -->
+    <!-- <initial_twist>0.001</initial_twist> -->
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.02</mesh_size>
+    <element_type>2</element_type>
+  </general>
+
+  <!-- =========================================================== -->
+  <baselines>
+    <basepoints>
+      <point name="pt_c">0.0  0.0</point>
+      <point name="pt_lb">-0.5 -0.5</point>
+      <point name="pt_lt">-0.5  0.5</point>
+      <point name="pt_rt">0.5  0.5</point>
+      <point name="pt_rb">0.5 -0.5</point>
+      <point name="pt_lm">-0.5  0.0</point>
+      <point name="pt_rm">0.5  0.0</point>
+      <point name="pt_lb2">-0.5 -0.1</point>
+      <point name="pt_lt2">-0.5  0.1</point>
+      <point name="pt_rt2">0.5  0.1</point>
+      <point name="pt_rb2">0.5 -0.1</point>
+      <point name="pt_lm2">-0.375  0.0</point>
+      <point name="pt_rm2">0.375  0.0</point>
+      <!-- <point name="pweb3">0.25  0.0</point> -->
+      <!-- <point name="bsp_web_m" constraint="middle">rt lb</point> -->
+    </basepoints>
+
+    <baseline name="ln_tlb" type="straight">
+      <points>pt_rt,pt_lt,pt_lb,pt_rb</points>
+    </baseline>
+    <baseline name="ln_top" type="straight">
+      <points>pt_rt,pt_lt</points>
+    </baseline>
+    <baseline name="ln_bottom" type="straight">
+      <points>pt_lb,pt_rb</points>
+    </baseline>
+    <baseline name="ln_web_left" type="straight">
+      <!-- <points>pt_lt2,pt_lm,pt_lb2</points> -->
+      <!-- <point>pt_lm</point> -->
+      <point>pt_lm2</point>
+      <angle>90</angle>
+    </baseline>
+    <baseline name="ln_web_right" type="straight">
+      <!-- <points>pt_rb2,pt_rm,pt_rt2</points> -->
+      <!-- <point>pt_rm</point> -->
+      <point>pt_rm2</point>
+      <angle>90</angle>
+    </baseline>
+    <baseline name="ln_web_mid" type="straight">
+      <point>pt_c</point>
+      <angle>60</angle>
+    </baseline>
+    <!-- <baseline name="bl_web3" type="straight">
+    <point>pweb3</point>
+    <angle>0</angle>
+  </baseline> -->
+  </baselines>
+  <!-- =========================================================== -->
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_iso5_1_002">90:1</layer>
+      <layer lamina="la_iso5_2_003">0</layer>
+    </layup>
+    <layup name="layup2">
+      <layer lamina="la_iso5_3_0025">0:3</layer>
+      <layer lamina="la_iso5_4_005">90</layer>
+    </layup>
+    <layup name="layup3">
+      <layer lamina="la_iso5_5_001">90</layer>
+      <layer lamina="la_iso5_1_002">0</layer>
+      <layer lamina="la_iso5_5_001">90</layer>
+    </layup>
+    <layup name="layup_web">
+      <layer lamina="la_iso5_5_001">0:10</layer>
+    </layup>
+    <layup name="layup_web_2">
+      <layer lamina="la_iso5_1_002">0:3</layer>
+    </layup>
+  </layups>
+
+
+  <!-- =========================================================== -->
+  <component name="wall_tlb">
+    <segment>
+      <baseline>ln_tlb</baseline>
+      <layup>layup1</layup>
+      <!-- <layup direction="right">layup1</layup> -->
+    </segment>
+  </component>
+  <!-- *************************************** -->
+  <!-- <component name="wall_top">
+    <segment>
+      <baseline>ln_top</baseline>
+      <layup>layup1</layup>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+  <!-- *************************************** -->
+  <!-- <component name="wall_bottom">
+    <segment>
+      <baseline>ln_bottom</baseline>
+      <layup>layup1</layup>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+  <!-- *************************************** -->
+  <!-- <component name="wall_left" depend="wall_top,wall_bottom"> -->
+  <component name="wall_mid" depend="wall_top">
+    <segment>
+      <baseline>ln_web_mid</baseline>
+      <!-- <layup>layup2</layup> -->
+      <layup direction="right">layup2</layup>
+    </segment>
+  </component>
+  <!-- *************************************** -->
+  <!-- <component name="wall_left" depend="wall_top,wall_bottom"> -->
+  <!-- <component name="wall_left" depend="wall_top">
+    <segment>
+      <baseline>ln_web_left</baseline>
+      <layup>layup2</layup>
+      <layup direction="right">layup2</layup>
+    </segment>
+  </component> -->
+  <!-- *************************************** -->
+  <!-- <component name="wall_right" depend="wall_top,wall_bottom"> -->
+  <!-- <component name="wall_right" depend="wall_top">
+    <segment>
+      <baseline>ln_web_right</baseline>
+      <layup>layup2</layup>
+    </segment>
+  </component> -->
+
+  <!-- *************************************** -->
+  <!-- <component name="main" style="2">
+    <segment name="sg1">
+      <baseline>bl1</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+    <segment name="sg2">
+      <baseline>bl2</baseline>
+      <layup direction="right">layup2</layup>
+    </segment>
+    <segment name="sg3">
+      <baseline>bl3</baseline>
+      <layup direction="right">layup3</layup>
+    </segment>
+  </component> -->
+
+  <!-- *************************************** -->
+  <!-- <component name="web" depend="main">
+    <segment>
+      <baseline>bl_web</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component> -->
+
+  <!-- *************************************** -->
+  <!-- <component name="fill_left" type="fill" depend="main">
+    <baseline fillside="right">bl_web</baseline>
+    <material>foam</material>
+  </component> -->
+
+  <!-- <component name="fill" type="fill" depend="main,web">
+    <location>pweb2</location>
+    <material>foam</material>
+  </component> -->
+
+  <!-- <component name="fill2" type="fill" depend="main,web">
+    <location>pweb3</location>
+    <material>titanium</material>
+  </component> -->
+
+  <!-- <component name="web2" depend="main,web">
+    <segment>
+      <baseline>bl_web2</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web3" depend="main,web">
+    <segment>
+      <baseline>bl_web3</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component> -->
+
+</cross_section>

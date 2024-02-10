@@ -1,0 +1,151 @@
+<cross_section name="notional_ah" format="1">
+  <!-- Unit: lb-in-slug-sec -->
+  <include>
+    <material>material_database</material>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.25 0</translate>
+    <!-- <scale>1.75</scale> -->
+    <scale>21</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.02</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <!--
+    
+    
+    Basic geometry
+  
+  
+  -->
+  <baselines>
+    <basepoints>
+      <include>hh02_prevabs</include>
+    </basepoints>
+    <!-- Leading cap -->
+    <baseline name="bsl_airfoil" type="straight">
+      <points>ple:79,ple</points>
+    </baseline>
+  </baselines>
+  <!--
+    
+    
+    Layups
+  
+  
+  -->
+  <layups>
+    <layup name="lyp_steel">
+      <layer lamina="Aluminum 8009_0.01">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_graphite">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_kevlar">
+      <layer lamina="AS4 6k/PR 500_fabric_0.0137">0:2</layer>
+    </layup>
+
+    <layup name="lyp_main_top_1">
+      <layer lamina="E-Glass 7781/EA 9396_0.0083">-41.89398091:4</layer>
+    </layup>
+    <layup name="lyp_main_bottom_1">
+      <layer lamina="E-Glass 7781/EA 9396_0.0083">-57.4450298:4</layer>
+    </layup>
+
+    <layup name="lyp_main_top_2">
+      <layer lamina="E-Glass 7781/EA 9396_0.0083">0.3362165638:2</layer>
+    </layup>
+    <layup name="lyp_main_bottom_2">
+      <layer lamina="E-Glass 7781/EA 9396_0.0083">-14.2909584:2</layer>
+    </layup>
+
+    <layup name="lyp_main_top_3">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-17.78772646:2</layer>
+    </layup>
+    <layup name="lyp_main_bottom_3">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">12.36055782:2</layer>
+    </layup>
+
+    <layup name="lyp_main_top_4">
+      <layer lamina="GY-70/934_0.075">63.13081252:3</layer>
+    </layup>
+    <layup name="lyp_main_bottom_4">
+      <layer lamina="GY-70/934_0.075">-71.55502837:3</layer>
+    </layup>
+
+    <layup name="lyp_main_top_5">
+      <layer lamina="T650-35 12k/976_0.0052">-20.69367336:3</layer>
+    </layup>
+    <layup name="lyp_main_bottom_5">
+      <layer lamina="T650-35 12k/976_0.0052">76.92452182:3</layer>
+    </layup>
+
+    <layup name="lyp_main_top_6">
+      <layer lamina="E-Glass 7781/EA 9396_0.0083">64.0957588:1</layer>
+    </layup>
+    <layup name="lyp_main_bottom_6">
+      <layer lamina="E-Glass 7781/EA 9396_0.0083">-86.31333232:1</layer>
+    </layup>
+
+    <layup name="lyp_main_top_7">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-16.10464901:3</layer>
+    </layup>
+    <layup name="lyp_main_bottom_7">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-62.8732736:3</layer>
+    </layup>
+
+    <layup name="lyp_main_top_8">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">39.45518988:0</layer>
+    </layup>
+    <layup name="lyp_main_bottom_8">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">76.7906091:0</layer>
+    </layup>
+
+  </layups>
+  <!--
+    
+    
+    Components
+  
+  
+  -->
+  <component>
+    <segments>
+      <baseline>bsl_airfoil</baseline>
+      <layup begin="0" end="0.1">lyp_steel</layup>
+      <layup begin="0.9" end="1">lyp_steel</layup>
+      <layup begin="0.1" end="0.3">lyp_skin_graphite</layup>
+      <layup begin="0.7" end="0.9">lyp_skin_graphite</layup>
+      <layup begin="0.3" end="0.7">lyp_skin_kevlar</layup>
+
+      <layup begin="0.05944722505" end="0.245602013">lyp_main_top_1</layup>
+      <layup begin="0.6649374932" end="0.8699140626">lyp_main_bottom_1</layup>
+
+      <layup begin="0.02562688245" end="0.2211632333">lyp_main_top_2</layup>
+      <layup begin="0.6029151866" end="0.8893850026">lyp_main_bottom_2</layup>
+
+      <layup begin="0.07934718571" end="0.3612899847">lyp_main_top_3</layup>
+      <layup begin="0.6210937326" end="0.8092675699">lyp_main_bottom_3</layup>
+
+      <layup begin="0.1759262214" end="0.3574157549">lyp_main_top_4</layup>
+      <layup begin="0.7213732704" end="0.9257113041">lyp_main_bottom_4</layup>
+
+      <layup begin="0.1166421246" end="0.2342981294">lyp_main_top_5</layup>
+      <layup begin="0.6956747821" end="0.9433784196">lyp_main_bottom_5</layup>
+
+      <layup begin="0.1026698887" end="0.3406994592">lyp_main_top_6</layup>
+      <layup begin="0.6692301268" end="0.9485843959">lyp_main_bottom_6</layup>
+
+      <layup begin="0.02966846684" end="0.3318725387">lyp_main_top_7</layup>
+      <layup begin="0.7800297206" end="0.9242328054">lyp_main_bottom_7</layup>
+
+      <layup begin="0.09983310181" end="0.2208706776">lyp_main_top_8</layup>
+      <layup begin="0.618925091" end="0.8065633609">lyp_main_bottom_8</layup>
+
+    </segments>
+  </component>
+</cross_section>

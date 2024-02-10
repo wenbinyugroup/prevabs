@@ -1,0 +1,103 @@
+<materials>
+  <material name="Gud0" type="orthotropic">
+    <density>1900</density>
+    <elastic>
+      <e1>4.8E+10</e1>
+      <e2>1.3E+10</e2>
+      <e3>1.3E+10</e3>
+      <g12>3.6E+09</g12>
+      <g13>3.6E+09</g13>
+      <g23>3.6E+09</g23>
+      <nu12>0.23</nu12>
+      <nu13>0.23</nu13>
+      <nu23>0.23</nu23>
+    </elastic>
+  </material>
+  <material name="Cud0" type="orthotropic">
+    <density>1500</density>
+    <elastic>
+      <e1>1.4E+11</e1>
+      <e2>8.5E+9</e2>
+      <e3>8.5E+9</e3>
+      <g12>4.1E+9</g12>
+      <g13>4.1E+9</g13>
+      <g23>4.1E+9</g23>
+      <nu12>0.23</nu12>
+      <nu13>0.23</nu13>
+      <nu23>0.23</nu23>
+    </elastic>
+  </material>
+  <material name="Biax0" type="orthotropic">
+    <density>1900</density>
+    <elastic>
+      <e1>1.2E+10</e1>
+      <e2>1.2E+10</e2>
+      <e3>1.2E+10</e3>
+      <g12>1.4E+10</g12>
+      <g13>1.4E+10</g13>
+      <g23>1.4E+10</g23>
+      <nu12>0.57</nu12>
+      <nu13>0.57</nu13>
+      <nu23>0.57</nu23>
+    </elastic>
+  </material>
+  <material name="Balsa0" type="orthotropic">
+    <density>250</density>
+    <elastic>
+      <e1>3.5E+08</e1>
+      <e2>3.5E+08</e2>
+      <e3>3.5E+08</e3>
+      <g12>1.5E+08</g12>
+      <g13>1.5E+08</g13>
+      <g23>1.5E+08</g23>
+      <nu12>0.3</nu12>
+      <nu13>0.3</nu13>
+      <nu23>0.3</nu23>
+    </elastic>
+  </material>
+  <material name="Pvc0" type="orthotropic">
+    <density>200</density>
+    <elastic>
+      <e1>1.2E+08</e1>
+      <e2>1.2E+08</e2>
+      <e3>1.2E+08</e3>
+      <g12>3.5E+07</g12>
+      <g13>3.5E+07</g13>
+      <g23>3.5E+07</g23>
+      <nu12>0.3</nu12>
+      <nu13>0.3</nu13>
+      <nu23>0.3</nu23>
+    </elastic>
+  </material>
+  <material name="Paste0" type="isotropic">
+    <density>1340</density>
+    <elastic>
+      <e>3.0E+09</e>
+      <nu>0.3</nu>
+    </elastic>
+  </material>
+  <lamina name="Gud">
+    <material>Gud0</material>
+    <thickness>0.0001</thickness>
+  </lamina>
+  <lamina name="Cud">
+    <material>Cud0</material>
+    <thickness>0.0001</thickness>
+  </lamina>
+  <lamina name="Biax">
+    <material>Biax0</material>
+    <thickness>0.0001</thickness>
+  </lamina>
+  <lamina name="Balsa">
+    <material>Balsa0</material>
+    <thickness>0.0001</thickness>
+  </lamina>
+  <lamina name="Pvc">
+    <material>Pvc0</material>
+    <thickness>0.0001</thickness>
+  </lamina>
+  <lamina name="Paste">
+    <material>Paste0</material>
+    <thickness>0.0001</thickness>
+  </lamina>
+</materials>

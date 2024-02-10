@@ -1,0 +1,146 @@
+<geometry>
+  <!-- <basepoints>
+    <include type="airfoil" format="" flip="true">sc1095</include>
+  </basepoints> -->
+  <line source="file" type="airfoil" format="" flip="true">sc1095.dat</line>
+  <!-- <baseline name="bsl_lps" type="straight">
+    <points>1:71</points>
+  </baseline> -->
+  <!-- <baseline name="bsl_hps" type="straight">
+    <points>72:141,1</points>
+  </baseline> -->
+  <point name="pt_spar_tle" on="bsl_lps" by="x2">-0.1</point>
+  <point name="pt_spar_tte" on="bsl_lps" by="x2">-0.4</point>
+  <point name="pt_spar_ble" on="bsl_hps" by="x2">-0.1</point>
+  <point name="pt_spar_bte" on="bsl_hps" by="x2">-0.4</point>
+
+  <point name="pt_fill_le">-0.068  0.0</point>
+  <point name="pt_spar_lwmid">-0.1  0</point>
+  <point name="pt_te_fill_bound">-0.95577 0</point>
+  <point name="pt_te_fill_1">-0.42 0</point>
+  <point name="pt_te_fill_2">-0.9 0</point>
+  <point name="pt_te_tab_2">-0.96 0</point>
+  <point name="pt_nsm_c">-0.03  0</point>
+
+  <baseline name="bsl_box" type="straight">
+    <points>pt_spar_tle:pt_spar_tte,pt_spar_bte:pt_spar_ble,pt_spar_tle</points>
+  </baseline>
+
+  <!-- <baseline name="bsl_spar_top" type="straight">
+    <points>pt_spar_tle:pt_spar_tte</points>
+  </baseline>
+  <baseline name="bsl_spar_bottom" type="straight">
+    <points>pt_spar_bte:pt_spar_ble</points>
+  </baseline>
+  <baseline name="bsl_web_le" type="straight">
+    <points>pt_spar_ble,pt_spar_tle</points>
+  </baseline>
+  <baseline name="bsl_web_te" type="straight">
+    <points>pt_spar_tte,pt_spar_bte</points>
+  </baseline> -->
+
+  <baseline name="bsl_tle" type="straight">
+    <!-- <points>1:22</points> -->
+    <points>1:pt_spar_tle</points>
+  </baseline>
+  <baseline name="bsl_ble" type="straight">
+    <!-- <points>121:141,1</points> -->
+    <points>pt_spar_ble:141,1</points>
+  </baseline>
+
+  <baseline name="bsl_tte" type="straight">
+    <!-- <points>35:66</points> -->
+    <points>pt_spar_tte:66</points>
+  </baseline>
+  <baseline name="bsl_bte" type="straight">
+    <!-- <points>77:108</points> -->
+    <points>77:pt_spar_bte</points>
+  </baseline>
+  <baseline name="bsl_te" type="straight">
+    <points>66:77</points>
+  </baseline>
+
+  <baseline name="bsl_nsm" type="circle">
+    <center>pt_nsm_c</center>
+    <radius>0.006</radius>
+    <discrete by="angle">9</discrete>
+  </baseline>
+  <baseline name="bsl_te_fill_bound" type="straight">
+    <point>pt_te_fill_bound</point>
+    <angle>90</angle>
+  </baseline>
+</geometry>
+
+
+
+
+<component name="main_spar">
+  <segment name="main_spar">
+    <baseline>bsl_box</baseline>
+    <layup>layup_box</layup>
+  </segment>
+</component>
+
+
+<component name="le" depend="main_spar">
+  <segment name="le_top">
+    <baseline>bsl_tle</baseline>
+    <layup>layup_cap</layup>
+  </segment>
+  <segment name="le_bottom">
+    <baseline>bsl_ble</baseline>
+    <layup>layup_cap</layup>
+  </segment>
+</component>
+
+
+<component name="te" depend="main_spar">
+  <segment name="te_top">
+    <baseline>bsl_tte</baseline>
+    <layup>layup_tail</layup>
+  </segment>
+  <segment name="te_te">
+    <baseline>bsl_te</baseline>
+    <layup>layup_tail</layup>
+  </segment>
+  <segment name="te_bottom">
+    <baseline>bsl_bte</baseline>
+    <layup>layup_tail</layup>
+  </segment>
+</component>
+
+
+<component name="ns_mass" type="fill" depend="le">
+  <baseline>bsl_nsm</baseline>
+  <location>pt_nsm_c</location>
+  <material>mtr_ns_mass</material>
+  <mesh_size at="pt_nsm_c">0.004</mesh_size>
+</component>
+
+
+<component name="fill_fwd" type="fill" depend="main_spar,le,ns_mass">
+  <location>pt_fill_le</location>
+  <material>Rohacell 70</material>
+  <mesh_size at="pt_fill_le">0.004</mesh_size>
+</component>
+
+
+<component name="fill_te" type="fill" depend="te">
+  <baseline fillside="left">bsl_te_fill_bound</baseline>
+  <!-- <location>pt_te_tab_2</location> -->
+  <material>e_glass</material>
+</component>
+
+
+<component name="fill_aft" type="fill" depend="main_spar,te,fill_te">
+  <!-- <baseline>bsl_te_fill_bound</baseline> -->
+  <location>pt_te_fill_1</location>
+  <material>Plascore PN2-3/16OX3.0</material>
+  <mesh_size at="pt_te_fill_1,pt_te_fill_2">0.01</mesh_size>
+</component>
+<!-- <component name="fill_te_tab" type="fill" depend="main_spar,te,fill_te">
+    <baseline fillside="left">bsl_te_fill_bound</baseline>
+    <baseline>bsl_te_fill_bound</baseline>
+    <location>pt_te_fill_2</location>
+    <material>e_glass</material>
+  </component> -->

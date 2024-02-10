@@ -1,0 +1,14 @@
+<baselines>
+  <basepoints>
+    <include scale="1.9">basepoints</include>
+  </basepoints>
+  <baseline name="bl_lps_4" type="straight">
+    <points>48:te</points>
+  </baseline>
+  <baseline name="bl_hps_4" type="straight">
+    <points>te:78</points>
+  </baseline>
+  <baseline name="bl_v" type="straight">
+    <points>48:78</points>
+  </baseline>
+</baselines>

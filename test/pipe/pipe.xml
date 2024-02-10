@@ -1,0 +1,32 @@
+<cross_section name="pipe2">
+    <include>
+        <baseline>baselines</baseline>
+        <material>materials</material>
+        <layup>layups</layup>
+    </include>
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.02</mesh_size>
+        <element_type>quadratic</element_type>
+    </general>
+    <segments>
+        <segment name="sgtop">
+            <baseline>bltop</baseline>
+            <layup>layup1</layup>
+        </segment>
+        <segment name="sgright">
+            <baseline>blright</baseline>
+            <layup>layup2</layup>
+        </segment>
+        <segment name="sgbottom">
+            <baseline>blbottom</baseline>
+            <layup>layup1</layup>
+        </segment>
+        <segment name="sgleft">
+            <baseline>blleft</baseline>
+            <layup>layup2</layup>
+        </segment>
+    </segments>
+</cross_section>

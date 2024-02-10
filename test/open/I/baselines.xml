@@ -1,0 +1,27 @@
+<baselines>
+  <basepoints>
+    <point name="tl">-1  0</point>
+    <point name="tc">0  0</point>
+    <point name="tr">1  0</point>
+    <point name="br">1.5  -3</point>
+    <point name="bc">0  -3</point>
+    <point name="bl">-1.5  -3</point>
+    <point name="web">0.04  -2</point>
+  </basepoints>
+  <baseline name="bl_top" type="straight">
+    <points>tl,tc,tr</points>
+  </baseline>
+  <baseline name="bl_bottom" type="straight">
+    <points>bl,bc,br</points>
+  </baseline>
+  <baseline name="bl_left_c" type="straight">
+    <points>tl,tc,bc,bl</points>
+  </baseline>
+  <baseline name="bl_right_c" type="straight">
+    <points>tr,tc,bc,br</points>
+  </baseline>
+  <baseline name="bl_web" type="straight">
+    <point>web</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

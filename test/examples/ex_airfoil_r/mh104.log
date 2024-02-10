@@ -1,0 +1,52 @@
+2022-01-11 00:12:14 [info] prevabs start
+2022-01-11 00:12:14 [info]   - dehomogenizing...
+2022-01-11 00:12:14 [info]       - reading main input file: .\share\test\examples\ex_airfoil_r\mh104.xml
+2022-01-11 00:12:14 [info]         - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2022-01-11 00:12:14 [info]         - reading materials file: .\share\test\examples\ex_airfoil_r\materials.xml
+2022-01-11 00:12:14 [info]       - reading main input data: .\share\test\examples\ex_airfoil_r\mh104.xml
+2022-01-11 00:12:14 [info]     - writing glb file: .\share\test\examples\ex_airfoil_r\mh104.sg.glb
+2022-01-11 00:12:14 [info] - post-processing recover results
+2022-01-11 00:12:14 [info]   - reading VABS input data: .\share\test\examples\ex_airfoil_r\mh104.sg
+2022-01-11 00:12:14 [info]   - reading dehomogenization outputs...
+2022-01-11 00:12:14 [info]     - reading VABS recovered data: .\share\test\examples\ex_airfoil_r\mh104.sg.U
+2022-01-11 00:12:15 [info]     - reading VABS recovered data: .\share\test\examples\ex_airfoil_r\mh104.sg.ELE
+2022-01-11 00:12:18 [info]   - writing gmsh .opt file: .\share\test\examples\ex_airfoil_r\mh104_local.opt
+2022-01-11 00:12:18 [info]   - writing gmsh .geo file: .\share\test\examples\ex_airfoil_r\mh104_local.geo
+2022-01-11 00:12:18 [info]   - writing gmsh .msh file: .\share\test\examples\ex_airfoil_r\mh104_local_case_1.msh
+2022-01-11 00:12:18 [info]       - writing node data: Displacement
+2022-01-11 00:12:18 [info]       - writing component: U1
+2022-01-11 00:12:18 [info]       - writing component: U2
+2022-01-11 00:12:18 [info]       - writing component: U3
+2022-01-11 00:12:18 [info]       - writing element data: Stress (global)
+2022-01-11 00:12:18 [info]       - writing component: S11
+2022-01-11 00:12:19 [info]       - writing component: S12
+2022-01-11 00:12:19 [info]       - writing component: S13
+2022-01-11 00:12:19 [info]       - writing component: S22
+2022-01-11 00:12:19 [info]       - writing component: S23
+2022-01-11 00:12:19 [info]       - writing component: S33
+2022-01-11 00:12:19 [info]       - writing element data: Strain (global)
+2022-01-11 00:12:19 [info]       - writing component: E11
+2022-01-11 00:12:19 [info]       - writing component: 2E12
+2022-01-11 00:12:19 [info]       - writing component: 2E13
+2022-01-11 00:12:20 [info]       - writing component: E22
+2022-01-11 00:12:20 [info]       - writing component: 2E23
+2022-01-11 00:12:20 [info]       - writing component: E33
+2022-01-11 00:12:20 [info]       - writing element data: Stress (material)
+2022-01-11 00:12:20 [info]       - writing component: SM11
+2022-01-11 00:12:20 [info]       - writing component: SM12
+2022-01-11 00:12:20 [info]       - writing component: SM13
+2022-01-11 00:12:20 [info]       - writing component: SM22
+2022-01-11 00:12:20 [info]       - writing component: SM23
+2022-01-11 00:12:20 [info]       - writing component: SM33
+2022-01-11 00:12:20 [info]       - writing element data: Strain (material)
+2022-01-11 00:12:21 [info]       - writing component: EM11
+2022-01-11 00:12:21 [info]       - writing component: 2EM12
+2022-01-11 00:12:21 [info]       - writing component: 2EM13
+2022-01-11 00:12:21 [info]       - writing component: EM22
+2022-01-11 00:12:21 [info]       - writing component: 2EM23
+2022-01-11 00:12:21 [info]       - writing component: EMN3
+2022-01-11 00:12:21 [info] - post-processing recover results -- done
+2022-01-11 00:12:21 [info] - running Gmsh for visualization
+2022-01-11 00:12:21 [info] - running: gmsh .\share\test\examples\ex_airfoil_r\mh104_local.geo .\share\test\examples\ex_airfoil_r\mh104_local_case_1.msh .\share\test\examples\ex_airfoil_r\mh104_local.opt
+2022-01-11 00:12:21 [info] prevabs finished
+2022-01-11 00:12:21 [info] total running time: 7.186 sec

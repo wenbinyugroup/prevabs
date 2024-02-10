@@ -1,0 +1,32 @@
+<cross_section name="t">
+  <include>
+    <baseline>baselines</baseline>
+    <!-- <material>materials</material> -->
+    <layup>layups</layup>
+  </include>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="cpflange">
+    <segment>
+      <baseline>bl1</baseline>
+      <layup direction="left">layup1</layup>
+    </segment>
+  </component>
+  <component name="cpwebl" depend="cpflange">
+    <segment free="head">
+      <baseline>blweb</baseline>
+      <layup direction="left">layupweb</layup>
+    </segment>
+  </component>
+  <!-- <component name="cpwebr" depend="cpflange">
+    <segment free="head">
+      <baseline>blweb</baseline>
+      <layup direction="right">layupweb</layup>
+    </segment>
+  </component> -->
+</cross_section>

@@ -1,0 +1,27 @@
+2021-11-08 10:21:16 [info] prevabs start
+2021-11-08 10:21:16 [info] - reading input files
+2021-11-08 10:21:16 [info]     - reading main input file: .\debug\ags705\ags705.xml
+2021-11-08 10:21:16 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2021-11-08 10:21:16 [info]       - reading materials file: .\debug\ags705\materials.xml
+2021-11-08 10:21:16 [info] - reading input files -- done
+2021-11-08 10:21:16 [info] - building the shape
+2021-11-08 10:21:16 [info]   - building the cross section, step 1
+2021-11-08 10:21:16 [info]     - building component: surface
+2021-11-08 10:21:16 [info]       - building the cross section, step 2
+2021-11-08 10:21:16 [info]         - building component details: surface
+2021-11-08 10:21:16 [info]     - building the shape -- done
+2021-11-08 10:21:16 [info]     - modeling in Gmsh
+2021-11-08 10:21:16 [info]       - creating gmsh vertices
+2021-11-08 10:21:16 [info]       - creating gmsh edges
+2021-11-08 10:21:16 [info]       - creating gmsh face
+2021-11-08 10:21:16 [info]       - meshing
+2021-11-08 10:21:17 [info]     - modeling in Gmsh -- done
+2021-11-08 10:21:17 [info]     - writing outputs
+2021-11-08 10:21:17 [info]       - writing Gmsh .geo file: .\debug\ags705\ags705.geo
+2021-11-08 10:21:17 [info]       - writing Gmsh .geo file: .\debug\ags705\ags705.msh
+2021-11-08 10:21:17 [info]       - writing Gmsh .opt file: .\debug\ags705\ags705.opt
+2021-11-08 10:21:17 [info]       - writing sg file: .\debug\ags705\ags705.sg
+2021-11-08 10:21:17 [info]     - writing outputs -- done
+2021-11-08 10:21:17 [info]     - running Gmsh for visualization
+2021-11-08 10:21:17 [info] prevabs finished
+2021-11-08 10:21:17 [info] total running time: 1.367 sec

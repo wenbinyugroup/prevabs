@@ -1,0 +1,80 @@
+<cross_section name="vr7">
+  <include>
+    <baseline>baselines</baseline>
+    <material>materials</material>
+    <layup>layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>0 0</translate>
+    <scale>20.2</scale>
+    <!-- <rotate>-5.0</rotate> -->
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <component name="main">
+    <segment name="lps_sgm_1">
+      <baseline>bsl_spar</baseline>
+      <layup direction="right">layup_cap_dspar</layup>
+    </segment>
+    <!-- <segment name="hps_sgm_1">
+      <baseline>hps_bl_1</baseline>
+      <layup direction="right">layup_cap_dspar</layup>
+    </segment> -->
+    <segment name="web_sgm">
+      <baseline>bsl_web</baseline>
+      <layup direction="right">layup_web_dspar</layup>
+    </segment>
+  </component>
+
+  <component name="overwrap" depend="main">
+    <segment>
+      <baseline>bsl_overwrap_top</baseline>
+      <layup direction="right">layup_skin</layup>
+    </segment>
+    <segment>
+      <baseline>bsl_overwrap_te</baseline>
+      <layup direction="right">layup_skin</layup>
+    </segment>
+    <segment>
+      <baseline>bsl_overwrap_bottom</baseline>
+      <layup direction="right">layup_skin</layup>
+    </segment>
+    <!-- <segment name="lps_sgm_3">
+      <baseline>lps_bl_3</baseline>
+      <layup direction="right">layup_skin</layup>
+    </segment>
+    <segment name="hps_sgm_3">
+      <baseline>hps_bl_3</baseline>
+      <layup direction="right">layup_skin</layup>
+    </segment>
+    <segment name="hps_sgm_2">
+      <baseline>hps_bl_2</baseline>
+      <layup direction="right">layup_skin</layup>
+    </segment> -->
+  </component>
+    <!-- <segment name="web_sgm_2" level="10">
+      <baseline>web_bl_tr</baseline>
+      <layup direction="left">layup_hc_2</layup>
+    </segment> -->
+    <!-- <segment name="filling_sgm" level="10">
+      <baseline>filling_bl</baseline>
+      <layup direction="left">filling_hc</layup>
+    </segment> -->
+
+  <!-- <dehomo measure="stress">
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <loads>11000 8 400 0 45000 1000</loads>
+  </dehomo> -->
+  <!-- <failure measure="stress">
+    <axis1>f1</axis1>
+    <axis2>m1</axis2>
+    <divisions>10</divisions>
+    <loads>11000 8 400 0 45000 1000</loads>
+  </failure> -->
+</cross_section>

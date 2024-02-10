@@ -1,0 +1,5 @@
+<baselines basepoints="basepoints">
+    <baseline name="blcircle" type="circle">
+        <center>ct</center><radius>10</radius>
+        <discrete by="angle">3</discrete></baseline>
+</baselines>

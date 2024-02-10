@@ -1,0 +1,33 @@
+<baselines>
+  <basepoints>
+    <point name="ct">0 0</point>
+    <point name="p1">2 0</point>
+    <point name="p2">-2 0</point>
+    <point name="pt_web_r">0.1  0.0</point>
+  </basepoints>
+  <baseline name="bsl_circle" type="circle">
+    <center>ct</center>
+    <radius>2</radius>
+    <discrete by="angle">5</discrete>
+    <direction>ccw</direction>
+  </baseline>
+  <baseline name="bsl_arc_top" type="arc">
+    <center>ct</center>
+    <start>p1</start>
+    <end>p2</end>
+    <discrete by="angle">3</discrete>
+    <direction>ccw</direction>
+  </baseline>
+  <baseline name="bsl_arc_bottom" type="arc">
+    <center>ct</center>
+    <start>p2</start>
+    <end>p1</end>
+    <discrete by="angle">3</discrete>
+    <direction>ccw</direction>
+  </baseline>
+
+  <baseline name="bl_web" type="straight">
+    <point>pt_web_r</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

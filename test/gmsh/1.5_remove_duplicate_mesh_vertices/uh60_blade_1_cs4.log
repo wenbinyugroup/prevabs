@@ -1,0 +1,40 @@
+2022-03-21 15:59:07 [info] prevabs start
+2022-03-21 15:59:07 [info] - reading input files
+2022-03-21 15:59:07 [info]     - reading main input file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.xml
+2022-03-21 15:59:07 [info]       - reading airfoil data file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\A094R8M3.dat
+2022-03-21 15:59:07 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2022-03-21 15:59:07 [info]       - reading materials file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\material_database_us_ft.xml
+2022-03-21 15:59:07 [info] - reading input files -- done
+2022-03-21 15:59:07 [info] - building the shape
+2022-03-21 15:59:07 [info]   - building the cross section, step 1
+2022-03-21 15:59:07 [info]     - building component: spar
+2022-03-21 15:59:07 [info]     - building component: le
+2022-03-21 15:59:07 [info]     - building component: te
+2022-03-21 15:59:07 [info]     - building component: ns_mass
+2022-03-21 15:59:07 [info]     - building component: fill_aft
+2022-03-21 15:59:07 [info]     - building component: fill_fwd
+2022-03-21 15:59:07 [info]   - building the cross section, step 2
+2022-03-21 15:59:07 [info]     - building component details: spar
+2022-03-21 15:59:07 [info]     - building component details: le
+2022-03-21 15:59:07 [info]     - building component details: te
+2022-03-21 15:59:07 [info]   - fixing geometry
+2022-03-21 15:59:07 [info] - building the shape -- done
+2022-03-21 15:59:07 [info] - modeling in Gmsh
+2022-03-21 15:59:07 [info]   - creating gmsh vertices
+2022-03-21 15:59:07 [info]   - creating gmsh edges
+2022-03-21 15:59:07 [info]   - creating gmsh face
+2022-03-21 15:59:07 [info]   - meshing
+2022-03-21 15:59:08 [info] - modeling in Gmsh -- done
+2022-03-21 15:59:08 [info] - writing outputs
+2022-03-21 15:59:08 [info]   - writing gmsh .opt file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.opt
+2022-03-21 15:59:08 [info]   - writing gmsh .geo file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.geo
+2022-03-21 15:59:08 [info]   - writing gmsh .msh file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.msh
+2022-03-21 15:59:08 [info]   - writing sg file: .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.sg
+2022-03-21 15:59:08 [info] - writing outputs -- done
+2022-03-21 15:59:08 [info]   - running VABS for homogenization
+2022-03-21 15:59:08 [info] running VABS...
+2022-03-21 15:59:10 [info]   - running VABS for homogenization -- done
+2022-03-21 15:59:10 [info] - running Gmsh for visualization
+2022-03-21 15:59:10 [info] - running: gmsh .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.geo .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.msh .\test\gmsh\1.5_remove_duplicate_mesh_vertices\uh60_blade_1_cs4.opt
+2022-03-21 15:59:10 [info] prevabs finished
+2022-03-21 15:59:10 [info] total running time: 3.062 sec

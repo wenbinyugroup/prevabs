@@ -1,0 +1,40 @@
+1. T300 15k/976
+xt, F1t 211 ksi
+xc, F1c 136 ksi
+yt, F2t 5.66 ksi
+yc, F2c 30.0 ksi
+s, F12 11.1  ksi
+
+2. T650-35 3k 976_fabric
+xt, F1t 94.4 ksi
+xc, F1c 96.7 ksi
+yt, F2t 93.7 ksi
+yc, F2c 92.6 ksi
+s, F12 15.0 ksi
+
+3. Aluminium 8009
+Tensile Strength, Yield 
+F 55.800 ksi	
+
+4. AS4 12k/E7K8 unidirectional tape 
+xt, F1t 303 ksi
+xc, F1c 245 ksi
+yt, F2t 5.47 ksi
+s, F12 16.5 ksi
+
+5. Lead
+0.1% strain
+
+
+6. Rohacell 70 PMI rigid foam
+xt, tensile, ultimate: 398 psi
+xc, compressive, yield: 213 psi
+s, shear: 185 psi
+flexural, yield: 356 psi
+
+
+7. Plascore PN2-3/16OX3.0
+xc, compressive: 330 psi
+shear, L: 176 psi
+shear, W: 118 psi
+
