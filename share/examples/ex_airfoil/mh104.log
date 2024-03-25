@@ -1,0 +1,33 @@
+2024-03-04 22:22:09 [info] prevabs start
+2024-03-04 22:22:09 [info] - reading input files
+2024-03-04 22:22:09 [info]     - reading main input file: mh104.xml
+2024-03-04 22:22:09 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
+2024-03-04 22:22:09 [info]         - reading materials file: materials.xml
+2024-03-04 22:22:09 [info]   - reading input files -- done
+2024-03-04 22:22:09 [info]   - building the shape
+2024-03-04 22:22:09 [info]     - building the cross section, step 1
+2024-03-04 22:22:09 [info]       - building component: surface
+2024-03-04 22:22:09 [info]       - building component: web1
+2024-03-04 22:22:09 [info]       - building component: web2
+2024-03-04 22:22:09 [info]     - building the cross section, step 2
+2024-03-04 22:22:09 [info]       - building component details: surface
+2024-03-04 22:22:09 [info]       - building component details: web1
+2024-03-04 22:22:09 [info]       - building component details: web2
+2024-03-04 22:22:09 [info]     - fixing geometry
+2024-03-04 22:22:09 [info]   - building the shape -- done
+2024-03-04 22:22:09 [info]   - modeling in Gmsh
+2024-03-04 22:22:09 [info]     - creating gmsh vertices
+2024-03-04 22:22:09 [info]     - creating gmsh edges
+2024-03-04 22:22:09 [info]     - creating gmsh face
+2024-03-04 22:22:09 [info]     - meshing
+2024-03-04 22:22:10 [info]   - modeling in Gmsh -- done
+2024-03-04 22:22:10 [info]   - writing outputs
+2024-03-04 22:22:10 [info]     - writing gmsh .opt file: mh104.opt
+2024-03-04 22:22:10 [info]     - writing gmsh .geo file: mh104.geo
+2024-03-04 22:22:10 [info]     - writing gmsh .msh file: mh104.msh
+2024-03-04 22:22:10 [info]     - writing sg file: mh104.sg
+2024-03-04 22:22:10 [info]   - writing outputs -- done
+2024-03-04 22:22:10 [info]   - running Gmsh for visualization
+2024-03-04 22:22:10 [info]   - running: gmsh mh104.geo mh104.msh mh104.opt
+2024-03-04 22:22:10 [info] prevabs finished
+2024-03-04 22:22:10 [info] total running time: 1.513 sec

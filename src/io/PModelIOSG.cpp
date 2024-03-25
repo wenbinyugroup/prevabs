@@ -98,9 +98,23 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
   fclose(fsg);
 
-  // config.file_name_vsc = fn + ".sg";
 
-  // i_indent--;
+  // Write a supplementary file
+  // to store the mapping between the material id and name
+  fn_mid2name = fn + ".mat";
+  PLOG(info) << pmessage->message("writing material id-name file: " + fn_mid2name);
+
+  FILE *fsg_mat;
+  fsg_mat = fopen(fn_mid2name.c_str(), "w");
+
+  for (auto m : this->cs()->getUsedMaterials()) {
+    fprintf(fsg_mat, "%4d    %s\n", m->id(), m->getName().c_str());
+  }
+  fprintf(fsg_mat, "\n");
+
+  fclose(fsg_mat);
+
+
   pmessage->decreaseIndent();
 
   return 1;

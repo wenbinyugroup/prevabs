@@ -1,37 +1,37 @@
-2022-04-19 13:30:39 [info] prevabs start
-2022-04-19 13:30:39 [info] - reading input files
-2022-04-19 13:30:39 [info]     - reading main input file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.xml
-2022-04-19 13:30:39 [info]       - reading airfoil data file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\SC1095.dat
-2022-04-19 13:30:39 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
-2022-04-19 13:30:39 [info]       - reading materials file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\material_database_us_ft.xml
-2022-04-19 13:30:39 [info] - reading input files -- done
-2022-04-19 13:30:39 [info] - building the shape
-2022-04-19 13:30:39 [info]   - building the cross section, step 1
-2022-04-19 13:30:39 [info]     - building component: spar
-2022-04-19 13:30:39 [info]     - building component: le
-2022-04-19 13:30:39 [info]     - building component: te
-2022-04-19 13:30:39 [info]     - building component: ns_mass
-2022-04-19 13:30:39 [info]     - building component: fill_aft
-2022-04-19 13:30:39 [info]     - building component: fill_fwd
-2022-04-19 13:30:39 [info]   - building the cross section, step 2
-2022-04-19 13:30:39 [info]     - building component details: spar
-2022-04-19 13:30:39 [info]     - building component details: le
-2022-04-19 13:30:39 [info]     - building component details: te
-2022-04-19 13:30:39 [info]   - fixing geometry
-2022-04-19 13:30:39 [info] - building the shape -- done
-2022-04-19 13:30:39 [info] - modeling in Gmsh
-2022-04-19 13:30:39 [info]   - creating gmsh vertices
-2022-04-19 13:30:39 [info]   - creating gmsh edges
-2022-04-19 13:30:39 [info]   - creating gmsh face
-2022-04-19 13:30:39 [info]   - meshing
-2022-04-19 13:30:40 [info] - modeling in Gmsh -- done
-2022-04-19 13:30:40 [info] - writing outputs
-2022-04-19 13:30:40 [info]   - writing gmsh .opt file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.opt
-2022-04-19 13:30:40 [info]   - writing gmsh .geo file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.geo
-2022-04-19 13:30:40 [info]   - writing gmsh .msh file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.msh
-2022-04-19 13:30:40 [info]   - writing sg file: .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.sg
-2022-04-19 13:30:41 [info] - writing outputs -- done
-2022-04-19 13:30:41 [info] - running Gmsh for visualization
-2022-04-19 13:30:41 [info] - running: gmsh .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.geo .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.msh .\test\airfoil\uh60a\1.5_airfoil_topo_dspar\uh60_cs_d.opt
-2022-04-19 13:30:41 [info] prevabs finished
-2022-04-19 13:30:41 [info] total running time: 1.808 sec
+2024-02-10 17:24:25 [info] prevabs start
+2024-02-10 17:24:25 [info] - reading input files
+2024-02-10 17:24:25 [info]     - reading main input file: uh60_cs_d.xml
+2024-02-10 17:24:25 [info]       - reading airfoil data file: SC1095.dat
+2024-02-10 17:24:25 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
+2024-02-10 17:24:25 [info]         - reading materials file: material_database_us_ft.xml
+2024-02-10 17:24:25 [info]   - reading input files -- done
+2024-02-10 17:24:25 [info]   - building the shape
+2024-02-10 17:24:25 [info]     - building the cross section, step 1
+2024-02-10 17:24:25 [info]       - building component: spar
+2024-02-10 17:24:25 [info]       - building component: le
+2024-02-10 17:24:25 [info]       - building component: te
+2024-02-10 17:24:25 [info]       - building component: ns_mass
+2024-02-10 17:24:25 [info]       - building component: fill_aft
+2024-02-10 17:24:25 [info]       - building component: fill_fwd
+2024-02-10 17:24:25 [info]     - building the cross section, step 2
+2024-02-10 17:24:25 [info]       - building component details: spar
+2024-02-10 17:24:25 [info]       - building component details: le
+2024-02-10 17:24:25 [info]       - building component details: te
+2024-02-10 17:24:25 [info]     - fixing geometry
+2024-02-10 17:24:25 [info]   - building the shape -- done
+2024-02-10 17:24:25 [info]   - modeling in Gmsh
+2024-02-10 17:24:25 [info]     - creating gmsh vertices
+2024-02-10 17:24:25 [info]     - creating gmsh edges
+2024-02-10 17:24:25 [info]     - creating gmsh face
+2024-02-10 17:24:25 [info]     - meshing
+2024-02-10 17:24:26 [info]   - modeling in Gmsh -- done
+2024-02-10 17:24:26 [info]   - writing outputs
+2024-02-10 17:24:26 [info]     - writing gmsh .opt file: uh60_cs_d.opt
+2024-02-10 17:24:26 [info]     - writing gmsh .geo file: uh60_cs_d.geo
+2024-02-10 17:24:26 [info]     - writing gmsh .msh file: uh60_cs_d.msh
+2024-02-10 17:24:26 [info]     - writing sg file: uh60_cs_d.sg
+2024-02-10 17:24:27 [info]   - writing outputs -- done
+2024-02-10 17:24:27 [info]   - running Gmsh for visualization
+2024-02-10 17:24:27 [info]   - running: gmsh uh60_cs_d.geo uh60_cs_d.msh uh60_cs_d.opt
+2024-02-10 17:24:27 [info] prevabs finished
+2024-02-10 17:24:27 [info] total running time: 2.197 sec

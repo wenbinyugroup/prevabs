@@ -2,6 +2,9 @@
 
 ## Version 1.5
 
+- 1.5.2
+  - Added a new output file after creating the cross-section to store the mapping between material IDs and names.
+
 - 1.5.1 (2022/10/27)
   - Fixed the issue of reading result of failure analysis of the new format with an extra line of load case label.
   - Added a new tag name for the root XML element: "sg".
