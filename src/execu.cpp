@@ -36,10 +36,10 @@ extern "C" {
   double *Xe3, double Aee_k[][NE_1D], double Aee_k_F[][NE_1D], double Aee_damp[][NE_1D], double *Xe2_k, double *Xe3_k, double ST[][6], double ST_F[][6], double ST_damp[][6], double *Sc1, double *Sc2, double stiff_val[][5],\
   double stiff_val_F[][5], double stiff_val_damp[][5], double Ag1[][4], double Bk1[][4], double Ck2[][4], double Dk3[][4], int *thermal_I, double *cte, double temperature[], double NT[], double NT_F[], char *error,int len1, int len2);
 
-  void output_(char *inp_name, double mass[][6], double *area, double *xm2, double *xm3, double mass_mc[][6], double *I22, double *I33, double *mass_angle, double *Xg2, double *Xg3,\
-  double Aee[][NE_1D], double Aee_F[][NE_1D], double *Xe2, double *Xe3, double Aee_k[][NE_1D], double Aee_k_F[][NE_1D], double Aee_damp[][NE_1D], double *Xe2_k, double *Xe3_k, double ST[][6], double ST_F[][6], double ST_damp[][6], double *Sc1, double *Sc2,\
-  double stiff_val[][5], double stiff_val_F[][5], double stiff_val_damp[][5], double Ag1[][4], double Bk1[][4], double Ck2[][4], double Dk3[][4], int *thermal_I, double *cte, double temperature[],\
-  double NT[], double NT_F[], int *Vlasov_I, int *damping_I, int *curved_I, int *Timoshenko_I, int *trapeze_I, char *error);
+  // void output_(char *inp_name, double mass[][6], double *area, double *xm2, double *xm3, double mass_mc[][6], double *I22, double *I33, double *mass_angle, double *Xg2, double *Xg3,\
+  // double Aee[][NE_1D], double Aee_F[][NE_1D], double *Xe2, double *Xe3, double Aee_k[][NE_1D], double Aee_k_F[][NE_1D], double Aee_damp[][NE_1D], double *Xe2_k, double *Xe3_k, double ST[][6], double ST_F[][6], double ST_damp[][6], double *Sc1, double *Sc2,\
+  // double stiff_val[][5], double stiff_val_F[][5], double stiff_val_damp[][5], double Ag1[][4], double Bk1[][4], double Ck2[][4], double Dk3[][4], int *thermal_I, double *cte, double temperature[],\
+  // double NT[], double NT_F[], int *Vlasov_I, int *damping_I, int *curved_I, int *Timoshenko_I, int *trapeze_I, char *error);
 }
 
 
@@ -331,10 +331,10 @@ void runIntegratedVABS(const std::string &file_name, PModel *model, Message *pme
     exit(1);
   }
 
-  output_(inp_name, mass, &area, &xm2, &xm3, mass_mc, &I22, &I33, &mass_angle, &Xg2, &Xg3,\
-  Aee, Aee_F, &Xe2, &Xe3, Aee_k, Aee_k_F, Aee_damp, &Xe2_k, &Xe3_k, ST, ST_F, ST_damp, &Sc1, &Sc2,\
-  stiff_val, stiff_val_F, stiff_val_damp, Ag1, Bk1, Ck2, Dk3, &thermal_I, &(cte[0][0]), temperature,\
-  NT, NT_F, &Vlasov_I, &damping_I, &curved_I, &Timoshenko_I, &trapeze_I, error);
+  // output_(inp_name, mass, &area, &xm2, &xm3, mass_mc, &I22, &I33, &mass_angle, &Xg2, &Xg3,\
+  // Aee, Aee_F, &Xe2, &Xe3, Aee_k, Aee_k_F, Aee_damp, &Xe2_k, &Xe3_k, ST, ST_F, ST_damp, &Sc1, &Sc2,\
+  // stiff_val, stiff_val_F, stiff_val_damp, Ag1, Bk1, Ck2, Dk3, &thermal_I, &(cte[0][0]), temperature,\
+  // NT, NT_F, &Vlasov_I, &damping_I, &curved_I, &Timoshenko_I, &trapeze_I, error);
 
 }
 
