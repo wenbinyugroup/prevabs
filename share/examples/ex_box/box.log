@@ -1,24 +1,23 @@
-2023-11-06 12:26:53 [info] prevabs start
-2023-11-06 12:26:53 [info] - reading input files
-2023-11-06 12:26:53 [info]     - reading main input file: .\box.xml
-2023-11-06 12:26:53 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
-2023-11-06 12:26:53 [info]         - reading materials file: .\materials.xml
-2023-11-06 12:26:53 [info]   - reading input files -- done
-2023-11-06 12:26:53 [info]   - building the shape
-2023-11-06 12:26:53 [info]     - building the cross section, step 1
-2023-11-06 12:26:53 [info]       - building component: main
-2023-11-06 12:26:53 [info]     - building the cross section, step 2
-2023-11-06 12:26:53 [info]       - building component details: main
-2023-11-06 12:26:53 [info]     - fixing geometry
-2023-11-06 12:26:53 [info]   - building the shape -- done
-2023-11-06 12:26:53 [info]   - modeling in Gmsh
-2023-11-06 12:26:53 [info]     - creating gmsh vertices
-2023-11-06 12:26:53 [info]     - creating gmsh edges
-2023-11-06 12:26:53 [info]     - creating gmsh face
-2023-11-06 12:26:53 [info]     - meshing
-2023-11-06 12:26:53 [info]   - modeling in Gmsh -- done
-2023-11-06 12:26:53 [info]   - writing outputs
-2023-11-06 12:26:53 [info]     - writing sg file: .\box.sg
-2023-11-06 12:26:53 [info]   - writing outputs -- done
-2023-11-06 12:26:53 [info] prevabs finished
-2023-11-06 12:26:53 [info] total running time: 0.118 sec
+2024-08-07 13:33:28 [info] prevabs start
+2024-08-07 13:33:28 [info] - reading input files
+2024-08-07 13:33:28 [info]     - reading main input file: box.xml
+2024-08-07 13:33:28 [info]       - reading materials file: C:\Users\tian50\program\MaterialDB.xml
+2024-08-07 13:33:28 [info]       - reading materials file: materials.xml
+2024-08-07 13:33:28 [info] - reading input files -- done
+2024-08-07 13:33:28 [info] - building the shape
+2024-08-07 13:33:28 [info]   - building the cross section, step 1
+2024-08-07 13:33:28 [info]     - building component: main
+2024-08-07 13:33:28 [info]   - building the cross section, step 2
+2024-08-07 13:33:28 [info]     - building component details: main
+2024-08-07 13:33:28 [info]   - fixing geometry
+2024-08-07 13:33:28 [info] - building the shape -- done
+2024-08-07 13:33:28 [info] - modeling in Gmsh
+2024-08-07 13:33:28 [info]   - creating gmsh vertices
+2024-08-07 13:33:28 [info]   - creating gmsh edges
+2024-08-07 13:33:28 [info]   - creating gmsh face
+2024-08-07 13:33:28 [info]   - meshing
+2024-08-07 13:33:28 [info] - modeling in Gmsh -- done
+2024-08-07 13:33:28 [info]   - running VABS for homogenization
+2024-08-07 13:33:30 [info]   - running VABS for homogenization -- done
+2024-08-07 13:33:30 [info] prevabs finished
+2024-08-07 13:33:30 [info] total running time: 2.04 sec

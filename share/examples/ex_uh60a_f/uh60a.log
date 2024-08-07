@@ -1,21 +1,8 @@
-2024-02-07 15:32:10 [info] prevabs start
-2024-02-07 15:32:10 [info]   - dehomogenizing...
-2024-02-07 15:32:10 [info]       - reading main input file: uh60a.xml
-2024-02-07 15:32:10 [error]         - unable to open file: C:\Users\tian50\program\MaterialDB.xml
-2024-02-07 15:32:10 [info]           - reading materials file: material_database.xml
-2024-02-07 15:32:10 [info]         - reading main input data: uh60a.xml
-2024-02-07 15:32:10 [info]       - writing glb file: uh60a.sg.glb
-2024-02-07 15:32:10 [info]   - post-processing recover results
-2024-02-07 15:32:10 [info]     - reading VABS input data: uh60a.sg
-2024-02-07 15:32:11 [info]     - reading failure analysis outputs...
-2024-02-07 15:32:11 [info]       - reading failure analysis result: uh60a.sg.fi
-2024-02-07 15:32:11 [info]     - writing gmsh .opt file: uh60a_local.opt
-2024-02-07 15:32:11 [info]     - writing gmsh .geo file: uh60a_local.geo
-2024-02-07 15:32:11 [info]     - writing gmsh .msh file: uh60a_local_case_1.msh
-2024-02-07 15:32:11 [info]         - writing element data: Strength ratio
-2024-02-07 15:32:11 [info]         - writing element data: Failure index
-2024-02-07 15:32:11 [info]   - post-processing recover results -- done
-2024-02-07 15:32:11 [info]   - running Gmsh for visualization
-2024-02-07 15:32:11 [info]   - running: gmsh uh60a_local.geo uh60a_local_case_1.msh uh60a_local.opt
-2024-02-07 15:32:11 [info] prevabs finished
-2024-02-07 15:32:11 [info] total running time: 0.565 sec
+2024-08-07 13:35:35 [info] prevabs start
+2024-08-07 13:35:35 [info]   - dehomogenizing...
+2024-08-07 13:35:35 [info]       - reading main input file: .\uh60a.xml
+2024-08-07 13:35:35 [info]         - reading materials file: C:\Users\tian50\program\MaterialDB.xml
+2024-08-07 13:35:35 [info]         - reading materials file: .\material_database.xml
+2024-08-07 13:35:35 [info]       - reading main input data: .\uh60a.xml
+2024-08-07 13:35:35 [info]     - writing glb file: .\uh60a.sg.glb
+2024-08-07 13:35:35 [info]   - running VABS for recover
