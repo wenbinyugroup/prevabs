@@ -2,16 +2,35 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "cl",
-            "displayName": "Configure preset using toolchain file",
-            "description": "Sets Ninja generator, build and install directory",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "name": "x86_amd64",
+            "displayName": "Visual Studio Community 2022 Release - x86_amd64",
+            "description": "Using compilers for Visual Studio 17 2022 (x86_x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x86",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/build",
+            "installDir": "${sourceDir}/bin",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_TOOLCHAIN_FILE": "",
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "Boost_DIR": "C:/Users/tian50/program/boost_1_85_0",
+                "Gmsh_DIR": "C:/Users/tian50/program/gmsh-4.13.1-Windows64-sdk",
+                "VABS_DIR": "C:/Program Files/AnalySwift/VABS4.1ReleasePC08-01-2024"
             }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "x86_amd64-debug",
+            "displayName": "Visual Studio Community 2022 Release - x86_amd64 - Debug",
+            "configurePreset": "x86_amd64",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x86_amd64-release",
+            "displayName": "Visual Studio Community 2022 Release - x86_amd64 - Release",
+            "configurePreset": "x86_amd64",
+            "configuration": "Release"
         }
     ]
 }

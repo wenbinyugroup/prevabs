@@ -53,9 +53,7 @@ set( SOURCES
   # src/vabs/output.f90
 )
 
-
 add_executable( ${PROJECTNAME} ${SOURCES} )
-
 
 
 # Link Boost libraries
@@ -65,10 +63,10 @@ set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_STATIC_RUNTIME OFF)
 add_definitions( -DBOOST_ALL_DYN_LINK )
 
-find_package( Boost 1.66 COMPONENTS log log_setup system thread REQUIRED )
-message( ${Boost_INCLUDE_DIRS} )
-message( ${Boost_LIBRARY_DIRS} )
-message( ${Boost_LIBRARIES} )
+find_package( Boost 1.85 COMPONENTS log log_setup system thread REQUIRED )
+message( STATUS ${Boost_INCLUDE_DIRS} )
+message( STATUS ${Boost_LIBRARY_DIRS} )
+message( STATUS ${Boost_LIBRARIES} )
 include_directories( ${Boost_INCLUDE_DIRS} )
 
 target_link_libraries( ${PROJECTNAME} ${Boost_LIBRARIES} )
@@ -78,8 +76,9 @@ target_link_libraries( ${PROJECTNAME} ${Boost_LIBRARIES} )
 
 # Link Gmsh library
 # -----------------
-find_library( GMSH NAMES Gmsh PATHS "./lib" REQUIRED NO_DEFAULT_PATH)
-message( ${GMSH} )
+message( STATUS ${Gmsh_DIR} )
+find_library( GMSH NAMES gmsh HINTS Gmsh_DIR REQUIRED )
+message( STATUS ${GMSH} )
 
 target_link_libraries( ${PROJECTNAME} ${GMSH} )
 
@@ -87,19 +86,11 @@ target_link_libraries( ${PROJECTNAME} ${GMSH} )
 
 # Link VABS library
 # -----------------
-# find_library( VABS NAMES VABS PATHS "${VABS_INSTALL_DIR}" REQUIRED NO_DEFAULT_PATH)
-# find_library( VABS NAMES VABSLib.so PATHS "${VABS_INSTALL_DIR}" REQUIRED NO_DEFAULT_PATH )
-# message( ${VABS} )
-# set( CMAKE_SHARED_LIBRARY_PREFIX "" )
-
-# target_link_directories( ${PROJECTNAME} "/home/msg/a/MSGCodes" )
-# target_link_libraries( ${PROJECTNAME} ${VABS} )
-# target_link_libraries( ${PROJECTNAME} "${VABS_INSTALL_DIR}/VABSLib.so" )
-# target_link_options( ${PROJECTNAME} PRIVATE "${VABS_INSTALL_DIR}/VABSLib.so" )
+message( STATUS ${VABS_DIR} )
 
 if( WIN32 OR CYGWIN OR MINGW )
-  find_library( VABS NAMES VABSLIB.dll.a PATHS "${VABS_INSTALL_DIR}" REQUIRED NO_DEFAULT_PATH)
-  message( ${VABS} )
+  find_library( VABS NAMES VABSLIB HINTS "${VABS_DIR}" REQUIRED )
+  message( STATUS ${VABS} )
   target_link_libraries( ${PROJECTNAME} ${VABS} )
 
 elseif( UNIX )
@@ -108,7 +99,7 @@ elseif( UNIX )
   # target_link_libraries( ${PROJECTNAME} ${VABS} )
   # target_link_options( ${PROJECTNAME} PRIVATE "${VABS_INSTALL_DIR}/VABSLib.so" )
   # target_link_options( ${PROJECTNAME} PRIVATE "-l:VABSLib.so" )
-  target_link_options( ${PROJECTNAME} PRIVATE "-L${VABS_INSTALL_DIR}" )
+  target_link_options( ${PROJECTNAME} PRIVATE "-L${VABS_DIR}" )
   target_link_options( ${PROJECTNAME} PRIVATE "-l:VABSLib.so" )
 
 endif()
