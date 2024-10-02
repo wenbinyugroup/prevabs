@@ -6,6 +6,7 @@ _build/
 share/doc/prevabs/_build/*
 evals/
 .vscode/
+.vs/
 
 # Ignore the following files
 ~$*
