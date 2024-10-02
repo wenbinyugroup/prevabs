@@ -3,8 +3,8 @@
 #include "globalConstants.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <iostream>

@@ -3,8 +3,9 @@
 #include "PModel.hpp"
 #include "utilities.hpp"
 
-#include <gmsh/StringUtils.h>
-#include "gmsh/MTriangle.h"
+// #include <gmsh/StringUtils.h>
+#include <gmsh_mod/StringUtils.h>
+// #include "gmsh/MTriangle.h"
 
 #include <array>
 #include <fstream>

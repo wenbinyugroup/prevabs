@@ -7,8 +7,8 @@
 #include "plog.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/GFace.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
+// #include "gmsh/GFace.h"
 
 #include <string>
 #include <vector>
@@ -24,7 +24,8 @@ PDCELFace::PDCELFace() {
   _y2 = SVector3(0, 1, 0);
 
   _gbuild = true;
-  _gface = nullptr;
+  // _gface = nullptr;
+  _gface_tag = 0;
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
@@ -38,7 +39,8 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
   _y2 = SVector3(0, 1, 0);
 
   _gbuild = true;
-  _gface = nullptr;
+  // _gface = nullptr;
+  _gface_tag = 0;
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
@@ -52,7 +54,8 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
   _y2 = SVector3(0, 1, 0);
 
   _gbuild = build;
-  _gface = nullptr;
+  // _gface = nullptr;
+  _gface_tag = 0;
 }
 
 

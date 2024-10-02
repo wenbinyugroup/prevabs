@@ -8,7 +8,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/StringUtils.h"
+// #include "gmsh/StringUtils.h"
+#include "gmsh_mod/StringUtils.h"
 
 // #include <cmath>
 #include <ctime>
@@ -175,15 +176,6 @@ int main(int argc, char *argv[]) {
 
   PLOG(info) << "prevabs start";
 
-  // PLOG(trace) << "A trace level message";
-  // PLOG(debug) << "A debug level message";
-  // PLOG(info) << "An info level message";
-  // PLOG(warning) << "A warning level message";
-  // PLOG(error) << "An error level message";
-  // PLOG(fatal) << "A fatel level message";
-
-  // std::cout << config.log_severity_level << std::endl;
-
   Message *pmessage = new Message(v_filename[0] + v_filename[1] + ".txt");
   pmessage->openFile();
 
@@ -206,78 +198,6 @@ int main(int argc, char *argv[]) {
   if (config.homo) {
 
     pmodel->homogenize(pmessage);
-
-    // try {
-    //   // ================
-    //   // READ INPUT FILES
-    //   // ================
-
-    //   pmessage->printBlank();
-    //   PLOG(info) << pmessage->message("reading input files");
-
-    //   readInputMain(config.main_input, config.file_directory, pmodel, pmessage);
-    //   // pmodel->summary(pmessage);
-
-    //   PLOG(info) << pmessage->message("reading input files -- done");
-    //   pmessage->printBlank();
-
-
-
-
-
-    //   // ==============
-    //   // BUILD GEOMETRY
-    //   // ==============
-
-    //   pmessage->printBlank();
-    //   PLOG(info) << pmessage->message("building the shape");
-
-    //   pmodel->build(pmessage);
-
-    //   PLOG(info) << pmessage->message("building the shape -- done");
-    //   pmessage->printBlank();
-
-
-
-
-
-    //   // ================
-    //   // MODELING IN GMSH
-    //   // ================
-
-    //   pmessage->printBlank();
-    //   PLOG(info) << pmessage->message("modeling in Gmsh");
-
-    //   pmodel->buildGmsh(pmessage);
-
-    //   PLOG(info) << pmessage->message("modeling in Gmsh -- done");
-    //   pmessage->printBlank();
-
-
-
-
-
-    //   // ===================
-    //   // WRITE SG INPUT FILE
-    //   // ===================
-    //   // if (config.analysis_tool != 3) {
-    //   if (!config.integrated_solver) {
-    //     pmessage->printBlank();
-    //     PLOG(info) << pmessage->message("writing outputs");
-
-    //     if (config.plot) {
-    //       pmodel->writeGmsh(config.file_directory + config.file_base_name, pmessage);
-    //     }
-    //     pmodel->writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
-
-    //     PLOG(info) << pmessage->message("writing outputs -- done");
-    //     pmessage->printBlank();
-    //   }
-    // }
-    // catch (std::exception &exception) {
-    //   pmessage->print(2, exception.what());
-    //   return 0;
-    // }
 
   }
 
@@ -368,65 +288,15 @@ int main(int argc, char *argv[]) {
 
     pmodel->run(pmessage);
 
-    // pmessage->printBlank();
-    // // pmessage->print(1, "running " + config.tool_name + " for " + config.msg_analysis);
-    // PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis);
-    // pmessage->printBlank();
-    // pmessage->print(1, " [" + config.tool_name + " Messages] ");
-    // pmessage->printBlank();
-
-    // if (config.analysis_tool == 1) {
-    //   if (config.integrated_solver) {
-    //     runIntegratedVABS(config.file_name_vsc, pmodel);
-    //   }
-    //   else {
-    //     if (config.dehomo) {
-    //       config.vabs_option = "2";
-    //       if (config.dehomo_nl) {
-    //         config.vabs_option = "1";
-    //       }
-    //     }
-    //     runVABS(config.file_name_vsc, config.vabs_option);
-    //   }
-    // }
-    // else if (config.analysis_tool == 2) {
-    //   runSC(config.file_name_vsc, config.sc_option);
-    // }
-    // // else if (config.analysis_tool == 3) {
-    // //   runIntegratedVABS(config.file_name_vsc, pmodel);
-    // // }
-
-    // pmessage->printBlank();
-    // pmessage->print(1, " [" + config.tool_name + " Messages End] ");
-    // pmessage->printBlank();
-    // // pmessage->print(1, "running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-    // PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-    // pmessage->printBlank();
   }
 
 
 
 
   if (config.plot) {
+
     pmodel->plot(pmessage);
-    // if (config.dehomo) {
-    //   pmessage->printBlank();
-    //   // pmessage->print(1, "post-processing recover results");
-    //   PLOG(info) << pmessage->message("post-processing recover results");
-    //   if (config.analysis_tool == 1) {
-    //     pmodel->postVABS(pmessage);
-    //   }
-    //   else if (config.analysis_tool == 2) {
-    //     pmodel->postSCDehomo();
-    //   }
-    //   // pmessage->print(1, "post-processing recover results -- done");
-    //   PLOG(info) << pmessage->message("post-processing recover results -- done");
-    //   pmessage->printBlank();
-    // }
-    // pmessage->printBlank();
-    // // pmessage->print(1, "running Gmsh for visualization");
-    // PLOG(info) << pmessage->message("running Gmsh for visualization");
-    // runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt);
+
   }
 
   pmodel->finalize();

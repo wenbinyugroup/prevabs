@@ -7,8 +7,8 @@
 #include "PDCELVertex.hpp"
 #include "globalConstants.hpp"
 
-#include "gmsh/GFace.h"
-#include "gmsh/SVector3.h"
+// #include "gmsh/GFace.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <string>
@@ -34,7 +34,8 @@ private:
   std::vector<PDCELVertex *> _embedded_vertices;
 
   bool _gbuild;
-  GFace *_gface;
+  // GFace *_gface;
+  int _gface_tag = 0;
 
   std::string _name;
 
@@ -62,7 +63,8 @@ public:
   std::vector<PDCELVertex *> getEmbeddedVertices() { return _embedded_vertices; }
 
   bool gbuild() { return _gbuild; }
-  GFace *gface() { return _gface; }
+  // GFace *gface() { return _gface; }
+  int gfaceTag() { return _gface_tag; }
 
   std::string name() { return _name; }
 
@@ -87,7 +89,8 @@ public:
   void addEmbeddedVertex(PDCELVertex *v) { _embedded_vertices.push_back(v); }
 
   void setGBuild(bool b) { _gbuild = b;}
-  void setGFace(GFace *gf) { _gface = gf; }
+  // void setGFace(GFace *gf) { _gface = gf; }
+  void setGFaceTag(int tag) { _gface_tag = tag; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
 
   void setName(std::string name) { _name = name; }

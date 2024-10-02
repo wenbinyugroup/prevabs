@@ -6,8 +6,8 @@
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 
-#include "gmsh/GEdge.h"
-#include "gmsh/SVector3.h"
+// #include "gmsh/GEdge.h"
+#include "gmsh_mod/SVector3.h"
 
 class PDCELFace;
 class PDCELHalfEdgeLoop;
@@ -28,7 +28,8 @@ private:
   bool _on_joint = false;
 
   bool _gbuild;
-  GEdge *_gedge;
+  // GEdge *_gedge;
+  int _gedge_tag = 0;
 
 public:
   PDCELHalfEdge()
@@ -89,8 +90,11 @@ public:
 
   // Gmsh
   bool gbuild() { return _gbuild; }
-  GEdge *gedge() { return _gedge; }
+  // GEdge *gedge() { return _gedge; }
+  ing gedgeTag() { return _gedge_tag; }
   void setGBuild(bool build) { _gbuild = build; }
-  void setGEdge(GEdge *gedge) { _gedge = gedge; }
-  void resetGEdge() { _gedge = nullptr; }
+  // void setGEdge(GEdge *gedge) { _gedge = gedge; }
+  void setGEdgeTag(int tag) { _gedge_tag = tag; }
+  // void resetGEdge() { _gedge = nullptr; }
+  void resetGEdgeTag() { _gedge_tag = 0; }
 };

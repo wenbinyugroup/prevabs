@@ -10,15 +10,16 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/GEdge.h"
-#include "gmsh/GEdgeLoop.h"
-#include "gmsh/GEntity.h"
-#include "gmsh/GFace.h"
-#include "gmsh/GModel.h"
-#include "gmsh/GVertex.h"
-#include "gmsh/Gmsh.h"
-#include "gmsh/MElement.h"
-#include "gmsh/MTriangle.h"
+#include <gmsh.h>
+// #include "gmsh/GEdge.h"
+// #include "gmsh/GEdgeLoop.h"
+// #include "gmsh/GEntity.h"
+// #include "gmsh/GFace.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/GVertex.h"
+// #include "gmsh/Gmsh.h"
+// #include "gmsh/MElement.h"
+// #include "gmsh/MTriangle.h"
 
 #include <cstdio>
 #include <fstream>
@@ -37,11 +38,15 @@ PModel::PModel(std::string name) {
 
 
 void PModel::initialize() {
+
   if (config.debug) {
     config.fdeb = fopen((config.file_directory + config.file_base_name + ".debug").c_str(), "w");
   }
-  GmshInitialize(0, 0);
+
+  gmsh::initialize();
+  // GmshInitialize(0, 0);
   // printInfo(1, "Gmsh initialized");
+
 }
 
 
@@ -49,10 +54,14 @@ void PModel::initialize() {
 
 
 void PModel::finalize() {
-  GmshFinalize();
+
+  gmsh::finalize();
+  // GmshFinalize();
+
   if (config.debug) {
     fclose(config.fdeb);
   }
+
 }
 
 

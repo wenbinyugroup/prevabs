@@ -8,7 +8,7 @@
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh/STensor3.h"
+#include "gmsh_mod/STensor3.h"
 #include "rapidxml/rapidxml.hpp"
 
 #include <fstream>

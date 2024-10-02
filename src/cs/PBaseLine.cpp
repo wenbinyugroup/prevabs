@@ -5,7 +5,7 @@
 #include "PDCELVertex.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <fstream>

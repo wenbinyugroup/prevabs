@@ -12,7 +12,7 @@
 // #include "recover.h"
 #include "utilities.hpp"
 
-#include "gmsh/StringUtils.h"
+#include "gmsh_mod/StringUtils.h"
 
 // #include <cmath>
 #include <ctime>

@@ -4,7 +4,7 @@
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <iostream>

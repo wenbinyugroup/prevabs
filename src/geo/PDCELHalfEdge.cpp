@@ -5,8 +5,8 @@
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
+#include "gmsh_mod/SVector3.h"
 #include "gmsh/GEdge.h"
-#include "gmsh/SVector3.h"
 
 #include <cmath>
 #include <cstdio>

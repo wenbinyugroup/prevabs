@@ -9,8 +9,8 @@
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
 
 #include <list>
 #include <string>

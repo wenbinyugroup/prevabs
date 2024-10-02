@@ -6,7 +6,7 @@
 #include "PSegment.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/GModel.h"
+// #include "gmsh/GModel.h"
 
 #include <string>
 #include <vector>
@@ -123,7 +123,7 @@ public:
 class PModel {
 private:
   std::string _name;
-  GModel *_gmodel, *_gmodel_debug;
+  // GModel *_gmodel, *_gmodel_debug;
   PDCEL *_dcel;
 
   double _global_mesh_size;
@@ -205,7 +205,7 @@ public:
   // =================================================================
   // Getters
 
-  GModel *gmodel() { return _gmodel; }
+  // GModel *gmodel() { return _gmodel; }
   PDCEL *dcel() { return _dcel; }
 
   double globalMeshSize() { return _global_mesh_size; }

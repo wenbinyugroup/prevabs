@@ -4,10 +4,10 @@
 #include "globalConstants.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/GVertex.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
+#include "gmsh_mod/SVector3.h"
+// #include "gmsh/GVertex.h"
 
 #include <sstream>
 #include <iostream>
@@ -155,7 +155,8 @@ void PDCELVertex::setPoint(SPoint3 &p) { _point = p; }
 
 void PDCELVertex::setIncidentEdge(PDCELHalfEdge *he) { _incident_edge = he; }
 
-void PDCELVertex::setGVertex(GVertex *gv) { _gvertex = gv; }
+// void PDCELVertex::setGVertex(GVertex *gv) { _gvertex = gv; }
+void PDCELVertex::setGVertexTag(int tag) { _gvertex_tag = tag; }
 
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2) {
   return v1->point() < v2->point();
