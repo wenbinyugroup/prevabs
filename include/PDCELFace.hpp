@@ -33,9 +33,13 @@ private:
   double _mesh_size = -1;
   std::vector<PDCELVertex *> _embedded_vertices;
 
+  // Gmsh
   bool _gbuild;
   // GFace *_gface;
   int _gface_tag = 0;
+  std::vector<int> _embedded_gvertex_tags;
+  std::vector<int> _embedded_gedge_tags;
+  int _gmsh_physical_group_tag = 0;
 
   std::string _name;
 
@@ -65,6 +69,11 @@ public:
   bool gbuild() { return _gbuild; }
   // GFace *gface() { return _gface; }
   int gfaceTag() { return _gface_tag; }
+  std::vector<int> getEmbeddedGVertexTags() { return _embedded_gvertex_tags; }
+  std::vector<int> getEmbeddedGEdgeTags() { return _embedded_gedge_tags; }
+  void addEmbeddedGVertexTag(int tag) { _embedded_gvertex_tags.push_back(tag); }
+  void addEmbeddedGEdgeTag(int tag) { _embedded_gedge_tags.push_back(tag); }
+  int gmshPhysicalGroupTag() { return _gmsh_physical_group_tag; }
 
   std::string name() { return _name; }
 
@@ -91,6 +100,7 @@ public:
   void setGBuild(bool b) { _gbuild = b;}
   // void setGFace(GFace *gf) { _gface = gf; }
   void setGFaceTag(int tag) { _gface_tag = tag; }
+  void setGmshPhysicalGroupTag(int tag) { _gmsh_physical_group_tag = tag; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
 
   void setName(std::string name) { _name = name; }

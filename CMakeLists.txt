@@ -101,19 +101,19 @@ target_link_libraries( ${PROJECTNAME} ${Boost_LIBRARIES} )
 # Link Gmsh library
 # -----------------
 message( STATUS "(st) " $ENV{Gmsh_ROOT} )
-find_library(GMSH_LIB gmsh PATHS $ENV{Gmsh_ROOT}/lib REQUIRED)
-if(NOT GMSH_LIB)
-  message(FATAL_ERROR "Could not find libgmsh")
-endif()
-message( STATUS "(st) " ${GMSH_LIB} )
 
 find_path(GMSH_INC gmsh.h PATHS $ENV{Gmsh_ROOT}/include REQUIRED)
 if(NOT GMSH_INC)
   message(FATAL_ERROR "Could not find gmsh.h")
 endif()
 message( STATUS "(st) " ${GMSH_INC} )
-
 include_directories(${GMSH_INC})
+
+find_library(GMSH_LIB gmsh PATHS $ENV{Gmsh_ROOT}/lib REQUIRED)
+if(NOT GMSH_LIB)
+  message(FATAL_ERROR "Could not find libgmsh")
+endif()
+message( STATUS "(st) " ${GMSH_LIB} )
 target_link_libraries( ${PROJECTNAME} ${GMSH_LIB} )
 
 # find_library( GMSH NAMES Gmsh PATHS "./lib" REQUIRED NO_DEFAULT_PATH)

@@ -1,3 +1,4 @@
+#include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "PDataClasses.hpp"
 #include "PMeshClasses.hpp"
@@ -10,6 +11,96 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+
+
+
+
+// ===================================================================
+
+void PModel::writeNodes(FILE *file, Message *pmessage) {
+
+  pmessage->increaseIndent();
+  PLOG(info) << pmessage->message("writing nodes");
+
+  // std::vector<GEntity *> gentities;
+  // pmodel->gmodel()->getEntities(gentities);
+
+  std::vector<std::size_t> node_tags;
+  std::vector<double> node_coords, node_params;
+
+  gmsh::model::mesh::getNodes(node_tags, node_coords, node_params, -1, -1);
+
+  for (std::size_t i = 0; i < node_tags.size(); ++i) {
+    fprintf(file, "%8d%16e%16e\n",
+            node_tags[i],
+            node_coords[3*i+1],
+            node_coords[3*i+2]);
+
+    if (interfaceOutput()) {
+      std::vector<int> eids;
+      // Add an empty vector as a placeholder
+      node_elements.push_back(eids);
+    }
+
+  }
+
+  fprintf(file, "\n");
+
+  pmessage->decreaseIndent();
+
+  return;
+
+}
+
+
+
+
+void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
+
+  pmessage->increaseIndent();
+  PLOG(info) << pmessage->message("writing elements");
+
+  // Write connectivity for each element
+  std::vector<int> elem_types;
+  std::vector<std::vector<std::size_t>> elem_tags, elem_node_tags;
+  gmsh::model::mesh::getElements(elem_types, elem_tags, elem_node_tags, -1, -1);
+
+  for (auto f : _dcel->faces()) {
+    if (f->gface() != nullptr) {
+      for (auto elem : f->gface()->triangles) {
+        writeElementVABS(file, this, elem, f->layertype()->id());
+      }
+    }
+  }
+  fprintf(file, "\n");
+
+  // Wirte local coordinate for each element
+  std::vector<double> dnums;
+  for (auto f : _dcel->faces()) {
+    if (f->gface() != nullptr) {
+      for (auto elem : f->gface()->triangles) {
+        fprintf(file, "%8d", _gmodel->getMeshElementIndex(elem));
+        dnums = {
+          // 1.0, 0.0, 0.0, 
+          f->localy1()[0], f->localy1()[1], f->localy1()[2], 
+          f->localy2()[0], f->localy2()[1], f->localy2()[2], 
+          0.0, 0.0, 0.0
+        };
+        writeNumbers(file, "%16e", dnums);
+      }
+    }
+  }
+
+  pmessage->decreaseIndent();
+
+  return;
+
+}
+
+
+
+
+// ===================================================================
 
 
 int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {

@@ -546,7 +546,7 @@ void PModel::build(Message *pmessage) {
 void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
 
   if (create_gmsh_geo) {
-    initGmshModel(pmessage);
+    // initGmshModel(pmessage);
     createGmshGeo(pmessage);
   }
 

@@ -228,6 +228,8 @@ public:
 
   int getNumOfMaterials() { return _materials.size(); }
   int getNumOfLayerTypes() { return _layertypes.size(); }
+  std::size_t getNumOfNodes();
+  std::size_t getNumOfElements();
 
   std::vector<PDCELVertex *> &vertices() { return _vertices; }
   std::vector<Baseline *> &baselines() { return _baselines; }
@@ -372,6 +374,11 @@ public:
     \param fmt Format (1: VABS, 2: SwiftComp)
    */
   int writeSG(std::string fn, int fmt, Message *);
+  void writeNodes(FILE *, Message *);
+  void writeElementsVABS(FILE *, Message *);
+  void writeElementsSC(FILE *, Message *);
+  // void writeMaterialsVABS(FILE *, Message *);
+  // void writeSettingsVABS(FILE *, Message *);
   int writeGLB(std::string fn, Message *);
 
   // Write supplement files
@@ -387,11 +394,14 @@ public:
   void homogenize(Message *);
   void build(Message *);
 
-  void initGmshModel(Message *);
+  // void initGmshModel(Message *);
   void createGmshVertices(Message *);
   void createGmshEdges(Message *);
   void createGmshFaces(Message *);
+  void createGmshEmbeddedEntities(Message *);
+  void createGmshPhyscialGroups(Message *);
   void createGmshGeo(Message *);
+  void recordInterface(PDCELHalfEdge *, Message *);
 
   void buildGmsh(Message *);
 
