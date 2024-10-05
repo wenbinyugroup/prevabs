@@ -536,32 +536,34 @@ std::vector<int> parseIntegersFromString(const std::string &s) {
 
 
 
-std::string lowerString(std::string str) {
-  std::locale loc;
-  for (std::string::size_type i = 0; i < str.length(); ++i)
-    str[i] = std::tolower(str[i], loc);
-  return str;
+// std::string lowerString(std::string str) {
+//   std::locale loc;
+//   for (std::string::size_type i = 0; i < str.length(); ++i)
+//     str[i] = std::tolower(str[i], loc);
+//   return str;
+// }
+std::string lowerString(const std::string& str) {
+    std::string lower_str = str;
+    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return lower_str;
 }
 
 
 
 
-
-
-
-
-
-std::string upperString(std::string str) {
-  std::locale loc;
-  for (std::string::size_type i = 0; i < str.length(); ++i)
-    str[i] = std::toupper(str[i], loc);
-  return str;
+// std::string upperString(std::string str) {
+//   std::locale loc;
+//   for (std::string::size_type i = 0; i < str.length(); ++i)
+//     str[i] = std::toupper(str[i], loc);
+//   return str;
+// }
+std::string upperString(const std::string& str) {
+    std::string upper_str = str;
+    std::transform(upper_str.begin(), upper_str.end(), upper_str.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
+    return upper_str;
 }
-
-
-
-
-
 
 
 

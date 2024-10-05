@@ -72,12 +72,15 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
   // ------------------------------
   // Write nodes and elements
-  writeNodes(fsg, this);
+  // writeNodes(fsg, this);
+  writeNodes(fsg, pmessage);
 
   if (config.analysis_tool == 1) {
-    writeElementsVABS(fsg, this);
+    // writeElementsVABS(fsg, this);
+    writeElementsVABS(fsg, pmessage);
   } else if (config.analysis_tool == 2) {
-    writeElementsSC(fsg, this);
+    // writeElementsSC(fsg, this);
+    writeElementsSC(fsg, pmessage);
   }
 
   // ------------------------------
@@ -615,18 +618,18 @@ void writeSettingsSC(FILE *file, PModel *model) {
 
 
 
-template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int mid) {
-  std::vector<int> inums(9, 0);
-  fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
-  for (int i = 0; i < elem->getNumVertices(); ++i) {
-    if (i < 3) {
-      inums[i] = elem->getVertex(i)->getIndex();
-    } else {
-      inums[i + 1] = elem->getVertex(i)->getIndex();
-    }
-  }
-  writeNumbers(file, "%8d", inums);
-}
+// template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int mid) {
+//   std::vector<int> inums(9, 0);
+//   fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
+//   for (int i = 0; i < elem->getNumVertices(); ++i) {
+//     if (i < 3) {
+//       inums[i] = elem->getVertex(i)->getIndex();
+//     } else {
+//       inums[i + 1] = elem->getVertex(i)->getIndex();
+//     }
+//   }
+//   writeNumbers(file, "%8d", inums);
+// }
 
 
 
@@ -636,35 +639,35 @@ template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int m
 
 
 
-void writeElementsSC(FILE *file, PModel *model) {
-  // Write connectivity for each element
-  for (auto f : model->dcel()->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        writeElementSC(file, model, elem, f->layertype()->id());
-      }
-    }
-  }
-  fprintf(file, "\n");
+// void writeElementsSC(FILE *file, PModel *model) {
+//   // Write connectivity for each element
+//   for (auto f : model->dcel()->faces()) {
+//     if (f->gface() != nullptr) {
+//       for (auto elem : f->gface()->triangles) {
+//         writeElementSC(file, model, elem, f->layertype()->id());
+//       }
+//     }
+//   }
+//   fprintf(file, "\n");
 
-  // Wirte local coordinate for each element
-  std::vector<double> dnums;
-  for (auto f : model->dcel()->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
-        dnums = {
-          // 1.0, 0.0, 0.0, 
-          f->localy1()[0], f->localy1()[1], f->localy1()[2], 
-          f->localy2()[0], f->localy2()[1], f->localy2()[2], 
-          0.0, 0.0, 0.0
-        };
-        writeNumbers(file, "%16e", dnums);
-      }
-    }
-  }
-  fprintf(file, "\n");
-}
+//   // Wirte local coordinate for each element
+//   std::vector<double> dnums;
+//   for (auto f : model->dcel()->faces()) {
+//     if (f->gface() != nullptr) {
+//       for (auto elem : f->gface()->triangles) {
+//         fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
+//         dnums = {
+//           // 1.0, 0.0, 0.0, 
+//           f->localy1()[0], f->localy1()[1], f->localy1()[2], 
+//           f->localy2()[0], f->localy2()[1], f->localy2()[2], 
+//           0.0, 0.0, 0.0
+//         };
+//         writeNumbers(file, "%16e", dnums);
+//       }
+//     }
+//   }
+//   fprintf(file, "\n");
+// }
 
 
 

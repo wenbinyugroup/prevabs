@@ -169,7 +169,7 @@ void runSC(const std::string &file_name, const std::vector<std::string> &args, M
 
 
 
-// void runIntegratedVABS(const std::string &file_name, PModel *model, Message *pmessage) {
+void runIntegratedVABS(const std::string &file_name, PModel *model, Message *pmessage) {
 //   // VABS input filename
 //   char inp_name[256];
 //   const int MAX_LEN1 = 256;
@@ -337,7 +337,9 @@ void runSC(const std::string &file_name, const std::vector<std::string> &args, M
 //   stiff_val, stiff_val_F, stiff_val_damp, Ag1, Bk1, Ck2, Dk3, &thermal_I, &(cte[0][0]), temperature,\
 //   NT, NT_F, &Vlasov_I, &damping_I, &curved_I, &Timoshenko_I, &trapeze_I, error);
 
-// }
+  return;
+
+}
 
 
 

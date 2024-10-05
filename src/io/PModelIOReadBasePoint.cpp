@@ -14,9 +14,9 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/GModel.h"
-#include "gmsh/MTriangle.h"
-#include "gmsh/MVertex.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/MTriangle.h"
+// #include "gmsh/MVertex.h"
 #include "gmsh_mod/SPoint3.h"
 #include "gmsh_mod/SVector3.h"
 #include "gmsh_mod/StringUtils.h"

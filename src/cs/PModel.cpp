@@ -560,11 +560,13 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
   }
 
   for (auto v : _dcel->vertices()) {
-    if (v->gvertex()) v->resetGVertex();
+    // if (v->gvertex()) v->resetGVertex();
+    if (v->gvertexTag() != 0) v->resetGVertexTag();
   }
 
   for (auto he : _dcel->halfedges()) {
-    if (he->gedge()) he->resetGEdge();
+    // if (he->gedge()) he->resetGEdge();
+    if (he->gedgeTag() != 0) he->resetGEdgeTag();
   }
 
 }

@@ -156,7 +156,7 @@ void PDCELVertex::setPoint(SPoint3 &p) { _point = p; }
 void PDCELVertex::setIncidentEdge(PDCELHalfEdge *he) { _incident_edge = he; }
 
 // void PDCELVertex::setGVertex(GVertex *gv) { _gvertex = gv; }
-void PDCELVertex::setGVertexTag(int tag) { _gvertex_tag = tag; }
+// void PDCELVertex::setGVertexTag(int tag) { _gvertex_tag = tag; }
 
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2) {
   return v1->point() < v2->point();

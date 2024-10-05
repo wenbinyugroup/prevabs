@@ -904,7 +904,8 @@ int readLineTypeAirfoil(
     double loc{0.5};
     double _x, _y, _z;
 
-    unsigned int _l{line->vertices().size()};
+    // unsigned int _l{line->vertices().size()};
+    std::size_t _l{line->vertices().size()};
     if (line->isClosed()) {_l = _l - 1;}
 
     for (int i = 0; i < _l; i++) {

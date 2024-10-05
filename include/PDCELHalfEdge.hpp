@@ -34,19 +34,19 @@ private:
 public:
   PDCELHalfEdge()
       : _source(nullptr), _twin(nullptr), _prev(nullptr), _next(nullptr),
-        _loop(nullptr), _face(nullptr), _gedge(nullptr),
+        _loop(nullptr), _face(nullptr),
         _line_segment(nullptr), _gbuild(true) {}
   PDCELHalfEdge(PDCELVertex *source)
       : _source(source), _twin(nullptr), _prev(nullptr), _next(nullptr),
-        _loop(nullptr), _face(nullptr), _gedge(nullptr),
+        _loop(nullptr), _face(nullptr),
         _line_segment(nullptr), _gbuild(true) {}
   PDCELHalfEdge(PDCELVertex *source, bool build)
       : _source(source), _twin(nullptr), _prev(nullptr), _next(nullptr),
-        _loop(nullptr), _face(nullptr), _gedge(nullptr),
+        _loop(nullptr), _face(nullptr),
         _line_segment(nullptr), _gbuild(build) {}
   PDCELHalfEdge(PDCELVertex *source, int sign)
       : _source(source), _twin(nullptr), _prev(nullptr), _next(nullptr),
-        _loop(nullptr), _face(nullptr), _gedge(nullptr), _sign(sign),
+        _loop(nullptr), _face(nullptr), _sign(sign),
         _line_segment(nullptr), _gbuild(true) {}
 
   friend std::ostream &operator<<(std::ostream &, PDCELHalfEdge *);
@@ -91,7 +91,7 @@ public:
   // Gmsh
   bool gbuild() { return _gbuild; }
   // GEdge *gedge() { return _gedge; }
-  ing gedgeTag() { return _gedge_tag; }
+  int gedgeTag() { return _gedge_tag; }
   void setGBuild(bool build) { _gbuild = build; }
   // void setGEdge(GEdge *gedge) { _gedge = gedge; }
   void setGEdgeTag(int tag) { _gedge_tag = tag; }

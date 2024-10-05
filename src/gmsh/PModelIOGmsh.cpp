@@ -55,6 +55,41 @@ void PModel::writeNodes(FILE *file, Message *pmessage) {
 
 
 
+void writeElementVABS(
+  FILE *file, int elem_tag, std::vector<std::size_t> node_tags,
+  int elem_type,
+  Message *pmessage
+  ) {
+
+  fprintf(file, "%8d", eid);
+
+  std::vector<int> inums(9, 0);
+
+  if (elem_type == 2) {
+    // 3-node triangle
+    inums = {node_tags[0], node_tags[1], node_tags[2], 0, 0, 0, 0, 0, 0};
+  } else if (elem_type == 3) {
+    // 4-node quadrilateral
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], 0, 0, 0, 0, 0};
+  } else if (elem_type == 9) {
+    // 6-node 2nd order triangle
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], 0, node_tags[4], node_tags[5], 0, 0};
+  } else if (elem_type == 10) {
+    // 9-node 2nd order quadrilateral
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], node_tags[4], node_tags[5], node_tags[6], node_tags[7], node_tags[8]};
+  } else if (elem_type == 16) {
+    // 8-node 2nd order quadrilateral
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], node_tags[4], node_tags[5], node_tags[6], node_tags[7], 0};
+  }
+
+  writeNumbers(file, "%8d", inums);
+
+  return;
+}
+
+
+
+
 void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
 
   pmessage->increaseIndent();
@@ -63,32 +98,61 @@ void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
   // Write connectivity for each element
   std::vector<int> elem_types;
   std::vector<std::vector<std::size_t>> elem_tags, elem_node_tags;
-  gmsh::model::mesh::getElements(elem_types, elem_tags, elem_node_tags, -1, -1);
+  gmsh::model::mesh::getElements(
+    elem_types, elem_tags, elem_node_tags, -1, -1);
 
-  for (auto f : _dcel->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        writeElementVABS(file, this, elem, f->layertype()->id());
-      }
+  for (auto _i = 0; _i < elem_types.size(); ++_i) {
+
+    // Get properties of the element type
+    std::string etype_name;
+    int etype_dim, etype_order, etype_nnodes, etype_nnodes_primary;
+    std::vector<double> etype_local_coords;
+    gmsh::model::mesh::getElementProperties(
+      elem_types[_i], etype_name, etype_dim, etype_order,
+      etype_nnodes, etype_nnodes_primary, etype_local_coords);
+
+    for (auto _j = 0; _j < elem_tags[_i].size(); ++_j) {
+
+      // Get the slice of the element nodes
+      std::vector<std::size_t> node_tags = std::vector<std::size_t>(
+        elem_node_tags[_i].begin() + _j * etype_nnodes,
+        elem_node_tags[_i].begin() + (_j + 1) * etype_nnodes);
+
+      writeElementVABS(
+        file, elem_tags[_i][_j], node_tags, elem_types[_i], pmessage);
+
     }
   }
-  fprintf(file, "\n");
 
   // Wirte local coordinate for each element
   std::vector<double> dnums;
   for (auto f : _dcel->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        fprintf(file, "%8d", _gmodel->getMeshElementIndex(elem));
-        dnums = {
-          // 1.0, 0.0, 0.0, 
-          f->localy1()[0], f->localy1()[1], f->localy1()[2], 
-          f->localy2()[0], f->localy2()[1], f->localy2()[2], 
-          0.0, 0.0, 0.0
-        };
-        writeNumbers(file, "%16e", dnums);
+
+    if (f->gfaceTag() != 0) {
+
+      // Get the element tags of the face
+      std::vector<int> face_elem_types;
+      std::vector<std::vector<std::size_t>> face_elem_tags, face_elem_node_tags;
+      gmsh::model::mesh::getElements(
+        face_elem_types, face_elem_tags, face_elem_node_tags, -1, f->gfaceTag()
+      );
+
+      for (auto _etype_tags : face_elem_tags) {
+        for (auto _etag : _etype_tags) {
+
+          fprintf(file, "%8d", _etag);
+          dnums = {
+            // 1.0, 0.0, 0.0, 
+            f->localy1()[0], f->localy1()[1], f->localy1()[2], 
+            f->localy2()[0], f->localy2()[1], f->localy2()[2], 
+            0.0, 0.0, 0.0
+          };
+          writeNumbers(file, "%16e", dnums);
+
+        }
       }
     }
+
   }
 
   pmessage->decreaseIndent();
@@ -96,6 +160,71 @@ void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
   return;
 
 }
+
+
+
+
+
+
+
+
+
+void writeElementSC(
+  FILE *file, int elem_tag, int mid,
+  std::vector<std::size_t> node_tags, int elem_type,
+  Message *pmessage) {
+  // std::vector<int> inums(9, 0);
+  // fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
+  // for (int i = 0; i < elem->getNumVertices(); ++i) {
+  //   if (i < 3) {
+  //     inums[i] = elem->getVertex(i)->getIndex();
+  //   } else {
+  //     inums[i + 1] = elem->getVertex(i)->getIndex();
+  //   }
+  // }
+  // writeNumbers(file, "%8d", inums);
+}
+
+
+
+
+void PModel::writeElementsSC(FILE *file, Message *pmessage) {
+
+  // // Write connectivity for each element
+  // for (auto f : model->dcel()->faces()) {
+  //   if (f->gface() != nullptr) {
+  //     for (auto elem : f->gface()->triangles) {
+  //       writeElementSC(file, model, elem, f->layertype()->id());
+  //     }
+  //   }
+  // }
+  // fprintf(file, "\n");
+
+  // // Wirte local coordinate for each element
+  // std::vector<double> dnums;
+  // for (auto f : model->dcel()->faces()) {
+  //   if (f->gface() != nullptr) {
+  //     for (auto elem : f->gface()->triangles) {
+  //       fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
+  //       dnums = {
+  //         // 1.0, 0.0, 0.0, 
+  //         f->localy1()[0], f->localy1()[1], f->localy1()[2], 
+  //         f->localy2()[0], f->localy2()[1], f->localy2()[2], 
+  //         0.0, 0.0, 0.0
+  //       };
+  //       writeNumbers(file, "%16e", dnums);
+  //     }
+  //   }
+  // }
+  // fprintf(file, "\n");
+
+  return;
+}
+
+
+
+
+
 
 
 

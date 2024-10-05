@@ -5,9 +5,10 @@
 #include "globalVariables.hpp"
 #include "plog.hpp"
 
-#include "gmsh/GVertex.h"
-#include "gmsh/GEdge.h"
-#include "gmsh/MVertex.h"
+// #include "gmsh/GVertex.h"
+// #include "gmsh/GEdge.h"
+// #include "gmsh/MVertex.h"
+#include <gmsh.h>
 
 #include <fstream>
 #include <string>
