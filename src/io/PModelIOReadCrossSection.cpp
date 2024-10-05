@@ -711,7 +711,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // s_fullpath = buffer;
   // std::cout << s_fullpath << std::endl;
   std::vector<std::string> vs;
-  vs = SplitFileName(s_fullpath);
+  vs = gmshSplitFileName(s_fullpath);
   fn_material_global = vs[0];
 #endif
   fn_material_global = fn_material_global + "MaterialDB.xml";

@@ -2,12 +2,12 @@
 #if defined(__CYGWIN__)
 #include <sys/cygwin.h>
 #endif
-#include "gmsh_old/StringUtils.h"
+#include "gmsh_mod/StringUtils.h"
 // #include "GmshMessage.h"
 #include "OS.h"
 
 
-std::vector<std::string> SplitFileName(const std::string &fileName)
+std::vector<std::string> gmshSplitFileName(const std::string &fileName)
 {
   // JFR DO NOT CHANGE TO std::vector<std::string> s(3), it segfaults while
   // destructor si called

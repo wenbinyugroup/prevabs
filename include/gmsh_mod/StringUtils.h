@@ -3,4 +3,4 @@
 #include <vector>
 
 
-std::vector<std::string> SplitFileName(const std::string &fileName);
+std::vector<std::string> gmshSplitFileName(const std::string &fileName);

@@ -79,7 +79,7 @@ void runVABS(const std::string &file_name, const std::vector<std::string> &args,
   // PLOG(info) << "running VABS...";
 
   std::vector<std::string> vs;
-  vs = SplitFileName(file_name);
+  vs = gmshSplitFileName(file_name);
   std::string s_cmd;
   s_cmd = "\"" + vs[1] + vs[2] + "\"";
   for (auto arg : args) {
@@ -129,7 +129,7 @@ void runSC(const std::string &file_name, const std::vector<std::string> &args, M
 
   // common func;
   std::vector<std::string> vs;
-  vs = SplitFileName(file_name);
+  vs = gmshSplitFileName(file_name);
   std::string s_cmd;
   s_cmd = "\"" + vs[1] + vs[2] + "\"";
   for (auto arg : args) {

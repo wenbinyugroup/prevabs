@@ -4,7 +4,7 @@
 // bugs and problems to the public mailing list <gmsh@onelab.info>.
 
 #include <algorithm>
-#include "gmsh_old/STensor3.h"
+#include "gmsh_mod/STensor3.h"
 
 // compute the largest inscribed ellipsoid
 

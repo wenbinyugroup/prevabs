@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  std::vector<std::string> v_filename{SplitFileName(config.main_input)};
+  std::vector<std::string> v_filename{gmshSplitFileName(config.main_input)};
   config.file_directory = v_filename[0]; // ****/****/
   config.file_base_name = v_filename[1]; // ****
   config.file_extension = v_filename[2]; // .****

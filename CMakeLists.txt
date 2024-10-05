@@ -77,6 +77,9 @@ set( SOURCES
 # add_subdirectory(src)
 
 
+if(MSVC)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
+endif()
 
 add_executable( ${PROJECTNAME} ${SOURCES} )
 
