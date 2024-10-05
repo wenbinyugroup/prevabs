@@ -84,10 +84,10 @@ add_executable( ${PROJECTNAME} ${SOURCES} )
 
 # Link Boost libraries
 # --------------------
-set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC_LIBS ON)
 # set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-add_definitions( -DBOOST_ALL_DYN_LINK )
+# set(Boost_USE_STATIC_RUNTIME OFF)
+# add_definitions( -DBOOST_ALL_DYN_LINK )
 
 find_package( Boost 1.66 COMPONENTS log log_setup system thread REQUIRED )
 message( STATUS "(st) " ${Boost_INCLUDE_DIRS} )

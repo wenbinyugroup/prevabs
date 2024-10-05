@@ -34,15 +34,19 @@
 
 
 
-int PModel::getNumOfNodes() {
-  return gmsh::model::mesh::getMaxNodeTag();
+std::size_t PModel::getNumOfNodes() {
+  std::size_t nnodes;
+  gmsh::model::mesh::getMaxNodeTag(nnodes);
+  return nnodes;
 }
 
 
 
 
-int PModel::getNumOfElements() {
-  return gmsh::model::mesh::getMaxElementTag();
+std::size_t PModel::getNumOfElements() {
+  std::size_t nelems;
+  gmsh::model::mesh::getMaxElementTag(nelems);
+  return nelems;
 }
 
 
@@ -393,10 +397,10 @@ void PModel::createGmshEmbeddedEntities(Message *pmessage) {
 
     PLOG(debug) << pmessage->message("");
     PLOG(debug) << pmessage->message("  face: " + f->name());
-    debug_print = false;
+    // debug_print = false;
 
     if (f->getEmbeddedGVertexTags().size() > 0) {
-      gmsh::model::mesh::embed(0, f->getEmbeddedGVTags(), 2, f->gfaceTag());
+      gmsh::model::mesh::embed(0, f->getEmbeddedGVertexTags(), 2, f->gfaceTag());
 
       if (f->getEmbeddedGEdgeTags().size() > 0) {
         gmsh::model::mesh::embed(1, f->getEmbeddedGEdgeTags(), 2, f->gfaceTag());

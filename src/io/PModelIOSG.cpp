@@ -103,7 +103,7 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   // ------------------------------
   // Write a supplementary file
   // to store the mapping between the material id and name
-  fn_mid2name = fn + ".mat";
+  std::string fn_mid2name = fn + ".mat";
   PLOG(info) << pmessage->message("writing material id-name file: " + fn_mid2name);
 
   FILE *fsg_mat;

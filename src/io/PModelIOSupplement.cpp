@@ -46,46 +46,74 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
         i_itf++;
         fprintf(p_file, "%8d", i_itf);
 
-        std::vector<int> mv_id_on_vertex;
+        // std::vector<int> mv_id_on_vertex;
+        std::vector<std::size_t> done_node_tags;
+
         for (auto he : itf_hes) {
 
             // Nodes on the edge
-            for (auto mv : he->gedge()->mesh_vertices) {
-                fprintf(p_file, "%8d", mv->getIndex());
+            std::vector<std::size_t> edge_node_tags;
+            std::vector<double> edge_node_coords, edge_node_param_coords;
+            gmsh::model::mesh::getNodes(
+                edge_node_tags, edge_node_coords, edge_node_param_coords,
+                1, he->gedgeTag(), false, false
+            );
+
+            // for (std::size_t _ntag : edge_node_tags) {
+            for (auto _i = 0; _i < edge_node_tags.size(); ++_i) {
+
+                std::size_t _ntag = edge_node_tags[_i];
+
+                // Check if the node is already written
+                bool found = false;
+                // for (std::size_t dntag : done_node_tags) {
+                for (auto _j = 0; _j < done_node_tags.size(); ++_j) {
+                    std::size_t dntag = done_node_tags[_j];
+                    if (_ntag == dntag) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    done_node_tags.push_back(_ntag);
+                    fprintf(p_file, "%8d", _ntag);
+                }
+
             }
 
-            // Node at the source vertex
-            int nid0 = he->source()->gvertex()->mesh_vertices[0]->getIndex();
-            bool found = false;
-            for (auto nid : mv_id_on_vertex) {
-                if (nid == nid0) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                fprintf(p_file, "%8d", nid0);
-                mv_id_on_vertex.push_back(nid0);
-            }
+            // // Node at the source vertex
+            // int nid0 = he->source()->gvertex()->mesh_vertices[0]->getIndex();
+            // bool found = false;
+            // for (auto nid : mv_id_on_vertex) {
+            //     if (nid == nid0) {
+            //         found = true;
+            //         break;
+            //     }
+            // }
+            // if (!found) {
+            //     fprintf(p_file, "%8d", nid0);
+            //     mv_id_on_vertex.push_back(nid0);
+            // }
 
-            // Node at the target vertex
-            int nid1 = he->twin()->source()->gvertex()->mesh_vertices[0]->getIndex();
-            found = false;
-            for (auto nid : mv_id_on_vertex) {
-                if (nid == nid1) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                fprintf(p_file, "%8d", nid1);
-                mv_id_on_vertex.push_back(nid1);
-            }
+            // // Node at the target vertex
+            // int nid1 = he->twin()->source()->gvertex()->mesh_vertices[0]->getIndex();
+            // found = false;
+            // for (auto nid : mv_id_on_vertex) {
+            //     if (nid == nid1) {
+            //         found = true;
+            //         break;
+            //     }
+            // }
+            // if (!found) {
+            //     fprintf(p_file, "%8d", nid1);
+            //     mv_id_on_vertex.push_back(nid1);
+            // }
 
         }
 
         fprintf(p_file, "\n");
-        // }
+
     }
 
     fclose(p_file);

@@ -6,6 +6,8 @@
 #include "plog.hpp"
 #include "utilities.hpp"
 
+#include <gmsh.h>
+
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
@@ -61,9 +63,9 @@ void writeElementVABS(
   Message *pmessage
   ) {
 
-  fprintf(file, "%8d", eid);
+  fprintf(file, "%8d", elem_tag);
 
-  std::vector<int> inums(9, 0);
+  std::vector<std::size_t> inums(9, 0);
 
   if (elem_type == 2) {
     // 3-node triangle
@@ -109,7 +111,7 @@ void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
     std::vector<double> etype_local_coords;
     gmsh::model::mesh::getElementProperties(
       elem_types[_i], etype_name, etype_dim, etype_order,
-      etype_nnodes, etype_nnodes_primary, etype_local_coords);
+      etype_nnodes, etype_local_coords, etype_nnodes_primary);
 
     for (auto _j = 0; _j < elem_tags[_i].size(); ++_j) {
 
@@ -261,8 +263,10 @@ int PModel::writeGmshGeo(const std::string &fn_base, Message *pmessage) {
   if (config.homo) {
     fn = fn_base + ".geo";
     PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
-    _gmodel->writeGEO(fn);
+    // _gmodel->writeGEO(fn);
+    gmsh::write(fn);
   }
+
   else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
     fn = fn_base + "_local.geo";
     PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
@@ -303,7 +307,8 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
     fn_msh = fn_base + ".msh";
     PLOG(info) << pmessage->message("writing gmsh .msh file: " + fn_msh);
-    _gmodel->writeMSH(fn_msh, 2.2);
+    // _gmodel->writeMSH(fn_msh, 2.2);
+    gmsh::write(fn_msh);
 
   }
 
