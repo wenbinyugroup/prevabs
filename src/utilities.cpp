@@ -293,6 +293,15 @@ void printVector(const std::vector<double> &v) {
 }
 
 
+void printVector(const std::vector<int> &v) {
+  for (auto n : v) {
+    std::cout << n << " ";
+  }
+  std::cout << std::endl;
+  return;
+}
+
+
 
 
 

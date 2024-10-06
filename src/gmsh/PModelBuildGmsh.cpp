@@ -293,15 +293,21 @@ void PModel::createGmshFaces(Message *pmessage) {
       do {
 
         // gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
+        // std::cout << he << std::endl;
         int _tag = he->gedgeTag();
+        // std::cout << "tag: " << _tag << std::endl;
         if (_tag == 0) {
-          _tag = -1 * he->twin()->gedgeTag();
+          _tag = he->twin()->gedgeTag();
+        }
+        if (he->sign() < 0) {
+          _tag = -1 * _tag;
         }
         _ge_tags.push_back(_tag);
         he = he->next();
 
       } while (he != f->outer());
       // gesloops.push_back(gesloop);
+      // printVector(_ge_tags);
       _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
       _geloop_tags.push_back(_gel_tag);
 
@@ -422,27 +428,54 @@ void PModel::createGmshEmbeddedEntities(Message *pmessage) {
 
 void PModel::createGmshPhyscialGroups(Message *pmessage) {
 
-  PLOG(debug) << pmessage->message("  adding physical entity");
+  PLOG(info) << pmessage->message("creating physical groups");
+
+  std::vector<int> group_tags;
+  std::vector<std::vector<int>> group_face_tags;
+
   for (auto f : _dcel->faces()) {
 
     PLOG(debug) << pmessage->message("");
     PLOG(debug) << pmessage->message("  face: " + f->name());
-    // debug_print = false;
 
     if (f->gbuild() && f->outer() != nullptr) {
-      // if (debug_print) {
-      // std::cout << f->layertype() << std::endl;
-      // }
+
       PLOG(debug) << pmessage->message(
         "  id: " + std::to_string(f->layertype()->id())
         + ", material: " + f->layertype()->material()->getName()
         + ", theta_3 = " + std::to_string(f->layertype()->angle())
       );
+
+      // Check if the group has been created
+      int index = -1;
+      for (auto i=0; i<group_tags.size(); i++) {
+        if (group_tags[i] == f->layertype()->id()) {
+          index = i;
+          break;
+        }
+      }
+
+      // If not found, create a new group
+      if (index == -1) {
+        group_tags.push_back(f->layertype()->id());
+        group_face_tags.push_back(std::vector<int>());
+        index = group_tags.size() - 1;
+      }
+
+      // Add face tag to the group
+      group_face_tags[index].push_back(f->gfaceTag());
+
       // gf->addPhysicalEntity(f->layertype()->id());
-      int _tag = gmsh::model::addPhysicalGroup(2, {f->gfaceTag()}, f->layertype()->id());
-      f->setGmshPhysicalGroupTag(_tag);
+      f->setGmshPhysicalGroupTag(f->layertype()->id());
 
     }
+  }
+
+  // Create physical groups
+  for (auto i=0; i<group_tags.size(); i++) {
+
+    gmsh::model::addPhysicalGroup(2, group_face_tags[i], group_tags[i]);
+
   }
 
   return;

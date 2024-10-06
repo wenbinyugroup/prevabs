@@ -77,6 +77,7 @@ void writeVectorToFile(std::ofstream &, std::vector<std::string>);
 void writeVectorToFile(FILE *, std::vector<double>, std::string="%16e", bool=true);
 
 void printVector(const std::vector<double> &);
+void printVector(const std::vector<int> &);
 
 int openFile(std::ifstream &, const std::string &);
 int closeFile(std::ifstream &);

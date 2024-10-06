@@ -4,7 +4,7 @@
 #endif
 #include "gmsh_mod/StringUtils.h"
 // #include "GmshMessage.h"
-#include "OS.h"
+// #include "OS.h"
 
 
 std::vector<std::string> gmshSplitFileName(const std::string &fileName)

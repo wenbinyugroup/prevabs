@@ -353,6 +353,7 @@ void runGmsh(const std::string &fn_geo, const std::string &fn_msh,
              const std::string &fn_opt, Message *pmessage) {
 
   std::string fn_all = fn_geo + " " + fn_msh + " " + fn_opt;
+  // std::string fn_all = fn_msh + " " + fn_opt;
 
   PLOG(info) << pmessage->message("running: gmsh " + fn_all);
 

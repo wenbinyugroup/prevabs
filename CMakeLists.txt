@@ -67,6 +67,8 @@ set( SOURCES
   src/io/PModelIOPlot.cpp
   src/gmsh/PModelBuildGmsh.cpp
   src/gmsh/PModelIOGmsh.cpp
+  src/gmsh/STensor3.cpp
+  src/gmsh/StringUtils.cpp
   src/plog.cpp
   src/overloadOperator.cpp
   src/utilities.cpp

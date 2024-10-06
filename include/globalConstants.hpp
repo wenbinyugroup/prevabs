@@ -5,8 +5,8 @@
 #include <vector>
 
 #define VERSION_MAJOR "1"
-#define VERSION_MINOR "5"
-#define VERSION_PATCH "2"
+#define VERSION_MINOR "6"
+#define VERSION_PATCH "0"
 
 const std::string version{
   VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH

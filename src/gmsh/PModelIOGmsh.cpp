@@ -239,7 +239,8 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
   // pmessage->increaseIndent();
 
   writeGmshOpt(fn_base, pmessage);
-  writeGmshGeo(fn_base, pmessage);
+  // writeGmshGeo(fn_base, pmessage);
+  writeGmshGeo(config.file_name_geo, pmessage);
   writeGmshMsh(fn_base, pmessage);
 
   // pmessage->decreaseIndent();
@@ -255,27 +256,25 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
 
 
 
-int PModel::writeGmshGeo(const std::string &fn_base, Message *pmessage) {
+int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
   pmessage->increaseIndent();
+  PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
 
-
-  std::string fn;
+  // std::string fn;
   if (config.homo) {
-    fn = fn_base + ".geo";
-    PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
+    // fn = fn_base + ".geo";
     // _gmodel->writeGEO(fn);
     gmsh::write(fn);
   }
 
   else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
-    fn = fn_base + "_local.geo";
-    PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
+    // fn = fn_base + "_local.geo";
+    // PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
     std::ofstream ofs_geo(fn);
     ofs_geo.close();
   }
 
-  config.file_name_geo = fn;
-
+  // config.file_name_geo = fn;
 
   pmessage->decreaseIndent();
 
