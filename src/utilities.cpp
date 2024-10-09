@@ -1,5 +1,7 @@
 #include "utilities.hpp"
 
+#include "version.h"
+
 #include "PComponent.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
@@ -175,7 +177,8 @@ void Message::printTitle() {
   printBlank();
   printDivider(40, '=');
   printBlank();
-  print(0, ("  PreVABS " + version));
+  std::string _ver_string{VERSION_STRING};
+  print(0, ("  PreVABS " + _ver_string));
   printBlank();
   print(0, ("  (For VABS " + vabs_version + " and SwiftComp " + sc_version + ")"));
   printBlank();

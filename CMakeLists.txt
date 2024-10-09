@@ -2,13 +2,21 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project( prevabs C CXX )
 # project( prevabs C CXX Fortran )
 
-
+set( PROJECTNAME "prevabs" )
 
 set( CMAKE_CXX_STANDARD 11 )
 
-set( PREVABS_MAJOR_VERSION 1 )
-set( PREVABS_MINOR_VERSION 6 )
-set( PREVABS_VERSION "${PREVABS_MAJOR_VERSION}.${PREVABS_MINOR_VERSION}" )
+set( PREVABS_VERSION_MAJOR 1 )
+set( PREVABS_VERSION_MINOR 6 )
+set( PREVABS_VERSION_PATCH 0 )
+set( PREVABS_VERSION "${PREVABS_VERSION_MAJOR}.${PREVABS_VERSION_MINOR}.${PREVABS_VERSION_PATCH}" )
+
+# Generate version.h
+configure_file(
+  "${CMAKE_SOURCE_DIR}/version.h.in"
+  "${CMAKE_BINARY_DIR}/generated/version.h"
+  @ONLY
+)
 
 option(LINK_VABS_SHARED_LIB "Link VABS shared library" OFF)
 
@@ -26,57 +34,11 @@ option(LINK_VABS_SHARED_LIB "Link VABS shared library" OFF)
 
 
 include_directories( ${CMAKE_SOURCE_DIR}/include )
+# include_directories( ${CMAKE_BINARY_DIR}/generated )
 # include_directories( ${CMAKE_SOURCE_DIR}/include/gmsh )
 
-set( PROJECTNAME "prevabs" )
-set( SOURCES 
-  src/geo/PGeoClasses.cpp
-  src/geo/PGeoLine.cpp
-  src/geo/PDCELVertex.cpp
-  src/geo/PDCELHalfEdge.cpp
-  src/geo/PDCELHalfEdgeLoop.cpp
-  src/geo/PDCELFace.cpp
-  src/geo/PDCEL.cpp
-  src/geo/PBST.cpp
-  src/geo/geo.cpp
-  src/geo/offset.cpp
-  src/geo/intersect.cpp
-  src/cs/PArea.cpp
-  src/cs/Material.cpp
-  src/cs/PSegment.cpp
-  src/cs/PComponent.cpp
-  src/cs/PBuildComponentLaminate.cpp
-  src/cs/PBuildComponentFilling.cpp
-  src/cs/PBuildSegmentAreas.cpp
-  src/cs/CrossSection.cpp
-  src/cs/PBaseLine.cpp
-  src/cs/PModel.cpp
-  src/cs/join.cpp
-  src/io/PModelIO.cpp
-  src/io/PModelIOReadBasePoint.cpp
-  src/io/PModelIOReadBaseLine.cpp
-  src/io/PModelIOReadMaterial.cpp
-  src/io/PModelIOReadLayup.cpp
-  src/io/PModelIOReadComponent.cpp
-  src/io/PModelIOReadComponentLaminate.cpp
-  src/io/PModelIOReadComponentFilling.cpp
-  src/io/PModelIOReadCrossSection.cpp
-  src/io/PModelIODehomo.cpp
-  src/io/PModelIOSG.cpp
-  src/io/PModelIOSupplement.cpp
-  src/io/PModelIOPlot.cpp
-  src/gmsh/PModelBuildGmsh.cpp
-  src/gmsh/PModelIOGmsh.cpp
-  src/gmsh/STensor3.cpp
-  src/gmsh/StringUtils.cpp
-  src/plog.cpp
-  src/overloadOperator.cpp
-  src/utilities.cpp
-  src/execu.cpp
-  src/main.cpp
-  # src/vabs/output.f90
-)
-# add_subdirectory(src)
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+
 
 
 if(MSVC)
@@ -85,6 +47,8 @@ endif()
 
 add_executable( ${PROJECTNAME} ${SOURCES} )
 
+# target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_SOURCE_DIR}/include )
+target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated )
 
 
 # Link Boost libraries
@@ -162,4 +126,4 @@ endif()
 
 # Install
 # -------
-install(TARGETS ${PROJECTNAME} RUNTIME DESTINATION bin)
+install(TARGETS ${PROJECTNAME} RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
