@@ -15,12 +15,12 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/GModel.h"
-#include "gmsh/MTriangle.h"
-#include "gmsh/MVertex.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/MTriangle.h"
+// #include "gmsh/MVertex.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -711,7 +711,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // s_fullpath = buffer;
   // std::cout << s_fullpath << std::endl;
   std::vector<std::string> vs;
-  vs = SplitFileName(s_fullpath);
+  vs = gmshSplitFileName(s_fullpath);
   fn_material_global = vs[0];
 #endif
   fn_material_global = fn_material_global + "MaterialDB.xml";

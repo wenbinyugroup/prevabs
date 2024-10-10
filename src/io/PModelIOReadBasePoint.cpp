@@ -14,12 +14,12 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/GModel.h"
-#include "gmsh/MTriangle.h"
-#include "gmsh/MVertex.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/MTriangle.h"
+// #include "gmsh/MVertex.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -171,7 +171,7 @@ PDCELVertex *readXMLElementPoint(const xml_node<> *p_xn_point, const xml_node<> 
             _is_new_tmp = false;
           }
           else {
-            double dy, dz, loc2;
+            double dy, dz;
             dy = p_bsl_vertices[i+1]->y() - p_bsl_vertices[i]->y();
             dz = p_bsl_vertices[i+1]->z() - p_bsl_vertices[i]->z();
             _z_tmp = dz / dy * (loc - p_bsl_vertices[i]->y()) + p_bsl_vertices[i]->z();

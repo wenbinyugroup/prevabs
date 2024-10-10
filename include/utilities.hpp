@@ -8,7 +8,7 @@
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh/STensor3.h"
+#include "gmsh_mod/STensor3.h"
 #include "rapidxml/rapidxml.hpp"
 
 #include <fstream>
@@ -77,6 +77,7 @@ void writeVectorToFile(std::ofstream &, std::vector<std::string>);
 void writeVectorToFile(FILE *, std::vector<double>, std::string="%16e", bool=true);
 
 void printVector(const std::vector<double> &);
+void printVector(const std::vector<int> &);
 
 int openFile(std::ifstream &, const std::string &);
 int closeFile(std::ifstream &);
@@ -95,8 +96,8 @@ STensor3 getRotationMatrix(double, int, GeoConst = DEGREE);
 std::vector<std::string> splitString(std::string, char);
 std::vector<double> parseNumbersFromString(const std::string &);
 std::vector<int> parseIntegersFromString(const std::string &);
-std::string lowerString(std::string);
-std::string upperString(std::string);
+std::string lowerString(const std::string &);
+std::string upperString(const std::string &);
 std::string removeChar(std::string, char = ' ');
 std::vector<double> getDxyFromAngle(double, char = 'x', double = 1.0,
                                     bool = false);

@@ -5,9 +5,9 @@
 #include "PDCEL.hpp"
 #include "PDCELHalfEdge.hpp"
 
-#include "gmsh/GVertex.h"
-#include "gmsh/SPoint2.h"
-#include "gmsh/SPoint3.h"
+// #include "gmsh/GVertex.h"
+#include "gmsh_mod/SPoint2.h"
+#include "gmsh_mod/SPoint3.h"
 
 #include <iostream>
 #include <string>
@@ -30,7 +30,8 @@ private:
   bool _on_joint = false;
 
   bool _gbuild;
-  GVertex *_gvertex;
+  // GVertex *_gvertex;
+  int _gvertex_tag = 0;
 
 public:
   PDCELVertex()
@@ -104,14 +105,17 @@ public:
   void setDCEL(PDCEL *dcel) { _dcel = dcel; }
   void setIncidentEdge(PDCELHalfEdge *);
 
-  void setGVertex(GVertex *);
-  void resetGVertex() { _gvertex = nullptr; }
+  // void setGVertex(GVertex *);
+  void setGVertexTag(int tag) { _gvertex_tag = tag; }
+  // void resetGVertex() { _gvertex = nullptr; }
+  void resetGVertexTag() { _gvertex_tag = 0; }
 
   void setOnJoint(bool on_joint) { _on_joint = on_joint; }
 
   bool gbuild() { return _gbuild; }
   void setGBuild(bool build) { _gbuild = build; }
-  GVertex *gvertex() { return _gvertex; }
+  // GVertex *gvertex() { return _gvertex; }
+  int gvertexTag() { return _gvertex_tag; }
 
   // void setName(std::string name) {_s_name = name; }
 };

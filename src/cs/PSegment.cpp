@@ -13,8 +13,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <cstdio>
@@ -96,7 +96,7 @@ void Segment::print() {
 
 
 void Segment::printBaseOffsetLink() {
-  int n = _curve_base->vertices().size();
+  std::size_t n = _curve_base->vertices().size();
   std::cout << "\nsegment " << _name << std::endl;
   std::cout << "base vertices: " << _curve_base->vertices().size() << std::endl;
   std::cout << "offset vertices: " << _curve_offset->vertices().size() << std::endl;
@@ -206,7 +206,7 @@ SVector3 Segment::getBeginTangent() {
 
 
 SVector3 Segment::getEndTangent() {
-  int n = _curve_base->vertices().size();
+  std::size_t n = _curve_base->vertices().size();
   return SVector3(_curve_base->vertices()[n - 2]->point(),
                   _curve_base->vertices()[n - 1]->point());
 }

@@ -1,23 +1,33 @@
-2024-08-07 13:33:28 [info] prevabs start
-2024-08-07 13:33:28 [info] - reading input files
-2024-08-07 13:33:28 [info]     - reading main input file: box.xml
-2024-08-07 13:33:28 [info]       - reading materials file: C:\Users\tian50\program\MaterialDB.xml
-2024-08-07 13:33:28 [info]       - reading materials file: materials.xml
-2024-08-07 13:33:28 [info] - reading input files -- done
-2024-08-07 13:33:28 [info] - building the shape
-2024-08-07 13:33:28 [info]   - building the cross section, step 1
-2024-08-07 13:33:28 [info]     - building component: main
-2024-08-07 13:33:28 [info]   - building the cross section, step 2
-2024-08-07 13:33:28 [info]     - building component details: main
-2024-08-07 13:33:28 [info]   - fixing geometry
-2024-08-07 13:33:28 [info] - building the shape -- done
-2024-08-07 13:33:28 [info] - modeling in Gmsh
-2024-08-07 13:33:28 [info]   - creating gmsh vertices
-2024-08-07 13:33:28 [info]   - creating gmsh edges
-2024-08-07 13:33:28 [info]   - creating gmsh face
-2024-08-07 13:33:28 [info]   - meshing
-2024-08-07 13:33:28 [info] - modeling in Gmsh -- done
-2024-08-07 13:33:28 [info]   - running VABS for homogenization
-2024-08-07 13:33:30 [info]   - running VABS for homogenization -- done
-2024-08-07 13:33:30 [info] prevabs finished
-2024-08-07 13:33:30 [info] total running time: 2.04 sec
+2024-10-06 16:28:21 [info] prevabs start
+2024-10-06 16:28:21 [info] - reading input files
+2024-10-06 16:28:21 [info]     - reading main input file: .\share\examples\ex_box\box.xml
+2024-10-06 16:28:21 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+2024-10-06 16:28:21 [info]         - reading materials file: .\share\examples\ex_box\materials.xml
+2024-10-06 16:28:21 [info]   - reading input files -- done
+2024-10-06 16:28:21 [info]   - building the shape
+2024-10-06 16:28:21 [info]     - building the cross section, step 1
+2024-10-06 16:28:21 [info]       - building component: main
+2024-10-06 16:28:21 [info]     - building the cross section, step 2
+2024-10-06 16:28:21 [info]       - building component details: main
+2024-10-06 16:28:21 [info]     - fixing geometry
+2024-10-06 16:28:21 [info]   - building the shape -- done
+2024-10-06 16:28:21 [info]   - modeling in Gmsh
+2024-10-06 16:28:21 [info]     - creating gmsh vertices
+2024-10-06 16:28:21 [info]     - creating gmsh edges
+2024-10-06 16:28:21 [info]     - creating gmsh faces
+2024-10-06 16:28:21 [info]     - creating physical groups
+2024-10-06 16:28:21 [info]     - meshing
+2024-10-06 16:28:21 [info]   - modeling in Gmsh -- done
+2024-10-06 16:28:21 [info]   - writing outputs
+2024-10-06 16:28:21 [info]     - writing gmsh .opt file: .\share\examples\ex_box\box.opt
+2024-10-06 16:28:21 [info]     - writing gmsh .geo file: .\share\examples\ex_box\box.geo_unrolled
+2024-10-06 16:28:21 [info]     - writing gmsh .msh file: .\share\examples\ex_box\box.msh
+2024-10-06 16:28:21 [info]     - writing sg file: .\share\examples\ex_box\box.sg
+2024-10-06 16:28:21 [info]       - writing nodes
+2024-10-06 16:28:21 [info]       - writing elements
+2024-10-06 16:28:21 [info]     - writing material id-name file: .\share\examples\ex_box\box.sg.mat
+2024-10-06 16:28:21 [info]   - writing outputs -- done
+2024-10-06 16:28:21 [info]   - running Gmsh for visualization
+2024-10-06 16:28:21 [info]   - running: gmsh .\share\examples\ex_box\box.geo_unrolled .\share\examples\ex_box\box.msh .\share\examples\ex_box\box.opt
+2024-10-06 16:28:21 [info] prevabs finished
+2024-10-06 16:28:21 [info] total running time: 0.075 sec

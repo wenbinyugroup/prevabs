@@ -5,7 +5,7 @@
 #include "PDCELVertex.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <fstream>
@@ -98,7 +98,7 @@ int Baseline::topology() {
 
 void Baseline::reverse() {
   std::vector<PDCELVertex *> temp;
-  int n = _pvertices.size();
+  std::size_t n = _pvertices.size();
   for (int i = 0; i < n; ++i) {
     temp.push_back(_pvertices[n - 1 - i]);
   }

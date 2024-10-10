@@ -125,7 +125,7 @@ int readLoadCasesFromCSV(const std::string &, const int &, const int &, const in
 int readVABSU(const std::string &, LocalState *, Message *);
 int readVABSEle(const std::string &, LocalState *, Message *);
 int readSCSn(const std::string &, LocalState *, Message *);
-int readMsgFi(const std::string &, LocalState *, int, Message *);
+int readMsgFi(const std::string &, LocalState *, std::size_t, Message *);
 // std::vector<std::vector<double>> readOutputDehomoElementSC(
 //   const std::string &, const int &);
 // std::vector<std::vector<double>> readOutputDehomoElementNodeVABS(
@@ -156,7 +156,7 @@ int writeFace(FILE *, PDCELFace *);
 /** @ingroup io
  * Write the node block to a file.
  */
-void writeNodes(FILE *, PModel *);
+// void writeNodes(FILE *, PModel *);
 
 /** @ingroup io
  * Write header settings block in VABS format to a file.
@@ -166,7 +166,7 @@ void writeSettingsVABS(FILE *, PModel *);
 /** @ingroup io
  * Write the element block in VABS format to a file.
  */
-void writeElementsVABS(FILE *, PModel *);
+// void writeElementsVABS(FILE *, PModel *);
 
 /** @ingroup io
  * Write the material block in VABS format to a file.
@@ -176,7 +176,7 @@ void writeMaterialsVABS(FILE *, PModel *);
 void writeMaterialStrength(FILE *, Material *);
 
 void writeSettingsSC(FILE *, PModel *);
-void writeElementsSC(FILE *, PModel *);
+// void writeElementsSC(FILE *, PModel *);
 void writeMaterialsSC(FILE *, PModel *);
 
 void writeGmshElementData(std::ofstream &,

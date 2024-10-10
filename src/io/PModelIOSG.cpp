@@ -16,12 +16,12 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/GModel.h"
-#include "gmsh/MTriangle.h"
-#include "gmsh/MVertex.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/MTriangle.h"
+// #include "gmsh/MVertex.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -49,11 +49,9 @@
 #endif
 
 int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
-  // i_indent++;
+
   pmessage->increaseIndent();
 
-  // printInfo(i_indent, "writing sg file: " + fn);
-  // pmessage->print(1, "writing sg file: " + fn);
   PLOG(info) << pmessage->message("writing sg file: " + fn);
 
   FILE *fsg;
@@ -62,8 +60,8 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   std::vector<int> inums;
   std::vector<double> dnums;
 
+  // ------------------------------
   // Write the analysis settings
-  // std::cout << "writing settings...\n";
   if (config.analysis_tool == 1) {
     // VABS
     writeSettingsVABS(fsg, this);
@@ -72,25 +70,28 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
     writeSettingsSC(fsg, this);
   }
 
+  // ------------------------------
   // Write nodes and elements
-  // std::cout << "writing nodes...\n";
-  writeNodes(fsg, this);
+  // writeNodes(fsg, this);
+  writeNodes(fsg, pmessage);
 
-  // std::cout << "writing elements...\n";
   if (config.analysis_tool == 1) {
-    writeElementsVABS(fsg, this);
+    // writeElementsVABS(fsg, this);
+    writeElementsVABS(fsg, pmessage);
   } else if (config.analysis_tool == 2) {
-    writeElementsSC(fsg, this);
+    // writeElementsSC(fsg, this);
+    writeElementsSC(fsg, pmessage);
   }
 
+  // ------------------------------
   // Write layer types and materials
-  // std::cout << "writing materials...\n";
   if (config.analysis_tool == 1) {
     writeMaterialsVABS(fsg, this);
   } else if (config.analysis_tool == 2) {
     writeMaterialsSC(fsg, this);
   }
 
+  // ------------------------------
   // Omega for SwiftComp only
   if (config.analysis_tool == 2) {
     fprintf(fsg, "%16e\n", _omega);
@@ -99,9 +100,10 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   fclose(fsg);
 
 
+  // ------------------------------
   // Write a supplementary file
   // to store the mapping between the material id and name
-  fn_mid2name = fn + ".mat";
+  std::string fn_mid2name = fn + ".mat";
   PLOG(info) << pmessage->message("writing material id-name file: " + fn_mid2name);
 
   FILE *fsg_mat;
@@ -251,7 +253,7 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
 // ===================================================================
 
 void writeSettingsVABS(FILE *file, PModel *model) {
-  std::vector<unsigned int> inums;
+  std::vector<std::size_t> inums;
 
   // inums = {1, model->cs()->getNumOfUsedLayerTypes()};
   inums.push_back(1);
@@ -292,8 +294,10 @@ void writeSettingsVABS(FILE *file, PModel *model) {
   inums.clear();
   // inums = {model->gmodel()->indexMeshVertices(true, 0),
   //          model->indexGmshElements(), model->cs()->getNumOfUsedMaterials()};
-  inums.push_back(model->gmodel()->indexMeshVertices(true, 0));
-  inums.push_back(model->indexGmshElements());
+  // inums.push_back(model->gmodel()->indexMeshVertices(true, 0));
+  inums.push_back(model->getNumOfNodes());
+  // inums.push_back(model->indexGmshElements());
+  inums.push_back(model->getNumOfElements());
   inums.push_back(model->cs()->getNumOfUsedMaterials());
   writeNumbers(file, "%8d", inums);
   fprintf(file, "\n");
@@ -307,69 +311,35 @@ void writeSettingsVABS(FILE *file, PModel *model) {
 
 
 
-void writeNodes(FILE *file, PModel *pmodel) {
-  std::vector<GEntity *> gentities;
-  pmodel->gmodel()->getEntities(gentities);
-  for (unsigned int i = 0; i < gentities.size(); ++i) {
+// void writeNodes(FILE *file, PModel *pmodel) {
+//   std::vector<GEntity *> gentities;
+//   pmodel->gmodel()->getEntities(gentities);
+//   for (unsigned int i = 0; i < gentities.size(); ++i) {
 
-    for (unsigned int j = 0; j < gentities[i]->mesh_vertices.size(); ++j) {
+//     for (unsigned int j = 0; j < gentities[i]->mesh_vertices.size(); ++j) {
 
-      if (gentities[i]->mesh_vertices[j]->getIndex() > 0) {
-        fprintf(file, "%8d%16e%16e\n",
-                gentities[i]->mesh_vertices[j]->getIndex(),
-                gentities[i]->mesh_vertices[j]->y(),
-                gentities[i]->mesh_vertices[j]->z());
+//       if (gentities[i]->mesh_vertices[j]->getIndex() > 0) {
+//         fprintf(file, "%8d%16e%16e\n",
+//                 gentities[i]->mesh_vertices[j]->getIndex(),
+//                 gentities[i]->mesh_vertices[j]->y(),
+//                 gentities[i]->mesh_vertices[j]->z());
 
-        if (pmodel->interfaceOutput()) {
-          std::vector<int> eids;
-          // Add an empty vector as a placeholder
-          pmodel->node_elements.push_back(eids);
-        }
+//         if (pmodel->interfaceOutput()) {
+//           std::vector<int> eids;
+//           // Add an empty vector as a placeholder
+//           pmodel->node_elements.push_back(eids);
+//         }
 
-      }
+//       }
 
-      else {
-        continue;
-      }
+//       else {
+//         continue;
+//       }
 
-    }
-  }
-  fprintf(file, "\n");
-}
-
-
-
-
-
-
-
-
-
-template <class T> void writeElementVABS(FILE *file, PModel *pmodel, T *elem) {
-  std::vector<int> inums(9, 0);
-
-  int eid = pmodel->gmodel()->getMeshElementIndex(elem);
-  fprintf(file, "%8d", eid);
-
-  for (int i = 0; i < elem->getNumVertices(); ++i) {
-    int nid = elem->getVertex(i)->getIndex();
-
-    if (i < 3) {
-      inums[i] = nid;
-    } else {
-      inums[i + 1] = nid;
-    }
-
-    if (pmodel->interfaceOutput()) {
-      // pmodel->addNodeElement(nid, eid);
-      pmodel->node_elements[nid-1].push_back(eid);
-    }
-
-  }
-
-  writeNumbers(file, "%8d", inums);
-
-}
+//     }
+//   }
+//   fprintf(file, "\n");
+// }
 
 
 
@@ -379,32 +349,66 @@ template <class T> void writeElementVABS(FILE *file, PModel *pmodel, T *elem) {
 
 
 
-void writeElementsVABS(FILE *file, PModel *pmodel) {
-  // Write connectivity for each element
-  // for (auto fit = model->firstFace(); fit != model->lastFace(); ++fit) {
-  for (auto f : pmodel->dcel()->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        writeElementVABS(file, pmodel, elem);
-      }
-    }
-  }
-  fprintf(file, "\n");
+// template <class T> void writeElementVABS(FILE *file, PModel *pmodel, T *elem) {
+//   std::vector<int> inums(9, 0);
 
-  // Wirte layer type and theta_1 for each element
-  // for (auto fit = model->firstFace(); fit != model->lastFace(); ++fit) {
-  for (auto f : pmodel->dcel()->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        fprintf(file, "%8d%8d%16e\n",
-                pmodel->gmodel()->getMeshElementIndex(elem),
-                // f->gface()->physicals[0],
-                f->layertype()->id(), f->theta1());
-      }
-    }
-  }
-  fprintf(file, "\n");
-}
+//   int eid = pmodel->gmodel()->getMeshElementIndex(elem);
+//   fprintf(file, "%8d", eid);
+
+//   for (int i = 0; i < elem->getNumVertices(); ++i) {
+//     int nid = elem->getVertex(i)->getIndex();
+
+//     if (i < 3) {
+//       inums[i] = nid;
+//     } else {
+//       inums[i + 1] = nid;
+//     }
+
+//     if (pmodel->interfaceOutput()) {
+//       // pmodel->addNodeElement(nid, eid);
+//       pmodel->node_elements[nid-1].push_back(eid);
+//     }
+
+//   }
+
+//   writeNumbers(file, "%8d", inums);
+
+// }
+
+
+
+
+
+
+
+
+
+// void writeElementsVABS(FILE *file, PModel *pmodel) {
+//   // Write connectivity for each element
+//   // for (auto fit = model->firstFace(); fit != model->lastFace(); ++fit) {
+//   for (auto f : pmodel->dcel()->faces()) {
+//     if (f->gface() != nullptr) {
+//       for (auto elem : f->gface()->triangles) {
+//         writeElementVABS(file, pmodel, elem);
+//       }
+//     }
+//   }
+//   fprintf(file, "\n");
+
+//   // Wirte layer type and theta_1 for each element
+//   // for (auto fit = model->firstFace(); fit != model->lastFace(); ++fit) {
+//   for (auto f : pmodel->dcel()->faces()) {
+//     if (f->gface() != nullptr) {
+//       for (auto elem : f->gface()->triangles) {
+//         fprintf(file, "%8d%8d%16e\n",
+//                 pmodel->gmodel()->getMeshElementIndex(elem),
+//                 // f->gface()->physicals[0],
+//                 f->layertype()->id(), f->theta1());
+//       }
+//     }
+//   }
+//   fprintf(file, "\n");
+// }
 
 
 
@@ -536,7 +540,7 @@ void writeMaterialsVABS(FILE *file, PModel *model) {
 // ===================================================================
 
 void writeSettingsSC(FILE *file, PModel *model) {
-  std::vector<unsigned int> inums;
+  std::vector<std::size_t> inums;
 
   if (model->analysisModelDim() == 1) {
     // Beam model
@@ -595,8 +599,10 @@ void writeSettingsSC(FILE *file, PModel *model) {
   //   model->cs()->getNumOfUsedLayerTypes() // nlayer
   // };
   inums.push_back(insg);
-  inums.push_back(model->gmodel()->indexMeshVertices(true, 0));
-  inums.push_back(model->indexGmshElements());
+  // inums.push_back(model->gmodel()->indexMeshVertices(true, 0));
+  inums.push_back(model->getNumOfNodes());
+  // inums.push_back(model->indexGmshElements());
+  inums.push_back(model->getNumOfElements());
   inums.push_back(model->cs()->getNumOfUsedMaterials());
   inums.push_back(inslave);
   inums.push_back(model->cs()->getNumOfUsedLayerTypes());
@@ -612,18 +618,18 @@ void writeSettingsSC(FILE *file, PModel *model) {
 
 
 
-template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int mid) {
-  std::vector<int> inums(9, 0);
-  fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
-  for (int i = 0; i < elem->getNumVertices(); ++i) {
-    if (i < 3) {
-      inums[i] = elem->getVertex(i)->getIndex();
-    } else {
-      inums[i + 1] = elem->getVertex(i)->getIndex();
-    }
-  }
-  writeNumbers(file, "%8d", inums);
-}
+// template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int mid) {
+//   std::vector<int> inums(9, 0);
+//   fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
+//   for (int i = 0; i < elem->getNumVertices(); ++i) {
+//     if (i < 3) {
+//       inums[i] = elem->getVertex(i)->getIndex();
+//     } else {
+//       inums[i + 1] = elem->getVertex(i)->getIndex();
+//     }
+//   }
+//   writeNumbers(file, "%8d", inums);
+// }
 
 
 
@@ -633,35 +639,35 @@ template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int m
 
 
 
-void writeElementsSC(FILE *file, PModel *model) {
-  // Write connectivity for each element
-  for (auto f : model->dcel()->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        writeElementSC(file, model, elem, f->layertype()->id());
-      }
-    }
-  }
-  fprintf(file, "\n");
+// void writeElementsSC(FILE *file, PModel *model) {
+//   // Write connectivity for each element
+//   for (auto f : model->dcel()->faces()) {
+//     if (f->gface() != nullptr) {
+//       for (auto elem : f->gface()->triangles) {
+//         writeElementSC(file, model, elem, f->layertype()->id());
+//       }
+//     }
+//   }
+//   fprintf(file, "\n");
 
-  // Wirte local coordinate for each element
-  std::vector<double> dnums;
-  for (auto f : model->dcel()->faces()) {
-    if (f->gface() != nullptr) {
-      for (auto elem : f->gface()->triangles) {
-        fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
-        dnums = {
-          // 1.0, 0.0, 0.0, 
-          f->localy1()[0], f->localy1()[1], f->localy1()[2], 
-          f->localy2()[0], f->localy2()[1], f->localy2()[2], 
-          0.0, 0.0, 0.0
-        };
-        writeNumbers(file, "%16e", dnums);
-      }
-    }
-  }
-  fprintf(file, "\n");
-}
+//   // Wirte local coordinate for each element
+//   std::vector<double> dnums;
+//   for (auto f : model->dcel()->faces()) {
+//     if (f->gface() != nullptr) {
+//       for (auto elem : f->gface()->triangles) {
+//         fprintf(file, "%8d", model->gmodel()->getMeshElementIndex(elem));
+//         dnums = {
+//           // 1.0, 0.0, 0.0, 
+//           f->localy1()[0], f->localy1()[1], f->localy1()[2], 
+//           f->localy2()[0], f->localy2()[1], f->localy2()[2], 
+//           0.0, 0.0, 0.0
+//         };
+//         writeNumbers(file, "%16e", dnums);
+//       }
+//     }
+//   }
+//   fprintf(file, "\n");
+// }
 
 
 

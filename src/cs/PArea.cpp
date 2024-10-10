@@ -10,7 +10,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cstdio>
 #include <list>

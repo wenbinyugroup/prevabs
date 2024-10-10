@@ -4,13 +4,15 @@
 #include <string>
 #include <vector>
 
-#define VERSION_MAJOR "1"
-#define VERSION_MINOR "5"
-#define VERSION_PATCH "2"
+// #include "version.h"
 
-const std::string version{
-  VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
-};
+// #define VERSION_MAJOR "1"
+// #define VERSION_MINOR "6"
+// #define VERSION_PATCH "0"
+
+// const std::string VERSION_STRING{
+//   VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
+// };
 
 const std::string vabs_version = "4.0";
 const std::string sc_version = "2.1";

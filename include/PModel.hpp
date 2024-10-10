@@ -6,7 +6,7 @@
 #include "PSegment.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/GModel.h"
+// #include "gmsh/GModel.h"
 
 #include <string>
 #include <vector>
@@ -123,7 +123,7 @@ public:
 class PModel {
 private:
   std::string _name;
-  GModel *_gmodel, *_gmodel_debug;
+  // GModel *_gmodel, *_gmodel_debug;
   PDCEL *_dcel;
 
   double _global_mesh_size;
@@ -205,7 +205,7 @@ public:
   // =================================================================
   // Getters
 
-  GModel *gmodel() { return _gmodel; }
+  // GModel *gmodel() { return _gmodel; }
   PDCEL *dcel() { return _dcel; }
 
   double globalMeshSize() { return _global_mesh_size; }
@@ -226,8 +226,10 @@ public:
   std::vector<double> &curvatures() { return _analysis_curvatures; }
   std::vector<double> &obliques() { return _analysis_obliques; }
 
-  int getNumOfMaterials() { return _materials.size(); }
-  int getNumOfLayerTypes() { return _layertypes.size(); }
+  std::size_t getNumOfMaterials() { return _materials.size(); }
+  std::size_t getNumOfLayerTypes() { return _layertypes.size(); }
+  std::size_t getNumOfNodes();
+  std::size_t getNumOfElements();
 
   std::vector<PDCELVertex *> &vertices() { return _vertices; }
   std::vector<Baseline *> &baselines() { return _baselines; }
@@ -372,6 +374,11 @@ public:
     \param fmt Format (1: VABS, 2: SwiftComp)
    */
   int writeSG(std::string fn, int fmt, Message *);
+  void writeNodes(FILE *, Message *);
+  void writeElementsVABS(FILE *, Message *);
+  void writeElementsSC(FILE *, Message *);
+  // void writeMaterialsVABS(FILE *, Message *);
+  // void writeSettingsVABS(FILE *, Message *);
   int writeGLB(std::string fn, Message *);
 
   // Write supplement files
@@ -387,11 +394,14 @@ public:
   void homogenize(Message *);
   void build(Message *);
 
-  void initGmshModel(Message *);
+  // void initGmshModel(Message *);
   void createGmshVertices(Message *);
   void createGmshEdges(Message *);
   void createGmshFaces(Message *);
+  void createGmshEmbeddedEntities(Message *);
+  void createGmshPhyscialGroups(Message *);
   void createGmshGeo(Message *);
+  void recordInterface(PDCELHalfEdge *, Message *);
 
   void buildGmsh(Message *);
 

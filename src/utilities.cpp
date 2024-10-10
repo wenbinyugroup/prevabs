@@ -1,5 +1,7 @@
 #include "utilities.hpp"
 
+#include "version.h"
+
 #include "PComponent.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
@@ -8,9 +10,12 @@
 #include "PBaseLine.hpp"
 #include "overloadOperator.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
-#include "gmsh/SVector3.h"
+// #include "gmsh/SPoint3.h"
+// #include "gmsh/STensor3.h"
+// #include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
+#include "gmsh_mod/SVector3.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -172,7 +177,8 @@ void Message::printTitle() {
   printBlank();
   printDivider(40, '=');
   printBlank();
-  print(0, ("  PreVABS " + version));
+  std::string _ver_string{VERSION_STRING};
+  print(0, ("  PreVABS " + _ver_string));
   printBlank();
   print(0, ("  (For VABS " + vabs_version + " and SwiftComp " + sc_version + ")"));
   printBlank();
@@ -282,6 +288,15 @@ void writeVectorToFile(FILE *file, std::vector<double> v, std::string fmt, bool 
 
 
 void printVector(const std::vector<double> &v) {
+  for (auto n : v) {
+    std::cout << n << " ";
+  }
+  std::cout << std::endl;
+  return;
+}
+
+
+void printVector(const std::vector<int> &v) {
   for (auto n : v) {
     std::cout << n << " ";
   }
@@ -533,32 +548,34 @@ std::vector<int> parseIntegersFromString(const std::string &s) {
 
 
 
-std::string lowerString(std::string str) {
-  std::locale loc;
-  for (std::string::size_type i = 0; i < str.length(); ++i)
-    str[i] = std::tolower(str[i], loc);
-  return str;
+// std::string lowerString(std::string str) {
+//   std::locale loc;
+//   for (std::string::size_type i = 0; i < str.length(); ++i)
+//     str[i] = std::tolower(str[i], loc);
+//   return str;
+// }
+std::string lowerString(const std::string& str) {
+    std::string lower_str = str;
+    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return lower_str;
 }
 
 
 
 
-
-
-
-
-
-std::string upperString(std::string str) {
-  std::locale loc;
-  for (std::string::size_type i = 0; i < str.length(); ++i)
-    str[i] = std::toupper(str[i], loc);
-  return str;
+// std::string upperString(std::string str) {
+//   std::locale loc;
+//   for (std::string::size_type i = 0; i < str.length(); ++i)
+//     str[i] = std::toupper(str[i], loc);
+//   return str;
+// }
+std::string upperString(const std::string& str) {
+    std::string upper_str = str;
+    std::transform(upper_str.begin(), upper_str.end(), upper_str.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
+    return upper_str;
 }
-
-
-
-
-
 
 
 

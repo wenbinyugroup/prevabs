@@ -11,7 +11,7 @@
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <iostream>
 #include <list>

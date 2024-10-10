@@ -10,9 +10,9 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -904,7 +904,8 @@ int readLineTypeAirfoil(
     double loc{0.5};
     double _x, _y, _z;
 
-    unsigned int _l{line->vertices().size()};
+    // unsigned int _l{line->vertices().size()};
+    std::size_t _l{line->vertices().size()};
     if (line->isClosed()) {_l = _l - 1;}
 
     for (int i = 0; i < _l; i++) {

@@ -783,7 +783,7 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
 
 
 
-int readMsgFi(const std::string &filename, LocalState *state, int nelem, Message *pmessage) {
+int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem, Message *pmessage) {
   pmessage->increaseIndent();
 
   // TODO: multiple load cases
@@ -826,7 +826,7 @@ int readMsgFi(const std::string &filename, LocalState *state, int nelem, Message
         // std::cout << line << std::endl;
         std::string first_word;
         int id;
-        double fi, sr;
+        // double fi, sr;
         std::string sfi, ssr;
 
         std::stringstream ss;
