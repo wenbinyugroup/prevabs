@@ -90,6 +90,13 @@ target_link_libraries( ${PROJECTNAME} ${GMSH_LIB} )
 # target_link_libraries( ${PROJECTNAME} ${GMSH} )
 
 
+# Extra libraries
+# ---------------
+if(WIN32 OR CYGWIN)
+  list(APPEND EXTRA_LIBS winmm wsock32 ws2_32 psapi)
+  target_link_libraries( ${PROJECTNAME} ${EXTRA_LIBS} )
+endif()
+
 
 # Link VABS library
 # -----------------

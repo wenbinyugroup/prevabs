@@ -77,7 +77,7 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
 
                 if (!found) {
                     done_node_tags.push_back(_ntag);
-                    fprintf(p_file, "%8d", _ntag);
+                    fprintf(p_file, "%8zd", _ntag);
                 }
 
             }

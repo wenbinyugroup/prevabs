@@ -171,7 +171,7 @@ PDCELVertex *readXMLElementPoint(const xml_node<> *p_xn_point, const xml_node<> 
             _is_new_tmp = false;
           }
           else {
-            double dy, dz, loc2;
+            double dy, dz;
             dy = p_bsl_vertices[i+1]->y() - p_bsl_vertices[i]->y();
             dz = p_bsl_vertices[i+1]->z() - p_bsl_vertices[i]->z();
             _z_tmp = dz / dy * (loc - p_bsl_vertices[i]->y()) + p_bsl_vertices[i]->z();

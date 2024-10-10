@@ -153,7 +153,7 @@ int readXMLElementComponentLaminate(
 
       // Default
       split_by = "id";
-      int nvertex = p_baseline->vertices().size();
+      std::size_t nvertex = p_baseline->vertices().size();
       if (nvertex % 2 == 0) {
         v_split = p_baseline->vertices()[nvertex / 2];
       }
@@ -462,7 +462,7 @@ int readXMLElementComponentLaminate(
     }
 
     // int n_sgms = v_p_layup.size();
-    int n_sgms = v_u_sorted.size() - 1;
+    std::size_t n_sgms = v_u_sorted.size() - 1;
 
 
 

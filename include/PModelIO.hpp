@@ -125,7 +125,7 @@ int readLoadCasesFromCSV(const std::string &, const int &, const int &, const in
 int readVABSU(const std::string &, LocalState *, Message *);
 int readVABSEle(const std::string &, LocalState *, Message *);
 int readSCSn(const std::string &, LocalState *, Message *);
-int readMsgFi(const std::string &, LocalState *, int, Message *);
+int readMsgFi(const std::string &, LocalState *, std::size_t, Message *);
 // std::vector<std::vector<double>> readOutputDehomoElementSC(
 //   const std::string &, const int &);
 // std::vector<std::vector<double>> readOutputDehomoElementNodeVABS(

@@ -761,7 +761,7 @@ PDCEL::addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop) {
   PDCELHalfEdgeLoop *hel = new PDCELHalfEdgeLoop();
 
   PDCELVertex *v1, *v2;
-  PDCELHalfEdge *he12, *he21;
+  PDCELHalfEdge *he12;
   PDCELHalfEdge *he12prev = nullptr, *he21next = nullptr;
 
   std::list<PDCELVertex *>::const_iterator vit;
@@ -979,7 +979,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
 
   PDCELHalfEdge *hei = hel->incidentEdge(), *he1, *he2;
   PGeoLineSegment *lsi;
-  bool not_parallel, split1, split2;
+  bool not_parallel;
   double u_ls, u_lsi;
   PDCELVertex *v_tmp, *v1, *v2;
   std::list<PDCELVertex *> vlist1, vlist2;
@@ -1508,7 +1508,7 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
   ls_list = findLineSegmentsAtSweepLine(v);
 
   PDCELVertex *vt = new PDCELVertex(v->x(), v->y(), v->z() + 1);
-  PDCELVertex *vintersect, *vbelow;
+  PDCELVertex *vbelow;
 
   ls_tmp = new PGeoLineSegment(v, vt);
 

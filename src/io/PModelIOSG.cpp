@@ -253,7 +253,7 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
 // ===================================================================
 
 void writeSettingsVABS(FILE *file, PModel *model) {
-  std::vector<unsigned int> inums;
+  std::vector<std::size_t> inums;
 
   // inums = {1, model->cs()->getNumOfUsedLayerTypes()};
   inums.push_back(1);
@@ -540,7 +540,7 @@ void writeMaterialsVABS(FILE *file, PModel *model) {
 // ===================================================================
 
 void writeSettingsSC(FILE *file, PModel *model) {
-  std::vector<unsigned int> inums;
+  std::vector<std::size_t> inums;
 
   if (model->analysisModelDim() == 1) {
     // Beam model

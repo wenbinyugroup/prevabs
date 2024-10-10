@@ -226,8 +226,8 @@ public:
   std::vector<double> &curvatures() { return _analysis_curvatures; }
   std::vector<double> &obliques() { return _analysis_obliques; }
 
-  int getNumOfMaterials() { return _materials.size(); }
-  int getNumOfLayerTypes() { return _layertypes.size(); }
+  std::size_t getNumOfMaterials() { return _materials.size(); }
+  std::size_t getNumOfLayerTypes() { return _layertypes.size(); }
   std::size_t getNumOfNodes();
   std::size_t getNumOfElements();
 

@@ -263,13 +263,13 @@ PDCELHalfEdge *findCurvesIntersection(
 
   PDCELHalfEdge *he = nullptr;
 
-  PGeoLineSegment *ls_end, *ls_tool;
+  // PGeoLineSegment *ls_end, *ls_tool;
   std::vector<PDCELVertex *> tmp_ls;
-  int ls_i_prev;
+  std::size_t ls_i_prev;
   PDCELHalfEdge *hei = hel->incidentEdge();
   std::vector<int> c_is, t_is;
   std::vector<double> c_us, t_us;
-  int tmp_c_i, j0;
+  int j0;
   double tmp_c_u, tmp_t_u;
 
   if (end == 0) {
@@ -512,7 +512,7 @@ Baseline *findCurvesIntersection(
   inew = 0;
 
   Baseline *bl_new = new Baseline();
-  int n = bl->vertices().size();
+  std::size_t n = bl->vertices().size();
 
   std::vector<int> link_to_list_new;
 

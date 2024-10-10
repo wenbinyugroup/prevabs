@@ -263,7 +263,7 @@ void PModel::createGmshFaces(Message *pmessage) {
   // GVertex *gv;
   // GEdge *ge;
   // GFace *gf;
-  int _gv_tag;  // gmsh vertex tag
+  // int _gv_tag;  // gmsh vertex tag
   int _ge_tag;  // gmsh edge tag
   int _gel_tag;  // gmsh edge loop tag
   int _gf_tag;  // gmsh face tag

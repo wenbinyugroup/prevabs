@@ -98,9 +98,9 @@ public:
   // double getMeshsize() { return csmeshsize; }
   // std::string getElementtype() { return cselementtype; }
   // std::vector<Material *>::size_type getNumOfUsedMaterials() const { return csusedmaterials.size(); }
-  unsigned int getNumOfUsedMaterials() const { return csusedmaterials.size(); }
+  std::size_t getNumOfUsedMaterials() const { return csusedmaterials.size(); }
   // std::vector<LayerType *>::size_type getNumOfUsedLayerTypes() const { return csusedlayertypes.size(); }
-  unsigned int getNumOfUsedLayerTypes() const { return csusedlayertypes.size(); }
+  std::size_t getNumOfUsedLayerTypes() const { return csusedlayertypes.size(); }
   std::vector<Material *> getUsedMaterials() { return csusedmaterials; }
   std::vector<LayerType *> getUsedLayerTypes() { return csusedlayertypes; }
   LayerType *getUsedLayerTypeByMaterialAngle(Material *, double);
@@ -113,10 +113,10 @@ public:
   void setPModel(PModel *pmodel) { _pmodel = pmodel; }
 
   void setOrigin(SPoint3);
-  void setTranslate(std::vector<double>);
-  void setScale(double);
-  void setRotate(double);
-  void setRotateMatrix(STensor3);
+  // void setTranslate(std::vector<double>);
+  // void setScale(double);
+  // void setRotate(double);
+  // void setRotateMatrix(STensor3);
   // void setMeshsize(double);
   // void setElementtype(std::string);
 

@@ -132,7 +132,7 @@ PDCELVertex *findParamPointOnPolyline(
   double length = calcPolylineLength(ps);
   double ulength = u * length;
 
-  int nlseg = ps.size() - 1;
+  std::size_t nlseg = ps.size() - 1;
   double ui = 0, li;
   // int i;
   for (seg = 0; seg < nlseg; ++seg) {
@@ -210,7 +210,7 @@ double calcDistanceSquared(PDCELVertex *v1, PDCELVertex *v2) {
 Baseline *joinCurves(std::list<Baseline *> curves) {
   // std::cout << "[debug] joining curves" << std::endl;
 
-  Baseline *bl, *bl_tmp;
+  Baseline *bl;
   bl = new Baseline(curves.front());
   bl->setName(bl->getName() + "_new");
   curves.pop_front();
@@ -565,7 +565,7 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
                         std::vector<PDCELVertex *> &vl_2,
                         std::vector<int> &vi_1, std::vector<int> &vi_2,
                         std::vector<PDCELVertex *> &vl_c) {
-  int m, n;
+  std::size_t m, n;
   m = vl_1.size();
   n = vl_2.size();
 

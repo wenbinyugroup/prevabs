@@ -49,13 +49,13 @@ void Segment::buildAreas(Message *pmessage) {
 
 
   PArea *area, *area_prev = nullptr;
-  PGeoLineSegment *ls, *ls_base, *ls_tt, *ls_offset, *ls_layup;
-  PDCELHalfEdge *he, *he_tmp, *he_tmp_prev, *he_tmp_next;
+  PGeoLineSegment *ls_base, *ls_offset, *ls_layup;
+  PDCELHalfEdge *he_tmp, *he_tmp_next;
   PDCELVertex *v_layer, *v_layer_prev, *vb_tmp, *vo_tmp, *v1_tmp, *v2_tmp;
   std::list<PDCELFace *> new_faces;
   std::vector<PDCELVertex *> prev_bound_vertices_tmp, first_bound_vertices;
   std::string name;
-  double cumu_thk = 0, norm_thk, u_tmp, u1_tmp, u2_tmp;
+  double cumu_thk = 0, norm_thk, u1_tmp, u2_tmp;
 
   // _curve_base->print(pmessage, 9);
 
@@ -366,8 +366,8 @@ void Segment::buildAreas(Message *pmessage) {
   // 4. Split bound according to the layup
 
   int offset_v_index = 0;
-  int offset_v_linkto, offset_v_linkto_next;
-  int ii;
+  // int offset_v_linkto, offset_v_linkto_next;
+  // int ii;
   int count = 0;
   // while (!_inner_bounds.empty()) {
   // while (offset_v_index < _curve_offset->vertices().size()) {

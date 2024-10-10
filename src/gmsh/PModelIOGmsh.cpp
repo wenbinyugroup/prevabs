@@ -33,7 +33,7 @@ void PModel::writeNodes(FILE *file, Message *pmessage) {
   gmsh::model::mesh::getNodes(node_tags, node_coords, node_params, -1, -1);
 
   for (std::size_t i = 0; i < node_tags.size(); ++i) {
-    fprintf(file, "%8d%16e%16e\n",
+    fprintf(file, "%8zd%16e%16e\n",
             node_tags[i],
             node_coords[3*i+1],
             node_coords[3*i+2]);
@@ -58,12 +58,12 @@ void PModel::writeNodes(FILE *file, Message *pmessage) {
 
 
 void writeElementVABS(
-  FILE *file, int elem_tag, std::vector<std::size_t> node_tags,
+  FILE *file, std::size_t elem_tag, std::vector<std::size_t> node_tags,
   int elem_type,
   Message *pmessage
   ) {
 
-  fprintf(file, "%8d", elem_tag);
+  fprintf(file, "%8zd", elem_tag);
 
   std::vector<std::size_t> inums(9, 0);
 
@@ -142,7 +142,7 @@ void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
       for (auto _etype_tags : face_elem_tags) {
         for (auto _etag : _etype_tags) {
 
-          fprintf(file, "%8d", _etag);
+          fprintf(file, "%8zd", _etag);
           dnums = {
             // 1.0, 0.0, 0.0, 
             f->localy1()[0], f->localy1()[1], f->localy1()[2], 
@@ -429,7 +429,7 @@ int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
 void PMesh::writeGmshMsh(FILE *file, Message *pmessage) {
   fprintf(file, "$Nodes\n");
   // number of nodes
-  fprintf(file, "%d\n", _nodes.size());
+  fprintf(file, "%zd\n", _nodes.size());
   // coordinates
   for (auto n : _nodes) {
     fprintf(file, "%8d", n->getId());
@@ -443,7 +443,7 @@ void PMesh::writeGmshMsh(FILE *file, Message *pmessage) {
 
   fprintf(file, "$Elements\n");
   // number of elements
-  fprintf(file, "%d\n", _elements.size());
+  fprintf(file, "%zd\n", _elements.size());
   for (auto e : _elements) {
     fprintf(file, "%8d", e->getId());
     if (e->getNodes().size() == 3) {
@@ -633,7 +633,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
   if (_order == 0) {fprintf(f_msh, "%d\n", 1);}  // scalar
   else if (_order == 1) {fprintf(f_msh, "%d\n", 3);}  // vector
   else if (_order == 2) {fprintf(f_msh, "%d\n", 9);}  // tensor
-  fprintf(f_msh, "%d\n", _data.size());
+  fprintf(f_msh, "%zd\n", _data.size());
 
   // data
   for (auto row : _data) {
@@ -667,7 +667,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 
     else if (_type == 2) {  // element node data
       if (_order == 0) {  // scalar
-        fprintf(f_msh, "%8d", datum.size());
+        fprintf(f_msh, "%8zd", datum.size());
         writeVectorToFile(f_msh, datum);
       }
     }
@@ -737,7 +737,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
     fprintf(f_msh, "%d\n", 3);  // 3 integer tag
     fprintf(f_msh, "%d\n", 0);  // time step
     fprintf(f_msh, "%d\n", 1);
-    fprintf(f_msh, "%d\n", _data.size());
+    fprintf(f_msh, "%zd\n", _data.size());
 
     // data
     for (auto row : _data) {
