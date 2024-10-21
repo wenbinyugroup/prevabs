@@ -53,7 +53,9 @@ target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated 
 
 # Link Boost libraries
 # --------------------
-set(Boost_USE_STATIC_LIBS ON)
+if(WIN32 OR CYGWIN)
+  set(Boost_USE_STATIC_LIBS ON)
+endif()
 # set(Boost_USE_MULTITHREADED ON)
 # set(Boost_USE_STATIC_RUNTIME OFF)
 # add_definitions( -DBOOST_ALL_DYN_LINK )
