@@ -553,7 +553,7 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
   debug_plot_count++;
   std::string fn_base = config.file_directory + config.file_base_name + "_debug";
 
-  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count), pmessage);
+  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count)+".geo_unrolled", pmessage);
 
   if (debug_plot_count == 1) {
     writeGmshOpt(fn_base, pmessage);
