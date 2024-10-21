@@ -826,52 +826,40 @@ int readLineTypeAirfoil(
       // Add points in the file
       while (getline(_ifs, data_line)) {
         counter++;
-        // std::cout << "line " << counter << ": " << data_line << std::endl;
+
+        std::cout << "line " << counter << ": " << data_line << std::endl;
+
+        // Skip empty line
+        if (data_line.length() == 0) {continue;}
+
         if (counter <= head_rows) {continue;}
 
-        if (data_line.length() == 0) {continue;}
 
         PDCELVertex *_pv_tmp;
         std::stringstream _ss(data_line);
         double x, y;
         _ss >> x >> y;
 
-        // std::cout << "(" << x << ", " << y << ")\n";
+        std::cout << "(" << x << ", " << y << ")\n";
 
+        // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {
           continue;
         }
 
         // Add the point (0, 0), i.e., leading edge
         if (fabs(x) <= tol && fabs(y) <= tol) {
-          // which = -1 * which;
-          // line_up->addPVertex(pv_le);
-          // line_low->addPVertex(pv_le);
           line->addPVertex(pv_le);
           continue;
         }
 
         _pv_tmp = new PDCELVertex(_pv_tmp_name, 0, x, y);
         pmodel->addVertex(_pv_tmp);
-
-        // if (which == 1) {
-        //   // Add points to the upper surface line
-        //   line_up->addPVertex(_pv_tmp);
-        // }
-        // else if (which == -1) {
-        //   // Add points to the lower surface line
-        //   line_low->addPVertex(_pv_tmp);
-        // }
         line->addPVertex(_pv_tmp);
+
       }
 
       // Add the point (1, 0), i.e., trailing edge
-      // if (direction == 1) {
-      //   line_low->addPVertex(pv_te);
-      // }
-      // else if (direction == -1) {
-      //   line_up->addPVertex(pv_te);
-      // }
       line->addPVertex(pv_te);  // Closed airfoil
 
       // Rename key points
