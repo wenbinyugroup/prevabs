@@ -47,6 +47,8 @@ void PModel::initialize() {
   // GmshInitialize(0, 0);
   // printInfo(1, "Gmsh initialized");
 
+  gmsh::logger::stop();
+
 }
 
 

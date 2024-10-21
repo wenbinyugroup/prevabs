@@ -556,7 +556,7 @@ void PModel::buildGmsh(Message *pmessage) {
 
   PLOG(info) << pmessage->message("meshing");
 
-  gmsh::logger::stop();
+  // gmsh::logger::stop();
 
   // unsigned int mesh_algo = 6;
   // GmshSetOption("Mesh", "Algorithm", mesh_algo);
@@ -568,7 +568,7 @@ void PModel::buildGmsh(Message *pmessage) {
     gmsh::model::mesh::setOrder(2);
   }
 
-  gmsh::logger::start();
+  // gmsh::logger::start();
 
 
 
