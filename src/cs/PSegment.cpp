@@ -371,7 +371,8 @@ void Segment::build(Message *pmessage) {
 
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
-    PLOG(debug) << pmessage->message("i: " + std::to_string(i));
+    // Debug log the two vertices i and i+1
+    PLOG(debug) << pmessage->message("vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1));
 
     he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
                                        _curve_base->vertices()[i + 1]);
