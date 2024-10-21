@@ -827,7 +827,7 @@ int readLineTypeAirfoil(
       while (getline(_ifs, data_line)) {
         counter++;
 
-        std::cout << "line " << counter << ": " << data_line << std::endl;
+        // std::cout << "line " << counter << ": " << data_line << std::endl;
 
         // if (data_line.length() == 0) {continue;}
 
@@ -843,7 +843,7 @@ int readLineTypeAirfoil(
         double x, y;
         _ss >> x >> y;
 
-        std::cout << "(" << x << ", " << y << ")\n";
+        // std::cout << "(" << x << ", " << y << ")\n";
 
         // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {

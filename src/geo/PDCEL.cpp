@@ -657,13 +657,13 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
 
 
 PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
-  std::cout << "[debug] findHalfEdge: " << v1 << ", " << v2 << std::endl;
-  std::cout << "        half edge v1->edge(): ";
-  if (v1->edge() != nullptr) {
-    std::cout << v1->edge() << std::endl;
-  } else {
-    std::cout << "nullptr" << std::endl;
-  }
+  // std::cout << "[debug] findHalfEdge: " << v1 << ", " << v2 << std::endl;
+  // std::cout << "        half edge v1->edge(): ";
+  // if (v1->edge() != nullptr) {
+  //   std::cout << v1->edge() << std::endl;
+  // } else {
+  //   std::cout << "nullptr" << std::endl;
+  // }
 
   if (v1->edge() == nullptr) {
     return nullptr;
