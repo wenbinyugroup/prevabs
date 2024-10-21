@@ -829,14 +829,17 @@ int readLineTypeAirfoil(
 
         std::cout << "line " << counter << ": " << data_line << std::endl;
 
-        // Skip empty line
-        if (data_line.length() == 0) {continue;}
+        // if (data_line.length() == 0) {continue;}
 
-        if (counter <= head_rows) {continue;}
+        // if (counter <= head_rows) {continue;}
+
+        std::string trimmed_line = trim(data_line);
+
+        if (trimmed_line.empty()) {continue;}
 
 
         PDCELVertex *_pv_tmp;
-        std::stringstream _ss(data_line);
+        std::stringstream _ss(trimmed_line);
         double x, y;
         _ss >> x >> y;
 

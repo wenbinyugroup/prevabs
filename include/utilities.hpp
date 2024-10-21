@@ -99,6 +99,8 @@ std::vector<int> parseIntegersFromString(const std::string &);
 std::string lowerString(const std::string &);
 std::string upperString(const std::string &);
 std::string removeChar(std::string, char = ' ');
+std::string trim(const std::string &);
+
 std::vector<double> getDxyFromAngle(double, char = 'x', double = 1.0,
                                     bool = false);
 void discretizeArcN(const PGeoArc &, int, Baseline *, PModel *);
