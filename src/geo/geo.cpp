@@ -21,6 +21,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 
 double calcPolylineLength(const std::vector<PDCELVertex *> ps) {

@@ -522,7 +522,8 @@ class fullMatrix
     if (nbRows != -1 && nbColumns == -1)
       nbColumns = _r * _c / nbRows;
     if (nbRows*nbColumns != size1()*size2())
-      Msg::Error("Invalid reshape, total number of entries must be equal (new %i x %i != old %i x %i)", nbRows, nbColumns, size1(), size2());
+      // Msg::Error("Invalid reshape, total number of entries must be equal (new %i x %i != old %i x %i)", nbRows, nbColumns, size1(), size2());
+      printf("Invalid reshape, total number of entries must be equal (new %i x %i != old %i x %i)", nbRows, nbColumns, size1(), size2());
     _r = nbRows;
     _c = nbColumns;
   }

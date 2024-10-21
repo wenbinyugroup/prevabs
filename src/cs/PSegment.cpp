@@ -364,19 +364,23 @@ void Segment::build(Message *pmessage) {
 
   PDCELHalfEdge *he;
 
-  // std::cout << "[debug] creating half edges for the base curve" << std::endl;
-  // if (config.debug) {
-  //   pmessage->print(9, "creating half edges for the base curve");
-  // }
   PLOG(debug) << pmessage->message("creating half edges for the base curve");
-  // pmessage->print(9, "creating half edges for the base curve");
-  for (int i = 0; i < _curve_base->vertices().size() - 1; ++i) {
+
+  // Log the number of vertices of the base curve
+  PLOG(debug) << pmessage->message("number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size()));
+
+  for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
+
+    PLOG(debug) << pmessage->message("i: " + std::to_string(i));
+
     he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
                                        _curve_base->vertices()[i + 1]);
+
     if (he == nullptr) {
       _pmodel->dcel()->addEdge(_curve_base->vertices()[i],
                                _curve_base->vertices()[i + 1]);
     }
+
   }
   // _pmodel->dcel()->print_dcel();
 
