@@ -240,8 +240,23 @@ void combineVertexLists(std::vector<PDCELVertex *> &,
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
               PDCELVertex *intersect);
 
-// PDCELHalfEdge *findCurvesIntersection(
-//   Baseline *, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &);
+/**
+ * @brief Finds the intersection of curves within a given tolerance.
+ *
+ * This function iterates through the half-edges of a given half-edge loop (hel) 
+ * and finds the intersection points with the provided vertices. It logs the 
+ * process and updates the intersection parameters (u1, u2) and the index (ls_i).
+ *
+ * @param vertices A vector of pointers to PDCELVertex objects representing the vertices.
+ * @param hel A pointer to a PDCELHalfEdgeLoop object representing the half-edge loop.
+ * @param end An integer indicating the end condition (0 for beginning, 1 for end).
+ * @param ls_i A reference to an integer that will be updated with the index of the line segment.
+ * @param u1 A reference to a double that will be updated with the parametric location of the intersection on the curve.
+ * @param u2 A reference to a double that will be updated with the parametric location of the intersection on the half-edge.
+ * @param tol A constant reference to a double representing the tolerance for intersection calculations.
+ * @param pmessage A pointer to a Message object used for logging.
+ * @return A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
+ */
 PDCELHalfEdge *findCurvesIntersection(
   std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &,
   Message *);
@@ -256,6 +271,23 @@ int findAllIntersections(
   std::vector<double> &u1s, std::vector<double> &u2s
 );
 
+/**
+ * @brief Finds the intersection location closest to the specified end.
+ *
+ * This function iterates through the provided intersection indices and parametric locations
+ * to find the intersection location that is closest to the specified end (beginning or ending side).
+ * It updates the line segment index (ls_i) and the parametric location (u) accordingly.
+ *
+ * @param c           A reference to a vector of pointers to PDCELVertex objects representing the curve.
+ * @param ii          A constant reference to a vector of integers representing the intersection indices.
+ * @param uu          A reference to a vector of doubles representing the parametric locations of intersections.
+ * @param which_end   A constant reference to an integer indicating the end to consider (0 for beginning, 1 for end).
+ * @param inner_only  A constant reference to an integer indicating whether to consider only inner intersections (1) or not (0).
+ * @param ls_i        A reference to an integer that will be updated with the index of the line segment.
+ * @param j           A reference to an integer that will be updated with the index of the intersection.
+ * @param pmessage    A pointer to a Message object used for logging.
+ * @return            A double representing the parametric location of the closest intersection.
+ */
 double getIntersectionLocation(
   std::vector<PDCELVertex *> &c,
   const std::vector<int> &ii, std::vector<double> &uu,
