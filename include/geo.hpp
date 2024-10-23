@@ -247,15 +247,15 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * and finds the intersection points with the provided vertices. It logs the 
  * process and updates the intersection parameters (u1, u2) and the index (ls_i).
  *
- * @param vertices A vector of pointers to PDCELVertex objects representing the vertices.
- * @param hel A pointer to a PDCELHalfEdgeLoop object representing the half-edge loop.
- * @param end An integer indicating the end condition (0 for beginning, 1 for end).
- * @param ls_i A reference to an integer that will be updated with the index of the line segment.
- * @param u1 A reference to a double that will be updated with the parametric location of the intersection on the curve.
- * @param u2 A reference to a double that will be updated with the parametric location of the intersection on the half-edge.
- * @param tol A constant reference to a double representing the tolerance for intersection calculations.
- * @param pmessage A pointer to a Message object used for logging.
- * @return A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
+ * @param vertices  A vector of pointers to PDCELVertex objects representing the vertices.
+ * @param hel       A pointer to a PDCELHalfEdgeLoop object representing the half-edge loop.
+ * @param end       An integer indicating the end condition (0 for beginning, 1 for end).
+ * @param ls_i      A reference to an integer that will be updated with the index of the line segment.
+ * @param u1        A reference to a double that will be updated with the parametric location of the intersection on the curve.
+ * @param u2        A reference to a double that will be updated with the parametric location of the intersection on the half-edge.
+ * @param tol       A constant reference to a double representing the tolerance for intersection calculations.
+ * @param pmessage  A pointer to a Message object used for logging.
+ * @return          A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
  */
 PDCELHalfEdge *findCurvesIntersection(
   std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &,

@@ -62,6 +62,7 @@ public:
 };
 
 
+int convertSizeTToInt(size_t value);
 
 
 void printInfo(int, std::string);

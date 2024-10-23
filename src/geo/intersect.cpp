@@ -252,7 +252,7 @@ PDCELHalfEdge *findCurvesIntersection(
   PDCELHalfEdge *he = nullptr;
 
   std::vector<PDCELVertex *> tmp_ls; // temporary line segment
-  std::size_t ls_i_prev;
+  int ls_i_prev;
   PDCELHalfEdge *hei = hel->incidentEdge();
   std::vector<int> c_is, t_is;  // curve indices, tool indices
   std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
@@ -265,9 +265,10 @@ PDCELHalfEdge *findCurvesIntersection(
   }
   else if (end == 1) {  // find the intersection at the end
     u1 = INF;
-    ls_i_prev = vertices.size();
+    ls_i_prev = convertSizeTToInt(vertices.size());
   }
 
+  // Iterate through all line segments of the half edge loop
   do {
     PLOG(debug) << pmessage->message("----------");
 
@@ -304,6 +305,7 @@ PDCELHalfEdge *findCurvesIntersection(
     // If there is at least one intersection
     if (c_is.size() > 0) {
 
+      // Find the intersection that is the closest to the expected end
       if (end == 0) {
         tmp_c_u = getIntersectionLocation(
           vertices, c_is, c_us, 1, 0, ls_i, j0, pmessage
@@ -316,57 +318,107 @@ PDCELHalfEdge *findCurvesIntersection(
       }
       tmp_t_u = t_us[j0];
 
-      PLOG(debug) << pmessage->message("ls_i = " + std::to_string(ls_i));
-      PLOG(debug) << pmessage->message("tmp_c_u = " + std::to_string(tmp_c_u));
-      PLOG(debug) << pmessage->message("tmp_t_u = " + std::to_string(tmp_t_u));
+      PLOG(debug) << pmessage->message("closest intersection to end " + std::to_string(end));
+      PLOG(debug) << pmessage->message("curve segment index (ls_i) = " + std::to_string(ls_i));
+      PLOG(debug) << pmessage->message("prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev));
+      PLOG(debug) << pmessage->message("curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u));
+      PLOG(debug) << pmessage->message("tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u));
       PLOG(debug) << pmessage->message(
-        "v11 = " + vertices[ls_i]->printString() + " -> "
+        "curve segment: v11 = " + vertices[ls_i]->printString() + " -> "
         + "v12 = " + vertices[ls_i+1]->printString()
       );
       PLOG(debug) << pmessage->message(
-        "v21 = " + tmp_ls[0]->printString() + " -> "
+        "tool segment: v21 = " + tmp_ls[0]->printString() + " -> "
         + "v22 = " + tmp_ls[1]->printString()
       );
+      // PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
+      // PLOG(debug) << pmessage->message("number of vertices of the curve = " + std::to_string(vertices.size()));
+
+      bool update = false;
+
+      // If the intersection is within the tool segment
       PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
-      PLOG(debug) << pmessage->message("u2 = " + std::to_string(u2));
-      PLOG(debug) << pmessage->message("end = " + std::to_string(end));
       PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
-      PLOG(debug) << pmessage->message("vertices.size() = " + std::to_string(vertices.size()));
+      if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
 
-      if (end == 0) {
-        if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
-          if (
-            (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1)  // before the first vertex
-            || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i > ls_i_prev)  // inner line segment
-            || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u > u1) // same line segment but inner u
-            ) {
+        // If want the intersection closer to the beginning
+        if (end == 0) {
 
-            u1 = tmp_c_u;
-            u2 = tmp_t_u;
-            he = hei;
-            ls_i_prev = ls_i;
-
+          // If the intersection is before the first vertex
+          if (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1) {
+            update = true;
           }
-        }
-      }
-      else if (end == 1) {
-
-        if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
-
-          if (
-            ((ls_i == vertices.size() - 2) && tmp_c_u > 1 && tmp_c_u < u1)  // after the last vertex
-            || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i < ls_i_prev)  // inner line segment
-            || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u < u1) // same line segment but inner u
-            ) {
-            u1 = tmp_c_u;
-            u2 = tmp_t_u;
-            he = hei;
-            ls_i_prev = ls_i;
-            // std::cout << "u1 = " << u1 << ", u2 = " << u2
-            // << ", ls_i_prev = " << ls_i_prev << std::endl;
+          else if (fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) {
+            if (ls_i > ls_i_prev) {
+              update = true;
+            }
+            else if (ls_i == ls_i_prev && tmp_c_u > u1) {
+              update = true;
+            }
           }
+
+          // if (
+          //   (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1)  // before the first vertex
+          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i > ls_i_prev)  // inner line segment
+          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u > u1) // same line segment but inner u
+          //   ) {
+
+          //   u1 = tmp_c_u;
+          //   u2 = tmp_t_u;
+          //   he = hei;
+          //   ls_i_prev = ls_i;
+
+          // }
+
         }
+
+        // If want the intersection closer to the ending
+        else if (end == 1) {
+
+          if (ls_i == vertices.size() - 2 && tmp_c_u > 1 && tmp_c_u < u1) {
+            update = true;
+          }
+          else if (fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) {
+            if (ls_i < ls_i_prev) {
+              update = true;
+            }
+            else if (ls_i == ls_i_prev && tmp_c_u < u1) {
+              update = true;
+            }
+          }
+
+          // if (
+          //   ((ls_i == vertices.size() - 2) && tmp_c_u > 1 && tmp_c_u < u1)  // after the last vertex
+          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i < ls_i_prev)  // inner line segment
+          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u < u1) // same line segment but inner u
+          //   ) {
+
+          //   u1 = tmp_c_u;
+          //   u2 = tmp_t_u;
+          //   he = hei;
+          //   ls_i_prev = ls_i;
+
+          // }
+
+        }
+
       }
+
+      if (update) {
+
+        PLOG(debug) << pmessage->message("update intersection");
+
+        u1 = tmp_c_u;
+        u2 = tmp_t_u;
+        he = hei;
+        ls_i_prev = ls_i;
+
+        PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
+        PLOG(debug) << pmessage->message("u2 = " + std::to_string(u2));
+        PLOG(debug) << pmessage->message("end = " + std::to_string(end));
+
+      }
+
 
       ls_i = ls_i_prev;
 
@@ -632,7 +684,7 @@ double getIntersectionLocation(
   // Find the intersection location that is the closest to the expected end
   pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
+  // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
 
   ls_i = ii[0];
   double u = uu[0];
@@ -653,10 +705,9 @@ double getIntersectionLocation(
             u = uu[k];
             j = k;
           }
-          // u = uu[k] < u ? uu[k] : u;
+
         }
-        // ls_i = ii[k] < ls_i ? ii[k] : ls_i;
-        // u = uu[k] < u ? uu[k] : u;
+
       }
       else if (which_end == 1) {
         // Closer to the ending side
@@ -670,22 +721,21 @@ double getIntersectionLocation(
             u = uu[k];
             j = k;
           }
-          // u = uu[k] > u ? uu[k] : u;
+
         }
-        // ls_i = ii[k] > ls_i ? ii[k] : ls_i;
-        // u = uu[k] > u ? uu[k] : u;
+
       }
     }
 
   }
 
 
-  PLOG(debug) << pmessage->message(
-    "ls_i = " + std::to_string(ls_i)
-    + ", u = " + std::to_string(u)
-    + ", v1 = " + c[ls_i]->printString()
-    + ", v2 = " + c[ls_i+1]->printString()
-  );
+  // PLOG(debug) << pmessage->message(
+  //   "ls_i = " + std::to_string(ls_i)
+  //   + ", u = " + std::to_string(u)
+  //   + ", v1 = " + c[ls_i]->printString()
+  //   + ", v2 = " + c[ls_i+1]->printString()
+  // );
 
   pmessage->decreaseIndent();
 

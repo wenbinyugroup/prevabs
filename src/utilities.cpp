@@ -27,6 +27,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <limits>
+#include <stdexcept>
 
 using namespace rapidxml;
 
@@ -218,37 +221,31 @@ void printError(int i_indent, std::string s_message) {
   return;
 }
 
-// void printMessage(int i_type, std::string s_message, std::ofstream &ofs, bool to_screen, int i_indent) {
-//   std::string s_prepend{""};
-//   s_prepend += std::string(i_indent, ' ');
 
-//   switch (i_type) {
-//     case 0:  // infomation
-//       s_prepend += "- ";
-//       break;
-//     case 1:  // error
-//       s_prepend += "X [error] ";
-//       break;
-//     case 2:  // debug
-//       s_prepend += "- [debug] ";
-//       break;
-//   }
 
-//   ofs << s_prepend << s_message;
-//   if (to_screen) {
-//     std::cout << s_prepend << s_message << std::endl;
-//   }
-//   return;
-// }
 
-// template <typename T, typename A>
-// void writeVectorToFile(std::ofstream &ofs, std::vector<T, A> v) {
-//   for (auto n : v) {
-//     ofs << n << " ";
-//   }
-//   ofs << "\n";
-//   return;
-// }
+
+
+
+
+
+int convertSizeTToInt(size_t value) {
+    // Check if the value is within the range of `int`
+    if (value > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        throw std::overflow_error("size_t value exceeds the maximum value of int");
+    }
+    
+    // Safe conversion since the value is within range
+    return static_cast<int>(value);
+}
+
+
+
+
+
+
+
+
 
 void writeVectorToFile(std::ofstream &ofs, std::vector<double> v) {
   for (auto n : v) {
