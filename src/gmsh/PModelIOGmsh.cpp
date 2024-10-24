@@ -208,11 +208,11 @@ void PModel::writeElementsVABS(
           elem_node_tags.begin() + _j * etype_nnodes,
           elem_node_tags.begin() + (_j + 1) * etype_nnodes);
 
-        std::cout << "node_tags: ";
-        for (auto _k = 0; _k < node_tags.size(); ++_k) {
-          std::cout << node_tags[_k] << " ";
-        }
-        std::cout << std::endl;
+        // std::cout << "node_tags: ";
+        // for (auto _k = 0; _k < node_tags.size(); ++_k) {
+        //   std::cout << node_tags[_k] << " ";
+        // }
+        // std::cout << std::endl;
 
         writeElementVABS(
           file, elem_tags[_j], node_tags, elem_type, pmessage);
@@ -220,6 +220,7 @@ void PModel::writeElementsVABS(
       }
     }
   }
+  fprintf(file, "\n");
 
   // Wirte local coordinate for each element
   PLOG(info) << pmessage->message("  writing local orientation");
@@ -247,7 +248,7 @@ void PModel::writeElementsVABS(
       for (auto _etag : elem_tags) {
 
         fprintf(
-          file, "%8zd%8zd%16e",
+          file, "%8zd%8zd%16e\n",
           _etag, face_prop_tag, face_local_orient
         );
 
@@ -257,6 +258,7 @@ void PModel::writeElementsVABS(
     }
 
   }
+  fprintf(file, "\n");
 
   pmessage->decreaseIndent();
 

@@ -1,6 +1,6 @@
 
-========================================2024-10-23 01:18:25 [info] - reading input files
-2024-10-23 01:18:25 [info]     - reading main input file:  
+========================================2024-10-24 11:09:57 [info] - reading input files
+2024-10-24 11:09:57 [info]     - reading main input file:  
   
     
   
@@ -16,36 +16,39 @@
   
   ========================================
   
-:18:25 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-2024-10-23 01:18:25 [info]         - reading materials file: .\test\debug\ver160\material_database_si.xml
-2024-10-23 01:18:25 [info]   - reading input files -- done
-2024-10-23 01:18:25 [info]   - building the shape
-2024-10-23 01:18:25 [info]     - building the cross section, step 1
-2024-10-23 01:18:25 [info]       - building component: spar
-2024-10-23 01:18:25 [info]       - building component: le
-2024-10-23 01:18:25 [info]       - building component: te
-2024-10-23 01:18:25 [info]     - building the cross section, step 2
-2024-10-23 01:18:25 [info]       - building component details: spar
-2024-10-23 01:18:25 [info]       - building component details: le
-2024-10-23 01:18:25 [info]       - building component details: te
-2024-10-23 01:18:25 [info]     - fixing geometry
-2024-10-23 01:18:25 [info]   - building the shape -- done
-2024-10-23 01:18:25 [info]   - modeling in Gmsh
-2024-10-23 01:18:25 [info]     - creating gmsh vertices
-2024-10-23 01:18:25 [info]     - creating gmsh edges
-2024-10-23 01:18:25 [info]     - creating gmsh faces
-2024-10-23 01:18:25 [info]     - creating physical groups
-2024-10-23 01:18:25 [info]     - meshing
-2024-10-23 01:18:27 [info]   - modeling in Gmsh -- done
-2024-10-23 01:18:27 [info]   - writing outputs
-2024-10-23 01:18:27 [info]     - writing gmsh .opt file: .\test\debug\ver160\main_cs_set1.opt
-2024-10-23 01:18:27 [info]     - writing gmsh .geo file: .\test\debug\ver160\main_cs_set1.geo_unrolled
-2024-10-23 01:18:27 [info]     - writing gmsh .msh file: .\test\debug\ver160\main_cs_set1.msh
-2024-10-23 01:18:27 [info]     - writing sg file: .\test\debug\ver160\main_cs_set1.sg
-2024-10-23 01:18:27 [info]       - writing nodes
-2024-10-23 01:18:27 [info]     - writing material id-name file: .\test\debug\ver160\main_cs_set1.sg.mat
-2024-10-23 01:18:27 [info]   - writing outputs -- done
-2024-10-23 01:18:27 [info]   - running Gmsh for visualization
-2024-10-23 01:18:27 [info]   - running: gmsh .\test\debug\ver160\main_cs_set1.geo_unrolled .\test\debug\ver160\main_cs_set1.msh .\test\debug\ver160\main_cs_set1.opt
-2024-10-23 01:18:27 [info] prevabs finished
-2024-10-23 01:18:27 [info] total running time: 2.223 sec
+:09:57 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+2024-10-24 11:09:57 [info]         - reading materials file: .\test\debug\ver160\material_database_si.xml
+2024-10-24 11:09:57 [info]   - reading input files -- done
+2024-10-24 11:09:57 [info]   - building the shape
+2024-10-24 11:09:57 [info]     - building the cross section, step 1
+2024-10-24 11:09:57 [info]       - building component: spar
+2024-10-24 11:09:57 [info]       - building component: le
+2024-10-24 11:09:57 [info]       - building component: te
+2024-10-24 11:09:57 [info]     - building the cross section, step 2
+2024-10-24 11:09:57 [info]       - building component details: spar
+2024-10-24 11:09:57 [info]       - building component details: le
+2024-10-24 11:09:57 [info]       - building component details: te
+2024-10-24 11:09:57 [info]     - fixing geometry
+2024-10-24 11:09:57 [info]   - building the shape -- done
+2024-10-24 11:09:57 [info]   - modeling in Gmsh
+2024-10-24 11:09:57 [info]     - creating gmsh vertices
+2024-10-24 11:09:57 [info]     - creating gmsh edges
+2024-10-24 11:09:57 [info]     - creating gmsh faces
+2024-10-24 11:09:57 [info]     - creating physical groups
+2024-10-24 11:09:57 [info]     - meshing
+2024-10-24 11:09:57 [info]   - modeling in Gmsh -- done
+2024-10-24 11:09:57 [info]   - writing outputs
+2024-10-24 11:09:57 [info]     - writing gmsh .opt file: .\test\debug\ver160\main_cs_set1.opt
+2024-10-24 11:09:57 [info]     - writing gmsh .geo file: .\test\debug\ver160\main_cs_set1.geo_unrolled
+2024-10-24 11:09:57 [info]     - writing gmsh .msh file: .\test\debug\ver160\main_cs_set1.msh
+2024-10-24 11:09:57 [info]     - writing sg file: .\test\debug\ver160\main_cs_set1.sg
+2024-10-24 11:09:57 [info]       - writing nodes
+2024-10-24 11:09:57 [info]       - writing elements
+2024-10-24 11:09:57 [info]         -   writing connectivity
+2024-10-24 11:09:57 [info]         -   writing local orientation
+2024-10-24 11:09:57 [info]     - writing material id-name file: .\test\debug\ver160\main_cs_set1.sg.mat
+2024-10-24 11:09:57 [info]   - writing outputs -- done
+2024-10-24 11:09:57 [info]   - running Gmsh for visualization
+2024-10-24 11:09:57 [info]   - running: gmsh .\test\debug\ver160\main_cs_set1.geo_unrolled .\test\debug\ver160\main_cs_set1.msh .\test\debug\ver160\main_cs_set1.opt
+2024-10-24 11:09:57 [info] prevabs finished
+2024-10-24 11:09:57 [info] total running time: 0.825 sec
