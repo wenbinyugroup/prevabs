@@ -54,14 +54,59 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
   PLOG(info) << pmessage->message("writing sg file: " + fn);
 
-  FILE *fsg;
-  fsg = fopen(fn.c_str(), "w");
-
   std::vector<int> inums;
   std::vector<double> dnums;
 
+  size_t nnode = 0;
+  size_t nelem = 0;
+
+  // Get mesh data
   // ------------------------------
+  std::vector<size_t> node_tags;
+  std::vector<double> node_coords;
+  getNodes(node_tags, node_coords, pmessage);
+  nnode = node_tags.size();
+
+  std::vector<std::vector<int>> face_elem_types;
+  std::vector<std::vector<std::vector<size_t>>> face_elem_tags, face_elem_node_tags;
+  std::vector<size_t> face_prop_tags;
+  std::vector<double> face_local_orients;
+
+  for (auto f : _dcel->faces()) {
+    if (f->gfaceTag() != 0) {
+      std::vector<int> elem_types;
+      std::vector<std::vector<size_t>> elem_type_tags, elem_type_node_tags;
+
+      getElements(
+        elem_types, elem_type_tags, elem_type_node_tags, 2, f->gfaceTag(),
+        pmessage
+      );
+
+      // Count element numbers
+      for (auto etags : elem_type_tags) {
+        nelem += etags.size();
+      }
+
+      face_elem_types.push_back(elem_types);
+      face_elem_tags.push_back(elem_type_tags);
+      face_elem_node_tags.push_back(elem_type_node_tags);
+
+      face_prop_tags.push_back(f->layertype()->id());
+      face_local_orients.push_back(f->theta1());
+    }
+  }
+
+  setNumNodes(nnode);
+  setNumElements(nelem);
+
+
+  // Write the SG file
+  // ------------------------------
+  FILE *fsg;
+  fsg = fopen(fn.c_str(), "w");
+
   // Write the analysis settings
+  // ------------------------------
   if (config.analysis_tool == 1) {
     // VABS
     writeSettingsVABS(fsg, this);
@@ -70,29 +115,35 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
     writeSettingsSC(fsg, this);
   }
 
-  // ------------------------------
   // Write nodes and elements
-  // writeNodes(fsg, this);
-  writeNodes(fsg, pmessage);
-
-  if (config.analysis_tool == 1) {
-    // writeElementsVABS(fsg, this);
-    writeElementsVABS(fsg, pmessage);
-  } else if (config.analysis_tool == 2) {
-    // writeElementsSC(fsg, this);
-    writeElementsSC(fsg, pmessage);
-  }
-
   // ------------------------------
+  // writeNodes(fsg, this);
+  writeNodes(fsg, node_tags, node_coords, pmessage);
+
+  writeElements(
+    fsg,
+    face_elem_types, face_elem_tags, face_elem_node_tags,
+    face_prop_tags, face_local_orients,
+    pmessage);
+
+  // if (config.analysis_tool == 1) {
+  //   // writeElementsVABS(fsg, this);
+  //   writeElementsVABS(fsg, pmessage);
+  // } else if (config.analysis_tool == 2) {
+  //   // writeElementsSC(fsg, this);
+  //   writeElementsSC(fsg, pmessage);
+  // }
+
   // Write layer types and materials
+  // ------------------------------
   if (config.analysis_tool == 1) {
     writeMaterialsVABS(fsg, this);
   } else if (config.analysis_tool == 2) {
     writeMaterialsSC(fsg, this);
   }
 
-  // ------------------------------
   // Omega for SwiftComp only
+  // ------------------------------
   if (config.analysis_tool == 2) {
     fprintf(fsg, "%16e\n", _omega);
   }

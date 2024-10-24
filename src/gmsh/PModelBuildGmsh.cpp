@@ -34,20 +34,20 @@
 
 
 
-std::size_t PModel::getNumOfNodes() {
-  std::size_t nnodes;
-  gmsh::model::mesh::getMaxNodeTag(nnodes);
-  return nnodes;
-}
+// std::size_t PModel::getNumOfNodes() {
+//   std::size_t nnodes;
+//   gmsh::model::mesh::getMaxNodeTag(nnodes);
+//   return nnodes;
+// }
 
 
 
 
-std::size_t PModel::getNumOfElements() {
-  std::size_t nelems;
-  gmsh::model::mesh::getMaxElementTag(nelems);
-  return nelems;
-}
+// std::size_t PModel::getNumOfElements() {
+//   std::size_t nelems;
+//   gmsh::model::mesh::getMaxElementTag(nelems);
+//   return nelems;
+// }
 
 
 

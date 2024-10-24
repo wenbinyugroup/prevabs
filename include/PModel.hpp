@@ -172,6 +172,8 @@ private:
 
   PMesh *_pmesh;
   std::vector<std::vector<int>> _node_elements;
+  size_t _num_nodes = 0;
+  size_t _num_elements = 0;
 
   std::vector<LocalState *> _local_states;
 
@@ -228,8 +230,16 @@ public:
 
   std::size_t getNumOfMaterials() { return _materials.size(); }
   std::size_t getNumOfLayerTypes() { return _layertypes.size(); }
-  std::size_t getNumOfNodes();
-  std::size_t getNumOfElements();
+  std::size_t getNumOfNodes() { return _num_nodes; }
+  std::size_t getNumOfElements() { return _num_elements; }
+
+  void getNodes(std::vector<size_t> &, std::vector<double> &, Message *);
+  void getElements(
+    std::vector<int> &,
+    std::vector<std::vector<size_t>> &,
+    std::vector<std::vector<size_t>> &,
+    int, int, Message *
+    );
 
   std::vector<PDCELVertex *> &vertices() { return _vertices; }
   std::vector<Baseline *> &baselines() { return _baselines; }
@@ -326,6 +336,8 @@ public:
   void setCrossSection(CrossSection *cs) { _cross_section = cs; }
 
   void setMesh(PMesh *mesh) { _pmesh = mesh; }
+  void setNumNodes(size_t n) { _num_nodes = n; }
+  void setNumElements(size_t n) { _num_elements = n; }
 
   void setOmega(double o) { _omega = o; }
 
@@ -374,8 +386,29 @@ public:
     \param fmt Format (1: VABS, 2: SwiftComp)
    */
   int writeSG(std::string fn, int fmt, Message *);
-  void writeNodes(FILE *, Message *);
-  void writeElementsVABS(FILE *, Message *);
+
+  void writeNodes(FILE *, const std::vector<size_t> &, const std::vector<double> &, Message *);
+
+  void writeElements(
+    FILE *,
+    const std::vector<std::vector<int>> &,
+    const std::vector<std::vector<std::vector<size_t>>> &,
+    const std::vector<std::vector<std::vector<size_t>>> &,
+    const std::vector<size_t> &,
+    const std::vector<double> &,
+    Message *
+    );
+
+  void writeElementsVABS(
+    FILE *,
+    const std::vector<std::vector<int>> &,
+    const std::vector<std::vector<std::vector<size_t>>> &,
+    const std::vector<std::vector<std::vector<size_t>>> &,
+    const std::vector<size_t> &,
+    const std::vector<double> &,
+    Message *
+    );
+
   void writeElementsSC(FILE *, Message *);
   // void writeMaterialsVABS(FILE *, Message *);
   // void writeSettingsVABS(FILE *, Message *);

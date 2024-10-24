@@ -62,11 +62,105 @@ void addParserArguments(CLI::App &app) {
   // Format help message
   app.get_formatter()->column_width(50);
 
-
-
 }
 
 
+// Old CLI, will be deprecated
+void printCliHelp() {
+  std::cout << std::endl;
+  std::cout << " Usage" << std::endl;
+  std::cout << std::string(20, '-') << std::endl;
+  std::cout << "         prevabs -i <file_path/file_name.xml> [options]\n";
+  std::cout << std::endl;
+  std::cout << " Analysis options" << std::endl;
+  std::cout << std::string(20, '-') << std::endl;
+  std::cout << " -h      Build cross section and generate VABS/SwiftComp input file for homogenization.\n";
+  std::cout << " -d      Read 1D beam analysis results and update VABS/SwiftComp input file for dehomogenization.\n";
+  std::cout << " -fi     Initial failure indices and strength ratios.\n";
+  std::cout << " -f      Initial failure strength analysis (SwiftComp only).\n";
+  std::cout << " -fe     Initial failure envelope (SwiftComp only).\n";
+  std::cout << std::endl;
+  std::cout << " Format and execution options" << std::endl;
+  std::cout << std::string(20, '-') << std::endl;
+  std::cout << " -vabs   Use VABS format (Default).\n";
+  std::cout << " -sc     Use SwiftComp format.\n";
+  std::cout << " -int    Use integrated solver.\n";
+  std::cout << " -e      Execute VABS/SwiftComp.\n";
+  std::cout << " -v      Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.\n";
+  std::cout << " -debug  Debug mode.\n";
+  std::cout << std::endl;
+}
+
+
+// Old CLI, will be deprecated
+void parseArguments(int argc, char** argv) {
+
+  for (int i = 1; i < argc; ++i) {
+    if (std::string{argv[i]} == "-i")
+      config.main_input = std::string{argv[i + 1]};
+    
+    if (std::string{argv[i]} == "-vabs") {
+      config.analysis_tool = 1;
+    }
+    if (std::string{argv[i]} == "-sc") {
+      config.analysis_tool = 2;
+    }
+
+    if (std::string{argv[i]} == "-int") {
+      config.integrated_solver = true;
+      config.execute = true;
+    }
+    
+    if (std::string{argv[i]} == "-h") {
+      config.homo = true;
+      config.dehomo = false;
+    }
+    if (std::string{argv[i]} == "-d") {
+      config.homo = false;
+      config.dehomo = true;
+    }
+
+    if (std::string{argv[i]} == "-f") {
+      config.fail_envelope = false;
+      config.fail_index = false;
+      config.fail_strength = true;
+    }
+    if (std::string{argv[i]} == "-fe") {
+      config.fail_envelope = true;
+      config.fail_index = false;
+      config.fail_strength = false;
+    }
+    if (std::string{argv[i]} == "-fi") {
+      config.fail_envelope = false;
+      config.fail_index = true;
+      config.fail_strength = false;
+    }
+
+    if (std::string{argv[i]} == "-v") {
+      config.plot = true;
+    }
+    if (std::string{argv[i]} == "-e") {
+      config.execute = true;
+    }
+    if (std::string{argv[i]} == "-debug") {
+      config.debug = true;
+    }
+  }
+
+  // throw exception
+  if (config.main_input.empty()) {
+    throw std::runtime_error("Please provide input file: -i working_directory/file_name.xml");
+  }
+
+  if (!(config.homo || config.dehomo || config.fail_strength || config.fail_envelope || config.fail_index)) {
+    throw std::runtime_error("Please indicate an analysis: -h or -d or -f or -fe or -fi\n");
+  }
+
+  if ((config.analysis_tool == 1) && (config.fail_strength || config.fail_envelope)) {
+    throw std::runtime_error("Failure strength and failure envelope analyses can only be carried out by SwiftComp: -sc\n");
+  }
+
+}
 
 
 void processConfigVariables() {
@@ -129,23 +223,27 @@ void processConfigVariables() {
 // ===================================================================
 int main(int argc, char** argv) {
 
-  CLI::App app{"PreVABS, a parametric pre-/post-processor for 2D cross-sections for VABS/SwiftComp"};
-  addParserArguments(app);
+  // CLI::App app{"PreVABS, a parametric pre-/post-processor for 2D cross-sections for VABS/SwiftComp"};
+  // addParserArguments(app);
 
-  // parseArguments(argc, argv);
   try {
-    app.parse(argc, argv);
+    // app.parse(argc, argv);
+
+    // Old CLI, will be deprecated
+    if (argc < 2) {
+      printCliHelp();
+      return 0;
+    }
+
+    parseArguments(argc, argv);
 
     processConfigVariables();
   }
 
-  catch (const CLI::ParseError &e) {
-    // Handle CLI parsing errors
-    return app.exit(e);
-    // std::cerr << "Error: " << e.what() << std::endl;
-    // return e.get_exit_code();
-    // return CLI::Exit(e);
-  }
+  // catch (const CLI::ParseError &e) {
+  //   // Handle CLI parsing errors
+  //   return app.exit(e);
+  // }
 
   catch (const std::exception &e) {
     // Handle other exceptions
@@ -200,62 +298,6 @@ int main(int argc, char** argv) {
       return 0;
     }
   }
-
-
-
-
-  // else if (config.dehomo) {
-  //   try {
-  //     pmessage->printBlank();
-  //     // pmessage->print(1, "reading and writing inputs for dehomogenization");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for dehomogenization");
-
-  //     if (config.analysis_tool == 1) {
-  //       pmodel->recoverVABS();
-  //     }
-  //     else if (config.analysis_tool == 2) {
-  //       pmodel->dehomoSC();
-  //     }
-
-  //     // pmessage->print(1, "reading and writing inputs for dehomogenization -- done");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for dehomogenization -- done");
-  //     pmessage->printBlank();
-  //   }
-  //   catch (std::exception &exception) {
-  //     pmessage->print(2, exception.what());
-  //     return 0;
-  //   }
-  // }
-
-
-
-
-  // else if (config.fail_strength || config.fail_index || config.fail_envelope) {
-  //   try{
-  //     pmessage->printBlank();
-  //     // pmessage->print(1, "reading and writing inputs for failure analysis");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for failure analysis");
-
-  //     readInputMain(config.main_input, config.file_directory, pmodel, pmessage);
-  //     if (config.analysis_tool == 1) {
-  //       pmodel->failureVABS();
-  //     }
-  //     else if (config.analysis_tool == 2) {
-  //       pmodel->failureSC();
-  //     }
-
-  //     // pmessage->print(1, "reading and writing inputs for failure analysis -- done");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for failure analysis -- done");
-  //     pmessage->printBlank();
-
-  //   }
-  //   catch (std::exception &exception) {
-  //     pmessage->print(2, exception.what());
-  //     return 0;
-  //   }
-  // }
-
-
 
 
 

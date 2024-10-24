@@ -19,18 +19,55 @@
 
 // ===================================================================
 
-void PModel::writeNodes(FILE *file, Message *pmessage) {
+void PModel::getNodes(
+  std::vector<size_t> &node_tags,
+  std::vector<double> &node_coords,
+  Message *pmessage
+  ) {
+
+  std::vector<double> node_params;
+
+  gmsh::model::mesh::getNodes(node_tags, node_coords, node_params, -1, -1);
+
+  return;
+
+}
+
+
+
+
+void PModel::getElements(
+  std::vector<int> &elem_types,
+  std::vector<std::vector<size_t>> &elem_tags,
+  std::vector<std::vector<size_t>> &elem_node_tags,
+  int dim, int tag,
+  Message *pmessage
+  ) {
+
+  gmsh::model::mesh::getElements(
+    elem_types, elem_tags, elem_node_tags, dim, tag);
+
+  return;
+
+}
+
+
+
+
+void PModel::writeNodes(
+  FILE *file,
+  const std::vector<size_t> &node_tags,
+  const std::vector<double> &node_coords,
+  Message *pmessage
+  ) {
 
   pmessage->increaseIndent();
   PLOG(info) << pmessage->message("writing nodes");
 
-  // std::vector<GEntity *> gentities;
-  // pmodel->gmodel()->getEntities(gentities);
+  // std::vector<size_t> node_tags;
+  // std::vector<double> node_coords, node_params;
 
-  std::vector<std::size_t> node_tags;
-  std::vector<double> node_coords, node_params;
-
-  gmsh::model::mesh::getNodes(node_tags, node_coords, node_params, -1, -1);
+  // gmsh::model::mesh::getNodes(node_tags, node_coords, node_params, -1, -1);
 
   for (std::size_t i = 0; i < node_tags.size(); ++i) {
     fprintf(file, "%8zd%16e%16e\n",
@@ -92,67 +129,131 @@ void writeElementVABS(
 
 
 
-void PModel::writeElementsVABS(FILE *file, Message *pmessage) {
+void PModel::writeElements(
+  FILE *file,
+  const std::vector<std::vector<int>> &face_elem_types,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
+  const std::vector<size_t> &face_prop_tags,
+  const std::vector<double> &face_local_orients,
+  Message *pmessage
+  ) {
 
   pmessage->increaseIndent();
   PLOG(info) << pmessage->message("writing elements");
 
+  if (config.analysis_tool == 1) {
+    writeElementsVABS(
+      file,
+      face_elem_types, face_elem_tags, face_elem_node_tags,
+      face_prop_tags, face_local_orients,
+      pmessage
+      );
+  }
+
+  else if (config.analysis_tool == 2) {
+    writeElementsSC(file, pmessage);
+  }
+
+  pmessage->decreaseIndent();
+
+}
+
+
+
+
+void PModel::writeElementsVABS(
+  FILE *file, 
+  const std::vector<std::vector<int>> &face_elem_types,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
+  const std::vector<size_t> &face_prop_tags,
+  const std::vector<double> &face_local_orients,
+  Message *pmessage
+  ) {
+
+  pmessage->increaseIndent();
+
   // Write connectivity for each element
-  std::vector<int> elem_types;
-  std::vector<std::vector<std::size_t>> elem_tags, elem_node_tags;
-  gmsh::model::mesh::getElements(
-    elem_types, elem_tags, elem_node_tags, -1, -1);
+  PLOG(info) << pmessage->message("  writing connectivity");
+  // std::vector<int> elem_types;
+  // std::vector<std::vector<size_t>> elem_tags, elem_node_tags;
+  // gmsh::model::mesh::getElements(
+  //   elem_types, elem_tags, elem_node_tags, -1, -1);
 
-  for (auto _i = 0; _i < elem_types.size(); ++_i) {
+  for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
+    PLOG(debug) << pmessage->message("  face " + std::to_string(_face_i));
 
-    // Get properties of the element type
-    std::string etype_name;
-    int etype_dim, etype_order, etype_nnodes, etype_nnodes_primary;
-    std::vector<double> etype_local_coords;
-    gmsh::model::mesh::getElementProperties(
-      elem_types[_i], etype_name, etype_dim, etype_order,
-      etype_nnodes, etype_local_coords, etype_nnodes_primary);
+    // For each element type of the face
+    for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
 
-    for (auto _j = 0; _j < elem_tags[_i].size(); ++_j) {
+      auto elem_type = face_elem_types[_face_i][_elem_type_i];
 
-      // Get the slice of the element nodes
-      std::vector<std::size_t> node_tags = std::vector<std::size_t>(
-        elem_node_tags[_i].begin() + _j * etype_nnodes,
-        elem_node_tags[_i].begin() + (_j + 1) * etype_nnodes);
+      // Get properties of the element type
+      std::string etype_name;
+      int etype_dim, etype_order, etype_nnodes, etype_nnodes_primary;
+      std::vector<double> etype_local_coords;
+      gmsh::model::mesh::getElementProperties(
+        elem_type, etype_name, etype_dim, etype_order,
+        etype_nnodes, etype_local_coords, etype_nnodes_primary);
 
-      writeElementVABS(
-        file, elem_tags[_i][_j], node_tags, elem_types[_i], pmessage);
+      auto elem_tags = face_elem_tags[_face_i][_elem_type_i];
+      auto elem_node_tags = face_elem_node_tags[_face_i][_elem_type_i];
 
+      // For each element of the element type
+      for (auto _j = 0; _j < elem_tags.size(); ++_j) {
+
+        // Get the slice of the element nodes
+        std::vector<size_t> node_tags = std::vector<std::size_t>(
+          elem_node_tags.begin() + _j * etype_nnodes,
+          elem_node_tags.begin() + (_j + 1) * etype_nnodes);
+
+        std::cout << "node_tags: ";
+        for (auto _k = 0; _k < node_tags.size(); ++_k) {
+          std::cout << node_tags[_k] << " ";
+        }
+        std::cout << std::endl;
+
+        writeElementVABS(
+          file, elem_tags[_j], node_tags, elem_type, pmessage);
+
+      }
     }
   }
 
   // Wirte local coordinate for each element
+  PLOG(info) << pmessage->message("  writing local orientation");
   std::vector<double> dnums;
-  for (auto f : _dcel->faces()) {
 
-    if (f->gfaceTag() != 0) {
+  for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
+    PLOG(debug) << pmessage->message("  face " + std::to_string(_face_i));
 
-      // Get the element tags of the face
-      std::vector<int> face_elem_types;
-      std::vector<std::vector<std::size_t>> face_elem_tags, face_elem_node_tags;
-      gmsh::model::mesh::getElements(
-        face_elem_types, face_elem_tags, face_elem_node_tags, -1, f->gfaceTag()
-      );
+    auto face_prop_tag = face_prop_tags[_face_i];
+    auto face_local_orient = face_local_orients[_face_i];
 
-      for (auto _etype_tags : face_elem_tags) {
-        for (auto _etag : _etype_tags) {
+    // For each element type of the face
+    for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
 
-          fprintf(file, "%8zd", _etag);
-          dnums = {
-            // 1.0, 0.0, 0.0, 
-            f->localy1()[0], f->localy1()[1], f->localy1()[2], 
-            f->localy2()[0], f->localy2()[1], f->localy2()[2], 
-            0.0, 0.0, 0.0
-          };
-          writeNumbers(file, "%16e", dnums);
+      // // Get the element tags of the face
+      // std::vector<int> face_elem_types;
+      // std::vector<std::vector<size_t>> face_elem_tags, face_elem_node_tags;
+      // gmsh::model::mesh::getElements(
+      //   face_elem_types, face_elem_tags, face_elem_node_tags, -1, f->gfaceTag()
+      // );
 
-        }
+      auto elem_tags = face_elem_tags[_face_i][_elem_type_i];
+
+      // for (auto _etype_tags : face_elem_tags) {
+      for (auto _etag : elem_tags) {
+
+        fprintf(
+          file, "%8zd%8zd%16e",
+          _etag, face_prop_tag, face_local_orient
+        );
+
       }
+      // }
+
     }
 
   }

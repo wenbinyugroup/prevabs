@@ -8,7 +8,7 @@
     <general>
         <translate>0.25 0</translate>
         <scale>1.73</scale>
-        <mesh_size>0.004</mesh_size>
+        <mesh_size>0.01</mesh_size>
         <element_type>linear</element_type>
     </general>
 
