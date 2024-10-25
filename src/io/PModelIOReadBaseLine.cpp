@@ -788,18 +788,19 @@ int readLineTypeAirfoil(
     std::string s_fn{p_xn_pts->value()};
     s_fn = config.file_directory + s_fn;
     std::ifstream _ifs{s_fn};
+
     if (!_ifs.is_open()) {
       PLOG(error) << pmessage->message("unable to open file: " + s_fn);
-      return 1;
+      return 0;
     }
-    else {
-      PLOG(info) << pmessage->message("reading airfoil data file: " + s_fn);
-    }
+
+    PLOG(info) << pmessage->message("reading airfoil data file: " + s_fn);
+
 
     // Read data
     std::string data_line;
     int counter{0};
-    // int which{1}; // 1: upper, -1: lower
+
     std::string _pv_tmp_name{"_tmp"};
 
     // Selig format
@@ -812,26 +813,12 @@ int readLineTypeAirfoil(
         std::string ss{p_xa_direction->value()};
         if (ss[0] != '\0') {direction = atoi(ss.c_str());}
       }
-      // if (direction == -1) {which = -1;}  // Start from the lower surface
 
-      // Add the point (1, 0), i.e., trailing edge
-      // if (direction == 1) {
-      //   line_up->addPVertex(pv_te);
-      // }
-      // else if (direction == -1) {
-      //   line_low->addPVertex(pv_te);
-      // }
       line->addPVertex(pv_te);
 
       // Add points in the file
       while (getline(_ifs, data_line)) {
         counter++;
-
-        // std::cout << "line " << counter << ": " << data_line << std::endl;
-
-        // if (data_line.length() == 0) {continue;}
-
-        // if (counter <= head_rows) {continue;}
 
         std::string trimmed_line = trim(data_line);
 
@@ -842,8 +829,6 @@ int readLineTypeAirfoil(
         std::stringstream _ss(trimmed_line);
         double x, y;
         _ss >> x >> y;
-
-        // std::cout << "(" << x << ", " << y << ")\n";
 
         // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {
@@ -865,20 +850,8 @@ int readLineTypeAirfoil(
       // Add the point (1, 0), i.e., trailing edge
       line->addPVertex(pv_te);  // Closed airfoil
 
-      // Rename key points
-      // if (direction == 1) {
-      //   line_up->vertices()[1]->setName("pteup");
-      //   line_up->vertices()[line_up->vertices().size()-2]->setName("pleup");
-      //   line_low->vertices()[1]->setName("plelow");
-      //   line_low->vertices()[line_low->vertices().size()-2]->setName("ptelow");
-      // }
-      // else if (direction == -1) {
-      //   line_up->vertices()[1]->setName("pleup");
-      //   line_up->vertices()[line_up->vertices().size()-2]->setName("pteup");
-      //   line_low->vertices()[1]->setName("ptelow");
-      //   line_low->vertices()[line_low->vertices().size()-2]->setName("plelow");
-      // }
     }
+
     // Lednicer format
     // LE -> upper surface -> TE
     // LE -> lower surface -> TE
