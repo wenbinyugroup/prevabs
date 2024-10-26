@@ -19,7 +19,7 @@ const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.14159265};
-const double TOLERANCE{1e-12};
+const double TOLERANCE{1e-15};
 
 enum GeoConst {
   DEGREE,
