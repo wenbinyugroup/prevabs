@@ -111,7 +111,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   CrossSection *cs = new CrossSection(csName, pmodel);
 
 
-  double d_fmt{0};
+  double d_fmt{1};
   xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
   if (p_xa_fmt) {
     std::string ss{p_xa_fmt->value()};
@@ -480,157 +480,159 @@ int readCrossSection(const std::string &filenameCrossSection,
   PLOG(debug) << pmessage->message("reading geometry...");
 
   // 1: Try to read geometry from a seperated file
-  xml_node<> *p_xn_include_bsl{nodeInclude->first_node("baseline")};
-  if (p_xn_include_bsl) {
+  if (nodeInclude) {
+    xml_node<> *p_xn_include_bsl{nodeInclude->first_node("baseline")};
+    if (p_xn_include_bsl) {
 
-    // General type cross-section
-    if (cs_type == "general") {
-      std::string filenameBaselines{p_xn_include_bsl->value()};
-      filenameBaselines = filePath + filenameBaselines + ".xml";
-      // if (debug) {
-      //   std::cout << markInfo << " Include Baselines File: " << filenameBaselines
-      //             << std::endl;
-      // }
-      PLOG(debug) << pmessage->message("reading base line file: " + filenameBaselines);
+      // General type cross-section
+      if (cs_type == "general") {
+        std::string filenameBaselines{p_xn_include_bsl->value()};
+        filenameBaselines = filePath + filenameBaselines + ".xml";
+        // if (debug) {
+        //   std::cout << markInfo << " Include Baselines File: " << filenameBaselines
+        //             << std::endl;
+        // }
+        PLOG(debug) << pmessage->message("reading base line file: " + filenameBaselines);
 
-      std::ifstream fileBaselines;
-      openFile(fileBaselines, filenameBaselines);
-      xml_document<> xmlDocBaselines;
-      std::vector<char> buffer_bsl{(std::istreambuf_iterator<char>(fileBaselines)),
-                              std::istreambuf_iterator<char>()};
-      buffer_bsl.push_back('\0');
+        std::ifstream fileBaselines;
+        openFile(fileBaselines, filenameBaselines);
+        xml_document<> xmlDocBaselines;
+        std::vector<char> buffer_bsl{(std::istreambuf_iterator<char>(fileBaselines)),
+                                std::istreambuf_iterator<char>()};
+        buffer_bsl.push_back('\0');
 
-      try {
-        xmlDocBaselines.parse<0>(&buffer_bsl[0]);
+        try {
+          xmlDocBaselines.parse<0>(&buffer_bsl[0]);
+        }
+        catch (parse_error &e) {
+          // std::cout << markError << " Unable to parse the file: " << filenameBaselines
+          //           << std::endl;
+          PLOG(error) << pmessage->message("unable to parse the file: " + filenameBaselines);
+          std::cerr << e.what() << std::endl;
+          // std::cout << e.where() << std::endl;
+        }
+        // print(std::cout, xmlDocBaselines, 0);
+        // xml_node<> *nodeBaselines{xmlDocBaselines.first_node("baselines")};
+        nodeBaselines = xmlDocBaselines.first_node("baselines");
+
+        readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, pmessage);
+
       }
-      catch (parse_error &e) {
-        // std::cout << markError << " Unable to parse the file: " << filenameBaselines
-        //           << std::endl;
-        PLOG(error) << pmessage->message("unable to parse the file: " + filenameBaselines);
-        std::cerr << e.what() << std::endl;
-        // std::cout << e.where() << std::endl;
-      }
-      // print(std::cout, xmlDocBaselines, 0);
-      // xml_node<> *nodeBaselines{xmlDocBaselines.first_node("baselines")};
-      nodeBaselines = xmlDocBaselines.first_node("baselines");
 
-      readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, pmessage);
+      // Airfoil type cross-section
+      else if (cs_type == "airfoil") {
+
+        xml_attribute<> *baselineType{p_xn_include_bsl->first_attribute("type")};
+
+        // Based on topology library
+        if (baselineType) {
+          std::string baselineTypeString{baselineType->value()};
+          if (baselineTypeString != "airfoil"){
+              std::cout << markError << " Undefined baseline type: " << baselineTypeString
+                        << std::endl;
+              return 1;
+          }
+
+          // Read topology information
+          // std::cout << "\nreading topology...\n";
+          // Box: two straight webs
+          // I: one straight webs
+          xml_node<> *nodeTopology{p_xn_sg->first_node("topology")};
+          std::vector<std::pair<double, double>> websArray;
+          if (nodeTopology) {
+            xml_node<> *nodeLEWeb{nodeTopology->first_node("leading_web")};
+            xml_node<> *nodeTEWeb{nodeTopology->first_node("trailling_web")};
+            xml_node<> *nodeMidWeb{nodeTopology->first_node("mid_web")};
+
+            xml_attribute<> *p_xa_fillLE = nodeLEWeb->first_attribute("fill");
+            xml_attribute<> *p_xa_curvedLE = nodeLEWeb->first_attribute("curved");
+            xml_attribute<> *p_xa_fillTE = nodeTEWeb->first_attribute("fill");
+            xml_attribute<> *p_xa_curvedTE = nodeTEWeb->first_attribute("curved");
+
+            bool fillLE = p_xa_fillLE ? (strcmp(p_xa_fillLE->value(), "true") == 0) : true;
+            bool curvedLE = p_xa_curvedLE ? (strcmp(p_xa_curvedLE->value(), "true") == 0) : false;
+            bool fillTE = p_xa_fillTE ? (strcmp(p_xa_fillTE->value(), "true") == 0) : true;
+            bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
+
+            double xtLE, xbLE, xtTE, xbTE;
+            xtLE = atof(nodeLEWeb->first_node("pos_top")->value());
+            xbLE = atof(nodeLEWeb->first_node("pos_bot")->value());
+            xtTE = atof(nodeTEWeb->first_node("pos_top")->value());
+            xbTE = atof(nodeTEWeb->first_node("pos_bot")->value());
+
+            const double PI = atan(1) * 4;
+            double ytLE,ybLE,xmLE,angLE;
+            ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
+            ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
+            xmLE = (0 - ybLE) / (ytLE - ybLE) * (xtLE - xbLE) + xbLE;
+            angLE = atan2(ytLE - ybLE, xtLE - xbLE) * 180 / PI;
+            PDCELVertex *pvLEmid = new PDCELVertex{"Pweb_le", 0, xmLE , 0};
+            addBaselineByPointAndAngle(pmodel, "web_le", pvLEmid, angLE);
+            websArray.push_back(std::make_pair(xmLE, angLE));
+
+            double ytTE,ybTE,xmTE,angTE;
+            ytTE = getWebEnd(p_xn_include_bsl, filePath, xtTE);
+            ybTE = getWebEnd(p_xn_include_bsl, filePath, xbTE, false);
+            xmTE = (0 - ybTE) / (ytTE - ybTE) * (xtTE - xbTE) + xbTE;
+            angTE = atan2(ytTE - ybTE, xtTE - xbTE) * 180 / PI;
+            PDCELVertex *pvTEmid = new PDCELVertex{"Pweb_te", 0, xmTE , 0};
+            addBaselineByPointAndAngle(pmodel, "web_te", pvTEmid, angTE);
+            websArray.push_back(std::make_pair(xmTE, angTE));        
+
+            if (nodeMidWeb) {
+              double xtM, xbM;
+              xtM = atof(nodeMidWeb->first_node("pos_top")->value());
+              xbM = atof(nodeMidWeb->first_node("pos_bot")->value());
+
+              double ytM,ybM,xmM,angM;
+              ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);
+              ybM = getWebEnd(p_xn_include_bsl, filePath, xbM, false);
+              xmM = (0 - ybM) / (ytM - ybM) * (xtM - xbM) + xbM;
+              angM = atan2(ytM - ybM, xtM - xbM) * 180 / PI;
+              PDCELVertex *pvMmid = new PDCELVertex{"Pweb_M", 0, xmM , 0};
+              addBaselineByPointAndAngle(pmodel, "web_M", pvMmid, angM);
+              websArray.push_back(std::make_pair(xmM, angM));   
+            }
+          }
+          xml_node<> *nodeSpar{p_xn_sg->first_node("spar")};
+          if (nodeSpar) {
+            xml_attribute<> *p_xa_spar = nodeSpar->first_attribute("type");
+            std::string sparType{p_xa_spar->value()};
+            std::cout << "\nSpar type: " << sparType << std::endl;
+
+            if (sparType == "box") {
+              std::stringstream ss(nodeSpar->value());
+              double x1, angle1, x2, angle2;
+              ss >> x1 >> angle1 >> x2 >> angle2;
+              PDCELVertex *pvMid1 = new PDCELVertex{"Pweb_le", 0, x1 , 0};
+              PDCELVertex *pvMid2 = new PDCELVertex{"Pweb_te", 0, x2 , 0};
+              addBaselineByPointAndAngle(pmodel, "web_le", pvMid1, angle1);
+              addBaselineByPointAndAngle(pmodel, "web_te", pvMid2, angle2);
+              websArray.push_back(std::make_pair(x1, angle1));
+              websArray.push_back(std::make_pair(x2, angle2));
+            }
+            else if (sparType == "I") {
+              std::stringstream ss(nodeSpar->value());
+              double x, angle;
+              ss >> x >> angle;
+              PDCELVertex *pvMid = new PDCELVertex{"Pweb", 0, x , 0};
+              addBaselineByPointAndAngle(pmodel, "web", pvMid, angle);
+              websArray.push_back(std::make_pair(x, angle));
+            }
+            else {
+              std::cout << markError << " Undefined spar type: " << sparType
+                        << std::endl;
+              return 1;
+            }
+          }
+          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle, pmessage);
+
+        }
+
+
+      }
 
     }
-
-    // Airfoil type cross-section
-    else if (cs_type == "airfoil") {
-
-      xml_attribute<> *baselineType{p_xn_include_bsl->first_attribute("type")};
-
-      // Based on topology library
-      if (baselineType) {
-        std::string baselineTypeString{baselineType->value()};
-        if (baselineTypeString != "airfoil"){
-            std::cout << markError << " Undefined baseline type: " << baselineTypeString
-                      << std::endl;
-            return 1;
-        }
-
-        // Read topology information
-        // std::cout << "\nreading topology...\n";
-        // Box: two straight webs
-        // I: one straight webs
-        xml_node<> *nodeTopology{p_xn_sg->first_node("topology")};
-        std::vector<std::pair<double, double>> websArray;
-        if (nodeTopology) {
-          xml_node<> *nodeLEWeb{nodeTopology->first_node("leading_web")};
-          xml_node<> *nodeTEWeb{nodeTopology->first_node("trailling_web")};
-          xml_node<> *nodeMidWeb{nodeTopology->first_node("mid_web")};
-
-          xml_attribute<> *p_xa_fillLE = nodeLEWeb->first_attribute("fill");
-          xml_attribute<> *p_xa_curvedLE = nodeLEWeb->first_attribute("curved");
-          xml_attribute<> *p_xa_fillTE = nodeTEWeb->first_attribute("fill");
-          xml_attribute<> *p_xa_curvedTE = nodeTEWeb->first_attribute("curved");
-
-          bool fillLE = p_xa_fillLE ? (strcmp(p_xa_fillLE->value(), "true") == 0) : true;
-          bool curvedLE = p_xa_curvedLE ? (strcmp(p_xa_curvedLE->value(), "true") == 0) : false;
-          bool fillTE = p_xa_fillTE ? (strcmp(p_xa_fillTE->value(), "true") == 0) : true;
-          bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
-
-          double xtLE, xbLE, xtTE, xbTE;
-          xtLE = atof(nodeLEWeb->first_node("pos_top")->value());
-          xbLE = atof(nodeLEWeb->first_node("pos_bot")->value());
-          xtTE = atof(nodeTEWeb->first_node("pos_top")->value());
-          xbTE = atof(nodeTEWeb->first_node("pos_bot")->value());
-
-          const double PI = atan(1) * 4;
-          double ytLE,ybLE,xmLE,angLE;
-          ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
-          ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
-          xmLE = (0 - ybLE) / (ytLE - ybLE) * (xtLE - xbLE) + xbLE;
-          angLE = atan2(ytLE - ybLE, xtLE - xbLE) * 180 / PI;
-          PDCELVertex *pvLEmid = new PDCELVertex{"Pweb_le", 0, xmLE , 0};
-          addBaselineByPointAndAngle(pmodel, "web_le", pvLEmid, angLE);
-          websArray.push_back(std::make_pair(xmLE, angLE));
-
-          double ytTE,ybTE,xmTE,angTE;
-          ytTE = getWebEnd(p_xn_include_bsl, filePath, xtTE);
-          ybTE = getWebEnd(p_xn_include_bsl, filePath, xbTE, false);
-          xmTE = (0 - ybTE) / (ytTE - ybTE) * (xtTE - xbTE) + xbTE;
-          angTE = atan2(ytTE - ybTE, xtTE - xbTE) * 180 / PI;
-          PDCELVertex *pvTEmid = new PDCELVertex{"Pweb_te", 0, xmTE , 0};
-          addBaselineByPointAndAngle(pmodel, "web_te", pvTEmid, angTE);
-          websArray.push_back(std::make_pair(xmTE, angTE));        
-
-          if (nodeMidWeb) {
-            double xtM, xbM;
-            xtM = atof(nodeMidWeb->first_node("pos_top")->value());
-            xbM = atof(nodeMidWeb->first_node("pos_bot")->value());
-
-            double ytM,ybM,xmM,angM;
-            ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);
-            ybM = getWebEnd(p_xn_include_bsl, filePath, xbM, false);
-            xmM = (0 - ybM) / (ytM - ybM) * (xtM - xbM) + xbM;
-            angM = atan2(ytM - ybM, xtM - xbM) * 180 / PI;
-            PDCELVertex *pvMmid = new PDCELVertex{"Pweb_M", 0, xmM , 0};
-            addBaselineByPointAndAngle(pmodel, "web_M", pvMmid, angM);
-            websArray.push_back(std::make_pair(xmM, angM));   
-          }
-        }
-        xml_node<> *nodeSpar{p_xn_sg->first_node("spar")};
-        if (nodeSpar) {
-          xml_attribute<> *p_xa_spar = nodeSpar->first_attribute("type");
-          std::string sparType{p_xa_spar->value()};
-          std::cout << "\nSpar type: " << sparType << std::endl;
-
-          if (sparType == "box") {
-            std::stringstream ss(nodeSpar->value());
-            double x1, angle1, x2, angle2;
-            ss >> x1 >> angle1 >> x2 >> angle2;
-            PDCELVertex *pvMid1 = new PDCELVertex{"Pweb_le", 0, x1 , 0};
-            PDCELVertex *pvMid2 = new PDCELVertex{"Pweb_te", 0, x2 , 0};
-            addBaselineByPointAndAngle(pmodel, "web_le", pvMid1, angle1);
-            addBaselineByPointAndAngle(pmodel, "web_te", pvMid2, angle2);
-            websArray.push_back(std::make_pair(x1, angle1));
-            websArray.push_back(std::make_pair(x2, angle2));
-          }
-          else if (sparType == "I") {
-            std::stringstream ss(nodeSpar->value());
-            double x, angle;
-            ss >> x >> angle;
-            PDCELVertex *pvMid = new PDCELVertex{"Pweb", 0, x , 0};
-            addBaselineByPointAndAngle(pmodel, "web", pvMid, angle);
-            websArray.push_back(std::make_pair(x, angle));
-          }
-          else {
-            std::cout << markError << " Undefined spar type: " << sparType
-                      << std::endl;
-            return 1;
-          }
-        }
-        addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle, pmessage);
-
-      }
-
-
-    }
-
   }
 
 
@@ -733,10 +735,12 @@ int readCrossSection(const std::string &filenameCrossSection,
   //   m->printMaterial();
 
   std::string fn_material_local = "";
-  xml_node<> *xn_material{nodeInclude->first_node("material")};
-  if (xn_material) {
-    fn_material_local = filePath + xn_material->value() + ".xml";
-    // readMaterials(fn_material_local, pmodel);
+  if (nodeInclude) {
+    xml_node<> *xn_material{nodeInclude->first_node("material")};
+    if (xn_material) {
+      fn_material_local = filePath + xn_material->value() + ".xml";
+      // readMaterials(fn_material_local, pmodel);
+    }
   }
 
   if (fn_material_global != "") {
@@ -777,30 +781,32 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   xml_node<> *nodeLayups;
   if (d_fmt == 0) {
-    xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
-    std::string filenameLayups{p_xn_include_lyp->value()};
-    filenameLayups = filePath + filenameLayups + ".xml";
-    if (debug) {
-      std::cout << markInfo << " Include Layups File: " << filenameLayups
-                << std::endl;
-    }
-    std::ifstream fileLayups;
-    openFile(fileLayups, filenameLayups);
-    xml_document<> xmlDocLayups;
-    std::vector<char> buffer_lyp{(std::istreambuf_iterator<char>(fileLayups)),
-                            std::istreambuf_iterator<char>()};
-    buffer_lyp.push_back('\0');
+    if (nodeInclude) {
+      xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
+      std::string filenameLayups{p_xn_include_lyp->value()};
+      filenameLayups = filePath + filenameLayups + ".xml";
+      if (debug) {
+        std::cout << markInfo << " Include Layups File: " << filenameLayups
+                  << std::endl;
+      }
+      std::ifstream fileLayups;
+      openFile(fileLayups, filenameLayups);
+      xml_document<> xmlDocLayups;
+      std::vector<char> buffer_lyp{(std::istreambuf_iterator<char>(fileLayups)),
+                              std::istreambuf_iterator<char>()};
+      buffer_lyp.push_back('\0');
 
-    try {
-      xmlDocLayups.parse<0>(&buffer_lyp[0]);
-    } catch (parse_error &e) {
-      std::cout << markError << " Unable to parse the file: " << filenameLayups
-                << std::endl;
-      std::cerr << e.what() << std::endl;
+      try {
+        xmlDocLayups.parse<0>(&buffer_lyp[0]);
+      } catch (parse_error &e) {
+        std::cout << markError << " Unable to parse the file: " << filenameLayups
+                  << std::endl;
+        std::cerr << e.what() << std::endl;
+      }
+      nodeLayups = xmlDocLayups.first_node("layups");
+      readLayups(nodeLayups, pmodel, pmessage);
+      PLOG(debug) << pmessage->message("finished reading layups.");
     }
-    nodeLayups = xmlDocLayups.first_node("layups");
-    readLayups(nodeLayups, pmodel, pmessage);
-    PLOG(debug) << pmessage->message("finished reading layups.");
   }
 
   else if (d_fmt == 1) {

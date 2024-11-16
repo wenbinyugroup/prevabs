@@ -50,6 +50,8 @@
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) {
   pmessage->increaseIndent();
 
+  PLOG(debug) << pmessage->message("in function: readLayups");
+
   std::vector<Layup> tempLayups;
 
   for (xml_node<> *nodeLayup = nodeLayups->first_node("layup"); nodeLayup;

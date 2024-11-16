@@ -1,5 +1,3 @@
-.. include:: /replace.txt
-
 .. _section-coordinate:
 
 Coordinate systems

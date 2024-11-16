@@ -1,5 +1,3 @@
-.. include:: /replace.txt
-
 .. _section-material-layup:
 
 Materials and layups
@@ -294,7 +292,7 @@ This is summarized in the table below.
   Hashin, :math:`X`, :math:`Y`,, :math:`X'`, :math:`Y'`,, :math:`S`,, :math:`R`
 
 
-More details can be found in the VABS users manual [VABS]_.
+More details can be found in the VABS users manual.
 
 **Specification**
 

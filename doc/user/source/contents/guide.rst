@@ -1,4 +1,4 @@
-.. include:: /replace.txt
+.. _section-prevabs_guide:
 
 Guide for Preparing Input Files
 ===============================

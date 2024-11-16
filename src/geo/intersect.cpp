@@ -1,3 +1,4 @@
+#include "globalConstants.hpp"
 #include "geo.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -9,16 +10,6 @@ bool calcLineIntersection2D(
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
   double &u1, double &u2, const double &tol
   ) {
-  // std::cout << "[debug] point l1p1: " << l1p1 << std::endl;
-  // std::cout << "[debug] point l1p2: " << l1p2 << std::endl;
-  // std::cout << "[debug] point l2p1: " << l2p1 << std::endl;
-  // std::cout << "[debug] point l2p2: " << l2p2 << std::endl;
-  // std::cout << l1p1 << "-" << l1p2 << " x " << l2p1 << "-" << l2p2 << std::endl;
-
-  // x1 = l1p1[0], y1 = l1p1[1]
-  // x2 = l1p2[0], y2 = l1p2[1]
-  // x3 = l2p1[0], y3 = l2p1[1]
-  // x4 = l2p2[0], y4 = l2p2[1]
 
   double dnm;
   dnm = (l1p1x - l1p2x) * (l2p1y - l2p2y) -
@@ -39,41 +30,36 @@ bool calcLineIntersection2D(
   // std::cout << "u2 = " << u2 << std::endl;
 
   return true;
+
 }
-
-
-
-
-
-
 
 
 
 
 // template <typename P2>
 bool calcLineIntersection2D(
-  const PGeoPoint2 &l1p1, const PGeoPoint2 &l1p2, const PGeoPoint2 &l2p1, const PGeoPoint2 &l2p2,
-  double &u1, double &u2, const double &tol) {
+  const PGeoPoint2 &l1p1, const PGeoPoint2 &l1p2,
+  const PGeoPoint2 &l2p1, const PGeoPoint2 &l2p2,
+  double &u1, double &u2, const double &tol
+  ) {
+
   return calcLineIntersection2D(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
     u1, u2, tol
   );
+
 }
-
-
-
-
-
-
 
 
 
 
 // template <typename P3>
 bool calcLineIntersection2D(
-  const PGeoPoint3 &l1p1, const PGeoPoint3 &l1p2, const PGeoPoint3 &l2p1, const PGeoPoint3 &l2p2,
-  double &u1, double &u2, const int &plane, const double &tol) {
+  const PGeoPoint3 &l1p1, const PGeoPoint3 &l1p2,
+  const PGeoPoint3 &l2p1, const PGeoPoint3 &l2p2,
+  double &u1, double &u2, const int &plane, const double &tol
+  ) {
   int d1, d2;
   if (plane == 0) {
     d1 = 1;
@@ -95,56 +81,46 @@ bool calcLineIntersection2D(
 
 
 
+bool calcLineIntersection2D(
+  SPoint2 l1p1, SPoint2 l1p2, SPoint2 l2p1, SPoint2 l2p2,
+  double &u1, double &u2, const double &tol
+  ) {
 
+  return calcLineIntersection2D(
+    l1p1[0], l1p1[1], l1p2[0], l1p2[1],
+    l2p1[0], l2p1[1], l2p2[0], l2p2[1],
+    u1, u2, tol
+  );
 
+  // double dnm;
+  // dnm = (l1p1[0] - l1p2[0]) * (l2p1[1] - l2p2[1]) -
+  //       (l1p1[1] - l1p2[1]) * (l2p1[0] - l2p2[0]);
+  // // std::cout << "dnm = " << dnm << std::endl;
+  // if (fabs(dnm) <= TOLERANCE) {
+  //   return false;
+  // }
 
+  // u1 = (l1p1[0] - l2p1[0]) * (l2p1[1] - l2p2[1]) -
+  //      (l1p1[1] - l2p1[1]) * (l2p1[0] - l2p2[0]);
+  // u1 = u1 / dnm;
+  // // std::cout << "u1 = " << u1 << std::endl;
 
+  // u2 = -(l1p1[0] - l1p2[0]) * (l1p1[1] - l2p1[1]) +
+  //      (l1p1[1] - l1p2[1]) * (l1p1[0] - l2p1[0]);
+  // u2 = u2 / dnm;
+  // // std::cout << "u2 = " << u2 << std::endl;
 
-bool calcLineIntersection2D(SPoint2 l1p1, SPoint2 l1p2, SPoint2 l2p1,
-                            SPoint2 l2p2, double &u1, double &u2) {
-  // std::cout << "[debug] point l1p1: " << l1p1 << std::endl;
-  // std::cout << "[debug] point l1p2: " << l1p2 << std::endl;
-  // std::cout << "[debug] point l2p1: " << l2p1 << std::endl;
-  // std::cout << "[debug] point l2p2: " << l2p2 << std::endl;
-  // std::cout << l1p1 << "-" << l1p2 << " x " << l2p1 << "-" << l2p2 << std::endl;
-
-  // x1 = l1p1[0], y1 = l1p1[1]
-  // x2 = l1p2[0], y2 = l1p2[1]
-  // x3 = l2p1[0], y3 = l2p1[1]
-  // x4 = l2p2[0], y4 = l2p2[1]
-
-  double dnm;
-  dnm = (l1p1[0] - l1p2[0]) * (l2p1[1] - l2p2[1]) -
-        (l1p1[1] - l1p2[1]) * (l2p1[0] - l2p2[0]);
-  // std::cout << "dnm = " << dnm << std::endl;
-  if (fabs(dnm) <= TOLERANCE) {
-    return false;
-  }
-
-  u1 = (l1p1[0] - l2p1[0]) * (l2p1[1] - l2p2[1]) -
-       (l1p1[1] - l2p1[1]) * (l2p1[0] - l2p2[0]);
-  u1 = u1 / dnm;
-  // std::cout << "u1 = " << u1 << std::endl;
-
-  u2 = -(l1p1[0] - l1p2[0]) * (l1p1[1] - l2p1[1]) +
-       (l1p1[1] - l1p2[1]) * (l1p1[0] - l2p1[0]);
-  u2 = u2 / dnm;
-  // std::cout << "u2 = " << u2 << std::endl;
-
-  return true;
+  // return true;
 }
 
 
 
 
+bool calcLineIntersection2D(
+  SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
+  double &u1, double &u2, int &plane, const double &tol
+  ) {
 
-
-
-
-
-
-bool calcLineIntersection2D(SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1,
-                            SPoint3 l2p2, double &u1, double &u2, int &plane) {
   int d1, d2;
   if (plane == 0) {
     d1 = 1;
@@ -163,43 +139,40 @@ bool calcLineIntersection2D(SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1,
   l2p = SPoint2(l2p1[d1], l2p1[d2]);
   l2q = SPoint2(l2p2[d1], l2p2[d2]);
 
-  return calcLineIntersection2D(l1p, l1q, l2p, l2q, u1, u2);
+  return calcLineIntersection2D(l1p, l1q, l2p, l2q, u1, u2, tol);
+
 }
 
 
 
 
+bool calcLineIntersection2D(
+  PDCELVertex *ls1v1, PDCELVertex *ls1v2,
+  PDCELVertex *ls2v1, PDCELVertex *ls2v2,
+  double &u1, double &u2, const double &tol
+  ) {
 
+  return calcLineIntersection2D(
+    ls1v1->point2(), ls1v2->point2(), ls2v1->point2(), ls2v2->point2(), u1, u2, tol);
 
-
-
-
-
-bool calcLineIntersection2D(PDCELVertex *ls1v1, PDCELVertex *ls1v2,
-                            PDCELVertex *ls2v1, PDCELVertex *ls2v2, double &u1,
-                            double &u2) {
-  return calcLineIntersection2D(ls1v1->point2(), ls1v2->point2(),
-                                ls2v1->point2(), ls2v2->point2(), u1, u2);
 }
 
 
 
 
+bool calcLineIntersection2D(
+  PGeoLineSegment *ls1, PGeoLineSegment *ls2,
+  double &u1, double &u2, const double &tol
+  ) {
 
-
-
-
-
-
-bool calcLineIntersection2D(PGeoLineSegment *ls1, PGeoLineSegment *ls2,
-                            double &u1, double &u2) {
   SPoint2 ls1p1, ls1p2, ls2p1, ls2p2;
   ls1p1 = ls1->v1()->point2();
   ls1p2 = ls1->v2()->point2();
   ls2p1 = ls2->v1()->point2();
   ls2p2 = ls2->v2()->point2();
 
-  return calcLineIntersection2D(ls1p1, ls1p2, ls2p1, ls2p2, u1, u2);
+  return calcLineIntersection2D(ls1p1, ls1p2, ls2p1, ls2p2, u1, u2, tol);
+
 }
 
 
@@ -215,7 +188,7 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
   double us, ut;
   bool not_parallel;
 
-  not_parallel = calcLineIntersection2D(subject, tool, us, ut);
+  not_parallel = calcLineIntersection2D(subject, tool, us, ut, TOLERANCE);
   if (not_parallel) {
     if (us >= 0 && us <= 1) {
       intersect = subject->getParametricVertex(us);
@@ -499,7 +472,7 @@ Baseline *findCurvesIntersection(
 
     // std::cout << "        line segment lsi: " << lsi << std::endl;
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u1, u2);
+    not_parallel = calcLineIntersection2D(lsi, ls, u1, u2, TOLERANCE);
 
     // std::cout << "        u1 = " << u1 << std::endl;
 
@@ -615,7 +588,7 @@ int findAllIntersections(
       // std::endl; std::cout << "        v21 = " << v21 << ", v22 = " << v22
       // << std::endl;
 
-      not_parallel = calcLineIntersection2D(v11, v12, v21, v22, u1, u2);
+      not_parallel = calcLineIntersection2D(v11, v12, v21, v22, u1, u2, TOLERANCE);
 
       // std::cout << "line_" << line_i << "_seg_" << i+1 << " and ";
       // std::cout << "line_" << line_i+1 << "_seg_" << j+1 << ": ";

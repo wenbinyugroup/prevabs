@@ -1,5 +1,3 @@
-.. include:: /replace.txt
-
 .. _section-uh60a-fi:
 
 UH-60A (Initial Failure Analysis)

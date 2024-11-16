@@ -989,7 +989,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
     lsi = hei->toLineSegment();
     // std::cout << "        line segment lsi: " << lsi << std::endl;
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls);
+    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, TOLERANCE);
     // std::cout << "        not_parallel = " << (not_parallel ? "true" : "false") << std::endl;
     // std::cout << "        u_lsi = " << u_lsi << ", u_ls = " << u_ls <<
     // std::endl;
@@ -1520,7 +1520,7 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
     // std::cout << "        line segment *lsit: " << (*lsit) << std::endl;
     // is_intersect = calcLineIntersection2D(v, vt, (*lsit)->v1(),
     // (*lsit)->v2(), u1_tmp, u2);
-    is_intersect = calcLineIntersection2D(ls_tmp, (*lsit), u1_tmp, u2);
+    is_intersect = calcLineIntersection2D(ls_tmp, (*lsit), u1_tmp, u2, TOLERANCE);
 
     if (is_intersect) {
       // not parallel

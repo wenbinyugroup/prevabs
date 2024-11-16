@@ -1,0 +1,50 @@
+
+========================================2024-11-16 17:49:02 [info] - reading input files
+2024-11-16 17:49:02 [info]     - reading main input file:  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  ========================================
+  
+  
+  ========================================
+  
+terialDB.xml
+2024-11-16 17:49:02 [info]   - reading input files -- done
+2024-11-16 17:49:02 [info]   - building the shape
+2024-11-16 17:49:02 [info]     - building the cross section, step 1
+2024-11-16 17:49:02 [info]       - building component: cmp_1
+2024-11-16 17:49:02 [info]     - building the cross section, step 2
+2024-11-16 17:49:02 [info]       - building component details: cmp_1
+2024-11-16 17:49:02 [info]     - fixing geometry
+2024-11-16 17:49:02 [info]   - building the shape -- done
+2024-11-16 17:49:02 [info]   - modeling in Gmsh
+2024-11-16 17:49:02 [info]     - creating gmsh vertices
+2024-11-16 17:49:02 [info]     - creating gmsh edges
+2024-11-16 17:49:02 [info]     - creating gmsh faces
+2024-11-16 17:49:02 [info]     - creating physical groups
+2024-11-16 17:49:02 [info]     - meshing
+2024-11-16 17:49:03 [info]   - modeling in Gmsh -- done
+2024-11-16 17:49:03 [info]   - writing outputs
+2024-11-16 17:49:03 [info]     - writing gmsh .opt file: .\share\examples\ex_pipe\pipe.opt
+2024-11-16 17:49:03 [info]     - writing gmsh .geo file: .\share\examples\ex_pipe\pipe.geo_unrolled
+2024-11-16 17:49:03 [info]     - writing gmsh .msh file: .\share\examples\ex_pipe\pipe.msh
+2024-11-16 17:49:03 [info]     - writing sg file: .\share\examples\ex_pipe\pipe.sg
+2024-11-16 17:49:03 [info]       - writing nodes
+2024-11-16 17:49:03 [info]       - writing elements
+2024-11-16 17:49:03 [info]         -   writing connectivity
+2024-11-16 17:49:03 [info]         -   writing local orientation
+2024-11-16 17:49:03 [info]     - writing material id-name file: .\share\examples\ex_pipe\pipe.sg.mat
+2024-11-16 17:49:03 [info]   - writing outputs -- done
+2024-11-16 17:49:03 [info]   - running Gmsh for visualization
+2024-11-16 17:49:03 [info]   - running: gmsh .\share\examples\ex_pipe\pipe.geo_unrolled .\share\examples\ex_pipe\pipe.msh .\share\examples\ex_pipe\pipe.opt
+2024-11-16 17:49:05 [info]   - gmsh launched successfully.
+2024-11-16 17:49:05 [info] prevabs finished
+2024-11-16 17:49:05 [info] total running time: 2.376 sec

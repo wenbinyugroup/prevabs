@@ -177,7 +177,7 @@
         </segments>
     </component>
 
-    <component name="te" depend="spar">
+    <!-- <component name="te" depend="spar">
         <segments>
             <baseline>bsl_te_top</baseline>
             <layup>lyp_skin</layup>
@@ -192,33 +192,31 @@
             <layup>lyp_skin</layup>
             <layup>lyp_te</layup>
         </segments>
-    </component>
+    </component> -->
 
-    <component name="ns_mass" type="fill" depend="le">
+    <!-- <component name="ns_mass" type="fill" depend="le">
         <baseline>bsl_nsm</baseline>
         <location>pnsmc</location>
         <material>lead</material>
         <mesh_size at="pnsmc">0.04</mesh_size>
-    </component>
+    </component> -->
 
-    <component name="fill_front" type="fill" depend="spar,le,ns_mass">
+    <!-- <component name="fill_front" type="fill" depend="spar,le,ns_mass">
         <location>pfle1</location>
         <material>Rohacell 70</material>
         <mesh_size at="pfle1,pfle2">0.04</mesh_size>
-    </component>
+    </component> -->
 
-    <component name="fill_back" type="fill" depend="spar,te">
+    <!-- <component name="fill_back" type="fill" depend="spar,te">
         <baseline fillside="right">bsl_te_fill_bound</baseline>
-        <!-- <location>pfte1</location> -->
         <material>Plascore PN2-3/16OX3.0</material>
         <mesh_size at="pfte1,pfte2">0.04</mesh_size>
-    </component>
+    </component> -->
 
-    <component name="fill_te" type="fill" depend="te,fill_back">
-        <!-- <baseline fillside="left">bsl_te_fill_bound</baseline> -->
+    <!-- <component name="fill_te" type="fill" depend="te,fill_back">
         <location>ptf</location>
         <material>S2/SP381</material>
-    </component>
+    </component> -->
 
 
 </cross_section>

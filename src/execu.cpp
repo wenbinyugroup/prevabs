@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <cstdlib>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -24,6 +25,28 @@
 using namespace std;
 
 const int NE_1D = 4;
+
+
+// A helper function to split a string by a delimiter
+std::string formatPaths(const char *paths) {
+  std::string string_out{"current path:\n"};
+  std::stringstream ss(paths);
+  std::string item;
+  // char delimiter = std::filesystem::path::preferred_separator == '/' ? ':' : ';';
+  #ifdef __linux__
+  while (std::getline(ss, item, ':')) {
+      // std::cout << item << std::endl;
+      string_out += item + "\n";
+  }
+  #elif _WIN32
+  while (std::getline(ss, item, ';')) {
+      // std::cout << item << std::endl;
+      string_out += item + "\n";
+  }
+  #endif
+
+  return string_out;
+}
 
 
 
@@ -354,16 +377,70 @@ void runGmsh(const std::string &fn_geo, const std::string &fn_msh,
 
   std::string fn_all = fn_geo + " " + fn_msh + " " + fn_opt;
   // std::string fn_all = fn_msh + " " + fn_opt;
+  std::string command = "gmsh " + fn_all;
 
-  PLOG(info) << pmessage->message("running: gmsh " + fn_all);
+  PLOG(info) << pmessage->message("running: " + command);
 
-#ifdef __linux__
-  std::string s_cmd, result;
-  s_cmd = "gmsh " + fn_all;
-  result = exec(s_cmd.c_str());
-#elif _WIN32
-  ShellExecute(NULL, "open", "gmsh.exe", fn_all.c_str(), NULL, SW_SHOWNORMAL);
-#endif
+  // Print the PATH environment variable
+  // const char* path = std::getenv("PATH");
+  char* path = nullptr;
+  size_t path_len;
+  if (_dupenv_s(&path, &path_len, "PATH") == 0 && path != nullptr) {
+    // std::cout << "Current PATH:" << std::endl;
+    // printPaths(path);
+    PLOG(debug) << pmessage->message(formatPaths(path));
+  } else {
+    // std::cerr << "Failed to get PATH environment variable." << std::endl;
+    PLOG(error) << pmessage->message("Failed to get PATH environment variable.");
+  }
+
+  // Ensure the PATH environment variable includes the directory containing gmsh.exe
+  _putenv_s("PATH", path);
+
+  // Debugging: Print PATH and attempt to run gmsh
+  int result = std::system(command.c_str());
+  // std::string debugCommand = "echo %PATH% && " + command;
+  // int result = std::system(debugCommand.c_str());
+
+  if (result != 0) {
+    std::cerr << "Failed to execute command: " << command << std::endl;
+    std::cerr << "Error code: " << result << std::endl;
+  } else {
+    // std::cout << "gmsh launched successfully." << std::endl;
+    PLOG(info) << pmessage->message("gmsh launched successfully.");
+  }
+
+// #ifdef __linux__
+//   std::string s_cmd, result;
+//   s_cmd = "gmsh " + fn_all;
+//   result = exec(s_cmd.c_str());
+// #elif _WIN32
+
+//   // ShellExecute(NULL, "open", "gmsh.exe", fn_all.c_str(), NULL, SW_SHOWNORMAL);
+
+//   HINSTANCE result = ShellExecute(NULL, "open", "gmsh", fn_all.c_str(), NULL, SW_SHOWNORMAL);
+//   if ((int)result <= 32) {
+//       // ShellExecute failed, get the error code
+//       DWORD error = GetLastError();
+//       std::cerr << "ShellExecute failed with error code: " << error << std::endl;
+//       // Optionally, you can use FormatMessage to get a human-readable error message
+//       LPVOID errorMsg;
+//       FormatMessage(
+//           FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+//           NULL,
+//           error,
+//           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+//           (LPSTR)&errorMsg,
+//           0,
+//           NULL);
+//       std::cerr << "Error message: " << (LPSTR)errorMsg << std::endl;
+//       LocalFree(errorMsg);
+//   } else {
+//       std::cout << "gmsh.exe launched successfully." << std::endl;
+//   }
+
+// #endif
 
   return;
+
 }

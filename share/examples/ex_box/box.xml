@@ -1,64 +1,105 @@
+<!-- 
+ Example: Box beam
+
+ Unit system:
+ - Length: inch
+ - Mass: slug (lb * sec^2 / inch)
+ - Density: slug / inch^3 (lb * sec^2 / inch^4)
+ - Force: lbf
+ - Pressure: psi
+-->
+
 <cross_section name="box" format="1">
 
-
-  <include>
-    <!-- <baseline>baselines</baseline> -->
-    <!-- <layup>layups</layup> -->
-    <material>materials</material>
-  </include>
-
   <analysis>
+    <!-- Timoshenko beam model -->
     <model>1</model>
-    <trapeze>1</trapeze>
   </analysis>
 
   <general>
+    <!-- Global mesh size -->
     <mesh_size>0.01</mesh_size>
+
     <element_type>linear</element_type>
   </general>
 
 
+  <!-- Geometry -->
   <baselines>
-    <basepoints>
-      <point name="bl">-0.4765  -0.265</point>
-      <point name="tl">-0.4765   0.265</point>
-      <point name="tr">0.4765   0.265</point>
-      <point name="br">0.4765  -0.265</point>
-    </basepoints>
+
+    <!-- Four corners of the box -->
+    <point name="bl">-0.4765 -0.265</point>  <!-- Bottom left -->
+    <point name="tl">-0.4765 0.265</point>  <!-- Top left -->
+    <point name="tr">0.4765 0.265</point>  <!-- Top right -->
+    <point name="br">0.4765 -0.265</point>  <!-- Bottom right -->
+
+    <!-- Outer profile of the box -->
     <baseline name="bl_all" type="straight">
+      <!-- 
+        The first and last points are the same to close the shape.
+        The order of the points defines the direction of the baseline.
+        In this example, the direction is counter-clockwise.
+      -->
       <points>tl,tr,br,bl,tl</points>
     </baseline>
+
   </baselines>
 
 
+  <!-- Materials and laminae database -->
+  <materials>
+
+    <material name="mat_1" type="orthotropic">
+      <density>1.353e-04</density>
+      <elastic>
+        <e1>20.59e+06</e1>
+        <e2>1.42e+06</e2>
+        <e3>1.42e+06</e3>
+        <g12>0.87e+06</g12>
+        <g13>0.87e+06</g13>
+        <g23>0.696e+06</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.34</nu23>
+      </elastic>
+    </material>
+
+    <lamina name="la_mat_1">
+      <material>mat_1</material>
+      <thickness>0.005</thickness>
+    </lamina>
+
+  </materials>
+
+
+  <!-- Layup definitions -->
   <layups>
+
     <layup name="layup_1">
+      <!-- For each layer, assign fiber angle and number of plies (angle:nplies) -->
       <layer lamina="la_mat_1">-15:6</layer>
     </layup>
-    <layup name="layup_2">
-      <layer lamina="la_mat_1">-15</layer>
-      <layer lamina="la_mat_1">15</layer>
-      <layer lamina="la_mat_1">-15</layer>
-      <layer lamina="la_mat_1">15</layer>
-      <layer lamina="la_mat_1">-15</layer>
-      <layer lamina="la_mat_1">15</layer>
-    </layup>
+
   </layups>
 
 
+  <!-- Component definitions -->
   <component name="main">
+
+    <!-- Since all four walls have the same layup, we can define a single segment -->
     <segment name="sg_all">
+
       <baseline>bl_all</baseline>
+
+      <!--
+        In this example, the base line is defined as the outer profile
+        and we want to create the layup inward. Since the base line is in the
+        counter-clockwise direction, hence the "direction" of the layup should be "right".
+      -->
       <layup direction="right">layup_1</layup>
+
     </segment>
+
   </component>
-
-  <global>
-
-    <displacements>1 2 3</displacements>
-    <loads>1 2 3 4 5 6</loads>
-
-  </global>
-
 
 </cross_section>

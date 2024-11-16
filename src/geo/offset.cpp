@@ -109,7 +109,7 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
         // Calculate intersection
         double u1, u2;
         bool not_parallel;
-        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2);
+        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2, TOLERANCE);
         if (not_parallel) {
           curve_off->addPVertex(ls->getParametricVertex(u1));
         } else {
@@ -128,7 +128,7 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
       double u1, u2;
       bool not_parallel;
       // PDCELVertex *v;
-      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2);
+      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2, TOLERANCE);
       if (not_parallel) {
         curve_off->vertices()[0] = ls_first_off->getParametricVertex(u1);
       }
@@ -261,7 +261,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       // v2_prev << std::endl; std::cout << "        v1_tmp = " << v1_tmp << ",
       // v2_tmp = " << v2_tmp << std::endl;
       not_parallel =
-          calcLineIntersection2D(v1_prev, v2_prev, v1_tmp, v2_tmp, u1, u2);
+          calcLineIntersection2D(v1_prev, v2_prev, v1_tmp, v2_tmp, u1, u2, TOLERANCE);
       // std::cout << "        not_parallel = " << not_parallel << ", u1 = " <<
       // u1 << ", u2 = " << u2 << std::endl;
       if (not_parallel) {

@@ -1,5 +1,14 @@
 # Change log
 
+## Version 1.6
+
+- 1.6.0 (2024)
+  - Changed the gmsh linking to the shared library from the SDK.
+  - Fixed the issue of unabling to run PreVABS without VABS dll.
+  - Fixed the issue of not reading airfoil data properly on linux.
+  - Fixed the issue of not skipping header rows of airfoil data.
+  - Fixed the issue of not able to run the input without the "include" block.
+
 ## Version 1.5
 
 - 1.5.2

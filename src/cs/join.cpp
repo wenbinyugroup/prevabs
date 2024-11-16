@@ -1122,7 +1122,7 @@ void PComponent::joinSegments(Segment *s1, Segment *s2, int e1, int e2,
       ls1 = lss1.back();
       for (int i = 0; i < lss2.size(); ++i) {
         ls2 = lss2[i];
-        calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp);
+        calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
         if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
           found = true;
           i2 = i;
@@ -1152,7 +1152,7 @@ void PComponent::joinSegments(Segment *s1, Segment *s2, int e1, int e2,
         ls2 = lss2.back();
         for (int i = 0; i < lss1.size(); ++i) {
           ls1 = lss1[i];
-          calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp);
+          calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
           if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
             found = true;
             i1 = i;

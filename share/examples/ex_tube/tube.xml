@@ -1,9 +1,4 @@
-<cross_section name="tube" format="1">
-
-
-  <include>
-    <material>materials</material>
-  </include>
+<cross_section name="tube">
 
 
   <analysis>
@@ -12,7 +7,7 @@
 
 
   <general>
-    <mesh_size>0.5</mesh_size>
+    <mesh_size>0.2</mesh_size>
     <element_type>linear</element_type>
   </general>
 
@@ -26,16 +21,36 @@
 
 
   <baselines>
-    <basepoints>
-      <point name="ct">0  0</point>
-    </basepoints>
-    <baseline name="blcircle" type="circle">
+    <point name="ct">0 0</point>
+    <line name="blcircle" type="circle">
       <center>ct</center>
       <radius>10</radius>
       <discrete by="angle">3</discrete>
       <direction>cw</direction>
-    </baseline>
+    </line>
   </baselines>
+
+
+  <materials>
+    <material name="iso5_4" type="orthotropic">
+      <density>1.664E+03</density>
+      <elastic>
+        <e1>1.03E+10</e1>
+        <e2>1.03E+10</e2>
+        <e3>1.03E+10</e3>
+        <g12>8.00E+09</g12>
+        <g13>8.00E+09</g13>
+        <g23>8.00E+09</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_iso5_4_01">
+      <material>iso5_4</material>
+      <thickness>0.1</thickness>
+    </lamina>
+  </materials>
 
 
   <layups>

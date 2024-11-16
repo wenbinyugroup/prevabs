@@ -135,6 +135,19 @@ bool calcLineIntersection2D(
   double &, double &, const int &, const double &
 );
 
+bool calcLineIntersection2D(
+  SPoint2, SPoint2, SPoint2, SPoint2,
+  double &, double &, const double &);
+bool calcLineIntersection2D(
+  SPoint3, SPoint3, SPoint3, SPoint3,
+  double &, double &, int &, const double &);
+bool calcLineIntersection2D(
+  PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
+  double &, double &, const double &);
+bool calcLineIntersection2D(
+  PGeoLineSegment *, PGeoLineSegment *,
+  double &, double &, const double &);
+
 
 
 
@@ -169,15 +182,6 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end);
 SVector3 getVectorFromAngle(double &angle, const int &plane);
 
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
-
-bool calcLineIntersection2D(SPoint2, SPoint2, SPoint2, SPoint2, double &,
-                            double &);
-bool calcLineIntersection2D(SPoint3, SPoint3, SPoint3, SPoint3, double &,
-                            double &, int &);
-bool calcLineIntersection2D(PDCELVertex *, PDCELVertex *, PDCELVertex *,
-                            PDCELVertex *, double &, double &);
-bool calcLineIntersection2D(PGeoLineSegment *, PGeoLineSegment *, double &,
-                            double &);
 
 bool isParallel(PGeoLineSegment *, PGeoLineSegment *);
 bool isCollinear(PGeoLineSegment *, PGeoLineSegment *);

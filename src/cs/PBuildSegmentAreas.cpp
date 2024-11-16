@@ -186,8 +186,8 @@ void Segment::buildAreas(Message *pmessage) {
         PLOG(debug) << pmessage->message("he_tmp: " + he_tmp->printString());
 
         bool not_parallel;
-        not_parallel = calcLineIntersection2D(he_tmp->toLineSegment(),
-                                              ls_offset, u1_tmp, u2_tmp);
+        not_parallel = calcLineIntersection2D(
+          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
         // std::cout << "        not_parallel = " << not_parallel << std::endl;
         // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
         std::stringstream ss_u1_tmp;
@@ -609,8 +609,8 @@ void Segment::buildAreas(Message *pmessage) {
 
         bool not_parallel;
 
-        not_parallel = calcLineIntersection2D(he_tmp->toLineSegment(),
-                                              ls_offset, u1_tmp, u2_tmp);
+        not_parallel = calcLineIntersection2D(
+          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
 
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;

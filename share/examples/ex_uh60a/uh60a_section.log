@@ -1,36 +1,58 @@
-2023-09-27 10:18:43 [info] prevabs start
-2023-09-27 10:18:43 [info] - reading input files
-2023-09-27 10:18:43 [info]     - reading main input file: .\uh60a_section.xml
-2023-09-27 10:18:43 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
-2023-09-27 10:18:43 [info]         - reading materials file: .\uh60a_material.xml
-2023-09-27 10:18:43 [info]   - reading input files -- done
-2023-09-27 10:18:43 [info]   - building the shape
-2023-09-27 10:18:43 [info]     - building the cross section, step 1
-2023-09-27 10:18:43 [info]       - building component: main_spar
-2023-09-27 10:18:43 [info]       - building component: le
-2023-09-27 10:18:43 [info]       - building component: te
-2023-09-27 10:18:43 [info]       - building component: ns_mass
-2023-09-27 10:18:43 [info]       - building component: fill_te
-2023-09-27 10:18:43 [info]       - building component: fill_ballast
-2023-09-27 10:18:43 [info]     - building the cross section, step 2
-2023-09-27 10:18:43 [info]       - building component details: main_spar
-2023-09-27 10:18:43 [info]       - building component details: le
-2023-09-27 10:18:43 [info]       - building component details: te
-2023-09-27 10:18:43 [info]     - fixing geometry
-2023-09-27 10:18:43 [info]   - building the shape -- done
-2023-09-27 10:18:43 [info]   - modeling in Gmsh
-2023-09-27 10:18:43 [info]     - creating gmsh vertices
-2023-09-27 10:18:43 [info]     - creating gmsh edges
-2023-09-27 10:18:43 [info]     - creating gmsh face
-2023-09-27 10:18:43 [info]     - meshing
-2023-09-27 10:18:43 [info]   - modeling in Gmsh -- done
-2023-09-27 10:18:43 [info]   - writing outputs
-2023-09-27 10:18:43 [info]     - writing gmsh .opt file: .\uh60a_section.opt
-2023-09-27 10:18:43 [info]     - writing gmsh .geo file: .\uh60a_section.geo
-2023-09-27 10:18:43 [info]     - writing gmsh .msh file: .\uh60a_section.msh
-2023-09-27 10:18:43 [info]     - writing sg file: .\uh60a_section.sg
-2023-09-27 10:18:44 [info]   - writing outputs -- done
-2023-09-27 10:18:44 [info]   - running Gmsh for visualization
-2023-09-27 10:18:44 [info]   - running: gmsh .\uh60a_section.geo .\uh60a_section.msh .\uh60a_section.opt
-2023-09-27 10:18:44 [info] prevabs finished
-2023-09-27 10:18:44 [info] total running time: 1.166 sec
+
+========================================2024-11-16 19:38:03 [info] - reading input files
+2024-11-16 19:38:03 [info]     - reading main input file:  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  ========================================
+  
+  
+  ========================================
+  
+2024-11-16 19:38:03 [error]       - unable to open file: C:\Users\foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+2024-11-16 19:38:03 [info]         - reading materials file: .\share\examples\ex_uh60a\uh60a_material.xml
+2024-11-16 19:38:03 [info]   - reading input files -- done
+2024-11-16 19:38:03 [info]   - building the shape
+2024-11-16 19:38:03 [info]     - building the cross section, step 1
+2024-11-16 19:38:03 [info]       - building component: main_spar
+2024-11-16 19:38:03 [info]       - building component: le
+2024-11-16 19:38:03 [info]       - building component: te
+2024-11-16 19:38:03 [info]       - building component: ns_mass
+2024-11-16 19:38:03 [info]       - building component: fill_back
+2024-11-16 19:38:03 [info]       - building component: fill_front
+2024-11-16 19:38:03 [info]     - building the cross section, step 2
+2024-11-16 19:38:03 [info]       - building component details: main_spar
+2024-11-16 19:38:03 [info]       - building component details: le
+2024-11-16 19:38:03 [info]       - building component details: te
+2024-11-16 19:38:03 [info]     - fixing geometry
+2024-11-16 19:38:03 [info]   - building the shape -- done
+2024-11-16 19:38:03 [info]   - modeling in Gmsh
+2024-11-16 19:38:03 [info]     - creating gmsh vertices
+2024-11-16 19:38:03 [info]     - creating gmsh edges
+2024-11-16 19:38:03 [info]     - creating gmsh faces
+2024-11-16 19:38:03 [info]     - creating physical groups
+2024-11-16 19:38:03 [info]     - meshing
+2024-11-16 19:38:05 [info]   - modeling in Gmsh -- done
+2024-11-16 19:38:05 [info]   - writing outputs
+2024-11-16 19:38:05 [info]     - writing gmsh .opt file: .\share\examples\ex_uh60a\uh60a_section.opt
+2024-11-16 19:38:05 [info]     - writing gmsh .geo file: .\share\examples\ex_uh60a\uh60a_section.geo_unrolled
+2024-11-16 19:38:05 [info]     - writing gmsh .msh file: .\share\examples\ex_uh60a\uh60a_section.msh
+2024-11-16 19:38:05 [info]     - writing sg file: .\share\examples\ex_uh60a\uh60a_section.sg
+2024-11-16 19:38:05 [info]       - writing nodes
+2024-11-16 19:38:05 [info]       - writing elements
+2024-11-16 19:38:05 [info]         -   writing connectivity
+2024-11-16 19:38:05 [info]         -   writing local orientation
+2024-11-16 19:38:05 [info]     - writing material id-name file: .\share\examples\ex_uh60a\uh60a_section.sg.mat
+2024-11-16 19:38:05 [info]   - writing outputs -- done
+2024-11-16 19:38:05 [info]   - running Gmsh for visualization
+2024-11-16 19:38:05 [info]   - running: gmsh .\share\examples\ex_uh60a\uh60a_section.geo_unrolled .\share\examples\ex_uh60a\uh60a_section.msh .\share\examples\ex_uh60a\uh60a_section.opt
+2024-11-16 19:38:24 [info]   - gmsh launched successfully.
+2024-11-16 19:38:24 [info] prevabs finished
+2024-11-16 19:38:24 [info] total running time: 21.083 sec

@@ -313,7 +313,7 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
   }
 
   double u1, u2;
-  calcLineIntersection2D(ls_end, ls, u1, u2);
+  calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
   PDCELVertex *vnew = ls_end->getParametricVertex(u1);
 
   if (end == 0) {
