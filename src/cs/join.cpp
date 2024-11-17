@@ -25,18 +25,12 @@
 
 
 void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessage) {
+
   pmessage->increaseIndent();
-  // if (config.debug) {
-  //   std::cout << "[debug] making segment end: " << s->getName() << " " << e
-  //             << std::endl;
-  //   std::stringstream ss;
-  //   ss << "making segment end: " << s->getName() << " " << e;
-  //   pmessage->print(9, ss.str());
-  // }
+
   PLOG(debug) << pmessage->message("making segment end: " + s->getName() + " " + std::to_string(e));
-  // std::cout << std::endl;
-  // std::cout << "\n[debug] function: joinSegments " << s->getName() << " " << e
-  //           << std::endl;
+
+  PLOG(debug) << pmessage->message("number of dependencies: " + std::to_string(_dependencies.size()));
 
   if (_dependencies.empty()) {
     PLOG(debug) << pmessage->message("making segment end because of no dependency.");
@@ -44,7 +38,11 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
     pmessage->decreaseIndent();
     return;
   }
+
   else {
+
+    PLOG(debug) << pmessage->message("the end to be done (e): " + std::to_string(e));
+    PLOG(debug) << pmessage->message("free end of the segment (s->free()): " + std::to_string(s->free()));
 
     if (e == s->free()) {
       PLOG(debug) << pmessage->message("making segment end because of free end set although with dependency.");
@@ -52,6 +50,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
       pmessage->decreaseIndent();
       return;
     }
+
     else {
 
       PDCELHalfEdge *he_tool, *he;
@@ -581,8 +580,10 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
 
 
-void PComponent::joinSegments(Segment *s1, Segment *s2, int e1, int e2,
-                              PDCELVertex *v, int style, Message *pmessage) {
+void PComponent::joinSegments(
+  Segment *s1, Segment *s2, int e1, int e2,
+  PDCELVertex *v, int style, Message *pmessage
+  ) {
   pmessage->increaseIndent();
 
   // if (config.debug) {

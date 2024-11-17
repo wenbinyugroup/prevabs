@@ -13,7 +13,6 @@
     </general>
 
 
-
     <baselines>
 
         <line name="ln_af" type="airfoil">
@@ -33,8 +32,8 @@
         <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
         <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
 
-        <point name="pfb">0.1  0</point>
-        <point name="ptf">0.08  0</point>
+        <point name="pfb">0.1 0</point>
+        <point name="ptf">0.08 0</point>
         <point name="pnsmc">0.97 0</point>
 
         <point name="pfle1">0.94 0</point>
@@ -112,7 +111,6 @@
     </baselines>
 
 
-
     <layups>
         <layup name="lyp_le_cap">
             <layer lamina="Aluminum 8009_0.01">0:2</layer>
@@ -139,7 +137,6 @@
     </layups>
 
 
-
     <component name="spar">
         <segments>
             <baseline>line_spar</baseline>
@@ -159,18 +156,18 @@
     </component>
 
     <component name="le" depend="spar">
-        <segments>
+        <segments name="sgm_front_le">
             <baseline>bsl_le</baseline>
             <layup>lyp_le_cap</layup>
             <layup>lyp_skin</layup>
             <layup>lyp_le</layup>
         </segments>
-        <segments>
+        <segments name="sgm_front_top">
             <baseline>bsl_le_top</baseline>
             <layup>lyp_skin</layup>
             <layup>lyp_le</layup>
         </segments>
-        <segments>
+        <segments name="sgm_front_bottom">
             <baseline>bsl_le_bottom</baseline>
             <layup>lyp_skin</layup>
             <layup>lyp_le</layup>

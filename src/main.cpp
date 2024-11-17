@@ -16,6 +16,9 @@
 // #include <exception>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 
 
 #ifdef _WIN32
@@ -218,6 +221,24 @@ void processConfigVariables() {
 
 
 
+std::string getCurrentDateTimeString() {
+  // Get the current time
+  auto now = std::chrono::system_clock::now();
+  // Convert to time_t to get calendar time
+  std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+  // Convert to tm structure
+  std::tm* now_tm = std::localtime(&now_time);
+
+  // Create a string stream to format the date and time
+  std::stringstream ss;
+  ss << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");
+
+  return ss.str();
+}
+
+
+
+
 
 
 // ===================================================================
@@ -256,8 +277,6 @@ int main(int argc, char** argv) {
 
   // -----------------------------------------------------------------
 
-  PLOG(info) << "prevabs start";
-
   // Message *pmessage = new Message(v_filename[0] + v_filename[1] + ".txt");
   Message *pmessage = new Message(config.file_name_log);
   pmessage->openFile();
@@ -269,6 +288,11 @@ int main(int argc, char** argv) {
   PModel *pmodel = new PModel(config.file_base_name);
   pmodel->initialize();
 
+
+  // Log current date and time
+  std::string s_dt_start = getCurrentDateTimeString();
+
+  PLOG(info) << pmessage->message("prevabs start (" + s_dt_start + ")");
 
 
 
@@ -329,6 +353,7 @@ int main(int argc, char** argv) {
   pmodel->finalize();
 
 
+  std::string s_dt_finish = getCurrentDateTimeString();
 
   int stop_s = clock();
   double tt = (stop_s - start_s) / double(CLOCKS_PER_SEC);
@@ -338,7 +363,7 @@ int main(int argc, char** argv) {
   pmessage->printDivider(40, '=');
   pmessage->printBlank();
   // pmessage->print(0, "  FINISHED");
-  PLOG(info) << "prevabs finished";
+  PLOG(info) << pmessage->message("prevabs finished (" + s_dt_finish + ")");
   // pmessage->print(0, ss);
   PLOG(info) << ss.str();
   pmessage->printBlank();

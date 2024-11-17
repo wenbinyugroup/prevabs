@@ -1,6 +1,6 @@
-
-========================================2024-10-24 10:41:57 [info] - reading input files
-2024-10-24 10:41:57 [info]     - reading main input file:  
+[info] - prevabs start (2024-11-17 18:52:50)
+[info] - reading input files
+[info]     - reading main input file: .\share\examples\ex_airfoil_dspar\c  
   
     
   
@@ -10,39 +10,45 @@
   
   
   
-  ========================================
-  
   
   ========================================
   
-r\sc1095.dat
-2024-10-24 10:41:57 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-2024-10-24 10:41:57 [info]         - reading materials file: .\share\examples\ex_airfoil_dspar\material_database_us_ft.xml
-2024-10-24 10:41:57 [info]   - reading input files -- done
-2024-10-24 10:41:57 [info]   - building the shape
-2024-10-24 10:41:57 [info]     - building the cross section, step 1
-2024-10-24 10:41:57 [info]       - building component: spar
-2024-10-24 10:41:57 [info]       - building component: te
-2024-10-24 10:41:57 [info]       - building component: fill_aft
-2024-10-24 10:41:57 [info]     - building the cross section, step 2
-2024-10-24 10:41:57 [info]       - building component details: spar
-2024-10-24 10:41:57 [info]       - building component details: te
-2024-10-24 10:41:57 [info]     - fixing geometry
-2024-10-24 10:41:57 [info]   - building the shape -- done
-2024-10-24 10:41:57 [info]   - modeling in Gmsh
-2024-10-24 10:41:57 [info]     - creating gmsh vertices
-2024-10-24 10:41:57 [info]     - creating gmsh edges
-2024-10-24 10:41:57 [info]     - creating gmsh faces
-2024-10-24 10:41:57 [info]     - creating physical groups
-2024-10-24 10:41:57 [info]     - meshing
-2024-10-24 10:41:59 [info]   - modeling in Gmsh -- done
-2024-10-24 10:41:59 [info]   - writing outputs
-2024-10-24 10:41:59 [info]     - writing sg file: .\share\examples\ex_airfoil_dspar\cs_main.sg
-2024-10-24 10:41:59 [info]       - writing nodes
-2024-10-24 10:41:59 [info]       - writing elements
-2024-10-24 10:41:59 [info]         -   writing connectivity
-2024-10-24 10:41:59 [info]         -   writing local orientation
-2024-10-24 10:41:59 [info]     - writing material id-name file: .\share\examples\ex_airfoil_dspar\cs_main.sg.mat
-2024-10-24 10:41:59 [info]   - writing outputs -- done
-2024-10-24 10:41:59 [info] prevabs finished
-2024-10-24 10:41:59 [info] total running time: 1.824 sec
+  
+  ========================================
+  
+foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]         - reading materials file: .\share\examples\ex_airfoil_dspar\material_database_us_ft.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: spar
+[info]       - building component: te
+[info]       - building component: fill_aft
+[info]     - building the cross section, step 2
+[info]       - building component details: spar
+[info]       - building component details: te
+[info]     - fixing geometry
+[info]   - building the shape -- done
+[info]   - modeling in Gmsh
+[info]     - creating gmsh vertices
+[info]     - creating gmsh edges
+[info]     - creating gmsh faces
+[info]     - creating physical groups
+[info]     - meshing
+[info]   - modeling in Gmsh -- done
+[info]   - writing outputs
+[info]     - writing gmsh .opt file: .\share\examples\ex_airfoil_dspar\cs_main.opt
+[info]     - writing gmsh .geo file: .\share\examples\ex_airfoil_dspar\cs_main.geo_unrolled
+[info]     - writing gmsh .msh file: .\share\examples\ex_airfoil_dspar\cs_main.msh
+[info]     - writing sg file: .\share\examples\ex_airfoil_dspar\cs_main.sg
+[info]       - writing nodes
+[info]       - writing elements
+[info]         -   writing connectivity
+[info]         -   writing local orientation
+[info]     - writing material id-name file: .\share\examples\ex_airfoil_dspar\cs_main.sg.mat
+[info]   - writing outputs -- done
+[info]   - running Gmsh for visualization
+[info]   - running: gmsh .\share\examples\ex_airfoil_dspar\cs_main.geo_unrolled .\share\examples\ex_airfoil_dspar\cs_main.msh .\share\examples\ex_airfoil_dspar\cs_main.opt
+[info]   - gmsh launched successfully.
+[info]   - prevabs finished (2024-11-17 18:52:53)
+[info] total running time: 2.729 sec
