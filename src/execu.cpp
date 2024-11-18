@@ -20,6 +20,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 using namespace std;
@@ -54,19 +56,32 @@ std::string formatPaths(const char *paths) {
 void setPath(Message *pmessage) {
   // Get the PATH environment variable
   char* path = nullptr;
+
+#ifdef _WIN32
   size_t path_len;
 
   if (_dupenv_s(&path, &path_len, "PATH") == 0 && path != nullptr) {
     PLOG(debug) << pmessage->message(formatPaths(path));
-  }
-
-  else {
+  } else {
     PLOG(error) << pmessage->message("Failed to get PATH environment variable.");
   }
 
   // Ensure the PATH environment variable includes the directory
   // containing the executable
   _putenv_s("PATH", path);
+
+// #else
+//   path = getenv("PATH");
+//   if (path != nullptr) {
+//     PLOG(debug) << pmessage->message(formatPaths(path));
+//   } else {
+//     PLOG(error) << pmessage->message("Failed to get PATH environment variable.");
+//   }
+
+//   // Ensure the PATH environment variable includes the directory containing the executable
+//   setenv("PATH", path, 1);
+
+#endif
 
   return;
 }
