@@ -886,11 +886,14 @@ void PModel::run(Message *pmessage) {
 
 
   std::vector<std::string> cmd_args;
+
   if (config.analysis_tool == 1) {
+    cmd_args.push_back(config.file_name_vsc);
     // VABS
     if (config.integrated_solver) {
       runIntegratedVABS(config.file_name_vsc, this, pmessage);
     }
+
     else {
       if (config.dehomo) {
         config.vabs_option = "2";
@@ -903,12 +906,13 @@ void PModel::run(Message *pmessage) {
         cmd_args.push_back(std::to_string(_load_cases.size()));
       }
 
-      runVABS(config.file_name_vsc, cmd_args, pmessage);
+      runVABS(config.vabs_name, cmd_args, pmessage);
 
     }
   }
 
   else if (config.analysis_tool == 2) {
+    cmd_args.push_back(config.file_name_vsc);
     // SwiftComp
     if (_analysis_model_dim == 1) {
       cmd_args.push_back("1D");
@@ -920,7 +924,7 @@ void PModel::run(Message *pmessage) {
       cmd_args.push_back("3D");
     }
     cmd_args.push_back(config.sc_option);
-    runSC(config.file_name_vsc, cmd_args, pmessage);
+    runSC(config.sc_name, cmd_args, pmessage);
 
   }
 

@@ -1,0 +1,48 @@
+[info] - prevabs start (2024-11-18 19:46:33)
+[info] - reading input files
+[info]     - reading main input file: .\test\circle\1.3_circle_iso_filled  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  ========================================
+  
+  
+  ========================================
+  
+g input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: fill_circle
+[info]     - building the cross section, step 2
+[info]     - fixing geometry
+[info]   - building the shape -- done
+[info]   - modeling in Gmsh
+[info]     - creating gmsh vertices
+[info]     - creating gmsh edges
+[info]     - creating gmsh faces
+[info]     - creating physical groups
+[info]     - meshing
+[info]   - modeling in Gmsh -- done
+[info]   - writing outputs
+[info]     - writing gmsh .opt file: .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.opt
+[info]     - writing gmsh .geo file: .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.geo_unrolled
+[info]     - writing gmsh .msh file: .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.msh
+[info]     - writing sg file: .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.sg
+[info]       - writing nodes
+[info]       - writing elements
+[info]         -   writing connectivity
+[info]         -   writing local orientation
+[info]     - writing material id-name file: .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.sg.mat
+[info]   - writing outputs -- done
+[info]   - running Gmsh for visualization
+[info]   - running: gmsh .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.geo_unrolled .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.msh .\test\circle\1.3_circle_iso_filled_dehomo\vabs\circle.opt
+[info]   - command launched successfully.
+[info]   - prevabs finished (2024-11-18 19:46:35)
+[info] total running time: 2.214 sec

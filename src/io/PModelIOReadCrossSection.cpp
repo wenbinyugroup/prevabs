@@ -647,12 +647,14 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   if (config.debug) {
-    pmessage->printBlank();
+    // pmessage->printBlank();
     // pmessage->print(9, "summary of base lines");
+    PLOG(debug) << pmessage->message(" ");
     PLOG(debug) << pmessage->message("summary of base lines (before transformation)");
     for (auto bsl : pmodel->baselines()) {
       bsl->print(pmessage);
-      pmessage->printBlank();
+      // pmessage->printBlank();
+      PLOG(debug) << pmessage->message(" ");
     }
   }
 
@@ -667,12 +669,14 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   if (config.debug) {
-    pmessage->printBlank();
+    // pmessage->printBlank();
     // pmessage->print(9, "summary of base lines");
+    PLOG(debug) << pmessage->message(" ");
     PLOG(debug) << pmessage->message("summary of base lines (after transformation)");
     for (auto bsl : pmodel->baselines()) {
       bsl->print(pmessage);
-      pmessage->printBlank();
+      // pmessage->printBlank();
+      PLOG(debug) << pmessage->message(" ");
     }
   }
 
@@ -717,22 +721,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   fn_material_global = vs[0];
 #endif
   fn_material_global = fn_material_global + "MaterialDB.xml";
-  // std::cout << fn_material_global << std::endl;
-  // }
-  // if (debug) {
-  //   std::cout << markInfo << " Include Material Database: " << fn_material_global
-  //             << std::endl;
-  // }
-  // if (debug)
-  // std::cout << "- reading materials" << std::endl;
-  // readMaterials(fn_material_global, pmodel);
-  // if (debug) {
-  // std::cout << "- reading materials -- done" << std::endl;
-  // for (auto m : pmodel->materials())
-  //   m->printMaterial();
-  // }
-  // for (auto m : pmodel->materials())
-  //   m->printMaterial();
 
   std::string fn_material_local = "";
   if (nodeInclude) {
@@ -756,14 +744,14 @@ int readCrossSection(const std::string &filenameCrossSection,
     readMaterials(p_xn_materials, pmodel, pmessage);
   }
 
-  if (config.debug) {
-    pmessage->printBlank();
-    pmessage->print(9, "summary of materials");
-    for (auto mtr : pmodel->materials()) {
-      mtr->print(pmessage, 9);
-      pmessage->printBlank();
-    }
-  }
+  // if (config.debug) {
+  //   pmessage->printBlank();
+  //   pmessage->print(9, "summary of materials");
+  //   for (auto mtr : pmodel->materials()) {
+  //     mtr->print(pmessage, 9);
+  //     pmessage->printBlank();
+  //   }
+  // }
 
   PLOG(debug) << pmessage->message("finished reading materials.");
 

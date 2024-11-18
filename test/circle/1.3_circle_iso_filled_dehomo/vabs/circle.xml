@@ -1,26 +1,18 @@
 <cross_section name="circle" format="1">
 
 
-  <include>
-    <material>materials</material>
-  </include>
-
-
-
 
   <analysis>
     <model>1</model>
-    <thermal>0</thermal>
-    <trapeze>0</trapeze>
+    <!-- <thermal>0</thermal> -->
+    <!-- <trapeze>0</trapeze> -->
     <!-- <vlasov>0</vlasov> -->
-    <initial_twist>0</initial_twist>
+    <!-- <initial_twist>0</initial_twist> -->
     <!-- <initial_curvature_2></initial_curvature_2>
     <initial_curvature_3></initial_curvature_3>
     <oblique_y1></oblique_y1>
     <oblique_y2></oblique_y2> -->
   </analysis>
-
-
 
 
   <general>
@@ -32,29 +24,32 @@
   </general>
 
 
-
-
   <baselines>
-    <basepoints>
-      <point name="ct">0 0</point>
-    </basepoints>
+    <point name="ct">0 0</point>
 
-    <baseline name="bsl_circle" type="circle">
+    <line name="bsl_circle" type="circle">
       <center>ct</center>
       <radius>1</radius>
       <discrete by="angle">5</discrete>
       <direction>ccw</direction>
-    </baseline>
+    </line>
 
   </baselines>
 
 
+  <materials>
+    <material name="iso1" type="isotropic">
+      <density>1e3</density>
+      <elastic>
+        <e>1e9</e>
+        <nu>0.3</nu>
+      </elastic>
+    </material>
+  </materials>
 
 
   <layups>
   </layups>
-
-
 
 
   <component name="fill_circle" type="fill">

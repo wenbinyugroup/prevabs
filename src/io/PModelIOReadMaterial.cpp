@@ -47,7 +47,9 @@
 #include <windows.h>
 #endif
 
-int readMaterialsFile(const std::string &fn_material_global, PModel *pmodel, Message *pmessage) {
+int readMaterialsFile(
+  const std::string &fn_material_global, PModel *pmodel, Message *pmessage
+  ) {
   pmessage->increaseIndent();
 
   xml_document<> xmlDocMaterials;

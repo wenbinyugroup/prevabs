@@ -3,6 +3,15 @@
 PreVABS is a preprocessing tool for VABS and SwiftComp.
 It helps users to create cross-sections and write input files.
 
+## Installation
+
+### Windows
+
+#### Portable (`prevabs-<ver>-windows-portable.zip`)
+
+- Unzip the package
+- Add the root directory to the system environment variable `PATH`
+
 ## Usage
 
 ````
@@ -108,7 +117,7 @@ Once done, the executable `prevabs.exe` can be found in `build_msvc\Release\`.
 ## Contact
 
 Su Tian
-(tian50@purdue.edu)
+(sutian@analyswift.com)
 
 Haodong Du
 (duhd1993@purdue.edu)

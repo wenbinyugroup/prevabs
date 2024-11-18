@@ -51,6 +51,52 @@ std::string formatPaths(const char *paths) {
 
 
 
+void setPath(Message *pmessage) {
+  // Get the PATH environment variable
+  char* path = nullptr;
+  size_t path_len;
+
+  if (_dupenv_s(&path, &path_len, "PATH") == 0 && path != nullptr) {
+    PLOG(debug) << pmessage->message(formatPaths(path));
+  }
+
+  else {
+    PLOG(error) << pmessage->message("Failed to get PATH environment variable.");
+  }
+
+  // Ensure the PATH environment variable includes the directory
+  // containing the executable
+  _putenv_s("PATH", path);
+
+  return;
+}
+
+
+
+
+void runCmd(const std::string &command, Message *pmessage) {
+  PLOG(info) << pmessage->message("running: " + command);
+
+  int result = std::system(command.c_str());
+
+  // Debugging: Print PATH and attempt to run command
+  // std::string debugCommand = "echo %PATH% && " + command;
+  // int result = std::system(debugCommand.c_str());
+
+  if (result != 0) {
+    std::cerr << "Failed to execute command: " << command << std::endl;
+    std::cerr << "Error code: " << result << std::endl;
+  }
+  else {
+    PLOG(info) << pmessage->message("command launched successfully.");
+  }
+
+  return;
+}
+
+
+
+
 
 // extern "C" {
 //   void constitutivemodeling_(char *inp_name, int *format_I, int mat_type_layer[], double layup_angle[], int *LAY_CONST, int *nlayer,\
@@ -98,44 +144,59 @@ std::string exec(const char *cmd) {
 
 
 
-void runVABS(const std::string &file_name, const std::vector<std::string> &args, Message *pmessage) {
-  // PLOG(info) << "running VABS...";
+void runVABS(
+  const std::string &cmd_name, const std::vector<std::string> &args,
+  Message *pmessage
+  ) {
 
-  std::vector<std::string> vs;
-  vs = gmshSplitFileName(file_name);
-  std::string s_cmd;
-  s_cmd = "\"" + vs[1] + vs[2] + "\"";
+  std::string command = cmd_name;
+  // std::string command = "VABS \"" + file_name + "\"";
   for (auto arg : args) {
-    s_cmd = s_cmd + " " + arg;
+    command = command + " \"" + arg + "\"";
   }
 
-  // std::string fn_all = fn_geo + " " + fn_msh + " " + fn_opt;
+  setPath(pmessage);
+
+  runCmd(command, pmessage);
 
 
-#ifdef __linux__
-  // s_cmd = "VABS " + s_cmd;
-  s_cmd = "VABS \"" + file_name + "\"";
-  for (auto arg : args) {
-    s_cmd = s_cmd + " " + arg;
-  }
-  PLOG(info) << pmessage->message("running: VABS " + s_cmd);
-  std::string result;
-  result = exec(s_cmd.c_str());
-  std::cout << result << std::endl;
-#elif _WIN32
-  SHELLEXECUTEINFO ShExecInfo = {0};
-  ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-  ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NO_CONSOLE;
-  ShExecInfo.hwnd = NULL;
-  ShExecInfo.lpVerb = NULL;
-  ShExecInfo.lpFile = "vabs";
-  ShExecInfo.lpParameters = s_cmd.c_str();
-  ShExecInfo.lpDirectory = vs[0].c_str();
-  ShExecInfo.nShow = SW_SHOW;
-  ShExecInfo.hInstApp = NULL;
-  ShellExecuteEx(&ShExecInfo);
-  WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-#endif
+//   // PLOG(info) << "running VABS...";
+
+//   std::vector<std::string> vs;
+//   vs = gmshSplitFileName(file_name);
+//   std::string s_cmd;
+//   s_cmd = "\"" + vs[1] + vs[2] + "\"";
+//   for (auto arg : args) {
+//     s_cmd = s_cmd + " " + arg;
+//   }
+
+//   // std::string fn_all = fn_geo + " " + fn_msh + " " + fn_opt;
+
+
+// #ifdef __linux__
+//   // s_cmd = "VABS " + s_cmd;
+//   s_cmd = "VABS \"" + file_name + "\"";
+//   for (auto arg : args) {
+//     s_cmd = s_cmd + " " + arg;
+//   }
+//   PLOG(info) << pmessage->message("running: VABS " + s_cmd);
+//   std::string result;
+//   result = exec(s_cmd.c_str());
+//   std::cout << result << std::endl;
+// #elif _WIN32
+//   SHELLEXECUTEINFO ShExecInfo = {0};
+//   ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+//   ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NO_CONSOLE;
+//   ShExecInfo.hwnd = NULL;
+//   ShExecInfo.lpVerb = NULL;
+//   ShExecInfo.lpFile = "vabs";
+//   ShExecInfo.lpParameters = s_cmd.c_str();
+//   ShExecInfo.lpDirectory = vs[0].c_str();
+//   ShExecInfo.nShow = SW_SHOW;
+//   ShExecInfo.hInstApp = NULL;
+//   ShellExecuteEx(&ShExecInfo);
+//   WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+// #endif
 
   return;
 }
@@ -143,43 +204,51 @@ void runVABS(const std::string &file_name, const std::vector<std::string> &args,
 
 
 
+void runSC(
+  const std::string &cmd_name, const std::vector<std::string> &args,
+  Message *pmessage
+  ) {
 
-
-
-
-
-void runSC(const std::string &file_name, const std::vector<std::string> &args, Message *pmessage) {
-
-  // common func;
-  std::vector<std::string> vs;
-  vs = gmshSplitFileName(file_name);
-  std::string s_cmd;
-  s_cmd = "\"" + vs[1] + vs[2] + "\"";
+  std::string command = cmd_name;
+  // std::string command = "SwfitComp \"" + file_name + "\"";
   for (auto arg : args) {
-    s_cmd = s_cmd + " " + arg;
+    command = command + " \"" + arg + "\"";
   }
 
-  PLOG(info) << pmessage->message("running: SwfitComp " + s_cmd);
+  setPath(pmessage);
 
-#ifdef __linux__
-  s_cmd = "SwiftComp " + s_cmd;
-  std::string result;
-  result = exec(s_cmd.c_str());
-  std::cout << result << std::endl;
-#elif _WIN32
-  SHELLEXECUTEINFO ShExecInfo = {0};
-  ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-  ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NO_CONSOLE;
-  ShExecInfo.hwnd = NULL;
-  ShExecInfo.lpVerb = NULL;
-  ShExecInfo.lpFile = "swiftcomp";
-  ShExecInfo.lpParameters = s_cmd.c_str();
-  ShExecInfo.lpDirectory = vs[0].c_str();
-  ShExecInfo.nShow = SW_SHOW;
-  ShExecInfo.hInstApp = NULL;
-  ShellExecuteEx(&ShExecInfo);
-  WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-#endif
+  runCmd(command, pmessage);
+
+//   // common func;
+//   std::vector<std::string> vs;
+//   vs = gmshSplitFileName(file_name);
+//   std::string s_cmd;
+//   s_cmd = "\"" + vs[1] + vs[2] + "\"";
+//   for (auto arg : args) {
+//     s_cmd = s_cmd + " " + arg;
+//   }
+
+//   PLOG(info) << pmessage->message("running: SwfitComp " + s_cmd);
+
+// #ifdef __linux__
+//   s_cmd = "SwiftComp " + s_cmd;
+//   std::string result;
+//   result = exec(s_cmd.c_str());
+//   std::cout << result << std::endl;
+// #elif _WIN32
+//   SHELLEXECUTEINFO ShExecInfo = {0};
+//   ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+//   ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NO_CONSOLE;
+//   ShExecInfo.hwnd = NULL;
+//   ShExecInfo.lpVerb = NULL;
+//   ShExecInfo.lpFile = "swiftcomp";
+//   ShExecInfo.lpParameters = s_cmd.c_str();
+//   ShExecInfo.lpDirectory = vs[0].c_str();
+//   ShExecInfo.nShow = SW_SHOW;
+//   ShExecInfo.hInstApp = NULL;
+//   ShellExecuteEx(&ShExecInfo);
+//   WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+// #endif
 
   return;
 }
@@ -379,36 +448,40 @@ void runGmsh(const std::string &fn_geo, const std::string &fn_msh,
   // std::string fn_all = fn_msh + " " + fn_opt;
   std::string command = "gmsh " + fn_all;
 
-  PLOG(info) << pmessage->message("running: " + command);
+  // PLOG(info) << pmessage->message("running: " + command);
 
-  // Print the PATH environment variable
-  // const char* path = std::getenv("PATH");
-  char* path = nullptr;
-  size_t path_len;
-  if (_dupenv_s(&path, &path_len, "PATH") == 0 && path != nullptr) {
-    // std::cout << "Current PATH:" << std::endl;
-    // printPaths(path);
-    PLOG(debug) << pmessage->message(formatPaths(path));
-  } else {
-    // std::cerr << "Failed to get PATH environment variable." << std::endl;
-    PLOG(error) << pmessage->message("Failed to get PATH environment variable.");
-  }
+  setPath(pmessage);
 
-  // Ensure the PATH environment variable includes the directory containing gmsh.exe
-  _putenv_s("PATH", path);
+  // // Print the PATH environment variable
+  // // const char* path = std::getenv("PATH");
+  // char* path = nullptr;
+  // size_t path_len;
+  // if (_dupenv_s(&path, &path_len, "PATH") == 0 && path != nullptr) {
+  //   // std::cout << "Current PATH:" << std::endl;
+  //   // printPaths(path);
+  //   PLOG(debug) << pmessage->message(formatPaths(path));
+  // } else {
+  //   // std::cerr << "Failed to get PATH environment variable." << std::endl;
+  //   PLOG(error) << pmessage->message("Failed to get PATH environment variable.");
+  // }
 
-  // Debugging: Print PATH and attempt to run gmsh
-  int result = std::system(command.c_str());
-  // std::string debugCommand = "echo %PATH% && " + command;
-  // int result = std::system(debugCommand.c_str());
+  // // Ensure the PATH environment variable includes the directory containing gmsh.exe
+  // _putenv_s("PATH", path);
 
-  if (result != 0) {
-    std::cerr << "Failed to execute command: " << command << std::endl;
-    std::cerr << "Error code: " << result << std::endl;
-  } else {
-    // std::cout << "gmsh launched successfully." << std::endl;
-    PLOG(info) << pmessage->message("gmsh launched successfully.");
-  }
+  runCmd(command, pmessage);
+
+  // // Debugging: Print PATH and attempt to run gmsh
+  // int result = std::system(command.c_str());
+  // // std::string debugCommand = "echo %PATH% && " + command;
+  // // int result = std::system(debugCommand.c_str());
+
+  // if (result != 0) {
+  //   std::cerr << "Failed to execute command: " << command << std::endl;
+  //   std::cerr << "Error code: " << result << std::endl;
+  // } else {
+  //   // std::cout << "gmsh launched successfully." << std::endl;
+  //   PLOG(info) << pmessage->message("gmsh launched successfully.");
+  // }
 
 // #ifdef __linux__
 //   std::string s_cmd, result;
