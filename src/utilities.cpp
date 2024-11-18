@@ -1,5 +1,7 @@
 #include "utilities.hpp"
 
+#include "version.h"
+
 #include "PComponent.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
@@ -8,9 +10,12 @@
 #include "PBaseLine.hpp"
 #include "overloadOperator.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
-#include "gmsh/SVector3.h"
+// #include "gmsh/SPoint3.h"
+// #include "gmsh/STensor3.h"
+// #include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
+#include "gmsh_mod/SVector3.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -22,6 +27,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <limits>
+#include <stdexcept>
 
 using namespace rapidxml;
 
@@ -172,7 +180,8 @@ void Message::printTitle() {
   printBlank();
   printDivider(40, '=');
   printBlank();
-  print(0, ("  PreVABS " + version));
+  std::string _ver_string{VERSION_STRING};
+  print(0, ("  PreVABS " + _ver_string));
   printBlank();
   print(0, ("  (For VABS " + vabs_version + " and SwiftComp " + sc_version + ")"));
   printBlank();
@@ -212,37 +221,31 @@ void printError(int i_indent, std::string s_message) {
   return;
 }
 
-// void printMessage(int i_type, std::string s_message, std::ofstream &ofs, bool to_screen, int i_indent) {
-//   std::string s_prepend{""};
-//   s_prepend += std::string(i_indent, ' ');
 
-//   switch (i_type) {
-//     case 0:  // infomation
-//       s_prepend += "- ";
-//       break;
-//     case 1:  // error
-//       s_prepend += "X [error] ";
-//       break;
-//     case 2:  // debug
-//       s_prepend += "- [debug] ";
-//       break;
-//   }
 
-//   ofs << s_prepend << s_message;
-//   if (to_screen) {
-//     std::cout << s_prepend << s_message << std::endl;
-//   }
-//   return;
-// }
 
-// template <typename T, typename A>
-// void writeVectorToFile(std::ofstream &ofs, std::vector<T, A> v) {
-//   for (auto n : v) {
-//     ofs << n << " ";
-//   }
-//   ofs << "\n";
-//   return;
-// }
+
+
+
+
+
+int convertSizeTToInt(size_t value) {
+    // Check if the value is within the range of `int`
+    if (value > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        throw std::overflow_error("size_t value exceeds the maximum value of int");
+    }
+    
+    // Safe conversion since the value is within range
+    return static_cast<int>(value);
+}
+
+
+
+
+
+
+
+
 
 void writeVectorToFile(std::ofstream &ofs, std::vector<double> v) {
   for (auto n : v) {
@@ -282,6 +285,15 @@ void writeVectorToFile(FILE *file, std::vector<double> v, std::string fmt, bool 
 
 
 void printVector(const std::vector<double> &v) {
+  for (auto n : v) {
+    std::cout << n << " ";
+  }
+  std::cout << std::endl;
+  return;
+}
+
+
+void printVector(const std::vector<int> &v) {
   for (auto n : v) {
     std::cout << n << " ";
   }
@@ -533,32 +545,34 @@ std::vector<int> parseIntegersFromString(const std::string &s) {
 
 
 
-std::string lowerString(std::string str) {
-  std::locale loc;
-  for (std::string::size_type i = 0; i < str.length(); ++i)
-    str[i] = std::tolower(str[i], loc);
-  return str;
+// std::string lowerString(std::string str) {
+//   std::locale loc;
+//   for (std::string::size_type i = 0; i < str.length(); ++i)
+//     str[i] = std::tolower(str[i], loc);
+//   return str;
+// }
+std::string lowerString(const std::string& str) {
+    std::string lower_str = str;
+    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return lower_str;
 }
 
 
 
 
-
-
-
-
-
-std::string upperString(std::string str) {
-  std::locale loc;
-  for (std::string::size_type i = 0; i < str.length(); ++i)
-    str[i] = std::toupper(str[i], loc);
-  return str;
+// std::string upperString(std::string str) {
+//   std::locale loc;
+//   for (std::string::size_type i = 0; i < str.length(); ++i)
+//     str[i] = std::toupper(str[i], loc);
+//   return str;
+// }
+std::string upperString(const std::string& str) {
+    std::string upper_str = str;
+    std::transform(upper_str.begin(), upper_str.end(), upper_str.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
+    return upper_str;
 }
-
-
-
-
-
 
 
 
@@ -566,6 +580,19 @@ std::string upperString(std::string str) {
 std::string removeChar(std::string s, char c) {
   s.erase(std::remove(s.begin(), s.end(), c), s.end());
   return s;
+}
+
+
+
+
+// Function to trim leading and trailing spaces
+std::string trim(const std::string& str) {
+    size_t start = str.find_first_not_of(" \t\n\r");
+    if (start == std::string::npos) {
+        return "";  // The string is empty or only contains whitespace
+    }
+    size_t end = str.find_last_not_of(" \t\n\r");
+    return str.substr(start, end - start + 1);
 }
 
 

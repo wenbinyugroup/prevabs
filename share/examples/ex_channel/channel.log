@@ -1,0 +1,50 @@
+
+========================================2024-11-16 17:09:15 [info] - reading input files
+2024-11-16 17:09:15 [info]     - reading main input file:  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  ========================================
+  
+  
+  ========================================
+  
+ase\MaterialDB.xml
+2024-11-16 17:09:15 [info]   - reading input files -- done
+2024-11-16 17:09:15 [info]   - building the shape
+2024-11-16 17:09:15 [info]     - building the cross section, step 1
+2024-11-16 17:09:15 [info]       - building component: cmp_1
+2024-11-16 17:09:15 [info]     - building the cross section, step 2
+2024-11-16 17:09:15 [info]       - building component details: cmp_1
+2024-11-16 17:09:15 [info]     - fixing geometry
+2024-11-16 17:09:15 [info]   - building the shape -- done
+2024-11-16 17:09:15 [info]   - modeling in Gmsh
+2024-11-16 17:09:15 [info]     - creating gmsh vertices
+2024-11-16 17:09:15 [info]     - creating gmsh edges
+2024-11-16 17:09:15 [info]     - creating gmsh faces
+2024-11-16 17:09:15 [info]     - creating physical groups
+2024-11-16 17:09:15 [info]     - meshing
+2024-11-16 17:09:15 [info]   - modeling in Gmsh -- done
+2024-11-16 17:09:15 [info]   - writing outputs
+2024-11-16 17:09:15 [info]     - writing gmsh .opt file: .\share\examples\ex_channel\channel.opt
+2024-11-16 17:09:15 [info]     - writing gmsh .geo file: .\share\examples\ex_channel\channel.geo_unrolled
+2024-11-16 17:09:15 [info]     - writing gmsh .msh file: .\share\examples\ex_channel\channel.msh
+2024-11-16 17:09:15 [info]     - writing sg file: .\share\examples\ex_channel\channel.sg
+2024-11-16 17:09:15 [info]       - writing nodes
+2024-11-16 17:09:15 [info]       - writing elements
+2024-11-16 17:09:15 [info]         -   writing connectivity
+2024-11-16 17:09:15 [info]         -   writing local orientation
+2024-11-16 17:09:15 [info]     - writing material id-name file: .\share\examples\ex_channel\channel.sg.mat
+2024-11-16 17:09:15 [info]   - writing outputs -- done
+2024-11-16 17:09:15 [info]   - running Gmsh for visualization
+2024-11-16 17:09:15 [info]   - running: gmsh .\share\examples\ex_channel\channel.geo_unrolled .\share\examples\ex_channel\channel.msh .\share\examples\ex_channel\channel.opt
+2024-11-16 17:09:17 [info]   - gmsh launched successfully.
+2024-11-16 17:09:17 [info] prevabs finished
+2024-11-16 17:09:17 [info] total running time: 2.142 sec

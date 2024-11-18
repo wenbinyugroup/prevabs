@@ -83,6 +83,19 @@ PComponent *readXMLElementComponent(
   }
   dependents_all.push_back(tmp_dependents_one);
 
+  // Read extra material orientation setting
+  xml_node<> *p_xn_orient = xn_component->first_node("material_orientation");
+  if (p_xn_orient) {
+    xml_node<> *p_xn_moe1 = p_xn_orient->first_node("e1");
+    if (p_xn_moe1) {
+      p_component->setMatOrient1(p_xn_moe1->value());
+    }
+    xml_node<> *p_xn_moe2 = p_xn_orient->first_node("e2");
+    if (p_xn_moe2) {
+      p_component->setMatOrient2(p_xn_moe2->value());
+    }
+  }
+
 
 
 

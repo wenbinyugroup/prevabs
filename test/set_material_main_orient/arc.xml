@@ -1,0 +1,105 @@
+<cross_section name="arc" format="1">
+    <include></include>
+
+    <analysis>
+        <model>1</model>
+        <thermal>0</thermal>
+        <trapeze>0</trapeze>
+        <!-- <vlasov>0</vlasov> -->
+        <initial_twist>0</initial_twist>
+        <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+    </analysis>
+
+    <general>
+        <!-- <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate> -->
+        <mesh_size>0.02</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+
+    <baselines>
+        <point name="pt_center">0  0</point>
+        <point name="pt_top">0  2</point>
+        <point name="pt_left">-2  0</point>
+        <point name="pt_web_r">0.1  0.0</point>
+
+        <baseline name="bl_arc_tl" type="arc">
+            <!-- <center>pt_center</center> -->
+            <start>pt_top</start>
+            <end>pt_left</end>
+            <curvature>0.5</curvature>
+            <!-- <radius>2</radius> -->
+            <!-- <side>right</side> -->
+            <discrete by="angle">1</discrete>
+            <direction>ccw</direction>
+        </baseline>
+
+        <baseline name="bl_web" type="straight">
+            <point>pt_web_r</point>
+            <angle>90</angle>
+        </baseline>
+
+    </baselines>
+
+
+    <materials>
+        <material name="iso5_1" type="orthotropic">
+            <density>1.86E+03</density>
+            <elastic>
+                <e1>3.70E+10</e1>
+                <e2>9.00E+09</e2>
+                <e3>9.00E+09</e3>
+                <g12>4.00E+09</g12>
+                <g13>4.00E+09</g13>
+                <g23>4.00E+09</g23>
+                <nu12>0.28</nu12>
+                <nu13>0.28</nu13>
+                <nu23>0.28</nu23>
+            </elastic>
+        </material>
+        <lamina name="la_iso5_1_02">
+            <material>iso5_1</material>
+            <thickness>0.005</thickness>
+        </lamina>
+    </materials>
+
+    <layups>
+        <layup name="layup1" method="ss">
+            <lamina>la_iso5_1_02</lamina>
+            <code>[45:2/-45:2/0:2/90:2]s</code>
+        </layup>
+    </layups>
+
+
+    <component name="in">
+        <segment>
+            <baseline>bl_arc_tl</baseline>
+            <layup>layup1</layup>
+            <trim>
+                <location>head</location>
+                <direction>1 -1</direction>
+            </trim>
+        </segment>
+        <material_orientation>
+            <e1>baseline</e1>
+            <e2>layup</e2>
+        </material_orientation>
+    </component>
+    <!-- <component name="out">
+    <segment name="">
+      <baseline>blcircle</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+    <!-- <component name="web" depend="in">
+    <segment>
+      <baseline>bl_web</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component> -->
+</cross_section>

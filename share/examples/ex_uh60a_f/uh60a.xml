@@ -210,7 +210,8 @@
   <global measure="stress">
     <displacements>0 0 0</displacements>
     <rotations>1 0 0 0 1 0 0 0 1</rotations>
-    <loads>46777 250.762 414.939 -306.1 -1613.19 2727.67</loads>
+    <loads>46777 250.762 414.939 -306.1 -16130.19 2727.67</loads>
+    <!-- <loads>46777 250.762 414.939 -306.1 -1613.19 2727.67</loads> -->
   </global>
 
 

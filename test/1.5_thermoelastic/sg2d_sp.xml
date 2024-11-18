@@ -1,0 +1,67 @@
+<sg name="sg2d_sp" format="1">
+  <include>
+    <material>materials</material>
+  </include>
+
+  <analysis>
+    <model_dim>3</model_dim>
+    <physics>1</physics>
+  </analysis>
+
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.1</mesh_size>
+    <element_type>2</element_type>
+  </general>
+
+
+  <baselines>
+
+    <point name="o">0  0</point>
+
+    <point name="lb">-0.5 -0.5</point>
+    <point name="lt">-0.5  0.5</point>
+    <point name="rt">0.5  0.5</point>
+    <point name="rb">0.5 -0.5</point>
+
+    <line name="ln_sq" type="straight">
+      <points>rt,lt,lb,rb,rt</points>
+    </line>
+
+    <line name="ln_cc" type="circle">
+        <center>o</center>
+        <radius>0.1</radius>
+        <discrete by="angle">9</discrete>
+    </line>
+
+    <point name="p_m">0.3  0</point>
+
+  </baselines>
+
+
+
+  <!-- <layups></layups> -->
+
+
+  <component name="fiber" type="fill">
+    <baseline>ln_cc</baseline>
+    <location>o</location>
+    <material>fiber</material>
+  </component>
+
+  <component name="matrix" type="fill" depend="fiber">
+    <baseline>ln_sq</baseline>
+    <location>p_m</location>
+    <material>matrix</material>
+  </component>
+
+  <global measure="stress">
+    <case>
+      <loads>1 2 3 4 5 6</loads>
+    </case>
+  </global>
+
+
+</sg>

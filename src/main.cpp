@@ -3,21 +3,23 @@
 #include "execu.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
-// #include "internalClasses.hpp"
-// #include "postProcess.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/StringUtils.h"
+#include "gmsh_mod/StringUtils.h"
 
-// #include <cmath>
+#include "CLI11.hpp"
+
 #include <ctime>
 #include <iostream>
 #include <stdexcept>
+// #include <exception>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 
-// #include <boost/log/trivial.hpp>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -31,91 +33,110 @@ bool debug = false;
 bool scientific_format = false;
 PConfig config;
 
-// ===================================================================
-int main(int argc, char *argv[]) {
 
-  // Print short documentation
-  if (argc < 2) {
-    std::cout << std::endl;
-    std::cout << " Usage" << std::endl;
-    std::cout << std::string(20, '-') << std::endl;
-    std::cout << "         prevabs -i <file_path/file_name.xml> [options]\n";
-    std::cout << std::endl;
-    std::cout << " Analysis options" << std::endl;
-    std::cout << std::string(20, '-') << std::endl;
-    std::cout << " -h      Build cross section and generate VABS/SwiftComp input file for homogenization.\n";
-    std::cout << " -d      Read 1D beam analysis results and update VABS/SwiftComp input file for dehomogenization.\n";
-    std::cout << " -fi     Initial failure indices and strength ratios.\n";
-    std::cout << " -f      Initial failure strength analysis (SwiftComp only).\n";
-    std::cout << " -fe     Initial failure envelope (SwiftComp only).\n";
-    std::cout << std::endl;
-    std::cout << " Format and execution options" << std::endl;
-    std::cout << std::string(20, '-') << std::endl;
-    std::cout << " -vabs   Use VABS format (Default).\n";
-    std::cout << " -sc     Use SwiftComp format.\n";
-    std::cout << " -int    Use integrated solver.\n";
-    std::cout << " -e      Execute VABS/SwiftComp.\n";
-    std::cout << " -v      Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.\n";
-    std::cout << " -debug  Debug mode.\n";
-    std::cout << std::endl;
-    return 0;
-  }
+// class CommandLineException : public std::exception {
+// public:
+//   explicit CommandLineException(const std::string& message) : msg_(message) {}
+//   virtual const char* what() const noexcept override {
+//     return msg_.c_str();
+//   }
+// private:
+//   std::string msg_;
+// };
 
-  // Read arguments
+
+void addParserArguments(CLI::App &app) {
+
+  app.add_option("-i,--input", config.main_input, "Input file")->required();
+  app.add_flag("--vabs", config.analysis_tool, "Use VABS format")->default_val(1);
+  app.add_flag("--sc", config.analysis_tool, "Use SwiftComp format")->default_val(2);
+  app.add_option("--ver", config.tool_ver, "Tool version");
+  app.add_flag("--int", config.integrated_solver, "Use integrated solver")->default_val(false);
+  app.add_flag("-e,--execute", config.execute, "Execute VABS/SwiftComp")->default_val(false);
+  app.add_flag("-v,--visualize", config.plot, "Visualize meshed cross section or contour plots")->default_val(false);
+  app.add_flag("-d,--debug", config.debug, "Debug mode")->default_val(false);
+
+  app.add_flag("--hm,--homogenization", config.homo, "Homogenization")->default_val(false);
+  app.add_flag("--dh,--dehomogenization", config.dehomo, "Dehomogenization")->default_val(false);
+  app.add_flag("--fs,--failure-strength", config.fail_strength, "Failure strength")->default_val(false);
+  app.add_flag("--fe,--failure-envelope", config.fail_envelope, "Failure envelope")->default_val(false);
+  app.add_flag("--fi,--failure-index", config.fail_index, "Failure index")->default_val(false);
+
+  // Format help message
+  app.get_formatter()->column_width(50);
+
+}
+
+
+// Old CLI, will be deprecated
+void printCliHelp() {
+  std::cout << std::endl;
+  std::cout << " Usage" << std::endl;
+  std::cout << std::string(20, '-') << std::endl;
+  std::cout << "         prevabs -i <file_path/file_name.xml> [options]\n";
+  std::cout << std::endl;
+  std::cout << " Analysis options" << std::endl;
+  std::cout << std::string(20, '-') << std::endl;
+  std::cout << " -h      Build cross section and generate VABS/SwiftComp input file for homogenization.\n";
+  std::cout << " -d      Read 1D beam analysis results and update VABS/SwiftComp input file for dehomogenization.\n";
+  std::cout << " -fi     Initial failure indices and strength ratios.\n";
+  std::cout << " -f      Initial failure strength analysis (SwiftComp only).\n";
+  std::cout << " -fe     Initial failure envelope (SwiftComp only).\n";
+  std::cout << std::endl;
+  std::cout << " Format and execution options" << std::endl;
+  std::cout << std::string(20, '-') << std::endl;
+  std::cout << " -vabs   Use VABS format (Default).\n";
+  std::cout << " -sc     Use SwiftComp format.\n";
+  std::cout << " -int    Use integrated solver.\n";
+  std::cout << " -e      Execute VABS/SwiftComp.\n";
+  std::cout << " -v      Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.\n";
+  std::cout << " -debug  Debug mode.\n";
+  std::cout << std::endl;
+}
+
+
+// Old CLI, will be deprecated
+void parseArguments(int argc, char** argv) {
+
   for (int i = 1; i < argc; ++i) {
     if (std::string{argv[i]} == "-i")
       config.main_input = std::string{argv[i + 1]};
     
     if (std::string{argv[i]} == "-vabs") {
       config.analysis_tool = 1;
-      config.tool_name = "VABS";
     }
     if (std::string{argv[i]} == "-sc") {
       config.analysis_tool = 2;
-      config.tool_name = "SwiftComp";
     }
 
     if (std::string{argv[i]} == "-int") {
-      // config.analysis_tool = 3;
       config.integrated_solver = true;
       config.execute = true;
-      // config.tool_name = "IntegratedVABS";
     }
     
     if (std::string{argv[i]} == "-h") {
       config.homo = true;
       config.dehomo = false;
-      config.msg_analysis = "homogenization";
-      config.sc_option = "H";
     }
     if (std::string{argv[i]} == "-d") {
       config.homo = false;
       config.dehomo = true;
-      config.msg_analysis = "recover";
-      config.sc_option = "LG";
     }
 
     if (std::string{argv[i]} == "-f") {
       config.fail_envelope = false;
       config.fail_index = false;
       config.fail_strength = true;
-      config.msg_analysis = "failure strength";
-      config.sc_option = "F";
     }
     if (std::string{argv[i]} == "-fe") {
       config.fail_envelope = true;
       config.fail_index = false;
       config.fail_strength = false;
-      config.msg_analysis = "failure envelope";
-      config.sc_option = "FE";
     }
     if (std::string{argv[i]} == "-fi") {
       config.fail_envelope = false;
       config.fail_index = true;
       config.fail_strength = false;
-      config.msg_analysis = "failure index";
-      config.vabs_option = "3";
-      config.sc_option = "FI";
     }
 
     if (std::string{argv[i]} == "-v") {
@@ -126,60 +147,138 @@ int main(int argc, char *argv[]) {
     }
     if (std::string{argv[i]} == "-debug") {
       config.debug = true;
-      config.log_severity_level = 1;
     }
   }
 
+  // throw exception
   if (config.main_input.empty()) {
-    std::cout
-        << "Please provide input file: -i working_directory/file_name.xml\n";
-    return 0;
+    throw std::runtime_error("Please provide input file: -i working_directory/file_name.xml");
   }
 
   if (!(config.homo || config.dehomo || config.fail_strength || config.fail_envelope || config.fail_index)) {
-    std::cout << "Please indicate an analysis: -h or -d or -f or -fe or -fi\n";
-    return 0;
+    throw std::runtime_error("Please indicate an analysis: -h or -d or -f or -fe or -fi\n");
   }
 
   if ((config.analysis_tool == 1) && (config.fail_strength || config.fail_envelope)) {
-    std::cout << "Failure strength and failure envelope analyses can only be carried out by SwiftComp: -sc\n";
-    return 0;
+    throw std::runtime_error("Failure strength and failure envelope analyses can only be carried out by SwiftComp: -sc\n");
   }
 
-  std::vector<std::string> v_filename{SplitFileName(config.main_input)};
+}
+
+
+void processConfigVariables() {
+
+  if (config.analysis_tool == 1) {
+    config.tool_name = "VABS";
+  } else if (config.analysis_tool == 2) {
+    config.tool_name = "SwiftComp";
+  }
+
+  if (config.homo && !config.dehomo) {
+    config.msg_analysis = "homogenization";
+    config.sc_option = "H";
+  }
+
+  if (!config.homo && config.dehomo) {
+    config.msg_analysis = "recover";
+    config.sc_option = "LG";
+  }
+
+  if (config.fail_strength && !config.fail_index && !config.fail_envelope) {
+    config.msg_analysis = "failure strength";
+    config.sc_option = "F";
+  }
+
+  if (!config.fail_strength && config.fail_index && !config.fail_envelope) {
+    config.msg_analysis = "failure index";
+    config.vabs_option = "3";
+    config.sc_option = "FI";
+  }
+
+  if (!config.fail_strength && !config.fail_index && config.fail_envelope) {
+    config.msg_analysis = "failure envelope";
+    config.sc_option = "FE";
+  }
+
+  if (config.debug) {
+    config.log_severity_level = 1;
+  }
+
+  std::vector<std::string> v_filename{gmshSplitFileName(config.main_input)};
   config.file_directory = v_filename[0]; // ****/****/
   config.file_base_name = v_filename[1]; // ****
   config.file_extension = v_filename[2]; // .****
   config.file_name_deb = v_filename[0] + v_filename[1] + ".debug";
 
-  config.file_name_geo = config.file_directory + config.file_base_name + ".geo";
+  config.file_name_geo = config.file_directory + config.file_base_name + ".geo_unrolled";
   config.file_name_msh = config.file_directory + config.file_base_name + ".msh";
   config.file_name_opt = config.file_directory + config.file_base_name + ".opt";
   config.file_name_vsc = config.file_directory + config.file_base_name + ".sg";
   config.file_name_log = config.file_directory + config.file_base_name + ".log";
 
+}
 
 
 
 
+std::string getCurrentDateTimeString() {
+  // Get the current time
+  auto now = std::chrono::system_clock::now();
+  // Convert to time_t to get calendar time
+  std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+  // Convert to tm structure
+  std::tm* now_tm = std::localtime(&now_time);
+
+  // Create a string stream to format the date and time
+  std::stringstream ss;
+  ss << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");
+
+  return ss.str();
+}
+
+
+
+
+
+
+// ===================================================================
+int main(int argc, char** argv) {
+
+  // CLI::App app{"PreVABS, a parametric pre-/post-processor for 2D cross-sections for VABS/SwiftComp"};
+  // addParserArguments(app);
+
+  try {
+    // app.parse(argc, argv);
+
+    // Old CLI, will be deprecated
+    if (argc < 2) {
+      printCliHelp();
+      return 0;
+    }
+
+    parseArguments(argc, argv);
+
+    processConfigVariables();
+  }
+
+  // catch (const CLI::ParseError &e) {
+  //   // Handle CLI parsing errors
+  //   return app.exit(e);
+  // }
+
+  catch (const std::exception &e) {
+    // Handle other exceptions
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
 
 
 
 
   // -----------------------------------------------------------------
 
-  PLOG(info) << "prevabs start";
-
-  // PLOG(trace) << "A trace level message";
-  // PLOG(debug) << "A debug level message";
-  // PLOG(info) << "An info level message";
-  // PLOG(warning) << "A warning level message";
-  // PLOG(error) << "An error level message";
-  // PLOG(fatal) << "A fatel level message";
-
-  // std::cout << config.log_severity_level << std::endl;
-
-  Message *pmessage = new Message(v_filename[0] + v_filename[1] + ".txt");
+  // Message *pmessage = new Message(v_filename[0] + v_filename[1] + ".txt");
+  Message *pmessage = new Message(config.file_name_log);
   pmessage->openFile();
 
   int start_s = clock();
@@ -189,6 +288,11 @@ int main(int argc, char *argv[]) {
   PModel *pmodel = new PModel(config.file_base_name);
   pmodel->initialize();
 
+
+  // Log current date and time
+  std::string s_dt_start = getCurrentDateTimeString();
+
+  PLOG(info) << pmessage->message("prevabs start (" + s_dt_start + ")");
 
 
 
@@ -201,78 +305,6 @@ int main(int argc, char *argv[]) {
   if (config.homo) {
 
     pmodel->homogenize(pmessage);
-
-    // try {
-    //   // ================
-    //   // READ INPUT FILES
-    //   // ================
-
-    //   pmessage->printBlank();
-    //   PLOG(info) << pmessage->message("reading input files");
-
-    //   readInputMain(config.main_input, config.file_directory, pmodel, pmessage);
-    //   // pmodel->summary(pmessage);
-
-    //   PLOG(info) << pmessage->message("reading input files -- done");
-    //   pmessage->printBlank();
-
-
-
-
-
-    //   // ==============
-    //   // BUILD GEOMETRY
-    //   // ==============
-
-    //   pmessage->printBlank();
-    //   PLOG(info) << pmessage->message("building the shape");
-
-    //   pmodel->build(pmessage);
-
-    //   PLOG(info) << pmessage->message("building the shape -- done");
-    //   pmessage->printBlank();
-
-
-
-
-
-    //   // ================
-    //   // MODELING IN GMSH
-    //   // ================
-
-    //   pmessage->printBlank();
-    //   PLOG(info) << pmessage->message("modeling in Gmsh");
-
-    //   pmodel->buildGmsh(pmessage);
-
-    //   PLOG(info) << pmessage->message("modeling in Gmsh -- done");
-    //   pmessage->printBlank();
-
-
-
-
-
-    //   // ===================
-    //   // WRITE SG INPUT FILE
-    //   // ===================
-    //   // if (config.analysis_tool != 3) {
-    //   if (!config.integrated_solver) {
-    //     pmessage->printBlank();
-    //     PLOG(info) << pmessage->message("writing outputs");
-
-    //     if (config.plot) {
-    //       pmodel->writeGmsh(config.file_directory + config.file_base_name, pmessage);
-    //     }
-    //     pmodel->writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
-
-    //     PLOG(info) << pmessage->message("writing outputs -- done");
-    //     pmessage->printBlank();
-    //   }
-    // }
-    // catch (std::exception &exception) {
-    //   pmessage->print(2, exception.what());
-    //   return 0;
-    // }
 
   }
 
@@ -294,62 +326,6 @@ int main(int argc, char *argv[]) {
 
 
 
-  // else if (config.dehomo) {
-  //   try {
-  //     pmessage->printBlank();
-  //     // pmessage->print(1, "reading and writing inputs for dehomogenization");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for dehomogenization");
-
-  //     if (config.analysis_tool == 1) {
-  //       pmodel->recoverVABS();
-  //     }
-  //     else if (config.analysis_tool == 2) {
-  //       pmodel->dehomoSC();
-  //     }
-
-  //     // pmessage->print(1, "reading and writing inputs for dehomogenization -- done");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for dehomogenization -- done");
-  //     pmessage->printBlank();
-  //   }
-  //   catch (std::exception &exception) {
-  //     pmessage->print(2, exception.what());
-  //     return 0;
-  //   }
-  // }
-
-
-
-
-  // else if (config.fail_strength || config.fail_index || config.fail_envelope) {
-  //   try{
-  //     pmessage->printBlank();
-  //     // pmessage->print(1, "reading and writing inputs for failure analysis");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for failure analysis");
-
-  //     readInputMain(config.main_input, config.file_directory, pmodel, pmessage);
-  //     if (config.analysis_tool == 1) {
-  //       pmodel->failureVABS();
-  //     }
-  //     else if (config.analysis_tool == 2) {
-  //       pmodel->failureSC();
-  //     }
-
-  //     // pmessage->print(1, "reading and writing inputs for failure analysis -- done");
-  //     PLOG(info) << pmessage->message("reading and writing inputs for failure analysis -- done");
-  //     pmessage->printBlank();
-
-  //   }
-  //   catch (std::exception &exception) {
-  //     pmessage->print(2, exception.what());
-  //     return 0;
-  //   }
-  // }
-
-
-
-
-
-
 
 
 
@@ -363,70 +339,21 @@ int main(int argc, char *argv[]) {
 
     pmodel->run(pmessage);
 
-    // pmessage->printBlank();
-    // // pmessage->print(1, "running " + config.tool_name + " for " + config.msg_analysis);
-    // PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis);
-    // pmessage->printBlank();
-    // pmessage->print(1, " [" + config.tool_name + " Messages] ");
-    // pmessage->printBlank();
-
-    // if (config.analysis_tool == 1) {
-    //   if (config.integrated_solver) {
-    //     runIntegratedVABS(config.file_name_vsc, pmodel);
-    //   }
-    //   else {
-    //     if (config.dehomo) {
-    //       config.vabs_option = "2";
-    //       if (config.dehomo_nl) {
-    //         config.vabs_option = "1";
-    //       }
-    //     }
-    //     runVABS(config.file_name_vsc, config.vabs_option);
-    //   }
-    // }
-    // else if (config.analysis_tool == 2) {
-    //   runSC(config.file_name_vsc, config.sc_option);
-    // }
-    // // else if (config.analysis_tool == 3) {
-    // //   runIntegratedVABS(config.file_name_vsc, pmodel);
-    // // }
-
-    // pmessage->printBlank();
-    // pmessage->print(1, " [" + config.tool_name + " Messages End] ");
-    // pmessage->printBlank();
-    // // pmessage->print(1, "running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-    // PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-    // pmessage->printBlank();
   }
 
 
 
 
   if (config.plot) {
+
     pmodel->plot(pmessage);
-    // if (config.dehomo) {
-    //   pmessage->printBlank();
-    //   // pmessage->print(1, "post-processing recover results");
-    //   PLOG(info) << pmessage->message("post-processing recover results");
-    //   if (config.analysis_tool == 1) {
-    //     pmodel->postVABS(pmessage);
-    //   }
-    //   else if (config.analysis_tool == 2) {
-    //     pmodel->postSCDehomo();
-    //   }
-    //   // pmessage->print(1, "post-processing recover results -- done");
-    //   PLOG(info) << pmessage->message("post-processing recover results -- done");
-    //   pmessage->printBlank();
-    // }
-    // pmessage->printBlank();
-    // // pmessage->print(1, "running Gmsh for visualization");
-    // PLOG(info) << pmessage->message("running Gmsh for visualization");
-    // runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt);
+
   }
 
   pmodel->finalize();
 
 
+  std::string s_dt_finish = getCurrentDateTimeString();
 
   int stop_s = clock();
   double tt = (stop_s - start_s) / double(CLOCKS_PER_SEC);
@@ -436,7 +363,7 @@ int main(int argc, char *argv[]) {
   pmessage->printDivider(40, '=');
   pmessage->printBlank();
   // pmessage->print(0, "  FINISHED");
-  PLOG(info) << "prevabs finished";
+  PLOG(info) << pmessage->message("prevabs finished (" + s_dt_finish + ")");
   // pmessage->print(0, ss);
   PLOG(info) << ss.str();
   pmessage->printBlank();

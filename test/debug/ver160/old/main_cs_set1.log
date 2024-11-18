@@ -1,0 +1,34 @@
+2024-10-24 11:10:02 [info] prevabs start
+2024-10-24 11:10:02 [info] - reading input files
+2024-10-24 11:10:02 [info]     - reading main input file: .\test\debug\ver160\old\main_cs_set1.xml
+2024-10-24 11:10:02 [info]       - reading airfoil data file: .\test\debug\ver160\old\sc1095.dat
+2024-10-24 11:10:02 [info]       - reading materials file: C:\Users\tian50\program\MaterialDB.xml
+2024-10-24 11:10:02 [info]       - reading materials file: .\test\debug\ver160\old\material_database_si.xml
+2024-10-24 11:10:02 [info] - reading input files -- done
+2024-10-24 11:10:02 [info] - building the shape
+2024-10-24 11:10:02 [info]   - building the cross section, step 1
+2024-10-24 11:10:02 [info]     - building component: spar
+2024-10-24 11:10:02 [info]     - building component: le
+2024-10-24 11:10:02 [info]     - building component: te
+2024-10-24 11:10:02 [info]   - building the cross section, step 2
+2024-10-24 11:10:02 [info]     - building component details: spar
+2024-10-24 11:10:02 [info]     - building component details: le
+2024-10-24 11:10:02 [info]     - building component details: te
+2024-10-24 11:10:02 [info]   - fixing geometry
+2024-10-24 11:10:02 [info] - building the shape -- done
+2024-10-24 11:10:02 [info] - modeling in Gmsh
+2024-10-24 11:10:02 [info]   - creating gmsh vertices
+2024-10-24 11:10:02 [info]   - creating gmsh edges
+2024-10-24 11:10:02 [info]   - creating gmsh face
+2024-10-24 11:10:02 [info]   - meshing
+2024-10-24 11:10:02 [info] - modeling in Gmsh -- done
+2024-10-24 11:10:02 [info] - writing outputs
+2024-10-24 11:10:02 [info]   - writing gmsh .opt file: .\test\debug\ver160\old\main_cs_set1.opt
+2024-10-24 11:10:02 [info]   - writing gmsh .geo file: .\test\debug\ver160\old\main_cs_set1.geo
+2024-10-24 11:10:03 [info]   - writing gmsh .msh file: .\test\debug\ver160\old\main_cs_set1.msh
+2024-10-24 11:10:03 [info]   - writing sg file: .\test\debug\ver160\old\main_cs_set1.sg
+2024-10-24 11:10:03 [info] - writing outputs -- done
+2024-10-24 11:10:03 [info] - running Gmsh for visualization
+2024-10-24 11:10:03 [info] - running: gmsh .\test\debug\ver160\old\main_cs_set1.geo .\test\debug\ver160\old\main_cs_set1.msh .\test\debug\ver160\old\main_cs_set1.opt
+2024-10-24 11:10:03 [info] prevabs finished
+2024-10-24 11:10:03 [info] total running time: 0.198 sec

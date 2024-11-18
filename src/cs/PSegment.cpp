@@ -13,8 +13,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <cstdio>
@@ -96,7 +96,7 @@ void Segment::print() {
 
 
 void Segment::printBaseOffsetLink() {
-  int n = _curve_base->vertices().size();
+  std::size_t n = _curve_base->vertices().size();
   std::cout << "\nsegment " << _name << std::endl;
   std::cout << "base vertices: " << _curve_base->vertices().size() << std::endl;
   std::cout << "offset vertices: " << _curve_offset->vertices().size() << std::endl;
@@ -109,6 +109,35 @@ void Segment::printBaseOffsetLink() {
     }
     std::cout << std::endl;
   }
+}
+
+
+
+
+
+
+
+
+
+void Segment::printBaseOffsetPairs(Message *pmessage) {
+
+  PLOG(debug) << pmessage->message("base vertices -- base_link_to_offset_indices");
+
+  // std::cout << _base_offset_indices_pairs.size() << std::endl;
+  PLOG(debug) << pmessage->message("number of pairs: " + std::to_string(_base_offset_indices_pairs.size()));
+
+  for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
+    // std::cout << "        " << i << ": " << base[i]
+    // << " -- " << link_to_2[i] << std::endl;
+    std::string s = std::to_string(_base_offset_indices_pairs[i][0]) + ": "
+      + _curve_base->vertices()[_base_offset_indices_pairs[i][0]]->printString()
+      + " -- " + std::to_string(_base_offset_indices_pairs[i][1]) + ": "
+      + _curve_offset->vertices()[_base_offset_indices_pairs[i][1]]->printString();
+
+    // std::cout << s << std::endl;
+    PLOG(debug) << pmessage->message(s);
+  }
+
 }
 
 
@@ -177,7 +206,7 @@ SVector3 Segment::getBeginTangent() {
 
 
 SVector3 Segment::getEndTangent() {
-  int n = _curve_base->vertices().size();
+  std::size_t n = _curve_base->vertices().size();
   return SVector3(_curve_base->vertices()[n - 2]->point(),
                   _curve_base->vertices()[n - 1]->point());
 }
@@ -335,19 +364,24 @@ void Segment::build(Message *pmessage) {
 
   PDCELHalfEdge *he;
 
-  // std::cout << "[debug] creating half edges for the base curve" << std::endl;
-  // if (config.debug) {
-  //   pmessage->print(9, "creating half edges for the base curve");
-  // }
   PLOG(debug) << pmessage->message("creating half edges for the base curve");
-  // pmessage->print(9, "creating half edges for the base curve");
-  for (int i = 0; i < _curve_base->vertices().size() - 1; ++i) {
+
+  // Log the number of vertices of the base curve
+  PLOG(debug) << pmessage->message("number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size()));
+
+  for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
+
+    // Debug log the two vertices i and i+1
+    PLOG(debug) << pmessage->message("vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1));
+
     he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
                                        _curve_base->vertices()[i + 1]);
+
     if (he == nullptr) {
       _pmodel->dcel()->addEdge(_curve_base->vertices()[i],
                                _curve_base->vertices()[i + 1]);
     }
+
   }
   // _pmodel->dcel()->print_dcel();
 

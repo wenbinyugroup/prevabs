@@ -1,0 +1,188 @@
+<sg name="sg2d_hp" format="1">
+  <include>
+    <material>materials</material>
+  </include>
+
+  <analysis>
+    <model_dim>3</model_dim>
+  </analysis>
+
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.05</mesh_size>
+    <element_type>2</element_type>
+    <omega>1.732</omega>
+  </general>
+
+
+  <baselines>
+
+    <point name="o">0  0</point>
+
+    <point name="lb">-0.5 -0.866</point>
+    <point name="lt">-0.5  0.866</point>
+    <point name="rt">0.5  0.866</point>
+    <point name="rb">0.5 -0.866</point>
+
+    <point name="p_e_tr">0.2 0.866</point>
+    <point name="p_e_tl">-0.2 0.866</point>
+    <point name="p_e_lt">-0.5 0.566</point>
+    <point name="p_e_lb">-0.5 -0.566</point>
+    <point name="p_e_br">0.2 -0.866</point>
+    <point name="p_e_bl">-0.2 -0.866</point>
+    <point name="p_e_rt">0.5 0.566</point>
+    <point name="p_e_rb">0.5 -0.566</point>
+
+
+    <line name="ln_tr">
+        <points>rt,p_e_tr</points>
+    </line>
+    <line name="ln_tm">
+        <points>p_e_tr,p_e_tl</points>
+    </line>
+    <line name="ln_tl">
+        <points>p_e_tl,lt</points>
+    </line>
+    <line name="ln_lt">
+        <points>lt,p_e_lt</points>
+    </line>
+    <line name="ln_lm">
+        <points>p_e_lt,p_e_lb</points>
+    </line>
+    <line name="ln_lb">
+        <points>p_e_lb,lb</points>
+    </line>
+    <line name="ln_bl">
+        <points>lb,p_e_bl</points>
+    </line>
+    <line name="ln_bm">
+        <points>p_e_bl,p_e_br</points>
+    </line>
+    <line name="ln_br">
+        <points>p_e_br,rb</points>
+    </line>
+    <line name="ln_rb">
+        <points>rb,p_e_rb</points>
+    </line>
+    <line name="ln_rm">
+        <points>p_e_rb,p_e_rt</points>
+    </line>
+    <line name="ln_rt">
+        <points>p_e_rt,rt</points>
+    </line>
+
+    <line name="ln_cc" type="circle">
+        <center>o</center>
+        <radius>0.3</radius>
+        <discrete by="angle">9</discrete>
+    </line>
+
+    <line name="ln_arc_rt" type="arc">
+        <center>rt</center>
+        <start>p_e_tr</start>
+        <end>p_e_rt</end>
+        <direction>ccw</direction>
+    </line>
+    <line name="ln_arc_lt" type="arc">
+        <center>lt</center>
+        <start>p_e_lt</start>
+        <end>p_e_tl</end>
+        <direction>ccw</direction>
+    </line>
+    <line name="ln_arc_lb" type="arc">
+        <center>lb</center>
+        <start>p_e_bl</start>
+        <end>p_e_lb</end>
+        <direction>ccw</direction>
+    </line>
+    <line name="ln_arc_rb" type="arc">
+        <center>rb</center>
+        <start>p_e_rb</start>
+        <end>p_e_br</end>
+        <direction>ccw</direction>
+    </line>
+
+    <line name="ln_inc_rt" method="join">
+        <line>ln_rt</line>
+        <line>ln_tr</line>
+        <!-- <line>ln_arc_rt</line> -->
+    </line>
+    <line name="ln_inc_lt" method="join">
+        <line>ln_tl</line>
+        <line>ln_lt</line>
+    </line>
+    <line name="ln_inc_lb" method="join">
+        <line>ln_lb</line>
+        <line>ln_bl</line>
+    </line>
+    <line name="ln_inc_rb" method="join">
+        <line>ln_br</line>
+        <line>ln_rb</line>
+    </line>
+
+
+    <!-- <line name="ln_mat" type="straight">
+      <points>rt,lt,lb,rb,rt</points>
+    </line> -->
+
+    <line name="ln_mat" method="join">
+        <line>ln_tm</line>
+        <line>ln_arc_lt</line>
+        <line>ln_lm</line>
+        <line>ln_arc_lb</line>
+        <line>ln_bm</line>
+        <line>ln_arc_rb</line>
+        <line>ln_rm</line>
+        <line>ln_arc_rt</line>
+    </line>
+
+    <point name="p_m">0.49  0</point>
+    <point name="p_f_rt">0.49  0.856</point>
+    <point name="p_f_lt">-0.49  0.856</point>
+    <point name="p_f_lb">-0.49  -0.856</point>
+    <point name="p_f_rb">0.49  -0.856</point>
+
+  </baselines>
+
+
+
+  <!-- <layups></layups> -->
+
+
+  <component name="fiber" type="fill">
+    <baseline>ln_cc</baseline>
+    <location>o</location>
+    <material>fiber</material>
+  </component>
+
+  <component name="matrix" type="fill" depend="fiber">
+    <baseline>ln_mat</baseline>
+    <location>p_m</location>
+    <material>matrix</material>
+  </component>
+
+  <component name="fiber_rt" type="fill" depend="matrix">
+    <baseline>ln_inc_rt</baseline>
+    <location>p_f_rt</location>
+    <material>fiber</material>
+  </component>
+  <component name="fiber_lt" type="fill" depend="matrix">
+    <baseline>ln_inc_lt</baseline>
+    <location>p_f_lt</location>
+    <material>fiber</material>
+  </component>
+  <component name="fiber_lb" type="fill" depend="matrix">
+    <baseline>ln_inc_lb</baseline>
+    <location>p_f_lb</location>
+    <material>fiber</material>
+  </component>
+  <component name="fiber_rb" type="fill" depend="matrix">
+    <baseline>ln_inc_rb</baseline>
+    <location>p_f_rb</location>
+    <material>fiber</material>
+  </component>
+
+
+</sg>

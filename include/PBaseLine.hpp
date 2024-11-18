@@ -6,7 +6,7 @@
 #include "Material.hpp"
 #include "PDCELVertex.hpp"
 #include "utilities.hpp"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <list>
 #include <string>
@@ -53,7 +53,7 @@ public:
   /**
    * Print out a summary.
    */
-  void print(Message *, int, int = 0);
+  void print(Message *);
   // void printBaseline(); // Print details
 
 

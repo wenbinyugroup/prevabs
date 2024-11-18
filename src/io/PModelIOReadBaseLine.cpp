@@ -10,9 +10,9 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #ifdef __linux__
 #include <libgen.h>
@@ -112,7 +113,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
       //   p_line = readXMLElementLine(p_xn_prim, nodeBaselines, pmodel, pmessage);
       //   pmodel->addBaseline(p_line);
       // }
-      p_line->print(pmessage, 9);
+      p_line->print(pmessage);
     }
 
   }
@@ -766,6 +767,13 @@ int readLineTypeAirfoil(
     if (_ss[0] != '\0') {flip = atoi(_ss.c_str());}
   }
 
+  int reverse{0};
+  xml_node<> *p_xn_reverse{p_xn_line->first_node("reverse")};
+  if (p_xn_reverse) {
+    std::string _ss{p_xn_reverse->value()};
+    if (_ss[0] != '\0') {reverse = atoi(_ss.c_str());}
+  }
+
 
   // Baseline *line_up = new Baseline(line->getName()+"_up", "straight");
   // Baseline *line_low = new Baseline(line->getName()+"_low", "straight");
@@ -780,18 +788,19 @@ int readLineTypeAirfoil(
     std::string s_fn{p_xn_pts->value()};
     s_fn = config.file_directory + s_fn;
     std::ifstream _ifs{s_fn};
+
     if (!_ifs.is_open()) {
       PLOG(error) << pmessage->message("unable to open file: " + s_fn);
-      return 1;
+      return 0;
     }
-    else {
-      PLOG(info) << pmessage->message("reading airfoil data file: " + s_fn);
-    }
+
+    PLOG(info) << pmessage->message("reading airfoil data file: " + s_fn);
+
 
     // Read data
     std::string data_line;
     int counter{0};
-    // int which{1}; // 1: upper, -1: lower
+
     std::string _pv_tmp_name{"_tmp"};
 
     // Selig format
@@ -804,82 +813,56 @@ int readLineTypeAirfoil(
         std::string ss{p_xa_direction->value()};
         if (ss[0] != '\0') {direction = atoi(ss.c_str());}
       }
-      // if (direction == -1) {which = -1;}  // Start from the lower surface
 
-      // Add the point (1, 0), i.e., trailing edge
-      // if (direction == 1) {
-      //   line_up->addPVertex(pv_te);
-      // }
-      // else if (direction == -1) {
-      //   line_low->addPVertex(pv_te);
-      // }
       line->addPVertex(pv_te);
 
       // Add points in the file
       while (getline(_ifs, data_line)) {
+
+        std::string trimmed_line = trim(data_line);
+
+        // Skip empty lines
+        if (trimmed_line.empty()) {continue;}
+
         counter++;
-        // std::cout << "line " << counter << ": " << data_line << std::endl;
+        PLOG(debug) << pmessage->message(
+          "reading line " + std::to_string(counter) + ": " + trimmed_line);
+
+        // Skip header rows
         if (counter <= head_rows) {continue;}
 
-        if (data_line.length() == 0) {continue;}
-
         PDCELVertex *_pv_tmp;
-        std::stringstream _ss(data_line);
+        std::stringstream _ss(trimmed_line);
         double x, y;
         _ss >> x >> y;
+        PLOG(debug) << pmessage->message(
+          "x: " + std::to_string(x) + ", y: " + std::to_string(y));
 
-        // std::cout << "(" << x << ", " << y << ")\n";
-
+        // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {
+          PLOG(debug) << pmessage->message("skipping trailing edge");
           continue;
         }
 
         // Add the point (0, 0), i.e., leading edge
         if (fabs(x) <= tol && fabs(y) <= tol) {
-          // which = -1 * which;
-          // line_up->addPVertex(pv_le);
-          // line_low->addPVertex(pv_le);
+          PLOG(debug) << pmessage->message("skipping and adding leading edge");
           line->addPVertex(pv_le);
           continue;
         }
 
+        PLOG(debug) << pmessage->message("creating and adding point");
         _pv_tmp = new PDCELVertex(_pv_tmp_name, 0, x, y);
         pmodel->addVertex(_pv_tmp);
-
-        // if (which == 1) {
-        //   // Add points to the upper surface line
-        //   line_up->addPVertex(_pv_tmp);
-        // }
-        // else if (which == -1) {
-        //   // Add points to the lower surface line
-        //   line_low->addPVertex(_pv_tmp);
-        // }
         line->addPVertex(_pv_tmp);
+
       }
 
       // Add the point (1, 0), i.e., trailing edge
-      // if (direction == 1) {
-      //   line_low->addPVertex(pv_te);
-      // }
-      // else if (direction == -1) {
-      //   line_up->addPVertex(pv_te);
-      // }
       line->addPVertex(pv_te);  // Closed airfoil
 
-      // Rename key points
-      // if (direction == 1) {
-      //   line_up->vertices()[1]->setName("pteup");
-      //   line_up->vertices()[line_up->vertices().size()-2]->setName("pleup");
-      //   line_low->vertices()[1]->setName("plelow");
-      //   line_low->vertices()[line_low->vertices().size()-2]->setName("ptelow");
-      // }
-      // else if (direction == -1) {
-      //   line_up->vertices()[1]->setName("pleup");
-      //   line_up->vertices()[line_up->vertices().size()-2]->setName("pteup");
-      //   line_low->vertices()[1]->setName("ptelow");
-      //   line_low->vertices()[line_low->vertices().size()-2]->setName("plelow");
-      // }
     }
+
     // Lednicer format
     // LE -> upper surface -> TE
     // LE -> lower surface -> TE
@@ -896,7 +879,8 @@ int readLineTypeAirfoil(
     double loc{0.5};
     double _x, _y, _z;
 
-    unsigned int _l{line->vertices().size()};
+    // unsigned int _l{line->vertices().size()};
+    std::size_t _l{line->vertices().size()};
     if (line->isClosed()) {_l = _l - 1;}
 
     for (int i = 0; i < _l; i++) {
@@ -911,6 +895,10 @@ int readLineTypeAirfoil(
       }
       line->vertices()[i]->setPosition(_x, _y, _z);
     }
+  }
+
+  if (reverse) {
+    std::reverse(line->vertices().begin(), line->vertices().end());
   }
 
   // line_up->print(pmessage, 9);
@@ -947,7 +935,7 @@ int readLineByJoin(
 
     std::string subline_name = p_xn_subline->value();
     Baseline *subline = findLineByName(subline_name, p_xn_geo, pmodel, pmessage);
-    subline->print(pmessage, 1);
+    subline->print(pmessage);
     sublines.push_back(subline);
 
   }

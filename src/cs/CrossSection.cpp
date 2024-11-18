@@ -13,8 +13,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
 
 #include <cmath>
 #include <iomanip>
@@ -293,7 +293,7 @@ void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
 
 void CrossSection::build(Message *pmessage) {
-  i_indent++;
+  // i_indent++;
   pmessage->increaseIndent();
 
   // Build the overall shape of the cross section
@@ -351,7 +351,7 @@ void CrossSection::build(Message *pmessage) {
 
 
   // _pmodel->dcel()->print_dcel();
-  i_indent--;
+  // i_indent--;
   pmessage->decreaseIndent();
 
 }

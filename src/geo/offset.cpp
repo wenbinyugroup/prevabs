@@ -11,10 +11,10 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint2.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint2.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -109,7 +109,7 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
         // Calculate intersection
         double u1, u2;
         bool not_parallel;
-        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2);
+        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2, TOLERANCE);
         if (not_parallel) {
           curve_off->addPVertex(ls->getParametricVertex(u1));
         } else {
@@ -127,8 +127,8 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
     if (curve->vertices().front() == curve->vertices().back()) {
       double u1, u2;
       bool not_parallel;
-      PDCELVertex *v;
-      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2);
+      // PDCELVertex *v;
+      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2, TOLERANCE);
       if (not_parallel) {
         curve_off->vertices()[0] = ls_first_off->getParametricVertex(u1);
       }
@@ -193,7 +193,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<std::vector<int>> &id_pairs, Message *pmessage) {
   // std::cout << "\n[debug] offset" << std::endl;
 
-  int size = base.size();
+  std::size_t size = base.size();
   // std::cout << "        base.size() = " << size << std::endl;
   PDCELVertex *v_tmp, *v1_tmp, *v2_tmp, *v1_prev, *v2_prev;
   // PGeoLineSegment *ls, *ls_prev, *ls_first;
@@ -261,7 +261,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       // v2_prev << std::endl; std::cout << "        v1_tmp = " << v1_tmp << ",
       // v2_tmp = " << v2_tmp << std::endl;
       not_parallel =
-          calcLineIntersection2D(v1_prev, v2_prev, v1_tmp, v2_tmp, u1, u2);
+          calcLineIntersection2D(v1_prev, v2_prev, v1_tmp, v2_tmp, u1, u2, TOLERANCE);
       // std::cout << "        not_parallel = " << not_parallel << ", u1 = " <<
       // u1 << ", u2 = " << u2 << std::endl;
       if (not_parallel) {
@@ -384,14 +384,14 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // Here use a brute force method
   // Since the intersection should be found in a local region
   // (tail part of the previous one and head part of the next one)
-  int size_i, size_i1;
+  std::size_t size_i, size_i1;
   std::vector<PDCELVertex *> sline_i, sline_i1;
-  PDCELVertex *v11, *v12, *v21, *v22, *v0 = nullptr, *v0_prev = lines_group[0][0];
+  PDCELVertex *v0 = nullptr, *v0_prev = lines_group[0][0];
   bool found;
   std::vector<int> link_i, link_i1;
   // int link11, link12, link21, link22;
   int i = 0, j = 0, i_prev = 0;
-  int trim_index_begin_this = 0, trim_index_begin_next, trim_index_end_this;
+  int trim_index_begin_this = 0, trim_index_begin_next;
   std::vector<std::vector<PDCELVertex *> > trimmed_sublines;
   std::vector<std::vector<int> > trimmed_link_to_base_indices;
 
@@ -456,7 +456,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       trim(lines_group[line_i + 1], v0, 0);
 
       // Adjust linking indices
-      int n = link_tos_group[line_i].size();
+      std::size_t n = link_tos_group[line_i].size();
       for (auto kk = ls_i1 + 1; kk < n; kk++) {
         link_tos_group[line_i].pop_back();
       }
@@ -581,7 +581,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     }
 
     // Adjust linking indices
-    int n = link_tos_group.back().size();
+    std::size_t n = link_tos_group.back().size();
     for (auto kk = ls_i1 + 1; kk < n; kk++) {
       link_tos_group.back().pop_back();
     }

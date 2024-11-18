@@ -4,10 +4,8 @@
   </include>
   <analysis>
     <model>1</model>
-    <!-- <trapeze>1</trapeze> -->
   </analysis>
   <general>
-    <!-- <translate>0.244457817 -9.27285155e-3</translate> -->
     <scale>20.76</scale>
     <mesh_size>0.04</mesh_size>
     <element_type>linear</element_type>
@@ -16,54 +14,43 @@
 
 
   <baselines>
-    <!-- <basepoints>
-      <include>sc1095</include>
-    </basepoints> -->
 
     <line name="ln_af" type="airfoil">
-      <points data="file" format="2" header="2">sc1095.dat</points>
+      <points data="file" format="1" header="0">sc1095_selig_cw.dat</points>
       <flip>1</flip>
     </line>
-  
-    <!-- <baseline name="ln_af_top" type="straight">
-      <points>1:71</points>
-    </baseline>
-    <baseline name="ln_af_bottom" type="straight">
-      <points>72:141,1</points>
-    </baseline> -->
 
-    <point name="p1" on="ln_af_top" by="x2">0.9</point>
-    <point name="p2" on="ln_af_top" by="x2">0.6</point>
-    <point name="p3" on="ln_af_bottom" by="x2">0.6</point>
-    <point name="p4" on="ln_af_bottom" by="x2">0.9</point>
+    <point name="p1" on="ln_af" by="x2" which="top">0.9</point>
+    <point name="p2" on="ln_af" by="x2" which="top">0.6</point>
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.6</point>
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.9</point>
 
-    <point name="p5" on="ln_af_top" by="x2">0.98</point>
-    <point name="p6" on="ln_af_bottom" by="x2">0.98</point>
+    <point name="p5" on="ln_af" by="x2" which="top">0.98</point>
+    <point name="p6" on="ln_af" by="x2" which="bottom">0.98</point>
 
-    <point name="p7" on="ln_af_top" by="x2">0.2</point>
-    <point name="p8" on="ln_af_bottom" by="x2">0.2</point>
+    <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
+    <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
 
     <point name="pfb">0.1  0</point>
 
-    <baseline name="bsl_spar_top">
-      <points>p1:p2</points>
-    </baseline>
-    <baseline name="bsl_spar_bottom">
-      <points>p3:p4</points>
-    </baseline>
-    <baseline name="bsl_spar_web_te">
+    <line name="bsl_spar_top">
+      <points data="line" on="ln_af">p1:p2</points>
+    </line>
+    <line name="bsl_spar_bottom">
+      <points data="line" on="ln_af">p3:p4</points>
+    </line>
+    <line name="bsl_spar_web_te">
       <points>p2,p3</points>
-    </baseline>
-    <baseline name="bsl_spar_web_le">
+    </line>
+    <line name="bsl_spar_web_le">
       <points>p4,p1</points>
-    </baseline>
+    </line>
 
     <baseline name="bsl_le_top">
       <points>p5:p1</points>
     </baseline>
     <baseline name="bsl_le">
-      <!-- <points>p6:141,1:p5</points> -->
-      <points>p6:pbottom1,ple,ptop0:p5</points>
+      <points>p6:p5</points>
     </baseline>
     <baseline name="bsl_le_bottom">
       <points>p4:p6</points>
@@ -73,8 +60,7 @@
       <points>p2:p7</points>
     </baseline>
     <baseline name="bsl_te">
-      <!-- <points>p7:71,72:p8</points> -->
-      <points>p7:ptop1,pte,pbottom0:p8</points>
+      <points>p7:p8</points>
     </baseline>
     <baseline name="bsl_te_bottom">
       <points>p8:p3</points>
@@ -138,21 +124,25 @@
   <component name="spar">
     <segments>
       <baseline>bsl_spar_top</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_spar</layup>
     </segments>
     <segments>
       <baseline>bsl_spar_bottom</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_spar</layup>
     </segments>
     <segments>
       <baseline>bsl_spar_web_le</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_spar</layup>
     </segments>
     <segments>
       <baseline>bsl_spar_web_te</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_spar</layup>
     </segments>
@@ -161,18 +151,21 @@
   <component name="le" depend="spar">
     <segments>
       <baseline>bsl_le</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_steel</layup>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_le</layup>
     </segments>
     <segments>
       <baseline>bsl_le_top</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_steel</layup>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_le</layup>
     </segments>
     <segments>
       <baseline>bsl_le_bottom</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_steel</layup>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_le</layup>
@@ -182,46 +175,49 @@
   <component name="te" depend="spar">
     <segments>
       <baseline>bsl_te_top</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_te</layup>
     </segments>
-    <segment>
+    <segments>
       <baseline>bsl_te</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
-    </segment>
+    </segments>
     <segments>
       <baseline>bsl_te_bottom</baseline>
+      <layup_side>left</layup_side>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_te</layup>
     </segments>
   </component>
 
-  <component name="nsm" type="fill" depend="le">
+  <!-- <component name="nsm" type="fill" depend="le">
     <baseline>bsl_nsm</baseline>
     <location>pnsmc</location>
     <material>lead</material>
     <mesh_size at="pnsmc">0.3</mesh_size>
-  </component>
+  </component> -->
 
-  <component name="fill_le" type="fill" depend="spar,le,nsm">
+  <!-- <component name="fill_le" type="fill" depend="spar,le,nsm">
     <location>pfle1</location>
     <material>Rohacell 70</material>
     <mesh_size at="pfle1,pfle2">0.3</mesh_size>
-  </component>
+  </component> -->
 
-  <component name="fill_te" type="fill" depend="spar,te">
+  <!-- <component name="fill_te" type="fill" depend="spar,te">
     <location>pfte1</location>
     <material>Plascore PN2-3/16OX3.0</material>
     <mesh_size at="pfte1,pfte2">0.3</mesh_size>
-  </component>
+  </component> -->
 
 
 
-  <global measure="stress">
+  <!-- <global measure="stress">
     <displacements>0 0 0</displacements>
     <rotations>1 0 0 0 1 0 0 0 1</rotations>
     <loads>71425.45 -295.6945 70.72665 -654.6625 -483.3335 1595.95</loads>
-  </global>
+  </global> -->
 
 
 </cross_section>

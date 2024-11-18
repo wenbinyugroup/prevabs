@@ -61,14 +61,6 @@ void PComponent::buildLaminate(Message *pmessage) {
         }
 
         if (seg_p != seg) {
-          // std::cout << "[debug] first vertex of seg " << seg->getName() <<
-          // ": "; seg->getBeginVertex()->printWithAddress(); std::cout <<
-          // "[debug] last vertex of seg " << seg->getName() << ": ";
-          // seg->getEndVertex()->printWithAddress();
-          // std::cout << "[debug] first vertex of seg_p " << seg_p->getName()
-          // << ": "; seg_p->getBeginVertex()->printWithAddress(); std::cout
-          // << "[debug] last vertex of seg_p " << seg_p->getName() << ": ";
-          // seg_p->getEndVertex()->printWithAddress();
 
           if (seg->headVertexOffset() == nullptr) {
             int js = _style;

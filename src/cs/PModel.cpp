@@ -10,15 +10,16 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/GEdge.h"
-#include "gmsh/GEdgeLoop.h"
-#include "gmsh/GEntity.h"
-#include "gmsh/GFace.h"
-#include "gmsh/GModel.h"
-#include "gmsh/GVertex.h"
-#include "gmsh/Gmsh.h"
-#include "gmsh/MElement.h"
-#include "gmsh/MTriangle.h"
+#include <gmsh.h>
+// #include "gmsh/GEdge.h"
+// #include "gmsh/GEdgeLoop.h"
+// #include "gmsh/GEntity.h"
+// #include "gmsh/GFace.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/GVertex.h"
+// #include "gmsh/Gmsh.h"
+// #include "gmsh/MElement.h"
+// #include "gmsh/MTriangle.h"
 
 #include <cstdio>
 #include <fstream>
@@ -37,11 +38,17 @@ PModel::PModel(std::string name) {
 
 
 void PModel::initialize() {
+
   if (config.debug) {
     config.fdeb = fopen((config.file_directory + config.file_base_name + ".debug").c_str(), "w");
   }
-  GmshInitialize(0, 0);
+
+  gmsh::initialize();
+  // GmshInitialize(0, 0);
   // printInfo(1, "Gmsh initialized");
+
+  // gmsh::logger::stop();
+
 }
 
 
@@ -49,10 +56,14 @@ void PModel::initialize() {
 
 
 void PModel::finalize() {
-  GmshFinalize();
+
+  gmsh::finalize();
+  // GmshFinalize();
+
   if (config.debug) {
     fclose(config.fdeb);
   }
+
 }
 
 
@@ -284,7 +295,7 @@ void PModel::summary(Message *pmessage) {
   pmessage->printBlank();
   pmessage->print(9, "summary of base lines");
   for (auto bsl : _baselines) {
-    bsl->print(pmessage, 9);
+    bsl->print(pmessage);
     pmessage->printBlank();
   }
 
@@ -537,25 +548,27 @@ void PModel::build(Message *pmessage) {
 void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
 
   if (create_gmsh_geo) {
-    initGmshModel(pmessage);
+    // initGmshModel(pmessage);
     createGmshGeo(pmessage);
   }
 
   debug_plot_count++;
   std::string fn_base = config.file_directory + config.file_base_name + "_debug";
 
-  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count), pmessage);
+  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count)+".geo_unrolled", pmessage);
 
   if (debug_plot_count == 1) {
     writeGmshOpt(fn_base, pmessage);
   }
 
   for (auto v : _dcel->vertices()) {
-    if (v->gvertex()) v->resetGVertex();
+    // if (v->gvertex()) v->resetGVertex();
+    if (v->gvertexTag() != 0) v->resetGVertexTag();
   }
 
   for (auto he : _dcel->halfedges()) {
-    if (he->gedge()) he->resetGEdge();
+    // if (he->gedge()) he->resetGEdge();
+    if (he->gedgeTag() != 0) he->resetGEdgeTag();
   }
 
 }
@@ -804,6 +817,11 @@ void PModel::homogenize(Message *pmessage) {
       }
       writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
 
+      if (_itf_output) {
+        // Write supplement files
+        writeSupp(pmessage);
+      }
+
       PLOG(info) << pmessage->message("writing outputs -- done");
       pmessage->printBlank();
     }
@@ -868,10 +886,14 @@ void PModel::run(Message *pmessage) {
 
 
   std::vector<std::string> cmd_args;
+
   if (config.analysis_tool == 1) {
+    cmd_args.push_back(config.file_name_vsc);
+    // VABS
     if (config.integrated_solver) {
       runIntegratedVABS(config.file_name_vsc, this, pmessage);
     }
+
     else {
       if (config.dehomo) {
         config.vabs_option = "2";
@@ -884,16 +906,25 @@ void PModel::run(Message *pmessage) {
         cmd_args.push_back(std::to_string(_load_cases.size()));
       }
 
-      runVABS(config.file_name_vsc, cmd_args, pmessage);
+      runVABS(config.vabs_name, cmd_args, pmessage);
 
     }
   }
 
   else if (config.analysis_tool == 2) {
-
-    cmd_args.push_back("1D");
+    cmd_args.push_back(config.file_name_vsc);
+    // SwiftComp
+    if (_analysis_model_dim == 1) {
+      cmd_args.push_back("1D");
+    }
+    else if (_analysis_model_dim == 2) {
+      cmd_args.push_back("2D");
+    }
+    else if (_analysis_model_dim == 3) {
+      cmd_args.push_back("3D");
+    }
     cmd_args.push_back(config.sc_option);
-    runSC(config.file_name_vsc, cmd_args, pmessage);
+    runSC(config.sc_name, cmd_args, pmessage);
 
   }
 

@@ -52,7 +52,8 @@ void PComponent::buildFilling(Message *pmessage) {
     // Trim/Extend ends for each open baseline
     for (auto bl : bl_open) {
       double u1_head, u2_head, u1_tail, u2_tail, u1_tmp, u2_tmp;
-      int ls_i_head = -1, ls_i_tail = bl->vertices().size(), ls_i_tmp;
+      int ls_i_head = -1, ls_i_tmp;
+      std::size_t ls_i_tail = bl->vertices().size();
       u1_head = -INF;
       u1_tail = INF;
 

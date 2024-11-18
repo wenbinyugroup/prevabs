@@ -5,9 +5,9 @@
 #include "PSegment.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh/SPoint2.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint2.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <iostream>
 

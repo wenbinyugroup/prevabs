@@ -1,29 +1,24 @@
-2023-09-21 13:35:24 [info] prevabs start
-2023-09-21 13:35:24 [info] - reading input files
-2023-09-21 13:35:24 [info]     - reading main input file: box.xml
-2023-09-21 13:35:24 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
-2023-09-21 13:35:24 [info]         - reading materials file: materials.xml
-2023-09-21 13:35:24 [info]   - reading input files -- done
-2023-09-21 13:35:24 [info]   - building the shape
-2023-09-21 13:35:24 [info]     - building the cross section, step 1
-2023-09-21 13:35:24 [info]       - building component: main
-2023-09-21 13:35:24 [info]     - building the cross section, step 2
-2023-09-21 13:35:24 [info]       - building component details: main
-2023-09-21 13:35:24 [info]     - fixing geometry
-2023-09-21 13:35:24 [info]   - building the shape -- done
-2023-09-21 13:35:24 [info]   - modeling in Gmsh
-2023-09-21 13:35:24 [info]     - creating gmsh vertices
-2023-09-21 13:35:24 [info]     - creating gmsh edges
-2023-09-21 13:35:24 [info]     - creating gmsh face
-2023-09-21 13:35:24 [info]     - meshing
-2023-09-21 13:35:25 [info]   - modeling in Gmsh -- done
-2023-09-21 13:35:25 [info]   - writing outputs
-2023-09-21 13:35:25 [info]     - writing gmsh .opt file: box.opt
-2023-09-21 13:35:25 [info]     - writing gmsh .geo file: box.geo
-2023-09-21 13:35:25 [info]     - writing gmsh .msh file: box.msh
-2023-09-21 13:35:25 [info]     - writing sg file: box.sg
-2023-09-21 13:35:25 [info]   - writing outputs -- done
-2023-09-21 13:35:25 [info]   - running Gmsh for visualization
-2023-09-21 13:35:25 [info]   - running: gmsh box.geo box.msh box.opt
-2023-09-21 13:35:25 [info] prevabs finished
-2023-09-21 13:35:25 [info] total running time: 0.407 sec
+2022-06-07 00:09:54 [info] prevabs start
+2022-06-07 00:09:54 [info] - reading input files
+2022-06-07 00:09:54 [info]     - reading main input file: /home/msg/a/tian50/develop/group_git/prevabs/test/box/1.6_multi_load_cases/box.xml
+2022-06-07 00:09:54 [info]       - reading materials file: /home/msg/a/msmshare/MaterialDB.xml
+2022-06-07 00:09:54 [info]       - reading materials file: /home/msg/a/tian50/develop/group_git/prevabs/test/box/1.6_multi_load_cases/materials.xml
+2022-06-07 00:09:54 [info] - reading input files -- done
+2022-06-07 00:09:54 [info] - building the shape
+2022-06-07 00:09:54 [info]   - building the cross section, step 1
+2022-06-07 00:09:54 [info]     - building component: main
+2022-06-07 00:09:54 [info]   - building the cross section, step 2
+2022-06-07 00:09:54 [info]     - building component details: main
+2022-06-07 00:09:54 [info]   - fixing geometry
+2022-06-07 00:09:54 [info] - building the shape -- done
+2022-06-07 00:09:54 [info] - modeling in Gmsh
+2022-06-07 00:09:54 [info]   - creating gmsh vertices
+2022-06-07 00:09:54 [info]   - creating gmsh edges
+2022-06-07 00:09:54 [info]   - creating gmsh face
+2022-06-07 00:09:54 [info]   - meshing
+2022-06-07 00:09:54 [info] - modeling in Gmsh -- done
+2022-06-07 00:09:54 [info] - writing outputs
+2022-06-07 00:09:54 [info]   - writing sg file: /home/msg/a/tian50/develop/group_git/prevabs/test/box/1.6_multi_load_cases/box.sg
+2022-06-07 00:09:55 [info] - writing outputs -- done
+2022-06-07 00:09:55 [info] prevabs finished
+2022-06-07 00:09:55 [info] total running time: 0.16 sec

@@ -43,10 +43,16 @@ struct Strength {
 class Material {
 private:
   int mid;
-  std::string mname;
-  std::string mtype; // isotropic, orthotropic, anisotropic
-  double mdensity{1.0};
-  std::vector<double> melastic;
+  std::string _name;
+
+  std::string _type; // isotropic, orthotropic, anisotropic
+
+  double _density{1.0};
+  std::vector<double> _elastic;
+
+  double _specific_heat{0.0};
+  std::vector<double> _cte;
+
   int mfcriterion{0};
   double mcharalength{0.0};
   std::vector<double> mstrength;
@@ -58,26 +64,26 @@ public:
     mid = 0;
     mstrength = {};
   }
-  Material(std::string name) : mname(name) {
+  Material(std::string name) : _name(name) {
     mid = 0;
     mstrength = {};
   }
   Material(std::string name, std::string type, double density,
            std::vector<double> elastic)
-      : mname(name), mtype(type), mdensity(density), melastic(elastic) {
+      : _name(name), _type(type), _density(density), _elastic(elastic) {
     mid = 0;
     mstrength = {};
   }
   Material(int id, std::string name, std::string type, double density,
            std::vector<double> elastic)
-      : mid(id), mname(name), mtype(type), mdensity(density),
-        melastic(elastic) {
+      : mid(id), _name(name), _type(type), _density(density),
+        _elastic(elastic) {
     mstrength = {};
   }
   Material(int id, std::string name, std::string type, double density,
            std::vector<double> elastic, int fcriterion, double charalength,
            std::vector<double> strength)
-      : mid(id), mname(name), mtype(type), mdensity(density), melastic(elastic),
+      : mid(id), _name(name), _type(type), _density(density), _elastic(elastic),
         mfcriterion(fcriterion), mcharalength(charalength),
         mstrength(strength) {}
 
@@ -85,20 +91,24 @@ public:
   void printMaterial(); // Print details
 
   int id() { return mid; }
-  std::string getName() { return mname; }
-  std::string getType() { return mtype; }
-  double getDensity() const { return mdensity; }
-  std::vector<double> getElastic() { return melastic; }
+  std::string getName() { return _name; }
+  std::string getType() { return _type; }
+  double getDensity() const { return _density; }
+  std::vector<double> getElastic() { return _elastic; }
+  std::vector<double> getCte() { return _cte; }
+  double getSpecificHeat() const { return _specific_heat; }
   int getFailureCriterion() const { return mfcriterion; }
   double getCharacteristicLength() const { return mcharalength; }
   // std::vector<double> getStrength() { return mstrength; }
   Strength getStrength() const { return _strength; }
 
   void setId(int);
-  void setName(std::string name) { mname = name; }
-  void setType(std::string type) { mtype = type; }
-  void setDensity(double density) { mdensity = density; }
-  void setElastic(std::vector<double> elastic) { melastic = elastic; }
+  void setName(std::string name) { _name = name; }
+  void setType(std::string type) { _type = type; }
+  void setDensity(double density) { _density = density; }
+  void setElastic(std::vector<double> elastic) { _elastic = elastic; }
+  void setCte(std::vector<double> cte) { _cte = cte; }
+  void setSpecificHeat(double sh) { _specific_heat = sh; }
   void setFailureCriterion(int);
   void setCharacteristicLength(double);
   void setStrength(std::vector<double>);

@@ -15,12 +15,12 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/GModel.h"
-#include "gmsh/MTriangle.h"
-#include "gmsh/MVertex.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/MTriangle.h"
+// #include "gmsh/MVertex.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -49,6 +49,8 @@
 
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) {
   pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("in function: readLayups");
 
   std::vector<Layup> tempLayups;
 

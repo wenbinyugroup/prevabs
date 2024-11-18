@@ -13,13 +13,14 @@
 #include "PBaseLine.hpp"
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
+#include "plog.hpp"
 
-#include "gmsh/GModel.h"
-#include "gmsh/MTriangle.h"
-#include "gmsh/MVertex.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
-#include "gmsh/StringUtils.h"
+// #include "gmsh/GModel.h"
+// #include "gmsh/MTriangle.h"
+// #include "gmsh/MVertex.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/StringUtils.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -84,12 +85,20 @@ int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
 
 
 
-PDCELVertex *readXMLElementPoint(const xml_node<> *p_xn_point, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
-  double tol = 1e-6;
+PDCELVertex *readXMLElementPoint(
+  const xml_node<> *p_xn_point, const xml_node<> *p_xn_geo,
+  PModel *pmodel, Message *pmessage
+  ) {
+  
+  pmessage->increaseIndent();
+
+  // double tol = 1e-6;
   
   PDCELVertex *pv;
 
   std::string label{p_xn_point->first_attribute("name")->value()};
+
+  PLOG(debug) << pmessage->message("reading point: " + label);
 
   std::string s_constraint{"none"};
   xml_attribute<> *p_xa_constraint{p_xn_point->first_attribute("constraint")};
@@ -149,43 +158,58 @@ PDCELVertex *readXMLElementPoint(const xml_node<> *p_xn_point, const xml_node<> 
 
       // Linear interpolation
       for (auto i = 0; i < p_bsl_vertices.size() - 1; i++) {
+
+        PLOG(debug) << pmessage->message("checking segment: " + std::to_string(i));
+        PLOG(debug) << pmessage->message("segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y()));
+        PLOG(debug) << pmessage->message("loc: " + std::to_string(loc));
+
         if (
           (p_bsl_vertices[i]->y() <= loc && loc <= p_bsl_vertices[i+1]->y()) ||
           (p_bsl_vertices[i]->y() >= loc && loc >= p_bsl_vertices[i+1]->y())
-        ) {
+          ) {
           found = true;
           count++;
+
           // Find the new point
-          if (fabs(loc - p_bsl_vertices[i]->y()) < tol) {
+
+          // The point is close to the starting point of the segment
+          if (fabs(loc - p_bsl_vertices[i]->y()) < TOLERANCE) {
+            PLOG(debug) << pmessage->message("found point close to the starting point of the segment");
             // _pv_tmp->setLinkToVertex(p_bsl_vertices[i]);
             // break;
             _z_tmp = p_bsl_vertices[i]->z();
             _id_tmp = i;
             _is_new_tmp = false;
           }
-          else if (fabs(loc - p_bsl_vertices[i+1]->y()) < tol) {
+
+          // The point is close to the ending point of the segment
+          else if (fabs(loc - p_bsl_vertices[i+1]->y()) < TOLERANCE) {
+            PLOG(debug) << pmessage->message("found point close to the ending point of the segment");
             // _pv_tmp->setLinkToVertex(p_bsl_vertices[i+1]);
             // break;
             _z_tmp = p_bsl_vertices[i+1]->z();
             _id_tmp = i+1;
             _is_new_tmp = false;
           }
+
+          // The point is in the middle of the segment
           else {
-            double dy, dz, loc2;
+            PLOG(debug) << pmessage->message("found point in the middle of the segment");
+            double dy, dz;
             dy = p_bsl_vertices[i+1]->y() - p_bsl_vertices[i]->y();
             dz = p_bsl_vertices[i+1]->z() - p_bsl_vertices[i]->z();
             _z_tmp = dz / dy * (loc - p_bsl_vertices[i]->y()) + p_bsl_vertices[i]->z();
             // _pv_tmp->setPosition(0, loc, loc2);
             _id_tmp = i+1;
             _is_new_tmp = true;
-
-            // Insert the new point into the line
-            // p_bsl->insertPVertex(i+1, pv);
-            // p_bsl->print(pmessage, 9);
-
-            // break;
           }
 
+          // debug message
+          PLOG(debug) << pmessage->message("_z_tmp = " + std::to_string(_z_tmp));
+          PLOG(debug) << pmessage->message("_id_tmp = " + std::to_string(_id_tmp));
+          PLOG(debug) << pmessage->message("_is_new_tmp = " + std::to_string(_is_new_tmp));
+
+          // If found more than one point
           if (count > 1) {
             // Compare z
             if (s_which == "top" && _z_tmp > _z || s_which == "bottom" && _z_tmp < _z) {
@@ -247,6 +271,8 @@ PDCELVertex *readXMLElementPoint(const xml_node<> *p_xn_point, const xml_node<> 
     pv = new PDCELVertex{label, 0, x2, x3};
 
   }
+
+  pmessage->decreaseIndent();
 
   return pv;
 }

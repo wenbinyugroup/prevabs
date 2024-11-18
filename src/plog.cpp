@@ -57,7 +57,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
   // Specify the format
   logging::formatter fmt = expr::stream
     // << std::setw(7) << std::setfill('0') << line_id << std::setfill(' ') << " | "
-    << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
+    // << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
     << "[" << logging::trivial::severity << "]"
     << " " << expr::message;
   sink->set_formatter(fmt);

@@ -1,0 +1,32 @@
+2022-11-19 17:03:57 [info] prevabs start
+2022-11-19 17:03:57 [info] - reading input files
+2022-11-19 17:03:57 [info]     - reading main input file: .\test\end_trim\cross.xml
+2022-11-19 17:03:57 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2022-11-19 17:03:57 [info] - reading input files -- done
+2022-11-19 17:03:57 [info] - building the shape
+2022-11-19 17:03:57 [info]   - building the cross section, step 1
+2022-11-19 17:03:57 [info]     - building component: c1
+2022-11-19 17:03:57 [info]     - building component: c2
+2022-11-19 17:03:57 [info]     - building component: c3
+2022-11-19 17:03:57 [info]     - building component: c4
+2022-11-19 17:03:57 [info]   - building the cross section, step 2
+2022-11-19 17:03:57 [info]     - building component details: c1
+2022-11-19 17:03:57 [info]     - building component details: c2
+2022-11-19 17:03:57 [info]     - building component details: c3
+2022-11-19 17:03:57 [info]     - building component details: c4
+2022-11-19 17:03:57 [info]   - fixing geometry
+2022-11-19 17:03:57 [info] - building the shape -- done
+2022-11-19 17:03:57 [info] - modeling in Gmsh
+2022-11-19 17:03:57 [info]   - creating gmsh vertices
+2022-11-19 17:03:57 [info]   - creating gmsh edges
+2022-11-19 17:03:57 [info]   - creating gmsh face
+2022-11-19 17:03:57 [info]   - meshing
+2022-11-19 17:03:58 [info] - modeling in Gmsh -- done
+2022-11-19 17:03:58 [info] - writing outputs
+2022-11-19 17:03:58 [info]   - writing sg file: .\test\end_trim\cross.sg
+2022-11-19 17:03:59 [info] - writing outputs -- done
+2022-11-19 17:03:59 [info]   - running SwiftComp for homogenization
+2022-11-19 17:03:59 [info]   - running: SwfitComp "cross.sg" 3D H
+2022-11-19 17:04:02 [info]   - running SwiftComp for homogenization -- done
+2022-11-19 17:04:02 [info] prevabs finished
+2022-11-19 17:04:02 [info] total running time: 4.303 sec

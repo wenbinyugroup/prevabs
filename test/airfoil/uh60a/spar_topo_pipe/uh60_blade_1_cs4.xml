@@ -1,0 +1,232 @@
+<cross_section name="uh60a_section" format="1">
+    <include>
+        <material>material_database_us_ft</material>
+    </include>
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <scale>1.74708</scale>
+        <mesh_size>0.01</mesh_size>
+        <element_type>linear</element_type>
+        <track_interface>0</track_interface>
+        <interface_theta3_diff_threshold>30</interface_theta3_diff_threshold>
+        <interface_theta1_diff_threshold>30</interface_theta1_diff_threshold>
+    </general>
+
+
+
+    <baselines>
+
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="1" direction="-1" header="0">sc94r8m4.dat</points>
+            <flip>1</flip>
+            <!-- <reverse>1</reverse> -->
+        </line>
+
+        <point name="p1" on="ln_af" by="x2" which="top">0.8</point>
+        <point name="p2" on="ln_af" by="x2" which="bottom">0.8</point>
+        <point name="p3" on="ln_af" by="x2" which="top">0.2</point>
+        <point name="p4" on="ln_af" by="x2" which="bottom">0.2</point>
+
+        <point name="p9" on="ln_af" by="x2" which="top">0.1</point>
+        <point name="p10" on="ln_af" by="x2" which="bottom">0.1</point>
+
+        <point name="pnsmc">0.9574088344 0</point>
+
+        <point name="pfle1">0.9 0</point>
+        <point name="pfle2">0.89 0</point>
+        <point name="pfte1">0.35283 0</point>
+        <point name="pfte2">0.11 0</point>
+
+        <!-- Skin -->
+        <line name="line_skin_top">
+            <points>p1:p3</points>
+        </line>
+        <line name="line_skin_bottom">
+            <points>p4:p2</points>
+        </line>
+        <line name="line_skin_le">
+            <points>p2:p1</points>
+        </line>
+        <line name="line_skin_te">
+            <points>p3:p4</points>
+        </line>
+
+        <!-- <line name="line_skin" method="join">
+            <line>line_skin_top</line>
+            <line>line_skin_te</line>
+            <line>line_skin_bottom</line>
+            <line>line_skin_le</line>
+        </line> -->
+
+        <!-- Main spar -->
+        <point name="ps1">0.85 0.025</point>
+        <point name="ps2">0.85 -0.025</point>
+        <point name="ps3">0.55 0.025</point>
+        <point name="ps4">0.55 -0.025</point>
+
+        <line name="line_spar_top">
+            <points>ps1,ps3</points>
+        </line>
+        <line name="line_spar_bottom">
+            <points>ps4,ps2</points>
+        </line>
+        <line name="line_spar_web_front" type="arc">
+            <start>ps2</start>
+            <end>ps1</end>
+            <curvature>40</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+        <line name="line_spar_web_back" type="arc">
+            <start>ps3</start>
+            <end>ps4</end>
+            <curvature>40</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+
+        <line name="line_spar" method="join">
+            <line>line_spar_top</line>
+            <line>line_spar_bottom</line>
+            <line>line_spar_web_front</line>
+            <line>line_spar_web_back</line>
+        </line>
+
+        <!-- Non-structural mass -->
+        <line name="line_nsm" type="circle">
+            <center>pnsmc</center>
+            <radius>0.01</radius>
+            <discrete by="angle">9</discrete>
+        </line>
+
+        <!-- Filling part -->
+        <point name="pfb1">0.75 0.026</point>
+        <point name="pfb2">0.75 -0.026</point>
+        <line name="line_fb_1">
+            <point>pfb1</point>
+            <angle>90</angle>
+        </line>
+        <line name="line_fb_2">
+            <point>pfb2</point>
+            <angle>90</angle>
+        </line>
+        <point name="ptfb" constraint="middle">p9 p10</point>
+        <point name="ptf">0.09 0</point>
+        <line name="bsl_te_fill_bound">
+            <points>p10,ptfb,p9</points>
+        </line>
+    </baselines>
+
+
+    <materials>
+        <lamina name="filler">
+            <material>Rohacell 70</material>
+            <thickness>0.0054</thickness>
+        </lamina>
+    </materials>
+
+
+    <layups>
+        <layup name="lyp_le_cap">
+            <layer lamina="Aluminum 8009_0.01">0:1</layer>
+        </layup>
+        <layup name="lyp_skin">
+            <layer lamina="AS4 12k/E7K8_0.0054">0:1</layer>
+        </layup>
+
+        <layup name="lyp_spar">
+            <layer lamina="AS4 12k/E7K8_0.0054">10:8</layer>
+            <layer lamina="AS4 12k/E7K8_0.0054">-1:8</layer>
+            <layer lamina="AS4 12k/E7K8_0.0054">-65:8</layer>
+            <layer lamina="AS4 12k/E7K8_0.0054">-81:8</layer>
+        </layup>
+
+        <layup name="lyp_le">
+            <layer lamina="AS4 12k/E7K8_0.0054">22:6</layer>
+        </layup>
+
+        <layup name="lyp_te">
+            <layer lamina="AS4 12k/E7K8_0.0054">-3:10</layer>
+        </layup>
+
+        <layup name="lyp_filler">
+            <layer lamina="filler">0:1</layer>
+        </layup>
+
+    </layups>
+
+
+
+    <component name="skin">
+        <segment>
+            <baseline>line_skin_top</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+        <segment>
+            <baseline>line_skin_bottom</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+        <segment>
+            <baseline>line_skin_le</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+        <segment>
+            <baseline>line_skin_te</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+    </component>
+
+    <component name="spar">
+        <segment>
+            <baseline>line_spar</baseline>
+            <layup>lyp_spar</layup>
+        </segment>
+    </component>
+
+    <!-- <component name="div_top" depend="skin,spar">
+        <segment>
+            <baseline>line_fb_1</baseline>
+            <layup>lyp_filler</layup>
+        </segment>
+    </component> -->
+    <!-- <component name="div_bottom" depend="skin,spar">
+        <segment>
+            <baseline>line_fb_2</baseline>
+            <layup>lyp_filler</layup>
+        </segment>
+    </component> -->
+
+    <component name="ns_mass" type="fill" depend="le">
+        <baseline>line_nsm</baseline>
+        <location>pnsmc</location>
+        <material>lead</material>
+        <mesh_size at="pnsmc">0.04</mesh_size>
+    </component>
+
+    <component name="fill_back" type="fill" depend="skin,spar">
+        <baseline fillside="right">bsl_te_fill_bound</baseline>
+        <!-- <baseline>bsl_te_fill_bound</baseline> -->
+        <!-- <baseline>line_fb_1</baseline> -->
+        <!-- <baseline>line_fb_2</baseline> -->
+        <!-- <location>pfte1</location> -->
+        <material>Plascore PN2-3/16OX3.0</material>
+        <mesh_size at="pfte1,pfte2">0.04</mesh_size>
+    </component>
+    <component name="fill_te" type="fill" depend="skin,fill_back">
+        <location>ptf</location>
+        <material>AS4 12k/E7K8</material>
+    </component>
+    <!-- <component name="fill_front" type="fill" depend="skin,spar,ns_mass,fill_back">
+        <baseline fillside="right">bsl_te_fill_bound</baseline>
+        <location>pfle1</location>
+        <material>Plascore PN2-3/16OX3.0</material>
+        <mesh_size at="pfte1,pfte2">0.04</mesh_size>
+    </component> -->
+
+    <global measure="stress">
+        <include format="csv" header="1">loadcases.csv</include>
+    </global>
+
+</cross_section>

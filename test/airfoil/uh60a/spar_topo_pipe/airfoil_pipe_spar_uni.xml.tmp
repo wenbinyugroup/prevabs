@@ -1,0 +1,188 @@
+<cross_section name="uh60a_section" format="1">
+    <include>
+        <material>{mdb_name}</material>
+    </include>
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <scale>{chord=1}</scale>
+        <mesh_size>{gms=0.004}</mesh_size>
+        <element_type>{elm_type="linear"}</element_type>
+        <track_interface>{interface_output=1}</track_interface>
+        <interface_theta3_diff_threshold>{interface_min_theta3_diff=30}</interface_theta3_diff_threshold>
+        <interface_theta1_diff_threshold>{interface_min_theta1_diff=30}</interface_theta1_diff_threshold>
+    </general>
+
+
+
+    <baselines>
+
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="{airfoil_format=1}" direction="{airfoil_point_order=-1}" header="{airfoil_file_head=0}">{airfoil}</points>
+            <flip>{airfoil_flip=1}</flip>
+            <!-- <reverse>1</reverse> -->
+        </line>
+
+        <point name="p1" on="ln_af" by="x2" which="top">{a2p1=0.8}</point>
+        <point name="p2" on="ln_af" by="x2" which="bottom">{a2p2=a2p1}</point>
+        <point name="p3" on="ln_af" by="x2" which="top">{a2p3=0.2}</point>
+        <point name="p4" on="ln_af" by="x2" which="bottom">{a2p4=a2p3}</point>
+
+        <point name="p9" on="ln_af" by="x2" which="top">{a2p9=0.1}</point>
+        <point name="p10" on="ln_af" by="x2" which="bottom">{a2p10=a2p9}</point>
+
+        <!-- Skin -->
+        <line name="line_skin_top">
+            <points>p1:p3</points>
+        </line>
+        <line name="line_skin_bottom">
+            <points>p4:p2</points>
+        </line>
+        <line name="line_skin_le">
+            <points>p2:p1</points>
+        </line>
+        <line name="line_skin_te">
+            <points>p3:p4</points>
+        </line>
+
+        <!-- <line name="line_skin" method="join">
+            <line>line_skin_top</line>
+            <line>line_skin_te</line>
+            <line>line_skin_bottom</line>
+            <line>line_skin_le</line>
+        </line> -->
+
+        <!-- Main spar -->
+        <point name="ps1">{a2ps1=0.8} {a3ps1=0.02}</point>
+        <point name="ps2">{a2ps2=a2ps1} {a3ps2=-1*a3ps1}</point>
+        <point name="ps3">{a2ps3=0.5} {a3ps3=a3ps1}</point>
+        <point name="ps4">{a2ps4=a2ps3} {a3ps4=a3ps2}</point>
+
+        <line name="line_spar_top">
+            <points>ps1,ps3</points>
+        </line>
+        <line name="line_spar_bottom">
+            <points>ps4,ps2</points>
+        </line>
+        <line name="line_spar_web_front" type="arc">
+            <start>ps2</start>
+            <end>ps1</end>
+            <curvature>{kw1=0}</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+        <line name="line_spar_web_back" type="arc">
+            <start>ps3</start>
+            <end>ps4</end>
+            <curvature>{kw2=0}</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+
+        <line name="line_spar" method="join">
+            <line>line_spar_top</line>
+            <line>line_spar_bottom</line>
+            <line>line_spar_web_front</line>
+            <line>line_spar_web_back</line>
+        </line>
+
+        <!-- Non-structural mass -->
+        <point name="pnsmc">{a2nsm=0.96} {a3nsm=0}</point>
+        <line name="line_nsm" type="circle">
+            <center>pnsmc</center>
+            <radius>{rnsm=0.005}</radius>
+            <discrete by="angle">9</discrete>
+        </line>
+
+        <!-- Filling part -->
+        <point name="ptfb" constraint="middle">p9 p10</point>
+        <point name="ptf">{a2ptf=a2p9-0.01} 0</point>
+        <line name="bsl_te_fill_bound">
+            <points>p10,ptfb,p9</points>
+        </line>
+
+        <!-- <point name="pfle1">{a2fmsp1=a2nsm-rnsm-0.01} 0</point> -->
+        <!-- <point name="pfle2">{a2fmsp2=a2p1+0.01} 0</point> -->
+        <point name="pfte1">{a2fmsp3=(a2ps3+a2ps4)/2-((a3ps3-a3ps4)/2)*kw2/2} 0</point>
+        <point name="pfte2">{a2fmsp4=(a2p9+a2p10)/2+0.01} 0</point>
+    </baselines>
+
+
+
+    <layups>
+        <layup name="lyp_le_cap">
+            <layer lamina="{lam_cap}">{ang_cap=0}:{ply_cap=1}</layer>
+        </layup>
+        <layup name="lyp_skin">
+            <layer lamina="{lam_skin=lam_spar_1}">{ang_skin=0}:{ply_skin=1}</layer>
+        </layup>
+
+        <layup name="lyp_spar">
+            <layer lamina="{lam_spar_1}">{ang_spar_1=0}:{ply_spar_1=1}</layer>
+            <layer lamina="{lam_spar_2=lam_spar_1}">{ang_spar_2=0}:{ply_spar_2=1}</layer>
+            <layer lamina="{lam_spar_3=lam_spar_1}">{ang_spar_3=0}:{ply_spar_3=1}</layer>
+            <layer lamina="{lam_spar_4=lam_spar_1}">{ang_spar_4=0}:{ply_spar_4=1}</layer>
+        </layup>
+
+        <layup name="lyp_le">
+            <layer lamina="{lam_front}">{ang_front=0}:{ply_front=1}</layer>
+        </layup>
+
+        <layup name="lyp_te">
+            <layer lamina="{lam_back}">{ang_back=0}:{ply_back=1}</layer>
+        </layup>
+
+    </layups>
+
+
+
+    <component name="skin">
+        <segment>
+            <baseline>line_skin_top</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+        <segment>
+            <baseline>line_skin_bottom</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+        <segment>
+            <baseline>line_skin_le</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+        <segment>
+            <baseline>line_skin_te</baseline>
+            <layup>lyp_skin</layup>
+        </segment>
+    </component>
+
+    <component name="spar">
+        <segment>
+            <baseline>line_spar</baseline>
+            <layup>lyp_spar</layup>
+        </segment>
+    </component>
+
+    <component name="ns_mass" type="fill">
+        <baseline>bsl_nsm</baseline>
+        <location>pnsmc</location>
+        <material>{mat_nsm}</material>
+        <mesh_size at="pnsmc">{fms=10*gms}</mesh_size>
+    </component>
+
+    <component name="fill_main" type="fill" depend="skin,spar,ns_mass">
+        <baseline fillside="right">bsl_te_fill_bound</baseline>
+        <material>{mat_fill_back}</material>
+        <mesh_size at="pfte1,pfte2">{fms=10*gms}</mesh_size>
+    </component>
+
+    <component name="fill_te" type="fill" depend="skin,fill_main">
+        <location>ptf</location>
+        <material>{mat_fill_te}</material>
+    </component>
+
+    <global measure="stress">
+        <include format="csv" header="1">loadcases.csv</include>
+    </global>
+
+</cross_section>

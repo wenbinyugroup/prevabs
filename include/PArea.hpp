@@ -8,7 +8,7 @@
 #include "PModel.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <list>
 #include <vector>
@@ -30,7 +30,7 @@ private:
   Segment *_segment;
   PDCELHalfEdge *_base, *_opposite;
   std::list<PDCELFace *> _faces;
-  SVector3 _y2, _y3;
+  SVector3 _y1{1, 0, 0}, _y2{0, 1, 0}, _y3;
   SVector3 _prev_bound, _next_bound;
 
   // excluding vertices on the base curve and offset curve
@@ -58,13 +58,15 @@ public:
   PDCELFace *face() { return _face; }
   PGeoLineSegment *lineSegmentBase() { return _line_segment_base; }
 
+  SVector3 localy1() { return _y1; }
   SVector3 localy2() { return _y2; }
   SVector3 localy3();
 
   void setSegment(Segment *);
   void addFace(PDCELFace *);
-  void setLocaly2(SVector3);
-  void setLocaly3(SVector3);
+  void setLocaly1(SVector3 v) { _y1 = v; };
+  void setLocaly2(SVector3 v) { _y2 = v; };
+  void setLocaly3(SVector3 v) { _y3 = v; };
   void setPrevBound(SVector3 &);
   void setNextBound(SVector3 &);
   void setPrevBoundVertices(std::vector<PDCELVertex *>);

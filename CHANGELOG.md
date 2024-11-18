@@ -1,6 +1,23 @@
 # Change log
 
+## Version 1.6
+
+- 1.6.0 (2024/11)
+  - Added a new output file after creating the cross-section to store the mapping between material IDs and names.
+  - Changed the gmsh linking to the shared library from the SDK.
+  - Fixed the issue of unabling to run PreVABS without VABS dll.
+  - Fixed the issue of not reading airfoil data properly on linux.
+  - Fixed the issue of not skipping header rows of airfoil data.
+  - Fixed the issue of not able to run the input without the "include" block.
+
 ## Version 1.5
+
+- 1.5.1 (2022/10/27)
+  - Fixed the issue of reading result of failure analysis of the new format with an extra line of load case label.
+  - Added a new tag name for the root XML element: "sg".
+  - Added a new input for output model dimension (for SwiftComp only).
+  - Updated the writing function for 3D solid model (for SwiftComp only).
+  - Changed the Gmsh plot option for strength ratios.
 
 - 1.5.0 (2022/06/05)
   - Added a new type of line "airfoil", which can accept the file name of a standard airfoil data file.

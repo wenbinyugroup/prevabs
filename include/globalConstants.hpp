@@ -4,20 +4,24 @@
 #include <string>
 #include <vector>
 
-#define VERSION_MAJOR "1"
-#define VERSION_MINOR "5"
-#define VERSION_PATCH "0"
+// #include "version.h"
 
-const std::string version{
-  VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
-};
+// #define VERSION_MAJOR "1"
+// #define VERSION_MINOR "6"
+// #define VERSION_PATCH "0"
+
+// const std::string VERSION_STRING{
+//   VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
+// };
 
 const std::string vabs_version = "4.0";
 const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.14159265};
-const double TOLERANCE{1e-12};
+const double TOLERANCE{1e-15};
+const double ABS_TOL{1e-15};
+const double REL_TOL{1e-15};
 
 enum GeoConst {
   DEGREE,
@@ -54,3 +58,5 @@ const std::vector<std::string> elasticLabelOrtho{
 const std::vector<std::string> elasticLabelAniso{
     "c11", "c12", "c13", "c14", "c15", "c16", "c22", "c23", "c24", "c25", "c26",
     "c33", "c34", "c35", "c36", "c44", "c45", "c46", "c55", "c56", "c66"};
+
+const std::vector<std::string> TAG_NAME_CTE_ORTHO{"a11", "a22", "a33"};

@@ -1,0 +1,217 @@
+<materials>
+
+<!--
+unit system: si
+  length: m
+  force: N
+  mass: kg
+  density: kg / m^3
+  pressure: Pa
+-->
+
+  <material name="al_alloy" type="isotropic">
+    <density>2.906e3</density>
+    <elastic>
+      <e>90.321e9</e>
+      <nu>3.30e-1</nu>
+    </elastic>
+    <failure_criterion>max principal stress</failure_criterion>
+    <strength>
+      <xt>384.727e6</xt>
+      <xc>384.727e6</xc>
+    </strength>
+  </material>  
+  <lamina name="al_alloy_0.01">
+    <material>al_alloy</material>
+    <thickness>2.54e-4</thickness>
+  </lamina>
+
+
+  <material name="lead" type="isotropic">
+    <density>11.338e3</density>
+    <elastic>
+      <e>1e-3</e>
+      <nu>0</nu>
+    </elastic>
+    <failure_criterion>max principal stress</failure_criterion>
+    <strength>
+      <xt>17.995e3</xt>
+      <xc>17.995e3</xc>
+    </strength>
+  </material>
+
+
+  <material name="foam" type="orthotropic">
+    <density>75.245</density>
+    <elastic>
+      <e1>90.494e6</e1>
+      <e2>90.494e6</e2>
+      <e3>90.494e6</e3>
+      <g12>28.393e6</g12>
+      <g13>28.393e6</g13>
+      <g23>28.393e6</g23>
+      <nu12>3.15E-01</nu12>
+      <nu13>3.15E-01</nu13>
+      <nu23>3.00E-01</nu23>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>2.744e6</xt>
+      <yt>2.744e6</yt>
+      <zt>2.744e6</zt>
+      <xc>1.469e6</xc>
+      <yc>1.469e6</yc>
+      <zc>1.469e6</zc>
+      <r>1.276e6</r>
+      <t>1.276e6</t>
+      <s>1.276e6</s>
+    </strength>
+  </material>
+
+
+  <material name="honeycomb" type="orthotropic">
+    <density>4.819</density>
+    <elastic>
+      <e1>6.895e6</e1>
+      <e2>6.895e6</e2>
+      <e3>137.895e6</e3>
+      <g12>6.895e6</g12>
+      <g23>39.980e6</g23>
+      <g13>24.132e6</g13>
+      <nu12>3.00E-01</nu12>
+      <nu13>1.00E-02</nu13>
+      <nu23>1.00E-02</nu23>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>68.947e3</xt>
+      <yt>68.947e3</yt>
+      <zt>2.275e6</zt>
+      <xc>68.947e3</xc>
+      <yc>68.947e3</yc>
+      <zc>2.275e6</zc>
+      <r>1.213e6</r>
+      <t>813.581e3</t>
+      <s>39.983e3</s>
+    </strength>
+  </material>
+
+
+  <material name="AS4 12k/E7K8" type="lamina">
+    <density>1.560e3</density>
+    <elastic>
+      <e1>133.069e9</e1>
+      <e2>8.481e9</e2>
+      <g12>50.401e9</g12>
+      <nu12>3.20E-01</nu12>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>2.089e9</xt>
+      <yt>37.714e6</yt>
+      <xc>1.689e9</xc>
+      <s>113.763e6</s>
+    </strength>
+  </material>
+  <lamina name="AS4 12k/E7K8">
+    <material>AS4 12k/E7K8</material>
+    <thickness>0.3048e-3</thickness>
+  </lamina>
+  <lamina name="AS4 12k/E7K8_0.0054">
+    <material>AS4 12k/E7K8</material>
+    <thickness>1.37e-4</thickness>
+  </lamina>
+
+
+  <material name="S2/SP381" type="lamina">
+    <density>1.850e3</density>
+    <elastic>
+      <e1>48.608e9</e1>
+      <e2>13.583e9</e2>
+      <g12>4.068e9</g12>
+      <nu12>0.263</nu12>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>1.530e9</xt>
+      <yt>56.537e6</yt>
+      <xc>1.195e9</xc>
+      <yc>274.273e6</yc>
+      <s>132.172e6</s>
+    </strength>
+  </material>
+  <lamina name="S2/SP381_0.0092">
+    <material>S2/SP381</material>
+    <thickness>2.34e-4</thickness>
+  </lamina>
+
+
+  <material name="ud_lam" type="lamina">
+    <density>1.600e3</density>
+    <elastic>
+      <e1>135.137e9</e1>
+      <e2>9.239e9</e2>
+      <g12>6.274e9</g12>
+      <nu12>3.48E-01</nu12>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>1.455e9</xt>
+      <yt>39.024e6</yt>
+      <xc>937.687e6</xc>
+      <yc>206.843e6</yc>
+      <s>76.532e6</s>
+    </strength>
+  </material>
+  <lamina name="ud_lam_0.0053">
+    <material>ud_lam</material>
+    <thickness>1.35e-4</thickness>
+  </lamina>
+
+
+  <material name="T650-35 12k/976" type="lamina">
+    <density>1.590e3</density>
+    <elastic>
+      <e1>151.684e9</e1>
+      <e2>8.963e9</e2>
+      <g12>5.137e9</g12>
+      <nu12>1.150E-01</nu12>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>1.593e9</xt>
+      <yt>39.369e6</yt>
+      <xc>1.034e9</xc>
+      <yc>231.664e6</yc>
+      <s>102.732e6</s>
+    </strength>
+  </material>
+  <lamina name="T650-35 12k/976_0.0052">
+    <material>T650-35 12k/976</material>
+    <thickness>1.32e-4</thickness>
+  </lamina>
+
+
+  <material name="T700 24K/E765" type="lamina">
+    <density>1.550e3</density>
+    <elastic>
+      <e1>129e9</e1>
+      <e2>9.377e9</e2>
+      <g12>4.482e9</g12>
+      <nu12>0.319</nu12>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <strength>
+      <xt>2.553e9</xt>
+      <yt>21.512e6</yt>
+      <xc>1.239e9</xc>
+      <yc>199.534e6</yc>
+      <s>94.251e6</s>
+    </strength>
+  </material>
+  <lamina name="T700 24K/E765_0.0056">
+    <material>T700 24K/E765</material>
+    <thickness>1.42e-4</thickness>
+  </lamina>
+
+</materials>

@@ -11,16 +11,17 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 
-#include "gmsh/SPoint2.h"
-#include "gmsh/SPoint3.h"
-#include "gmsh/STensor3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint2.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/STensor3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <list>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 
 double calcPolylineLength(const std::vector<PDCELVertex *> ps) {
@@ -132,7 +133,7 @@ PDCELVertex *findParamPointOnPolyline(
   double length = calcPolylineLength(ps);
   double ulength = u * length;
 
-  int nlseg = ps.size() - 1;
+  std::size_t nlseg = ps.size() - 1;
   double ui = 0, li;
   // int i;
   for (seg = 0; seg < nlseg; ++seg) {
@@ -210,7 +211,7 @@ double calcDistanceSquared(PDCELVertex *v1, PDCELVertex *v2) {
 Baseline *joinCurves(std::list<Baseline *> curves) {
   // std::cout << "[debug] joining curves" << std::endl;
 
-  Baseline *bl, *bl_tmp;
+  Baseline *bl;
   bl = new Baseline(curves.front());
   bl->setName(bl->getName() + "_new");
   curves.pop_front();
@@ -312,7 +313,7 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
   }
 
   double u1, u2;
-  calcLineIntersection2D(ls_end, ls, u1, u2);
+  calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
   PDCELVertex *vnew = ls_end->getParametricVertex(u1);
 
   if (end == 0) {
@@ -565,7 +566,7 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
                         std::vector<PDCELVertex *> &vl_2,
                         std::vector<int> &vi_1, std::vector<int> &vi_2,
                         std::vector<PDCELVertex *> &vl_c) {
-  int m, n;
+  std::size_t m, n;
   m = vl_1.size();
   n = vl_2.size();
 

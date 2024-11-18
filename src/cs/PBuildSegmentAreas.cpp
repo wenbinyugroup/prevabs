@@ -13,8 +13,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh/SPoint3.h"
-#include "gmsh/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
+#include "gmsh_mod/SVector3.h"
 
 #include <cmath>
 #include <cstdio>
@@ -49,13 +49,13 @@ void Segment::buildAreas(Message *pmessage) {
 
 
   PArea *area, *area_prev = nullptr;
-  PGeoLineSegment *ls, *ls_base, *ls_tt, *ls_offset;
-  PDCELHalfEdge *he, *he_tmp, *he_tmp_prev, *he_tmp_next;
+  PGeoLineSegment *ls_base, *ls_offset, *ls_layup;
+  PDCELHalfEdge *he_tmp, *he_tmp_next;
   PDCELVertex *v_layer, *v_layer_prev, *vb_tmp, *vo_tmp, *v1_tmp, *v2_tmp;
   std::list<PDCELFace *> new_faces;
   std::vector<PDCELVertex *> prev_bound_vertices_tmp, first_bound_vertices;
   std::string name;
-  double cumu_thk = 0, norm_thk, u_tmp, u1_tmp, u2_tmp;
+  double cumu_thk = 0, norm_thk, u1_tmp, u2_tmp;
 
   // _curve_base->print(pmessage, 9);
 
@@ -186,8 +186,8 @@ void Segment::buildAreas(Message *pmessage) {
         PLOG(debug) << pmessage->message("he_tmp: " + he_tmp->printString());
 
         bool not_parallel;
-        not_parallel = calcLineIntersection2D(he_tmp->toLineSegment(),
-                                              ls_offset, u1_tmp, u2_tmp);
+        not_parallel = calcLineIntersection2D(
+          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
         // std::cout << "        not_parallel = " << not_parallel << std::endl;
         // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
         std::stringstream ss_u1_tmp;
@@ -366,8 +366,8 @@ void Segment::buildAreas(Message *pmessage) {
   // 4. Split bound according to the layup
 
   int offset_v_index = 0;
-  int offset_v_linkto, offset_v_linkto_next;
-  int ii;
+  // int offset_v_linkto, offset_v_linkto_next;
+  // int ii;
   int count = 0;
   // while (!_inner_bounds.empty()) {
   // while (offset_v_index < _curve_offset->vertices().size()) {
@@ -391,6 +391,8 @@ void Segment::buildAreas(Message *pmessage) {
     vo_tmp = _curve_offset->vertices()[voi_tmp];
     PLOG(debug) << pmessage->message("  base vertex: " + vb_tmp->printString());
     PLOG(debug) << pmessage->message("  offset vertex: " + vo_tmp->printString());
+
+    ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
 
     // 2.
     // PLOG(debug) << pmessage->message("  2.2");
@@ -422,7 +424,18 @@ void Segment::buildAreas(Message *pmessage) {
     }
 
     area->setLineSegmentBase(ls_base);
-    area->setLocaly2(ls_base->toVector());
+
+    if (_mat_orient_e1 == "baseline") {
+      area->setLocaly1(ls_base->toVector());
+    }
+
+    if (_mat_orient_e2 == "baseline") {
+      area->setLocaly2(ls_base->toVector());
+    }
+    else if (_mat_orient_e2 == "layup") {
+      area->setLocaly2(ls_layup->toVector());
+    }
+
     area->face()->setName(_name + "_area_" + std::to_string(count));
     area->setPrevBoundVertices(prev_bound_vertices_tmp);
 
@@ -483,9 +496,21 @@ void Segment::buildAreas(Message *pmessage) {
   // pmessage->print(9, ss.str());
   area->setLineSegmentBase(ls_base);
 
+  ls_layup = new PGeoLineSegment(_curve_base->vertices().back(),
+                                _curve_offset->vertices().back());
+
   // Set y2 of the local layer orientation
   // as the direction of the current line segment of baseline
-  area->setLocaly2(ls_base->toVector());
+  if (_mat_orient_e1 == "baseline") {
+    area->setLocaly1(ls_base->toVector());
+  }
+
+  if (_mat_orient_e2 == "baseline") {
+    area->setLocaly2(ls_base->toVector());
+  }
+  else if (_mat_orient_e2 == "layup") {
+    area->setLocaly2(ls_layup->toVector());
+  }
   // std::cout << "[debug] vector localy2: " << ls_base->toVector() <<
   // std::endl;
 
@@ -584,8 +609,8 @@ void Segment::buildAreas(Message *pmessage) {
 
         bool not_parallel;
 
-        not_parallel = calcLineIntersection2D(he_tmp->toLineSegment(),
-                                              ls_offset, u1_tmp, u2_tmp);
+        not_parallel = calcLineIntersection2D(
+          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
 
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;

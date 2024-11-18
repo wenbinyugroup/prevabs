@@ -5,9 +5,9 @@
 #include "PDCEL.hpp"
 #include "PDCELHalfEdge.hpp"
 
-#include "gmsh/GVertex.h"
-#include "gmsh/SPoint2.h"
-#include "gmsh/SPoint3.h"
+// #include "gmsh/GVertex.h"
+#include "gmsh_mod/SPoint2.h"
+#include "gmsh_mod/SPoint3.h"
 
 #include <iostream>
 #include <string>
@@ -24,11 +24,14 @@ private:
   SPoint3 _point;
   PDCEL *_dcel; // Indicating if the vertex has been added to the dcel
   PDCELHalfEdge *_incident_edge;
-  GVertex *_gvertex;
-  bool _gbuild;
   int _degenerated;
   PDCELVertex *_link_to = nullptr;
   Baseline *_p_on_line = nullptr;
+  bool _on_joint = false;
+
+  bool _gbuild;
+  // GVertex *_gvertex;
+  int _gvertex_tag = 0;
 
 public:
   PDCELVertex()
@@ -82,14 +85,12 @@ public:
   void rotate(double);
 
   bool isFinite();
+  bool onJoint() { return _on_joint; }
 
   PDCEL *dcel() { return _dcel; }
   PDCELHalfEdge *edge() { return _incident_edge; }
   int degree();
   PDCELHalfEdge *getEdgeTo(PDCELVertex *);
-
-  bool gbuild() { return _gbuild; }
-  GVertex *gvertex() { return _gvertex; }
 
   int &degenerated() { return _degenerated; }
 
@@ -104,9 +105,17 @@ public:
   void setDCEL(PDCEL *dcel) { _dcel = dcel; }
   void setIncidentEdge(PDCELHalfEdge *);
 
+  // void setGVertex(GVertex *);
+  void setGVertexTag(int tag) { _gvertex_tag = tag; }
+  // void resetGVertex() { _gvertex = nullptr; }
+  void resetGVertexTag() { _gvertex_tag = 0; }
+
+  void setOnJoint(bool on_joint) { _on_joint = on_joint; }
+
+  bool gbuild() { return _gbuild; }
   void setGBuild(bool build) { _gbuild = build; }
-  void setGVertex(GVertex *);
-  void resetGVertex() { _gvertex = nullptr; }
+  // GVertex *gvertex() { return _gvertex; }
+  int gvertexTag() { return _gvertex_tag; }
 
   // void setName(std::string name) {_s_name = name; }
 };

@@ -1,24 +1,8 @@
-2022-01-11 00:25:36 [info] prevabs start
-2022-01-11 00:25:36 [info]   - dehomogenizing...
-2022-01-11 00:25:36 [info]       - reading main input file: .\share\test\examples\ex_uh60a_f\uh60a.xml
-2022-01-11 00:25:36 [info]         - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
-2022-01-11 00:25:36 [info]         - reading materials file: .\share\test\examples\ex_uh60a_f\material_database.xml
-2022-01-11 00:25:36 [info]       - reading main input data: .\share\test\examples\ex_uh60a_f\uh60a.xml
-2022-01-11 00:25:36 [info]     - writing glb file: .\share\test\examples\ex_uh60a_f\uh60a.sg.glb
-2022-01-11 00:25:36 [info]   - running VABS for failure index
-2022-01-11 00:25:36 [info] running VABS...
-2022-01-11 00:25:38 [info]   - running VABS for failure index -- done
-2022-01-11 00:25:38 [info] - post-processing recover results
-2022-01-11 00:25:38 [info]   - reading VABS input data: .\share\test\examples\ex_uh60a_f\uh60a.sg
-2022-01-11 00:25:38 [info]   - reading failure analysis outputs...
-2022-01-11 00:25:38 [info]     - reading failure analysis result: .\share\test\examples\ex_uh60a_f\uh60a.sg.fi
-2022-01-11 00:25:38 [info]   - writing gmsh .opt file: .\share\test\examples\ex_uh60a_f\uh60a_local.opt
-2022-01-11 00:25:38 [info]   - writing gmsh .geo file: .\share\test\examples\ex_uh60a_f\uh60a_local.geo
-2022-01-11 00:25:38 [info]   - writing gmsh .msh file: .\share\test\examples\ex_uh60a_f\uh60a_local_case_1.msh
-2022-01-11 00:25:38 [info]       - writing element data: Strength ratio
-2022-01-11 00:25:38 [info]       - writing element data: Failure index
-2022-01-11 00:25:38 [info] - post-processing recover results -- done
-2022-01-11 00:25:38 [info] - running Gmsh for visualization
-2022-01-11 00:25:38 [info] - running: gmsh .\share\test\examples\ex_uh60a_f\uh60a_local.geo .\share\test\examples\ex_uh60a_f\uh60a_local_case_1.msh .\share\test\examples\ex_uh60a_f\uh60a_local.opt
-2022-01-11 00:25:38 [info] prevabs finished
-2022-01-11 00:25:38 [info] total running time: 2.035 sec
+2024-08-07 13:35:35 [info] prevabs start
+2024-08-07 13:35:35 [info]   - dehomogenizing...
+2024-08-07 13:35:35 [info]       - reading main input file: .\uh60a.xml
+2024-08-07 13:35:35 [info]         - reading materials file: C:\Users\tian50\program\MaterialDB.xml
+2024-08-07 13:35:35 [info]         - reading materials file: .\material_database.xml
+2024-08-07 13:35:35 [info]       - reading main input data: .\uh60a.xml
+2024-08-07 13:35:35 [info]     - writing glb file: .\uh60a.sg.glb
+2024-08-07 13:35:35 [info]   - running VABS for recover
