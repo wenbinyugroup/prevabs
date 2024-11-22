@@ -110,13 +110,19 @@ html_theme = 'pydata_sphinx_theme'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {
-#     "repository_url": "https://github.itap.purdue.edu/wenbinyugroup/prevabs",
-#     "use_repository_button": True,
-#     "use_issues_button": True,
-#     "use_edit_page_button": True,
-#     "use_download_button": True,
-# }
+html_theme_options = {
+    'logo': {
+        'text': 'PreVABS',
+    },
+    'show_nav_level': 2,
+    # "path_to_docs": "doc/source",
+    # 'use_edit_page_button': True,
+    # "use_repository_button": True,
+    # "use_issues_button": True,
+    # 'collapse_navigation': True,
+    'navigation_depth': 4,
+    "announcement": "Documentation is under construction.",
+}
 
 html_show_copyright = False
 

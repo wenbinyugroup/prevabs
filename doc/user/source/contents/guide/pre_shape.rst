@@ -294,30 +294,29 @@ There are two ways of defining an arc as shown in :numref:`Fig. %s <fig_baseline
   Two possible cases of defining an arc.
 
 
-.. code-block:: xml
-  :linenos:
-  :name: code_baseline_arc
-  :caption: Input syntax for the base lines shown in :numref:`Fig. %s <fig_baselinearc2>`
+..  code-block:: xml
+    :linenos:
+    :name: code_baseline_arc
+    :caption: Input syntax for the base lines shown in :numref:`Fig. %s <fig_baselinearc2>`
 
-  <baselines>
-    ...
-    <baseline name="left" type="arc">
-      <center> c </center>
-      <start> s </start>
-      <end> e </end>
-      <direction> ccw </direction>
-      <discrete by="angle> 9 </discrete>
-    </baseline>
-  
-    <baseline name="right" type="arc">
-      <center> c </center>
-      <start> s </start>
-      <angle> a </angle>
-      <!-- here the direction is the default value 'ccw' -->
-      <discrete by="number"> 10 </discrete>
-    </baseline>
-    ...
-  </basepoints>
+    <baselines>
+        ...
+        <baseline name="left" type="arc">
+            <center> c </center>
+            <start> s </start>
+            <end> e </end>
+            <direction> ccw </direction>
+            <discrete by="angle"> 9 </discrete>
+        </baseline>
+
+        <baseline name="right" type="arc">
+            <center> c </center>
+            <start> s </start>
+            <angle> a </angle>
+            <discrete by="number"> 10 </discrete>
+        </baseline>
+        ...
+    </baselines>
 
 
 **Specification**
@@ -354,25 +353,25 @@ There are two ways of defining a circle.
 - Use center and a point on the circle.
 
 
-.. code-block:: xml
-  :linenos:
-  :name: code_baseline_circle
-  :caption: Input syntax for the 'circle' type base line.
+..  code-block:: xml
+    :linenos:
+    :name: code_baseline_circle
+    :caption: Input syntax for the 'circle' type base line.
 
-  <baselines>
-    ...
-    <baseline name="circle1" type="circle">
-      <center> c </center>
-      <radius> r </radius>
-    </baseline>
+    <baselines>
+        ...
+        <baseline name="circle1" type="circle">
+            <center> c </center>
+            <radius> r </radius>
+        </baseline>
 
-    <baseline name="circle2" type="circle">
-      <center> c </center>
-      <point> p </point>
-      <direction> cw </direction>
-    </baseline>
-    ...
-  </baselines>
+        <baseline name="circle2" type="circle">
+            <center> c </center>
+            <point> p </point>
+            <direction> cw </direction>
+        </baseline>
+        ...
+    </baselines>
 
 
 **Specification**
