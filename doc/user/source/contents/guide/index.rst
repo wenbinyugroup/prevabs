@@ -1,6 +1,6 @@
 .. _section-prevabs_guide:
 
-Guide for Preparing Input Files
+Input Guide
 ===============================
 
 In PreVABS, a cross section is defined through two aspects: components and global configuration, as shown in :numref:`Fig. %s <fig_csfiles1>`.
@@ -8,12 +8,12 @@ Components are built from geometry and materials.
 The geometry aspect comprises definitions of base points and base lines.
 The material aspect includes material properties, lamina thicknesses, layup stacking sequences, etc. The global configuration contains the files included, transformation, meshing options, and analysis settings.
 
-.. figure:: /figures/chart1.png
-  :name: fig_csfiles1
-  :width: 75%
-  :align: center
+..  figure:: /figures/chart1.png
+    :name: fig_csfiles1
+    :width: 75%
+    :align: center
 
-  Cross section definition in PreVABS.
+    Cross section definition in PreVABS.
 
 .. In PreVABS, the key to preparing input files for a cross section is
 .. defining *Segment*\ s. A *Segment* is a unique combination of a
@@ -43,21 +43,21 @@ Except the base points file, which has a file extension .dat, all other files us
 A top level cross section file stores all information that will be discussed in the following sections.
 The input syntax for this main file is shown in :numref:`Listing %s <code_crosssection>`.
 
-.. code-block:: xml
-  :linenos:
-  :name: code_crosssection
-  :caption: Input syntax for the cross section file.
+..  code-block:: xml
+    :linenos:
+    :name: code_crosssection
+    :caption: Input syntax for the cross section file.
 
-  <cross_section name="" format="">
-    <include>...</include>
-    <analysis>...</analysis>
-    <general>...</general>
-    <baselines>...</baselines>
-    <layups>...</layups>
-    <component>...</component>
-    <component>...</component>
-    ...
-  </cross_section>
+    <cross_section name="" format="">
+      <include>...</include>
+      <analysis>...</analysis>
+      <general>...</general>
+      <baselines>...</baselines>
+      <layups>...</layups>
+      <component>...</component>
+      <component>...</component>
+      ...
+    </cross_section>
 
 
 Data of geometry and layup can be arranged in two ways, controlled by the attribute ``format``:
@@ -84,15 +84,15 @@ Data of geometry and layup can be arranged in two ways, controlled by the attrib
 
 
 
-.. toctree::
+..  toctree::
     :maxdepth: 2
     :caption: Subtopics
 
-    guide/pre_coordinate
-    guide/pre_shape
-    guide/pre_material
-    guide/pre_component
-    guide/pre_recover
-    guide/pre_overall
+    pre_coordinate
+    pre_shape
+    pre_material
+    pre_component
+    pre_recover
+    pre_overall
 
 

@@ -22,18 +22,18 @@ Complete files can be found in ``examples\ex_airfoil_r\``, including
 ``mh104.sg.K``, ``mh104.sg.opt``, ``mh104.sg.v0``,
 ``mh104.sg.v1S``, and ``mh104.sg.v22``.
 
-.. csv-table:: Sectional forces and moments
-  :name: table_mh104_1dresults
-  :header-rows: 1
-  :align: center
+..  csv-table:: Sectional forces and moments
+    :name: table_mh104_1dresults
+    :header-rows: 1
+    :align: center
 
-  Quantity, Value
-  ":math:`F_1`, N", 1
-  ":math:`F_2`, N", 2
-  ":math:`F_3`, N", 3
-  ":math:`M_1`, Nm", 4
-  ":math:`M_2`, Nm", 5
-  ":math:`M_3`, Nm", 6
+    Quantity, Value
+    ":math:`F_1`, N", 1
+    ":math:`F_2`, N", 2
+    ":math:`F_3`, N", 3
+    ":math:`M_1`, Nm", 4
+    ":math:`M_2`, Nm", 5
+    ":math:`M_3`, Nm", 6
 
 
 
@@ -42,10 +42,10 @@ Complete files can be found in ``examples\ex_airfoil_r\``, including
 Result
 ------
 
-.. figure:: /figures/examplemh104r.png
-  :name: fig_mh104r
-  :width: 6in
-  :align: center
+..  figure:: /figures/examplemh104r.png
+    :name: fig_mh104r
+    :width: 6in
+    :align: center
 
-  Contour plot of recovered nodal stress SN11.
+    Contour plot of recovered nodal stress SN11.
 
