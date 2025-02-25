@@ -282,16 +282,16 @@ void Segment::offsetCurveBase(Message *pmessage) {
 
 
   // New offset function
-  // _curve_offset = new Baseline();
-  // offset2(_curve_base->vertices(), side, _layup->getTotalThickness(),
-  //        _curve_offset->vertices(), _offset_indices_base_link_to);
+  _curve_offset = new Baseline();
+  offset_2(_curve_base->vertices(), side, _layup->getTotalThickness(),
+         _curve_offset->vertices(), pmessage);
 
 
   // Old offset function
-  _curve_offset = new Baseline();
-  offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
-         _curve_offset->vertices(), _offset_indices_base_link_to,
-         _base_offset_indices_pairs, pmessage);
+  // _curve_offset = new Baseline();
+  // offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
+  //        _curve_offset->vertices(), _offset_indices_base_link_to,
+  //        _base_offset_indices_pairs, pmessage);
 
 
   // if (config.debug) {

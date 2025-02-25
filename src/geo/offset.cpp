@@ -133,71 +133,63 @@ PGeoLineSegment *offsetLineSegment(PGeoLineSegment *ls, SVector3 &offset) {
  * offsetting these segments, and then constructing the new curve from the offset
  * segments.
  *
- * @param curve The original baseline curve to be offset.
+ * @param pcurve The original baseline curve to be offset.
  * @param side The side on which to offset the curve (e.g., left or right).
  * @param distance The distance by which to offset the curve.
  * @return A pointer to the new offset baseline curve.
  */
-Baseline *offsetCurve(Baseline *curve, int side, double distance) {
-  // std::cout << "[debug] offsetCurve" << std::endl;
-  Baseline *curve_off = new Baseline();
+Baseline *offsetCurve(Baseline *pcurve, int side, double distance) {
+  Baseline *pcurve_off = new Baseline();
 
-  PGeoLineSegment *ls;
-  if (curve->vertices().size() == 2) {
-    ls = new PGeoLineSegment(curve->vertices()[0], curve->vertices()[1]);
-    ls = offsetLineSegment(ls, side, distance);
+  PGeoLineSegment *psegment;
+  if (pcurve->vertices().size() == 2) {
+    psegment = new PGeoLineSegment(pcurve->vertices()[0], pcurve->vertices()[1]);
+    psegment = offsetLineSegment(psegment, side, distance);
 
-    curve_off->addPVertex(ls->v1());
-    curve_off->addPVertex(ls->v2());
+    pcurve_off->addPVertex(psegment->v1());
+    pcurve_off->addPVertex(psegment->v2());
   } else {
-    PGeoLineSegment *ls_prev, *ls_first_off;
-    for (int i = 0; i < curve->vertices().size() - 1; ++i) {
-      ls = new PGeoLineSegment(curve->vertices()[i], curve->vertices()[i + 1]);
-      ls = offsetLineSegment(ls, side, distance);
+    PGeoLineSegment *pprev_segment, *pfirst_segment_off;
+    for (int i = 0; i < pcurve->vertices().size() - 1; ++i) {
+      psegment = new PGeoLineSegment(pcurve->vertices()[i], pcurve->vertices()[i + 1]);
+      psegment = offsetLineSegment(psegment, side, distance);
 
       if (i == 0) {
-        ls_first_off = ls;
-        curve_off->addPVertex(ls->v1());
+        pfirst_segment_off = psegment;
+        pcurve_off->addPVertex(psegment->v1());
       }
 
       if (i > 0) {
-        // Calculate intersection
         double u1, u2;
         bool not_parallel;
-        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2, TOLERANCE);
+        not_parallel = calcLineIntersection2D(psegment, pprev_segment, u1, u2, TOLERANCE);
         if (not_parallel) {
-          curve_off->addPVertex(ls->getParametricVertex(u1));
+          pcurve_off->addPVertex(psegment->getParametricVertex(u1));
         } else {
-          curve_off->addPVertex(ls->v1());
+          pcurve_off->addPVertex(psegment->v1());
         }
       }
 
-      if (i == curve->vertices().size() - 2) {
-        curve_off->addPVertex(ls->v2());
+      if (i == pcurve->vertices().size() - 2) {
+        pcurve_off->addPVertex(psegment->v2());
       }
 
-      ls_prev = ls;
+      pprev_segment = psegment;
     }
 
-    if (curve->vertices().front() == curve->vertices().back()) {
+    if (pcurve->vertices().front() == pcurve->vertices().back()) {
       double u1, u2;
       bool not_parallel;
-      // PDCELVertex *v;
-      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2, TOLERANCE);
+      not_parallel = calcLineIntersection2D(pfirst_segment_off, pprev_segment, u1, u2, TOLERANCE);
       if (not_parallel) {
-        curve_off->vertices()[0] = ls_first_off->getParametricVertex(u1);
+        pcurve_off->vertices()[0] = pfirst_segment_off->getParametricVertex(u1);
       }
-      curve_off->vertices()[curve_off->vertices().size() - 1] =
-          curve_off->vertices()[0];
+      pcurve_off->vertices()[pcurve_off->vertices().size() - 1] =
+          pcurve_off->vertices()[0];
     }
   }
 
-  // std::cout << "        baseline curve_off" << std::endl;
-  // for (auto v : curve_off->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
-  return curve_off;
+  return pcurve_off;
 }
 
 
@@ -214,36 +206,28 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
  * This function calculates a new position for the vertices of a line segment
  * by offsetting them perpendicular to the segment direction by a given distance.
  *
- * @param v1_base Pointer to the first vertex of the original line segment.
- * @param v2_base Pointer to the second vertex of the original line segment.
- * @param side Integer indicating the side of the offset (positive or negative).
- * @param dist Distance by which to offset the line segment.
- * @param v1_off Pointer to the first vertex of the offset line segment (output).
- * @param v2_off Pointer to the second vertex of the offset line segment (output).
+ * @param[in] v1_base Pointer to the first vertex of the original line segment.
+ * @param[in] v2_base Pointer to the second vertex of the original line segment.
+ * @param[in] side Integer indicating the side of the offset (positive or negative).
+ * @param[in] dist Distance by which to offset the line segment.
+ * @param[out] v1_off Pointer to the first vertex of the offset line segment (output).
+ * @param[out] v2_off Pointer to the second vertex of the offset line segment (output).
  * @return Integer indicating the success of the operation (always returns 1).
  */
 int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
            PDCELVertex *v1_off, PDCELVertex *v2_off) {
-  // std::cout << "[debug] offset a line segment:" << std::endl;
-  // std::cout << "        " << v1_base << std::endl;
-  // std::cout << "        " << v2_base << std::endl;
+  SVector3 direction, normal, tangential;
+  normal = SVector3(side, 0, 0);
+  tangential = SVector3(v1_base->point(), v2_base->point());
 
-  SVector3 dir, n, t;
-  n = SVector3(side, 0, 0);
-  t = SVector3(v1_base->point(), v2_base->point());
-
-  dir = crossprod(n, t).unit() * dist;
-  // std::cout << "        vector dir = " << dir << std::endl;
+  direction = crossprod(normal, tangential).unit() * dist;
 
   SPoint3 p1, p2;
-  p1 = v1_base->point() + dir.point();
-  p2 = v2_base->point() + dir.point();
-  // std::cout << "        point p1 = " << p1 << std::endl;
+  p1 = v1_base->point() + direction.point();
+  p2 = v2_base->point() + direction.point();
 
   v1_off->setPoint(p1);
   v2_off->setPoint(p2);
-  // v1_off = new PDCELVertex(p1[0], p1[1], p1[2]);
-  // v2_off = new PDCELVertex(p2[0], p2[1], p2[2]);
 
   return 1;
 }
@@ -840,3 +824,379 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   return 1;
 }
 
+
+
+
+
+//
+// New offset function
+//
+
+/**
+ * @brief Handle the case when the base curve has only two vertices.
+ *
+ * @param[in] base The base curve.
+ * @param[in] side The side of the offset (positive or negative).
+ * @param[in] dist The distance by which to offset the line segment.
+ * @param[out] offset_vertices The offset curve (output).
+ * @param[in] pmessage The message object.
+ */
+void handle_two_vertex_case(const std::vector<PDCELVertex *> &base, int side, double dist,
+                         std::vector<PDCELVertex *> &offset_vertices, Message *pmessage)
+{
+  PLOG(debug) << pmessage->message("handling the case when the base curve has only two vertices");
+
+  // Create two new vertices
+  PDCELVertex *v1_tmp = new PDCELVertex();
+  PDCELVertex *v2_tmp = new PDCELVertex();
+
+  // Calculate the offset line segment
+  offset(base[0], base[1], side, dist, v1_tmp, v2_tmp);
+
+  // Add the two vertices to the offset curve
+  PLOG(debug) << pmessage->message("adding two vertices to the offset curve");
+  offset_vertices.push_back(v1_tmp);
+  offset_vertices.push_back(v2_tmp);
+
+  // Print the two vertices
+  PLOG(debug) << pmessage->message("two vertices:");
+  PLOG(debug) << pmessage->message("  " + v1_tmp->printString());
+  PLOG(debug) << pmessage->message("  " + v2_tmp->printString());
+}
+
+
+
+
+/**
+ * @brief Handle the intersection of two line segments.
+ *
+ * @param[in] v1_prev The previous vertex.
+ * @param[in] v2_prev The previous vertex.
+ * @param[in] v1_tmp The current vertex.
+ * @param[in] v2_tmp The current vertex.
+ * @param[out] vertices_tmp The vertices of the offset curve (output).
+ * @param[in] pmessage The message object.
+ */
+void handle_segment_intersection(PDCELVertex *v1_prev, PDCELVertex *v2_prev,
+                               PDCELVertex *v1_tmp, PDCELVertex *v2_tmp,
+                               std::vector<PDCELVertex *> &vertices_tmp,
+                               Message *pmessage)
+{
+  PLOG(debug) << pmessage->message("calculate intersection");
+  PLOG(debug) << pmessage->message("  previous segment: " + v1_prev->printString() + " -- " + v2_prev->printString());
+  PLOG(debug) << pmessage->message("  current segment: " + v1_tmp->printString() + " -- " + v2_tmp->printString());
+
+  // Calculate the intersection of the two line segments
+  h2d::Point2d p1_prev(v1_prev->point2()[0], v1_prev->point2()[1]);
+  h2d::Point2d p2_prev(v2_prev->point2()[0], v2_prev->point2()[1]);
+  h2d::Point2d p1_tmp(v1_tmp->point2()[0], v1_tmp->point2()[1]);
+  h2d::Point2d p2_tmp(v2_tmp->point2()[0], v2_tmp->point2()[1]);
+
+  h2d::Segment seg_prev(p1_prev, p2_prev);
+  h2d::Segment seg_curr(p1_tmp, p2_tmp);
+  auto res = seg_prev.intersects(seg_curr);
+
+  PDCELVertex *v_new = nullptr;
+  if (res())
+  {
+    // If there is an intersection, calculate the intersection point
+    auto pts = res.get();
+    PLOG(debug) << pmessage->message("  intersection point: (" + std::to_string(pts.getX()) + ", " + std::to_string(pts.getY()) + ")");
+    if (isClose(pts.getX(), pts.getY(), p1_prev.getX(), p1_prev.getY(), ABS_TOL, REL_TOL))
+    {
+      v_new = v1_prev;
+      PLOG(debug) << pmessage->message("  using previous vertex: " + v1_prev->printString());
+    }
+    else if (isClose(pts.getX(), pts.getY(), p2_prev.getX(), p2_prev.getY(), ABS_TOL, REL_TOL))
+    {
+      v_new = v2_prev;
+      PLOG(debug) << pmessage->message("  using previous vertex: " + v2_prev->printString());
+    }
+    else
+    {
+      // Create a new vertex at the intersection point
+      v_new = new PDCELVertex(0, pts.getX(), pts.getY());
+      PLOG(debug) << pmessage->message("  created new vertex: " + v_new->printString());
+    }
+  }
+  else
+  {
+    // If there is no intersection, use the previous vertex
+    v_new = v2_prev;
+    PLOG(debug) << pmessage->message("  using previous vertex: " + v2_prev->printString());
+  }
+
+  // Add the new vertex to the offset curve
+  vertices_tmp.push_back(v_new);
+}
+
+
+
+/**
+ * @brief Process all line segments in the base curve and calculate the offset curve.
+ *
+ * @param[in] base The base curve.
+ * @param[in] side The side of the offset (positive or negative).
+ * @param[in] dist The distance by which to offset the line segment.
+ * @param[out] vertices_tmp The vertices of the offset curve (output).
+ * @param[in] pmessage The message object.
+ */
+void process_all_segments(const std::vector<PDCELVertex *> &base, int side, double dist,
+                        std::vector<PDCELVertex *> &vertices_tmp, Message *pmessage)
+{
+  PDCELVertex *v1_prev = nullptr, *v2_prev = nullptr;
+
+  // Iterate over all line segments in the base curve
+  for (int i = 0; i < base.size() - 1; ++i)
+  {
+    PLOG(debug) << pmessage->message("processing line segment " + std::to_string(i+1) + "/" + std::to_string(base.size()-1));
+    PDCELVertex *v1_tmp = new PDCELVertex();
+    PDCELVertex *v2_tmp = new PDCELVertex();
+
+    // Calculate the offset curve for the current line segment
+    PLOG(debug) << pmessage->message("  calculating offset curve");
+    offset(base[i], base[i + 1], side, dist, v1_tmp, v2_tmp);
+
+    // If it is the first line segment, add the first vertex to the output
+    if (i == 0)
+    {
+      PLOG(debug) << pmessage->message("  adding first vertex to output");
+      vertices_tmp.push_back(v1_tmp);
+    }
+    else
+    {
+      // Handle the intersection of the two line segments
+      PLOG(debug) << pmessage->message("  handling intersection of two line segments");
+      handle_segment_intersection(v1_prev, v2_prev, v1_tmp, v2_tmp, vertices_tmp, pmessage);
+    }
+
+    // If it is the last line segment, add the last vertex to the output
+    if (i == base.size() - 2)
+    {
+      PLOG(debug) << pmessage->message("  adding last vertex to output");
+      vertices_tmp.push_back(v2_tmp);
+    }
+
+    // Store the current vertices for the next iteration
+    v1_prev = v1_tmp;
+    v2_prev = v2_tmp;
+  }
+}
+
+/**
+ * @brief Groups the vertices of the offset curve into sublines.
+ * @details
+ * This function takes a base curve and a set of vertices, and groups the
+ * vertices into sublines such that the orientation of the sublines is the
+ * same as the orientation of the base curve.
+ * @param[in] base The base curve.
+ * @param[in] vertices_tmp The vertices of the offset curve.
+ * @param[out] lines_group The grouped sublines.
+ * @param[in] pmessage The message object.
+ */
+void group_valid_sublines(const std::vector<PDCELVertex *> &base,
+                        const std::vector<PDCELVertex *> &vertices_tmp,
+                        std::vector<std::vector<PDCELVertex *>> &lines_group,
+                        Message *pmessage)
+{
+  PLOG(debug) << pmessage->message("grouping valid sublines");
+  SVector3 vec_base, vec_off;
+  bool check_prev = false;
+  for (int j = 0; j < base.size() - 1; ++j)
+  {
+    vec_base = SVector3(base[j]->point(), base[j + 1]->point());
+    vec_off = SVector3(vertices_tmp[j]->point(), vertices_tmp[j + 1]->point());
+
+    PLOG(debug) << pmessage->message("  checking line segment " + std::to_string(j+1) + "/" + std::to_string(base.size()-1));
+    // Check if the orientation of the subline is correct
+    bool check_next = (dot(vec_base, vec_off) > 0) && (vec_off.normSq() >= TOLERANCE * TOLERANCE);
+
+    PLOG(debug) << pmessage->message("  check_next: " + std::to_string(check_next));
+    // If the orientation is correct, add the vertex to the current subline
+    if (check_next)
+    {
+      if (!check_prev)
+      {
+        // Start a new subline
+        lines_group.push_back({vertices_tmp[j]});
+        PLOG(debug) << pmessage->message("  starting new subline: " + std::to_string(lines_group.size()));
+      }
+      // Add the vertex to the current subline
+      lines_group.back().push_back(vertices_tmp[j + 1]);
+      PLOG(debug) << pmessage->message("  adding vertex to current subline: " + std::to_string(lines_group.back().size()));
+    }
+    // Remember the orientation of the previous subline
+    check_prev = check_next;
+  }
+}
+
+/**
+ * @brief Trim and connect sublines in the offset curve.
+ *
+ * This function takes a list of sublines and trims them to remove any
+ * intersections between adjacent sublines. The trimmed sublines are then
+ * added to the output list.
+ *
+ * @param[in] lines_group The list of sublines.
+ * @param[out] trimmed_sublines The trimmed sublines.
+ * @param[in] pmessage The message object.
+ */
+void trim_and_connect_sublines(std::vector<std::vector<PDCELVertex *>> &lines_group,
+                            std::vector<std::vector<PDCELVertex *>> &trimmed_sublines,
+                            Message *pmessage)
+{
+  for (int line_i = 0; line_i < lines_group.size() - 1; ++line_i)
+  {
+    auto &sline_i = lines_group[line_i];
+    auto &sline_i1 = lines_group[line_i + 1];
+
+    PLOG(debug) << pmessage->message("trimming and connecting sublines " + std::to_string(line_i) + " and " + std::to_string(line_i + 1));
+
+    // Find intersections and trim sublines
+    std::vector<int> i1s, i2s;
+    std::vector<double> u1s, u2s;
+    findAllIntersections(sline_i, sline_i1, i1s, i2s, u1s, u2s);
+
+    int ls_i1, j1;
+    double ls_u1 = getIntersectionLocation(sline_i, i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+
+    int ls_i2 = i2s[j1];
+    double ls_u2 = u2s[j1];
+
+    int is_new_1, is_new_2;
+    PDCELVertex *v0 = getIntersectionVertex(sline_i, sline_i1, ls_i1, ls_i2, ls_u1, ls_u2,
+                                            1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
+
+    PLOG(debug) << pmessage->message("  trimming subline " + std::to_string(line_i) + " at " + std::to_string(ls_u1));
+    trim(sline_i, v0, 1);
+
+    PLOG(debug) << pmessage->message("  trimming subline " + std::to_string(line_i + 1) + " at " + std::to_string(ls_u2));
+    trim(sline_i1, v0, 0);
+
+    trimmed_sublines.push_back(sline_i);
+  }
+  trimmed_sublines.push_back(lines_group.back());
+}
+
+
+
+
+/**
+ * @brief Trim and connect sublines in the offset curve for a closed curve.
+ *
+ * This function takes a list of sublines and trims them to remove any
+ * intersections between adjacent sublines. The trimmed sublines are then
+ * added to the output list.
+ *
+ * Note that this function is only used for closed curves.
+ *
+ * @param[in] base The base curve.
+ * @param[in] lines_group The list of sublines.
+ * @param[out] trimmed_sublines The trimmed sublines.
+ * @param[in] pmessage The message object.
+ */
+void process_closed_curve_case(const std::vector<PDCELVertex *> &base,
+                            std::vector<std::vector<PDCELVertex *>> &lines_group,
+                            std::vector<std::vector<PDCELVertex *>> &trimmed_sublines,
+                            Message *pmessage)
+{
+  // Get the last and first subline
+  auto &sline_last = lines_group.back();
+  auto &sline_first = lines_group.front();
+
+  PLOG(debug) << pmessage->message("  processing last and first sublines");
+
+  // Find intersections between last and first sublines
+  std::vector<int> i1s, i2s;
+  std::vector<double> u1s, u2s;
+  findAllIntersections(sline_last, sline_first, i1s, i2s, u1s, u2s);
+
+  // Get the intersection location
+  int ls_i1, j1;
+  double ls_u1 = getIntersectionLocation(sline_last, i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+  int ls_i2 = i2s[j1];
+  double ls_u2 = u2s[j1];
+
+  PLOG(debug) << pmessage->message("  intersection location: " + std::to_string(ls_u1));
+
+  // Create the intersection vertex
+  int is_new_1, is_new_2;
+  PDCELVertex *v0 = getIntersectionVertex(sline_last, sline_first, ls_i1, ls_i2, ls_u1, ls_u2,
+                                          1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
+
+  PLOG(debug) << pmessage->message("  intersection vertex: " + v0->printString());
+
+  // Trim the sublines
+  trim(sline_last, v0, 1);
+  trim(sline_first, v0, 0);
+
+  PLOG(debug) << pmessage->message("  trimmed sublines");
+
+  // Update trimmed sublines
+  if (!trimmed_sublines.empty())
+  {
+    trimmed_sublines.back() = sline_last;
+    trimmed_sublines.front() = sline_first;
+  }
+}
+
+
+
+
+
+
+/**
+ * @brief Offset a polyline.
+ *
+ * @param[in] base The base polyline.
+ * @param[in] side The side to offset to (0 for left, 1 for right).
+ * @param[in] dist The offset distance.
+ * @param[out] offset The offset polyline.
+ * @param[in] pmessage The message object.
+ * @return 1 if successful, 0 otherwise.
+ */
+int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
+           std::vector<PDCELVertex *> &offset_vertices, Message *pmessage) {
+  pmessage->increaseIndent();
+  PLOG(debug) << pmessage->message("offsetting a polyline");
+
+  if (base.size() == 2) {
+      handle_two_vertex_case(base, side, dist, offset_vertices, pmessage);
+      pmessage->decreaseIndent();
+      return 1;
+  }
+
+  // Process all segments
+  std::vector<PDCELVertex*> vertices_tmp;
+  process_all_segments(base, side, dist, vertices_tmp, pmessage);
+
+  PLOG(debug) << pmessage->message("  processed all segments");
+
+  // Group valid sublines
+  std::vector<std::vector<PDCELVertex*>> lines_group;
+  group_valid_sublines(base, vertices_tmp, lines_group, pmessage);
+
+  PLOG(debug) << pmessage->message("  grouped valid sublines");
+
+  // Trim and connect sublines
+  std::vector<std::vector<PDCELVertex*>> trimmed_sublines;
+  if (lines_group.size() > 1) {
+      trim_and_connect_sublines(lines_group, trimmed_sublines,
+                              pmessage);
+  } else {
+      trimmed_sublines = lines_group;
+  }
+
+  PLOG(debug) << pmessage->message("  trimmed and connected sublines");
+
+  // Process closed curve case
+  if (!base.empty() && base.front() == base.back()) {
+      process_closed_curve_case(base, lines_group, trimmed_sublines,
+                              pmessage);
+  }
+
+  PLOG(debug) << pmessage->message("  processed closed curve case");
+
+  pmessage->decreaseIndent();
+  return 1;
+}

@@ -39,27 +39,28 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
   plogger_mt plogger;
 
   // Add attributes
-  // logging::add_common_attributes();
   plogger.add_attribute("LineID", attrs::counter<unsigned int>(1));
   plogger.add_attribute("TimeStamp", attrs::local_clock());
 
   // Add a text sink
-  typedef sinks::synchronous_sink<sinks::text_ostream_backend> text_sink;
-  boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
+  using text_sink = sinks::synchronous_sink<sinks::text_ostream_backend>;
+  auto sink = boost::make_shared<text_sink>();
 
   // Add a log file stream to the sink
-  sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(config.file_name_log));
+  sink->locked_backend()->add_stream(
+    boost::make_shared<std::ofstream>(config.file_name_log));
   sink->locked_backend()->auto_flush(true);
 
   // Add a console output stream to the sink
-  sink->locked_backend()->add_stream(boost::shared_ptr<std::ostream>(&std::clog, boost::null_deleter()));
+  sink->locked_backend()->add_stream(
+    boost::shared_ptr<std::ostream>(&std::clog, boost::null_deleter()));
 
   // Specify the format
   logging::formatter fmt = expr::stream
-    // << std::setw(7) << std::setfill('0') << line_id << std::setfill(' ') << " | "
-    // << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
+    << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
     << "[" << logging::trivial::severity << "]"
     << " " << expr::message;
+
   sink->set_formatter(fmt);
 
   // Set filter
@@ -67,31 +68,6 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
 
   // Register the sink
   logging::core::get()->add_sink(sink);
-
-  // logging::add_console_log(
-  //   std::cout,
-  //   keywords::format = (
-  //     expr::stream << expr::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S")
-  //     << " [" << expr::attr < logging::trivial::severity_level >("Severity") << "]: "
-  //     << expr::message
-  //   )
-  // );
-
-  // logging::add_file_log(
-  //   keywords::file_name = config.file_name_log,
-  //   keywords::format = (
-  //     expr::stream << expr::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S")
-  //     << " [" << expr::attr < logging::trivial::severity_level >("Severity") << "]: "
-  //     << expr::message
-  //   )
-  // );
-
-
-  // logging::core::get()->set_filter(
-  //   logging::trivial::severity >= config.log_severity_level
-  //   // logging::trivial::severity >= logging::trivial::debug
-  //   // logging::trivial::severity >= logging::trivial::info
-  // );
 
   return plogger;
 }

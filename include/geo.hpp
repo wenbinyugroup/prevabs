@@ -231,8 +231,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<PDCELVertex *> &offset, std::vector<int> &link_to_list_2,
            std::vector<std::vector<int>> &id_pairs, Message *pmessage);
 
-// int offset2(const std::vector<PDCELVertex *> &base, int side, double dist,
-//            std::vector<PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
+int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
+           std::vector<PDCELVertex *> &offset, Message *pmessage);
 
 
 
