@@ -1,0 +1,54 @@
+2025-02-25 17:55:40 [info] - prevabs start (2025-02-25 17:55:40)
+2025-02-25 17:55:40 [info] - reading input files
+2025-02-25 17:55:40 [info]     -   
+  
+        
+      
+      
+      
+      
+      
+      
+        
+        
+        -  [VABS Messages] 
+        
+        
+        -  [VABS Messages End] 
+        
+        
+      
+      ========================================
+      
+      
+      ========================================
+      
+nfo]     - building the cross section, step 1
+2025-02-25 17:55:40 [info]       - building component: top
+2025-02-25 17:55:40 [info]         - building the cross section, step 2
+2025-02-25 17:55:40 [info]           - building component details: top
+2025-02-25 17:55:40 [info]             - updating base-offset index pairs
+2025-02-25 17:55:40 [info]             - updating base-offset index pairs
+2025-02-25 17:55:40 [info]         - fixing geometry
+2025-02-25 17:55:40 [info]       - building the shape -- done
+2025-02-25 17:55:40 [info]       - modeling in Gmsh
+2025-02-25 17:55:40 [info]         - creating gmsh vertices
+2025-02-25 17:55:40 [info]         - creating gmsh edges
+2025-02-25 17:55:40 [info]         - creating gmsh faces
+2025-02-25 17:55:40 [info]         - creating physical groups
+2025-02-25 17:55:40 [info]         - meshing
+2025-02-25 17:55:40 [info]       - modeling in Gmsh -- done
+2025-02-25 17:55:40 [info]       - writing outputs
+2025-02-25 17:55:40 [info]         - writing sg file: .\test\strip\strip_two_segs.sg
+2025-02-25 17:55:40 [info]           - writing nodes
+2025-02-25 17:55:40 [info]           - writing elements
+2025-02-25 17:55:40 [info]             -   writing connectivity
+2025-02-25 17:55:40 [info]             -   writing local orientation
+2025-02-25 17:55:40 [info]         - writing material id-name file: .\test\strip\strip_two_segs.sg.mat
+2025-02-25 17:55:40 [info]       - writing outputs -- done
+2025-02-25 17:55:40 [info]         - running VABS for homogenization
+2025-02-25 17:55:40 [info]         - running: VABS ".\test\strip\strip_two_segs.sg" ""
+2025-02-25 17:55:42 [info]         - command launched successfully.
+2025-02-25 17:55:42 [info]         - running VABS for homogenization -- done
+2025-02-25 17:55:42 [info]       - prevabs finished (2025-02-25 17:55:42)
+2025-02-25 17:55:42 [info] total running time: 2.121 sec

@@ -1,28 +1,25 @@
-<cross_section name="v" format="1">
+<cross_section name="strip" format="1">
+
   <include>
     <!-- <baseline>baselines</baseline> -->
     <!-- <material>materials</material> -->
     <!-- <layup>layups</layup> -->
   </include>
 
-  <analysis>
-    <model>1</model>
-  </analysis>
-
   <general>
     <translate>0.0 0.0</translate>
-    <scale>1</scale>
-    <rotate></rotate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
     <mesh_size>0.01</mesh_size>
     <element_type>linear</element_type>
   </general>
 
   <baselines>
-    <point name="p1">-1 2</point>
-    <point name="p2">0 0</point>
-    <point name="p3">1 2</point>
+    <point name="lc">-1 0</point>
+    <point name="mc">0 0</point>
+    <point name="rc">1 0</point>
     <baseline name="bl" type="straight">
-      <points>p1,p2,p3</points>
+      <points>lc,mc,rc</points>
     </baseline>
   </baselines>
 
@@ -40,6 +37,19 @@
         <nu13>0.28</nu13>
         <nu23>0.28</nu23>
       </elastic>
+      <failure_criterion>tsai-wu</failure_criterion>
+      <characteristic_length>0</characteristic_length>
+      <strength>
+        <xt>1</xt>
+        <xc>2</xc>
+        <yt>3</yt>
+        <yc>4</yc>
+        <zt>5</zt>
+        <zc>6</zc>
+        <r>7</r>
+        <t>8</t>
+        <s>9</s>
+      </strength>
     </material>
     <lamina name="la_iso5_1_0005">
       <material>iso5_1</material>
@@ -54,11 +64,27 @@
     </layup>
   </layups>
 
-  <component name="surface">
-    <segment name="sg_v">
+  <component name="top">
+    <segment>
       <baseline>bl</baseline>
       <layup>layup1</layup>
     </segment>
   </component>
-
+  <!-- <component name="bottom">
+    <segment>
+      <baseline>bl</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+  <!-- <dehomo>
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <strains>1 1 1 1</strains>
+  </dehomo>
+  <failure output="stress">
+    <axis1>e11</axis1>
+    <axis2>k11</axis2>
+    <divisions>10</divisions>
+    <loads>1 1 1 1</loads>
+  </failure> -->
 </cross_section>

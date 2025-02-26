@@ -164,6 +164,7 @@ bool calcLineIntersection2D(
 
 
 
+
 int getTurningSide(SVector3, SVector3);
 
 double calcDistanceSquared(PDCELVertex *, PDCELVertex *);

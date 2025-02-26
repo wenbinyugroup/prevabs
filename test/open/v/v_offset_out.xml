@@ -57,7 +57,7 @@
   <component name="surface">
     <segment name="sg_v">
       <baseline>bl</baseline>
-      <layup>layup1</layup>
+      <layup direction="right">layup1</layup>
     </segment>
   </component>
 

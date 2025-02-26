@@ -1,0 +1,55 @@
+2025-02-25 18:01:47 [info] - prevabs start (2025-02-25 18:01:47)
+2025-02-25 18:01:47 [info] - reading input files
+2025-02-25 18:01:47 [info]     -   
+  
+    
+  
+  
+  
+  
+  
+  
+    
+    
+    -  [VABS Messages] 
+    
+    
+    -  [VABS Messages End] 
+    
+    
+  
+  ========================================
+  
+  
+  ========================================
+  
+ -- done
+2025-02-25 18:01:47 [info]   - building the shape
+2025-02-25 18:01:47 [info]     - building the cross section, step 1
+2025-02-25 18:01:47 [info]       - building component: surface
+2025-02-25 18:01:47 [info]     - building the cross section, step 2
+2025-02-25 18:01:47 [info]       - building component details: surface
+2025-02-25 18:01:47 [info]         - updating base-offset index pairs
+2025-02-25 18:01:47 [info]     - fixing geometry
+2025-02-25 18:01:47 [info]   - building the shape -- done
+2025-02-25 18:01:47 [info]   - modeling in Gmsh
+2025-02-25 18:01:47 [info]     - creating gmsh vertices
+2025-02-25 18:01:47 [info]     - creating gmsh edges
+2025-02-25 18:01:47 [info]     - creating gmsh faces
+2025-02-25 18:01:47 [info]     - creating physical groups
+2025-02-25 18:01:47 [info]     - meshing
+2025-02-25 18:01:47 [info]   - modeling in Gmsh -- done
+2025-02-25 18:01:47 [info]   - writing outputs
+2025-02-25 18:01:47 [info]     - writing sg file: .\test\open\v\v_offset_out.sg
+2025-02-25 18:01:47 [info]       - writing nodes
+2025-02-25 18:01:47 [info]       - writing elements
+2025-02-25 18:01:47 [info]         -   writing connectivity
+2025-02-25 18:01:47 [info]         -   writing local orientation
+2025-02-25 18:01:47 [info]     - writing material id-name file: .\test\open\v\v_offset_out.sg.mat
+2025-02-25 18:01:47 [info]   - writing outputs -- done
+2025-02-25 18:01:47 [info]     - running VABS for homogenization
+2025-02-25 18:01:47 [info]     - running: VABS ".\test\open\v\v_offset_out.sg" ""
+2025-02-25 18:01:49 [info]     - command launched successfully.
+2025-02-25 18:01:49 [info]     - running VABS for homogenization -- done
+2025-02-25 18:01:49 [info]   - prevabs finished (2025-02-25 18:01:49)
+2025-02-25 18:01:49 [info] total running time: 2.292 sec
