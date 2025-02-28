@@ -1,6 +1,6 @@
-2025-02-25 15:14:54 [info] - prevabs start (2025-02-25 15:14:54)
-2025-02-25 15:14:54 [info] - reading input files
-2025-02-25 15:14:54 [info]     -   
+2025-02-27 16:53:08 [info] - prevabs start (2025-02-27 16:53:08)
+2025-02-27 16:53:08 [info] - reading input files
+2025-02-27 16:53:08 [info]     -   
   
     
   
@@ -17,302 +17,310 @@
   ========================================
   
 nalysis...
-2025-02-25 15:14:54 [debug]     - finished reading analysis.
-2025-02-25 15:14:54 [debug]     - reading general...
-2025-02-25 15:14:54 [debug]     - tolerance = 1e-12
-2025-02-25 15:14:54 [debug]     - finished reading general.
-2025-02-25 15:14:54 [debug]     - finding includings...
-2025-02-25 15:14:54 [debug]     - reading geometry...
-2025-02-25 15:14:54 [debug]       - reading point: p1
-2025-02-25 15:14:54 [debug]       - reading point: p2
-2025-02-25 15:14:54 [debug]       - reading point: p3
-2025-02-25 15:14:54 [debug]       - reading point: p4
-2025-02-25 15:14:54 [debug]       - reading line: l_base
-2025-02-25 15:14:54 [debug]       - name: l_base
-2025-02-25 15:14:54 [debug]       - type: straight
-2025-02-25 15:14:54 [debug]       - point: (x, y, z)
-2025-02-25 15:14:54 [debug]       - 1 [p1]: ( 0 , -0.5 , 0.5 )
-2025-02-25 15:14:54 [debug]       - 2 [p2]: ( 0 , 0 , 0.5 )
-2025-02-25 15:14:54 [debug]       - 3 [p3]: ( 0 , 0 , -0.5 )
-2025-02-25 15:14:54 [debug]       - 4 [p4]: ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]     -  
-2025-02-25 15:14:54 [debug]     - summary of base lines (before transformation)
-2025-02-25 15:14:54 [debug]       - name: l_base
-2025-02-25 15:14:54 [debug]       - type: straight
-2025-02-25 15:14:54 [debug]       - point: (x, y, z)
-2025-02-25 15:14:54 [debug]       - 1 [p1]: ( 0 , -0.5 , 0.5 )
-2025-02-25 15:14:54 [debug]       - 2 [p2]: ( 0 , 0 , 0.5 )
-2025-02-25 15:14:54 [debug]       - 3 [p3]: ( 0 , 0 , -0.5 )
-2025-02-25 15:14:54 [debug]       - 4 [p4]: ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]     -  
-2025-02-25 15:14:54 [debug]     - transforming base geometry
-2025-02-25 15:14:54 [debug]     -  
-2025-02-25 15:14:54 [debug]     - summary of base lines (after transformation)
-2025-02-25 15:14:54 [debug]       - name: l_base
-2025-02-25 15:14:54 [debug]       - type: straight
-2025-02-25 15:14:54 [debug]       - point: (x, y, z)
-2025-02-25 15:14:54 [debug]       - 1 [p1]: ( 0 , -0.5 , 0.5 )
-2025-02-25 15:14:54 [debug]       - 2 [p2]: ( 0 , 0 , 0.5 )
-2025-02-25 15:14:54 [debug]       - 3 [p3]: ( 0 , 0 , -0.5 )
-2025-02-25 15:14:54 [debug]       - 4 [p4]: ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]     -  
-2025-02-25 15:14:54 [debug]     - finished reading geometry.
-2025-02-25 15:14:54 [debug]     - reading materials...
-2025-02-25 15:14:54 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-2025-02-25 15:14:54 [info]         - reading materials file: .\test\open\z\materials.xml
-2025-02-25 15:14:54 [debug]             - reading material: iso5_1
-2025-02-25 15:14:54 [debug]             - reading material: iso5_2
-2025-02-25 15:14:54 [debug]             - reading material: iso5_3
-2025-02-25 15:14:54 [debug]             - reading material: iso5_4
-2025-02-25 15:14:54 [debug]             - reading material: iso5_5
-2025-02-25 15:14:54 [debug]             - reading lamina: la_iso5_1_02
-2025-02-25 15:14:54 [debug]             - reading lamina: la_iso5_2_03
-2025-02-25 15:14:54 [debug]             - reading lamina: la_iso5_3_015
-2025-02-25 15:14:54 [debug]             - reading lamina: la_iso5_4_02
-2025-02-25 15:14:54 [debug]             - reading lamina: la_iso5_5_01
-2025-02-25 15:14:54 [debug]       - finished reading materials.
-2025-02-25 15:14:54 [debug]       - reading layups...
-2025-02-25 15:14:54 [debug]         - in function: readLayups
-2025-02-25 15:14:54 [debug]         - reading layup: layup1
-2025-02-25 15:14:54 [debug]       - finished reading layups.
-2025-02-25 15:14:54 [debug]       - reading components...
-2025-02-25 15:14:54 [debug]       - reading component: cmp_1
-2025-02-25 15:14:54 [debug]       - finished reading components.
-2025-02-25 15:14:54 [info]   - reading input files -- done
-2025-02-25 15:14:54 [info]   - building the shape
-2025-02-25 15:14:54 [info]     - building the cross section, step 1
-2025-02-25 15:14:54 [info]       - building component: cmp_1
-2025-02-25 15:14:54 [debug]         - offsetting the base curve of segment: sg1
-2025-02-25 15:14:54 [debug]           - offsetting a polyline
-2025-02-25 15:14:54 [debug]           - 1. offset each line segment
-2025-02-25 15:14:54 [debug]           - calculate intersection
-2025-02-25 15:14:54 [debug]           - v1_prev: ( 0 , -0.5 , 0.57 ), v2_prev: ( 0 , 0 , 0.57 )
-2025-02-25 15:14:54 [debug]           - v1_tmp: ( 0 , 0.07 , 0.5 ), v2_tmp: ( 0 , 0.07 , -0.5 )
-2025-02-25 15:14:54 [debug]           - Points: [-0.5,0.57] and [0,0.57]
-2025-02-25 15:14:54 [debug]           - Points: [0.07,0.5] and [0.07,-0.5]
-2025-02-25 15:14:54 [debug]           - Line: [0,1,-0.57] and [1,0,-0.07]
-2025-02-25 15:14:54 [debug]           - res = 1
-2025-02-25 15:14:54 [debug]           -   intersection points: [0.07,0.57]
-2025-02-25 15:14:54 [debug]           -         added vertex: ( 0 , 0.07 , 0.57 )
-2025-02-25 15:14:54 [debug]           - calculate intersection
-2025-02-25 15:14:54 [debug]           - v1_prev: ( 0 , 0.07 , 0.5 ), v2_prev: ( 0 , 0.07 , -0.5 )
-2025-02-25 15:14:54 [debug]           - v1_tmp: ( 0 , 0 , -0.43 ), v2_tmp: ( 0 , 0.5 , -0.43 )
-2025-02-25 15:14:54 [debug]           - Points: [0.07,0.5] and [0.07,-0.5]
-2025-02-25 15:14:54 [debug]           - Points: [0,-0.43] and [0.5,-0.43]
-2025-02-25 15:14:54 [debug]           - Line: [1,0,-0.07] and [0,1,0.43]
-2025-02-25 15:14:54 [debug]           - res = 1
-2025-02-25 15:14:54 [debug]           -   intersection points: [0.07,-0.43]
-2025-02-25 15:14:54 [debug]           -         added vertex: ( 0 , 0.07 , -0.43 )
-2025-02-25 15:14:54 [debug]           - 2. check degenerated cases
-2025-02-25 15:14:54 [debug]           - 3. find intersections between neighboring sub-lines
-2025-02-25 15:14:54 [debug]           - 4. join all sub-lines
-2025-02-25 15:14:54 [debug]         - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]         - offset line: ( 0 , -0.5 , 0.57 ) -> ( 0 , 0.5 , -0.43 )
-2025-02-25 15:14:54 [debug]         - making segment end: sg1 0
-2025-02-25 15:14:54 [debug]         - number of dependencies: 0
-2025-02-25 15:14:54 [debug]         - making segment end because of no dependency.
-2025-02-25 15:14:54 [debug]         - createSegmentFreeEnd: sg1 0
-2025-02-25 15:14:54 [debug]         - curve base:
-2025-02-25 15:14:54 [debug]           - name: l_base
-2025-02-25 15:14:54 [debug]           - type: straight
-2025-02-25 15:14:54 [debug]           - point: (x, y, z)
-2025-02-25 15:14:54 [debug]           - 1 [p1]: ( 0 , -0.5 , 0.5 )
-2025-02-25 15:14:54 [debug]           - 2 [p2]: ( 0 , 0 , 0.5 )
-2025-02-25 15:14:54 [debug]           - 3 [p3]: ( 0 , 0 , -0.5 )
-2025-02-25 15:14:54 [debug]           - 4 [p4]: ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]         - curve offset:
-2025-02-25 15:14:54 [debug]           - name: 
-2025-02-25 15:14:54 [debug]           - type: 
-2025-02-25 15:14:54 [debug]           - point: (x, y, z)
-2025-02-25 15:14:54 [debug]           - 1 []: ( 0 , -0.5 , 0.57 )
-2025-02-25 15:14:54 [debug]           - 2 []: ( 0 , 0.07 , 0.57 )
-2025-02-25 15:14:54 [debug]           - 3 []: ( 0 , 0.07 , -0.43 )
-2025-02-25 15:14:54 [debug]           - 4 []: ( 0 , 0.5 , -0.43 )
-2025-02-25 15:14:54 [debug]         - base vertices -- base_link_to_offset_indices
-2025-02-25 15:14:54 [debug]         - number of pairs: 0
-2025-02-25 15:14:54 [debug]         - making segment end: sg1 1
-2025-02-25 15:14:54 [debug]         - number of dependencies: 0
-2025-02-25 15:14:54 [debug]         - making segment end because of no dependency.
-2025-02-25 15:14:54 [debug]         - createSegmentFreeEnd: sg1 1
-2025-02-25 15:14:54 [debug]         - curve base:
-2025-02-25 15:14:54 [debug]           - name: l_base
-2025-02-25 15:14:54 [debug]           - type: straight
-2025-02-25 15:14:54 [debug]           - point: (x, y, z)
-2025-02-25 15:14:54 [debug]           - 1 [p1]: ( 0 , -0.5 , 0.5 )
-2025-02-25 15:14:54 [debug]           - 2 [p2]: ( 0 , 0 , 0.5 )
-2025-02-25 15:14:54 [debug]           - 3 [p3]: ( 0 , 0 , -0.5 )
-2025-02-25 15:14:54 [debug]           - 4 [p4]: ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]         - curve offset:
-2025-02-25 15:14:54 [debug]           - name: 
-2025-02-25 15:14:54 [debug]           - type: 
-2025-02-25 15:14:54 [debug]           - point: (x, y, z)
-2025-02-25 15:14:54 [debug]           - 1 []: ( 0 , -0.5 , 0.57 )
-2025-02-25 15:14:54 [debug]           - 2 []: ( 0 , 0.07 , 0.57 )
-2025-02-25 15:14:54 [debug]           - 3 []: ( 0 , 0.07 , -0.43 )
-2025-02-25 15:14:54 [debug]           - 4 []: ( 0 , 0.5 , -0.43 )
-2025-02-25 15:14:54 [debug]         - base vertices -- base_link_to_offset_indices
-2025-02-25 15:14:54 [debug]         - number of pairs: 0
-2025-02-25 15:14:54 [debug]         - building the overall shape of segment: sg1
-2025-02-25 15:14:54 [debug]         - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
-2025-02-25 15:14:54 [debug]         - creating half edges for the base curve
-2025-02-25 15:14:54 [debug]         - number of vertices of the base curve: 4
-2025-02-25 15:14:54 [debug]         - vertices: 0 -- 1
-2025-02-25 15:14:54 [debug]         - vertices: 1 -- 2
-2025-02-25 15:14:54 [debug]         - vertices: 2 -- 3
-2025-02-25 15:14:54 [debug]         - creating half edges for the offset curve
-2025-02-25 15:14:54 [debug]         - creating the half edge loop and face
-2025-02-25 15:14:54 [info]       - creating gmsh vertices
-2025-02-25 15:14:54 [info]       - creating gmsh edges
-2025-02-25 15:14:54 [info]         - writing gmsh .geo file: .\test\open\z\z_debug_1.geo_unrolled
-2025-02-25 15:14:54 [info]         - writing gmsh .opt file: .\test\open\z\z_debug.opt
-2025-02-25 15:14:54 [info]     - creating gmsh vertices
-2025-02-25 15:14:54 [info]     - creating gmsh edges
-2025-02-25 15:14:54 [info]       - writing gmsh .geo file: .\test\open\z\z_debug_2.geo_unrolled
-2025-02-25 15:14:54 [info]     - building the cross section, step 2
-2025-02-25 15:14:54 [info]       - building component details: cmp_1
-2025-02-25 15:14:54 [info]         - updating base-offset index pairs
-2025-02-25 15:14:54 [debug]         - updated base-offset index pairs:
-2025-02-25 15:14:54 [debug]         - 0 -- 0
-2025-02-25 15:14:54 [debug]         - 1 -- 1
-2025-02-25 15:14:54 [debug]         - 2 -- 2
-2025-02-25 15:14:54 [debug]         - 3 -- 3
-2025-02-25 15:14:54 [debug]         - building areas of segment: sg1
-2025-02-25 15:14:54 [debug]         - 1. creating the beginning bound of the first area
-2025-02-25 15:14:54 [debug]           - open segment
-2025-02-25 15:14:54 [debug]           - first vertex of the base: ( 0 , -0.5 , 0.5 )
-2025-02-25 15:14:54 [debug]           - first vertex of the offset: ( 0 , -0.5 , 0.57 )
-2025-02-25 15:14:54 [debug]             - layer 1
-2025-02-25 15:14:54 [debug]             - cumu_thk = 0.04
-2025-02-25 15:14:54 [debug]             - ls_offset: ( 0 , -0.5 , 0.54 ) -> ( 0 , 0 , 0.54 )
-2025-02-25 15:14:54 [debug]               - 
-2025-02-25 15:14:54 [debug]               - he_tmp: ( 0 , -0.5 , 0.57 ) -> ( 0 , -0.5 , 0.5 ) | loop: keep | face: sg1_face
-2025-02-25 15:14:54 [debug]               - u1_tmp = 0.428571
-2025-02-25 15:14:54 [debug]               -   case 3: intersect current edge
-2025-02-25 15:14:54 [debug]               -   v_layer: ( 0 , -0.5 , 0.54 )
-2025-02-25 15:14:54 [debug]             - v_layer: ( 0 , -0.5 , 0.54 )
-2025-02-25 15:14:54 [debug]         - 2. creating areas
-2025-02-25 15:14:54 [debug]           - area 1
-2025-02-25 15:14:54 [debug]           -   base vertex: ( 0 , 0 , 0.5 )
-2025-02-25 15:14:54 [debug]           -   offset vertex: ( 0 , 0.07 , 0.57 )
-2025-02-25 15:14:54 [debug]           - area 2
-2025-02-25 15:14:54 [debug]           -   base vertex: ( 0 , 0 , -0.5 )
-2025-02-25 15:14:54 [debug]           -   offset vertex: ( 0 , 0.07 , -0.43 )
-2025-02-25 15:14:54 [debug]         - 3. creating the last area
-2025-02-25 15:14:54 [debug]             - layer 1
-2025-02-25 15:14:54 [debug]             - ls_offset: ( 0 , 0 , -0.46 ) -> ( 0 , 0.5 , -0.46 )
-2025-02-25 15:14:54 [debug]               - 
-2025-02-25 15:14:54 [debug]               - he_tmp: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , -0.43 ) | loop: temp | face: sg1_area_3
-2025-02-25 15:14:54 [debug]               - u1_tmp = 0.571429
-2025-02-25 15:14:54 [debug]               -   case 5: intersect current edge
-2025-02-25 15:14:54 [debug]             - v_layer: ( 0 , 0.5 , -0.46 )
-2025-02-25 15:14:54 [debug]           - building layers for area: sg1_area_1
-2025-02-25 15:14:54 [debug]           - building layers for area: sg1_area_2
-2025-02-25 15:14:54 [debug]           - building layers for area: sg1_area_3
-2025-02-25 15:14:54 [info]       - creating gmsh vertices
-2025-02-25 15:14:54 [info]       - creating gmsh edges
-2025-02-25 15:14:54 [info]         - writing gmsh .geo file: .\test\open\z\z_debug_3.geo_unrolled
-2025-02-25 15:14:54 [info]     - fixing geometry
-2025-02-25 15:14:54 [info]   - building the shape -- done
-2025-02-25 15:14:54 [info]   - modeling in Gmsh
-2025-02-25 15:14:54 [info]     - creating gmsh vertices
-2025-02-25 15:14:54 [info]     - creating gmsh edges
-2025-02-25 15:14:54 [info]     - creating gmsh faces
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: background
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_1_layer_2
-2025-02-25 15:14:54 [debug]     -   adding outer loop
-2025-02-25 15:14:54 [debug]     -   adding inner loops
-2025-02-25 15:14:54 [debug]     -   adding local mesh size
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_1_layer_1
-2025-02-25 15:14:54 [debug]     -   adding outer loop
-2025-02-25 15:14:54 [debug]     -   adding inner loops
-2025-02-25 15:14:54 [debug]     -   adding local mesh size
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_2_layer_2
-2025-02-25 15:14:54 [debug]     -   adding outer loop
-2025-02-25 15:14:54 [debug]     -   adding inner loops
-2025-02-25 15:14:54 [debug]     -   adding local mesh size
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_2_layer_1
-2025-02-25 15:14:54 [debug]     -   adding outer loop
-2025-02-25 15:14:54 [debug]     -   adding inner loops
-2025-02-25 15:14:54 [debug]     -   adding local mesh size
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_3_layer_2
-2025-02-25 15:14:54 [debug]     -   adding outer loop
-2025-02-25 15:14:54 [debug]     -   adding inner loops
-2025-02-25 15:14:54 [debug]     -   adding local mesh size
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_3_layer_1
-2025-02-25 15:14:54 [debug]     -   adding outer loop
-2025-02-25 15:14:54 [debug]     -   adding inner loops
-2025-02-25 15:14:54 [debug]     -   adding local mesh size
-2025-02-25 15:14:54 [debug]     -   adding embedded entities
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: background
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_1_layer_2
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_1_layer_1
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_2_layer_2
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_2_layer_1
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_3_layer_2
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_3_layer_1
-2025-02-25 15:14:54 [info]     - creating physical groups
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: background
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_1_layer_2
-2025-02-25 15:14:54 [debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_1_layer_1
-2025-02-25 15:14:54 [debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_2_layer_2
-2025-02-25 15:14:54 [debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_2_layer_1
-2025-02-25 15:14:54 [debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_3_layer_2
-2025-02-25 15:14:54 [debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
-2025-02-25 15:14:54 [debug]     - 
-2025-02-25 15:14:54 [debug]     -   face: sg1_area_3_layer_1
-2025-02-25 15:14:54 [debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
-2025-02-25 15:14:54 [info]       - writing gmsh .geo file: .\test\open\z\z_debug_4.geo_unrolled
-2025-02-25 15:14:54 [info]     - meshing
-2025-02-25 15:14:54 [info]   - modeling in Gmsh -- done
-2025-02-25 15:14:54 [info]   - writing outputs
-2025-02-25 15:14:54 [info]     - writing gmsh .opt file: .\test\open\z\z.opt
-2025-02-25 15:14:54 [info]     - writing gmsh .geo file: .\test\open\z\z.geo_unrolled
-2025-02-25 15:14:54 [info]     - writing gmsh .msh file: .\test\open\z\z.msh
-2025-02-25 15:14:54 [info]     - writing sg file: .\test\open\z\z.sg
-2025-02-25 15:14:54 [info]       - writing nodes
-2025-02-25 15:14:54 [info]       - writing elements
-2025-02-25 15:14:54 [info]         -   writing connectivity
-2025-02-25 15:14:54 [debug]         -   face 0
-2025-02-25 15:14:54 [debug]         -   face 1
-2025-02-25 15:14:54 [debug]         -   face 2
-2025-02-25 15:14:54 [debug]         -   face 3
-2025-02-25 15:14:54 [debug]         -   face 4
-2025-02-25 15:14:54 [debug]         -   face 5
-2025-02-25 15:14:54 [info]         -   writing local orientation
-2025-02-25 15:14:54 [debug]         -   face 0
-2025-02-25 15:14:54 [debug]         -   face 1
-2025-02-25 15:14:54 [debug]         -   face 2
-2025-02-25 15:14:54 [debug]         -   face 3
-2025-02-25 15:14:54 [debug]         -   face 4
-2025-02-25 15:14:54 [debug]         -   face 5
-2025-02-25 15:14:54 [info]     - writing material id-name file: .\test\open\z\z.sg.mat
-2025-02-25 15:14:54 [info]   - writing outputs -- done
-2025-02-25 15:14:54 [info]   - running Gmsh for visualization
-2025-02-25 15:14:54 [debug]   - current path:
+2025-02-27 16:53:08 [debug]     - finished reading analysis.
+2025-02-27 16:53:08 [debug]     - reading general...
+2025-02-27 16:53:08 [debug]     - tolerance = 1e-12
+2025-02-27 16:53:08 [debug]     - finished reading general.
+2025-02-27 16:53:08 [debug]     - finding includings...
+2025-02-27 16:53:08 [debug]     - reading geometry...
+2025-02-27 16:53:08 [debug]       - reading point: p1
+2025-02-27 16:53:08 [debug]       - reading point: p2
+2025-02-27 16:53:08 [debug]       - reading point: p3
+2025-02-27 16:53:08 [debug]       - reading point: p4
+2025-02-27 16:53:08 [debug]       - reading line: l_base
+2025-02-27 16:53:08 [debug]       - name: l_base
+2025-02-27 16:53:08 [debug]       - type: straight
+2025-02-27 16:53:08 [debug]       - point: (x, y, z)
+2025-02-27 16:53:08 [debug]       - 1 [p1]: ( 0 , -0.5 , 0.5 )
+2025-02-27 16:53:08 [debug]       - 2 [p2]: ( 0 , 0 , 0.5 )
+2025-02-27 16:53:08 [debug]       - 3 [p3]: ( 0 , 0 , -0.5 )
+2025-02-27 16:53:08 [debug]       - 4 [p4]: ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]     -  
+2025-02-27 16:53:08 [debug]     - summary of base lines (before transformation)
+2025-02-27 16:53:08 [debug]       - name: l_base
+2025-02-27 16:53:08 [debug]       - type: straight
+2025-02-27 16:53:08 [debug]       - point: (x, y, z)
+2025-02-27 16:53:08 [debug]       - 1 [p1]: ( 0 , -0.5 , 0.5 )
+2025-02-27 16:53:08 [debug]       - 2 [p2]: ( 0 , 0 , 0.5 )
+2025-02-27 16:53:08 [debug]       - 3 [p3]: ( 0 , 0 , -0.5 )
+2025-02-27 16:53:08 [debug]       - 4 [p4]: ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]     -  
+2025-02-27 16:53:08 [debug]     - transforming base geometry
+2025-02-27 16:53:08 [debug]     -  
+2025-02-27 16:53:08 [debug]     - summary of base lines (after transformation)
+2025-02-27 16:53:08 [debug]       - name: l_base
+2025-02-27 16:53:08 [debug]       - type: straight
+2025-02-27 16:53:08 [debug]       - point: (x, y, z)
+2025-02-27 16:53:08 [debug]       - 1 [p1]: ( 0 , -0.5 , 0.5 )
+2025-02-27 16:53:08 [debug]       - 2 [p2]: ( 0 , 0 , 0.5 )
+2025-02-27 16:53:08 [debug]       - 3 [p3]: ( 0 , 0 , -0.5 )
+2025-02-27 16:53:08 [debug]       - 4 [p4]: ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]     -  
+2025-02-27 16:53:08 [debug]     - finished reading geometry.
+2025-02-27 16:53:08 [debug]     - reading materials...
+2025-02-27 16:53:08 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+2025-02-27 16:53:08 [info]         - reading materials file: .\test\open\z\materials.xml
+2025-02-27 16:53:08 [debug]             - reading material: iso5_1
+2025-02-27 16:53:08 [debug]             - reading material: iso5_2
+2025-02-27 16:53:08 [debug]             - reading material: iso5_3
+2025-02-27 16:53:08 [debug]             - reading material: iso5_4
+2025-02-27 16:53:08 [debug]             - reading material: iso5_5
+2025-02-27 16:53:08 [debug]             - reading lamina: la_iso5_1_02
+2025-02-27 16:53:08 [debug]             - reading lamina: la_iso5_2_03
+2025-02-27 16:53:08 [debug]             - reading lamina: la_iso5_3_015
+2025-02-27 16:53:08 [debug]             - reading lamina: la_iso5_4_02
+2025-02-27 16:53:08 [debug]             - reading lamina: la_iso5_5_01
+2025-02-27 16:53:08 [debug]       - finished reading materials.
+2025-02-27 16:53:08 [debug]       - reading layups...
+2025-02-27 16:53:08 [debug]         - in function: readLayups
+2025-02-27 16:53:08 [debug]         - reading layup: layup1
+2025-02-27 16:53:08 [debug]       - finished reading layups.
+2025-02-27 16:53:08 [debug]       - reading components...
+2025-02-27 16:53:08 [debug]       - reading component: cmp_1
+2025-02-27 16:53:08 [debug]       - finished reading components.
+2025-02-27 16:53:08 [info]   - reading input files -- done
+2025-02-27 16:53:08 [info]   - building the shape
+2025-02-27 16:53:08 [info]     - building the cross section, step 1
+2025-02-27 16:53:08 [info]       - building component: cmp_1
+2025-02-27 16:53:08 [debug]         - offsetting the base curve of segment: sg1
+2025-02-27 16:53:08 [debug]           - offsetting a polyline
+2025-02-27 16:53:08 [debug]           - 1. offset each line segment
+2025-02-27 16:53:08 [debug]           - line segment 1
+2025-02-27 16:53:08 [debug]           -   v_offset = ( 0 , -0.5 , 0.57 )
+2025-02-27 16:53:08 [debug]           - line segment 2
+2025-02-27 16:53:08 [debug]           - v1_prev: ( 0 , -0.5 , 0.57 ), v2_prev: ( 0 , 0 , 0.57 )
+2025-02-27 16:53:08 [debug]           - v1_tmp: ( 0 , 0.07 , 0.5 ), v2_tmp: ( 0 , 0.07 , -0.5 )
+2025-02-27 16:53:08 [debug]             - calculate intersection
+2025-02-27 16:53:08 [debug]             - Points: [-0.5,0.57] and [0,0.57]
+2025-02-27 16:53:08 [debug]             - Points: [0.07,0.5] and [0.07,-0.5]
+2025-02-27 16:53:08 [debug]             - Line: [0,1,-0.57] and [1,0,-0.07]
+2025-02-27 16:53:08 [debug]             - res = 1
+2025-02-27 16:53:08 [debug]             -   intersection points: [0.07,0.57]
+2025-02-27 16:53:08 [debug]             -   v_intersect = ( 0 , 0.07 , 0.57 )
+2025-02-27 16:53:08 [debug]           -   v_offset = ( 0 , 0.07 , 0.57 )
+2025-02-27 16:53:08 [debug]           - line segment 3
+2025-02-27 16:53:08 [debug]           - v1_prev: ( 0 , 0.07 , 0.5 ), v2_prev: ( 0 , 0.07 , -0.5 )
+2025-02-27 16:53:08 [debug]           - v1_tmp: ( 0 , 0 , -0.43 ), v2_tmp: ( 0 , 0.5 , -0.43 )
+2025-02-27 16:53:08 [debug]             - calculate intersection
+2025-02-27 16:53:08 [debug]             - Points: [0.07,0.5] and [0.07,-0.5]
+2025-02-27 16:53:08 [debug]             - Points: [0,-0.43] and [0.5,-0.43]
+2025-02-27 16:53:08 [debug]             - Line: [1,0,-0.07] and [0,1,0.43]
+2025-02-27 16:53:08 [debug]             - res = 1
+2025-02-27 16:53:08 [debug]             -   intersection points: [0.07,-0.43]
+2025-02-27 16:53:08 [debug]             -   v_intersect = ( 0 , 0.07 , -0.43 )
+2025-02-27 16:53:08 [debug]           -   v_offset = ( 0 , 0.07 , -0.43 )
+2025-02-27 16:53:08 [debug]           - the last line segment
+2025-02-27 16:53:08 [debug]           -   v_offset = ( 0 , 0.5 , -0.43 )
+2025-02-27 16:53:08 [debug]           - 2. check degenerated cases
+2025-02-27 16:53:08 [debug]           - 3. find intersections between neighboring sub-lines
+2025-02-27 16:53:08 [debug]           - 4. join all sub-lines
+2025-02-27 16:53:08 [debug]         - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]         - offset line: ( 0 , -0.5 , 0.57 ) -> ( 0 , 0.5 , -0.43 )
+2025-02-27 16:53:08 [debug]         - making segment end: sg1 0
+2025-02-27 16:53:08 [debug]         - number of dependencies: 0
+2025-02-27 16:53:08 [debug]         - making segment end because of no dependency.
+2025-02-27 16:53:08 [debug]         - createSegmentFreeEnd: sg1 0
+2025-02-27 16:53:08 [debug]         - curve base:
+2025-02-27 16:53:08 [debug]           - name: l_base
+2025-02-27 16:53:08 [debug]           - type: straight
+2025-02-27 16:53:08 [debug]           - point: (x, y, z)
+2025-02-27 16:53:08 [debug]           - 1 [p1]: ( 0 , -0.5 , 0.5 )
+2025-02-27 16:53:08 [debug]           - 2 [p2]: ( 0 , 0 , 0.5 )
+2025-02-27 16:53:08 [debug]           - 3 [p3]: ( 0 , 0 , -0.5 )
+2025-02-27 16:53:08 [debug]           - 4 [p4]: ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]         - curve offset:
+2025-02-27 16:53:08 [debug]           - name: 
+2025-02-27 16:53:08 [debug]           - type: 
+2025-02-27 16:53:08 [debug]           - point: (x, y, z)
+2025-02-27 16:53:08 [debug]           - 1 []: ( 0 , -0.5 , 0.57 )
+2025-02-27 16:53:08 [debug]           - 2 []: ( 0 , 0.07 , 0.57 )
+2025-02-27 16:53:08 [debug]           - 3 []: ( 0 , 0.07 , -0.43 )
+2025-02-27 16:53:08 [debug]           - 4 []: ( 0 , 0.5 , -0.43 )
+2025-02-27 16:53:08 [debug]         - base vertices -- base_link_to_offset_indices
+2025-02-27 16:53:08 [debug]         - number of pairs: 0
+2025-02-27 16:53:08 [debug]         - making segment end: sg1 1
+2025-02-27 16:53:08 [debug]         - number of dependencies: 0
+2025-02-27 16:53:08 [debug]         - making segment end because of no dependency.
+2025-02-27 16:53:08 [debug]         - createSegmentFreeEnd: sg1 1
+2025-02-27 16:53:08 [debug]         - curve base:
+2025-02-27 16:53:08 [debug]           - name: l_base
+2025-02-27 16:53:08 [debug]           - type: straight
+2025-02-27 16:53:08 [debug]           - point: (x, y, z)
+2025-02-27 16:53:08 [debug]           - 1 [p1]: ( 0 , -0.5 , 0.5 )
+2025-02-27 16:53:08 [debug]           - 2 [p2]: ( 0 , 0 , 0.5 )
+2025-02-27 16:53:08 [debug]           - 3 [p3]: ( 0 , 0 , -0.5 )
+2025-02-27 16:53:08 [debug]           - 4 [p4]: ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]         - curve offset:
+2025-02-27 16:53:08 [debug]           - name: 
+2025-02-27 16:53:08 [debug]           - type: 
+2025-02-27 16:53:08 [debug]           - point: (x, y, z)
+2025-02-27 16:53:08 [debug]           - 1 []: ( 0 , -0.5 , 0.57 )
+2025-02-27 16:53:08 [debug]           - 2 []: ( 0 , 0.07 , 0.57 )
+2025-02-27 16:53:08 [debug]           - 3 []: ( 0 , 0.07 , -0.43 )
+2025-02-27 16:53:08 [debug]           - 4 []: ( 0 , 0.5 , -0.43 )
+2025-02-27 16:53:08 [debug]         - base vertices -- base_link_to_offset_indices
+2025-02-27 16:53:08 [debug]         - number of pairs: 0
+2025-02-27 16:53:08 [debug]         - building the overall shape of segment: sg1
+2025-02-27 16:53:08 [debug]         - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
+2025-02-27 16:53:08 [debug]         - creating half edges for the base curve
+2025-02-27 16:53:08 [debug]         - number of vertices of the base curve: 4
+2025-02-27 16:53:08 [debug]         - vertices: 0 -- 1
+2025-02-27 16:53:08 [debug]         - vertices: 1 -- 2
+2025-02-27 16:53:08 [debug]         - vertices: 2 -- 3
+2025-02-27 16:53:08 [debug]         - creating half edges for the offset curve
+2025-02-27 16:53:08 [debug]         - creating the half edge loop and face
+2025-02-27 16:53:08 [info]       - creating gmsh vertices
+2025-02-27 16:53:08 [info]       - creating gmsh edges
+2025-02-27 16:53:08 [info]         - writing gmsh .geo file: .\test\open\z\z_debug_1.geo_unrolled
+2025-02-27 16:53:08 [info]         - writing gmsh .opt file: .\test\open\z\z_debug.opt
+2025-02-27 16:53:08 [info]     - creating gmsh vertices
+2025-02-27 16:53:08 [info]     - creating gmsh edges
+2025-02-27 16:53:08 [info]       - writing gmsh .geo file: .\test\open\z\z_debug_2.geo_unrolled
+2025-02-27 16:53:08 [info]     - building the cross section, step 2
+2025-02-27 16:53:08 [info]       - building component details: cmp_1
+2025-02-27 16:53:08 [info]         - updating base-offset index pairs
+2025-02-27 16:53:08 [debug]         - updated base-offset index pairs:
+2025-02-27 16:53:08 [debug]         - 0 -- 0
+2025-02-27 16:53:08 [debug]         - 1 -- 1
+2025-02-27 16:53:08 [debug]         - 2 -- 2
+2025-02-27 16:53:08 [debug]         - 3 -- 3
+2025-02-27 16:53:08 [debug]         - building areas of segment: sg1
+2025-02-27 16:53:08 [debug]         - 1. creating the beginning bound of the first area
+2025-02-27 16:53:08 [debug]           - open segment
+2025-02-27 16:53:08 [debug]           - first vertex of the base: ( 0 , -0.5 , 0.5 )
+2025-02-27 16:53:08 [debug]           - first vertex of the offset: ( 0 , -0.5 , 0.57 )
+2025-02-27 16:53:08 [debug]             - layer 1
+2025-02-27 16:53:08 [debug]             - cumu_thk = 0.04
+2025-02-27 16:53:08 [debug]             - ls_offset: ( 0 , -0.5 , 0.54 ) -> ( 0 , 0 , 0.54 )
+2025-02-27 16:53:08 [debug]               - 
+2025-02-27 16:53:08 [debug]               - he_tmp: ( 0 , -0.5 , 0.57 ) -> ( 0 , -0.5 , 0.5 ) | loop: keep | face: sg1_face
+2025-02-27 16:53:08 [debug]               - u1_tmp = 0.428571
+2025-02-27 16:53:08 [debug]               -   case 3: intersect current edge
+2025-02-27 16:53:08 [debug]               -   v_layer: ( 0 , -0.5 , 0.54 )
+2025-02-27 16:53:08 [debug]             - v_layer: ( 0 , -0.5 , 0.54 )
+2025-02-27 16:53:08 [debug]         - 2. creating areas
+2025-02-27 16:53:08 [debug]           - area 1
+2025-02-27 16:53:08 [debug]           -   base vertex: ( 0 , 0 , 0.5 )
+2025-02-27 16:53:08 [debug]           -   offset vertex: ( 0 , 0.07 , 0.57 )
+2025-02-27 16:53:08 [debug]           - area 2
+2025-02-27 16:53:08 [debug]           -   base vertex: ( 0 , 0 , -0.5 )
+2025-02-27 16:53:08 [debug]           -   offset vertex: ( 0 , 0.07 , -0.43 )
+2025-02-27 16:53:08 [debug]         - 3. creating the last area
+2025-02-27 16:53:08 [debug]             - layer 1
+2025-02-27 16:53:08 [debug]             - ls_offset: ( 0 , 0 , -0.46 ) -> ( 0 , 0.5 , -0.46 )
+2025-02-27 16:53:08 [debug]               - 
+2025-02-27 16:53:08 [debug]               - he_tmp: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , -0.43 ) | loop: temp | face: sg1_area_3
+2025-02-27 16:53:08 [debug]               - u1_tmp = 0.571429
+2025-02-27 16:53:08 [debug]               -   case 5: intersect current edge
+2025-02-27 16:53:08 [debug]             - v_layer: ( 0 , 0.5 , -0.46 )
+2025-02-27 16:53:08 [debug]           - building layers for area: sg1_area_1
+2025-02-27 16:53:08 [debug]           - building layers for area: sg1_area_2
+2025-02-27 16:53:08 [debug]           - building layers for area: sg1_area_3
+2025-02-27 16:53:08 [info]       - creating gmsh vertices
+2025-02-27 16:53:08 [info]       - creating gmsh edges
+2025-02-27 16:53:08 [info]         - writing gmsh .geo file: .\test\open\z\z_debug_3.geo_unrolled
+2025-02-27 16:53:08 [info]     - fixing geometry
+2025-02-27 16:53:08 [info]   - building the shape -- done
+2025-02-27 16:53:08 [info]   - modeling in Gmsh
+2025-02-27 16:53:08 [info]     - creating gmsh vertices
+2025-02-27 16:53:08 [info]     - creating gmsh edges
+2025-02-27 16:53:08 [info]     - creating gmsh faces
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: background
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_1_layer_2
+2025-02-27 16:53:08 [debug]     -   adding outer loop
+2025-02-27 16:53:08 [debug]     -   adding inner loops
+2025-02-27 16:53:08 [debug]     -   adding local mesh size
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_1_layer_1
+2025-02-27 16:53:08 [debug]     -   adding outer loop
+2025-02-27 16:53:08 [debug]     -   adding inner loops
+2025-02-27 16:53:08 [debug]     -   adding local mesh size
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_2_layer_2
+2025-02-27 16:53:08 [debug]     -   adding outer loop
+2025-02-27 16:53:08 [debug]     -   adding inner loops
+2025-02-27 16:53:08 [debug]     -   adding local mesh size
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_2_layer_1
+2025-02-27 16:53:08 [debug]     -   adding outer loop
+2025-02-27 16:53:08 [debug]     -   adding inner loops
+2025-02-27 16:53:08 [debug]     -   adding local mesh size
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_3_layer_2
+2025-02-27 16:53:08 [debug]     -   adding outer loop
+2025-02-27 16:53:08 [debug]     -   adding inner loops
+2025-02-27 16:53:08 [debug]     -   adding local mesh size
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_3_layer_1
+2025-02-27 16:53:08 [debug]     -   adding outer loop
+2025-02-27 16:53:08 [debug]     -   adding inner loops
+2025-02-27 16:53:08 [debug]     -   adding local mesh size
+2025-02-27 16:53:08 [debug]     -   adding embedded entities
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: background
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_1_layer_2
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_1_layer_1
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_2_layer_2
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_2_layer_1
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_3_layer_2
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_3_layer_1
+2025-02-27 16:53:08 [info]     - creating physical groups
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: background
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_1_layer_2
+2025-02-27 16:53:08 [debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_1_layer_1
+2025-02-27 16:53:08 [debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_2_layer_2
+2025-02-27 16:53:08 [debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_2_layer_1
+2025-02-27 16:53:08 [debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_3_layer_2
+2025-02-27 16:53:08 [debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
+2025-02-27 16:53:08 [debug]     - 
+2025-02-27 16:53:08 [debug]     -   face: sg1_area_3_layer_1
+2025-02-27 16:53:08 [debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
+2025-02-27 16:53:08 [info]       - writing gmsh .geo file: .\test\open\z\z_debug_4.geo_unrolled
+2025-02-27 16:53:08 [info]     - meshing
+2025-02-27 16:53:08 [info]   - modeling in Gmsh -- done
+2025-02-27 16:53:08 [info]   - writing outputs
+2025-02-27 16:53:08 [info]     - writing gmsh .opt file: .\test\open\z\z.opt
+2025-02-27 16:53:08 [info]     - writing gmsh .geo file: .\test\open\z\z.geo_unrolled
+2025-02-27 16:53:08 [info]     - writing gmsh .msh file: .\test\open\z\z.msh
+2025-02-27 16:53:08 [info]     - writing sg file: .\test\open\z\z.sg
+2025-02-27 16:53:08 [info]       - writing nodes
+2025-02-27 16:53:08 [info]       - writing elements
+2025-02-27 16:53:08 [info]         -   writing connectivity
+2025-02-27 16:53:08 [debug]         -   face 0
+2025-02-27 16:53:08 [debug]         -   face 1
+2025-02-27 16:53:08 [debug]         -   face 2
+2025-02-27 16:53:08 [debug]         -   face 3
+2025-02-27 16:53:08 [debug]         -   face 4
+2025-02-27 16:53:08 [debug]         -   face 5
+2025-02-27 16:53:08 [info]         -   writing local orientation
+2025-02-27 16:53:08 [debug]         -   face 0
+2025-02-27 16:53:08 [debug]         -   face 1
+2025-02-27 16:53:08 [debug]         -   face 2
+2025-02-27 16:53:08 [debug]         -   face 3
+2025-02-27 16:53:08 [debug]         -   face 4
+2025-02-27 16:53:08 [debug]         -   face 5
+2025-02-27 16:53:08 [info]     - writing material id-name file: .\test\open\z\z.sg.mat
+2025-02-27 16:53:08 [info]   - writing outputs -- done
+2025-02-27 16:53:08 [info]   - running Gmsh for visualization
+2025-02-27 16:53:08 [debug]   - current path:
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\bin\HostX64\x64
 C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\VC\VCPackages
 C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TestWindow
@@ -363,7 +371,7 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtens
 C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
 C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\VC\Linux\bin\ConnectionManagerExe
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\vcpkg
-2025-02-25 15:14:54 [info]   - running: gmsh .\test\open\z\z.geo_unrolled .\test\open\z\z.msh .\test\open\z\z.opt
-2025-02-25 15:15:04 [info]   - command launched successfully.
-2025-02-25 15:15:04 [info]   - prevabs finished (2025-02-25 15:15:04)
-2025-02-25 15:15:04 [info] total running time: 9.395 sec
+2025-02-27 16:53:08 [info]   - running: gmsh .\test\open\z\z.geo_unrolled .\test\open\z\z.msh .\test\open\z\z.opt
+2025-02-27 16:53:10 [info]   - command launched successfully.
+2025-02-27 16:53:10 [info]   - prevabs finished (2025-02-27 16:53:10)
+2025-02-27 16:53:10 [info] total running time: 2.157 sec

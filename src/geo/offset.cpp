@@ -836,6 +836,100 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 // New offset function
 //
 
+/**
+ * @brief Handle the intersection of two line segments.
+ *
+ * @param[in] v1_prev The previous vertex.
+ * @param[in] v2_prev The previous vertex.
+ * @param[in] v1_tmp The current vertex.
+ * @param[in] v2_tmp The current vertex.
+ * @param[out] vertices_tmp The vertices of the offset curve (output).
+ * @param[in] pmessage The message object.
+ */
+PDCELVertex *calc_segment_intersection(PDCELVertex *s1v1, PDCELVertex *s1v2,
+                               PDCELVertex *s2v1, PDCELVertex *s2v2,
+                               Message *pmessage)
+{
+  pmessage->increaseIndent();
+
+  PDCELVertex *v_intersect = nullptr;
+  std::stringstream ss;
+
+  PLOG(debug) << pmessage->message("calculate intersection");
+
+  // New intersection method (h2d)
+  h2d::Point2d _s1p1(s1v1->point2()[0], s1v1->point2()[1]);
+  h2d::Point2d _s1p2(s1v2->point2()[0], s1v2->point2()[1]);
+  h2d::Point2d _s2p1(s2v1->point2()[0], s2v1->point2()[1]);
+  h2d::Point2d _s2p2(s2v2->point2()[0], s2v2->point2()[1]);
+
+  ss.str("");
+  ss << "Points: " << _s1p1 << " and " << _s1p2 << std::endl;
+  PLOG(debug) << pmessage->message(ss.str());
+  ss.str("");
+  ss << "Points: " << _s2p1 << " and " << _s2p2 << std::endl;
+  PLOG(debug) << pmessage->message(ss.str());
+
+  // h2d::Segment seg1(_p1_prev, _p2_prev);
+  // h2d::Segment seg2(_p1_tmp, _p2_tmp);
+  h2d::Line2d seg1(_s1p1, _s1p2);
+  h2d::Line2d seg2(_s2p1, _s2p2);
+
+  ss.str("");
+  ss << "Line: " << seg1 << " and " << seg2 << std::endl;
+  PLOG(debug) << pmessage->message(ss.str());
+
+  auto res = seg1.intersects(seg2);
+
+  ss.str("");
+  ss << "res = " << res() << std::endl;
+  PLOG(debug) << pmessage->message(ss.str());
+
+  if (res())
+  {
+    auto pts = res.get();
+
+    ss.str("");
+    ss << "  intersection points: " << pts << std::endl;
+    PLOG(debug) << pmessage->message(ss.str());
+    
+    // Check the distance between the intersection point and the segment ends
+    if (isClose(pts.getX(), pts.getY(), _s1p1.getX(), _s1p1.getY(), ABS_TOL, REL_TOL))
+    {
+      v_intersect = s1v1;
+    }
+    else if (isClose(pts.getX(), pts.getY(), _s1p2.getX(), _s1p2.getY(), ABS_TOL, REL_TOL))
+    {
+      v_intersect = s1v2;
+    }
+    else
+    {
+      v_intersect = new PDCELVertex(0, pts.getX(), pts.getY());
+    }
+  }
+  else
+  {
+    v_intersect = s1v2;
+  }
+  // New intersection method (h2d) (end)
+
+  ss.str("");
+  ss << "  v_intersect = " << v_intersect << std::endl;
+  PLOG(debug) << pmessage->message(ss.str());
+  
+  pmessage->decreaseIndent();
+
+  return v_intersect;
+}
+
+
+
+
+
+
+
+
+
 int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
              std::vector<PDCELVertex *> &offset_vertices, Message *pmessage)
 {
@@ -846,7 +940,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   PLOG(debug) << pmessage->message("offsetting a polyline");
 
   std::size_t size = base.size();
-  PDCELVertex *v_tmp, *v1_tmp, *v2_tmp, *v1_prev, *v2_prev;
+  PDCELVertex *v_offset, *v1_tmp, *v2_tmp, *v1_prev, *v2_prev;
 
   // The base curve has only two vertices
   if (size == 2)
@@ -871,97 +965,52 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   // calculate intersections between every two neighbors
   PLOG(debug) << pmessage->message("1. offset each line segment");
 
-  // PGeoLineSegment *ls_prev, *ls_first;
-  for (int i = 0; i < size - 1; ++i)
-  {
-    // std::cout << "        line seg: " << i+1 << std::endl;
+  for (int i = 0; i < size - 1; ++i) {  // For each line segment
+    PLOG(debug) << pmessage->message("line segment " + std::to_string(i+1));
+
     v1_tmp = new PDCELVertex();
     v2_tmp = new PDCELVertex();
 
     offset(base[i], base[i + 1], side, dist, v1_tmp, v2_tmp);
 
-    if (i == 0)
-    {
-      vertices_tmp.push_back(v1_tmp);
-    }
-    else
-    {
+    if (i == 0) {  // The first line segment
+      v_offset = v1_tmp;
+      // vertices_tmp.push_back(v1_tmp);
+    } else {
       // Calculate intersection
 
-      PLOG(debug) << pmessage->message("calculate intersection");
+      // PLOG(debug) << pmessage->message("calculate intersection");
       PLOG(debug) << pmessage->message(
           "v1_prev: " + v1_prev->printString() + ", v2_prev: " + v2_prev->printString());
       PLOG(debug) << pmessage->message(
           "v1_tmp: " + v1_tmp->printString() + ", v2_tmp: " + v2_tmp->printString());
 
-      // New intersection method (h2d)
-      h2d::Point2d _p1_prev(v1_prev->point2()[0], v1_prev->point2()[1]);
-      h2d::Point2d _p2_prev(v2_prev->point2()[0], v2_prev->point2()[1]);
-      h2d::Point2d _p1_tmp(v1_tmp->point2()[0], v1_tmp->point2()[1]);
-      h2d::Point2d _p2_tmp(v2_tmp->point2()[0], v2_tmp->point2()[1]);
+      v_offset = calc_segment_intersection(
+        v1_prev, v2_prev, v1_tmp, v2_tmp, pmessage);
 
-      ss.str("");
-      ss << "Points: " << _p1_prev << " and " << _p2_prev << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-      ss.str("");
-      ss << "Points: " << _p1_tmp << " and " << _p2_tmp << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      // h2d::Segment seg1(_p1_prev, _p2_prev);
-      // h2d::Segment seg2(_p1_tmp, _p2_tmp);
-      h2d::Line2d seg1(_p1_prev, _p2_prev);
-      h2d::Line2d seg2(_p1_tmp, _p2_tmp);
-
-      ss.str("");
-      ss << "Line: " << seg1 << " and " << seg2 << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      auto res = seg1.intersects(seg2);
-
-      ss.str("");
-      ss << "res = " << res() << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      if (res())
-      {
-        auto pts = res.get();
-
-        ss.str("");
-        ss << "  intersection points: " << pts << std::endl;
-        PLOG(debug) << pmessage->message(ss.str());
-
-        // Check the distance between the intersection point and the segment ends
-        if (isClose(pts.getX(), pts.getY(), _p1_prev.getX(), _p1_prev.getY(), ABS_TOL, REL_TOL))
-        {
-          vertices_tmp.push_back(v1_prev);
-        }
-        else if (isClose(pts.getX(), pts.getY(), _p2_prev.getX(), _p2_prev.getY(), ABS_TOL, REL_TOL))
-        {
-          vertices_tmp.push_back(v2_prev);
-        }
-        else
-        {
-          v_tmp = new PDCELVertex(0, pts.getX(), pts.getY());
-          vertices_tmp.push_back(v_tmp);
-        }
-      }
-      else
-      {
-        vertices_tmp.push_back(v2_prev);
-      }
-      // New intersection method (h2d) (end)
-
-      ss.str("");
-      ss << "        added vertex: " << vertices_tmp.back() << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
     }
 
-    if (i == size - 2)
-    {
-      vertices_tmp.push_back(v2_tmp);
-    }
+    ss.str("");
+    ss << "  v_offset = " << v_offset << std::endl;
+    PLOG(debug) << pmessage->message(ss.str());
+    
+    vertices_tmp.push_back(v_offset);
+
     v1_prev = v1_tmp;
     v2_prev = v2_tmp;
+
+    if (i == size - 2) {  // The last line segment
+      PLOG(debug) << pmessage->message("the last line segment");
+
+      v_offset = v2_tmp;
+
+      ss.str("");
+      ss << "  v_offset = " << v_offset << std::endl;
+      PLOG(debug) << pmessage->message(ss.str());
+
+      vertices_tmp.push_back(v_offset);
+      // vertices_tmp.push_back(v2_tmp);
+    }
   }
 
   //
@@ -1009,84 +1058,53 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   // Here use a brute force method
   // Since the intersection should be found in a local region
   // (tail part of the previous one and head part of the next one)
-  std::size_t size_i, size_i1;
-  std::vector<PDCELVertex *> sline_i, sline_i1;
   PDCELVertex *v0 = nullptr, *v0_prev = lines_group[0][0];
-  bool found;
-  std::vector<int> link_i, link_i1;
-  int i = 0, j = 0, i_prev = 0;
-  int trim_index_begin_this = 0, trim_index_begin_next;
   std::vector<std::vector<PDCELVertex *>> trimmed_sublines;
-
-  std::vector<PDCELVertex *> tmp_trimmed_subline;
-
   int ls_i1, ls_i2;
 
-  // Only one sub-line, no trim
-  // No operations needed
-  // (except possible trimming by itself at two ends, i.e., closed line)
-  if (lines_group.size() == 1)
+  for (auto line_i = 0; line_i < lines_group.size() - 1; ++line_i)
   {
-    trimmed_sublines.push_back(lines_group[0]);
+    ss.str("");
+    ss << "  find intersection between line " << line_i << " and line "
+        << line_i + 1 << std::endl;
+    PLOG(debug) << pmessage->message(ss.str());
+
+    // v0 = nullptr;
+
+    //
+    double ls_u1, ls_u2;
+    std::vector<int> i1s, i2s;
+    std::vector<double> u1s, u2s;
+    int is_new_1, is_new_2;
+    int j1;
+
+    findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
+
+    ls_u1 = getIntersectionLocation(
+        lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+
+    ls_i2 = i2s[j1];
+    ls_u2 = u2s[j1];
+
+    v0 = getIntersectionVertex(
+        lines_group[line_i], lines_group[line_i + 1],
+        ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
+
+    trim(lines_group[line_i], v0, 1);
+    trim(lines_group[line_i + 1], v0, 0);
+
+    trimmed_sublines.push_back(lines_group[line_i]);
+
   }
 
-  else if (lines_group.size() > 1)
-  {
-    for (int line_i = 0; line_i < lines_group.size() - 1; ++line_i)
-    {
-      // std::cout << "\n        find intersection between line "
-      //           << line_i << " and line " << line_i + 1 << std::endl;
 
-      tmp_trimmed_subline.clear();
-
-      sline_i = lines_group[line_i];
-      sline_i1 = lines_group[line_i + 1];
-
-      size_i = sline_i.size();
-      size_i1 = sline_i1.size();
-
-      found = false;
-      v0 = nullptr;
-
-      //
-      double ls_u1, ls_u2;
-      std::vector<int> i1s, i2s;
-      std::vector<double> u1s, u2s;
-      int is_new_1, is_new_2;
-      int j1;
-
-      findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
-
-      ls_u1 = getIntersectionLocation(
-          lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
-      // std::cout << "j1 = " << j1 << std::endl;
-      // ls_u2 = getIntersectionLocation(
-      //   lines_group[line_i + 1], i2s, u2s, 0, 0, ls_i2);
-      ls_i2 = i2s[j1];
-      ls_u2 = u2s[j1];
-
-      v0 = getIntersectionVertex(
-          lines_group[line_i], lines_group[line_i + 1],
-          ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
-
-      trim(lines_group[line_i], v0, 1);
-      trim(lines_group[line_i + 1], v0, 0);
-
-      trimmed_sublines.push_back(lines_group[line_i]);
-      //
-    }
-
-    // For the last subline
-    trimmed_sublines.push_back(lines_group.back());
-  }
+  // For the last or the only subline
+  trimmed_sublines.push_back(lines_group.back());
 
 
   // If this curve is closed
   if (base.front() == base.back())
   {
-
-    sline_i = lines_group.back();   // tail
-    sline_i1 = lines_group.front(); // head
 
     //
     double ls_u1, ls_u2;
@@ -1206,68 +1224,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 
 
 
-// /**
-//  * @brief Handle the intersection of two line segments.
-//  *
-//  * @param[in] v1_prev The previous vertex.
-//  * @param[in] v2_prev The previous vertex.
-//  * @param[in] v1_tmp The current vertex.
-//  * @param[in] v2_tmp The current vertex.
-//  * @param[out] vertices_tmp The vertices of the offset curve (output).
-//  * @param[in] pmessage The message object.
-//  */
-// void handle_segment_intersection(PDCELVertex *v1_prev, PDCELVertex *v2_prev,
-//                                PDCELVertex *v1_tmp, PDCELVertex *v2_tmp,
-//                                std::vector<PDCELVertex *> &vertices_tmp,
-//                                Message *pmessage)
-// {
-//   PLOG(debug) << pmessage->message("calculate intersection");
-//   PLOG(debug) << pmessage->message("  previous segment: " + v1_prev->printString() + " -- " + v2_prev->printString());
-//   PLOG(debug) << pmessage->message("  current segment: " + v1_tmp->printString() + " -- " + v2_tmp->printString());
 
-//   // Calculate the intersection of the two line segments
-//   h2d::Point2d p1_prev(v1_prev->point2()[0], v1_prev->point2()[1]);
-//   h2d::Point2d p2_prev(v2_prev->point2()[0], v2_prev->point2()[1]);
-//   h2d::Point2d p1_tmp(v1_tmp->point2()[0], v1_tmp->point2()[1]);
-//   h2d::Point2d p2_tmp(v2_tmp->point2()[0], v2_tmp->point2()[1]);
-
-//   h2d::Segment seg_prev(p1_prev, p2_prev);
-//   h2d::Segment seg_curr(p1_tmp, p2_tmp);
-//   auto res = seg_prev.intersects(seg_curr);
-
-//   PDCELVertex *v_new = nullptr;
-//   if (res())
-//   {
-//     // If there is an intersection, calculate the intersection point
-//     auto pts = res.get();
-//     PLOG(debug) << pmessage->message("  intersection point: (" + std::to_string(pts.getX()) + ", " + std::to_string(pts.getY()) + ")");
-//     if (isClose(pts.getX(), pts.getY(), p1_prev.getX(), p1_prev.getY(), ABS_TOL, REL_TOL))
-//     {
-//       v_new = v1_prev;
-//       PLOG(debug) << pmessage->message("  using previous vertex: " + v1_prev->printString());
-//     }
-//     else if (isClose(pts.getX(), pts.getY(), p2_prev.getX(), p2_prev.getY(), ABS_TOL, REL_TOL))
-//     {
-//       v_new = v2_prev;
-//       PLOG(debug) << pmessage->message("  using previous vertex: " + v2_prev->printString());
-//     }
-//     else
-//     {
-//       // Create a new vertex at the intersection point
-//       v_new = new PDCELVertex(0, pts.getX(), pts.getY());
-//       PLOG(debug) << pmessage->message("  created new vertex: " + v_new->printString());
-//     }
-//   }
-//   else
-//   {
-//     // If there is no intersection, use the previous vertex
-//     v_new = v2_prev;
-//     PLOG(debug) << pmessage->message("  using previous vertex: " + v2_prev->printString());
-//   }
-
-//   // Add the new vertex to the offset curve
-//   vertices_tmp.push_back(v_new);
-// }
 
 
 

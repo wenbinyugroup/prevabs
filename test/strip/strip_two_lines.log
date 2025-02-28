@@ -1,6 +1,6 @@
-2025-02-25 17:55:47 [info] - prevabs start (2025-02-25 17:55:47)
-2025-02-25 17:55:47 [info] - reading input files
-2025-02-25 17:55:47 [info]     -   
+2025-02-27 16:53:24 [info] - prevabs start (2025-02-27 16:53:24)
+2025-02-27 16:53:24 [info] - reading input files
+2025-02-27 16:53:24 [info]     -   
   
     
   
@@ -9,47 +9,43 @@
   
   
   
-    
-    
-    -  [VABS Messages] 
-    
-    
-    -  [VABS Messages End] 
-    
-    
+  
   
   ========================================
   
   
   ========================================
   
-es -- done
-2025-02-25 17:55:47 [info]   - building the shape
-2025-02-25 17:55:47 [info]     - building the cross section, step 1
-2025-02-25 17:55:47 [info]       - building component: top
-2025-02-25 17:55:47 [info]     - building the cross section, step 2
-2025-02-25 17:55:47 [info]       - building component details: top
-2025-02-25 17:55:47 [info]         - updating base-offset index pairs
-2025-02-25 17:55:47 [info]     - fixing geometry
-2025-02-25 17:55:47 [info]   - building the shape -- done
-2025-02-25 17:55:47 [info]   - modeling in Gmsh
-2025-02-25 17:55:47 [info]     - creating gmsh vertices
-2025-02-25 17:55:47 [info]     - creating gmsh edges
-2025-02-25 17:55:47 [info]     - creating gmsh faces
-2025-02-25 17:55:47 [info]     - creating physical groups
-2025-02-25 17:55:47 [info]     - meshing
-2025-02-25 17:55:47 [info]   - modeling in Gmsh -- done
-2025-02-25 17:55:47 [info]   - writing outputs
-2025-02-25 17:55:47 [info]     - writing sg file: .\test\strip\strip_two_lines.sg
-2025-02-25 17:55:47 [info]       - writing nodes
-2025-02-25 17:55:47 [info]       - writing elements
-2025-02-25 17:55:47 [info]         -   writing connectivity
-2025-02-25 17:55:47 [info]         -   writing local orientation
-2025-02-25 17:55:47 [info]     - writing material id-name file: .\test\strip\strip_two_lines.sg.mat
-2025-02-25 17:55:47 [info]   - writing outputs -- done
-2025-02-25 17:55:47 [info]     - running VABS for homogenization
-2025-02-25 17:55:47 [info]     - running: VABS ".\test\strip\strip_two_lines.sg" ""
-2025-02-25 17:55:49 [info]     - command launched successfully.
-2025-02-25 17:55:49 [info]     - running VABS for homogenization -- done
-2025-02-25 17:55:49 [info]   - prevabs finished (2025-02-25 17:55:49)
-2025-02-25 17:55:49 [info] total running time: 2.162 sec
+bs\build_msvc\Release\MaterialDB.xml
+2025-02-27 16:53:24 [info]   - reading input files -- done
+2025-02-27 16:53:24 [info]   - building the shape
+2025-02-27 16:53:24 [info]     - building the cross section, step 1
+2025-02-27 16:53:24 [info]       - building component: top
+2025-02-27 16:53:24 [info]     - building the cross section, step 2
+2025-02-27 16:53:24 [info]       - building component details: top
+2025-02-27 16:53:24 [info]         - updating base-offset index pairs
+2025-02-27 16:53:24 [info]     - fixing geometry
+2025-02-27 16:53:24 [info]   - building the shape -- done
+2025-02-27 16:53:24 [info]   - modeling in Gmsh
+2025-02-27 16:53:24 [info]     - creating gmsh vertices
+2025-02-27 16:53:24 [info]     - creating gmsh edges
+2025-02-27 16:53:24 [info]     - creating gmsh faces
+2025-02-27 16:53:24 [info]     - creating physical groups
+2025-02-27 16:53:24 [info]     - meshing
+2025-02-27 16:53:24 [info]   - modeling in Gmsh -- done
+2025-02-27 16:53:24 [info]   - writing outputs
+2025-02-27 16:53:24 [info]     - writing gmsh .opt file: .\test\strip\strip_two_lines.opt
+2025-02-27 16:53:24 [info]     - writing gmsh .geo file: .\test\strip\strip_two_lines.geo_unrolled
+2025-02-27 16:53:24 [info]     - writing gmsh .msh file: .\test\strip\strip_two_lines.msh
+2025-02-27 16:53:24 [info]     - writing sg file: .\test\strip\strip_two_lines.sg
+2025-02-27 16:53:24 [info]       - writing nodes
+2025-02-27 16:53:24 [info]       - writing elements
+2025-02-27 16:53:24 [info]         -   writing connectivity
+2025-02-27 16:53:24 [info]         -   writing local orientation
+2025-02-27 16:53:24 [info]     - writing material id-name file: .\test\strip\strip_two_lines.sg.mat
+2025-02-27 16:53:24 [info]   - writing outputs -- done
+2025-02-27 16:53:24 [info]   - running Gmsh for visualization
+2025-02-27 16:53:24 [info]   - running: gmsh .\test\strip\strip_two_lines.geo_unrolled .\test\strip\strip_two_lines.msh .\test\strip\strip_two_lines.opt
+2025-02-27 16:53:26 [info]   - command launched successfully.
+2025-02-27 16:53:26 [info]   - prevabs finished (2025-02-27 16:53:26)
+2025-02-27 16:53:26 [info] total running time: 2.19 sec

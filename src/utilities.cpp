@@ -424,6 +424,64 @@ int parseCSVString(const std::string &fn, std::vector<std::vector<std::string>> 
 //   return xn_root;
 // }
 
+
+// Math
+
+
+/**
+ * @brief Check if two floating point numbers are close to each other
+ * @details Compares two floating point numbers and returns true if they are close
+ * to each other, within the absolute tolerance of ABS_TOL.
+ * @param a The first floating point number
+ * @param b The second floating point number
+ * @return true if the numbers are close, false otherwise
+ * @throws std::invalid_argument if either a or b is NaN
+ */
+bool is_close(const double &a, const double &b) {
+  if (std::isnan(a) || std::isnan(b)) {
+    throw std::invalid_argument("NaN is not a valid input");
+  }
+
+  if (abs(a - b) < ABS_TOL)
+    return true;
+  else
+    return false;
+}
+
+
+/**
+ * @brief Check if two vectors are close to each other
+ * @details Compares two vectors and returns true if they are close
+ * to each other, within the absolute tolerance of ABS_TOL.
+ * @param a The first vector
+ * @param b The second vector
+ * @return true if the vectors are close, false otherwise
+ */
+bool is_close(const std::vector<double> &a, const std::vector<double> &b) {
+  if (a.size() != b.size()) {
+    std::cout << "is_close(): vectors have different size" << std::endl;
+    return false;
+  }
+
+  double l = 0;
+  // compute the sum of squares of the differences
+  try {
+    for (int i = 0; i < a.size(); ++i) {
+      l += (a[i] - b[i]) * (a[i] - b[i]);
+    }
+  } catch (const std::exception &e) {
+    std::cerr << "is_close(): exception caught: " << e.what() << std::endl;
+    return false;
+  }
+
+  // if the sum of squares is less than ABS_TOL^2, then the vectors are close
+  if (l < ABS_TOL * ABS_TOL)
+    return true;
+  else
+    return false;
+}
+
+
 double deg2rad(double degree) { return degree * PI / 180.0; }
 
 double rad2deg(double radian) { return radian * 180.0 / PI; }

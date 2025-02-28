@@ -86,6 +86,12 @@ int parseXMLDoc(xml_document<> &, std::ifstream &, const std::string &);
 int parseCSVString(const std::string &, std::vector<std::vector<std::string>> &);
 // xml_node<> *getXMLRoot(std::ifstream &, const std::string &);
 
+
+// Math
+
+bool is_close(const double &, const double &);
+bool is_close(const std::vector<double> &, const std::vector<double> &);
+
 double deg2rad(double);
 double rad2deg(double);
 // double getDistanceSquare(const Point2 &, const Point2 &);
