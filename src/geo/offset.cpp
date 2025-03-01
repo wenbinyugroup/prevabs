@@ -1060,35 +1060,76 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   // (tail part of the previous one and head part of the next one)
   PDCELVertex *v0 = nullptr, *v0_prev = lines_group[0][0];
   std::vector<std::vector<PDCELVertex *>> trimmed_sublines;
-  int ls_i1, ls_i2;
-
+  
   for (auto line_i = 0; line_i < lines_group.size() - 1; ++line_i)
   {
+    
     ss.str("");
     ss << "  find intersection between line " << line_i << " and line "
-        << line_i + 1 << std::endl;
+    << line_i + 1 << std::endl;
     PLOG(debug) << pmessage->message(ss.str());
-
-    // v0 = nullptr;
-
-    //
+    
+    // Old method
+    int ls_i1, ls_i2;
     double ls_u1, ls_u2;
-    std::vector<int> i1s, i2s;
-    std::vector<double> u1s, u2s;
+    std::vector<int> i1s, i2s;  // Line segment indices of the intersections
+    std::vector<double> u1s, u2s;  // Parametric coordinates of the intersections
     int is_new_1, is_new_2;
     int j1;
 
-    findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
+    // findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
+    find_polylines_intersections(
+      lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s, pmessage);
 
-    ls_u1 = getIntersectionLocation(
-        lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+    ss.str("");
+    ss << "  i1s.size() = " << i1s.size();
+    ss << ", i2s.size() = " << i2s.size();
+    ss << ", u1s.size() = " << u1s.size();
+    ss << ", u2s.size() = " << u2s.size() << std::endl;
+    PLOG(debug) << pmessage->message(ss.str());
 
-    ls_i2 = i2s[j1];
-    ls_u2 = u2s[j1];
+    // ls_u1 = getIntersectionLocation(
+    //     lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
 
-    v0 = getIntersectionVertex(
+    // ls_i2 = i2s[j1];
+    // ls_u2 = u2s[j1];
+
+    // There should be just one intersection
+    ls_i1 = i1s[0];
+    ls_i2 = i2s[0];
+    ls_u1 = u1s[0];
+    ls_u2 = u2s[0];
+
+    // v0 = getIntersectionVertex(
+    //     lines_group[line_i], lines_group[line_i + 1],
+    //     ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
+    v0 = get_intersection_vertex(
         lines_group[line_i], lines_group[line_i + 1],
-        ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
+        ls_i1, ls_i2, ls_u1, ls_u2, pmessage);
+    // Old method (end)
+
+    // // New method (h2d)
+    // // Create open polylines
+    // std::vector<h2d::Point2d> pts1, pts2;
+    // for (auto v : lines_group[line_i]) {
+    //   pts1.push_back(h2d::Point2d(v->point().y, v->point().z));
+    // }
+    // for (auto v : lines_group[line_i + 1]) {
+    //   pts2.push_back(h2d::Point2d(v->point().y, v->point().z));
+    // }
+    // h2d::OPolyline pl1(pts1), pl2(pts2);
+    // // Find the intersection
+    // auto res = pl1.intersects(pl2);
+    // // There will be one intersection
+    // if (res()) {
+    //   ss.str("");
+    //   ss << "  number of intersections: " << res.size() << std::endl;
+    //   PLOG(debug) << pmessage->message(ss.str());
+    //   auto pts = res.get();
+    // } else {
+
+    // }
+    // // New method (end)
 
     trim(lines_group[line_i], v0, 1);
     trim(lines_group[line_i + 1], v0, 0);
@@ -1107,6 +1148,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   {
 
     //
+    int ls_i1, ls_i2;
     double ls_u1, ls_u2;
     std::vector<int> i1s, i2s;
     std::vector<double> u1s, u2s;

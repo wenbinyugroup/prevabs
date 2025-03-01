@@ -41,17 +41,21 @@ PDCEL::~PDCEL() {
 
 
 
+/**
+ * Initialize the DCEL by adding the infinite bounding box and the
+ * unbounded face.
+ */
 void PDCEL::initialize() {
-  // Create the infinity large bounding box
-  PDCELVertex *v_tr = new PDCELVertex(0, INF, INF, false);
-  PDCELVertex *v_tl = new PDCELVertex(0, -INF, INF, false);
-  PDCELVertex *v_bl = new PDCELVertex(0, -INF, -INF, false);
-  PDCELVertex *v_br = new PDCELVertex(0, INF, -INF, false);
+  // Create the infinite bounding box
+  PDCELVertex *v_top_right = new PDCELVertex(0, INF, INF, false);
+  PDCELVertex *v_top_left = new PDCELVertex(0, -INF, INF, false);
+  PDCELVertex *v_bottom_left = new PDCELVertex(0, -INF, -INF, false);
+  PDCELVertex *v_bottom_right = new PDCELVertex(0, INF, -INF, false);
 
-  PGeoLineSegment *ls_top = new PGeoLineSegment(v_tr, v_tl);
-  PGeoLineSegment *ls_left = new PGeoLineSegment(v_tl, v_bl);
-  PGeoLineSegment *ls_bottom = new PGeoLineSegment(v_bl, v_br);
-  PGeoLineSegment *ls_right = new PGeoLineSegment(v_br, v_tr);
+  PGeoLineSegment *ls_top = new PGeoLineSegment(v_top_right, v_top_left);
+  PGeoLineSegment *ls_left = new PGeoLineSegment(v_top_left, v_bottom_left);
+  PGeoLineSegment *ls_bottom = new PGeoLineSegment(v_bottom_left, v_bottom_right);
+  PGeoLineSegment *ls_right = new PGeoLineSegment(v_bottom_right, v_top_right);
 
   PDCELHalfEdge *he_top = addEdge(ls_top);
   PDCELHalfEdge *he_left = addEdge(ls_left);
@@ -69,24 +73,18 @@ void PDCEL::initialize() {
   hel->setFace(f);
   hel->setKeep(true);
 
-  _vertices.push_back(v_tr);
-  _vertices.push_back(v_tl);
-  _vertices.push_back(v_bl);
-  _vertices.push_back(v_br);
+  _vertices.push_back(v_top_right);
+  _vertices.push_back(v_top_left);
+  _vertices.push_back(v_bottom_left);
+  _vertices.push_back(v_bottom_right);
 
+  // Remove the half edges which are not part of the unbounded face
   _halfedges.remove(he_top->twin());
   _halfedges.remove(he_left->twin());
   _halfedges.remove(he_bottom->twin());
   _halfedges.remove(he_right->twin());
 
   _faces.push_back(f);
-
-  // _vertex_tree->insert(v_tr);
-  // _vertex_tree->insert(v_tl);
-  // _vertex_tree->insert(v_bl);
-  // _vertex_tree->insert(v_br);
-
-  // print_dcel();
 }
 
 

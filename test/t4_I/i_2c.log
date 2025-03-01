@@ -1,0 +1,65 @@
+2025-02-28 12:43:31 [info] - prevabs start (2025-02-28 12:43:31)
+2025-02-28 12:43:31 [info] - reading input files
+2025-02-28 12:43:31 [info]     -   
+  
+    
+  
+  
+  
+  
+  
+  
+    
+    
+    -  [VABS Messages] 
+    
+    
+    -  [VABS Messages End] 
+    
+    
+  
+  ========================================
+  
+  
+  ========================================
+  
+aterials.xml
+2025-02-28 12:43:31 [info]   - reading input files -- done
+2025-02-28 12:43:31 [info]   - building the shape
+2025-02-28 12:43:31 [info]     - building the cross section, step 1
+2025-02-28 12:43:31 [info]       - building component: top
+2025-02-28 12:43:31 [info]       - building component: bottom
+2025-02-28 12:43:31 [info]       - building component: c_left
+2025-02-28 12:43:31 [info]       - building component: c_right
+2025-02-28 12:43:31 [info]     - building the cross section, step 2
+2025-02-28 12:43:31 [info]       - building component details: top
+2025-02-28 12:43:31 [info]         - updating base-offset index pairs
+2025-02-28 12:43:31 [info]       - building component details: bottom
+2025-02-28 12:43:31 [info]         - updating base-offset index pairs
+2025-02-28 12:43:31 [info]       - building component details: c_left
+2025-02-28 12:43:31 [info]         - updating base-offset index pairs
+2025-02-28 12:43:31 [info]       - building component details: c_right
+2025-02-28 12:43:31 [info]         - updating base-offset index pairs
+2025-02-28 12:43:31 [info]     - fixing geometry
+2025-02-28 12:43:31 [info]   - building the shape -- done
+2025-02-28 12:43:31 [info]   - modeling in Gmsh
+2025-02-28 12:43:31 [info]     - creating gmsh vertices
+2025-02-28 12:43:31 [info]     - creating gmsh edges
+2025-02-28 12:43:31 [info]     - creating gmsh faces
+2025-02-28 12:43:31 [info]     - creating physical groups
+2025-02-28 12:43:31 [info]     - meshing
+2025-02-28 12:43:31 [info]   - modeling in Gmsh -- done
+2025-02-28 12:43:31 [info]   - writing outputs
+2025-02-28 12:43:31 [info]     - writing sg file: t4_I/i_2c.sg
+2025-02-28 12:43:31 [info]       - writing nodes
+2025-02-28 12:43:31 [info]       - writing elements
+2025-02-28 12:43:31 [info]         -   writing connectivity
+2025-02-28 12:43:31 [info]         -   writing local orientation
+2025-02-28 12:43:31 [info]     - writing material id-name file: t4_I/i_2c.sg.mat
+2025-02-28 12:43:31 [info]   - writing outputs -- done
+2025-02-28 12:43:31 [info]     - running VABS for homogenization
+2025-02-28 12:43:31 [info]     - running: VABS "t4_I/i_2c.sg" ""
+2025-02-28 12:43:32 [info]     - command launched successfully.
+2025-02-28 12:43:32 [info]     - running VABS for homogenization -- done
+2025-02-28 12:43:32 [info]   - prevabs finished (2025-02-28 12:43:32)
+2025-02-28 12:43:32 [info] total running time: 0.48 sec

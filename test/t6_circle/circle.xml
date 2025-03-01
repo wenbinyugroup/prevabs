@@ -1,0 +1,98 @@
+<cross_section name="circle" format="1">
+    <include>
+        <!-- <baseline>baselines</baseline> -->
+        <material>materials</material>
+        <!-- <layup>layups</layup> -->
+    </include>
+
+    <analysis>
+        <model>1</model>
+        <thermal>0</thermal>
+        <trapeze>0</trapeze>
+        <!-- <vlasov>0</vlasov> -->
+        <initial_twist>0</initial_twist>
+        <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+    </analysis>
+
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.02</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+    <baselines>
+
+        <point name="ct">0 0</point>
+        <point name="p1">2 0</point>
+        <point name="p2">-2 0</point>
+        <point name="pt_web_r">0.1 0.0</point>
+
+        <baseline name="bsl_circle" type="circle">
+            <center>ct</center>
+            <radius>2</radius>
+            <discrete by="angle">5</discrete>
+            <direction>ccw</direction>
+        </baseline>
+        <baseline name="bsl_arc_top" type="arc">
+            <center>ct</center>
+            <start>p1</start>
+            <end>p2</end>
+            <discrete by="angle">3</discrete>
+            <direction>ccw</direction>
+        </baseline>
+        <baseline name="bsl_arc_bottom" type="arc">
+            <center>ct</center>
+            <start>p2</start>
+            <end>p1</end>
+            <discrete by="angle">3</discrete>
+            <direction>ccw</direction>
+        </baseline>
+
+        <baseline name="bl_web" type="straight">
+            <point>pt_web_r</point>
+            <angle>90</angle>
+        </baseline>
+    </baselines>
+
+    <layups>
+        <layup name="layup1" method="stack sequence">
+            <lamina>la_iso5_4_005</lamina>
+            <code>[45/-45/0/90]</code>
+        </layup>
+        <layup name="layup2" method="stack sequence">
+            <lamina>la_iso5_4_005</lamina>
+            <code>[45/-45]</code>
+        </layup>
+        <layup name="layup3" method="stack sequence">
+            <lamina>la_iso5_4_005</lamina>
+            <code>[30/0/-30]</code>
+        </layup>
+    </layups>
+
+    <component name="in">
+        <segments>
+            <!-- <baseline>blcircle</baseline> -->
+            <baseline>bsl_circle</baseline>
+            <layup begin="0" end="1">layup1</layup>
+            <layup begin="-3.1" end="-2.7">layup2</layup>
+            <!-- <layup begin="-0.75" end="-0.1">layup3</layup> -->
+        </segments>
+    </component>
+    <!-- <component name="out">
+    <segment name="">
+      <baseline>blcircle</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component> -->
+    <!-- <component name="web" depend="in">
+    <segment>
+      <baseline>bl_web</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component> -->
+</cross_section>

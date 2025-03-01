@@ -1,0 +1,13 @@
+2025-02-28 12:43:32 [info] - prevabs start (2025-02-28 12:43:32)
+2025-02-28 12:43:32 [info] - reading input files
+2025-02-28 12:43:32 [info]     -   
+  
+main input file: t4_I/i_web.xml
+2025-02-28 12:43:32 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+2025-02-28 12:43:32 [info]         - reading materials file: t4_I/materials.xml
+2025-02-28 12:43:32 [info]   - reading input files -- done
+2025-02-28 12:43:32 [info]   - building the shape
+2025-02-28 12:43:32 [info]     - building the cross section, step 1
+2025-02-28 12:43:32 [info]       - building component: top
+2025-02-28 12:43:32 [info]       - building component: bottom
+2025-02-28 12:43:32 [info]       - building component: web

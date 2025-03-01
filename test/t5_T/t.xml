@@ -1,0 +1,68 @@
+<cross_section name="t" format="1">
+    <include>
+        <!-- <baseline>baselines</baseline> -->
+        <!-- <material>materials</material> -->
+        <!-- <layup>layups</layup> -->
+    </include>
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.01</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+    <baselines basepoints="basepoints">
+
+        <point name="tl">-1 0</point>
+        <point name="tr">1 0</point>
+        <point name="web">0 -1</point>
+        <point name="webl">-0.14 -1</point>
+        <point name="webr">0.22 -1</point>
+
+        <baseline name="bl1" type="straight" method="pp">
+            <points>tl,tr</points>
+        </baseline>
+        <baseline name="blweb" type="straight" method="pa">
+            <point loc="begin">web</point>
+            <angle>90</angle>
+        </baseline>
+        <baseline name="blwebl" type="straight" method="pa">
+            <point loc="begin">webl</point>
+            <angle>90</angle>
+        </baseline>
+        <baseline name="blwebr" type="straight" method="pa">
+            <point loc="begin">webr</point>
+            <angle>90</angle>
+        </baseline>
+    </baselines>
+
+    <layups>
+        <layup name="layup1">
+            <layer lamina="la_iso5_1_002">90:2</layer>
+            <layer lamina="la_iso5_2_003">0</layer>
+        </layup>
+        <layup name="layupweb">
+            <layer lamina="la_iso5_5_001">0:8</layer>
+        </layup>
+    </layups>
+
+    <component name="cpflange">
+        <segment>
+            <baseline>bl1</baseline>
+            <layup direction="left">layup1</layup>
+        </segment>
+    </component>
+    <component name="cpwebl" depend="cpflange">
+        <segment free="head">
+            <baseline>blweb</baseline>
+            <layup direction="left">layupweb</layup>
+        </segment>
+    </component>
+    <!-- <component name="cpwebr" depend="cpflange">
+    <segment free="head">
+      <baseline>blweb</baseline>
+      <layup direction="right">layupweb</layup>
+    </segment>
+  </component> -->
+</cross_section>

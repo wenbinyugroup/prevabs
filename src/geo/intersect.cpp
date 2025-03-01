@@ -3,7 +3,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 #include <string>
-// #include "homog2d.hpp"
+#include <sstream>
+#include "homog2d.hpp"
 
 
 /**
@@ -48,6 +49,42 @@ bool calcLineIntersection2D(
        (l1p1y - l1p2y) * (l1p1x - l2p1x);
   u2 = u2 / dnm;
   // std::cout << "u2 = " << u2 << std::endl;
+
+  return true;
+
+}
+
+
+
+
+bool calc_line_intersection_2d(
+  const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
+  const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
+  double &ipx, double &ipy, double &u1, double &u2
+  ) {
+
+  h2d::Point2d l1p1(l1p1x, l1p1y);
+  h2d::Point2d l1p2(l1p2x, l1p2y);
+  h2d::Point2d l2p1(l2p1x, l2p1y);
+  h2d::Point2d l2p2(l2p2x, l2p2y);
+
+  h2d::Line2d l1(l1p1, l1p2);
+  h2d::Line2d l2(l2p1, l2p2);
+
+  auto res = l1.intersects(l2);
+
+  if (!res()) {
+    return false;
+  }
+
+  // Intersect
+  auto pts = res.get();
+  ipx = pts.getX();
+  ipy = pts.getY();
+
+  // Calculate parametric coordinates
+  u1 = h2d::dist(l1p1, pts) / h2d::dist(l1p1, l1p2);
+  u2 = h2d::dist(l2p1, pts) / h2d::dist(l2p1, l2p2);
 
   return true;
 
@@ -220,6 +257,22 @@ bool calcLineIntersection2D(
 
   return calcLineIntersection2D(
     ls1v1->point2(), ls1v2->point2(), ls2v1->point2(), ls2v2->point2(), u1, u2, tol);
+
+}
+
+
+
+
+bool calc_line_intersection_2d(
+  PDCELVertex *ls1v1, PDCELVertex *ls1v2,
+  PDCELVertex *ls2v1, PDCELVertex *ls2v2,
+  double &ipx, double &ipy, double &u1, double &u2
+  ) {
+
+  return calc_line_intersection_2d(
+    ls1v1->point2()[0], ls1v1->point2()[1], ls1v2->point2()[0], ls1v2->point2()[1],
+    ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
+    ipx, ipy, u1, u2);
 
 }
 
@@ -694,12 +747,13 @@ int findAllIntersections(
   std::vector<double> &u1s, std::vector<double> &u2s
 ) {
 
+  bool found = false;
+
+  if (c1.empty() || c2.empty()) {
+    return 0;
+  }
+
   // Find all intersections
-
-  // i1s, i2s: indices of line segments having intersection
-  // u1s, u2s: non-dimensional location of the intersection on the line segment
-
-  // std::cout << "\n[debug] function: findAllIntersections\n";
 
   PDCELVertex *v11, *v12, *v21, *v22;
 
@@ -716,6 +770,10 @@ int findAllIntersections(
       // Check intersection
       bool not_parallel;
       double u1, u2;
+
+      if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
+        throw std::runtime_error("null pointer reference in findAllIntersections");
+      }
 
       // std::cout << "        find intersection:" << std::endl;
       // std::cout << "        v11 = " << v11 << ", v12 = " << v12 <<
@@ -772,6 +830,94 @@ int findAllIntersections(
 
   return 0;
 
+}
+
+
+
+
+int find_polylines_intersections(
+  const std::vector<PDCELVertex *> &c1,
+  const std::vector<PDCELVertex *> &c2,
+  std::vector<int> &i1s, std::vector<int> &i2s,
+  std::vector<double> &u1s, std::vector<double> &u2s,
+  Message *pmessage
+) {
+  pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("find_polylines_intersections");
+
+  std::stringstream ss;
+  bool found = false;
+
+  if (c1.empty() || c2.empty()) {
+    return 0;
+  }
+
+  // Find all intersections
+
+  PDCELVertex *v11, *v12, *v21, *v22;
+
+  for (int i = 0; i < c1.size() - 1; ++i) {
+    // Iterate through all line segments of the first polyline
+
+    v11 = c1[i];
+    v12 = c1[i + 1];
+
+    for (int j = 0; j < c2.size() - 1; ++j) {
+      // Iterate through all line segments of the second polyline
+
+      v21 = c2[j];
+      v22 = c2[j + 1];
+
+      // Check intersection
+      bool not_parallel;
+      double ipx, ipy, u1, u2;
+
+      if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
+        throw std::runtime_error("null pointer reference in findAllIntersections");
+      }
+
+      ss.str("");
+      ss << "  find intersection:\n";
+      ss << "  polyline 1 segment " << i + 1 << " v11 = " << v11 << ", v12 = " << v12 << "\n";
+      ss << "  polyline 2 segment " << j + 1 << " v21 = " << v21 << ", v22 = " << v22 << std::endl;
+      PLOG(debug) << pmessage->message(ss.str());
+
+      not_parallel = calc_line_intersection_2d(v11, v12, v21, v22, ipx, ipy, u1, u2);
+
+      if (not_parallel) {
+        ss.str("");
+        ss << "  u1 = " << u1 << ", u2 = " << u2 << std::endl;
+        PLOG(debug) << pmessage->message(ss.str());
+
+        if (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1) {
+          // Keep only the intersections that are inside both segments
+
+          ss.str("");
+          ss << "  intersection is inside both segments: ";
+          ss << "(" << ipx << ", " << ipy << ")" << std::endl;
+          PLOG(debug) << pmessage->message(ss.str());
+
+          i1s.push_back(i);
+          i2s.push_back(j);
+          u1s.push_back(u1);
+          u2s.push_back(u2);
+
+        }
+
+      } else {
+        ss.str("");
+        ss << "  parallel" << std::endl;
+        PLOG(debug) << pmessage->message(ss.str());
+      }
+
+    }
+
+  }
+
+  pmessage->decreaseIndent();
+
+  return 0;
 }
 
 
@@ -1026,6 +1172,140 @@ PDCELVertex *getIntersectionVertex(
   //   }
   //   std::cout << std::endl;
   // }
+
+  return ip;
+
+}
+
+
+
+
+PDCELVertex *get_intersection_vertex(
+  std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
+  int &i1, int &i2, const double &u1, const double &u2,
+  Message *pmessage
+) {
+  // Get wanted intersection vertex from all options
+
+  // i1s, i2s: indices of line segments having intersection
+  // u1s, u2s: non-dimensional location of the intersection on the line segment
+
+  pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("in function: get_intersection_vertex");
+
+  std::streamstring ss;
+
+  PDCELVertex *ip = nullptr; // The intersection vertex
+
+  // Check if the vectors are not empty
+  if (c1.empty() || c2.empty()) {
+    pmessage->decreaseIndent();
+    return ip;
+  }
+
+  // Create/Get the intersection vertex
+  PDCELVertex *v11 = c1[i1];
+  PDCELVertex *v12 = c1[i1 + 1];
+  PDCELVertex *v21 = c2[i2];
+  PDCELVertex *v22 = c2[i2 + 1];
+
+  ss.str("");
+  ss << "  segment 1: " << v11 << " - " << v12 << "\n";
+  ss << "  segment 2: " << v21 << " - " << v22 << "\n";
+  PLOG(debug) << pmessage->message(ss.str());
+
+  if (!v11 || !v12 || !v21 || !v22) {
+    PLOG(error) << pmessage->message("Null pointer reference");
+    throw std::runtime_error("Null pointer reference");
+  }
+
+  bool is_new_1, is_new_2;
+
+  // The intersecting point is an existing point of either curve
+
+  // For curve c1
+  if (is_close(u1, 0.0)) {
+    // Intersecting point is the beginning point (v11) of the line
+    // segment i (v11-v12) of c1
+    is_new_1 = false;
+    ip = v11;
+    PLOG(debug) << pmessage->message("  intersection is close to the beginning point of segment 1");
+  }
+  else if (is_close(u1, 1.0)) {
+    // Intersecting point is the ending point (v12) of the line
+    // segment i (v11-v12) of c1
+    is_new_1 = false;
+    i1 += 1;
+    ip = v12;
+    PLOG(debug) << pmessage->message("  intersection is close to the ending point of segment 1");
+  }
+  else {
+    // Intersecting point is in the middle of the line segment i
+    // of c1, insertion is needed
+    is_new_1 = true;
+    i1 += 1;
+    PLOG(debug) << pmessage->message("  intersection is in the middle of segment 1");
+  }
+  
+  // For curve c2
+  if (is_close(u2, 0.0)) {
+    // Intersecting point is the beginning point (v21) of the line
+    // segment j (v21-v22) of c2
+    is_new_2 = false;
+    ip = v21;
+    PLOG(debug) << pmessage->message("  intersection is close to the beginning point of segment 2");
+  }
+  else if (is_close(u2, 1.0)) {
+    // Intersecting point is the beginning point (v22) of the line
+    // segment j (v21-v22) of c2
+    is_new_2 = false;
+    i2 += 1;
+    ip = v22;
+    PLOG(debug) << pmessage->message("  intersection is close to the ending point of segment 2");
+  }
+  else {
+    // Intersecting point is in the middle of the line segment i
+    // of c2, insertion is needed
+    is_new_2 = true;
+    i2 += 1;
+    PLOG(debug) << pmessage->message("  intersection is in the middle of segment 2");
+  }
+
+  ss.str("");
+  ss << "  is_new_1 = " << is_new_1 << ", i1 = " << i1 << "\n";
+  ss << "  is_new_2 = " << is_new_2 << ", i2 = " << i2 << "\n";
+  PLOG(debug) << pmessage->message(ss.str());
+
+  if (insert1 && insert2) {
+    // The last case, the intersection is at the middle of two sub-lines
+    // Calculate the new point
+
+    if (!ip) {
+      ip = new PDCELVertex(
+          getParametricPoint(v11->point(), v12->point(), u1));
+    }
+
+    ss.str("");
+    ss << "  new vertex ip = " << ip << "\n";
+    PLOG(debug) << pmessage->message(ss.str());
+  }
+
+  // Insert the intersection vertex (if needed)
+  if (insert1) {
+    c1.insert(c1.begin()+i1, ip);
+  }
+  else {
+    c1[i1] = ip;
+  }
+
+  if (insert2) {
+    c2.insert(c2.begin()+i2, ip);
+  } else {
+    c2[i2] = ip;
+  }
+
+  pmessage->decreaseIndent();
 
   return ip;
 

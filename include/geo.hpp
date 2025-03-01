@@ -130,6 +130,12 @@ bool calcLineIntersection2D(
   double &, double &, const double &
   );
 
+bool calc_line_intersection_2d(
+  const double &, const double &, const double &, const double &,
+  const double &, const double &, const double &, const double &,
+  double &, double &, double &, double &
+  );
+
 // template <typename P2>
 bool calcLineIntersection2D(
   const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &,
@@ -151,6 +157,9 @@ bool calcLineIntersection2D(
 bool calcLineIntersection2D(
   PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
   double &, double &, const double &);
+bool calc_line_intersection_2d(
+  PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
+  double &, double &, double &, double &);
 bool calcLineIntersection2D(
   PGeoLineSegment *, PGeoLineSegment *,
   double &, double &, const double &);
@@ -283,6 +292,13 @@ int findAllIntersections(
   std::vector<double> &u1s, std::vector<double> &u2s
 );
 
+int find_polylines_intersections(
+  const std::vector<PDCELVertex *> &, const std::vector<PDCELVertex *> &,
+  std::vector<int> &, std::vector<int> &,
+  std::vector<double> &, std::vector<double> &,
+  Message *
+);
+
 /**
  * @brief Finds the intersection location closest to the specified end.
  *
@@ -314,6 +330,12 @@ PDCELVertex *getIntersectionVertex(
   const int &inner_only_1, const int &inner_only_2,
   int &is_new_1, int &is_new_2,
   const double &tol
+);
+
+PDCELVertex *get_intersection_vertex(
+  std::vector<PDCELVertex *> &, std::vector<PDCELVertex *> &,
+  int &, int &, const double &, const double &,
+  Message *
 );
 
 int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove);
