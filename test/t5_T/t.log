@@ -1,0 +1,4 @@
+2025-03-01 19:52:07 [info] - prevabs start (2025-03-01 19:52:07)
+2025-03-01 19:52:07 [info] - reading input files
+2025-03-01 19:52:07 [info]     - reading main input file: t5_T/t.xml
+2025-03-01 19:52:07 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml

@@ -29,21 +29,36 @@ using namespace std;
 const int NE_1D = 4;
 
 
-// A helper function to split a string by a delimiter
+/**
+ * @brief Format a string representing the PATH environment variable into a
+ * nicely-formatted string with one path per line.
+ *
+ * @param paths The PATH environment variable as a string.
+ * @return A string with one path per line.
+ */
 std::string formatPaths(const char *paths) {
   std::string string_out{"current path:\n"};
+  if (paths == nullptr) {
+    string_out += "No PATH environment variable found.\n";
+    return string_out;
+  }
+
   std::stringstream ss(paths);
   std::string item;
-  // char delimiter = std::filesystem::path::preferred_separator == '/' ? ':' : ';';
+
   #ifdef __linux__
+  // On Linux, the PATH environment variable is a colon-separated list of paths.
   while (std::getline(ss, item, ':')) {
-      // std::cout << item << std::endl;
+    if (!item.empty()) {
       string_out += item + "\n";
+    }
   }
   #elif _WIN32
+  // On Windows, the PATH environment variable is a semicolon-separated list of paths.
   while (std::getline(ss, item, ';')) {
-      // std::cout << item << std::endl;
+    if (!item.empty()) {
       string_out += item + "\n";
+    }
   }
   #endif
 
@@ -89,9 +104,20 @@ void setPath(Message *pmessage) {
 
 
 
+/**
+ * Run a command in the operating system shell.
+ *
+ * @param command   The command to run.
+ * @param pmessage  A pointer to a Message object for logging.
+ */
 void runCmd(const std::string &command, Message *pmessage) {
+  if (pmessage == nullptr) {
+    throw std::runtime_error("pmessage pointer is null");
+  }
+
   PLOG(info) << pmessage->message("running: " + command);
 
+  // Execute the command in the shell
   int result = std::system(command.c_str());
 
   // Debugging: Print PATH and attempt to run command

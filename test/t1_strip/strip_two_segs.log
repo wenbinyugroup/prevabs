@@ -1,6 +1,6 @@
-2025-02-28 12:43:29 [info] - prevabs start (2025-02-28 12:43:29)
-2025-02-28 12:43:29 [info] - reading input files
-2025-02-28 12:43:29 [info]     -   
+2025-03-01 19:52:03 [info] - prevabs start (2025-03-01 19:52:03)
+2025-03-01 19:52:03 [info] - reading input files
+2025-03-01 19:52:03 [info]     -   
   
         
       
@@ -9,46 +9,39 @@
       
       
       
-        
-        
-        -  [VABS Messages] 
-        
-        
-        -  [VABS Messages End] 
-        
-        
       
       ========================================
       
       
       ========================================
       
-     - building the cross section, step 1
-2025-02-28 12:43:29 [info]       - building component: top
-2025-02-28 12:43:29 [info]         - building the cross section, step 2
-2025-02-28 12:43:29 [info]           - building component details: top
-2025-02-28 12:43:29 [info]             - updating base-offset index pairs
-2025-02-28 12:43:29 [info]             - updating base-offset index pairs
-2025-02-28 12:43:29 [info]         - fixing geometry
-2025-02-28 12:43:29 [info]       - building the shape -- done
-2025-02-28 12:43:29 [info]       - modeling in Gmsh
-2025-02-28 12:43:29 [info]         - creating gmsh vertices
-2025-02-28 12:43:29 [info]         - creating gmsh edges
-2025-02-28 12:43:29 [info]         - creating gmsh faces
-2025-02-28 12:43:29 [info]         - creating physical groups
-2025-02-28 12:43:29 [info]         - meshing
-2025-02-28 12:43:29 [info]       - modeling in Gmsh -- done
-2025-02-28 12:43:29 [info]       - writing outputs
-2025-02-28 12:43:29 [info]         - writing sg file: t1_strip/strip_two_segs.sg
-2025-02-28 12:43:29 [info]           - writing nodes
-2025-02-28 12:43:29 [info]           - writing elements
-2025-02-28 12:43:29 [info]             -   writing connectivity
-2025-02-28 12:43:29 [info]             -   writing local orientation
-2025-02-28 12:43:29 [info]         - writing material id-name file: t1_strip/strip_two_segs.sg.mat
-2025-02-28 12:43:29 [info]       - writing outputs -- done
-2025-02-28 12:43:29 [info]         - running VABS for homogenization
-2025-02-28 12:43:29 [info]         - running: VABS "t1_strip/strip_two_segs.sg" ""
-2025-02-28 12:43:30 [info]         - command launched successfully.
-2025-02-28 12:43:30 [info]         - running VABS for homogenization -- done
-2025-02-28 12:43:30 [info]       - prevabs finished (2025-02-28 12:43:30)
-2025-02-28 12:43:30 [info] total running time: 0.339 sec
+2:03 [info]   - reading input files -- done
+2025-03-01 19:52:03 [info]   - building the shape
+2025-03-01 19:52:03 [info]     - building the cross section, step 1
+2025-03-01 19:52:03 [info]       - building component: top
+2025-03-01 19:52:03 [info]         - building the cross section, step 2
+2025-03-01 19:52:03 [info]           - building component details: top
+2025-03-01 19:52:03 [info]             - updating base-offset index pairs
+2025-03-01 19:52:03 [info]             - updating base-offset index pairs
+2025-03-01 19:52:03 [info]         - fixing geometry
+2025-03-01 19:52:03 [info]       - building the shape -- done
+2025-03-01 19:52:03 [info]       - modeling in Gmsh
+2025-03-01 19:52:03 [info]         - creating gmsh vertices
+2025-03-01 19:52:03 [info]         - creating gmsh edges
+2025-03-01 19:52:03 [info]         - creating gmsh faces
+2025-03-01 19:52:03 [info]         - creating physical groups
+2025-03-01 19:52:03 [info]         - meshing
+2025-03-01 19:52:03 [info]       - modeling in Gmsh -- done
+2025-03-01 19:52:03 [info]       - writing outputs
+2025-03-01 19:52:03 [info]         - writing gmsh .opt file: t1_strip/strip_two_segs.opt
+2025-03-01 19:52:03 [info]         - writing gmsh .geo file: t1_strip/strip_two_segs.geo_unrolled
+2025-03-01 19:52:03 [info]         - writing gmsh .msh file: t1_strip/strip_two_segs.msh
+2025-03-01 19:52:03 [info]         - writing sg file: t1_strip/strip_two_segs.sg
+2025-03-01 19:52:03 [info]           - writing nodes
+2025-03-01 19:52:03 [info]           - writing elements
+2025-03-01 19:52:03 [info]             -   writing connectivity
+2025-03-01 19:52:03 [info]             -   writing local orientation
+2025-03-01 19:52:03 [info]         - writing material id-name file: t1_strip/strip_two_segs.sg.mat
+2025-03-01 19:52:03 [info]       - writing outputs -- done
+2025-03-01 19:52:03 [info]       - prevabs finished (2025-03-01 19:52:03)
+2025-03-01 19:52:03 [info] total running time: 0.107 sec

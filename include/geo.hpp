@@ -323,6 +323,13 @@ double getIntersectionLocation(
   int &ls_i, int &j, Message *
 );
 
+int get_intersection_closer_to(
+  const std::vector<PDCELVertex *> &,
+  const std::vector<int> &, const std::vector<double> &,
+  const int &, const bool &,
+  Message *
+);
+
 PDCELVertex *getIntersectionVertex(
   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
   int &i1, int &i2, const double &u1, const double &u2,

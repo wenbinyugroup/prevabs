@@ -962,6 +962,7 @@ double getIntersectionLocation(
       if (which_end == 0) {
         // Closer to the beginning side
         if (ii[k] < ls_i) {
+          // If the current segment index is smaller
           ls_i = ii[k];
           u = uu[k];
           j = k;
@@ -1006,6 +1007,83 @@ double getIntersectionLocation(
   pmessage->decreaseIndent();
 
   return u;
+}
+
+
+
+
+int get_intersection_closer_to(
+  const std::vector<PDCELVertex *> &c,
+  const std::vector<int> &ii, const std::vector<double> &uu,
+  const int &which_end, const bool &inner_only,
+  Message *pmessage
+) {
+  // Find the intersection location that is the closest to the expected end
+  pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("in function: get_intersection_closer_to");
+
+  int j = 0;
+
+  int ls_i = ii[0];
+  double u = uu[0];
+
+  for (auto k = 1; k < ii.size(); k++) {
+
+    if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
+      if (which_end == 0) {
+        // Closer to the beginning side
+        if (ii[k] < ls_i) {
+          // If the current segment index is smaller
+          ls_i = ii[k];
+          u = uu[k];
+          j = k;
+        }
+        else if (ii[k] == ls_i) {
+          // If the current segment index is the same
+          if (uu[k] < u) {
+            // If the current parametric coordinate is smaller
+            u = uu[k];
+            j = k;
+          }
+
+        }
+
+      }
+      else if (which_end == 1) {
+        // Closer to the ending side
+        if (ii[k] > ls_i) {
+          // If the current segment index is larger
+          ls_i = ii[k];
+          u = uu[k];
+          j = k;
+        }
+        else if (ii[k] == ls_i) {
+          // If the current segment index is the same
+          if (uu[k] > u) {
+            // If the current parametric coordinate is larger
+            u = uu[k];
+            j = k;
+          }
+
+        }
+
+      }
+    }
+
+  }
+
+
+  // PLOG(debug) << pmessage->message(
+  //   "ls_i = " + std::to_string(ls_i)
+  //   + ", u = " + std::to_string(u)
+  //   + ", v1 = " + c[ls_i]->printString()
+  //   + ", v2 = " + c[ls_i+1]->printString()
+  // );
+
+  pmessage->decreaseIndent();
+
+  return j;
 }
 
 
@@ -1194,7 +1272,7 @@ PDCELVertex *get_intersection_vertex(
 
   PLOG(debug) << pmessage->message("in function: get_intersection_vertex");
 
-  std::streamstring ss;
+  std::stringstream ss;
 
   PDCELVertex *ip = nullptr; // The intersection vertex
 
@@ -1277,7 +1355,7 @@ PDCELVertex *get_intersection_vertex(
   ss << "  is_new_2 = " << is_new_2 << ", i2 = " << i2 << "\n";
   PLOG(debug) << pmessage->message(ss.str());
 
-  if (insert1 && insert2) {
+  if (is_new_1 && is_new_2) {
     // The last case, the intersection is at the middle of two sub-lines
     // Calculate the new point
 
@@ -1292,14 +1370,14 @@ PDCELVertex *get_intersection_vertex(
   }
 
   // Insert the intersection vertex (if needed)
-  if (insert1) {
+  if (is_new_1) {
     c1.insert(c1.begin()+i1, ip);
   }
   else {
     c1[i1] = ip;
   }
 
-  if (insert2) {
+  if (is_new_2) {
     c2.insert(c2.begin()+i2, ip);
   } else {
     c2[i2] = ip;

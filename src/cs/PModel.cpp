@@ -967,11 +967,12 @@ void PModel::plot(Message *pmessage) {
     // pmessage->printBlank();
   }
 
-
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running Gmsh for visualization");
-
-  runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
+  if (config.execute) {
+    pmessage->printBlank();
+    PLOG(info) << pmessage->message("running Gmsh for visualization");
+  
+    runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
+  }
 
   return;
 }

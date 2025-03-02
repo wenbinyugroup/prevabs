@@ -1,7 +1,7 @@
 <cross_section name="t" format="1">
     <include>
         <!-- <baseline>baselines</baseline> -->
-        <!-- <material>materials</material> -->
+        <material>materials</material>
         <!-- <layup>layups</layup> -->
     </include>
     <general>
