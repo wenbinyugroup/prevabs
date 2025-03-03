@@ -170,6 +170,10 @@ private:
 
   CrossSection *_cross_section;
 
+  std::vector<double> _translate = {0.0, 0.0};
+  double _scale = 1.0;
+  double _rotate = 0.0;
+
   PMesh *_pmesh;
   std::vector<std::vector<int>> _node_elements;
   size_t _num_nodes = 0;
@@ -227,6 +231,10 @@ public:
 
   std::vector<double> &curvatures() { return _analysis_curvatures; }
   std::vector<double> &obliques() { return _analysis_obliques; }
+
+  std::vector<double> &global_translate() { return _translate; }
+  double global_scale() { return _scale; }
+  double global_rotate() { return _rotate; }
 
   std::size_t getNumOfMaterials() { return _materials.size(); }
   std::size_t getNumOfLayerTypes() { return _layertypes.size(); }
@@ -332,6 +340,10 @@ public:
 
   void setCurvatures(double, double, double);
   void setObliques(double, double);
+
+  void setGlobalTranslate(double x, double y) { _translate = {x, y}; }
+  void setGlobalScale(double s) { _scale = s; }
+  void setGlobalRotate(double r) { _rotate = r; }
 
   void setCrossSection(CrossSection *cs) { _cross_section = cs; }
 
