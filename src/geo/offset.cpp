@@ -935,6 +935,13 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 {
   pmessage->increaseIndent();
 
+  if (config.debug) {
+    PLOG(debug) << pmessage->message("  base curve:") << std::endl;
+    for (auto i = 0; i < base.size(); i++) {
+      PLOG(debug) << pmessage->message("    ") << i << ": " << base[i];
+    }
+  }
+
   std::stringstream ss;
 
   PLOG(debug) << pmessage->message("offsetting a polyline");
@@ -1063,12 +1070,11 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   
   for (auto line_i = 0; line_i < lines_group.size() - 1; ++line_i)
   {
-    
-    ss.str("");
-    ss << "  find intersection between line " << line_i << " and line "
-    << line_i + 1 << std::endl;
-    PLOG(debug) << pmessage->message(ss.str());
-    
+
+    PLOG(debug) << pmessage->message("  ")
+      << "find intersection between line " << line_i << " and line "
+      << line_i + 1 << std::endl;
+
     // Old method
     int ls_i1, ls_i2;
     double ls_u1, ls_u2;
@@ -1154,11 +1160,11 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 
 
   // If this curve is closed
-  if (base.front() == base.back())
-  {
-    ss.str("");
-    ss << "  close curve" << std::endl;
-    PLOG(debug) << pmessage->message(ss.str());
+  if (base.front() == base.back()) {
+    PLOG(debug) << pmessage->message("  closed curve");
+
+    PLOG(debug) << pmessage->message("  ")
+      << "lines_group.size() = " << lines_group.size() << std::endl;
 
     if (lines_group.size() == 1) {
       // If there is only one sub-line, split it to two sub-lines
@@ -1203,6 +1209,8 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
         lines_group.push_back(l2);
       }
 
+      trimmed_sublines.push_back(lines_group.back());
+
     }
 
     //
@@ -1218,12 +1226,11 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
     find_polylines_intersections(
       lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s, pmessage);
 
-    ss.str("");
-    ss << "  i1s.size() = " << i1s.size();
-    ss << ", i2s.size() = " << i2s.size();
-    ss << ", u1s.size() = " << u1s.size();
-    ss << ", u2s.size() = " << u2s.size() << std::endl;
-    PLOG(debug) << pmessage->message(ss.str());
+    PLOG(debug) << pmessage->message("  ")
+      << "i1s.size() = " << i1s.size()
+      << ", i2s.size() = " << i2s.size()
+      << ", u1s.size() = " << u1s.size()
+      << ", u2s.size() = " << u2s.size() << std::endl;
 
     auto nips = i1s.size();  // number of intersection points
     if (lines_group.size() == 2) {
@@ -1233,6 +1240,9 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
       // This vertex should not be counted.
       nips -= 1;
     }
+
+    PLOG(debug) << pmessage->message("  ")
+      << "nips = " << nips << std::endl;
 
     if (nips == 0) {
       // If there are no intersection points,
@@ -1295,8 +1305,25 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
         lines_group.back(), lines_group.front(),
         ls_i1, ls_i2, ls_u1, ls_u2, pmessage);
 
+      PLOG(debug) << pmessage->message("  ")
+        << "intersection v0 = " << v0 << std::endl;
+
       trim(lines_group.back(), v0, 1);
       trim(lines_group.front(), v0, 0);
+
+      if (config.debug) {
+        PLOG(debug) << pmessage->message("  lines_group.back():") << std::endl;
+        for (auto i = 0; i < lines_group.back().size(); i++) {
+          PLOG(debug) << pmessage->message("    ")
+            << i << ": " << lines_group.back()[i];
+        }
+        PLOG(debug) << pmessage->message("  lines_group.front():") << std::endl;
+        for (auto i = 0; i < lines_group.front().size(); i++) {
+          PLOG(debug) << pmessage->message("    ")
+            << i << ": " << lines_group.front()[i];
+        }
+      }
+
     }
 
     // if (lines_group.size() > 1)
@@ -1330,11 +1357,25 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
     // trimmed_sublines.pop_back();
     // trimmed_sublines.push_back(lines_group.back());
 
+    auto ntrimmed = trimmed_sublines.size();
+    PLOG(debug) << pmessage->message("  ")
+      << "trimmed_sublines.size() = " << ntrimmed << std::endl;
+
     trimmed_sublines[0] = lines_group.front();
-    trimmed_sublines[trimmed_sublines.size() - 1] = lines_group.back();
-    // if (lines_group.size() > 1)
-    // {
-    // }
+    trimmed_sublines[ntrimmed - 1] = lines_group.back();
+
+    if (config.debug) {
+      PLOG(debug) << pmessage->message("  trimmed_sublines[0]:") << std::endl;
+      for (auto i = 0; i < trimmed_sublines[0].size(); i++) {
+        PLOG(debug) << pmessage->message("    ")
+          << i << ": " << trimmed_sublines[0][i];
+      }
+      PLOG(debug) << pmessage->message("  trimmed_sublines[ntrimmed - 1]:") << std::endl;
+      for (auto i = 0; i < trimmed_sublines[ntrimmed - 1].size(); i++) {
+        PLOG(debug) << pmessage->message("    ")
+          << i << ": " << trimmed_sublines[ntrimmed - 1][i];
+      }
+    }
   }
 
   // Step 4: Join all sub-lines
@@ -1348,6 +1389,14 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
     }
   }
   offset_vertices.push_back((trimmed_sublines.back()).back());
+
+  // Debug
+  if (config.debug) {
+    PLOG(debug) << pmessage->message("  offset curve:") << std::endl;
+    for (auto i = 0; i < offset_vertices.size(); i++) {
+      PLOG(debug) << pmessage->message("    ") << i << ": " << offset_vertices[i];
+    }
+  }
 
   pmessage->decreaseIndent();
 

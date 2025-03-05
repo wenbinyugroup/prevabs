@@ -1,0 +1,183 @@
+<cross_section name="uh60a_section" format="1">
+    <include>
+        <material>material_database_us_ft</material>
+    </include>
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <scale>1</scale>
+        <mesh_size>0.004</mesh_size>
+        <element_type>linear</element_type>
+        <track_interface>0</track_interface>
+    </general>
+
+
+
+    <baselines>
+
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="1" direction="-1" header="0">SC1095.dat</points>
+            <flip>1</flip>
+            <reverse>0</reverse>
+        </line>
+
+        <point name="p1" on="ln_af" by="x2" which="top">0.82</point>
+        <point name="p2" on="ln_af" by="x2" which="bottom">0.82</point>
+        <point name="p3" on="ln_af" by="x2" which="top">0.58</point>
+        <point name="p4" on="ln_af" by="x2" which="bottom">0.58</point>
+
+        <point name="p5" on="ln_af" by="x2" which="top">0.98</point>
+        <point name="p6" on="ln_af" by="x2" which="bottom">0.98</point>
+
+        <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
+        <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
+
+        <point name="p9" on="ln_af" by="x2" which="top">0.1</point>
+        <point name="p10" on="ln_af" by="x2" which="bottom">0.1</point>
+
+        <point name="pnsmc">0.96 0</point>
+
+        
+
+        <!-- Main spar -->
+        <line name="line_spar">
+            <points>p1:p3,p4:p2,p1</points>
+        </line>
+
+        <!-- Front part and leading edge -->
+        <baseline name="bsl_le_top">
+            <points>p5:p1</points>
+        </baseline>
+        <baseline name="bsl_le">
+            <points>p6:p5</points>
+        </baseline>
+        <baseline name="bsl_le_bottom">
+            <points>p2:p6</points>
+        </baseline>
+
+        <!-- Back part and trailing edge -->
+        <baseline name="bsl_te_top">
+            <points>p3:p7</points>
+        </baseline>
+        <baseline name="bsl_te">
+            <points>p7:p8</points>
+        </baseline>
+        <baseline name="bsl_te_bottom">
+            <points>p8:p4</points>
+        </baseline>
+
+        <!-- Non-structural mass -->
+        <baseline name="bsl_nsm" type="circle">
+            <center>pnsmc</center>
+            <radius>0.005</radius>
+            <discrete by="angle">9</discrete>
+        </baseline>
+
+        <!-- Filling part -->
+        
+        <point name="ptfb" constraint="middle">p9 p10</point>
+        <point name="ptf">0.09 0</point>
+        <line name="bsl_te_fill_bound">
+            <points>p10,ptfb,p9</points>
+        </line>
+
+        <point name="pfle1">0.945 0</point>
+        <point name="pfle2">0.87 0</point>
+        <point name="pfte1">0.53 0</point>
+        <point name="pfte2">0.11 0</point>
+
+    </baselines>
+
+
+
+    <layups>
+
+        <layup name="lyp_spar" method="stack sequence">
+            <lamina>cfrp_0.0053</lamina>
+            <code>[-45/0/45/90]</code>
+        </layup>
+
+        <layup name="lyp_le" method="stack sequence">
+            <lamina>cfrp_0.0053</lamina>
+            <code>[0]</code>
+        </layup>
+
+        <layup name="lyp_te" method="stack sequence">
+            <lamina>cfrp_0.0053</lamina>
+            <code>[0]</code>
+        </layup>
+
+    </layups>
+
+
+
+    <component name="spar">
+        <segments>
+            <baseline>line_spar</baseline>
+            <layup>lyp_spar</layup>
+        </segments>
+    </component>
+
+    <component name="le" depend="spar">
+        <segments>
+            <baseline>bsl_le</baseline>
+            <layup>lyp_le</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_le_top</baseline>
+            <layup>lyp_le</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_le_bottom</baseline>
+            <layup>lyp_le</layup>
+        </segments>
+    </component>
+
+    <component name="te" depend="spar">
+        <segments>
+            <baseline>bsl_te_top</baseline>
+            <layup>lyp_te</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_te</baseline>
+            <layup>lyp_te</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_te_bottom</baseline>
+            <layup>lyp_te</layup>
+        </segments>
+    </component>
+
+    <component name="ns_mass" type="fill">
+        <baseline>bsl_nsm</baseline>
+        <location>pnsmc</location>
+        <material>metal</material>
+        <mesh_size at="pnsmc">0.04</mesh_size>
+    </component>
+
+    <component name="fill_front" type="fill" depend="spar,le,ns_mass">
+        <location>pfle1</location>
+        <material>foam</material>
+        <mesh_size at="pfle1,pfle2">0.04</mesh_size>
+    </component>
+
+    <component name="fill_te" type="fill" depend="te">
+        <baseline>bsl_te_fill_bound</baseline>
+        <location>ptf</location>
+        <material>honeycomb</material>
+    </component>
+
+    <component name="fill_back" type="fill" depend="spar,te,fill_back">
+        <baseline>bsl_te_fill_bound</baseline>
+        <!-- <baseline fillside="right">bsl_te_fill_bound</baseline> -->
+        <location>pfte1</location>
+        <material>honeycomb</material>
+        <mesh_size at="pfte1,pfte2">0.04</mesh_size>
+    </component>
+
+    <global measure="stress">
+        <include format="csv" header="1">loadcases.csv</include>
+    </global>
+
+</cross_section>

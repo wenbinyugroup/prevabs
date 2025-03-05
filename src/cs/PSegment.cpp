@@ -293,13 +293,6 @@ void Segment::offsetCurveBase(Message *pmessage) {
   //        _curve_offset->vertices(), _offset_indices_base_link_to,
   //        _base_offset_indices_pairs, pmessage);
 
-
-  // if (config.debug) {
-  //   std::cout << "base line: " <<  _curve_base->vertices().front();
-  //   std::cout << " -> " <<  _curve_base->vertices().back() << std::endl;
-  //   std::cout << "offset line: " <<  _curve_offset->vertices().front();
-  //   std::cout << " -> " <<  _curve_offset->vertices().back() << std::endl;
-  // }
   PLOG(debug) << pmessage->message("base line: ")
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
@@ -374,21 +367,12 @@ void Segment::updateBaseOffsetIndexPairs(Message *pmessage) {
 
 void Segment::build(Message *pmessage) {
   pmessage->increaseIndent();
-  if (config.debug) {
-    // std::cout << "[debug] building the overall shape of segment: " << _name
-    //           << std::endl;
-    // fprintf(config.fdeb, "- building segment areas: %s\n", _name.c_str());
-    // pmessage->print(9, "building the overall shape of segment: " + _name);
-    PLOG(debug) << pmessage->message("building the overall shape of segment: " + _name);
-    // std::cout << "base line: " <<  _curve_base->vertices().front();
-    // std::cout << " -> " <<  _curve_base->vertices().back() << std::endl;
-    PLOG(debug) << pmessage->message("base line: ")
+
+  PLOG(debug) << pmessage->message("building the overall shape of segment: " + _name);
+
+  PLOG(debug) << pmessage->message("base line: ")
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
-  }
-  // pmessage->print(9, "building the overall shape of segment: " + _name);
-
-  // printBaseOffsetLink();
 
 
   PDCELHalfEdge *he;
@@ -396,12 +380,15 @@ void Segment::build(Message *pmessage) {
   PLOG(debug) << pmessage->message("creating half edges for the base curve");
 
   // Log the number of vertices of the base curve
-  PLOG(debug) << pmessage->message("number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size()));
+  PLOG(debug) << pmessage->message("number of vertices of the base curve: ")
+    << _curve_base->vertices().size();
 
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
     // Debug log the two vertices i and i+1
-    PLOG(debug) << pmessage->message("vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1));
+    // PLOG(debug) << pmessage->message("  half edge: ")
+    //   << i << " " << _curve_base->vertices()[i]->printString()
+    //   << " -- " << i + 1 << " " << _curve_base->vertices()[i + 1]->printString();
 
     he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
                                        _curve_base->vertices()[i + 1]);
@@ -414,50 +401,44 @@ void Segment::build(Message *pmessage) {
   }
   // _pmodel->dcel()->print_dcel();
 
-  // std::cout << "[debug] creating half edges for the offset curve" <<
-  // std::endl;
-  // if (config.debug) {
-  //   pmessage->print(9, "creating half edges for the offset curve");
-  // }
+
   PLOG(debug) << pmessage->message("creating half edges for the offset curve");
-  // pmessage->print(9, "creating half edges for the offset curve");
+
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
+    // PLOG(debug) << pmessage->message("  half edge: ")
+    //   << i << " " << _curve_offset->vertices()[i]->printString()
+    //   << " -- " << i + 1 << " " << _curve_offset->vertices()[i + 1]->printString();
+
     _pmodel->dcel()->addEdge(_curve_offset->vertices()[i],
                              _curve_offset->vertices()[i + 1]);
   }
 
   // Create half edge loop and face
-  // if (config.debug) {
-  //   pmessage->print(9, "creating the half edge loop and face");
-  // }
+
   PLOG(debug) << pmessage->message("creating the half edge loop and face");
-  // pmessage->print(9, "creating the half edge loop and face");
+
   PDCELHalfEdgeLoop *hel;
   he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[0],
                                      _curve_base->vertices()[1]);
+
+  // PLOG(debug) << pmessage->message("  found half edge: ") << he;
+
   if (slayupside == "right") {
     he = he->twin();
   }
 
-  // std::cout << "[debug] half edges of vertex " << he->target() << std::endl;
-  // he->target()->printAllLeavingHalfEdges();
-
-  // std::cout << "\n[debug] half edge he: " << he << std::endl;
   hel = _pmodel->dcel()->addHalfEdgeLoop(he);
-  // std::cout << "\nhalf edge loop:\n";
-  // std::cout << hel << std::endl;
+
+  hel->log();
 
   _face = _pmodel->dcel()->addFace(hel);
   _face->setName(_name + "_face");
-  // std::cout << "        face _face:" << std::endl;
-  // _face->print();
+
+  _face->print();
 
   hel->setKeep(true);
   hel->setFace(_face);
 
-  // for (auto f : _pmodel->dcel()->faces()) {
-  //   f->outer()->print2();
-  // }
   pmessage->decreaseIndent();
 }
 

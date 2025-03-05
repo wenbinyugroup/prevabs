@@ -57,7 +57,7 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
 
   // Specify the format
   logging::formatter fmt = expr::stream
-    << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
+    // << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
     << "[" << logging::trivial::severity << "]"
     << " " << expr::message;
 

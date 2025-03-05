@@ -493,7 +493,7 @@ void PModel::createGmshGeo(Message *pmessage) {
 
   createGmshVertices(pmessage);
   createGmshEdges(pmessage);
-  // createGmshFaces(pmessage);
+  createGmshFaces(pmessage);
 
 }
 
@@ -514,20 +514,22 @@ void PModel::buildGmsh(Message *pmessage) {
   gmsh::model::add(_name);
 
 
-  // ------------------------------
-  // Create Gmsh vertices
-  createGmshVertices(pmessage);
+  // // ------------------------------
+  // // Create Gmsh vertices
+  // createGmshVertices(pmessage);
 
 
-  // ------------------------------
-  // Create Gmsh edges
-  createGmshEdges(pmessage);
+  // // ------------------------------
+  // // Create Gmsh edges
+  // createGmshEdges(pmessage);
 
 
-  // ------------------------------
-  // Create Gmsh faces
-  createGmshFaces(pmessage);
+  // // ------------------------------
+  // // Create Gmsh faces
+  // createGmshFaces(pmessage);
 
+
+  createGmshGeo(pmessage);
 
   gmsh::model::geo::synchronize();
 
@@ -535,20 +537,24 @@ void PModel::buildGmsh(Message *pmessage) {
   // Create embedded entities and set local mesh sizes
   createGmshEmbeddedEntities(pmessage);
 
-
   gmsh::model::geo::synchronize();
 
   // ------------------------------
   // Create Gmsh physical groups
   createGmshPhyscialGroups(pmessage);
 
+  gmsh::model::geo::synchronize();
 
-  if (config.debug) {
-    // Create Gmsh model and write Gmsh files for debugging
+  // if (config.debug) {
+  //   // Create Gmsh model and write Gmsh files for debugging
 
-    plotGeoDebug(pmessage, false);
+  //   plotGeoDebug(pmessage, false);
 
-  }
+  // }
+
+  std::string fn = config.file_directory + "geo_before_mesh.geo_unrolled";
+
+  writeGmshGeo(fn, pmessage);
 
 
   // ------------------------------

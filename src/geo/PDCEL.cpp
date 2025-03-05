@@ -412,6 +412,7 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
 
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   // std::cout << "[debug] addEdge: " << v1 << ", " << v2 << std::endl;
+  PLOG(debug) << "adding edge: " << v1 << " -> " << v2;
 
   addVertex(v1);
   addVertex(v2);
@@ -489,6 +490,8 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
 
 
 void PDCEL::removeEdge(PDCELHalfEdge *he) {
+  PLOG(debug) << "removing edge: " << he;
+
   PDCELHalfEdge *he2 = he->twin();
 
   // std::cout << "he1: " << he << std::endl;
@@ -662,6 +665,7 @@ PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
   // } else {
   //   std::cout << "nullptr" << std::endl;
   // }
+  PLOG(debug) << "looking for half edge: " << v1 << " -> " << v2;
 
   if (v1->edge() == nullptr) {
     return nullptr;
@@ -672,10 +676,13 @@ PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
   do {
     // std::cout << "        vertex heit->target(): " << heit->target() << std::endl;
     if (heit->target() == v2) {
+      PLOG(debug) << "found half edge: " << heit;
       return heit;
     }
     heit = heit->twin()->next();
   } while (heit != he1 && heit != nullptr);
+
+  PLOG(debug) << "half edge not found";
 
   return nullptr;
 }
@@ -730,14 +737,15 @@ int PDCEL::isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2) {
 
 
 PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
-  // std::cout << "[debug] addHalfEdgeLoop:" << std::endl;
+  PLOG(debug) << "adding half edge loop with half edge: " << he;
+
   PDCELHalfEdgeLoop *hel = new PDCELHalfEdgeLoop();
 
   PDCELHalfEdge *hei = he;
   do {
-    // std::cout << "        half edge hei: " << hei << std::endl;
+    PLOG(debug) << "  handling half edge: " << hei;
     hei->setLoop(hel);
-    hel->updateVertexEdge(hei);
+    // hel->updateVertexEdge(hei);
     hei = hei->next();
   } while (hei != he);
 
@@ -805,6 +813,7 @@ PDCEL::addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop) {
 
 
 void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
+  PLOG(debug) << "removing half edge loop";
   PDCELHalfEdge *he = hel->incidentEdge();
   do {
     he->resetLoop();
@@ -972,8 +981,7 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
 
 void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
                                    PGeoLineSegment *ls) {
-  // std::cout << "[debug] findCurvesIntersection(loop, line segment)"
-  //           << std::endl;
+  PLOG(debug) << "finding curves intersection";
 
   PDCELHalfEdge *hei = hel->incidentEdge(), *he1, *he2;
   PGeoLineSegment *lsi;
@@ -1335,7 +1343,7 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PDCELVertex *v1,
 
 
 std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PGeoLineSegment *ls) {
-  // std::cout << "[debug] splitFace(face, line segment)" << std::endl;
+  PLOG(debug) << "splitFace";
 
   // Find the two intersections
   findCurvesIntersection(f->outer()->loop(), ls);

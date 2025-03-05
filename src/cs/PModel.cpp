@@ -43,7 +43,7 @@ void PModel::initialize() {
     config.fdeb = fopen((config.file_directory + config.file_base_name + ".debug").c_str(), "w");
   }
 
-  gmsh::initialize();
+  // gmsh::initialize();
   // GmshInitialize(0, 0);
   // printInfo(1, "Gmsh initialized");
 
@@ -57,7 +57,7 @@ void PModel::initialize() {
 
 void PModel::finalize() {
 
-  gmsh::finalize();
+  // gmsh::finalize();
   // GmshFinalize();
 
   if (config.debug) {
@@ -547,6 +547,8 @@ void PModel::build(Message *pmessage) {
 
 void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
 
+  gmsh::initialize();
+
   if (create_gmsh_geo) {
     // initGmshModel(pmessage);
     createGmshGeo(pmessage);
@@ -570,6 +572,8 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
     // if (he->gedge()) he->resetGEdge();
     if (he->gedgeTag() != 0) he->resetGEdgeTag();
   }
+
+  gmsh::finalize();
 
 }
 
@@ -795,6 +799,8 @@ void PModel::homogenize(Message *pmessage) {
     // ================
     // MODELING IN GMSH
 
+    gmsh::initialize();
+
     pmessage->printBlank();
     PLOG(info) << pmessage->message("modeling in Gmsh");
 
@@ -825,8 +831,10 @@ void PModel::homogenize(Message *pmessage) {
       PLOG(info) << pmessage->message("writing outputs -- done");
       pmessage->printBlank();
     }
-  }
-  catch (std::exception &exception) {
+
+    gmsh::finalize();
+
+  } catch (std::exception &exception) {
     pmessage->print(2, exception.what());
     return;
   }

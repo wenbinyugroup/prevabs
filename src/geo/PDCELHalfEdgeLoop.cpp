@@ -156,8 +156,14 @@ void PDCELHalfEdgeLoop::setFace(PDCELFace *f) {
 
 
 void PDCELHalfEdgeLoop::updateVertexEdge(PDCELHalfEdge *he) {
-  if (_incident_edge == nullptr ||
-      he->source()->point() < _bottom_left_vertex->point()) {
+  PLOG(debug) << "updateVertexEdge: " << he;
+
+  if (_incident_edge == nullptr) {
+    PLOG(debug) << "  setting incident edge for the first time";
+    _incident_edge = he;
+    _bottom_left_vertex = he->source();
+  } else if (he->source()->point() < _bottom_left_vertex->point()) {
+    PLOG(debug) << "  setting incident edge to a smaller one";
     _incident_edge = he;
     _bottom_left_vertex = he->source();
   }
