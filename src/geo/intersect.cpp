@@ -57,6 +57,27 @@ bool calcLineIntersection2D(
 
 
 
+/**
+ * @brief Calculates the intersection of two 2D lines.
+ *
+ * This function determines if two lines in 2D space intersect and calculates the
+ * intersection points. It also calculates the parametric coordinates of the
+ * intersection point on each line.
+ *
+ * @param l1p1x The x-coordinate of the first point of the first line.
+ * @param l1p1y The y-coordinate of the first point of the first line.
+ * @param l1p2x The x-coordinate of the second point of the first line.
+ * @param l1p2y The y-coordinate of the second point of the first line.
+ * @param l2p1x The x-coordinate of the first point of the second line.
+ * @param l2p1y The y-coordinate of the first point of the second line.
+ * @param l2p2x The x-coordinate of the second point of the second line.
+ * @param l2p2y The y-coordinate of the second point of the second line.
+ * @param ipx Reference to a double where the x-coordinate of the intersection point will be stored.
+ * @param ipy Reference to a double where the y-coordinate of the intersection point will be stored.
+ * @param u1 Reference to a double where the parametric coordinate of the intersection point on the first line will be stored.
+ * @param u2 Reference to a double where the parametric coordinate of the intersection point on the second line will be stored.
+ * @return true if the lines intersect, false otherwise.
+ */
 bool calc_line_intersection_2d(
   const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
@@ -107,19 +128,19 @@ bool calc_line_intersection_2d(
  * @param tol The tolerance value used for intersection calculations.
  * @return True if the lines intersect, false otherwise.
  */
-bool calcLineIntersection2D(
-  const PGeoPoint2 &l1p1, const PGeoPoint2 &l1p2,
-  const PGeoPoint2 &l2p1, const PGeoPoint2 &l2p2,
-  double &u1, double &u2, const double &tol
-  ) {
+// bool calcLineIntersection2D(
+//   const PGeoPoint2 &l1p1, const PGeoPoint2 &l1p2,
+//   const PGeoPoint2 &l2p1, const PGeoPoint2 &l2p2,
+//   double &u1, double &u2, const double &tol
+//   ) {
 
-  return calcLineIntersection2D(
-    l1p1[0], l1p1[1], l1p2[0], l1p2[1],
-    l2p1[0], l2p1[1], l2p2[0], l2p2[1],
-    u1, u2, tol
-  );
+//   return calcLineIntersection2D(
+//     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
+//     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
+//     u1, u2, tol
+//   );
 
-}
+// }
 
 
 
@@ -142,44 +163,44 @@ bool calcLineIntersection2D(
  * @param tol The tolerance value for determining intersection.
  * @return True if the lines intersect, false otherwise.
  */
-bool calcLineIntersection2D(
-  const PGeoPoint3 &l1p1, const PGeoPoint3 &l1p2,
-  const PGeoPoint3 &l2p1, const PGeoPoint3 &l2p2,
-  double &u1, double &u2, const int &plane, const double &tol
-  ) {
-  int d1, d2;
-  if (plane == 0) {
-    d1 = 1;
-    d2 = 2;
-  } else if (plane == 1) {
-    d1 = 2;
-    d2 = 0;
-  } else if (plane == 2) {
-    d1 = 0;
-    d2 = 1;
-  }
-  return calcLineIntersection2D(
-    l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
-    l2p1[d1], l2p1[d2], l2p2[d1], l2p2[d2],
-    u1, u2, tol
-  );
-}
+// bool calcLineIntersection2D(
+//   const PGeoPoint3 &l1p1, const PGeoPoint3 &l1p2,
+//   const PGeoPoint3 &l2p1, const PGeoPoint3 &l2p2,
+//   double &u1, double &u2, const int &plane, const double &tol
+//   ) {
+//   int d1, d2;
+//   if (plane == 0) {
+//     d1 = 1;
+//     d2 = 2;
+//   } else if (plane == 1) {
+//     d1 = 2;
+//     d2 = 0;
+//   } else if (plane == 2) {
+//     d1 = 0;
+//     d2 = 1;
+//   }
+//   return calcLineIntersection2D(
+//     l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
+//     l2p1[d1], l2p1[d2], l2p2[d1], l2p2[d2],
+//     u1, u2, tol
+//   );
+// }
 
 
 
 
-bool calcLineIntersection2D(
-  SPoint2 l1p1, SPoint2 l1p2, SPoint2 l2p1, SPoint2 l2p2,
-  double &u1, double &u2, const double &tol
-  ) {
+// bool calcLineIntersection2D(
+//   SPoint2 l1p1, SPoint2 l1p2, SPoint2 l2p1, SPoint2 l2p2,
+//   double &u1, double &u2, const double &tol
+//   ) {
 
-  return calcLineIntersection2D(
-    l1p1[0], l1p1[1], l1p2[0], l1p2[1],
-    l2p1[0], l2p1[1], l2p2[0], l2p2[1],
-    u1, u2, tol
-  );
+//   return calcLineIntersection2D(
+//     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
+//     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
+//     u1, u2, tol
+//   );
 
-}
+// }
 
 
 
@@ -204,32 +225,32 @@ bool calcLineIntersection2D(
  * @param tol The tolerance value for determining intersection.
  * @return True if the lines intersect within the given tolerance, false otherwise.
  */
-bool calcLineIntersection2D(
-  SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
-  double &u1, double &u2, int &plane, const double &tol
-  ) {
+// bool calcLineIntersection2D(
+//   SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
+//   double &u1, double &u2, int &plane, const double &tol
+//   ) {
 
-  int d1, d2;
-  if (plane == 0) {
-    d1 = 1;
-    d2 = 2;
-  } else if (plane == 1) {
-    d1 = 2;
-    d2 = 0;
-  } else if (plane == 2) {
-    d1 = 0;
-    d2 = 1;
-  }
+//   int d1, d2;
+//   if (plane == 0) {
+//     d1 = 1;
+//     d2 = 2;
+//   } else if (plane == 1) {
+//     d1 = 2;
+//     d2 = 0;
+//   } else if (plane == 2) {
+//     d1 = 0;
+//     d2 = 1;
+//   }
 
-  SPoint2 l1p, l1q, l2p, l2q;
-  l1p = SPoint2(l1p1[d1], l1p1[d2]);
-  l1q = SPoint2(l1p2[d1], l1p2[d2]);
-  l2p = SPoint2(l2p1[d1], l2p1[d2]);
-  l2q = SPoint2(l2p2[d1], l2p2[d2]);
+//   SPoint2 l1p, l1q, l2p, l2q;
+//   l1p = SPoint2(l1p1[d1], l1p1[d2]);
+//   l1q = SPoint2(l1p2[d1], l1p2[d2]);
+//   l2p = SPoint2(l2p1[d1], l2p1[d2]);
+//   l2q = SPoint2(l2p2[d1], l2p2[d2]);
 
-  return calcLineIntersection2D(l1p, l1q, l2p, l2q, u1, u2, tol);
+//   return calcLineIntersection2D(l1p, l1q, l2p, l2q, u1, u2, tol);
 
-}
+// }
 
 
 
@@ -249,16 +270,16 @@ bool calcLineIntersection2D(
  * @param tol The tolerance value used for determining intersection.
  * @return true if the line segments intersect, false otherwise.
  */
-bool calcLineIntersection2D(
-  PDCELVertex *ls1v1, PDCELVertex *ls1v2,
-  PDCELVertex *ls2v1, PDCELVertex *ls2v2,
-  double &u1, double &u2, const double &tol
-  ) {
+// bool calcLineIntersection2D(
+//   PDCELVertex *ls1v1, PDCELVertex *ls1v2,
+//   PDCELVertex *ls2v1, PDCELVertex *ls2v2,
+//   double &u1, double &u2, const double &tol
+//   ) {
 
-  return calcLineIntersection2D(
-    ls1v1->point2(), ls1v2->point2(), ls2v1->point2(), ls2v2->point2(), u1, u2, tol);
+//   return calcLineIntersection2D(
+//     ls1v1->point2(), ls1v2->point2(), ls2v1->point2(), ls2v2->point2(), u1, u2, tol);
 
-}
+// }
 
 
 
@@ -277,24 +298,40 @@ bool calc_line_intersection_2d(
 }
 
 
-
-
-
-
-bool calcLineIntersection2D(
-  PGeoLineSegment *ls1, PGeoLineSegment *ls2,
-  double &u1, double &u2, const double &tol
+bool calc_line_intersection_2d(
+  PDCELVertex *ls1v1, PDCELVertex *ls1v2,
+  PDCELVertex *ls2v1, PDCELVertex *ls2v2,
+  PDCELVertex *v_intersect, double &u1, double &u2
   ) {
 
-  SPoint2 ls1p1, ls1p2, ls2p1, ls2p2;
-  ls1p1 = ls1->v1()->point2();
-  ls1p2 = ls1->v2()->point2();
-  ls2p1 = ls2->v1()->point2();
-  ls2p2 = ls2->v2()->point2();
+  bool is_intersect = calc_line_intersection_2d(
+    ls1v1->point2()[0], ls1v1->point2()[1], ls1v2->point2()[0], ls1v2->point2()[1],
+    ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
+    ipx, ipy, u1, u2);
 
-  return calcLineIntersection2D(ls1p1, ls1p2, ls2p1, ls2p2, u1, u2, tol);
 
+  return is_intersect;
 }
+
+
+
+
+
+
+// bool calcLineIntersection2D(
+//   PGeoLineSegment *ls1, PGeoLineSegment *ls2,
+//   double &u1, double &u2, const double &tol
+//   ) {
+
+//   SPoint2 ls1p1, ls1p2, ls2p1, ls2p2;
+//   ls1p1 = ls1->v1()->point2();
+//   ls1p2 = ls1->v2()->point2();
+//   ls2p1 = ls2->v1()->point2();
+//   ls2p2 = ls2->v2()->point2();
+
+//   return calcLineIntersection2D(ls1p1, ls1p2, ls2p1, ls2p2, u1, u2, tol);
+
+// }
 
 
 
@@ -366,198 +403,198 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * @param pmessage A pointer to a Message object used for logging and debugging.
  * @return A pointer to the PDCELHalfEdge where the intersection occurs, or nullptr if no intersection is found.
  */
-PDCELHalfEdge *findCurvesIntersection(
-  std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
-  int end, int &ls_i, double &u1, double &u2, const double &tol,
-  Message *pmessage
-  ) {
-  pmessage->increaseIndent();
+// PDCELHalfEdge *findCurvesIntersection(
+//   std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
+//   int end, int &ls_i, double &u1, double &u2, const double &tol,
+//   Message *pmessage
+//   ) {
+//   pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("in function: findCurvesIntersection");
+//   PLOG(debug) << pmessage->message("in function: findCurvesIntersection");
 
-  PDCELHalfEdge *he = nullptr;
+//   PDCELHalfEdge *he = nullptr;
 
-  std::vector<PDCELVertex *> tmp_ls; // temporary line segment
-  int ls_i_prev;
-  PDCELHalfEdge *hei = hel->incidentEdge();
-  std::vector<int> c_is, t_is;  // curve indices, tool indices
-  std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
-  int j0;
-  double tmp_c_u, tmp_t_u;  // temporary parametric locations
+//   std::vector<PDCELVertex *> tmp_ls; // temporary line segment
+//   int ls_i_prev;
+//   PDCELHalfEdge *hei = hel->incidentEdge();
+//   std::vector<int> c_is, t_is;  // curve indices, tool indices
+//   std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
+//   int j0;
+//   double tmp_c_u, tmp_t_u;  // temporary parametric locations
 
-  if (end == 0) {  // find the intersection at the beginning
-    u1 = -INF;
-    ls_i_prev = -1;
-  }
-  else if (end == 1) {  // find the intersection at the end
-    u1 = INF;
-    ls_i_prev = convertSizeTToInt(vertices.size());
-  }
+//   if (end == 0) {  // find the intersection at the beginning
+//     u1 = -INF;
+//     ls_i_prev = -1;
+//   }
+//   else if (end == 1) {  // find the intersection at the end
+//     u1 = INF;
+//     ls_i_prev = convertSizeTToInt(vertices.size());
+//   }
 
-  // Iterate through all line segments of the half edge loop
-  do {
-    PLOG(debug) << pmessage->message("----------");
+//   // Iterate through all line segments of the half edge loop
+//   do {
+//     PLOG(debug) << pmessage->message("----------");
 
-    tmp_ls.clear();
-    tmp_ls.push_back(hei->source());
-    tmp_ls.push_back(hei->target());
+//     tmp_ls.clear();
+//     tmp_ls.push_back(hei->source());
+//     tmp_ls.push_back(hei->target());
 
-    // std::cout << "tmp_ls: " << tmp_ls[0] << ", " << tmp_ls[1] << std::endl;
-    PLOG(debug) << pmessage->message(
-      "line segment of the half edge loop (tmp_ls): " + tmp_ls[0]->printString() + " -- " + tmp_ls[1]->printString()
-      );
+//     // std::cout << "tmp_ls: " << tmp_ls[0] << ", " << tmp_ls[1] << std::endl;
+//     PLOG(debug) << pmessage->message(
+//       "line segment of the half edge loop (tmp_ls): " + tmp_ls[0]->printString() + " -- " + tmp_ls[1]->printString()
+//       );
 
-    c_is.clear();
-    t_is.clear();
-    c_us.clear();
-    t_us.clear();
-
-
-    // Find all intersections between the line segment and the curve
-    findAllIntersections(
-      vertices, tmp_ls, c_is, t_is, c_us, t_us
-    );
-
-    PLOG(debug) << pmessage->message("all intersections");
-    PLOG(debug) << pmessage->message("curve index (i) -- param loc (u) | tool index (i) -- param loc (u)");
-
-    for (auto k = 0; k < c_is.size(); k++) {
-      PLOG(debug) << pmessage->message(
-        std::to_string(c_is[k]) + " -- " + std::to_string(c_us[k]) + " | "
-        + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]));
-    }
+//     c_is.clear();
+//     t_is.clear();
+//     c_us.clear();
+//     t_us.clear();
 
 
-    // If there is at least one intersection
-    if (c_is.size() > 0) {
+//     // Find all intersections between the line segment and the curve
+//     findAllIntersections(
+//       vertices, tmp_ls, c_is, t_is, c_us, t_us
+//     );
 
-      // Find the intersection that is the closest to the expected end
-      if (end == 0) {
-        tmp_c_u = getIntersectionLocation(
-          vertices, c_is, c_us, 1, 0, ls_i, j0, pmessage
-        );
-      }
-      else if (end == 1) {
-        tmp_c_u = getIntersectionLocation(
-          vertices, c_is, c_us, 0, 0, ls_i, j0, pmessage
-        );
-      }
-      tmp_t_u = t_us[j0];
+//     PLOG(debug) << pmessage->message("all intersections");
+//     PLOG(debug) << pmessage->message("curve index (i) -- param loc (u) | tool index (i) -- param loc (u)");
 
-      PLOG(debug) << pmessage->message("closest intersection to end " + std::to_string(end));
-      PLOG(debug) << pmessage->message("curve segment index (ls_i) = " + std::to_string(ls_i));
-      PLOG(debug) << pmessage->message("prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev));
-      PLOG(debug) << pmessage->message("curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u));
-      PLOG(debug) << pmessage->message("tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u));
-      PLOG(debug) << pmessage->message(
-        "curve segment: v11 = " + vertices[ls_i]->printString() + " -> "
-        + "v12 = " + vertices[ls_i+1]->printString()
-      );
-      PLOG(debug) << pmessage->message(
-        "tool segment: v21 = " + tmp_ls[0]->printString() + " -> "
-        + "v22 = " + tmp_ls[1]->printString()
-      );
-      // PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
-      // PLOG(debug) << pmessage->message("number of vertices of the curve = " + std::to_string(vertices.size()));
-
-      bool update = false;
-
-      // If the intersection is within the tool segment
-      PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
-      PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
-      if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
-
-        // If want the intersection closer to the beginning
-        if (end == 0) {
-
-          // If the intersection is before the first vertex
-          if (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1) {
-            update = true;
-          }
-          else if (fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) {
-            if (ls_i > ls_i_prev) {
-              update = true;
-            }
-            else if (ls_i == ls_i_prev && tmp_c_u > u1) {
-              update = true;
-            }
-          }
-
-          // if (
-          //   (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1)  // before the first vertex
-          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i > ls_i_prev)  // inner line segment
-          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u > u1) // same line segment but inner u
-          //   ) {
-
-          //   u1 = tmp_c_u;
-          //   u2 = tmp_t_u;
-          //   he = hei;
-          //   ls_i_prev = ls_i;
-
-          // }
-
-        }
-
-        // If want the intersection closer to the ending
-        else if (end == 1) {
-
-          if (ls_i == vertices.size() - 2 && tmp_c_u > 1 && tmp_c_u < u1) {
-            update = true;
-          }
-          else if (fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) {
-            if (ls_i < ls_i_prev) {
-              update = true;
-            }
-            else if (ls_i == ls_i_prev && tmp_c_u < u1) {
-              update = true;
-            }
-          }
-
-          // if (
-          //   ((ls_i == vertices.size() - 2) && tmp_c_u > 1 && tmp_c_u < u1)  // after the last vertex
-          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i < ls_i_prev)  // inner line segment
-          //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u < u1) // same line segment but inner u
-          //   ) {
-
-          //   u1 = tmp_c_u;
-          //   u2 = tmp_t_u;
-          //   he = hei;
-          //   ls_i_prev = ls_i;
-
-          // }
-
-        }
-
-      }
-
-      if (update) {
-
-        PLOG(debug) << pmessage->message("update intersection");
-
-        u1 = tmp_c_u;
-        u2 = tmp_t_u;
-        he = hei;
-        ls_i_prev = ls_i;
-
-        PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
-        PLOG(debug) << pmessage->message("u2 = " + std::to_string(u2));
-        PLOG(debug) << pmessage->message("end = " + std::to_string(end));
-
-      }
+//     for (auto k = 0; k < c_is.size(); k++) {
+//       PLOG(debug) << pmessage->message(
+//         std::to_string(c_is[k]) + " -- " + std::to_string(c_us[k]) + " | "
+//         + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]));
+//     }
 
 
-      ls_i = ls_i_prev;
+//     // If there is at least one intersection
+//     if (c_is.size() > 0) {
 
-    }
+//       // Find the intersection that is the closest to the expected end
+//       if (end == 0) {
+//         tmp_c_u = getIntersectionLocation(
+//           vertices, c_is, c_us, 1, 0, ls_i, j0, pmessage
+//         );
+//       }
+//       else if (end == 1) {
+//         tmp_c_u = getIntersectionLocation(
+//           vertices, c_is, c_us, 0, 0, ls_i, j0, pmessage
+//         );
+//       }
+//       tmp_t_u = t_us[j0];
 
-    hei = hei->next();
+//       PLOG(debug) << pmessage->message("closest intersection to end " + std::to_string(end));
+//       PLOG(debug) << pmessage->message("curve segment index (ls_i) = " + std::to_string(ls_i));
+//       PLOG(debug) << pmessage->message("prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev));
+//       PLOG(debug) << pmessage->message("curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u));
+//       PLOG(debug) << pmessage->message("tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u));
+//       PLOG(debug) << pmessage->message(
+//         "curve segment: v11 = " + vertices[ls_i]->printString() + " -> "
+//         + "v12 = " + vertices[ls_i+1]->printString()
+//       );
+//       PLOG(debug) << pmessage->message(
+//         "tool segment: v21 = " + tmp_ls[0]->printString() + " -> "
+//         + "v22 = " + tmp_ls[1]->printString()
+//       );
+//       // PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
+//       // PLOG(debug) << pmessage->message("number of vertices of the curve = " + std::to_string(vertices.size()));
 
-  } while (hei != hel->incidentEdge());
+//       bool update = false;
 
-  pmessage->decreaseIndent();
+//       // If the intersection is within the tool segment
+//       PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
+//       PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
+//       if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
 
-  return he;
-}
+//         // If want the intersection closer to the beginning
+//         if (end == 0) {
+
+//           // If the intersection is before the first vertex
+//           if (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1) {
+//             update = true;
+//           }
+//           else if (fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) {
+//             if (ls_i > ls_i_prev) {
+//               update = true;
+//             }
+//             else if (ls_i == ls_i_prev && tmp_c_u > u1) {
+//               update = true;
+//             }
+//           }
+
+//           // if (
+//           //   (ls_i == 0 && tmp_c_u < 0 && tmp_c_u > u1)  // before the first vertex
+//           //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i > ls_i_prev)  // inner line segment
+//           //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u > u1) // same line segment but inner u
+//           //   ) {
+
+//           //   u1 = tmp_c_u;
+//           //   u2 = tmp_t_u;
+//           //   he = hei;
+//           //   ls_i_prev = ls_i;
+
+//           // }
+
+//         }
+
+//         // If want the intersection closer to the ending
+//         else if (end == 1) {
+
+//           if (ls_i == vertices.size() - 2 && tmp_c_u > 1 && tmp_c_u < u1) {
+//             update = true;
+//           }
+//           else if (fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) {
+//             if (ls_i < ls_i_prev) {
+//               update = true;
+//             }
+//             else if (ls_i == ls_i_prev && tmp_c_u < u1) {
+//               update = true;
+//             }
+//           }
+
+//           // if (
+//           //   ((ls_i == vertices.size() - 2) && tmp_c_u > 1 && tmp_c_u < u1)  // after the last vertex
+//           //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i < ls_i_prev)  // inner line segment
+//           //   || ((fabs(tmp_c_u) <= tol || (tmp_c_u > 0 && tmp_c_u < 1) || fabs(1 - tmp_c_u) <= tol) && ls_i == ls_i_prev && tmp_c_u < u1) // same line segment but inner u
+//           //   ) {
+
+//           //   u1 = tmp_c_u;
+//           //   u2 = tmp_t_u;
+//           //   he = hei;
+//           //   ls_i_prev = ls_i;
+
+//           // }
+
+//         }
+
+//       }
+
+//       if (update) {
+
+//         PLOG(debug) << pmessage->message("update intersection");
+
+//         u1 = tmp_c_u;
+//         u2 = tmp_t_u;
+//         he = hei;
+//         ls_i_prev = ls_i;
+
+//         PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
+//         PLOG(debug) << pmessage->message("u2 = " + std::to_string(u2));
+//         PLOG(debug) << pmessage->message("end = " + std::to_string(end));
+
+//       }
+
+
+//       ls_i = ls_i_prev;
+
+//     }
+
+//     hei = hei->next();
+
+//   } while (hei != hel->incidentEdge());
+
+//   pmessage->decreaseIndent();
+
+//   return he;
+// }
 
 
 
@@ -587,136 +624,136 @@ PDCELHalfEdge *findCurvesIntersection(
  * @param base_offset_indices_links Reference to a vector of integers representing the base offset indices links.
  * @return Pointer to the new baseline with the adjusted vertices. Returns nullptr if the intersection is not found.
  */
-Baseline *findCurvesIntersection(
-  Baseline *bl, PGeoLineSegment *ls, int end,
-  double &u1, double &u2, int &iold, int &inew,
-  std::vector<int> &link_to_list, std::vector<int> &base_offset_indices_links
-  ) {
-  // After adjusting the curve
-  // the first kept vertex will be at index iold in the old curve
-  // and at the index inew in the new curve
+// Baseline *findCurvesIntersection(
+//   Baseline *bl, PGeoLineSegment *ls, int end,
+//   double &u1, double &u2, int &iold, int &inew,
+//   std::vector<int> &link_to_list, std::vector<int> &base_offset_indices_links
+//   ) {
+//   // After adjusting the curve
+//   // the first kept vertex will be at index iold in the old curve
+//   // and at the index inew in the new curve
 
-  // std::cout << "\n[debug] findCurvesIntersection" << std::endl;
+//   // std::cout << "\n[debug] findCurvesIntersection" << std::endl;
 
-  // std::cout << "        curve bl:" << std::endl;
-  // for (auto v : bl->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
+//   // std::cout << "        curve bl:" << std::endl;
+//   // for (auto v : bl->vertices()) {
+//   //   std::cout << "        " << v << std::endl;
+//   // }
 
-  iold = 0;
-  inew = 0;
+//   iold = 0;
+//   inew = 0;
 
-  Baseline *bl_new = new Baseline();
-  std::size_t n = bl->vertices().size();
+//   Baseline *bl_new = new Baseline();
+//   std::size_t n = bl->vertices().size();
 
-  std::vector<int> link_to_list_new;
+//   std::vector<int> link_to_list_new;
 
-  std::list<PDCELVertex *> vlist;
-  std::list<int> link_to_list_copy;
-  for (int i = 0; i < n; ++i) {
-    vlist.push_back(bl->vertices()[i]);
-    link_to_list_copy.push_back(link_to_list[i]);
-  }
-  if (end == 1) {
-    vlist.reverse();
-    link_to_list_copy.reverse();
-  }
-  // std::cout << "        vertex list vlist:" << std::endl;
-  // for (auto v : vlist) {
-  //   std::cout << "        " << v << std::endl;
-  // }
+//   std::list<PDCELVertex *> vlist;
+//   std::list<int> link_to_list_copy;
+//   for (int i = 0; i < n; ++i) {
+//     vlist.push_back(bl->vertices()[i]);
+//     link_to_list_copy.push_back(link_to_list[i]);
+//   }
+//   if (end == 1) {
+//     vlist.reverse();
+//     link_to_list_copy.reverse();
+//   }
+//   // std::cout << "        vertex list vlist:" << std::endl;
+//   // for (auto v : vlist) {
+//   //   std::cout << "        " << v << std::endl;
+//   // }
 
-  PDCELVertex *v1, *v2, *v_new = nullptr;
-  PGeoLineSegment *lsi;
-  int link_i1, link_i2;
-  bool not_parallel;
-  while (!vlist.empty()) {
-    v1 = vlist.front();
-    vlist.pop_front();
-    v2 = vlist.front();
-    iold++;
+//   PDCELVertex *v1, *v2, *v_new = nullptr;
+//   PGeoLineSegment *lsi;
+//   int link_i1, link_i2;
+//   bool not_parallel;
+//   while (!vlist.empty()) {
+//     v1 = vlist.front();
+//     vlist.pop_front();
+//     v2 = vlist.front();
+//     iold++;
 
-    link_i1 = link_to_list_copy.front();
-    link_to_list_copy.pop_front();
-    link_i2 = link_to_list_copy.front();
+//     link_i1 = link_to_list_copy.front();
+//     link_to_list_copy.pop_front();
+//     link_i2 = link_to_list_copy.front();
 
-    lsi = new PGeoLineSegment(v1, v2);
+//     lsi = new PGeoLineSegment(v1, v2);
 
-    // std::cout << "        line segment lsi: " << lsi << std::endl;
+//     // std::cout << "        line segment lsi: " << lsi << std::endl;
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u1, u2, TOLERANCE);
+//     not_parallel = calcLineIntersection2D(lsi, ls, u1, u2, TOLERANCE);
 
-    // std::cout << "        u1 = " << u1 << std::endl;
+//     // std::cout << "        u1 = " << u1 << std::endl;
 
-    if (not_parallel) {
-      if (u1 > 1) {
-        continue;
-      } else {
-        if (fabs(u1) < TOLERANCE) {
-          vlist.push_front(v1);
-          link_to_list_copy.push_front(link_i1);
-          iold--;
-          break;
-        } else if (fabs(u1 - 1) < TOLERANCE) {
-          break;
-        } else if (u1 < 0) {
-          // In this case, the new curve is extended
-          // along the direction of the tangent at the end.
-          // The old vertex v1 will not be added back,
-          // instead, the intersecting point will be the new ending vertex.
+//     if (not_parallel) {
+//       if (u1 > 1) {
+//         continue;
+//       } else {
+//         if (fabs(u1) < TOLERANCE) {
+//           vlist.push_front(v1);
+//           link_to_list_copy.push_front(link_i1);
+//           iold--;
+//           break;
+//         } else if (fabs(u1 - 1) < TOLERANCE) {
+//           break;
+//         } else if (u1 < 0) {
+//           // In this case, the new curve is extended
+//           // along the direction of the tangent at the end.
+//           // The old vertex v1 will not be added back,
+//           // instead, the intersecting point will be the new ending vertex.
 
-          // vlist.push_front(v1);
-          // iold--;
-          v_new = lsi->getParametricVertex(u1);
-          vlist.push_front(v_new);
+//           // vlist.push_front(v1);
+//           // iold--;
+//           v_new = lsi->getParametricVertex(u1);
+//           vlist.push_front(v_new);
 
-          link_to_list_copy.push_front(0);
-          inew++;
-          break;
-        } else {
-          v_new = lsi->getParametricVertex(u1);
-          vlist.push_front(v_new);
-          link_to_list_copy.push_front(0);
-          inew++;
-          break;
-        }
-      }
-    } else {
-      continue;
-    }
-  }
+//           link_to_list_copy.push_front(0);
+//           inew++;
+//           break;
+//         } else {
+//           v_new = lsi->getParametricVertex(u1);
+//           vlist.push_front(v_new);
+//           link_to_list_copy.push_front(0);
+//           inew++;
+//           break;
+//         }
+//       }
+//     } else {
+//       continue;
+//     }
+//   }
 
-  if (vlist.size() < 2) {
-    return nullptr;
-  }
+//   if (vlist.size() < 2) {
+//     return nullptr;
+//   }
 
-  while (!vlist.empty()) {
-    if (end == 0) {
-      bl_new->addPVertex(vlist.front());
-      vlist.pop_front();
+//   while (!vlist.empty()) {
+//     if (end == 0) {
+//       bl_new->addPVertex(vlist.front());
+//       vlist.pop_front();
 
-      link_to_list_new.push_back(link_to_list_copy.front());
-      link_to_list_copy.pop_front();
-    } else if (end == 1) {
-      bl_new->addPVertex(vlist.back());
-      vlist.pop_back();
+//       link_to_list_new.push_back(link_to_list_copy.front());
+//       link_to_list_copy.pop_front();
+//     } else if (end == 1) {
+//       bl_new->addPVertex(vlist.back());
+//       vlist.pop_back();
 
-      link_to_list_new.push_back(link_to_list_copy.back());
-      link_to_list_copy.pop_back();
-      iold = n - 1 - iold;
-      inew = bl_new->vertices().size() - 1 - inew;
-    }
-  }
+//       link_to_list_new.push_back(link_to_list_copy.back());
+//       link_to_list_copy.pop_back();
+//       iold = n - 1 - iold;
+//       inew = bl_new->vertices().size() - 1 - inew;
+//     }
+//   }
 
-  link_to_list.swap(link_to_list_new);
+//   link_to_list.swap(link_to_list_new);
 
-  // std::cout << "        baseline bl_new" << std::endl;
-  // for (auto v : bl_new->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
+//   // std::cout << "        baseline bl_new" << std::endl;
+//   // for (auto v : bl_new->vertices()) {
+//   //   std::cout << "        " << v << std::endl;
+//   // }
 
-  return bl_new;
-}
+//   return bl_new;
+// }
 
 
 
@@ -741,96 +778,96 @@ Baseline *findCurvesIntersection(
  * @param u2s A vector to store the non-dimensional locations of the intersections on the segments from the second set.
  * @return An integer indicating the success of the function (always returns 0).
  */
-int findAllIntersections(
-  const std::vector<PDCELVertex *> &c1, const std::vector<PDCELVertex *> &c2,
-  std::vector<int> &i1s, std::vector<int> &i2s,
-  std::vector<double> &u1s, std::vector<double> &u2s
-) {
+// int findAllIntersections(
+//   const std::vector<PDCELVertex *> &c1, const std::vector<PDCELVertex *> &c2,
+//   std::vector<int> &i1s, std::vector<int> &i2s,
+//   std::vector<double> &u1s, std::vector<double> &u2s
+// ) {
 
-  bool found = false;
+//   bool found = false;
 
-  if (c1.empty() || c2.empty()) {
-    return 0;
-  }
+//   if (c1.empty() || c2.empty()) {
+//     return 0;
+//   }
 
-  // Find all intersections
+//   // Find all intersections
 
-  PDCELVertex *v11, *v12, *v21, *v22;
+//   PDCELVertex *v11, *v12, *v21, *v22;
 
-  for (int i = 0; i < c1.size() - 1; ++i) {
+//   for (int i = 0; i < c1.size() - 1; ++i) {
 
-    v11 = c1[i];
-    v12 = c1[i + 1];
+//     v11 = c1[i];
+//     v12 = c1[i + 1];
 
-    for (int j = 0; j < c2.size() - 1; ++j) {
+//     for (int j = 0; j < c2.size() - 1; ++j) {
 
-      v21 = c2[j];
-      v22 = c2[j + 1];
+//       v21 = c2[j];
+//       v22 = c2[j + 1];
 
-      // Check intersection
-      bool not_parallel;
-      double u1, u2;
+//       // Check intersection
+//       bool not_parallel;
+//       double u1, u2;
 
-      if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
-        throw std::runtime_error("null pointer reference in findAllIntersections");
-      }
+//       if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
+//         throw std::runtime_error("null pointer reference in findAllIntersections");
+//       }
 
-      // std::cout << "        find intersection:" << std::endl;
-      // std::cout << "        v11 = " << v11 << ", v12 = " << v12 <<
-      // std::endl; std::cout << "        v21 = " << v21 << ", v22 = " << v22
-      // << std::endl;
+//       // std::cout << "        find intersection:" << std::endl;
+//       // std::cout << "        v11 = " << v11 << ", v12 = " << v12 <<
+//       // std::endl; std::cout << "        v21 = " << v21 << ", v22 = " << v22
+//       // << std::endl;
 
-      not_parallel = calcLineIntersection2D(v11, v12, v21, v22, u1, u2, TOLERANCE);
+//       not_parallel = calcLineIntersection2D(v11, v12, v21, v22, u1, u2, TOLERANCE);
 
-      // std::cout << "line_" << line_i << "_seg_" << i+1 << " and ";
-      // std::cout << "line_" << line_i+1 << "_seg_" << j+1 << ": ";
-      // std::cout << "u1=" << u1 << " and u2=" << u2 << std::endl;
-      // std::cout << "        not_parallel = " << not_parallel << ", u1 = "
-      // << u1 << ", u2 = " << u2 << std::endl;
+//       // std::cout << "line_" << line_i << "_seg_" << i+1 << " and ";
+//       // std::cout << "line_" << line_i+1 << "_seg_" << j+1 << ": ";
+//       // std::cout << "u1=" << u1 << " and u2=" << u2 << std::endl;
+//       // std::cout << "        not_parallel = " << not_parallel << ", u1 = "
+//       // << u1 << ", u2 = " << u2 << std::endl;
 
-      if (not_parallel) {
-        if (
-          // 9 cases
-          (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1)  // inner x inner
-          || (i == 0 && u1 < 0 && j == 0 && u2 < 0) // before head x before head
-          || (i == 0 && u1 < 0 && u2 >= 0 && u2 <= 1)  // before head x inner
-          || (i == 0 && u1 < 0 && j == c2.size() - 2 && u2 > 1) // before head x after tail
-          || (i == c1.size() - 2 && u1 > 1 && j == 0 && u2 < 0) // after tail x before head
-          || (i == c1.size() - 2 && u1 > 1 && u2 >= 0 && u2 <= 1)  // after tail x inner
-          || (i == c1.size() - 2 && u1 > 1 && j == c2.size() - 2 && u2 > 1) // after tail x after tail
-          || (u1 >= 0 && u1 <= 1 && j == 0 && u2 < 0)  // inner x before head
-          || (u1 >= 0 && u1 <= 1 && j == c2.size() - 2 && u2 > 1)  // inner x after tail
-          ) {
+//       if (not_parallel) {
+//         if (
+//           // 9 cases
+//           (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1)  // inner x inner
+//           || (i == 0 && u1 < 0 && j == 0 && u2 < 0) // before head x before head
+//           || (i == 0 && u1 < 0 && u2 >= 0 && u2 <= 1)  // before head x inner
+//           || (i == 0 && u1 < 0 && j == c2.size() - 2 && u2 > 1) // before head x after tail
+//           || (i == c1.size() - 2 && u1 > 1 && j == 0 && u2 < 0) // after tail x before head
+//           || (i == c1.size() - 2 && u1 > 1 && u2 >= 0 && u2 <= 1)  // after tail x inner
+//           || (i == c1.size() - 2 && u1 > 1 && j == c2.size() - 2 && u2 > 1) // after tail x after tail
+//           || (u1 >= 0 && u1 <= 1 && j == 0 && u2 < 0)  // inner x before head
+//           || (u1 >= 0 && u1 <= 1 && j == c2.size() - 2 && u2 > 1)  // inner x after tail
+//           ) {
 
-          i1s.push_back(i);
-          i2s.push_back(j);
-          u1s.push_back(u1);
-          u2s.push_back(u2);
+//           i1s.push_back(i);
+//           i2s.push_back(j);
+//           u1s.push_back(u1);
+//           u2s.push_back(u2);
 
-          // found = true;
-          // std::cout << "        found intersection:" << std::endl;
-          // std::cout << "        v11 = " << v11 << ", v12 = " << v12 << std::endl;
-          // std::cout << "        v21 = " << v21 << ", v22 = " << v22 << std::endl;
-          // std::cout << "        not_parallel = " << not_parallel
-          //           << ", u1 = " << u1 << ", u2 = " << u2 << std::endl;
+//           // found = true;
+//           // std::cout << "        found intersection:" << std::endl;
+//           // std::cout << "        v11 = " << v11 << ", v12 = " << v12 << std::endl;
+//           // std::cout << "        v21 = " << v21 << ", v22 = " << v22 << std::endl;
+//           // std::cout << "        not_parallel = " << not_parallel
+//           //           << ", u1 = " << u1 << ", u2 = " << u2 << std::endl;
 
-        }
+//         }
 
-      }
+//       }
 
-    }
+//     }
 
-  }
+//   }
 
-  // for (auto i = 0; i < i1s.size(); i++) {
-  //   std::cout << "intersection " << i << std::endl;
-  //   std::cout << "  i1 = " << i1s[i] << ", v11 = " << c1[i1s[i]] << ", v12 = " << c1[i1s[i]+1] << ", u1 = " << u1s[i] << std::endl;
-  //   std::cout << "  i2 = " << i2s[i] << ", v21 = " << c2[i2s[i]] << ", v22 = " << c2[i2s[i]+1] << ", u2 = " << u2s[i] << std::endl;
-  // }
+//   // for (auto i = 0; i < i1s.size(); i++) {
+//   //   std::cout << "intersection " << i << std::endl;
+//   //   std::cout << "  i1 = " << i1s[i] << ", v11 = " << c1[i1s[i]] << ", v12 = " << c1[i1s[i]+1] << ", u1 = " << u1s[i] << std::endl;
+//   //   std::cout << "  i2 = " << i2s[i] << ", v21 = " << c2[i2s[i]] << ", v22 = " << c2[i2s[i]+1] << ", u2 = " << u2s[i] << std::endl;
+//   // }
 
-  return 0;
+//   return 0;
 
-}
+// }
 
 
 

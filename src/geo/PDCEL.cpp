@@ -983,29 +983,44 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
                                    PGeoLineSegment *ls) {
   PLOG(debug) << "finding curves intersection";
 
+  // Iterate through all half edges of the half edge loop
   PDCELHalfEdge *hei = hel->incidentEdge(), *he1, *he2;
   PGeoLineSegment *lsi;
-  bool not_parallel;
-  double u_ls, u_lsi;
-  PDCELVertex *v_tmp, *v1, *v2;
+
+  // Store the vertices of the intersection points
   std::list<PDCELVertex *> vlist1, vlist2;
 
-  // std::cout << "        line segment ls:" << ls << std::endl;
+  // Iterate through all line segments of the half edge loop
   do {
     lsi = hei->toLineSegment();
-    // std::cout << "        line segment lsi: " << lsi << std::endl;
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, TOLERANCE);
-    // std::cout << "        not_parallel = " << (not_parallel ? "true" : "false") << std::endl;
-    // std::cout << "        u_lsi = " << u_lsi << ", u_ls = " << u_ls <<
-    // std::endl;
+    PLOG(debug) << "  checking line segments: (lsi) " << lsi
+      << " and (ls) " << ls;
+
+    // Check if the line segment intersects with the line segment ls
+    double ipx, ipy;
+    double u_lsi, u_ls;
+    // bool not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, ABS_TOL);
+    bool not_parallel = calc_line_intersection_2d(
+      lsi->v1()->point2()[0], lsi->v1()->point2()[1],
+      lsi->v2()->point2()[0], lsi->v2()->point2()[1],
+      ls->v1()->point2()[0], ls->v1()->point2()[1],
+      ls->v2()->point2()[0], ls->v2()->point2()[1],
+      ipx, ipy, u_lsi, u_ls, ABS_TOL
+    );
+
     if (!not_parallel) {
-      // std::cout << "        isCollinear(lsi, ls) = " << (isCollinear(lsi, ls) ? "true" : "false") << std::endl;
+      // The line segments are parallel, so check if they are collinear
+      PLOG(debug) << "  line segments are parallel";
+
       if (!isCollinear(lsi, ls)) {
+        // Not collinear, so skip this line segment
+        PLOG(debug) << "  line segments are not collinear";
         hei = hei->next();
         continue;
       }
 
+      // The line segments are collinear, so add the vertices to the lists
       if (vlist1.empty()) {
         vlist1.push_back(lsi->v1());
         vlist1.push_back(lsi->v2());
@@ -1016,18 +1031,24 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
         he2 = hei;
       }
     } else {
-      if (u_lsi >= 0 && u_lsi < 1) {
-        // std::cout << "        u_lsi = " << std::endl;
-        if (u_lsi < TOLERANCE) {
-          v_tmp = lsi->v1();
-        } else if (1 - u_lsi < TOLERANCE) {
-          v_tmp = lsi->v2();
-        } else {
-          v_tmp = lsi->getParametricVertex(u_lsi);
-        }
+      // The line segments intersect, so add the intersection point to the lists
+      PDCELVertex *v_tmp = nullptr;
 
-        // std::cout << "        vertex v_tmp: " << v_tmp << std::endl;
+      // Calculate the intersection point
+      if (is_close(u_lsi, 0)) {
+        v_tmp = lsi->v1();
+      } else if (is_close(u_lsi, 1)) {
+        v_tmp = lsi->v2();
+      } else if (u_lsi > 0 && u_lsi < 1) {
+        v_tmp = lsi->getParametricVertex(u_lsi);
+      } else {
+        // The intersection point is outside the line segment, so skip it
+        hei = hei->next();
+        continue;
+      }
 
+      if (v_tmp != nullptr) {
+        // Check if the intersection point is already in the lists
         if (!isInContainer(vlist1, v_tmp) && !isInContainer(vlist2, v_tmp)) {
           if (vlist1.empty()) {
             vlist1.push_back(v_tmp);
@@ -1037,27 +1058,14 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
             he2 = hei;
           }
         }
-      } else {
-        hei = hei->next();
-        continue;
-      }
+      } 
     }
 
     hei = hei->next();
-    // std::cout << std::endl;
   } while (hei != hel->incidentEdge());
 
-  // std::cout << "        vertex list vlist1:" << std::endl;
-  // for (auto v : vlist1) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
-  // std::cout << "        vertex list vlist2:" << std::endl;
-  // for (auto v : vlist2) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
   // Find the closest two vertices, v1 from vlist1 and v2 from vlist2
+  PDCELVertex *v1, *v2;
   if (vlist1.size() == 1) {
     v1 = vlist1.front();
   } else if (vlist1.size() > 1) {
@@ -1083,9 +1091,6 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
       }
     }
   }
-
-  // std::cout << "        vertex v1: " << v1 << std::endl;
-  // std::cout << "        vertex v2: " << v2 << std::endl;
 
   // Split half edges if necessary
   if (v1->degree() == 0) {

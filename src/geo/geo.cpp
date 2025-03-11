@@ -528,7 +528,7 @@ bool isParallel(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   vec2 = ls2->toVector();
 
   vecn = crossprod(vec1, vec2);
-  if (vecn.normSq() < TOLERANCE * TOLERANCE) {
+  if (vecn.normSq() < ABS_TOL * ABS_TOL) {
     return true;
   } else {
     return false;
@@ -553,7 +553,7 @@ bool isCollinear(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   vec1 = ls1->toVector();
   vec2 = SVector3(ls1->v1()->point(), ls2->v1()->point());
   vecn = crossprod(vec1, vec2);
-  if (vecn.normSq() < TOLERANCE * TOLERANCE) {
+  if (vecn.normSq() < ABS_TOL * ABS_TOL) {
     return true;
   } else {
     return false;
