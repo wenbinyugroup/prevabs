@@ -298,17 +298,82 @@ bool calc_line_intersection_2d(
 }
 
 
+/**
+ * @brief Calculates the intersection of two 2D line segments and returns the intersection vertex.
+ *
+ * This function determines if two line segments, defined by their endpoints, intersect in 2D space.
+ * It returns true if the line segments intersect, and false otherwise.
+ * If the line segments intersect, the intersection vertex is stored in v_intersect.
+ *
+ * @param ls1v1 Pointer to the first vertex of the first line segment.
+ * @param ls1v2 Pointer to the second vertex of the first line segment.
+ * @param ls2v1 Pointer to the first vertex of the second line segment.
+ * @param ls2v2 Pointer to the second vertex of the second line segment.
+ * @param v_intersect Pointer to the intersection vertex.
+ * @param u1 Reference to a double where the intersection parameteric coordinate for the first line segment will be stored.
+ * @param u2 Reference to a double where the intersection parameteric coordinate for the second line segment will be stored.
+ * @param ex11 Reference to an int indicating if considering the extension of the first line segment before the starting point (1) or not (0).
+ * @param ex12 Reference to an int indicating if considering the extension of the first line segment after the ending point (1) or not (0).
+ * @param ex21 Reference to an int indicating if considering the extension of the second line segment before the starting point (1) or not (0).
+ * @param ex22 Reference to an int indicating if considering the extension of the second line segment after the ending point (1) or not (0).
+ * @return true if the line segments intersect, false otherwise.
+ */
 bool calc_line_intersection_2d(
   PDCELVertex *ls1v1, PDCELVertex *ls1v2,
   PDCELVertex *ls2v1, PDCELVertex *ls2v2,
-  PDCELVertex *v_intersect, double &u1, double &u2
+  PDCELVertex *v_intersect, double &u1, double &u2,
+  const int &ex11, const int &ex12, const int &ex21, const int &ex22
   ) {
+  
+  PLOG(debug) << "calc_line_intersection_2d"
+    << " line 1: " << ls1v1 << " - " << ls1v2
+    << " line 2: " << ls2v1 << " - " << ls2v2;
 
+  double ipx, ipy;
   bool is_intersect = calc_line_intersection_2d(
     ls1v1->point2()[0], ls1v1->point2()[1], ls1v2->point2()[0], ls1v2->point2()[1],
     ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
     ipx, ipy, u1, u2);
 
+  if (!is_intersect) {
+    return false;
+  }
+
+  if (u1 > 0 && u1 < 1 && u2 > 0 && u2 < 1) {
+    // Intersection is inside both line segments
+    v_intersect = new PDCELVertex(ipx, ipy);
+  } else if (ex11 && ex12 && ex21 && ex22) {
+    // Consider the two line segments as infinite lines
+    v_intersect = new PDCELVertex(ipx, ipy);
+  }
+
+  if (is_close(u1, 0)) {
+    v_intersect = ls1v1;
+  } else if (is_close(u1, 1)) {
+    v_intersect = ls1v2;
+  } else if (is_close(u2, 0)) {
+    v_intersect = ls2v1;
+  } else if (is_close(u2, 1)) {
+    v_intersect = ls2v2;
+  } else if ((ex1 == -1 || ex1 == 2) && u1 < 0) {
+    // Extend the first line segment before the starting point
+    if ((ex2 == -1 || ex2 == 2) && u2 < 0) {
+      // Extend the second line segment before the starting point
+      v_intersect = new PDCELVertex(ipx, ipy);
+    } else if (u2 > 0 && u2 < 1) {
+      // Intersection is inside the second line segment
+      v_intersect = new PDCELVertex(ipx, ipy);
+    } else if ((ex2 == 1 || ex2 == 2) && u2 > 1) {
+      // Extend the second line segment after the ending point
+      v_intersect = new PDCELVertex(ipx, ipy);
+    } else {
+      // Two line segments intersect outside the desired range
+      return false;
+    }
+  } else {
+    // Two line segments intersect outside the desired range
+    return false;
+  }
 
   return is_intersect;
 }
