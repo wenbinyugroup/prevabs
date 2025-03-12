@@ -998,15 +998,13 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
       << " and (ls) " << ls;
 
     // Check if the line segment intersects with the line segment ls
-    double ipx, ipy;
+    // double ipx, ipy;
     double u_lsi, u_ls;
+    PDCELVertex *v_intersect;
     // bool not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, ABS_TOL);
     bool not_parallel = calc_line_intersection_2d(
-      lsi->v1()->point2()[0], lsi->v1()->point2()[1],
-      lsi->v2()->point2()[0], lsi->v2()->point2()[1],
-      ls->v1()->point2()[0], ls->v1()->point2()[1],
-      ls->v2()->point2()[0], ls->v2()->point2()[1],
-      ipx, ipy, u_lsi, u_ls, ABS_TOL
+      lsi->v1(), lsi->v2(), ls->v1(), ls->v2(),
+      v_intersect, u_lsi, u_ls, 1, 1, 1, 1
     );
 
     if (!not_parallel) {
@@ -1531,7 +1529,13 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
     // std::cout << "        line segment *lsit: " << (*lsit) << std::endl;
     // is_intersect = calcLineIntersection2D(v, vt, (*lsit)->v1(),
     // (*lsit)->v2(), u1_tmp, u2);
-    is_intersect = calcLineIntersection2D(ls_tmp, (*lsit), u1_tmp, u2, TOLERANCE);
+    // is_intersect = calcLineIntersection2D(ls_tmp, (*lsit), u1_tmp, u2, TOLERANCE);
+    PDCELVertex *v_intersect;
+    is_intersect = calc_line_intersection_2d(
+      ls_tmp->v1(), ls_tmp->v2(),
+      (*lsit)->v1(), (*lsit)->v2(),
+      v_intersect, u1, u2, 1, 1, 1, 1
+    );
 
     if (is_intersect) {
       // not parallel

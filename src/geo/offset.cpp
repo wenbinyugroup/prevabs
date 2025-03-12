@@ -161,8 +161,13 @@ Baseline *offsetCurve(Baseline *pcurve, int side, double distance) {
 
       if (i > 0) {
         double u1, u2;
-        bool not_parallel;
-        not_parallel = calcLineIntersection2D(psegment, pprev_segment, u1, u2, TOLERANCE);
+        PDCELVertex *v_intersect;
+        bool not_parallel = calc_line_intersection_2d(
+          psegment->v1(), psegment->v2(),
+          pprev_segment->v1(), pprev_segment->v2(),
+          v_intersect, u1, u2, 1, 1, 1, 1
+        );
+        // not_parallel = calcLineIntersection2D(psegment, pprev_segment, u1, u2, TOLERANCE);
         if (not_parallel) {
           pcurve_off->addPVertex(psegment->getParametricVertex(u1));
         } else {
@@ -179,8 +184,13 @@ Baseline *offsetCurve(Baseline *pcurve, int side, double distance) {
 
     if (pcurve->vertices().front() == pcurve->vertices().back()) {
       double u1, u2;
-      bool not_parallel;
-      not_parallel = calcLineIntersection2D(pfirst_segment_off, pprev_segment, u1, u2, TOLERANCE);
+      PDCELVertex *v_intersect;
+      bool not_parallel = calc_line_intersection_2d(
+        psegment->v1(), psegment->v2(),
+        pprev_segment->v1(), pprev_segment->v2(),
+        v_intersect, u1, u2, 1, 1, 1, 1
+      );
+      // not_parallel = calcLineIntersection2D(pfirst_segment_off, pprev_segment, u1, u2, TOLERANCE);
       if (not_parallel) {
         pcurve_off->vertices()[0] = pfirst_segment_off->getParametricVertex(u1);
       }
@@ -257,572 +267,572 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  * @param pmessage Pointer to a Message object for logging and debugging.
  * @return int Returns 1 on successful offsetting of vertices.
  */
-int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
-           std::vector<PDCELVertex *> &offset_vertices, std::vector<int> &link_to_2,
-           std::vector<std::vector<int>> &id_pairs, Message *pmessage) {
-  pmessage->increaseIndent();
-
-  std::stringstream ss;
-
-  PLOG(debug) << pmessage->message("offsetting a polyline");
-  // std::cout << "\n[debug] offset" << std::endl;
-
-  std::size_t size = base.size();
-  // std::cout << "        base.size() = " << size << std::endl;
-  PDCELVertex *v_tmp, *v1_tmp, *v2_tmp, *v1_prev, *v2_prev;
-  // PGeoLineSegment *ls, *ls_prev, *ls_first;
-  std::vector<int> link_to_tmp;
-
-  // The base curve has only two vertices
-  if (size == 2) {
-    PLOG(debug) << pmessage->message("the base curve has only two vertices");
-
-    // ls = new PGeoLineSegment(curve->vertices()[0], curve->vertices()[1]);
-    v1_tmp = new PDCELVertex();
-    v2_tmp = new PDCELVertex();
-
-    offset(base[0], base[1], side, dist, v1_tmp, v2_tmp);
-
-    offset_vertices.push_back(v1_tmp);
-    offset_vertices.push_back(v2_tmp);
-
-    link_to_2.push_back(0);
-    link_to_2.push_back(1);
-
-    std::vector<int> i0_tmp{0, 0}, i1_tmp{1, 1};
-    id_pairs.push_back(i0_tmp);
-    id_pairs.push_back(i1_tmp);
-
-    return 1;
-  }
-
-  std::vector<PDCELVertex *> vertices_tmp;
-
-  // Initialize all vertices as un-degenerated
-  // std::vector<int> degen_flags_tmp(size, 1);
-  // std::vector<int> undegen_counts, degen_counts;
-
-
-
-
-  //
-  // Step 1: Offset each line segment, and
-  // calculate intersections between every two neighbors
-  PLOG(debug) << pmessage->message("1. offset each line segment");
-
-  // PGeoLineSegment *ls_prev, *ls_first;
-  for (int i = 0; i < size - 1; ++i) {
-    // std::cout << "        line seg: " << i+1 << std::endl;
-    v1_tmp = new PDCELVertex();
-    v2_tmp = new PDCELVertex();
-
-    offset(base[i], base[i + 1], side, dist, v1_tmp, v2_tmp);
-
-    // std::cout << "        vertex v1_tmp = " << v1_tmp << std::endl;
-    // std::cout << "        vertex v2_tmp = " << v2_tmp << std::endl;
-    // std::cout << base[i] << "-" << base[i + 1] << " -> ";
-    // std::cout << v1_tmp << "-" << v2_tmp << std::endl;
-
-    link_to_tmp.push_back(i);
-
-    if (i == 0) {
-      // ls_first = ls;
-      vertices_tmp.push_back(v1_tmp);
-    }
-    else {
-      // Calculate intersection
-
-      // std::cout << "        find intersection:" << std::endl;
-      // std::cout << "        v1_prev = " << v1_prev << ", v2_prev = " << v2_prev << std::endl;
-      // std::cout << "        v1_tmp = " << v1_tmp << ", v2_tmp = " << v2_tmp << std::endl;
-
-      PLOG(debug) << pmessage->message("calculate intersection");
-      PLOG(debug) << pmessage->message(
-        "v1_prev: " + v1_prev->printString() + ", v2_prev: " + v2_prev->printString());
-      PLOG(debug) << pmessage->message(
-        "v1_tmp: " + v1_tmp->printString() + ", v2_tmp: " + v2_tmp->printString());
-
-      // Old intersection method
-      // double u1, u2;
-      // bool not_parallel;
-      // not_parallel =
-      //     calcLineIntersection2D(v1_prev, v2_prev, v1_tmp, v2_tmp, u1, u2, TOLERANCE);
-      // // std::cout << "        not_parallel = " << not_parallel << ", u1 = " <<
-      // // u1 << ", u2 = " << u2 << std::endl;
-      // if (not_parallel) {
-      //   // vertices_tmp.push_back(ls->getParametricVertex(u1));
-      //   v_tmp = new PDCELVertex(
-      //       getParametricPoint(v1_prev->point(), v2_prev->point(), u1));
-      //   vertices_tmp.push_back(v_tmp);
-      // }
-      // else {
-      //   vertices_tmp.push_back(v2_prev);
-      // }
-      // Old intersection method (end)
-
-      // New intersection method (h2d)
-      h2d::Point2d _p1_prev(v1_prev->point2()[0], v1_prev->point2()[1]);
-      h2d::Point2d _p2_prev(v2_prev->point2()[0], v2_prev->point2()[1]);
-      h2d::Point2d _p1_tmp(v1_tmp->point2()[0], v1_tmp->point2()[1]);
-      h2d::Point2d _p2_tmp(v2_tmp->point2()[0], v2_tmp->point2()[1]);
-
-      ss.str("");
-      ss << "Points: " << _p1_prev << " and " << _p2_prev << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-      ss.str("");
-      ss << "Points: " << _p1_tmp << " and " << _p2_tmp << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      h2d::Segment seg1(_p1_prev, _p2_prev);
-      h2d::Segment seg2(_p1_tmp, _p2_tmp);
-
-      ss.str("");
-      ss << "Segments: " << seg1 << " and " << seg2 << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      auto res = seg1.intersects(seg2);
-
-      ss.str("");
-      ss << "res = " << res() << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      if ( res() ) {
-        auto pts = res.get();
-
-        ss.str("");
-        ss << "  intersection points: " << pts << std::endl;
-        PLOG(debug) << pmessage->message(ss.str());
-
-        // Check the distance between the intersection point and the segment ends
-        if (isClose(pts.getX(), pts.getY(), _p1_prev.getX(), _p1_prev.getY(), ABS_TOL, REL_TOL)) {
-          vertices_tmp.push_back(v1_prev);
-        }
-        else if (isClose(pts.getX(), pts.getY(), _p2_prev.getX(), _p2_prev.getY(), ABS_TOL, REL_TOL)) {
-          vertices_tmp.push_back(v2_prev);
-        }
-        else {
-          v_tmp = new PDCELVertex(0, pts.getX(), pts.getY());
-          vertices_tmp.push_back(v_tmp);
-        }
-
-      }
-      else {
-        vertices_tmp.push_back(v2_prev);
-      }
-      // New intersection method (h2d) (end)
-
-      ss.str("");
-      ss << "        added vertex: " << vertices_tmp.back() << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-    }
-
-    if (i == size - 2) {
-      vertices_tmp.push_back(v2_tmp);
-      link_to_tmp.push_back(i + 1);
-    }
-    // ls_prev = ls;
-    v1_prev = v1_tmp;
-    v2_prev = v2_tmp;
-  }
-
-  // std::cout << "        link to indices:" << std::endl;
-  // for (auto i : link_to_tmp) {
-  //   std::cout << "        " << i << std::endl;
-  // }
-
-  // If this curve is closed
-  // if (base.front() == base.back()) {
-  //   double u1, u2;
-  //   bool not_parallel;
-  //   PDCELVertex *v;
-  //   not_parallel = calcLineIntersection2D(v1_prev, v2_prev, vertices_tmp[0],
-  //                                         vertices_tmp[1], u1, u2);
-  //   // std::cout << "        not_parallel = " << not_parallel << ", u1 = " << u1
-  //   // << ", u2 = " << u2 << std::endl;
-  //   if (not_parallel) {
-  //     v_tmp = new PDCELVertex(
-  //         getParametricPoint(v1_prev->point(), v2_prev->point(), u1));
-  //     vertices_tmp[0] = v_tmp;
-  //   }
-  //   vertices_tmp[size - 1] = vertices_tmp[0];
-  // }
-
-  // std::cout << "\n        list vertices_tmp: " << std::endl;
-  // for (auto i = 0; i < vertices_tmp.size(); i++) {
-  //   std::cout << "        " << i << ": " << vertices_tmp[i] << std::endl;
-  // }
-
-
-
-
-  //
-  // Step 2: Check degenerated cases (zero length and inversed line segments)
-  PLOG(debug) << pmessage->message("2. check degenerated cases");
-
-  SVector3 vec_base, vec_off;
-
-  // Eliminate reversed direction line segments
-  // The result is a group of sub-lines with correct orientation
-  std::vector<std::vector<PDCELVertex *>> lines_group;
-  std::vector<std::vector<int>> link_tos_group;
-  // std::vector<std::vector<int>> degen_flags_group;
-
-  // int line_i = -1;
-  // int degen_i = -1;
-  // int undegen_count = 0;
-  // int degen_count = 0;
-
-  // Mark if the orientation is correct
-  bool check_prev{false}, check_next;
-  for (int j = 0; j < size - 1; ++j) {
-    // std::cout << "        index j = " << j << std::endl;
-    vec_base = SVector3(base[j]->point(), base[j + 1]->point());
-    vec_off = SVector3(vertices_tmp[j]->point(), vertices_tmp[j + 1]->point());
-    if (dot(vec_base, vec_off) <= 0 ||
-        (vec_off.normSq() < TOLERANCE * TOLERANCE)) {
-      // Offset line segment is in the wrong direction or too short
-      // This is the end of the current sub-line
-      check_next = false;
-    }
-    else {
-      check_next = true;
-      if (!check_prev) {
-        // This means that we are starting a new sub-line
-        std::vector<PDCELVertex *> lines_group_i;
-        // line_i += 1;
-        lines_group_i.push_back(vertices_tmp[j]);
-        lines_group.push_back(lines_group_i);
-
-        std::vector<int> link_tos_group_i;
-        link_tos_group_i.push_back(link_to_tmp[j]);
-        link_tos_group.push_back(link_tos_group_i);
-      }
-      lines_group.back().push_back(vertices_tmp[j + 1]);
-      link_tos_group.back().push_back(link_to_tmp[j + 1]);
-    }
-    // std::cout << "        check_next = " << check_next << std::endl;
-    check_prev = check_next;
-  }
-
-  // std::cout << "\n        lines_group: " << lines_group.size() << std::endl;
-  // for (int i = 0; i < lines_group.size(); ++i) {
-  //   std::cout << "        line " << i << std::endl;
-  //   for (int j = 0; j < lines_group[i].size(); ++j) {
-  //     std::cout << "        " << lines_group[i][j] << " links to " <<
-  //     link_tos_group[i][j] << std::endl;
-  //   }
-  // }
-
-
-
-
-
-  //
-  // Step 3: Find intersections between neighboring sub-lines for more than 2 lines
-  PLOG(debug) << pmessage->message("3. find intersections between neighboring sub-lines");
-  //
-  // Here use a brute force method
-  // Since the intersection should be found in a local region
-  // (tail part of the previous one and head part of the next one)
-  std::size_t size_i, size_i1;
-  std::vector<PDCELVertex *> sline_i, sline_i1;
-  PDCELVertex *v0 = nullptr, *v0_prev = lines_group[0][0];
-  bool found;
-  std::vector<int> link_i, link_i1;
-  // int link11, link12, link21, link22;
-  int i = 0, j = 0, i_prev = 0;
-  int trim_index_begin_this = 0, trim_index_begin_next;
-  std::vector<std::vector<PDCELVertex *> > trimmed_sublines;
-  std::vector<std::vector<int> > trimmed_link_to_base_indices;
-
-  std::vector<PDCELVertex *> tmp_trimmed_subline;
-  std::vector<int> tmp_trimmed_link_to_base_index;
-
-  int ls_i1, ls_i2;
-
-
-
-  // Only one sub-line, no trim
-  // No operations needed
-  // (except possible trimming by itself at two ends, i.e., closed line)
-  if (lines_group.size() == 1) {
-    trimmed_sublines.push_back(lines_group[0]);
-    trimmed_link_to_base_indices.push_back(link_tos_group[0]);
-  }
-
-  else if (lines_group.size() > 1) {
-    for (int line_i = 0; line_i < lines_group.size() - 1; ++line_i) {
-      // std::cout << "\n        find intersection between line "
-      //           << line_i << " and line " << line_i + 1 << std::endl;
-
-      tmp_trimmed_subline.clear();
-      tmp_trimmed_link_to_base_index.clear();
-
-      sline_i = lines_group[line_i];
-      sline_i1 = lines_group[line_i + 1];
-
-      link_i = link_tos_group[line_i];
-      link_i1 = link_tos_group[line_i + 1];
-
-      size_i = sline_i.size();
-      size_i1 = sline_i1.size();
-
-      found = false;
-      v0 = nullptr;
-
-      //
-      double ls_u1, ls_u2;
-      std::vector<int> i1s, i2s;
-      std::vector<double> u1s, u2s;
-      int is_new_1, is_new_2;
-      int j1;
-
-      findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
-
-      ls_u1 = getIntersectionLocation(
-        lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
-      // std::cout << "j1 = " << j1 << std::endl;
-      // ls_u2 = getIntersectionLocation(
-      //   lines_group[line_i + 1], i2s, u2s, 0, 0, ls_i2);
-      ls_i2 = i2s[j1];
-      ls_u2 = u2s[j1];
-
-      v0 = getIntersectionVertex(
-        lines_group[line_i], lines_group[line_i + 1],
-        ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
-      );
-
-      trim(lines_group[line_i], v0, 1);
-      trim(lines_group[line_i + 1], v0, 0);
-
-      // Adjust linking indices
-      std::size_t n = link_tos_group[line_i].size();
-      for (auto kk = ls_i1 + 1; kk < n; kk++) {
-        link_tos_group[line_i].pop_back();
-      }
-      n = link_tos_group[line_i + 1].size();
-      for (auto kk = 0; kk < ls_i2 - 1; kk++) {
-        link_tos_group[line_i + 1].erase(link_tos_group[line_i + 1].begin());
-      }
-
-      trimmed_sublines.push_back(lines_group[line_i]);
-      trimmed_link_to_base_indices.push_back(link_tos_group[line_i]);
-      //
-
-    }
-
-    // For the last subline
-    trimmed_sublines.push_back(lines_group.back());
-    trimmed_link_to_base_indices.push_back(link_tos_group.back());
-
-  }
+// int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
+//            std::vector<PDCELVertex *> &offset_vertices, std::vector<int> &link_to_2,
+//            std::vector<std::vector<int>> &id_pairs, Message *pmessage) {
+//   pmessage->increaseIndent();
+
+//   std::stringstream ss;
+
+//   PLOG(debug) << pmessage->message("offsetting a polyline");
+//   // std::cout << "\n[debug] offset" << std::endl;
+
+//   std::size_t size = base.size();
+//   // std::cout << "        base.size() = " << size << std::endl;
+//   PDCELVertex *v_tmp, *v1_tmp, *v2_tmp, *v1_prev, *v2_prev;
+//   // PGeoLineSegment *ls, *ls_prev, *ls_first;
+//   std::vector<int> link_to_tmp;
+
+//   // The base curve has only two vertices
+//   if (size == 2) {
+//     PLOG(debug) << pmessage->message("the base curve has only two vertices");
+
+//     // ls = new PGeoLineSegment(curve->vertices()[0], curve->vertices()[1]);
+//     v1_tmp = new PDCELVertex();
+//     v2_tmp = new PDCELVertex();
+
+//     offset(base[0], base[1], side, dist, v1_tmp, v2_tmp);
+
+//     offset_vertices.push_back(v1_tmp);
+//     offset_vertices.push_back(v2_tmp);
+
+//     link_to_2.push_back(0);
+//     link_to_2.push_back(1);
+
+//     std::vector<int> i0_tmp{0, 0}, i1_tmp{1, 1};
+//     id_pairs.push_back(i0_tmp);
+//     id_pairs.push_back(i1_tmp);
+
+//     return 1;
+//   }
+
+//   std::vector<PDCELVertex *> vertices_tmp;
+
+//   // Initialize all vertices as un-degenerated
+//   // std::vector<int> degen_flags_tmp(size, 1);
+//   // std::vector<int> undegen_counts, degen_counts;
+
+
+
+
+//   //
+//   // Step 1: Offset each line segment, and
+//   // calculate intersections between every two neighbors
+//   PLOG(debug) << pmessage->message("1. offset each line segment");
+
+//   // PGeoLineSegment *ls_prev, *ls_first;
+//   for (int i = 0; i < size - 1; ++i) {
+//     // std::cout << "        line seg: " << i+1 << std::endl;
+//     v1_tmp = new PDCELVertex();
+//     v2_tmp = new PDCELVertex();
+
+//     offset(base[i], base[i + 1], side, dist, v1_tmp, v2_tmp);
+
+//     // std::cout << "        vertex v1_tmp = " << v1_tmp << std::endl;
+//     // std::cout << "        vertex v2_tmp = " << v2_tmp << std::endl;
+//     // std::cout << base[i] << "-" << base[i + 1] << " -> ";
+//     // std::cout << v1_tmp << "-" << v2_tmp << std::endl;
+
+//     link_to_tmp.push_back(i);
+
+//     if (i == 0) {
+//       // ls_first = ls;
+//       vertices_tmp.push_back(v1_tmp);
+//     }
+//     else {
+//       // Calculate intersection
+
+//       // std::cout << "        find intersection:" << std::endl;
+//       // std::cout << "        v1_prev = " << v1_prev << ", v2_prev = " << v2_prev << std::endl;
+//       // std::cout << "        v1_tmp = " << v1_tmp << ", v2_tmp = " << v2_tmp << std::endl;
+
+//       PLOG(debug) << pmessage->message("calculate intersection");
+//       PLOG(debug) << pmessage->message(
+//         "v1_prev: " + v1_prev->printString() + ", v2_prev: " + v2_prev->printString());
+//       PLOG(debug) << pmessage->message(
+//         "v1_tmp: " + v1_tmp->printString() + ", v2_tmp: " + v2_tmp->printString());
+
+//       // Old intersection method
+//       // double u1, u2;
+//       // bool not_parallel;
+//       // not_parallel =
+//       //     calcLineIntersection2D(v1_prev, v2_prev, v1_tmp, v2_tmp, u1, u2, TOLERANCE);
+//       // // std::cout << "        not_parallel = " << not_parallel << ", u1 = " <<
+//       // // u1 << ", u2 = " << u2 << std::endl;
+//       // if (not_parallel) {
+//       //   // vertices_tmp.push_back(ls->getParametricVertex(u1));
+//       //   v_tmp = new PDCELVertex(
+//       //       getParametricPoint(v1_prev->point(), v2_prev->point(), u1));
+//       //   vertices_tmp.push_back(v_tmp);
+//       // }
+//       // else {
+//       //   vertices_tmp.push_back(v2_prev);
+//       // }
+//       // Old intersection method (end)
+
+//       // New intersection method (h2d)
+//       h2d::Point2d _p1_prev(v1_prev->point2()[0], v1_prev->point2()[1]);
+//       h2d::Point2d _p2_prev(v2_prev->point2()[0], v2_prev->point2()[1]);
+//       h2d::Point2d _p1_tmp(v1_tmp->point2()[0], v1_tmp->point2()[1]);
+//       h2d::Point2d _p2_tmp(v2_tmp->point2()[0], v2_tmp->point2()[1]);
+
+//       ss.str("");
+//       ss << "Points: " << _p1_prev << " and " << _p2_prev << std::endl;
+//       PLOG(debug) << pmessage->message(ss.str());
+//       ss.str("");
+//       ss << "Points: " << _p1_tmp << " and " << _p2_tmp << std::endl;
+//       PLOG(debug) << pmessage->message(ss.str());
+
+//       h2d::Segment seg1(_p1_prev, _p2_prev);
+//       h2d::Segment seg2(_p1_tmp, _p2_tmp);
+
+//       ss.str("");
+//       ss << "Segments: " << seg1 << " and " << seg2 << std::endl;
+//       PLOG(debug) << pmessage->message(ss.str());
+
+//       auto res = seg1.intersects(seg2);
+
+//       ss.str("");
+//       ss << "res = " << res() << std::endl;
+//       PLOG(debug) << pmessage->message(ss.str());
+
+//       if ( res() ) {
+//         auto pts = res.get();
+
+//         ss.str("");
+//         ss << "  intersection points: " << pts << std::endl;
+//         PLOG(debug) << pmessage->message(ss.str());
+
+//         // Check the distance between the intersection point and the segment ends
+//         if (isClose(pts.getX(), pts.getY(), _p1_prev.getX(), _p1_prev.getY(), ABS_TOL, REL_TOL)) {
+//           vertices_tmp.push_back(v1_prev);
+//         }
+//         else if (isClose(pts.getX(), pts.getY(), _p2_prev.getX(), _p2_prev.getY(), ABS_TOL, REL_TOL)) {
+//           vertices_tmp.push_back(v2_prev);
+//         }
+//         else {
+//           v_tmp = new PDCELVertex(0, pts.getX(), pts.getY());
+//           vertices_tmp.push_back(v_tmp);
+//         }
+
+//       }
+//       else {
+//         vertices_tmp.push_back(v2_prev);
+//       }
+//       // New intersection method (h2d) (end)
+
+//       ss.str("");
+//       ss << "        added vertex: " << vertices_tmp.back() << std::endl;
+//       PLOG(debug) << pmessage->message(ss.str());
+
+//     }
+
+//     if (i == size - 2) {
+//       vertices_tmp.push_back(v2_tmp);
+//       link_to_tmp.push_back(i + 1);
+//     }
+//     // ls_prev = ls;
+//     v1_prev = v1_tmp;
+//     v2_prev = v2_tmp;
+//   }
+
+//   // std::cout << "        link to indices:" << std::endl;
+//   // for (auto i : link_to_tmp) {
+//   //   std::cout << "        " << i << std::endl;
+//   // }
+
+//   // If this curve is closed
+//   // if (base.front() == base.back()) {
+//   //   double u1, u2;
+//   //   bool not_parallel;
+//   //   PDCELVertex *v;
+//   //   not_parallel = calcLineIntersection2D(v1_prev, v2_prev, vertices_tmp[0],
+//   //                                         vertices_tmp[1], u1, u2);
+//   //   // std::cout << "        not_parallel = " << not_parallel << ", u1 = " << u1
+//   //   // << ", u2 = " << u2 << std::endl;
+//   //   if (not_parallel) {
+//   //     v_tmp = new PDCELVertex(
+//   //         getParametricPoint(v1_prev->point(), v2_prev->point(), u1));
+//   //     vertices_tmp[0] = v_tmp;
+//   //   }
+//   //   vertices_tmp[size - 1] = vertices_tmp[0];
+//   // }
+
+//   // std::cout << "\n        list vertices_tmp: " << std::endl;
+//   // for (auto i = 0; i < vertices_tmp.size(); i++) {
+//   //   std::cout << "        " << i << ": " << vertices_tmp[i] << std::endl;
+//   // }
+
+
+
+
+//   //
+//   // Step 2: Check degenerated cases (zero length and inversed line segments)
+//   PLOG(debug) << pmessage->message("2. check degenerated cases");
+
+//   SVector3 vec_base, vec_off;
+
+//   // Eliminate reversed direction line segments
+//   // The result is a group of sub-lines with correct orientation
+//   std::vector<std::vector<PDCELVertex *>> lines_group;
+//   std::vector<std::vector<int>> link_tos_group;
+//   // std::vector<std::vector<int>> degen_flags_group;
+
+//   // int line_i = -1;
+//   // int degen_i = -1;
+//   // int undegen_count = 0;
+//   // int degen_count = 0;
+
+//   // Mark if the orientation is correct
+//   bool check_prev{false}, check_next;
+//   for (int j = 0; j < size - 1; ++j) {
+//     // std::cout << "        index j = " << j << std::endl;
+//     vec_base = SVector3(base[j]->point(), base[j + 1]->point());
+//     vec_off = SVector3(vertices_tmp[j]->point(), vertices_tmp[j + 1]->point());
+//     if (dot(vec_base, vec_off) <= 0 ||
+//         (vec_off.normSq() < TOLERANCE * TOLERANCE)) {
+//       // Offset line segment is in the wrong direction or too short
+//       // This is the end of the current sub-line
+//       check_next = false;
+//     }
+//     else {
+//       check_next = true;
+//       if (!check_prev) {
+//         // This means that we are starting a new sub-line
+//         std::vector<PDCELVertex *> lines_group_i;
+//         // line_i += 1;
+//         lines_group_i.push_back(vertices_tmp[j]);
+//         lines_group.push_back(lines_group_i);
+
+//         std::vector<int> link_tos_group_i;
+//         link_tos_group_i.push_back(link_to_tmp[j]);
+//         link_tos_group.push_back(link_tos_group_i);
+//       }
+//       lines_group.back().push_back(vertices_tmp[j + 1]);
+//       link_tos_group.back().push_back(link_to_tmp[j + 1]);
+//     }
+//     // std::cout << "        check_next = " << check_next << std::endl;
+//     check_prev = check_next;
+//   }
+
+//   // std::cout << "\n        lines_group: " << lines_group.size() << std::endl;
+//   // for (int i = 0; i < lines_group.size(); ++i) {
+//   //   std::cout << "        line " << i << std::endl;
+//   //   for (int j = 0; j < lines_group[i].size(); ++j) {
+//   //     std::cout << "        " << lines_group[i][j] << " links to " <<
+//   //     link_tos_group[i][j] << std::endl;
+//   //   }
+//   // }
+
+
+
+
+
+//   //
+//   // Step 3: Find intersections between neighboring sub-lines for more than 2 lines
+//   PLOG(debug) << pmessage->message("3. find intersections between neighboring sub-lines");
+//   //
+//   // Here use a brute force method
+//   // Since the intersection should be found in a local region
+//   // (tail part of the previous one and head part of the next one)
+//   std::size_t size_i, size_i1;
+//   std::vector<PDCELVertex *> sline_i, sline_i1;
+//   PDCELVertex *v0 = nullptr, *v0_prev = lines_group[0][0];
+//   bool found;
+//   std::vector<int> link_i, link_i1;
+//   // int link11, link12, link21, link22;
+//   int i = 0, j = 0, i_prev = 0;
+//   int trim_index_begin_this = 0, trim_index_begin_next;
+//   std::vector<std::vector<PDCELVertex *> > trimmed_sublines;
+//   std::vector<std::vector<int> > trimmed_link_to_base_indices;
+
+//   std::vector<PDCELVertex *> tmp_trimmed_subline;
+//   std::vector<int> tmp_trimmed_link_to_base_index;
+
+//   int ls_i1, ls_i2;
+
+
+
+//   // Only one sub-line, no trim
+//   // No operations needed
+//   // (except possible trimming by itself at two ends, i.e., closed line)
+//   if (lines_group.size() == 1) {
+//     trimmed_sublines.push_back(lines_group[0]);
+//     trimmed_link_to_base_indices.push_back(link_tos_group[0]);
+//   }
+
+//   else if (lines_group.size() > 1) {
+//     for (int line_i = 0; line_i < lines_group.size() - 1; ++line_i) {
+//       // std::cout << "\n        find intersection between line "
+//       //           << line_i << " and line " << line_i + 1 << std::endl;
+
+//       tmp_trimmed_subline.clear();
+//       tmp_trimmed_link_to_base_index.clear();
+
+//       sline_i = lines_group[line_i];
+//       sline_i1 = lines_group[line_i + 1];
+
+//       link_i = link_tos_group[line_i];
+//       link_i1 = link_tos_group[line_i + 1];
+
+//       size_i = sline_i.size();
+//       size_i1 = sline_i1.size();
+
+//       found = false;
+//       v0 = nullptr;
+
+//       //
+//       double ls_u1, ls_u2;
+//       std::vector<int> i1s, i2s;
+//       std::vector<double> u1s, u2s;
+//       int is_new_1, is_new_2;
+//       int j1;
+
+//       findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
+
+//       ls_u1 = getIntersectionLocation(
+//         lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+//       // std::cout << "j1 = " << j1 << std::endl;
+//       // ls_u2 = getIntersectionLocation(
+//       //   lines_group[line_i + 1], i2s, u2s, 0, 0, ls_i2);
+//       ls_i2 = i2s[j1];
+//       ls_u2 = u2s[j1];
+
+//       v0 = getIntersectionVertex(
+//         lines_group[line_i], lines_group[line_i + 1],
+//         ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
+//       );
+
+//       trim(lines_group[line_i], v0, 1);
+//       trim(lines_group[line_i + 1], v0, 0);
+
+//       // Adjust linking indices
+//       std::size_t n = link_tos_group[line_i].size();
+//       for (auto kk = ls_i1 + 1; kk < n; kk++) {
+//         link_tos_group[line_i].pop_back();
+//       }
+//       n = link_tos_group[line_i + 1].size();
+//       for (auto kk = 0; kk < ls_i2 - 1; kk++) {
+//         link_tos_group[line_i + 1].erase(link_tos_group[line_i + 1].begin());
+//       }
+
+//       trimmed_sublines.push_back(lines_group[line_i]);
+//       trimmed_link_to_base_indices.push_back(link_tos_group[line_i]);
+//       //
+
+//     }
+
+//     // For the last subline
+//     trimmed_sublines.push_back(lines_group.back());
+//     trimmed_link_to_base_indices.push_back(link_tos_group.back());
+
+//   }
 
   
 
-  // std::cout << "trimmed_sublines:" << std::endl;
-  // for (auto i = 0; i < trimmed_sublines.size(); i++) {
-  //   std::cout << "i = " << i << std::endl;
-  //   for (auto j = 0; j < trimmed_sublines[i].size(); j++) {
-  //     std::cout << " " << trimmed_sublines[i][j] << std::endl;
-  //   }
-  // }
-  // std::cout << std::endl;
-  // std::cout << "trimmed_link_to_base_indices:";
-  // for (auto i = 0; i < trimmed_link_to_base_indices.size(); i++) {
-  //   std::cout << "i = " << i << std::endl;
-  //   for (auto j = 0; j < trimmed_link_to_base_indices[i].size(); j++) {
-  //     std::cout << " " << trimmed_link_to_base_indices[i][j] << std::endl;
-  //   }
-  // }
-  // std::cout << std::endl;
+//   // std::cout << "trimmed_sublines:" << std::endl;
+//   // for (auto i = 0; i < trimmed_sublines.size(); i++) {
+//   //   std::cout << "i = " << i << std::endl;
+//   //   for (auto j = 0; j < trimmed_sublines[i].size(); j++) {
+//   //     std::cout << " " << trimmed_sublines[i][j] << std::endl;
+//   //   }
+//   // }
+//   // std::cout << std::endl;
+//   // std::cout << "trimmed_link_to_base_indices:";
+//   // for (auto i = 0; i < trimmed_link_to_base_indices.size(); i++) {
+//   //   std::cout << "i = " << i << std::endl;
+//   //   for (auto j = 0; j < trimmed_link_to_base_indices[i].size(); j++) {
+//   //     std::cout << " " << trimmed_link_to_base_indices[i][j] << std::endl;
+//   //   }
+//   // }
+//   // std::cout << std::endl;
 
 
 
 
-  // If this curve is closed
-  if (base.front() == base.back()) {
-    // std::cout << "\n[debug] handling head-tail offsets\n";
+//   // If this curve is closed
+//   if (base.front() == base.back()) {
+//     // std::cout << "\n[debug] handling head-tail offsets\n";
 
-    // tmp_trimmed_subline.clear();
-    // tmp_trimmed_link_to_base_index.clear();
+//     // tmp_trimmed_subline.clear();
+//     // tmp_trimmed_link_to_base_index.clear();
 
-    sline_i = lines_group.back();  // tail
-    sline_i1 = lines_group.front();  // head
+//     sline_i = lines_group.back();  // tail
+//     sline_i1 = lines_group.front();  // head
 
-    link_i = link_tos_group.back();
-    link_i1 = link_tos_group.front();
+//     link_i = link_tos_group.back();
+//     link_i1 = link_tos_group.front();
 
-    // size_i = sline_i.size();
-    // size_i1 = sline_i1.size();
+//     // size_i = sline_i.size();
+//     // size_i1 = sline_i1.size();
 
-    // found = false;
+//     // found = false;
 
-    //
-    double ls_u1, ls_u2;
-    std::vector<int> i1s, i2s;
-    std::vector<double> u1s, u2s;
-    int is_new_1, is_new_2;
-    int j1;
+//     //
+//     double ls_u1, ls_u2;
+//     std::vector<int> i1s, i2s;
+//     std::vector<double> u1s, u2s;
+//     int is_new_1, is_new_2;
+//     int j1;
 
-    findAllIntersections(
-      lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s
-    );
-    // std::cout << "\ni1 -- u1 -- i2 -- u2\n";
-    // for (auto k = 0; k < i1s.size(); k++) {
-    //   std::cout << i1s[k] << " -- " << u1s[k]
-    //   << " -- " << i2s[k] << " -- " << u2s[k] << std::endl;
-    // }
+//     findAllIntersections(
+//       lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s
+//     );
+//     // std::cout << "\ni1 -- u1 -- i2 -- u2\n";
+//     // for (auto k = 0; k < i1s.size(); k++) {
+//     //   std::cout << i1s[k] << " -- " << u1s[k]
+//     //   << " -- " << i2s[k] << " -- " << u2s[k] << std::endl;
+//     // }
 
-    ls_u1 = getIntersectionLocation(
-      lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
-    // ls_u2 = getIntersectionLocation(lines_group.front(), i2s, u2s, 0, 0, ls_i2);
-    // std::cout << "\nj1 = " << j1 << std::endl;
-    ls_i2 = i2s[j1];
-    ls_u2 = u2s[j1];
-    // std::cout << "\nls_i1 = " << ls_i1 << ", " << "ls_i2 = " << ls_i2 << std::endl;
+//     ls_u1 = getIntersectionLocation(
+//       lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+//     // ls_u2 = getIntersectionLocation(lines_group.front(), i2s, u2s, 0, 0, ls_i2);
+//     // std::cout << "\nj1 = " << j1 << std::endl;
+//     ls_i2 = i2s[j1];
+//     ls_u2 = u2s[j1];
+//     // std::cout << "\nls_i1 = " << ls_i1 << ", " << "ls_i2 = " << ls_i2 << std::endl;
 
-    v0 = getIntersectionVertex(
-      lines_group.back(), lines_group.front(),
-      ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
-    );
-    // std::cout << "\nv0 = " << v0 << std::endl;
+//     v0 = getIntersectionVertex(
+//       lines_group.back(), lines_group.front(),
+//       ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
+//     );
+//     // std::cout << "\nv0 = " << v0 << std::endl;
 
-    // std::cout << "\n        lines_group: " << lines_group.size() << std::endl;
-    // for (int i = 0; i < lines_group.size(); ++i) {
-    //   std::cout << "        line " << i << std::endl;
-    //   for (int j = 0; j < lines_group[i].size(); ++j) {
-    //     std::cout << "        " << j << ": " << lines_group[i][j] << " links to " <<
-    //     link_tos_group[i][j] << std::endl;
-    //   }
-    // }
+//     // std::cout << "\n        lines_group: " << lines_group.size() << std::endl;
+//     // for (int i = 0; i < lines_group.size(); ++i) {
+//     //   std::cout << "        line " << i << std::endl;
+//     //   for (int j = 0; j < lines_group[i].size(); ++j) {
+//     //     std::cout << "        " << j << ": " << lines_group[i][j] << " links to " <<
+//     //     link_tos_group[i][j] << std::endl;
+//     //   }
+//     // }
 
-    if (lines_group.size() > 1) {
-      trim(lines_group.back(), v0, 1);
-      trim(lines_group.front(), v0, 0);
-    }
-    else {
-      std::vector<PDCELVertex *> _tmp;
-      bool keep = false, check;
-      for (auto v : lines_group[0]) {
-        check = true;
-        if (check && !keep && v == v0) {
-          keep = true;
-          check = false;
-        }
-        if (keep) {
-          _tmp.push_back(v);
-        }
-        if (check && keep && v == v0) {
-          keep = false;
-          check = false;
-        }
-      }
-      lines_group[0] = _tmp;
-    }
+//     if (lines_group.size() > 1) {
+//       trim(lines_group.back(), v0, 1);
+//       trim(lines_group.front(), v0, 0);
+//     }
+//     else {
+//       std::vector<PDCELVertex *> _tmp;
+//       bool keep = false, check;
+//       for (auto v : lines_group[0]) {
+//         check = true;
+//         if (check && !keep && v == v0) {
+//           keep = true;
+//           check = false;
+//         }
+//         if (keep) {
+//           _tmp.push_back(v);
+//         }
+//         if (check && keep && v == v0) {
+//           keep = false;
+//           check = false;
+//         }
+//       }
+//       lines_group[0] = _tmp;
+//     }
 
-    // Adjust linking indices
-    std::size_t n = link_tos_group.back().size();
-    for (auto kk = ls_i1 + 1; kk < n; kk++) {
-      link_tos_group.back().pop_back();
-    }
-    n = link_tos_group.front().size();
-    for (auto kk = 0; kk < ls_i2 - 1; kk++) {
-      link_tos_group.front().erase(link_tos_group.front().begin());
-    }
+//     // Adjust linking indices
+//     std::size_t n = link_tos_group.back().size();
+//     for (auto kk = ls_i1 + 1; kk < n; kk++) {
+//       link_tos_group.back().pop_back();
+//     }
+//     n = link_tos_group.front().size();
+//     for (auto kk = 0; kk < ls_i2 - 1; kk++) {
+//       link_tos_group.front().erase(link_tos_group.front().begin());
+//     }
 
-    // std::cout << "        lines_group: " << lines_group.size() << std::endl;
-    // for (int i = 0; i < lines_group.size(); ++i) {
-    //   std::cout << "        line " << i << std::endl;
-    //   for (int j = 0; j < lines_group[i].size(); ++j) {
-    //     std::cout << "        " << lines_group[i][j] << " links to " <<
-    //     link_tos_group[i][j] << std::endl;
-    //   }
-    // }
+//     // std::cout << "        lines_group: " << lines_group.size() << std::endl;
+//     // for (int i = 0; i < lines_group.size(); ++i) {
+//     //   std::cout << "        line " << i << std::endl;
+//     //   for (int j = 0; j < lines_group[i].size(); ++j) {
+//     //     std::cout << "        " << lines_group[i][j] << " links to " <<
+//     //     link_tos_group[i][j] << std::endl;
+//     //   }
+//     // }
 
-    trimmed_sublines.pop_back();
-    trimmed_sublines.push_back(lines_group.back());
-    trimmed_link_to_base_indices.pop_back();
-    // std::cout << "link_tos_group.back() =";
-    // for (auto i : link_tos_group.back()) {
-    //   std::cout << " " << i;
-    // }
-    // std::cout << std::endl;
-    trimmed_link_to_base_indices.push_back(link_tos_group.back());
+//     trimmed_sublines.pop_back();
+//     trimmed_sublines.push_back(lines_group.back());
+//     trimmed_link_to_base_indices.pop_back();
+//     // std::cout << "link_tos_group.back() =";
+//     // for (auto i : link_tos_group.back()) {
+//     //   std::cout << " " << i;
+//     // }
+//     // std::cout << std::endl;
+//     trimmed_link_to_base_indices.push_back(link_tos_group.back());
 
-    if (lines_group.size() > 1) {
-      trimmed_sublines[0] = lines_group.front();
-      trimmed_link_to_base_indices[0] = link_tos_group.front();
-    }
+//     if (lines_group.size() > 1) {
+//       trimmed_sublines[0] = lines_group.front();
+//       trimmed_link_to_base_indices[0] = link_tos_group.front();
+//     }
 
-  }
+//   }
 
 
-  // Step 4: Join all sub-lines
-  PLOG(debug) << pmessage->message("4. join all sub-lines");
+//   // Step 4: Join all sub-lines
+//   PLOG(debug) << pmessage->message("4. join all sub-lines");
 
-  // std::vector<PDCELVertex *> tmp_offset_vertices;
-  // std::vector<int> tmp_offset_link_to_base_indices;
-  std::vector<int> tmp_base_link_to_offset_indices(base.size(), 0);
-  link_to_2 = std::vector<int>(base.size(), 0);
+//   // std::vector<PDCELVertex *> tmp_offset_vertices;
+//   // std::vector<int> tmp_offset_link_to_base_indices;
+//   std::vector<int> tmp_base_link_to_offset_indices(base.size(), 0);
+//   link_to_2 = std::vector<int>(base.size(), 0);
 
-  for (auto i = 0; i < trimmed_sublines.size(); i++) {
-    for (auto j = 0; j < trimmed_sublines[i].size() - 1; j++) {
-      offset_vertices.push_back(trimmed_sublines[i][j]);
-      // tmp_offset_link_to_base_indices.push_back(trimmed_link_to_base_indices[i][j]);
-      // std::cout << "trimmed_link_to_base_indices[i][j] = " << trimmed_link_to_base_indices[i][j] << std::endl;
-      link_to_2[trimmed_link_to_base_indices[i][j]] = offset_vertices.size() - 1;
-    }
-    // std::cout << "trimmed_link_to_base_indices[i].back() = " << trimmed_link_to_base_indices[i].back() << std::endl;
-    link_to_2[trimmed_link_to_base_indices[i].back()] = offset_vertices.size();
-  }
-  offset_vertices.push_back((trimmed_sublines.back()).back());
-  // tmp_offset_link_to_base_indices.push_back((trimmed_link_to_base_indices.back()).back());
-  // tmp_base_link_to_offset_indices[(trimmed_link_to_base_indices.back()).back()] = tmp_offset_vertices.size() - 1;
+//   for (auto i = 0; i < trimmed_sublines.size(); i++) {
+//     for (auto j = 0; j < trimmed_sublines[i].size() - 1; j++) {
+//       offset_vertices.push_back(trimmed_sublines[i][j]);
+//       // tmp_offset_link_to_base_indices.push_back(trimmed_link_to_base_indices[i][j]);
+//       // std::cout << "trimmed_link_to_base_indices[i][j] = " << trimmed_link_to_base_indices[i][j] << std::endl;
+//       link_to_2[trimmed_link_to_base_indices[i][j]] = offset_vertices.size() - 1;
+//     }
+//     // std::cout << "trimmed_link_to_base_indices[i].back() = " << trimmed_link_to_base_indices[i].back() << std::endl;
+//     link_to_2[trimmed_link_to_base_indices[i].back()] = offset_vertices.size();
+//   }
+//   offset_vertices.push_back((trimmed_sublines.back()).back());
+//   // tmp_offset_link_to_base_indices.push_back((trimmed_link_to_base_indices.back()).back());
+//   // tmp_base_link_to_offset_indices[(trimmed_link_to_base_indices.back()).back()] = tmp_offset_vertices.size() - 1;
 
-  // std::cout << "\n[debug] base vertices -- base_link_to_offset_indices\n";
-  // for (auto i = 0; i < base.size(); i++) {
-  //   std::cout << "        " << i << ": " << base[i]
-  //   << " -- " << link_to_2[i] << std::endl;
-  // }
+//   // std::cout << "\n[debug] base vertices -- base_link_to_offset_indices\n";
+//   // for (auto i = 0; i < base.size(); i++) {
+//   //   std::cout << "        " << i << ": " << base[i]
+//   //   << " -- " << link_to_2[i] << std::endl;
+//   // }
 
-  for (auto i = 0; i < link_to_2.size(); i++) {
-    if (i > 0 && link_to_2[i] == 0) {
-      link_to_2[i] = link_to_2[i-1];
-    }
+//   for (auto i = 0; i < link_to_2.size(); i++) {
+//     if (i > 0 && link_to_2[i] == 0) {
+//       link_to_2[i] = link_to_2[i-1];
+//     }
 
-    std::vector<int> id_pair_tmp{i, link_to_2[i]};
-    id_pairs.push_back(id_pair_tmp);
-  }
+//     std::vector<int> id_pair_tmp{i, link_to_2[i]};
+//     id_pairs.push_back(id_pair_tmp);
+//   }
 
-  // std::cout << "\n[debug] tmp_offset_vertices -- tmp_offset_link_to_base_indices\n";
-  // for (auto i = 0; i < tmp_offset_vertices.size(); i++) {
-  //   std::cout << "        " << tmp_offset_vertices[i]
-  //   << " -- " << tmp_offset_link_to_base_indices[i] << std::endl;
-  // }
+//   // std::cout << "\n[debug] tmp_offset_vertices -- tmp_offset_link_to_base_indices\n";
+//   // for (auto i = 0; i < tmp_offset_vertices.size(); i++) {
+//   //   std::cout << "        " << tmp_offset_vertices[i]
+//   //   << " -- " << tmp_offset_link_to_base_indices[i] << std::endl;
+//   // }
 
-  // std::cout << "\n[debug] offset_vertices: " << std::endl;
-  // for (auto i = 0; i < offset_vertices.size(); i++) {
-  //   std::cout << "        " << i << ": " << offset_vertices[i] << std::endl;
-  // }
+//   // std::cout << "\n[debug] offset_vertices: " << std::endl;
+//   // for (auto i = 0; i < offset_vertices.size(); i++) {
+//   //   std::cout << "        " << i << ": " << offset_vertices[i] << std::endl;
+//   // }
 
-  // std::cout << "\n[debug] base vertices -- base_link_to_offset_indices\n";
-  PLOG(debug) << pmessage->message("base vertices -- base_link_to_offset_indices");
-  for (auto i = 0; i < id_pairs.size(); i++) {
+//   // std::cout << "\n[debug] base vertices -- base_link_to_offset_indices\n";
+//   PLOG(debug) << pmessage->message("base vertices -- base_link_to_offset_indices");
+//   for (auto i = 0; i < id_pairs.size(); i++) {
 
-    // ss.str("");
-    // ss << "        " << i << ": " << base[i]
-    // << " -- " << link_to_2[i] << std::endl;
-    PLOG(debug) << pmessage->message(
-      "  " + std::to_string(id_pairs[i][0]) + ": " + base[id_pairs[i][0]]->printString()
-      + " -- " + std::to_string(id_pairs[i][1])
-    );
-  }
+//     // ss.str("");
+//     // ss << "        " << i << ": " << base[i]
+//     // << " -- " << link_to_2[i] << std::endl;
+//     PLOG(debug) << pmessage->message(
+//       "  " + std::to_string(id_pairs[i][0]) + ": " + base[id_pairs[i][0]]->printString()
+//       + " -- " + std::to_string(id_pairs[i][1])
+//     );
+//   }
 
-  pmessage->decreaseIndent();
+//   pmessage->decreaseIndent();
 
-  return 1;
-}
+//   return 1;
+// }
 
 
 
@@ -1081,11 +1091,12 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
     std::vector<int> i1s, i2s;  // Line segment indices of the intersections
     std::vector<double> u1s, u2s;  // Parametric coordinates of the intersections
     // int is_new_1, is_new_2;
-    
+
     // findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
-    find_polylines_intersections(
-      lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s, pmessage);
-      
+    find_open_polylines_intersections(
+      lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s,
+      1, 1, 1, 1, pmessage);
+
     ss.str("");
     ss << "  i1s.size() = " << i1s.size();
     ss << ", i2s.size() = " << i2s.size();
@@ -1223,8 +1234,9 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 
     // findAllIntersections(
     //     lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s);
-    find_polylines_intersections(
-      lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s, pmessage);
+    find_open_polylines_intersections(
+      lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s,
+      1, 1, 1, 1, pmessage);
 
     PLOG(debug) << pmessage->message("  ")
       << "i1s.size() = " << i1s.size()
@@ -1260,7 +1272,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
       // Calculate the intersection
       double _ipx, _ipy, _u1, _u2;
       bool is_intersect = calc_line_intersection_2d(
-        v11, v12, v21, v22, _ipx, _ipy, _u1, _u2
+        v11, v12, v21, v22, v0, _u1, _u2, 1, 1, 1, 1
       );
 
       if (!is_intersect) {
@@ -1269,7 +1281,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
         return 0;
       }
 
-      v0 = new PDCELVertex(0, _ipx, _ipy);
+      // v0 = new PDCELVertex(0, _ipx, _ipy);
 
       // Update the last vertex of the first sub-line
       //   and the first vertex of the second sub-line
@@ -1326,36 +1338,6 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 
     }
 
-    // if (lines_group.size() > 1)
-    // {
-    // }
-    // else
-    // {
-    //   std::vector<PDCELVertex *> _tmp;
-    //   bool keep = false, check;
-    //   for (auto v : lines_group[0])
-    //   {
-    //     check = true;
-    //     if (check && !keep && v == v0)
-    //     {
-    //       keep = true;
-    //       check = false;
-    //     }
-    //     if (keep)
-    //     {
-    //       _tmp.push_back(v);
-    //     }
-    //     if (check && keep && v == v0)
-    //     {
-    //       keep = false;
-    //       check = false;
-    //     }
-    //   }
-    //   lines_group[0] = _tmp;
-    // }
-
-    // trimmed_sublines.pop_back();
-    // trimmed_sublines.push_back(lines_group.back());
 
     auto ntrimmed = trimmed_sublines.size();
     PLOG(debug) << pmessage->message("  ")

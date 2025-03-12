@@ -184,8 +184,11 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
           // std::cout << "        half edge loop hel:" << std::endl;
           // hel->print();
 
-          he = findCurvesIntersection(s->curveBase()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          // he = findCurvesIntersection(s->curveBase()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
           // he = findCurvesIntersection(tmp_vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
+          he = find_curves_intersection(
+            s->curveBase()->vertices(), hel, e, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
+          );
 
           // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
           // std::cout << "ls_i_tmp = " << ls_i_tmp << std::endl;
@@ -313,8 +316,11 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
       for (auto hel : hels) {
         if (!hel->keep()) {
 
-          he = findCurvesIntersection(s->curveOffset()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          // he = findCurvesIntersection(s->curveOffset()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
           // he = findCurvesIntersection(tmp_vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
+          he = find_curves_intersection(
+            s->curveOffset()->vertices(), hel, e, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
+          );
 
           // std::cout << "ls_i_tmp = " << ls_i_tmp << std::endl;
           // pmessage->print(9, "u1_tmp = " + std::to_string(u1_tmp));
@@ -1123,7 +1129,14 @@ void PComponent::joinSegments(
       ls1 = lss1.back();
       for (int i = 0; i < lss2.size(); ++i) {
         ls2 = lss2[i];
-        calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
+
+        // calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
+        PDCELVertex *v_intersect;
+        bool is_intersect = calc_line_intersection_2d(
+            ls1->v1(), ls1->v2(), ls2->v1(), ls2->v2(), v_intersect,
+            u1_tmp, u2_tmp, 1, 1, 1, 1
+        );
+
         if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
           found = true;
           i2 = i;
@@ -1153,7 +1166,14 @@ void PComponent::joinSegments(
         ls2 = lss2.back();
         for (int i = 0; i < lss1.size(); ++i) {
           ls1 = lss1[i];
-          calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
+
+          // calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
+          PDCELVertex *v_intersect;
+          bool is_intersect = calc_line_intersection_2d(
+            ls1->v1(), ls1->v2(), ls2->v1(), ls2->v2(), v_intersect,
+            u1_tmp, u2_tmp, 1, 1, 1, 1
+          );
+
           if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
             found = true;
             i1 = i;

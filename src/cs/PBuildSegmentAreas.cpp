@@ -160,13 +160,19 @@ void Segment::buildAreas(Message *pmessage) {
         PLOG(debug) << pmessage->message("");
         PLOG(debug) << pmessage->message("he_tmp: ") << he_tmp;
 
-        bool not_parallel;
-        not_parallel = calcLineIntersection2D(
-          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
+        // bool not_parallel;
+        // not_parallel = calcLineIntersection2D(
+        //   he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
+        PDCELVertex *v_intersect;
+        bool not_parallel = calc_line_intersection_2d(
+          he_tmp->toLineSegment()->v1(), he_tmp->toLineSegment()->v2(),
+          ls_offset->v1(), ls_offset->v2(), v_intersect,
+          u1_tmp, u2_tmp, 1, 1, 1, 1
+        );
 
-        std::stringstream ss_u1_tmp;
-        ss_u1_tmp << u1_tmp;
-        PLOG(debug) << pmessage->message("u1_tmp = ") << ss_u1_tmp;
+        // std::stringstream ss_u1_tmp;
+        // ss_u1_tmp << u1_tmp;
+        PLOG(debug) << pmessage->message("u1_tmp = ") << u1_tmp;
 
 
         if (not_parallel) {
@@ -223,7 +229,7 @@ void Segment::buildAreas(Message *pmessage) {
         break;
       }
       else {
-        PLOG(debug) << pmessage->message("v_layer: " + v_layer->printString());
+        PLOG(debug) << pmessage->message("v_layer: ") << v_layer;
         prev_bound_vertices_tmp.push_back(v_layer);
         v_layer_prev = v_layer;
       }
@@ -269,7 +275,7 @@ void Segment::buildAreas(Message *pmessage) {
   int count = 0;
 
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
-    PLOG(debug) << pmessage->message("area " + std::to_string(k));
+    PLOG(debug) << pmessage->message("area ") << k;
 
     int vbi_tmp = _base_offset_indices_pairs[k][0];
     int voi_tmp = _base_offset_indices_pairs[k][1];
@@ -283,8 +289,8 @@ void Segment::buildAreas(Message *pmessage) {
     // PLOG(debug) << pmessage->message("  2.1");
     vb_tmp = _curve_base->vertices()[vbi_tmp];
     vo_tmp = _curve_offset->vertices()[voi_tmp];
-    PLOG(debug) << pmessage->message("  base vertex: " + vb_tmp->printString());
-    PLOG(debug) << pmessage->message("  offset vertex: " + vo_tmp->printString());
+    PLOG(debug) << pmessage->message("  base vertex: ") << vb_tmp;
+    PLOG(debug) << pmessage->message("  offset vertex: ") << vo_tmp;
 
     ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
 
@@ -450,8 +456,8 @@ void Segment::buildAreas(Message *pmessage) {
       } else {
         ls_base = offsetLineSegment(ls_tmp, 1, _layup->getTotalThickness());
       }
-      PLOG(debug) << pmessage->message(" ls_tmp: " + ls_tmp->printString());
-      PLOG(debug) << pmessage->message(" ls_base: " + ls_base->printString());
+      PLOG(debug) << pmessage->message(" ls_tmp: ") << ls_tmp;
+      PLOG(debug) << pmessage->message(" ls_base: ") << ls_base;
     }
 
     v_layer_prev = _curve_base->vertices().back();
@@ -461,7 +467,7 @@ void Segment::buildAreas(Message *pmessage) {
     // pmessage->increaseIndent();
     for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
 
-      PLOG(debug) << pmessage->message("layer " + std::to_string(i+1));
+      PLOG(debug) << pmessage->message("layer ") << i+1;
 
       // Create offset of the base curve
       cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
@@ -473,7 +479,7 @@ void Segment::buildAreas(Message *pmessage) {
         ls_offset = offsetLineSegment(ls_base, -1, cumu_thk);
       }
 
-      PLOG(debug) << pmessage->message("ls_offset: " + ls_offset->printString());
+      PLOG(debug) << pmessage->message("ls_offset: ") << ls_offset;
 
       // Find the intersecting line segment
       // v_layer = nullptr;
@@ -491,16 +497,22 @@ void Segment::buildAreas(Message *pmessage) {
         // double u_tmp;
         // u_tmp = he_tmp->toLineSegment()->getParametricLocation(v_layer);
         PLOG(debug) << pmessage->message("");
-        PLOG(debug) << pmessage->message("he_tmp: " + he_tmp->printString());
+        PLOG(debug) << pmessage->message("he_tmp: ") << he_tmp;
 
-        bool not_parallel;
+        // bool not_parallel;
 
-        not_parallel = calcLineIntersection2D(
-          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
+        // not_parallel = calcLineIntersection2D(
+        //   he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
+        PDCELVertex *v_intersect;
+        bool not_parallel = calc_line_intersection_2d(
+          he_tmp->toLineSegment()->v1(), he_tmp->toLineSegment()->v2(),
+          ls_offset->v1(), ls_offset->v2(), v_intersect,
+          u1_tmp, u2_tmp, 1, 1, 1, 1
+        );
 
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;
-        PLOG(debug) << pmessage->message("u1_tmp = " + ss_u1_tmp.str());
+        PLOG(debug) << pmessage->message("u1_tmp = ") << u1_tmp;
 
 
         if (not_parallel) {

@@ -10,6 +10,7 @@
 #include "PBaseLine.hpp"
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
+#include "plog.hpp"
 
 #include "gmsh_mod/SPoint2.h"
 #include "gmsh_mod/SPoint3.h"
@@ -418,24 +419,41 @@ int joinCurves(Baseline *line, std::list<Baseline *> curves) {
  * @param end Integer indicating which end of the baseline curve segment to adjust (0 for the beginning, 1 for the end).
  */
 void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
+
+  PLOG(debug) << "adjustCurveEnd";
+
   PGeoLineSegment *ls_end;
+  PDCELVertex *vnew;
   if (end == 0) {
-    ls_end = new PGeoLineSegment(bl->vertices().front(),
-                                 bl->getTangentVectorBegin());
-  } else if (end == 1) {
-    ls_end =
-        new PGeoLineSegment(bl->vertices().back(), bl->getTangentVectorEnd());
-  }
-
-  double u1, u2;
-  calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
-  PDCELVertex *vnew = ls_end->getParametricVertex(u1);
-
-  if (end == 0) {
+    ls_end = new PGeoLineSegment(
+      bl->vertices().front(), bl->getTangentVectorBegin());
+    double u1, u2;
+    bool is_intersect = calc_line_intersection_2d(
+      ls_end->v1(), ls_end->v2(),
+      ls->v1(), ls->v2(),
+      vnew, u1, u2, 1, 0, 1, 1
+    );
     bl->vertices()[0] = vnew;
   } else if (end == 1) {
+    ls_end = new PGeoLineSegment(
+      bl->vertices().back(), bl->getTangentVectorEnd());
+    double u1, u2;
+    bool is_intersect = calc_line_intersection_2d(
+      ls_end->v1(), ls_end->v2(),
+      ls->v1(), ls->v2(),
+      vnew, u1, u2, 0, 1, 1, 1
+    );
     bl->vertices()[bl->vertices().size() - 1] = vnew;
   }
+
+  // calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
+  // PDCELVertex *vnew = ls_end->getParametricVertex(u1);
+
+  // if (end == 0) {
+  //   bl->vertices()[0] = vnew;
+  // } else if (end == 1) {
+  //   bl->vertices()[bl->vertices().size() - 1] = vnew;
+  // }
 }
 
 

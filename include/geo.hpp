@@ -137,32 +137,38 @@ bool calc_line_intersection_2d(
   );
 
 // template <typename P2>
-bool calcLineIntersection2D(
-  const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &,
-  double &, double &, const double &
-);
+// bool calcLineIntersection2D(
+//   const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &,
+//   double &, double &, const double &
+// );
 
 // template <typename P3>
-bool calcLineIntersection2D(
-  const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &,
-  double &, double &, const int &, const double &
-);
+// bool calcLineIntersection2D(
+//   const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &,
+//   double &, double &, const int &, const double &
+// );
 
-bool calcLineIntersection2D(
-  SPoint2, SPoint2, SPoint2, SPoint2,
-  double &, double &, const double &);
-bool calcLineIntersection2D(
-  SPoint3, SPoint3, SPoint3, SPoint3,
-  double &, double &, int &, const double &);
-bool calcLineIntersection2D(
-  PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
-  double &, double &, const double &);
+// bool calcLineIntersection2D(
+//   SPoint2, SPoint2, SPoint2, SPoint2,
+//   double &, double &, const double &);
+// bool calcLineIntersection2D(
+//   SPoint3, SPoint3, SPoint3, SPoint3,
+//   double &, double &, int &, const double &);
+// bool calcLineIntersection2D(
+//   PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
+//   double &, double &, const double &);
+// bool calc_line_intersection_2d(
+//   PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
+//   double &, double &, double &, double &);
 bool calc_line_intersection_2d(
-  PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
-  double &, double &, double &, double &);
-bool calcLineIntersection2D(
-  PGeoLineSegment *, PGeoLineSegment *,
-  double &, double &, const double &);
+  PDCELVertex *ls1v1, PDCELVertex *ls1v2,
+  PDCELVertex *ls2v1, PDCELVertex *ls2v2,
+  PDCELVertex *v_intersect, double &u1, double &u2,
+  const int &ex11, const int &ex12, const int &ex21, const int &ex22
+  );
+// bool calcLineIntersection2D(
+//   PGeoLineSegment *, PGeoLineSegment *,
+//   double &, double &, const double &);
 
 
 
@@ -258,8 +264,8 @@ void combineVertexLists(std::vector<PDCELVertex *> &,
                         std::vector<PDCELVertex *> &, std::vector<int> &,
                         std::vector<int> &, std::vector<PDCELVertex *> &);
 
-int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect);
+// int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
+//               PDCELVertex *intersect);
 
 /**
  * @brief Finds the intersection of curves within a given tolerance.
@@ -278,24 +284,30 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * @param pmessage  A pointer to a Message object used for logging.
  * @return          A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
  */
-PDCELHalfEdge *findCurvesIntersection(
-  std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &,
-  Message *);
+// PDCELHalfEdge *findCurvesIntersection(
+//   std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &,
+//   Message *);
+PDCELHalfEdge *find_curves_intersection(
+  std::vector<PDCELVertex *> , PDCELHalfEdgeLoop *,
+  const int &, const int &, int &, double &, double &,
+  Message *
+  );
 
-Baseline *findCurvesIntersection(
-  Baseline *, PGeoLineSegment *, int, double &,
-  double &, int &, int &, std::vector<int> &, std::vector<int> &);
+// Baseline *findCurvesIntersection(
+//   Baseline *, PGeoLineSegment *, int, double &,
+//   double &, int &, int &, std::vector<int> &, std::vector<int> &);
 
-int findAllIntersections(
-  const std::vector<PDCELVertex *> &c1, const std::vector<PDCELVertex *> &c2,
-  std::vector<int> &i1s, std::vector<int> &i2s,
-  std::vector<double> &u1s, std::vector<double> &u2s
-);
+// int findAllIntersections(
+//   const std::vector<PDCELVertex *> &c1, const std::vector<PDCELVertex *> &c2,
+//   std::vector<int> &i1s, std::vector<int> &i2s,
+//   std::vector<double> &u1s, std::vector<double> &u2s
+// );
 
-int find_polylines_intersections(
+int find_open_polylines_intersections(
   const std::vector<PDCELVertex *> &, const std::vector<PDCELVertex *> &,
   std::vector<int> &, std::vector<int> &,
   std::vector<double> &, std::vector<double> &,
+  const int &, const int &, const int &, const int &,
   Message *
 );
 

@@ -65,7 +65,10 @@ void PComponent::buildFilling(Message *pmessage) {
         if (!hel->keep()) {
           // he = findCurvesIntersection(bl, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
           tmp_vertices = {bl->vertices()[0], bl->vertices()[1]};
-          he = findCurvesIntersection(tmp_vertices, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          // he = findCurvesIntersection(tmp_vertices, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          he = find_curves_intersection(
+            tmp_vertices, hel, 0, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
+          );
           if (he != nullptr) {
             if (
               (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1_head)  // before the first vertex
@@ -82,7 +85,10 @@ void PComponent::buildFilling(Message *pmessage) {
           // he = findCurvesIntersection(bl, hel, 1, ls_i, u1_tmp, u2_tmp, TOLERANCE);
           tmp_vertices.clear();
           tmp_vertices = {bl->vertices()[bl->vertices().size() - 2], bl->vertices()[bl->vertices().size() - 1]};
-          he = findCurvesIntersection(tmp_vertices, hel, 1, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          // he = findCurvesIntersection(tmp_vertices, hel, 1, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          he = find_curves_intersection(
+            tmp_vertices, hel, 1, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
+          );
           if (he != nullptr) {
             if (
               ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1_tail)  // after the first vertex

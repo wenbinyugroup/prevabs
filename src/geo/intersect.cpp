@@ -284,18 +284,18 @@ bool calc_line_intersection_2d(
 
 
 
-bool calc_line_intersection_2d(
-  PDCELVertex *ls1v1, PDCELVertex *ls1v2,
-  PDCELVertex *ls2v1, PDCELVertex *ls2v2,
-  double &ipx, double &ipy, double &u1, double &u2
-  ) {
+// bool calc_line_intersection_2d(
+//   PDCELVertex *ls1v1, PDCELVertex *ls1v2,
+//   PDCELVertex *ls2v1, PDCELVertex *ls2v2,
+//   double &ipx, double &ipy, double &u1, double &u2
+//   ) {
 
-  return calc_line_intersection_2d(
-    ls1v1->point2()[0], ls1v1->point2()[1], ls1v2->point2()[0], ls1v2->point2()[1],
-    ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
-    ipx, ipy, u1, u2);
+//   return calc_line_intersection_2d(
+//     ls1v1->point2()[0], ls1v1->point2()[1], ls1v2->point2()[0], ls1v2->point2()[1],
+//     ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
+//     ipx, ipy, u1, u2);
 
-}
+// }
 
 
 /**
@@ -335,37 +335,71 @@ bool calc_line_intersection_2d(
     ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
     ipx, ipy, u1, u2);
 
+  v_intersect = nullptr;
+
   if (!is_intersect) {
     return false;
   }
 
-  if (u1 > 0 && u1 < 1 && u2 > 0 && u2 < 1) {
+  if (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1) {
     // Intersection is inside both line segments
-    v_intersect = new PDCELVertex(ipx, ipy);
+    v_intersect = new PDCELVertex(0, ipx, ipy);
   } else if (ex11 && ex12 && ex21 && ex22) {
     // Consider the two line segments as infinite lines
-    v_intersect = new PDCELVertex(ipx, ipy);
-  }
-
-  if (is_close(u1, 0)) {
-    v_intersect = ls1v1;
-  } else if (is_close(u1, 1)) {
-    v_intersect = ls1v2;
-  } else if (is_close(u2, 0)) {
-    v_intersect = ls2v1;
-  } else if (is_close(u2, 1)) {
-    v_intersect = ls2v2;
-  } else if ((ex1 == -1 || ex1 == 2) && u1 < 0) {
+    v_intersect = new PDCELVertex(0, ipx, ipy);
+  } else if (ex11 && u1 < 0) {
     // Extend the first line segment before the starting point
-    if ((ex2 == -1 || ex2 == 2) && u2 < 0) {
+    if (ex21 && u2 < 0) {
       // Extend the second line segment before the starting point
-      v_intersect = new PDCELVertex(ipx, ipy);
-    } else if (u2 > 0 && u2 < 1) {
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (u2 >= 0 && u2 <= 1) {
       // Intersection is inside the second line segment
-      v_intersect = new PDCELVertex(ipx, ipy);
-    } else if ((ex2 == 1 || ex2 == 2) && u2 > 1) {
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (ex22 && u2 > 1) {
       // Extend the second line segment after the ending point
-      v_intersect = new PDCELVertex(ipx, ipy);
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (is_close(u2, 0.0)) {
+      // Intersection is very close to the starting point of the second line segment
+      v_intersect = ls2v1;
+    } else if (is_close(u2, 1.0)) {
+      // Intersection is very close to the ending point of the second line segment
+      v_intersect = ls2v2;
+    } else {
+      // Two line segments intersect outside the desired range
+      return false;
+    }
+  } else if (u1 >= 0 && u1 <= 1) {
+    // Intersection is inside the first line segment
+    if (ex21 && u2 < 0) {
+      // Extend the second line segment before the starting point
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (u2 >= 0 && u2 <= 1) {
+      // Intersection is inside the second line segment
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (ex22 && u2 > 1) {
+      // Extend the second line segment after the ending point
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else {
+      // Two line segments intersect outside the desired range
+      return false;
+    }
+  } else if (ex12 && u1 > 0) {
+    // Extend the first line segment after the ending point
+    if (ex21 && u2 < 0) {
+      // Extend the second line segment before the starting point
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (u2 >= 0 && u2 <= 1) {
+      // Intersection is inside the second line segment
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (ex22 && u2 > 1) {
+      // Extend the second line segment after the ending point
+      v_intersect = new PDCELVertex(0, ipx, ipy);
+    } else if (is_close(u2, 0.0)) {
+      // Intersection is very close to the starting point of the second line segment
+      v_intersect = ls2v1;
+    } else if (is_close(u2, 1.0)) {
+      // Intersection is very close to the ending point of the second line segment
+      v_intersect = ls2v2;
     } else {
       // Two line segments intersect outside the desired range
       return false;
@@ -374,6 +408,18 @@ bool calc_line_intersection_2d(
     // Two line segments intersect outside the desired range
     return false;
   }
+
+  if (is_close(u1, 0.0)) {
+    v_intersect = ls1v1;
+  } else if (is_close(u1, 1.0)) {
+    v_intersect = ls1v2;
+  } else if (is_close(u2, 0.0)) {
+    v_intersect = ls2v1;
+  } else if (is_close(u2, 1.0)) {
+    v_intersect = ls2v2;
+  }
+
+  PLOG(debug) << "  intersection point: " << v_intersect;
 
   return is_intersect;
 }
@@ -420,28 +466,28 @@ bool calc_line_intersection_2d(
  *         - 2 if the intersection point is after the end of the first segment.
  *         - 0 if the segments are parallel and do not intersect.
  */
-int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect) {
-  int result;
-  double us, ut;
-  bool not_parallel;
+// int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
+//               PDCELVertex *intersect) {
+//   int result;
+//   double us, ut;
+//   bool not_parallel;
 
-  not_parallel = calcLineIntersection2D(subject, tool, us, ut, TOLERANCE);
-  if (not_parallel) {
-    if (us >= 0 && us <= 1) {
-      intersect = subject->getParametricVertex(us);
-      result = 1;
-    } else if (us < 0) {
-      result = -1;
-    } else if (us > 1) {
-      result = 2;
-    }
-  } else {
-    result = 0; // Parallel case
-  }
+//   not_parallel = calcLineIntersection2D(subject, tool, us, ut, TOLERANCE);
+//   if (not_parallel) {
+//     if (us >= 0 && us <= 1) {
+//       intersect = subject->getParametricVertex(us);
+//       result = 1;
+//     } else if (us < 0) {
+//       result = -1;
+//     } else if (us > 1) {
+//       result = 2;
+//     }
+//   } else {
+//     result = 0; // Parallel case
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
 
 
@@ -660,6 +706,65 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
 
 //   return he;
 // }
+
+
+
+
+PDCELHalfEdge *find_curves_intersection(
+  std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
+  const int &end, const int &ex, int &ls_i, double &u1, double &u2,
+  Message *pmessage
+  ) {
+  pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("in function: find_curves_intersection");
+
+  PDCELHalfEdge *he = nullptr;
+
+
+  // Convert the half-edge loop to a list of vertices
+  std::list<PDCELVertex *> vertices_hel;
+  PDCELHalfEdge *hei = hel->incidentEdge();
+  vertices_hel.push_back(hei->source());
+  do {
+    vertices_hel.push_back(hei->target());
+    hei = hei->next();
+  } while (hei != hel->incidentEdge());
+
+
+  // Find all intersections between the curves and the half-edge loop
+  std::vector<int> c_is, t_is;  // curve indices, tool indices
+  std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
+  find_open_polylines_intersection(
+    vertices, vertices_hel, c_is, t_is, c_us, t_us,
+    ex, ex,  // Consider the extensions beyond the two ending points of the first curve
+    0, 0,  // Since the second curve is a closed loop, consider only the interior intersections
+    pmessage
+  );
+
+
+  // Find the intersection closest to the end of the first curve
+  int j = get_intersection_closer_to(
+    vertices, c_is, c_us, end, !ex, pmessage
+  );
+
+
+  // Get output and return values
+  u1 = c_us[j];
+  u2 = t_us[j];
+  ls_i = c_is[j];
+
+  // Get the j-th half-edge from the half-edge loop
+  hei = hel->incidentEdge();
+  for (int k = 0; k < t_is[j] - 1; k++) {
+    hei = hei->next();
+  }
+  he = hei;
+
+  pmessage->decreaseIndent();
+
+  return he;
+}
 
 
 
@@ -937,18 +1042,19 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
 
 
 
-int find_polylines_intersections(
+int find_open_polylines_intersections(
   const std::vector<PDCELVertex *> &c1,
   const std::vector<PDCELVertex *> &c2,
   std::vector<int> &i1s, std::vector<int> &i2s,
   std::vector<double> &u1s, std::vector<double> &u2s,
+  const int &ex11, const int &ex12, const int &ex21, const int &ex22,
   Message *pmessage
 ) {
   pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("find_polylines_intersections");
+  PLOG(debug) << pmessage->message("find_open_polylines_intersections");
 
-  std::stringstream ss;
+  // std::stringstream ss;
   bool found = false;
 
   if (c1.empty() || c2.empty()) {
@@ -958,59 +1064,79 @@ int find_polylines_intersections(
   // Find all intersections
 
   PDCELVertex *v11, *v12, *v21, *v22;
+  auto nls1 = c1.size() - 1;  // number of line segments
+  auto nls2 = c2.size() - 1;
 
-  for (int i = 0; i < c1.size() - 1; ++i) {
+  int _ex11, _ex12, _ex21, _ex22;  // flags to consider extensions of segments
+
+  for (int i = 0; i < nls1; ++i) {
     // Iterate through all line segments of the first polyline
 
     v11 = c1[i];
     v12 = c1[i + 1];
 
-    for (int j = 0; j < c2.size() - 1; ++j) {
+    if (i == 0) {
+      // For the first line segment
+      _ex11 = ex11;  // use the same flag for the starting point
+      _ex12 = 0;  // no extension after the ending point
+    } else if (i == nls1 - 1) {
+      // For the last line segment
+      _ex11 = 0;  // no extension before the starting point
+      _ex12 = ex12;  // use the same flag for the ending point
+    } else {
+      // For all other line segments, use no extension
+      _ex11 = 0;
+      _ex12 = 0;
+    }
+
+    for (int j = 0; j < nls2; ++j) {
       // Iterate through all line segments of the second polyline
 
       v21 = c2[j];
       v22 = c2[j + 1];
 
-      // Check intersection
-      bool not_parallel;
-      double ipx, ipy, u1, u2;
+      if (j == 0) {
+        // For the first line segment
+        _ex21 = ex21;  // use the same flag for the starting point
+        _ex22 = 0;  // no extension after the ending point
+      } else if (j == nls2 - 1) {
+        // For the last line segment
+        _ex21 = 0;  // no extension before the starting point
+        _ex22 = ex22;  // use the same flag for the ending point
+      } else {
+        // For all other line segments, use no extension
+        _ex21 = 0;
+        _ex22 = 0;
+      }
 
+      // Check intersection
+      // bool not_parallel;
+      
       if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
         throw std::runtime_error("null pointer reference in findAllIntersections");
       }
-
-      ss.str("");
-      ss << "  find intersection:\n";
-      ss << "  polyline 1 segment " << i + 1 << " v11 = " << v11 << ", v12 = " << v12 << "\n";
-      ss << "  polyline 2 segment " << j + 1 << " v21 = " << v21 << ", v22 = " << v22 << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
-
-      not_parallel = calc_line_intersection_2d(v11, v12, v21, v22, ipx, ipy, u1, u2);
+      
+      // ss.str("");
+      // ss << "  find intersection:\n";
+      // ss << "  polyline 1 segment " << i + 1 << " v11 = " << v11 << ", v12 = " << v12 << "\n";
+      // ss << "  polyline 2 segment " << j + 1 << " v21 = " << v21 << ", v22 = " << v22 << std::endl;
+      // PLOG(debug) << pmessage->message(ss.str());
+      
+      double u1, u2;
+      PDCELVertex *ip;
+      bool not_parallel = calc_line_intersection_2d(
+        v11, v12, v21, v22, ip, u1, u2, _ex11, _ex12, _ex21, _ex22);
 
       if (not_parallel) {
-        ss.str("");
-        ss << "  u1 = " << u1 << ", u2 = " << u2 << std::endl;
-        PLOG(debug) << pmessage->message(ss.str());
+        PLOG(debug) << "  u1 = " << u1 << ", u2 = " << u2 << std::endl;
 
-        if (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1) {
-          // Keep only the intersections that are inside both segments
-
-          ss.str("");
-          ss << "  intersection is inside both segments: ";
-          ss << "(" << ipx << ", " << ipy << ")" << std::endl;
-          PLOG(debug) << pmessage->message(ss.str());
-
-          i1s.push_back(i);
-          i2s.push_back(j);
-          u1s.push_back(u1);
-          u2s.push_back(u2);
-
-        }
+        i1s.push_back(i);
+        i2s.push_back(j);
+        u1s.push_back(u1);
+        u2s.push_back(u2);
 
       } else {
-        ss.str("");
-        ss << "  parallel" << std::endl;
-        PLOG(debug) << pmessage->message(ss.str());
+        PLOG(debug) << "  parallel" << std::endl;
       }
 
     }
@@ -1452,10 +1578,8 @@ PDCELVertex *get_intersection_vertex(
     PLOG(debug) << pmessage->message("  intersection is in the middle of segment 2");
   }
 
-  ss.str("");
-  ss << "  is_new_1 = " << is_new_1 << ", i1 = " << i1 << "\n";
-  ss << "  is_new_2 = " << is_new_2 << ", i2 = " << i2 << "\n";
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(debug) << "  is_new_1 = " << is_new_1 << ", i1 = " << i1 << "\n";
+  PLOG(debug) << "  is_new_2 = " << is_new_2 << ", i2 = " << i2 << "\n";
 
   if (is_new_1 && is_new_2) {
     // The last case, the intersection is at the middle of two sub-lines
@@ -1466,9 +1590,7 @@ PDCELVertex *get_intersection_vertex(
           getParametricPoint(v11->point(), v12->point(), u1));
     }
 
-    ss.str("");
-    ss << "  new vertex ip = " << ip << "\n";
-    PLOG(debug) << pmessage->message(ss.str());
+    PLOG(debug) << "  new vertex ip = " << ip << "\n";
   }
 
   // Insert the intersection vertex (if needed)
