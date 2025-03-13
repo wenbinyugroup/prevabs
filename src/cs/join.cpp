@@ -667,21 +667,34 @@ void PComponent::joinSegments(
 
     // Intersect segment 1 offset curve and the bound
 
-    findAllIntersections(
-      s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1
+    // findAllIntersections(
+    //   s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1
+    // );
+    find_open_polylines_intersections(
+      s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1,
+      1, 1, 1, 1, pmessage
     );
-    ls_u1 = getIntersectionLocation(
-      s1->curveOffset()->vertices(), i1s, u1s, e1, 0, ls_i1, j1, pmessage
+    // ls_u1 = getIntersectionLocation(
+    //   s1->curveOffset()->vertices(), i1s, u1s, e1, 0, ls_i1, j1, pmessage
+    // );
+    j1 = get_intersection_closer_to(
+      s1->curveOffset()->vertices(), i1s, u1s, e1, 0, pmessage
     );
     // ls_bu1 = getIntersectionLocation(
     //   tmp_bound, ibs1, ubs1, 0, 0, ls_bi1
     // );
+    ls_u1 = u1s[j1];
+    ls_i1 = i1s[j1];
     ls_bi1 = ibs1[j1];
     ls_bu1 = ubs1[j1];
     // std::cout << "\nls_bi1 = " << ls_bi1 << ", ls_bu1 = " << ls_bu1 << std::endl;
-    v1_new = getIntersectionVertex(
+    // v1_new = getIntersectionVertex(
+    //   s1->curveOffset()->vertices(), tmp_bound_1,
+    //   ls_i1, ls_bi1, ls_u1, ls_bu1, e1, 0, 0, 0, is_new_1, is_new_b1, TOLERANCE
+    // );
+    v1_new = get_intersection_vertex(
       s1->curveOffset()->vertices(), tmp_bound_1,
-      ls_i1, ls_bi1, ls_u1, ls_bu1, e1, 0, 0, 0, is_new_1, is_new_b1, TOLERANCE
+      ls_i1, ls_bi1, ls_u1, ls_bu1, pmessage
     );
     trim(s1->curveOffset()->vertices(), v1_new, e1);
 
@@ -860,21 +873,34 @@ void PComponent::joinSegments(
 
     // Intersect segment 2 offset curve and the bound
 
-    findAllIntersections(
-      s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2
+    // findAllIntersections(
+    //   s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2
+    // );
+    find_open_polylines_intersections(
+      s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2,
+      1, 1, 1, 1, pmessage
     );
-    ls_u2 = getIntersectionLocation(
-      s2->curveOffset()->vertices(), i2s, u2s, e2, 0, ls_i2, j1, pmessage
+    // ls_u2 = getIntersectionLocation(
+    //   s2->curveOffset()->vertices(), i2s, u2s, e2, 0, ls_i2, j1, pmessage
+    // );
+    j1 = get_intersection_closer_to(
+      s2->curveOffset()->vertices(), i2s, u2s, e2, 0, pmessage
     );
     // ls_bu2 = getIntersectionLocation(
     //   tmp_bound, ibs2, ubs2, 0, 0, ls_bi2
     // );
+    ls_i2 = i2s[j1];
+    ls_u2 = u2s[j1];
     ls_bi2 = ibs2[j1];
     ls_bu2 = ubs2[j1];
     // std::cout << "\nls_bi2 = " << ls_bi2 << ", ls_bu2 = " << ls_bu2 << std::endl;
-    v2_new = getIntersectionVertex(
+    // v2_new = getIntersectionVertex(
+    //   s2->curveOffset()->vertices(), tmp_bound_2,
+    //   ls_i2, ls_bi2, ls_u2, ls_bu2, e2, 0, 0, 0, is_new_2, is_new_b2, TOLERANCE
+    // );
+    v2_new = get_intersection_vertex(
       s2->curveOffset()->vertices(), tmp_bound_2,
-      ls_i2, ls_bi2, ls_u2, ls_bu2, e2, 0, 0, 0, is_new_2, is_new_b2, TOLERANCE
+      ls_i2, ls_bi2, ls_u2, ls_bu2, pmessage
     );
     trim(s2->curveOffset()->vertices(), v2_new, e2);
 
@@ -1380,23 +1406,38 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
     std::vector<int> i1s, i2s;
     std::vector<double> u1s, u2s;
 
-    findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
+    // findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
+    find_open_polylines_intersections(
+      s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s,
+      1, 1, 1, 1, pmessage
+    );
 
     double u1, u2;
     int ls_i1, ls_i2, j1, j2;
-    u1 = getIntersectionLocation(
-      s->curveOffset()->vertices(), i1s, u1s, 0, false, ls_i1, j1, pmessage
+    // u1 = getIntersectionLocation(
+    //   s->curveOffset()->vertices(), i1s, u1s, 0, false, ls_i1, j1, pmessage
+    // );
+    // u2 = getIntersectionLocation(
+    //   b, i2s, u2s, 0, false, ls_i2, j2, pmessage
+    // );
+    j1 = get_intersection_closer_to(
+      s->curveOffset()->vertices(), i1s, u1s, 0, false, pmessage
     );
-    u2 = getIntersectionLocation(
-      b, i2s, u2s, 0, false, ls_i2, j2, pmessage
-    );
+
+    ls_i1 = i1s[j1];
+    ls_i2 = i2s[j1];
+    u1 = u1s[j1];
+    u2 = u2s[j1];
 
     PDCELVertex *ip;
     int is_new_1, is_new_2;
-    double tol{1.0e-9};
-    ip = getIntersectionVertex(
-      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 0, 0,
-      false, false, is_new_1, is_new_2, tol
+    // double tol{1.0e-9};
+    // ip = getIntersectionVertex(
+    //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 0, 0,
+    //   false, false, is_new_1, is_new_2, tol
+    // );
+    ip = get_intersection_vertex(
+      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
     );
     // std::cout << "ip = " << ip->point() << std::endl;
     PLOG(debug) << pmessage->message("ip = " + ip->printString());
@@ -1480,23 +1521,37 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
     std::vector<int> i1s, i2s;
     std::vector<double> u1s, u2s;
 
-    findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
+    // findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
+    find_open_polylines_intersections(
+      s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s,
+      1, 1, 1, 1, pmessage
+    );
 
     double u1, u2;
     int ls_i1, ls_i2, j1, j2;
-    u1 = getIntersectionLocation(
-      s->curveOffset()->vertices(), i1s, u1s, 1, false, ls_i1, j1, pmessage
+    // u1 = getIntersectionLocation(
+    //   s->curveOffset()->vertices(), i1s, u1s, 1, false, ls_i1, j1, pmessage
+    // );
+    // u2 = getIntersectionLocation(
+    //   b, i2s, u2s, 1, false, ls_i2, j2, pmessage
+    // );
+    j1 = get_intersection_closer_to(
+      s->curveOffset()->vertices(), i1s, u1s, 1, false, pmessage
     );
-    u2 = getIntersectionLocation(
-      b, i2s, u2s, 1, false, ls_i2, j2, pmessage
-    );
+    ls_i1 = i1s[j1];
+    ls_i2 = i2s[j1];
+    u1 = u1s[j1];
+    u2 = u2s[j1];
 
     PDCELVertex *ip;
     int is_new_1, is_new_2;
-    double tol{1.0e-9};
-    ip = getIntersectionVertex(
-      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 1, 1,
-      false, false, is_new_1, is_new_2, tol
+    // double tol{1.0e-9};
+    // ip = getIntersectionVertex(
+    //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 1, 1,
+    //   false, false, is_new_1, is_new_2, tol
+    // );
+    ip = get_intersection_vertex(
+      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
     );
     // std::cout << "ip = " << ip->point() << std::endl;
     PLOG(debug) << pmessage->message("ip = " + ip->printString());

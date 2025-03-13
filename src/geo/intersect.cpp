@@ -723,7 +723,7 @@ PDCELHalfEdge *find_curves_intersection(
 
 
   // Convert the half-edge loop to a list of vertices
-  std::list<PDCELVertex *> vertices_hel;
+  std::vector<PDCELVertex *> vertices_hel;
   PDCELHalfEdge *hei = hel->incidentEdge();
   vertices_hel.push_back(hei->source());
   do {
@@ -735,7 +735,7 @@ PDCELHalfEdge *find_curves_intersection(
   // Find all intersections between the curves and the half-edge loop
   std::vector<int> c_is, t_is;  // curve indices, tool indices
   std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
-  find_open_polylines_intersection(
+  find_open_polylines_intersections(
     vertices, vertices_hel, c_is, t_is, c_us, t_us,
     ex, ex,  // Consider the extensions beyond the two ending points of the first curve
     0, 0,  // Since the second curve is a closed loop, consider only the interior intersections
