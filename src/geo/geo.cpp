@@ -246,6 +246,23 @@ PDCELVertex *findParamPointOnPolyline(
 
 
 
+bool get_vertex_on_polyline_by_segment_param_coord(
+  std::vector<PDCELVertex *> &polyline, const int &i, const double &u,
+  PDCELVertex *&v
+) {
+  PLOG(debug) << "get_vertex_on_polyline_by_segment_param_coord";
+
+  PDCELVertex *v1 = polyline[i];
+  PDCELVertex *v2 = polyline[i+1];
+
+  bool is_new = get_vertex_by_param_coord_of_two_vertices(v1, v2, u, v);
+
+  return is_new;
+}
+
+
+
+
 
 
 
@@ -530,6 +547,47 @@ SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u) {
 
     return SPoint3(x, y, z);
   }
+}
+
+
+
+
+bool get_vertex_by_param_coord_of_two_vertices(
+  const PDCELVertex *v1, const PDCELVertex *v2, const double &u,
+  PDCELVertex *v
+) {
+  PLOG(debug) << "get_vertex_by_param_coord_of_two_vertices";
+
+  bool is_new = false;
+
+  if (is_close(u, 0.0)) {
+    // Vertex is the beginning point (v1) of the line segment i
+    PLOG(debug) << "  vertex is close to v1";
+    is_new = false;
+    v = v1;
+  }
+  else if (is_close(u, 1.0)) {
+    // Vertex is the ending point (v2) of the line segment i
+    PLOG(debug) << "  vertex is close to v2";
+    is_new = false;
+    v = v2;
+  }
+  else {
+    // Vertex is in the interior of the line segment i
+    PLOG(debug) << "  vertex is new";
+    is_new = true;
+
+    double x1 = v1->x(), y1 = v1->y(), z1 = v1->z();
+    double x2 = v2->x(), y2 = v2->y(), z2 = v2->z();
+
+    v = new PDCELVertex(
+      x1 + u * (x2 - x1),
+      y1 + u * (y2 - y1),
+      z1 + u * (z2 - z1)
+    );
+  }
+
+  return is_new;
 }
 
 

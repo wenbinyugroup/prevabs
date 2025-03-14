@@ -205,6 +205,10 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end);
 SVector3 getVectorFromAngle(double &angle, const int &plane);
 
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
+bool get_vertex_by_param_coord_of_two_vertices(
+  const PDCELVertex *, const PDCELVertex *, const double &,
+  PDCELVertex *
+)
 
 bool isParallel(PGeoLineSegment *, PGeoLineSegment *);
 bool isCollinear(PGeoLineSegment *, PGeoLineSegment *);

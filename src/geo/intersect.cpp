@@ -710,6 +710,18 @@ bool calc_line_intersection_2d(
 
 
 
+PDCELVertex *get_polylines_intersection_close_to(
+  std::vector<PDCELVertex *> &polyline_1, std::vector<PDCELVertex *> &polyline_2,
+  const int &which_line, const double &param_loc,
+  const int &ex11, const int &ex12, const int &ex21, const int &ex22,
+  Message *pmessage
+) {
+
+}
+
+
+
+
 PDCELHalfEdge *find_curves_intersection(
   std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
   const int &end, const int &ex, int &ls_i, double &u1, double &u2,
@@ -1169,73 +1181,73 @@ int find_open_polylines_intersections(
  * @param pmessage A pointer to a Message object for logging purposes.
  * @return The intersection parameter (u) of the closest intersection.
  */
-double getIntersectionLocation(
-  std::vector<PDCELVertex *> &c,
-  const std::vector<int> &ii, std::vector<double> &uu,
-  const int &which_end, const int &inner_only,
-  int &ls_i, int &j, Message *pmessage
-) {
-  // Find the intersection location that is the closest to the expected end
-  pmessage->increaseIndent();
+// double getIntersectionLocation(
+//   std::vector<PDCELVertex *> &c,
+//   const std::vector<int> &ii, std::vector<double> &uu,
+//   const int &which_end, const int &inner_only,
+//   int &ls_i, int &j, Message *pmessage
+// ) {
+//   // Find the intersection location that is the closest to the expected end
+//   pmessage->increaseIndent();
 
-  // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
+//   // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
 
-  ls_i = ii[0];
-  double u = uu[0];
-  j = 0;
+//   ls_i = ii[0];
+//   double u = uu[0];
+//   j = 0;
 
-  for (auto k = 1; k < ii.size(); k++) {
+//   for (auto k = 1; k < ii.size(); k++) {
 
-    if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
-      if (which_end == 0) {
-        // Closer to the beginning side
-        if (ii[k] < ls_i) {
-          // If the current segment index is smaller
-          ls_i = ii[k];
-          u = uu[k];
-          j = k;
-        }
-        else if (ii[k] == ls_i) {
-          if (uu[k] < u) {
-            u = uu[k];
-            j = k;
-          }
+//     if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
+//       if (which_end == 0) {
+//         // Closer to the beginning side
+//         if (ii[k] < ls_i) {
+//           // If the current segment index is smaller
+//           ls_i = ii[k];
+//           u = uu[k];
+//           j = k;
+//         }
+//         else if (ii[k] == ls_i) {
+//           if (uu[k] < u) {
+//             u = uu[k];
+//             j = k;
+//           }
 
-        }
+//         }
 
-      }
-      else if (which_end == 1) {
-        // Closer to the ending side
-        if (ii[k] > ls_i) {
-          ls_i = ii[k];
-          u = uu[k];
-          j = k;
-        }
-        else if (ii[k] == ls_i) {
-          if (uu[k] > u) {
-            u = uu[k];
-            j = k;
-          }
+//       }
+//       else if (which_end == 1) {
+//         // Closer to the ending side
+//         if (ii[k] > ls_i) {
+//           ls_i = ii[k];
+//           u = uu[k];
+//           j = k;
+//         }
+//         else if (ii[k] == ls_i) {
+//           if (uu[k] > u) {
+//             u = uu[k];
+//             j = k;
+//           }
 
-        }
+//         }
 
-      }
-    }
+//       }
+//     }
 
-  }
+//   }
 
 
-  // PLOG(debug) << pmessage->message(
-  //   "ls_i = " + std::to_string(ls_i)
-  //   + ", u = " + std::to_string(u)
-  //   + ", v1 = " + c[ls_i]->printString()
-  //   + ", v2 = " + c[ls_i+1]->printString()
-  // );
+//   // PLOG(debug) << pmessage->message(
+//   //   "ls_i = " + std::to_string(ls_i)
+//   //   + ", u = " + std::to_string(u)
+//   //   + ", v1 = " + c[ls_i]->printString()
+//   //   + ", v2 = " + c[ls_i+1]->printString()
+//   // );
 
-  pmessage->decreaseIndent();
+//   pmessage->decreaseIndent();
 
-  return u;
-}
+//   return u;
+// }
 
 
 
@@ -1341,147 +1353,152 @@ int get_intersection_closer_to(
  * @param tol Tolerance value for determining if the intersection is at the beginning or end of a segment.
  * @return PDCELVertex* Pointer to the intersection vertex.
  */
-PDCELVertex *getIntersectionVertex(
-  std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
-  int &i1, int &i2, const double &u1, const double &u2,
-  const int &which_end_1, const int &which_end_2,
-  const int &inner_only_1, const int &inner_only_2,
-  int &is_new_1, int &is_new_2,
-  const double &tol
-) {
-  // Get wanted intersection vertex from all options
+// PDCELVertex *getIntersectionVertex(
+//   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
+//   int &i1, int &i2, const double &u1, const double &u2,
+//   const int &which_end_1, const int &which_end_2,
+//   const int &inner_only_1, const int &inner_only_2,
+//   int &is_new_1, int &is_new_2,
+//   const double &tol
+// ) {
+//   // Get wanted intersection vertex from all options
 
-  // i1s, i2s: indices of line segments having intersection
-  // u1s, u2s: non-dimensional location of the intersection on the line segment
-  // which_end_1, which_end_2: choose the intersection closer to beginning (0) or ending (1)
-  // inner_only_1, inner_only_2: whether consider intersections between two ends (1) or not (0)
+//   // i1s, i2s: indices of line segments having intersection
+//   // u1s, u2s: non-dimensional location of the intersection on the line segment
+//   // which_end_1, which_end_2: choose the intersection closer to beginning (0) or ending (1)
+//   // inner_only_1, inner_only_2: whether consider intersections between two ends (1) or not (0)
 
-  // std::cout << "\n[debug] function: getIntersectionVertex\n";
+//   // std::cout << "\n[debug] function: getIntersectionVertex\n";
 
-  PDCELVertex *ip = nullptr; // The intersection vertex
-  // PDCELVertex *ip2 = nullptr;
+//   PDCELVertex *ip = nullptr; // The intersection vertex
+//   // PDCELVertex *ip2 = nullptr;
 
-  // Create/Get the intersection vertex
-  PDCELVertex *v11 = c1[i1];
-  PDCELVertex *v12 = c1[i1 + 1];
-  PDCELVertex *v21 = c2[i2];
-  PDCELVertex *v22 = c2[i2 + 1];
+//   // Create/Get the intersection vertex
+//   PDCELVertex *v11 = c1[i1];
+//   PDCELVertex *v12 = c1[i1 + 1];
+//   PDCELVertex *v21 = c2[i2];
+//   PDCELVertex *v22 = c2[i2 + 1];
 
-  // std::cout << "v11 = " << v11 << ", v12 = " << v12 << std::endl;
-  // std::cout << "v21 = " << v21 << ", v22 = " << v22 << std::endl;
+//   // std::cout << "v11 = " << v11 << ", v12 = " << v12 << std::endl;
+//   // std::cout << "v21 = " << v21 << ", v22 = " << v22 << std::endl;
 
-  bool insert1, insert2;
-  // int ii1, ii2;
+//   bool insert1, insert2;
+//   // int ii1, ii2;
 
-  // The intersecting point is an existing point of either curve
-  if (fabs(u1) <= tol || fabs(1 - u1) <= tol ||
-      fabs(u2) <= tol || fabs(1 - u2) <= tol) {
+//   // The intersecting point is an existing point of either curve
+//   if (fabs(u1) <= tol || fabs(1 - u1) <= tol ||
+//       fabs(u2) <= tol || fabs(1 - u2) <= tol) {
 
-    // For curve c1
-    if (fabs(u1) <= tol) {
-      // Intersecting point is the beginning point (v11) of the line
-      // segment i (v11-v12) of c1
-      insert1 = false;
-      is_new_1 = 0;
-      // i1 = i1;
-      ip = v11;
-    }
-    else if (fabs(1 - u1) <= tol) {
-      // Intersecting point is the ending point (v12) of the line
-      // segment i (v11-v12) of c1
-      insert1 = false;
-      is_new_1 = 0;
-      i1 += 1;
-      ip = v12;
-    }
-    else {
-      // Intersecting point is in the middle of the line segment i
-      // of c1, insertion is needed
-      insert1 = true;
-      is_new_1 = 1;
-      i1 += 1;
-    }
+//     // For curve c1
+//     if (fabs(u1) <= tol) {
+//       // Intersecting point is the beginning point (v11) of the line
+//       // segment i (v11-v12) of c1
+//       insert1 = false;
+//       is_new_1 = 0;
+//       // i1 = i1;
+//       ip = v11;
+//     }
+//     else if (fabs(1 - u1) <= tol) {
+//       // Intersecting point is the ending point (v12) of the line
+//       // segment i (v11-v12) of c1
+//       insert1 = false;
+//       is_new_1 = 0;
+//       i1 += 1;
+//       ip = v12;
+//     }
+//     else {
+//       // Intersecting point is in the middle of the line segment i
+//       // of c1, insertion is needed
+//       insert1 = true;
+//       is_new_1 = 1;
+//       i1 += 1;
+//     }
 
-    if (fabs(u2) <= tol) {
-      // Intersecting point is the beginning point (v21) of the line
-      // segment j (v21-v22) of c2
-      insert2 = false;
-      is_new_2 = 0;
-      // ii2 = i2;
-      ip = v21;
-    }
-    else if (fabs(1 - u2) <= tol) {
-      // Intersecting point is the beginning point (v22) of the line
-      // segment j (v21-v22) of c2
-      insert2 = false;
-      is_new_2 = 0;
-      i2 += 1;
-      ip = v22;
-    }
-    else {
-      // Intersecting point is in the middle of the line segment i
-      // of c2, insertion is needed
-      insert2 = true;
-      is_new_2 = 1;
-      i2 += 1;
-    }
-  }
+//     if (fabs(u2) <= tol) {
+//       // Intersecting point is the beginning point (v21) of the line
+//       // segment j (v21-v22) of c2
+//       insert2 = false;
+//       is_new_2 = 0;
+//       // ii2 = i2;
+//       ip = v21;
+//     }
+//     else if (fabs(1 - u2) <= tol) {
+//       // Intersecting point is the beginning point (v22) of the line
+//       // segment j (v21-v22) of c2
+//       insert2 = false;
+//       is_new_2 = 0;
+//       i2 += 1;
+//       ip = v22;
+//     }
+//     else {
+//       // Intersecting point is in the middle of the line segment i
+//       // of c2, insertion is needed
+//       insert2 = true;
+//       is_new_2 = 1;
+//       i2 += 1;
+//     }
+//   }
 
-  else {
-    // The last case, the intersection is at the middle of two sub-lines
-    // Calculate the new point
-    insert1 = true;
-    insert2 = true;
-    is_new_1 = 1;
-    is_new_2 = 1;
-    i1 += 1;
-    i2 += 1;
+//   else {
+//     // The last case, the intersection is at the middle of two sub-lines
+//     // Calculate the new point
+//     insert1 = true;
+//     insert2 = true;
+//     is_new_1 = 1;
+//     is_new_2 = 1;
+//     i1 += 1;
+//     i2 += 1;
 
-    ip = new PDCELVertex(
-        getParametricPoint(v11->point(), v12->point(), u1));
-    // ip2 = new PDCELVertex(
-    //     getParametricPoint(v21->point(), v22->point(), u2));
+//     ip = new PDCELVertex(
+//         getParametricPoint(v11->point(), v12->point(), u1));
+//     // ip2 = new PDCELVertex(
+//     //     getParametricPoint(v21->point(), v22->point(), u2));
 
-    // std::cout << "        new vertex v0 = " << v0 << std::endl;
-  }
+//     // std::cout << "        new vertex v0 = " << v0 << std::endl;
+//   }
 
-  // std::cout << "intersecting point ip1: " << ip << std::endl;
-  // std::cout << "intersecting point ip2: " << ip2 << std::endl;
+//   // std::cout << "intersecting point ip1: " << ip << std::endl;
+//   // std::cout << "intersecting point ip2: " << ip2 << std::endl;
 
-  // Insert the intersection vertex (if needed)
-  if (insert1) {
-    c1.insert(c1.begin()+i1, ip);
-  }
-  else {
-    c1[i1] = ip;
-  }
+//   // Insert the intersection vertex (if needed)
+//   if (insert1) {
+//     c1.insert(c1.begin()+i1, ip);
+//   }
+//   else {
+//     c1[i1] = ip;
+//   }
 
-  if (insert2) {
-    c2.insert(c2.begin()+i2, ip);
-  } else {
-    c2[i2] = ip;
-  }
+//   if (insert2) {
+//     c2.insert(c2.begin()+i2, ip);
+//   } else {
+//     c2[i2] = ip;
+//   }
 
-  // std::cout << "updated curve 1\n";
-  // for (auto v : c1) {
-  //   std::cout << v;
-  //   if (v == ip) {
-  //     std::cout << " intersect i = " << i1;
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << "updated curve 2\n";
-  // for (auto v : c2) {
-  //   std::cout << v;
-  //   if (v == ip) {
-  //     std::cout << " intersect i = " << i2;
-  //   }
-  //   std::cout << std::endl;
-  // }
+//   // std::cout << "updated curve 1\n";
+//   // for (auto v : c1) {
+//   //   std::cout << v;
+//   //   if (v == ip) {
+//   //     std::cout << " intersect i = " << i1;
+//   //   }
+//   //   std::cout << std::endl;
+//   // }
+//   // std::cout << "updated curve 2\n";
+//   // for (auto v : c2) {
+//   //   std::cout << v;
+//   //   if (v == ip) {
+//   //     std::cout << " intersect i = " << i2;
+//   //   }
+//   //   std::cout << std::endl;
+//   // }
 
-  return ip;
+//   return ip;
 
-}
+// }
+
+
+
+
+
 
 
 
@@ -1516,10 +1533,8 @@ PDCELVertex *get_intersection_vertex(
   PDCELVertex *v21 = c2[i2];
   PDCELVertex *v22 = c2[i2 + 1];
 
-  ss.str("");
-  ss << "  segment 1: " << v11 << " - " << v12 << "\n";
-  ss << "  segment 2: " << v21 << " - " << v22 << "\n";
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(debug) << "  segment 1: " << v11 << " - " << v12 << "\n";
+  PLOG(debug) << "  segment 2: " << v21 << " - " << v22 << "\n";
 
   if (!v11 || !v12 || !v21 || !v22) {
     PLOG(error) << pmessage->message("Null pointer reference");
