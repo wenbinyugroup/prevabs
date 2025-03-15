@@ -710,13 +710,130 @@ bool calc_line_intersection_2d(
 
 
 
+/**
+ * @brief Finds the intersection point between two polylines that is closest to a certain parameter location on each polyline.
+ * 
+ * Find the intersection point between two polylines that is closest to a certain
+ * parameter location on each polyline.
+ *
+ * @param polyline_1 list of vertices of the first polyline
+ * @param polyline_2 list of vertices of the second polyline
+ * @param param_loc_1 the nondimensional parametric location on the first polyline the intersection point is closest to. The parametric location can be in the range [0, 1] or -1. 0 means the beginning of the polyline, 1 means the end of the polyline, and -1 means anywhere on the polyline.
+ * @param param_loc_2 the nondimensional parametric location on the second polyline the intersection point is closest to. The parametric location can be in the range [0, 1] or -1. 0 means the beginning of the polyline, 1 means the end of the polyline, and -1 means anywhere on the polyline.
+ * @param ex11 whether consider the intersection before the beginning point of the first polyline
+ * @param ex12 whether consider the intersection after the ending point of the first polyline
+ * @param ex21 whether consider the intersection before the beginning point of the second polyline
+ * @param ex22 whether consider the intersection after the ending point of the second polyline
+ * @param i1 the index of the line segment of the first polyline that contains the intersection point
+ * @param u1 the nondimensional parametric location of the intersection point on the line segment of the first polyline
+ * @param i2 the index of the line segment of the second polyline that contains the intersection point
+ * @param u2 the nondimensional parametric location of the intersection point on the line segment of the second polyline
+ * @param is_new_1 whether the intersection point is new to the first polyline
+ * @param is_new_2 whether the intersection point is new to the second polyline
+ * @param pmessage a message object for logging
+ *
+ * @return the intersection point, or nullptr if no intersection point is found
+ */
 PDCELVertex *get_polylines_intersection_close_to(
   std::vector<PDCELVertex *> &polyline_1, std::vector<PDCELVertex *> &polyline_2,
-  const int &which_line, const double &param_loc,
+  const double &param_loc_1, const double &param_loc_2,
   const int &ex11, const int &ex12, const int &ex21, const int &ex22,
+  int &i1, double &u1, int &i2, double &u2, bool &is_new_1, bool &is_new_2,
   Message *pmessage
 ) {
+  pmessage->increaseIndent();
 
+  PLOG(debug) << pmessage->message("in function: get_polylines_intersection_close_to");
+
+  PDCELVertex *v_intersect = nullptr;
+
+  // Find all intersections between the curves and the half-edge loop
+  std::vector<int> is1, is2;  // curve indices, tool indices
+  std::vector<double> us1, us2;  // curve parametric locations, tool parametric locations
+  find_open_polylines_intersections(
+    polyline_1, polyline_2, is1, is2, us1, us2,
+    ex11, ex12, ex21, ex22,
+    pmessage
+  );
+
+  if (is1.size() == 1) {
+    // Only one intersection
+    i1 = is1[0];
+    i2 = is2[0];
+    u1 = us1[0];
+    u2 = us2[0];
+  } else {
+    // Find the intersection closest to the specified parametric locations of the curve
+    int which_end;
+    bool inner_only;
+    int j;
+    if (param_loc_1 != -1) {
+      if (param_loc_1 == 0) {
+        which_end = 0;
+        if (ex11) {
+          inner_only = false;
+        } else {
+          inner_only = true;
+        }
+      } else if (param_loc_1 == 1) {
+        which_end = 1;
+        if (ex12) {
+          inner_only = false;
+        } else {
+          inner_only = true;
+        }
+      }
+      j = get_intersection_closer_to(
+        polyline_1, is1, us1, which_end, inner_only, pmessage
+      );
+    } else if (param_loc_2 != -1) {
+      if (param_loc_2 == 0) {
+        which_end = 0;
+        if (ex21) {
+          inner_only = false;
+        } else {
+          inner_only = true;
+        }
+      } else if (param_loc_2 == 1) {
+        which_end = 1;
+        if (ex22) {
+          inner_only = false;
+        } else {
+          inner_only = true;
+        }
+      }
+      j = get_intersection_closer_to(
+        polyline_2, is2, us2, which_end, inner_only, pmessage
+      );
+    }
+
+    // Get output and return values
+    i1 = is1[j];
+    u1 = us1[j];
+    i2 = is2[j];
+    u2 = us2[j];
+  }
+
+  // Get the intersection point
+  PDCELVertex *v1, v2;
+  is_new_1 = get_vertex_by_param_coord_of_two_vertices(
+    polyline_1[i1], polyline_1[i1 + 1], u1, v1
+  );
+  is_new_2 = get_vertex_by_param_coord_of_two_vertices(
+    polyline_2[i2], polyline_2[i2 + 1], u2, v2
+  );
+
+  if (is_new_1 && is_new_2) {
+    v_intersect = v1;
+  } else if (!is_new_1) {
+    v_intersect = v1;
+  } else if (!is_new_2) {
+    v_intersect = v2;
+  }
+
+  pmessage->decreaseIndent();
+
+  return v_intersect;
 }
 
 
@@ -743,32 +860,24 @@ PDCELHalfEdge *find_curves_intersection(
     hei = hei->next();
   } while (hei != hel->incidentEdge());
 
-
-  // Find all intersections between the curves and the half-edge loop
-  std::vector<int> c_is, t_is;  // curve indices, tool indices
-  std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
-  find_open_polylines_intersections(
-    vertices, vertices_hel, c_is, t_is, c_us, t_us,
-    ex, ex,  // Consider the extensions beyond the two ending points of the first curve
-    0, 0,  // Since the second curve is a closed loop, consider only the interior intersections
-    pmessage
+  double param_loc;
+  if (end == 0) {
+    param_loc = 0.0;
+  } else if (end == 1) {
+    param_loc = 1.0;
+  }
+  int i1, i2;
+  double u1, u2;
+  bool is_new_1, is_new_2;
+  PDCELVertex v_intersect = get_polylines_intersection_close_to(
+    vertices, vertices_hel, param_loc, ex, ex, 0, 0,
+    i1, u1, i2, u2, is_new_1, is_new_2, pmessage
   );
 
-
-  // Find the intersection closest to the end of the first curve
-  int j = get_intersection_closer_to(
-    vertices, c_is, c_us, end, !ex, pmessage
-  );
-
-
-  // Get output and return values
-  u1 = c_us[j];
-  u2 = t_us[j];
-  ls_i = c_is[j];
 
   // Get the j-th half-edge from the half-edge loop
   hei = hel->incidentEdge();
-  for (int k = 0; k < t_is[j] - 1; k++) {
+  for (int k = 0; k < i2 - 1; k++) {
     hei = hei->next();
   }
   he = hei;

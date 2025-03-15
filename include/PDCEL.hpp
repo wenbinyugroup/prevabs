@@ -101,7 +101,7 @@ public:
     \param he2 the half edge leaves the vertex
     \return integer 1 for outer boundary, -1 for inner boundary
   */
-  int isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2);
+  // int isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2);
 
   PDCELHalfEdgeLoop *addHalfEdgeLoop(PDCELHalfEdge *he);
   PDCELHalfEdgeLoop *addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop);

@@ -242,14 +242,39 @@ void PDCEL::removeVertex(PDCELVertex *v) {
 //
 // ===================================================================
 
+/**
+ * Find the half edge with source vertex v having incident face f
+ * @param[in] v the vertex
+ * @param[in] f the face
+ * @return the half edge with source vertex v having incident face f, or nullptr if no such half edge exists
+ */
 PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v, PDCELFace *f) {
-  PDCELHalfEdge *he;
+  PLOG(debug) << "findHalfEdge: vertex " << v << ", face " << f;
+  PDCELHalfEdge *he = v->edge();
 
-  he = v->edge();
+  // Check for null pointer reference
+  if (he == nullptr) {
+    PLOG(debug) << "findHalfEdge: vertex has no incident edge";
+    return nullptr;
+  }
+
   do {
+    // Check for null pointer reference
+    if (he->face() == nullptr) {
+      continue;
+    }
+
     if (he->face() == f) {
+      PLOG(debug) << "findHalfEdge: found half edge " << he;
       return he;
     }
+
+    // Check for null pointer reference
+    if (he->twin() == nullptr) {
+      PLOG(debug) << "findHalfEdge: half edge twin is null";
+      return nullptr;
+    }
+
     he = he->twin()->next();
   } while (he != v->edge() && he != nullptr);
 
@@ -410,6 +435,19 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
 
 
 
+/**
+ * @brief Add a new edge to the DCEL.
+ *
+ * This function first adds the two vertices to the DCEL if they are not
+ * already in the DCEL. Then it creates two half edges, one from v1 to v2
+ * and one from v2 to v1, and a PGeoLineSegment to represent the line
+ * segment between the two vertices.  The half edges are then added to the
+ * DCEL and the edge neighbors of the two vertices are updated.
+ *
+ * @param v1 The source vertex of the edge.
+ * @param v2 The target vertex of the edge.
+ * @return The half edge from v1 to v2.
+ */
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   // std::cout << "[debug] addEdge: " << v1 << ", " << v2 << std::endl;
   PLOG(debug) << "adding edge: " << v1 << " -> " << v2;
@@ -451,6 +489,19 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
 
 
 
+/**
+ * @brief Add a new edge to the DCEL, given a PGeoLineSegment.
+ *
+ * This function creates two half edges, one from v1 to v2 and one from v2
+ * to v1, and sets the incident edge of the two vertices if they do not
+ * already have an incident edge. Then it sets the twin half edges of each
+ * other, and the line segment of each half edge.  Finally, it updates the
+ * edge neighbors of the two vertices and adds the two half edges to the
+ * DCEL.
+ *
+ * @param ls The PGeoLineSegment to add to the DCEL.
+ * @return The half edge from v1 to v2.
+ */
 PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
   PDCELHalfEdge *he12 = new PDCELHalfEdge(ls->v1(), 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(ls->v2(), -1);
@@ -489,6 +540,16 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
 
 
 
+/**
+ * @brief Remove a half edge from the DCEL.
+ *
+ * This function removes a half edge from the DCEL and updates the
+ * incident edges of the two vertices, the face and loop that the
+ * half edge belongs to.  It also updates the prev and next edges of
+ * the half edge, and removes the half edge from the DCEL.
+ *
+ * @param[in] he The half edge to remove from the DCEL.
+ */
 void PDCEL::removeEdge(PDCELHalfEdge *he) {
   PLOG(debug) << "removing edge: " << he;
 
@@ -657,24 +718,27 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
 
 
 
+/**
+ * Find the half edge with source vertex v1 and target vertex v2.
+ * The method traverses the half edges incident on v1 and checks if
+ * the target of the half edge is v2.
+ * @param[in] v1 the source vertex
+ * @param[in] v2 the target vertex
+ * @return the half edge from v1 to v2, or nullptr if no such half edge exists
+ */
 PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
-  // std::cout << "[debug] findHalfEdge: " << v1 << ", " << v2 << std::endl;
-  // std::cout << "        half edge v1->edge(): ";
-  // if (v1->edge() != nullptr) {
-  //   std::cout << v1->edge() << std::endl;
-  // } else {
-  //   std::cout << "nullptr" << std::endl;
-  // }
-  PLOG(debug) << "looking for half edge: " << v1 << " -> " << v2;
 
-  if (v1->edge() == nullptr) {
+  PLOG(debug) << "looking for half edge: v1 " << v1 << " -> v2 " << v2;
+
+  PDCELHalfEdge *he1 = v1->edge();
+
+  if (he1 == nullptr) {
+    PLOG(debug) << "  v1 has no incident edge";
     return nullptr;
   }
 
-  PDCELHalfEdge *he1 = v1->edge();
   PDCELHalfEdge *heit = he1;
   do {
-    // std::cout << "        vertex heit->target(): " << heit->target() << std::endl;
     if (heit->target() == v2) {
       PLOG(debug) << "found half edge: " << heit;
       return heit;
@@ -695,6 +759,16 @@ PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
 
 
 
+/**
+ * Add the edges from a Baseline to the DCEL.
+ *
+ * This function goes through all the vertices in the Baseline and adds
+ * an edge between each pair of adjacent vertices. The method addEdge is
+ * used to add the edge, which will also update the edge neighbors of
+ * the vertices.
+ *
+ * @param bl the Baseline to add edges from
+ */
 void PDCEL::addEdgesFromCurve(Baseline *bl) {
   // std::cout << "[debug] adding edges from a curve" << std::endl;
   PDCELHalfEdge *he;
@@ -718,17 +792,21 @@ void PDCEL::addEdgesFromCurve(Baseline *bl) {
 //
 // ===================================================================
 
-int PDCEL::isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2) {
-  SVector3 sv1, sv2, sv0;
-  sv1 = he1->toVector();
-  sv2 = he2->toVector();
+/**
+ * Determine if a boundary is an outer or inner boundary.
+ * @param[in] he1 one half edge of the boundary
+ * @param[in] he2 the other half edge of the boundary
+ * @return 1 if the boundary is an outer boundary and -1 if it is an inner boundary
+ */
+// int PDCEL::isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2) {
+//   SVector3 sv1, sv2, sv0;
+//   sv1 = he1->toVector();
+//   sv2 = he2->toVector();
 
-  sv0 = crossprod(sv1, sv2);
+//   sv0 = crossprod(sv1, sv2);
 
-  return sv0.x() > 0 ? 1 : -1;
-}
-
-
+//   return sv0.x() > 0 ? 1 : -1;
+// }
 
 
 
@@ -736,6 +814,13 @@ int PDCEL::isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2) {
 
 
 
+
+
+/**
+ * Add a half edge loop to the data structure.
+ * @param[in] he a half edge of the loop
+ * @return the newly created half edge loop
+ */
 PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
   PLOG(debug) << "adding half edge loop with half edge: " << he;
 
@@ -762,8 +847,14 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
 
 
 
-PDCELHalfEdgeLoop *
-PDCEL::addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop) {
+/**
+ * Add a new half edge loop, specified by a list of vertices.
+ * The method adds new half edges and vertices as needed.
+ * The method also updates the bottom left vertex of the loop.
+ * @param[in] vloop the list of vertices to add
+ * @return the newly added half edge loop
+ */
+PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop) {
   PDCELHalfEdgeLoop *hel = new PDCELHalfEdgeLoop();
 
   PDCELVertex *v1, *v2;
@@ -812,6 +903,12 @@ PDCEL::addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop) {
 
 
 
+/**
+ * Remove a half edge loop from the DCEL.
+ * The method removes the loop and all its half edges from the DCEL.
+ * The method also resets the loop pointer of each half edge.
+ * @param[in] hel the half edge loop to remove
+ */
 void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
   PLOG(debug) << "removing half edge loop";
   PDCELHalfEdge *he = hel->incidentEdge();
@@ -848,6 +945,11 @@ void PDCEL::clearHalfEdgeLoops() {
 
 
 
+/**
+ * Find the half edge loop nearest to a given half edge loop.
+ * @param[in] loop the loop to find the nearest loop for
+ * @return the nearest loop
+ */
 PDCELHalfEdgeLoop *PDCEL::findNearestLoop(PDCELHalfEdgeLoop *loop) {
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
@@ -924,6 +1026,13 @@ void PDCEL::createTempLoops() {
 
 
 
+/**
+ * Link inner half edge loops to their nearest outer half edge loop.
+ * For each inner loop, find the nearest outer loop by traversing the half edge loop chain.
+ * Then set the adjacent loop pointer of the inner loop to the nearest outer loop.
+ * This step is necessary for the construction of the final mesh, in which each inner loop
+ * should have a path linking to an outer loop.
+ */
 void PDCEL::linkHalfEdgeLoops() {
   PDCELHalfEdgeLoop *hel;
   std::list<PDCELHalfEdgeLoop *>::iterator lit;
@@ -944,6 +1053,13 @@ void PDCEL::linkHalfEdgeLoops() {
 
 
 
+/**
+ * Find the enclosing loop of a given vertex.
+ * The algorithm works by first finding a line segment below the vertex, then
+ * traversing the half edge loop chain until it reaches an outer loop.
+ * @param[in] v the vertex to find the enclosing loop for
+ * @return the enclosing loop
+ */
 PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
   // std::cout << "\n[debug] findEnclosingLoop: " << v << std::endl;
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
@@ -979,6 +1095,15 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
 
 
 
+/**
+ * Find the intersection points of a given line segment with all line segments of a half edge loop.
+ * The method iterates through all half edges of the half edge loop and checks if they intersect with the given line segment.
+ * If they do, the method adds the intersection points to two lists, vlist1 and vlist2.
+ * If the line segments are parallel, the method checks if they are collinear, and if so, adds the vertices to the lists.
+ * Finally, the method finds the closest two vertices, v1 from vlist1 and v2 from vlist2, and splits the half edges if necessary.
+ * @param[in] hel the half edge loop to find the intersection points for
+ * @param[in] ls the line segment to find the intersection points for
+ */
 void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
                                    PGeoLineSegment *ls) {
   PLOG(debug) << "finding curves intersection";
