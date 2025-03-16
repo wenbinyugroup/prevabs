@@ -716,21 +716,21 @@ bool calc_line_intersection_2d(
  * Find the intersection point between two polylines that is closest to a certain
  * parameter location on each polyline.
  *
- * @param polyline_1 list of vertices of the first polyline
- * @param polyline_2 list of vertices of the second polyline
- * @param param_loc_1 the nondimensional parametric location on the first polyline the intersection point is closest to. The parametric location can be in the range [0, 1] or -1. 0 means the beginning of the polyline, 1 means the end of the polyline, and -1 means anywhere on the polyline.
- * @param param_loc_2 the nondimensional parametric location on the second polyline the intersection point is closest to. The parametric location can be in the range [0, 1] or -1. 0 means the beginning of the polyline, 1 means the end of the polyline, and -1 means anywhere on the polyline.
- * @param ex11 whether consider the intersection before the beginning point of the first polyline
- * @param ex12 whether consider the intersection after the ending point of the first polyline
- * @param ex21 whether consider the intersection before the beginning point of the second polyline
- * @param ex22 whether consider the intersection after the ending point of the second polyline
- * @param i1 the index of the line segment of the first polyline that contains the intersection point
- * @param u1 the nondimensional parametric location of the intersection point on the line segment of the first polyline
- * @param i2 the index of the line segment of the second polyline that contains the intersection point
- * @param u2 the nondimensional parametric location of the intersection point on the line segment of the second polyline
- * @param is_new_1 whether the intersection point is new to the first polyline
- * @param is_new_2 whether the intersection point is new to the second polyline
- * @param pmessage a message object for logging
+ * @param[in] polyline_1 list of vertices of the first polyline
+ * @param[in] polyline_2 list of vertices of the second polyline
+ * @param[in] param_loc_1 the nondimensional parametric location on the first polyline the intersection point is closest to. The parametric location can be in the range [0, 1] or -1. 0 means the beginning of the polyline, 1 means the end of the polyline, and -1 means anywhere on the polyline.
+ * @param[in] param_loc_2 the nondimensional parametric location on the second polyline the intersection point is closest to. The parametric location can be in the range [0, 1] or -1. 0 means the beginning of the polyline, 1 means the end of the polyline, and -1 means anywhere on the polyline.
+ * @param[in] ex11 whether consider the intersection before the beginning point of the first polyline
+ * @param[in] ex12 whether consider the intersection after the ending point of the first polyline
+ * @param[in] ex21 whether consider the intersection before the beginning point of the second polyline
+ * @param[in] ex22 whether consider the intersection after the ending point of the second polyline
+ * @param[out] i1 the index of the line segment of the first polyline that contains the intersection point
+ * @param[out] u1 the nondimensional parametric location of the intersection point on the line segment of the first polyline
+ * @param[out] i2 the index of the line segment of the second polyline that contains the intersection point
+ * @param[out] u2 the nondimensional parametric location of the intersection point on the line segment of the second polyline
+ * @param[out] is_new_1 whether the intersection point is new to the first polyline
+ * @param[out] is_new_2 whether the intersection point is new to the second polyline
+ * @param[in] pmessage a message object for logging
  *
  * @return the intersection point, or nullptr if no intersection point is found
  */

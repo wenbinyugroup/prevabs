@@ -23,6 +23,10 @@
 
 void PComponent::buildLaminate(Message *pmessage) {
 
+  pmessage->increaseIndent();
+
+  PLOG(info) << pmessage->message("building component: " + _name);
+
   for (auto seg : _segments) {
 
     // seg->curveBase()->print(pmessage, 9);
@@ -146,6 +150,9 @@ void PComponent::buildLaminate(Message *pmessage) {
     if (config.debug) _pmodel->plotGeoDebug(pmessage);
 
   }
+
+
+  pmessage->decreaseIndent();
 
 
 }

@@ -576,7 +576,35 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
 
 
+void join_segments_style_1(
+  Segment *s1, Segment *s2, int e1, int e2, Message *pmessage
+  ) {
+  // Step-like joint
+  // This style uses the angle bisector line as the boundary
+  // between the two segments
+  // If the layup thicknesses are not the same
+  // or base curves are not symmetric about the bisector,
+  // then there will be a step change at the joint
 
+  // Calculate the bounding vector and line segment
+  SVector3 b, t1, t2;
+  t1 = e1 == 0 ? s1->getBeginTangent() : s1->getEndTangent();
+  t2 = e2 == 0 ? s2->getBeginTangent() : s2->getEndTangent();
+
+  b = calcAngleBisectVector(t1, t2, s1->getLayupside(), s2->getLayupside());
+
+  PGeoLineSegment *ls_b = new PGeoLineSegment(v, b);
+  PDCELVertex *tmp_v = new PDCELVertex((v->point()+b).point());
+  std::vector<PDCELVertex *> bound_vertices;
+  bound_vertices.push_back(v);
+  bound_vertices.push_back(tmp_v);
+
+  // Intersect offset curve with the bound for each segment
+  
+  PDCELVertex *v1_new;
+
+  // Update linking indices
+}
 
 
 
@@ -592,31 +620,14 @@ void PComponent::joinSegments(
   ) {
   pmessage->increaseIndent();
 
-  // if (config.debug) {
-  //   // std::cout << "[debug] joining segments ends: " << s1->getName() << " " << e1
-  //   //           << ", " << s2->getName() << " " << e2 << std::endl;
-  //   std::stringstream ss;
-  //   ss << "joining segments ends: " << s1->getName() << " " << e1
-  //      << ", " << s2->getName() << " " << e2;
-  //   pmessage->print(9, ss.str());
-  // }
-  PLOG(debug) << pmessage->message(
-    "joining segments ends: "
-    + s1->getName() + " " + std::to_string(e1) + ", "
-    + s2->getName() + " " + std::to_string(e2)
-  );
+  PLOG(debug) << pmessage->message("joining segments ends: ")
+    << s1->getName() << " " << e1 << ", " << s2->getName() << " " << e2;
 
-  // std::cout << std::endl;
-  // std::cout << "\n[debug] joining segments ends: " << s1->getName() << " " << e1
-  //           << ", " << s2->getName() << " " << e2 << std::endl;
 
   PDCELVertex *v1_new, *v2_new, *v_intersect;
   Baseline *bl1_off_new, *bl2_off_new;
   std::vector<PDCELVertex *> bound_vertices;
   bound_vertices.push_back(v);
-
-
-
 
 
 
@@ -1384,119 +1395,110 @@ void PComponent::joinSegments(
 
 
 void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
-  // std::cout << "[debug] createSegmentFreeEnd: " << s->getName() << " " << e
-  // << std::endl;
-  PLOG(debug) << pmessage->message("createSegmentFreeEnd: " + s->getName() + " " + std::to_string(e));
+
+  PLOG(debug) << pmessage->message("createSegmentFreeEnd: ") << s->getName() << " " << e;
 
   // Trim head
   if (e == 0 && s->prevBound().normSq() != 0) {
 
-    // std::cout << "[debug] trimming head using vector " << s->prevBound() << std::endl;
-
-    SPoint3 sp0{s->getBaseline()->vertices().front()->point()};
-    SVector3 sv1{s->prevBound()};
+    SPoint3 sp0{s->getBaseline()->vertices().front()->point()};  // start point
+    SVector3 sv1{s->prevBound()};  // vector
     SPoint3 sp1{sp0 + sv1.point()};
     PDCELVertex *p = new PDCELVertex(sp1);
-    // p->setPoint(s->getBaseline()->vertices().front()->point() + s->prevBound());
-    // std::cout << "p = " << p->point() << std::endl;
 
     std::vector<PDCELVertex *> b;
     b.assign({s->getBaseline()->vertices().front(), p});
 
-    std::vector<int> i1s, i2s;
-    std::vector<double> u1s, u2s;
+    // Intersect the bound and the offset curve
 
-    // findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
-    find_open_polylines_intersections(
-      s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s,
-      1, 1, 1, 1, pmessage
-    );
-
-    double u1, u2;
-    int ls_i1, ls_i2, j1, j2;
-    // u1 = getIntersectionLocation(
-    //   s->curveOffset()->vertices(), i1s, u1s, 0, false, ls_i1, j1, pmessage
-    // );
-    // u2 = getIntersectionLocation(
-    //   b, i2s, u2s, 0, false, ls_i2, j2, pmessage
-    // );
-    j1 = get_intersection_closer_to(
-      s->curveOffset()->vertices(), i1s, u1s, 0, false, pmessage
-    );
-
-    ls_i1 = i1s[j1];
-    ls_i2 = i2s[j1];
-    u1 = u1s[j1];
-    u2 = u2s[j1];
-
-    PDCELVertex *ip;
     int is_new_1, is_new_2;
-    // double tol{1.0e-9};
-    // ip = getIntersectionVertex(
-    //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 0, 0,
-    //   false, false, is_new_1, is_new_2, tol
-    // );
-    ip = get_intersection_vertex(
-      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
+    double u1, u2;
+    int ls_i1, ls_i2;
+    PDCELVertex *ip = get_polylines_intersection_close_to(
+      s->curveOffset()->vertices(), b, 0, 1, 1, 1, 1, 1, ls_i1, u1, ls_i2, u2, is_new_1, is_new_2, pmessage
     );
-    // std::cout << "ip = " << ip->point() << std::endl;
+
+
+    // std::vector<int> i1s, i2s;
+    // std::vector<double> u1s, u2s;
+
+    // find_open_polylines_intersections(
+    //   s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s,
+    //   1, 1, 1, 1, pmessage
+    // );
+
+    // int j1, j2;
+
+    // j1 = get_intersection_closer_to(
+    //   s->curveOffset()->vertices(), i1s, u1s, 0, false, pmessage
+    // );
+
+    // ls_i1 = i1s[j1];
+    // ls_i2 = i2s[j1];
+    // u1 = u1s[j1];
+    // u2 = u2s[j1];
+
+
+    // ip = get_intersection_vertex(
+    //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
+    // );
+
     PLOG(debug) << pmessage->message("ip = " + ip->printString());
 
     trim(s->curveOffset()->vertices(), ip, 0);
 
-    // Adjust linking indices
-    // int n = s->curveOffset()->vertices().size();
-    // for (auto kk = 0; kk < ls_i1 - 1; kk++) {
-    //   s->baseOffsetIndicesLink().erase(s->baseOffsetIndicesLink().begin());
-    // }
+    // Update base-offset index pairs
+    s->updateBaseOffsetIndexPairs(pmessage);
 
-    // 1.1: Remove the index pairs if the base vertex index is in the trim region
-    // std::cout << "step 1" << std::endl;
-    PLOG(debug) << pmessage->message("step 1");
-    int ls_i_base = 0;
-    int ls_i_offset = ls_i1-1;
+
+    // // int n = s->curveOffset()->vertices().size();
+    // // for (auto kk = 0; kk < ls_i1 - 1; kk++) {
+    // //   s->baseOffsetIndicesLink().erase(s->baseOffsetIndicesLink().begin());
+    // // }
+
+    // // 1.1: Remove the index pairs if the base vertex index is in the trim region
+    // // std::cout << "step 1" << std::endl;
+    // PLOG(debug) << pmessage->message("step 1");
+    // int ls_i_base = 0;
+    // int ls_i_offset = ls_i1-1;
+
+
+    // // 1.2: Remove the index pairs if the offset vertex index is in the trim region
     // while (1) {
-    //   int id_base_tmp = s->baseOffsetIndicesPairs().front()[0];
-    //   if (id_base_tmp > ls_i_base) break;
+    //   int id_offset_tmp = s->baseOffsetIndicesPairs().front()[1];
+    //   // std::cout << "id_offset_tmp = " << id_offset_tmp << ", ls_i_offset = " << ls_i_offset << std::endl;
+    //   PLOG(debug) << pmessage->message("id_offset_tmp = " + std::to_string(id_offset_tmp) + ", ls_i_offset = " + std::to_string(ls_i_offset));
+    //   if (id_offset_tmp > ls_i_offset) break;
     //   s->baseOffsetIndicesPairs().erase(s->baseOffsetIndicesPairs().begin());
     // }
 
-    // 1.2: Remove the index pairs if the offset vertex index is in the trim region
-    while (1) {
-      int id_offset_tmp = s->baseOffsetIndicesPairs().front()[1];
-      // std::cout << "id_offset_tmp = " << id_offset_tmp << ", ls_i_offset = " << ls_i_offset << std::endl;
-      PLOG(debug) << pmessage->message("id_offset_tmp = " + std::to_string(id_offset_tmp) + ", ls_i_offset = " + std::to_string(ls_i_offset));
-      if (id_offset_tmp > ls_i_offset) break;
-      s->baseOffsetIndicesPairs().erase(s->baseOffsetIndicesPairs().begin());
-    }
+    // // 2: Renumber indices
+    // // std::cout << "step 2" << std::endl;
+    // PLOG(debug) << pmessage->message("step 2");
+    // for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
+    //   // s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
+    //   s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
+    // }
 
-    // 2: Renumber indices
-    // std::cout << "step 2" << std::endl;
-    PLOG(debug) << pmessage->message("step 2");
-    for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
-      // s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
-      s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
-    }
+    // // 3: Add the index pairs for the trimmed end
+    // // std::cout << "step 3" << std::endl;
+    // PLOG(debug) << pmessage->message("step 3");
+    // int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
+    // PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
 
-    // 3: Add the index pairs for the trimmed end
-    // std::cout << "step 3" << std::endl;
-    PLOG(debug) << pmessage->message("step 3");
-    int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-    PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
-
-    std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
-    for (int k = 0; k < nv_diff; k++) {
-      if (ls_i_base > ls_i_offset) {
-        std::vector<int> id_pair_tmp{0, nv_diff - k};
-        it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-      }
-      else if (ls_i_base < ls_i_offset) {
-        std::vector<int> id_pair_tmp{nv_diff - k, 0};
-        it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-      }
-    }
-    std::vector<int> id_pair_tmp{0, 0};
-    it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    // std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
+    // for (int k = 0; k < nv_diff; k++) {
+    //   if (ls_i_base > ls_i_offset) {
+    //     std::vector<int> id_pair_tmp{0, nv_diff - k};
+    //     it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //   }
+    //   else if (ls_i_base < ls_i_offset) {
+    //     std::vector<int> id_pair_tmp{nv_diff - k, 0};
+    //     it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //   }
+    // }
+    // std::vector<int> id_pair_tmp{0, 0};
+    // it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
 
   }
 
@@ -1506,7 +1508,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
 
     // std::cout << "[debug] trimming tail using vector " << s->nextBound() << std::endl;
 
-    int nv_offset_before = s->getBaseline()->vertices().size();
+    // int nv_offset_before = s->getBaseline()->vertices().size();
 
     SPoint3 sp0{s->getBaseline()->vertices().back()->point()};
     SVector3 sv1{s->nextBound()};
@@ -1518,123 +1520,131 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
     std::vector<PDCELVertex *> b;
     b.assign({s->getBaseline()->vertices().back(), p});
 
-    std::vector<int> i1s, i2s;
-    std::vector<double> u1s, u2s;
-
-    // findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
-    find_open_polylines_intersections(
-      s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s,
-      1, 1, 1, 1, pmessage
-    );
-
-    double u1, u2;
-    int ls_i1, ls_i2, j1, j2;
-    // u1 = getIntersectionLocation(
-    //   s->curveOffset()->vertices(), i1s, u1s, 1, false, ls_i1, j1, pmessage
-    // );
-    // u2 = getIntersectionLocation(
-    //   b, i2s, u2s, 1, false, ls_i2, j2, pmessage
-    // );
-    j1 = get_intersection_closer_to(
-      s->curveOffset()->vertices(), i1s, u1s, 1, false, pmessage
-    );
-    ls_i1 = i1s[j1];
-    ls_i2 = i2s[j1];
-    u1 = u1s[j1];
-    u2 = u2s[j1];
-
-    PDCELVertex *ip;
+    // Intersect the bound and the offset curve
     int is_new_1, is_new_2;
-    // double tol{1.0e-9};
-    // ip = getIntersectionVertex(
-    //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 1, 1,
-    //   false, false, is_new_1, is_new_2, tol
-    // );
-    ip = get_intersection_vertex(
-      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
+    double u1, u2;
+    int ls_i1, ls_i2;
+    PDCELVertex *ip = get_polylines_intersection_close_to(
+      s->curveOffset()->vertices(), b, 1, 1, 1, 1, 1, 1, ls_i1, u1, ls_i2, u2, is_new_1, is_new_2, pmessage
     );
+
+    // std::vector<int> i1s, i2s;
+    // std::vector<double> u1s, u2s;
+
+    // // findAllIntersections(s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s);
+    // find_open_polylines_intersections(
+    //   s->curveOffset()->vertices(), b, i1s, i2s, u1s, u2s,
+    //   1, 1, 1, 1, pmessage
+    // );
+
+    // int j1, j2;
+    // // u1 = getIntersectionLocation(
+    // //   s->curveOffset()->vertices(), i1s, u1s, 1, false, ls_i1, j1, pmessage
+    // // );
+    // // u2 = getIntersectionLocation(
+    // //   b, i2s, u2s, 1, false, ls_i2, j2, pmessage
+    // // );
+    // j1 = get_intersection_closer_to(
+    //   s->curveOffset()->vertices(), i1s, u1s, 1, false, pmessage
+    // );
+    // ls_i1 = i1s[j1];
+    // ls_i2 = i2s[j1];
+    // u1 = u1s[j1];
+    // u2 = u2s[j1];
+
+    // // double tol{1.0e-9};
+    // // ip = getIntersectionVertex(
+    // //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 1, 1,
+    // //   false, false, is_new_1, is_new_2, tol
+    // // );
+    // ip = get_intersection_vertex(
+    //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
+    // );
     // std::cout << "ip = " << ip->point() << std::endl;
     PLOG(debug) << pmessage->message("ip = " + ip->printString());
 
     trim(s->curveOffset()->vertices(), ip, 1);
 
-    int nv_offset_after = s->curveOffset()->vertices().size();
+    // Update base-offset index pairs
+    s->updateBaseOffsetIndexPairs(pmessage);
 
-    PLOG(debug) << pmessage->message("curve base:");
-    s->getBaseline()->print(pmessage);
-    PLOG(debug) << pmessage->message("curve offset:");
-    s->curveOffset()->print(pmessage);
-    // s->printBaseOffsetPairs(pmessage);
+    // int nv_offset_after = s->curveOffset()->vertices().size();
 
-    // Adjust linking indices
-    int ls_i_base = s->getBaseline()->vertices().size();
-    int ls_i_offset = ls_i1;
+    // PLOG(debug) << pmessage->message("curve base:");
+    // s->getBaseline()->print(pmessage);
+    // PLOG(debug) << pmessage->message("curve offset:");
+    // s->curveOffset()->print(pmessage);
+    // // s->printBaseOffsetPairs(pmessage);
 
-    PLOG(debug) << pmessage->message("step 1");
-    // 1.1: Remove the index pairs if the base vertex index is in the trim region
+    // // Adjust linking indices
+    // int ls_i_base = s->getBaseline()->vertices().size();
+    // int ls_i_offset = ls_i1;
+
+    // PLOG(debug) << pmessage->message("step 1");
+    // // 1.1: Remove the index pairs if the base vertex index is in the trim region
+    // // while (1) {
+    // //   int id_base_tmp = s->baseOffsetIndicesPairs().back()[0];
+    // //   if (id_base_tmp < ls_i_base) break;
+    // //   s->baseOffsetIndicesPairs().pop_back();
+    // // }
+
+    // // 1.2: Remove the index pairs if the offset vertex index is in the trim region
     // while (1) {
-    //   int id_base_tmp = s->baseOffsetIndicesPairs().back()[0];
-    //   if (id_base_tmp < ls_i_base) break;
+    //   int id_offset_tmp = s->baseOffsetIndicesPairs().back()[1];
+    //   // std::cout << "id_offset_tmp = " << id_offset_tmp << ", ls_i_offset = " << ls_i_offset << std::endl;
+    //   PLOG(debug) << pmessage->message("id_offset_tmp = " + std::to_string(id_offset_tmp) + ", ls_i_offset = " + std::to_string(ls_i_offset));
+    //   if (id_offset_tmp < ls_i_offset) break;
     //   s->baseOffsetIndicesPairs().pop_back();
     // }
 
-    // 1.2: Remove the index pairs if the offset vertex index is in the trim region
-    while (1) {
-      int id_offset_tmp = s->baseOffsetIndicesPairs().back()[1];
-      // std::cout << "id_offset_tmp = " << id_offset_tmp << ", ls_i_offset = " << ls_i_offset << std::endl;
-      PLOG(debug) << pmessage->message("id_offset_tmp = " + std::to_string(id_offset_tmp) + ", ls_i_offset = " + std::to_string(ls_i_offset));
-      if (id_offset_tmp < ls_i_offset) break;
-      s->baseOffsetIndicesPairs().pop_back();
-    }
+    // s->printBaseOffsetPairs(pmessage);
 
-    s->printBaseOffsetPairs(pmessage);
+    // // 2: Renumber indices
+    // PLOG(debug) << pmessage->message("step 2");
+    // // for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
+    // //   s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
+    // //   s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
+    // // }
 
-    // 2: Renumber indices
-    PLOG(debug) << pmessage->message("step 2");
-    // for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
-    //   s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
-    //   s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
+    // // 3: Add the index pairs for the trimmed end
+    // PLOG(debug) << pmessage->message("step 3");
+    // PLOG(debug) << pmessage->message("  ls_i_base = " + std::to_string(ls_i_base));
+    // PLOG(debug) << pmessage->message("  ls_i_offset = " + std::to_string(ls_i_offset));
+    // int _tmp_nv_base = s->getBaseline()->vertices().size();
+    // int _tmp_nv_offset = s->curveOffset()->vertices().size();
+    // PLOG(debug) << pmessage->message("  _tmp_nv_base = " + std::to_string(_tmp_nv_base));
+    // PLOG(debug) << pmessage->message("  _tmp_nv_offset = " + std::to_string(_tmp_nv_offset));
+    // int curve_len_diff = _tmp_nv_base - _tmp_nv_offset;
+    // int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
+    // // int nv_diff = curve_len_diff;
+    // PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
+
+    // // std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
+    // int id_base_last_tmp = s->baseOffsetIndicesPairs().back()[0];
+    // int id_offset_last_tmp = s->baseOffsetIndicesPairs().back()[1];
+
+    // for (int k = 0; k < nv_diff; k++) {
+    //   PLOG(debug) << pmessage->message("  id_base_last_tmp = " + std::to_string(id_base_last_tmp));
+    //   PLOG(debug) << pmessage->message("  id_offset_last_tmp = " + std::to_string(id_offset_last_tmp));
+    //   if (id_base_last_tmp == _tmp_nv_base - 2 && id_offset_last_tmp == _tmp_nv_offset - 2) {
+    //     break;
+    //   }
+    //   std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
+    //   s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+    //   if (ls_i_base > ls_i_offset) {
+    //     id_base_last_tmp++;
+    //   }
+    //   else if (ls_i_base < ls_i_offset) {
+    //     id_offset_last_tmp++;
+    //     // std::vector<int> id_pair_tmp{nv_diff - k, 0};
+    //     // it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //   }
     // }
 
-    // 3: Add the index pairs for the trimmed end
-    PLOG(debug) << pmessage->message("step 3");
-    PLOG(debug) << pmessage->message("  ls_i_base = " + std::to_string(ls_i_base));
-    PLOG(debug) << pmessage->message("  ls_i_offset = " + std::to_string(ls_i_offset));
-    int _tmp_nv_base = s->getBaseline()->vertices().size();
-    int _tmp_nv_offset = s->curveOffset()->vertices().size();
-    PLOG(debug) << pmessage->message("  _tmp_nv_base = " + std::to_string(_tmp_nv_base));
-    PLOG(debug) << pmessage->message("  _tmp_nv_offset = " + std::to_string(_tmp_nv_offset));
-    int curve_len_diff = _tmp_nv_base - _tmp_nv_offset;
-    int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-    // int nv_diff = curve_len_diff;
-    PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
+    // std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
+    // s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
 
-    // std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
-    int id_base_last_tmp = s->baseOffsetIndicesPairs().back()[0];
-    int id_offset_last_tmp = s->baseOffsetIndicesPairs().back()[1];
-
-    for (int k = 0; k < nv_diff; k++) {
-      PLOG(debug) << pmessage->message("  id_base_last_tmp = " + std::to_string(id_base_last_tmp));
-      PLOG(debug) << pmessage->message("  id_offset_last_tmp = " + std::to_string(id_offset_last_tmp));
-      if (id_base_last_tmp == _tmp_nv_base - 2 && id_offset_last_tmp == _tmp_nv_offset - 2) {
-        break;
-      }
-      std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
-      s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-      if (ls_i_base > ls_i_offset) {
-        id_base_last_tmp++;
-      }
-      else if (ls_i_base < ls_i_offset) {
-        id_offset_last_tmp++;
-        // std::vector<int> id_pair_tmp{nv_diff - k, 0};
-        // it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-      }
-    }
-
-    std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
-    s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-
-    s->printBaseOffsetPairs(pmessage);
+    // s->printBaseOffsetPairs(pmessage);
 
   }
 

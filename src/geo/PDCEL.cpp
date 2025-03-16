@@ -149,15 +149,22 @@ void PDCEL::print_dcel() {
 
 
 
+/**
+ * @brief Fixes the geometry of the PDCEL by removing very small edges.
+ *
+ * @param pmessage the message object to print the output
+ */
 void PDCEL::fixGeometry(Message *pmessage) {
   pmessage->increaseIndent();
-  PLOG(info) << pmessage->message("fixing geometry");
-  // Remove very small edges (very close points)
-  // double tol{1e-6};
+  PLOG(info) << pmessage->message("fixing geometry by removing small edges");
 
   // Find all small edges
   std::vector<PDCELHalfEdge *> small_edges;
   for (auto he : _halfedges) {
+    // Check for null pointer reference
+    if (he == nullptr) continue;
+
+    // Check if the edge is in the list of small edges already
     bool found = false;
     for (auto she : small_edges) {
       if (he->twin() == she) {
@@ -176,16 +183,16 @@ void PDCEL::fixGeometry(Message *pmessage) {
 
   // Remove small edges
   for (auto he : small_edges) {
-    removeEdge(he);
+    // Check for null pointer reference
+    if (he == nullptr) continue;
+
+    try {
+      removeEdge(he);
+    } catch (const std::exception& e) {
+      PLOG(error) << "Exception occurred while removing edge: " << e.what();
+    }
   }
 
-  // std::cout << "after removing small edges\n";
-  // for (auto he : _halfedges) {
-  //   double sqlen = calcDistanceSquared(he->source(), he->target());
-  //   if (sqlen <= tol*tol) {
-  //     std::cout << he << std::endl;
-  //   }
-  // }
   pmessage->decreaseIndent();
 }
 
@@ -1493,23 +1500,35 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PGeoLineSegment *ls) {
 //
 // ===================================================================
 
+/**
+ * @brief Update the neighbors of an edge.
+ *
+ * This function updates the neighbors of an edge by checking the degree of the
+ * source vertex and updating the previous and next half edges accordingly.
+ *
+ * @param he The half edge to update.
+ */
 void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
-  // std::cout << "[debug] updateEdgeNeighbors: " << he << std::endl;
+  PLOG(debug) << "updateEdgeNeighbors";
 
   PDCELVertex *v = he->source();
   PDCELHalfEdge *het = he->twin();
 
-  // std::cout << "        v degree = " << v->degree() << std::endl;
+
   if (v->degree() == 0) {
+    // If the source vertex has degree 0, set the incident edge to be the given
+    // half edge.
     v->setIncidentEdge(he);
   } else if (v->degree() == 1) {
+    // If the source vertex has degree 1, set the previous and next half edges
+    // to form a cycle.
     he->setPrev(v->edge()->twin());
     v->edge()->twin()->setNext(he);
     het->setNext(v->edge());
     v->edge()->setPrev(het);
   } else {
     // Two or more edges
-    // Find the closet one on the left to the new edge
+    // Find the closest one on the left to the new edge
     std::list<PDCELHalfEdge *> cycle_list, cycle_list_2;
     PDCELHalfEdge *hei;
     int list_num = 1;
@@ -1518,17 +1537,25 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     cycle_list.push_back(hei);
     hei = hei->prev()->twin();
     do {
+      // If the angle of the current half edge is less than the angle of the
+      // last half edge in the list, then the list number is 2.
       if (hei->angle() < cycle_list.back()->angle()) {
         list_num = 2;
       }
+      // Add the current half edge to the list.
       if (list_num == 1) {
         cycle_list.push_back(hei);
       } else if (list_num == 2) {
         cycle_list_2.push_back(hei);
       }
+      // Move to the previous half edge.
       hei = hei->prev()->twin();
     } while (hei != v->edge());
 
+    // If the second list is not empty, then the first list is the list of
+    // half edges that are on the left of the new edge and the second list is
+    // the list of half edges that are on the right of the new edge.
+    // Splice the second list into the first list.
     if (cycle_list_2.size() > 0) {
       cycle_list.splice(cycle_list.begin(), cycle_list_2);
       // Now the list stores leaving edges sorted from (-pi, pi]
@@ -1537,6 +1564,8 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     // Insert the new edge according to the angle
     std::list<PDCELHalfEdge *>::iterator it;
     for (it = cycle_list.begin(); it != cycle_list.end(); ++it) {
+      // If the angle of the new edge is less than the angle of the current
+      // half edge, then insert the new edge before the current half edge.
       if (he->angle() < (*it)->angle())
         break;
     }
@@ -1545,8 +1574,11 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     // Update prev and next
     PDCELHalfEdge *he12left;
     if (it == cycle_list.end()) {
+      // If the new edge is inserted at the end of the list, then the left
+      // neighbor of the new edge is the first half edge in the list.
       he12left = cycle_list.front();
     } else {
+      // Otherwise, the left neighbor of the new edge is the current half edge.
       he12left = *it;
     }
 
@@ -1565,6 +1597,16 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
 
 
 
+/**
+ * @brief Find all line segments at the sweep line at a given vertex.
+ *
+ * Find all line segments at the sweep line at a given vertex. The sweep line
+ * is a vertical line passing through the given vertex. The function returns a
+ * list of line segments that intersect with the sweep line.
+ *
+ * @param v The vertex that the sweep line passes through.
+ * @return A list of line segments that intersect with the sweep line.
+ */
 std::list<PGeoLineSegment *>
 PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
   // std::cout << "[debug] findLineSegmentsAtSweepLine: " << v << std::endl;
@@ -1633,6 +1675,13 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
 
 
 
+/**
+ * Find the line segment below a given vertex.
+ * The method returns the line segment below the given vertex by sweeping a
+ * vertical line through the vertex from the top to the bottom.
+ * @param[in] v The vertex to find the line segment below
+ * @return The line segment below the given vertex
+ */
 PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
   // std::cout << "[debug] findLineSegmentBelowVertex: " << v << std::endl;
 
@@ -1682,7 +1731,7 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
 
       if ((*lsit)->vout()->point() < v->point()) {
         if (ls_below == nullptr || calcDistanceSquared(v, (*lsit)->vout()) <
-                                       calcDistanceSquared(v, vbelow)) {
+            calcDistanceSquared(v, vbelow)) {
           ls_below = (*lsit);
           vbelow = (*lsit)->vout();
           u1 = ls_tmp->getParametricLocation(vbelow);

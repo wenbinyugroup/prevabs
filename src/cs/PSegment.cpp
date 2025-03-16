@@ -337,6 +337,22 @@ void Segment::updateBaseOffsetIndexPairs(Message *pmessage) {
   _base_offset_indices_pairs = create_polyline_vertex_pairs(
     _curve_base->vertices(), _curve_offset->vertices());
 
+  // Check if the first pair is (0, 0), if not, add it
+  if (_base_offset_indices_pairs.front()[0] != 0 && 
+      _base_offset_indices_pairs.front()[1] != 0) {
+    _base_offset_indices_pairs.insert(_base_offset_indices_pairs.begin(), {0, 0});
+  }
+
+  // Check if the last pair is the one of the last vertex index of the base and offset, if not, add it
+  if (_base_offset_indices_pairs.back()[0] != _curve_base->vertices().size() - 1 &&
+      _base_offset_indices_pairs.back()[1] != _curve_offset->vertices().size() - 1) {
+    _base_offset_indices_pairs.push_back({
+      _curve_base->vertices().size() - 1,
+      _curve_offset->vertices().size() - 1
+    });
+  }
+
+
   // Log the updated pairs
   PLOG(debug) << pmessage->message("updated base-offset index pairs:");
   for (const auto &pair : _base_offset_indices_pairs) {

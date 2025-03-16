@@ -667,13 +667,24 @@ bool isOverlapped(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
 
 
 
+/**
+ * @brief Calculates the line bisecting the angle of <p1p0p2.
+ *
+ * Given three points, p0, p1, p2, calculate the line bisecting the
+ * angle of <p1p0p2, and return the vector parallel this line.
+ *
+ * @param[in] p0 The first point.
+ * @param[in] p1 The second point.
+ * @param[in] p2 The third point.
+ *
+ * @return The vector parallel to the bisecting line.
+ */
 SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
-  // Given three points, p0, p1, p2, calculate the line bisecting the
-  // angle of <p1p0p2, and return the vector parallel this line.
   SVector3 v1{p0, p1}, v2{p0, p2}, vb;
   // Make the two vectors the same length
   v1 *= 1 / v1.normSq();
   v2 *= 1 / v2.normSq();
+  // Calculate the bisecting vector by adding the two vectors
   vb = v1 + v2;
 
   return vb;
@@ -688,6 +699,20 @@ SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
 
 
 
+/**
+ * @brief Calculates the line bisecting the angle of <p1p0p2.
+ *
+ * Given two vectors, v1, v2, and the layup side (left or right) of
+ * each vector, calculate the line bisecting the angle of <p1p0p2, and
+ * return the vector parallel this line.
+ *
+ * @param[in] v1 The first vector.
+ * @param[in] v2 The second vector.
+ * @param[in] s1 The layup side (left or right) of v1.
+ * @param[in] s2 The layup side (left or right) of v2.
+ *
+ * @return The vector parallel to the bisecting line.
+ */
 SVector3 calcAngleBisectVector(SVector3 &v1, SVector3 &v2, std::string s1,
                                std::string s2) {
   // s1, s2 are the layup side (left or right) of v1, v2, respectively.
@@ -695,13 +720,16 @@ SVector3 calcAngleBisectVector(SVector3 &v1, SVector3 &v2, std::string s1,
   if (s1 == "right") {
     n1 = -1 * n1;
   }
+  // Calculate the vector perpendicular to v1 on the layup side s1
   p1 = crossprod(n1, v1).unit();
 
   if (s2 == "right") {
     n2 = -1 * n2;
   }
+  // Calculate the vector perpendicular to v2 on the layup side s2
   p2 = crossprod(n2, v2).unit();
 
+  // Calculate the bisecting vector by adding the two vectors
   return p1 + p2;
 }
 

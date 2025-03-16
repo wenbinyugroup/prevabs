@@ -82,10 +82,9 @@ void PComponent::addDependent(PComponent *component) {
 
 void PComponent::build(Message *pmessage) {
 
-  // i_indent++;
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
-  PLOG(info) << pmessage->message("building component: " + _name);
+  // PLOG(info) << pmessage->message("building component: " + _name);
 
   // Laminate type component
   if (_type == 1) {
@@ -102,8 +101,7 @@ void PComponent::build(Message *pmessage) {
 
   }
 
-  // i_indent--;
-  pmessage->decreaseIndent();
+  // pmessage->decreaseIndent();
 
 }
 
