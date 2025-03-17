@@ -49,9 +49,7 @@ bool isClose(
 
 double calcPolylineLength(const std::vector<PDCELVertex *>);
 
-
-
-
+double calc_curve_length_of_segment_param_coord_from_start(const std::vector<PDCELVertex *> &, const int &, const double &);
 
 template <typename P>
 P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, const double &tol) {
@@ -183,6 +181,10 @@ bool calc_line_intersection_2d(
 int getTurningSide(SVector3, SVector3);
 
 double calcDistanceSquared(PDCELVertex *, PDCELVertex *);
+
+bool is_close(PDCELVertex *, PDCELVertex *);
+
+void replace_vertex(std::vector<PDCELVertex *> &, PDCELVertex *, PDCELVertex *);
 
 /// Connect a list of baselines into a single one
 Baseline *joinCurves(std::list<Baseline *>);

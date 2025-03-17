@@ -1361,6 +1361,88 @@ int find_open_polylines_intersections(
 
 
 
+/// @brief Get the intersection location that is the closest to a given parametric coordinate.
+/// @param c The curve.
+/// @param ii The indices of the line segments of the intersections.
+/// @param uu The non-dimensional locations of the intersections on the line segments.
+/// @param param_coord The parametric coordinate.
+/// @param ex1 The extension flag for the starting point of the line segment.
+/// @param ex2 The extension flag for the ending point of the line segment.
+/// @param side The side from which to consider the distance to the parametric coordinate (-1: from the beginning, 1: from the ending, 0: either side).
+/// @param pmessage The message.
+/// @return The index of the intersection.
+int get_intersection_close_to_param_coord(
+  const std::vector<PDCELVertex *> &c,
+  const std::vector<int> &ii, const std::vector<double> &uu,
+  const double &param_coord, const int &ex1, const int &ex2, const int &side,
+  Message *pmessage
+) {
+
+  pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("in function: get_intersection_close_to_param_coord");
+
+  int j = 0;
+
+  double length = calcPolylineLength(c);
+
+  int ls_i = ii[0];
+  double u = uu[0];
+
+  for (auto k = 1; k < ii.size(); k++) {
+
+    if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
+      if (which_end == 0) {
+        // Closer to the beginning side
+        if (ii[k] < ls_i) {
+          // If the current segment index is smaller
+          ls_i = ii[k];
+          u = uu[k];
+          j = k;
+        }
+        else if (ii[k] == ls_i) {
+          // If the current segment index is the same
+          if (uu[k] < u) {
+            // If the current parametric coordinate is smaller
+            u = uu[k];
+            j = k;
+          }
+
+        }
+
+      }
+      else if (which_end == 1) {
+        // Closer to the ending side
+        if (ii[k] > ls_i) {
+          // If the current segment index is larger
+          ls_i = ii[k];
+          u = uu[k];
+          j = k;
+        }
+        else if (ii[k] == ls_i) {
+          // If the current segment index is the same
+          if (uu[k] > u) {
+            // If the current parametric coordinate is larger
+            u = uu[k];
+            j = k;
+          }
+
+        }
+
+      }
+    }
+
+  }
+
+  pmessage->decreaseIndent();
+
+  return j;
+
+}
+
+
+
+
 int get_intersection_closer_to(
   const std::vector<PDCELVertex *> &c,
   const std::vector<int> &ii, const std::vector<double> &uu,

@@ -24,13 +24,126 @@
 #include <string>
 
 
+void PComponent::join_segment_to_dependency(
+  Segment *s, int e, PDCELVertex *v, Message *pmessage) {
+
+  // 1. Use the reference point of the component to find the outer
+  // half edge loop that enclosing this point
+  // 2. Find all inner half edge loops inside the outer half edge loop
+  // 3. For each found loop, calculate intersections and
+  //    keep the intersection(s) closest to the reference point
+
+  PLOG(debug) << pmessage->message("joining segment to dependency: ") << _name << "." << s->getName() << " " << e;
+
+  std::vector<PDCELHalfEdgeLoop *> hels;  // The half edge loops that may intersect with the segment
+
+  // 1.
+  PLOG(debug) << pmessage->message("step 1: find the outer half edge loop");
+  if (_ref_vertex == nullptr) {
+    _ref_vertex = s->curveBase()->refVertex();
+    if (_ref_vertex == nullptr) {
+      if (s->curveBase()->vertices().size() > 2) {
+        // More than 2 vertices
+        int i = std::floor(s->curveBase()->vertices().size() / 2);
+        _ref_vertex = s->curveBase()->vertices()[i];
+      }
+      else {
+        // Only 2 vertices
+        // Create a new temporary vertex as the reference point
+        _ref_vertex = new PDCELVertex(
+          (s->curveBase()->vertices().front()->point() +
+           s->curveBase()->vertices().back()->point()) / 2
+        );
+      }
+    }
+  }
+
+  PLOG(debug) << pmessage->message("ref vertex: ") << _ref_vertex;
+
+  bool to_be_removed;
+  if (_ref_vertex->dcel() != nullptr) {
+    to_be_removed = false;
+  }
+  else {
+    _pmodel->dcel()->addVertex(_ref_vertex);
+    to_be_removed = true;
+  }
+
+  // Find the outer half edge loop that encloses the reference point
+  PDCELHalfEdgeLoop *tmp_hel_out = _pmodel->dcel()->findEnclosingLoop(_ref_vertex);
+  if (tmp_hel_out != _pmodel->dcel()->halfedgeloops().front()) {
+    // Not the first loop with INF size
+    hels.push_back(tmp_hel_out);
+  }
+
+  PDCELFace *tmp_face = tmp_hel_out->face();
+  if (config.debug) {
+    tmp_face->print();
+  }
+
+
+  // 2. Find all inner half edge loops inside the outer half edge loop
+  PLOG(debug) << pmessage->message("step 2: find all inner half edge loops");
+
+  // Try to update inner loops first
+  if (tmp_face->inners().size() == 0) {
+    _pmodel->dcel()->update_face_inner_loops(tmp_face);
+  }
+
+  for (auto _he : tmp_face->inners()) {
+    hels.push_back(_he->loop());
+  }
+
+
+
+  // If the reference point is a temporary vertex, remove it
+  if (to_be_removed) {
+    _pmodel->dcel()->removeVertex(_ref_vertex);
+  }
+
+  // Print the found half edge loops
+  if (config.debug) {
+    PLOG(debug) << pmessage->message("half edge loops found:");
+    for (auto hel : hels) {
+      hel->log();
+    }
+  }
+
+
+  // 3. For each found loop, calculate intersections and
+  //    keep the intersection(s) closest to the reference point
+  PLOG(debug) << pmessage->message("step 3: calculate intersections");
+
+  // 3.1. For the base curve
+  PLOG(debug) << pmessage->message("step 3.1: for the base curve");
+  std::vector<PDCELVertex *> vertices_intersect;
+  for (auto hel : hels) {
+    if (!hel->keep()) {}
+  }
+
+  // 3.2. For the offset curve
+  PLOG(debug) << pmessage->message("step 3.2: for the offset curve");
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
 void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessage) {
 
   pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("making segment end: " + s->getName() + " " + std::to_string(e));
+  PLOG(debug) << pmessage->message("making segment end: ") << _name << "." << s->getName() << " " << e;
 
-  PLOG(debug) << pmessage->message("number of dependencies: " + std::to_string(_dependencies.size()));
+  PLOG(debug) << pmessage->message("number of dependencies: ") << _dependencies.size();
 
   if (_dependencies.empty()) {
     PLOG(debug) << pmessage->message("making segment end because of no dependency.");
@@ -41,8 +154,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
   else {
 
-    PLOG(debug) << pmessage->message("the end to be done (e): " + std::to_string(e));
-    PLOG(debug) << pmessage->message("free end of the segment (s->free()): " + std::to_string(s->free()));
+    PLOG(debug) << pmessage->message("the end to be done (e): ") << e;
+    PLOG(debug) << pmessage->message("free end of the segment (s->free()): ") << s->free();
 
     if (e == s->free()) {
       PLOG(debug) << pmessage->message("making segment end because of free end set although with dependency.");
@@ -82,8 +195,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
           _ref_vertex = _segments[0]->curveBase()->vertices()[i];
         }
       }
-      // std::cout << "\n_ref_vertex = " << _ref_vertex << std::endl;
-      PLOG(debug) << pmessage->message("ref vertex: " + _ref_vertex->printString());
+
+      PLOG(debug) << pmessage->message("ref vertex: ") << _ref_vertex;
 
       bool to_be_removed;
       if (_ref_vertex->dcel() != nullptr) {
@@ -576,15 +689,25 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
 
 
+/// @brief Join two segments with a step-like joint
+///
+/// This style uses the angle bisector line as the boundary
+/// between the two segments
+/// If the layup thicknesses are not the same
+/// or base curves are not symmetric about the bisector,
+/// then there will be a step change at the joint
+///
+/// @param s1 Segment 1
+/// @param s2 Segment 2
+/// @param e1 Which end of segment 1 to join
+/// @param e2 Which end of segment 2 to join
+/// @param pmessage Message object for logging
 void join_segments_style_1(
-  Segment *s1, Segment *s2, int e1, int e2, Message *pmessage
+  Segment *s1, Segment *s2, int e1, int e2, std::vector<PDCELVertex *> bound_vertices,
+  Message *pmessage
   ) {
-  // Step-like joint
-  // This style uses the angle bisector line as the boundary
-  // between the two segments
-  // If the layup thicknesses are not the same
-  // or base curves are not symmetric about the bisector,
-  // then there will be a step change at the joint
+
+  PLOG(debug) << pmessage->message("joining segments with style 1 (step-like joint)");
 
   // Calculate the bounding vector and line segment
   SVector3 b, t1, t2;
@@ -593,35 +716,130 @@ void join_segments_style_1(
 
   b = calcAngleBisectVector(t1, t2, s1->getLayupside(), s2->getLayupside());
 
-  PGeoLineSegment *ls_b = new PGeoLineSegment(v, b);
+  // PGeoLineSegment *ls_b = new PGeoLineSegment(v, b);
   PDCELVertex *tmp_v = new PDCELVertex((v->point()+b).point());
-  std::vector<PDCELVertex *> bound_vertices;
-  bound_vertices.push_back(v);
+  // std::vector<PDCELVertex *> bound_vertices;
+  // bound_vertices.push_back(v);
   bound_vertices.push_back(tmp_v);
+
 
   // Intersect offset curve with the bound for segment 1
   double param_loc_1 = e1 == 0 ? 0.0 : 1.0;
-  double param_loc_2 = e2 == 0 ? 0.0 : 1.0;
-  int i1, i2;
-  double u1, u2;
-  bool is_new_1, is_new_2;
-  PDCELVertex *v_new = get_polylines_intersection_close_to(
+  int i1, ib1;
+  double u1, ub1;
+  bool is_new_1, is_new_b1;
+  PDCELVertex *v_new_1 = get_polylines_intersection_close_to(
     s1->curveOffset()->vertices(), bound_vertices,
-    param_loc_1, param_loc_2, 1, 1, 1, 1,
-    i1, u1, i2, u2, is_new_1, is_new_2,
+    param_loc_1, -1, 1, 1, 1, 1,
+    i1, u1, ib1, ub1, is_new_1, is_new_b1,
     pmessage
   );
-  
-  trim(s1->curveOffset()->vertices(), v_new, e1);
+
+  trim(s1->curveOffset()->vertices(), v_new_1, e1);
   
   PLOG(debug) << pmessage->message("  intersection vertex for ")
-  << s1->getName() << ": " << v_new;
-  
+  << s1->getName() << ": " << v_new_1;
+
   // Update linking indices
   s1->updateBaseOffsetIndexPairs(pmessage);
 
 
   // Intersect offset curve with the bound for segment 2
+  double param_loc_2 = e2 == 0 ? 0.0 : 1.0;
+  int i2, ib2;
+  double u2, ub2;
+  bool is_new_2, is_new_b2;
+  PDCELVertex *v_new_2 = get_polylines_intersection_close_to(
+    s2->curveOffset()->vertices(), bound_vertices,
+    param_loc_2, -1, 1, 1, 1, 1,
+    i1, u1, ib1, ub1, is_new_1, is_new_b1,
+    pmessage
+  );
+
+  trim(s2->curveOffset()->vertices(), v_new_2, e2);
+  
+  PLOG(debug) << pmessage->message("  intersection vertex for ")
+  << s2->getName() << ": " << v_new_2;
+
+  // Update linking indices
+  s2->updateBaseOffsetIndexPairs(pmessage);
+
+  // Remove the temporary vertex from the bound vertices
+  bound_vertices.pop_back();
+
+  // Check if the two intersection vertices are close to each other
+  // If so, replace one of them with the other
+  if (is_close(v_new_1, v_new_2)) {
+    // Check if the two vertices are the same object
+    // If not, replace one of them with the other
+    if (v_new_1 != v_new_2) {
+      replace_vertex(s2->curveOffset()->vertices(), v_new_2, v_new_1);
+    }
+
+    // Add the intersection vertex to the bound vertices
+    bound_vertices.push_back(v_new_1);
+  } else {
+    // Add both intersection vertices to the bound vertices
+    // Add first the one that is closer to the first vertex of the bound
+    if (calcDistanceSquared(v_new_1, bound_vertices.front()) <
+        calcDistanceSquared(v_new_2, bound_vertices.front())) {
+      bound_vertices.push_back(v_new_1);
+      bound_vertices.push_back(v_new_2);
+    } else {
+      bound_vertices.push_back(v_new_2);
+      bound_vertices.push_back(v_new_1);
+    }
+  }
+
+}
+
+
+
+
+
+
+
+
+
+/// @brief Join two segments with a non-step-like joint
+/// @param s1 
+/// @param s2 
+/// @param e1 
+/// @param e2 
+/// @param pmessage 
+void join_segments_style_2(
+  Segment *s1, Segment *s2, int e1, int e2, std::vector<PDCELVertex *> bound_vertices,
+  Message *pmessage
+  ) {
+
+  PLOG(debug) << pmessage->message("joining segments with style 2 (non-step-like joint)");
+
+  // Intersect the two offset curves
+
+  double param_loc_1 = e1 == 0 ? 0.0 : 1.0;
+  double param_loc_2 = e2 == 0 ? 0.0 : 1.0;
+  int i1, i2;
+  double u1, u2;
+  bool is_new_1, is_new_2;
+
+  PDCELVertex *v_new = get_polylines_intersection_close_to(
+    s1->curveOffset()->vertices(), s2->curveOffset()->vertices(),
+    param_loc_1, param_loc_2, 1, 1, 1, 1,
+    i1, u1, i2, u2, is_new_1, is_new_2, pmessage
+  );
+
+  trim(s1->curveOffset()->vertices(), v_new, e1);
+  trim(s2->curveOffset()->vertices(), v_new, e2);
+
+  PLOG(debug) << pmessage->message("  intersection vertex: ") << v_new;
+
+  // Update linking indices
+  s1->updateBaseOffsetIndexPairs(pmessage);
+  s2->updateBaseOffsetIndexPairs(pmessage);
+
+  // Add the intersection vertex to the bound vertices
+  bound_vertices.push_back(v_new);
+
 }
 
 
@@ -660,475 +878,477 @@ void PComponent::joinSegments(
   // then there will be a step change at the joint
   if (style == 1) {
 
-
-    // Calculate the bounding vector and line segment
-    SVector3 b, t1, t2;
-    t1 = e1 == 0 ? s1->getBeginTangent() : s1->getEndTangent();
-    t2 = e2 == 0 ? s2->getBeginTangent() : s2->getEndTangent();
-    // std::cout << "        vector t1: " << t1 << std::endl;
-    // std::cout << "        vector t2: " << t2 << std::endl;
-    b = calcAngleBisectVector(t1, t2, s1->getLayupside(), s2->getLayupside());
-    // std::cout << "        vector b: " << b << std::endl;
-
-    PGeoLineSegment *ls_b = new PGeoLineSegment(v, b);
-    PDCELVertex *tmp_v = new PDCELVertex((v->point()+b).point());
-    std::vector<PDCELVertex *> tmp_bound_1, tmp_bound_2;
-    tmp_bound_1.push_back(v);
-    tmp_bound_1.push_back(tmp_v);
-    tmp_bound_2.push_back(v);
-    tmp_bound_2.push_back(tmp_v);
+    join_segments_style_1(s1, s2, e1, e2, bound_vertices, pmessage);
 
 
+    // // Calculate the bounding vector and line segment
+    // SVector3 b, t1, t2;
+    // t1 = e1 == 0 ? s1->getBeginTangent() : s1->getEndTangent();
+    // t2 = e2 == 0 ? s2->getBeginTangent() : s2->getEndTangent();
+    // // std::cout << "        vector t1: " << t1 << std::endl;
+    // // std::cout << "        vector t2: " << t2 << std::endl;
+    // b = calcAngleBisectVector(t1, t2, s1->getLayupside(), s2->getLayupside());
+    // // std::cout << "        vector b: " << b << std::endl;
 
-
-    // Intersect offset curve with the bound for each segment
-    int ib_tmp, i_tmp;
-    double u1, u2, ub1, ub2;
-    std::vector<int> i1s, i2s, ibs1, ibs2;
-    std::vector<double> u1s, u2s, ubs1, ubs2;
-    int ls_i1, ls_i2, ls_bi1, ls_bi2;
-    double ls_u1, ls_u2, ls_bu1, ls_bu2;
-    int is_new_1, is_new_2, is_new_b1, is_new_b2;
-    int j1;
+    // PGeoLineSegment *ls_b = new PGeoLineSegment(v, b);
+    // PDCELVertex *tmp_v = new PDCELVertex((v->point()+b).point());
+    // std::vector<PDCELVertex *> tmp_bound_1, tmp_bound_2;
+    // tmp_bound_1.push_back(v);
+    // tmp_bound_1.push_back(tmp_v);
+    // tmp_bound_2.push_back(v);
+    // tmp_bound_2.push_back(tmp_v);
 
 
 
 
-    // Intersect segment 1 offset curve and the bound
+    // // Intersect offset curve with the bound for each segment
+    // int ib_tmp, i_tmp;
+    // double u1, u2, ub1, ub2;
+    // std::vector<int> i1s, i2s, ibs1, ibs2;
+    // std::vector<double> u1s, u2s, ubs1, ubs2;
+    // int ls_i1, ls_i2, ls_bi1, ls_bi2;
+    // double ls_u1, ls_u2, ls_bu1, ls_bu2;
+    // int is_new_1, is_new_2, is_new_b1, is_new_b2;
+    // int j1;
 
-    // findAllIntersections(
-    //   s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1
+
+
+
+    // // Intersect segment 1 offset curve and the bound
+
+    // // findAllIntersections(
+    // //   s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1
+    // // );
+    // find_open_polylines_intersections(
+    //   s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1,
+    //   1, 1, 1, 1, pmessage
     // );
-    find_open_polylines_intersections(
-      s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1,
-      1, 1, 1, 1, pmessage
-    );
-    // ls_u1 = getIntersectionLocation(
-    //   s1->curveOffset()->vertices(), i1s, u1s, e1, 0, ls_i1, j1, pmessage
+    // // ls_u1 = getIntersectionLocation(
+    // //   s1->curveOffset()->vertices(), i1s, u1s, e1, 0, ls_i1, j1, pmessage
+    // // );
+    // j1 = get_intersection_closer_to(
+    //   s1->curveOffset()->vertices(), i1s, u1s, e1, 0, pmessage
     // );
-    j1 = get_intersection_closer_to(
-      s1->curveOffset()->vertices(), i1s, u1s, e1, 0, pmessage
-    );
-    // ls_bu1 = getIntersectionLocation(
-    //   tmp_bound, ibs1, ubs1, 0, 0, ls_bi1
-    // );
-    ls_u1 = u1s[j1];
-    ls_i1 = i1s[j1];
-    ls_bi1 = ibs1[j1];
-    ls_bu1 = ubs1[j1];
-    // std::cout << "\nls_bi1 = " << ls_bi1 << ", ls_bu1 = " << ls_bu1 << std::endl;
-    // v1_new = getIntersectionVertex(
+    // // ls_bu1 = getIntersectionLocation(
+    // //   tmp_bound, ibs1, ubs1, 0, 0, ls_bi1
+    // // );
+    // ls_u1 = u1s[j1];
+    // ls_i1 = i1s[j1];
+    // ls_bi1 = ibs1[j1];
+    // ls_bu1 = ubs1[j1];
+    // // std::cout << "\nls_bi1 = " << ls_bi1 << ", ls_bu1 = " << ls_bu1 << std::endl;
+    // // v1_new = getIntersectionVertex(
+    // //   s1->curveOffset()->vertices(), tmp_bound_1,
+    // //   ls_i1, ls_bi1, ls_u1, ls_bu1, e1, 0, 0, 0, is_new_1, is_new_b1, TOLERANCE
+    // // );
+    // v1_new = get_intersection_vertex(
     //   s1->curveOffset()->vertices(), tmp_bound_1,
-    //   ls_i1, ls_bi1, ls_u1, ls_bu1, e1, 0, 0, 0, is_new_1, is_new_b1, TOLERANCE
+    //   ls_i1, ls_bi1, ls_u1, ls_bu1, pmessage
     // );
-    v1_new = get_intersection_vertex(
-      s1->curveOffset()->vertices(), tmp_bound_1,
-      ls_i1, ls_bi1, ls_u1, ls_bu1, pmessage
-    );
-    trim(s1->curveOffset()->vertices(), v1_new, e1);
+    // trim(s1->curveOffset()->vertices(), v1_new, e1);
 
-    PLOG(debug) << pmessage->message("  ls_i1 = " + std::to_string(ls_i1));
+    // PLOG(debug) << pmessage->message("  ls_i1 = " + std::to_string(ls_i1));
 
-    PLOG(debug) << pmessage->message(
-      "  intersection vertex for " + s1->getName()
-      + ": " + v1_new->printString()
-    );
+    // PLOG(debug) << pmessage->message(
+    //   "  intersection vertex for " + s1->getName()
+    //   + ": " + v1_new->printString()
+    // );
 
 
 
 
-    // Adjust linking indices
+    // // Adjust linking indices
   
-    if (is_new_1) {
-      // If the intersection vertex is a new one
+    // if (is_new_1) {
+    //   // If the intersection vertex is a new one
 
-      if (e1 == 0) {
-        // At the starting end
+    //   if (e1 == 0) {
+    //     // At the starting end
 
-        if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesPairs().back()[1] + 1) {
-          // Extending case
-          // Add 1 to every offset index
-          for (auto k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
-            (s1->baseOffsetIndicesPairs()[k][1])++;
-          }
-          // Insert a new pair of (0, 0)
-          std::vector<int> id_pair_tmp{0, 0};
-          s1->baseOffsetIndicesPairs().insert(
-            s1->baseOffsetIndicesPairs().begin(), id_pair_tmp
-          );
-        }
-        else {
-          // Trimming case
-          // 1: Remove the index pairs if the offset vertex index is in the trim region
-          while (1) {
-            int id_offset_tmp = s1->baseOffsetIndicesPairs().front()[1];
-            if (id_offset_tmp > (ls_i1-1)) break;
-            s1->baseOffsetIndicesPairs().erase(s1->baseOffsetIndicesPairs().begin());
-          }
+    //     if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesPairs().back()[1] + 1) {
+    //       // Extending case
+    //       // Add 1 to every offset index
+    //       for (auto k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
+    //         (s1->baseOffsetIndicesPairs()[k][1])++;
+    //       }
+    //       // Insert a new pair of (0, 0)
+    //       std::vector<int> id_pair_tmp{0, 0};
+    //       s1->baseOffsetIndicesPairs().insert(
+    //         s1->baseOffsetIndicesPairs().begin(), id_pair_tmp
+    //       );
+    //     }
+    //     else {
+    //       // Trimming case
+    //       // 1: Remove the index pairs if the offset vertex index is in the trim region
+    //       while (1) {
+    //         int id_offset_tmp = s1->baseOffsetIndicesPairs().front()[1];
+    //         if (id_offset_tmp > (ls_i1-1)) break;
+    //         s1->baseOffsetIndicesPairs().erase(s1->baseOffsetIndicesPairs().begin());
+    //       }
 
-          // 2: Renumber indices
-          for (int k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
-            s1->baseOffsetIndicesPairs()[k][1] -= (ls_i1-1);
-          }
+    //       // 2: Renumber indices
+    //       for (int k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
+    //         s1->baseOffsetIndicesPairs()[k][1] -= (ls_i1-1);
+    //       }
 
-          // 3: Add the index pairs for the trimmed end
-          std::vector<std::vector<int>>::iterator it_tmp = s1->baseOffsetIndicesPairs().begin();
-          int id_base_tmp = s1->baseOffsetIndicesPairs().front()[0];
-          for (int k = 0; k < id_base_tmp; k++) {
-            std::vector<int> id_pair_tmp{id_base_tmp - 1 - k, 0};
-            it_tmp = s1->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-          }
-          // std::vector<int> id_pair_tmp{0, 0};
-          // it_tmp = s1->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-        }
-
-
-        // Old method
-        // if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesLink().back() + 1) {
-        //   for (auto k = 1; k < s1->baseOffsetIndicesLink().size(); k++) {
-        //     s1->baseOffsetIndicesLink()[k] += 1;
-        //   }
-        // }
-        // else {
-        //   for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
-        //     if (s1->baseOffsetIndicesLink()[k] < ls_i1) {
-        //       s1->baseOffsetIndicesLink()[k] = 0;
-        //     }
-        //     else {
-        //       s1->baseOffsetIndicesLink()[k] -= ls_i1 - 1;
-        //     }
-        //   }
-        // }
+    //       // 3: Add the index pairs for the trimmed end
+    //       std::vector<std::vector<int>>::iterator it_tmp = s1->baseOffsetIndicesPairs().begin();
+    //       int id_base_tmp = s1->baseOffsetIndicesPairs().front()[0];
+    //       for (int k = 0; k < id_base_tmp; k++) {
+    //         std::vector<int> id_pair_tmp{id_base_tmp - 1 - k, 0};
+    //         it_tmp = s1->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //       }
+    //       // std::vector<int> id_pair_tmp{0, 0};
+    //       // it_tmp = s1->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //     }
 
 
-      }
-      else if (e1 == 1) {
-        // At the stopping end
-
-        if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesPairs().back()[1] + 1) {
-          // Extending case
-          std::vector<int> id_pair_tmp{
-            s1->baseOffsetIndicesPairs().back()[0],
-            s1->baseOffsetIndicesPairs().back()[1] + 1
-          };
-          s1->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-        }
-        else {
-          // Trimming case
-          // 1.2: Remove the index pairs if the offset vertex index is in the trim region
-          while (1) {
-            int id_offset_tmp = s1->baseOffsetIndicesPairs().back()[1];
-            if (id_offset_tmp < ls_i1) break;
-            s1->baseOffsetIndicesPairs().pop_back();
-          }
-
-          // 3: Add the index pairs for the trimmed end
-          for (
-            auto k = s1->baseOffsetIndicesPairs().back()[0]+1;
-            k < s1->curveBase()->vertices().size(); k++
-          ) {
-            std::vector<int> id_pair_tmp{k, ls_i1};
-            s1->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-          }
-        }
+    //     // Old method
+    //     // if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesLink().back() + 1) {
+    //     //   for (auto k = 1; k < s1->baseOffsetIndicesLink().size(); k++) {
+    //     //     s1->baseOffsetIndicesLink()[k] += 1;
+    //     //   }
+    //     // }
+    //     // else {
+    //     //   for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
+    //     //     if (s1->baseOffsetIndicesLink()[k] < ls_i1) {
+    //     //       s1->baseOffsetIndicesLink()[k] = 0;
+    //     //     }
+    //     //     else {
+    //     //       s1->baseOffsetIndicesLink()[k] -= ls_i1 - 1;
+    //     //     }
+    //     //   }
+    //     // }
 
 
-        // Old method
-        // if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesLink().back() + 1) {
-        //   s1->baseOffsetIndicesLink().back() += 1;
-        // }
-        // else {
-        //   for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
-        //     if (s1->baseOffsetIndicesLink()[k] > ls_i1) {
-        //       s1->baseOffsetIndicesLink()[k] = ls_i1;
-        //     }
-        //   }
-        // }
-      }
+    //   }
+    //   else if (e1 == 1) {
+    //     // At the stopping end
 
-    }
-    else {
+    //     if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesPairs().back()[1] + 1) {
+    //       // Extending case
+    //       std::vector<int> id_pair_tmp{
+    //         s1->baseOffsetIndicesPairs().back()[0],
+    //         s1->baseOffsetIndicesPairs().back()[1] + 1
+    //       };
+    //       s1->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+    //     }
+    //     else {
+    //       // Trimming case
+    //       // 1.2: Remove the index pairs if the offset vertex index is in the trim region
+    //       while (1) {
+    //         int id_offset_tmp = s1->baseOffsetIndicesPairs().back()[1];
+    //         if (id_offset_tmp < ls_i1) break;
+    //         s1->baseOffsetIndicesPairs().pop_back();
+    //       }
 
-      // If the intersection vertex is an existing one
-      if (e1 == 0) {
-        for (auto k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
-          if (s1->baseOffsetIndicesPairs()[k][1] <= ls_i1) {
-            s1->baseOffsetIndicesPairs()[k][1] = 0;
-          }
-          else {
-            s1->baseOffsetIndicesPairs()[k][1] -= ls_i1;
-          }
-        }
-
-
-        // Old method
-        // for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
-        //   if (s1->baseOffsetIndicesLink()[k] <= ls_i1) {
-        //     s1->baseOffsetIndicesLink()[k] = 0;
-        //   }
-        //   else {
-        //     s1->baseOffsetIndicesLink()[k] -= ls_i1;
-        //   }
-        // }
-
-      }
-      else if (e1 == 1) {
-        for (auto k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
-          if (s1->baseOffsetIndicesPairs()[k][1] > ls_i1) {
-            s1->baseOffsetIndicesPairs()[k][1] = ls_i1;
-          }
-        }
+    //       // 3: Add the index pairs for the trimmed end
+    //       for (
+    //         auto k = s1->baseOffsetIndicesPairs().back()[0]+1;
+    //         k < s1->curveBase()->vertices().size(); k++
+    //       ) {
+    //         std::vector<int> id_pair_tmp{k, ls_i1};
+    //         s1->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+    //       }
+    //     }
 
 
-        // Old method
-        // for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
-        //   if (s1->baseOffsetIndicesLink()[k] > ls_i1) {
-        //     s1->baseOffsetIndicesLink()[k] = ls_i1;
-        //   }
-        // }
+    //     // Old method
+    //     // if (s1->curveOffset()->vertices().size() > s1->baseOffsetIndicesLink().back() + 1) {
+    //     //   s1->baseOffsetIndicesLink().back() += 1;
+    //     // }
+    //     // else {
+    //     //   for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
+    //     //     if (s1->baseOffsetIndicesLink()[k] > ls_i1) {
+    //     //       s1->baseOffsetIndicesLink()[k] = ls_i1;
+    //     //     }
+    //     //   }
+    //     // }
+    //   }
 
-      }
-
-    }
-
-    // std::cout << "\n[debug] new base-offset link:";
-    // for (auto k : s1->baseOffsetIndicesLink()) {
-    //   std::cout << " " << k;
     // }
-    // std::cout << std::endl;
+    // else {
+
+    //   // If the intersection vertex is an existing one
+    //   if (e1 == 0) {
+    //     for (auto k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
+    //       if (s1->baseOffsetIndicesPairs()[k][1] <= ls_i1) {
+    //         s1->baseOffsetIndicesPairs()[k][1] = 0;
+    //       }
+    //       else {
+    //         s1->baseOffsetIndicesPairs()[k][1] -= ls_i1;
+    //       }
+    //     }
+
+
+    //     // Old method
+    //     // for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
+    //     //   if (s1->baseOffsetIndicesLink()[k] <= ls_i1) {
+    //     //     s1->baseOffsetIndicesLink()[k] = 0;
+    //     //   }
+    //     //   else {
+    //     //     s1->baseOffsetIndicesLink()[k] -= ls_i1;
+    //     //   }
+    //     // }
+
+    //   }
+    //   else if (e1 == 1) {
+    //     for (auto k = 0; k < s1->baseOffsetIndicesPairs().size(); k++) {
+    //       if (s1->baseOffsetIndicesPairs()[k][1] > ls_i1) {
+    //         s1->baseOffsetIndicesPairs()[k][1] = ls_i1;
+    //       }
+    //     }
+
+
+    //     // Old method
+    //     // for (auto k = 0; k < s1->baseOffsetIndicesLink().size(); k++) {
+    //     //   if (s1->baseOffsetIndicesLink()[k] > ls_i1) {
+    //     //     s1->baseOffsetIndicesLink()[k] = ls_i1;
+    //     //   }
+    //     // }
+
+    //   }
+
+    // }
+
+    // // std::cout << "\n[debug] new base-offset link:";
+    // // for (auto k : s1->baseOffsetIndicesLink()) {
+    // //   std::cout << " " << k;
+    // // }
+    // // std::cout << std::endl;
 
 
 
 
-    // Intersect segment 2 offset curve and the bound
+    // // Intersect segment 2 offset curve and the bound
 
-    // findAllIntersections(
-    //   s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2
+    // // findAllIntersections(
+    // //   s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2
+    // // );
+    // find_open_polylines_intersections(
+    //   s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2,
+    //   1, 1, 1, 1, pmessage
     // );
-    find_open_polylines_intersections(
-      s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2,
-      1, 1, 1, 1, pmessage
-    );
-    // ls_u2 = getIntersectionLocation(
-    //   s2->curveOffset()->vertices(), i2s, u2s, e2, 0, ls_i2, j1, pmessage
+    // // ls_u2 = getIntersectionLocation(
+    // //   s2->curveOffset()->vertices(), i2s, u2s, e2, 0, ls_i2, j1, pmessage
+    // // );
+    // j1 = get_intersection_closer_to(
+    //   s2->curveOffset()->vertices(), i2s, u2s, e2, 0, pmessage
     // );
-    j1 = get_intersection_closer_to(
-      s2->curveOffset()->vertices(), i2s, u2s, e2, 0, pmessage
-    );
-    // ls_bu2 = getIntersectionLocation(
-    //   tmp_bound, ibs2, ubs2, 0, 0, ls_bi2
-    // );
-    ls_i2 = i2s[j1];
-    ls_u2 = u2s[j1];
-    ls_bi2 = ibs2[j1];
-    ls_bu2 = ubs2[j1];
-    // std::cout << "\nls_bi2 = " << ls_bi2 << ", ls_bu2 = " << ls_bu2 << std::endl;
-    // v2_new = getIntersectionVertex(
+    // // ls_bu2 = getIntersectionLocation(
+    // //   tmp_bound, ibs2, ubs2, 0, 0, ls_bi2
+    // // );
+    // ls_i2 = i2s[j1];
+    // ls_u2 = u2s[j1];
+    // ls_bi2 = ibs2[j1];
+    // ls_bu2 = ubs2[j1];
+    // // std::cout << "\nls_bi2 = " << ls_bi2 << ", ls_bu2 = " << ls_bu2 << std::endl;
+    // // v2_new = getIntersectionVertex(
+    // //   s2->curveOffset()->vertices(), tmp_bound_2,
+    // //   ls_i2, ls_bi2, ls_u2, ls_bu2, e2, 0, 0, 0, is_new_2, is_new_b2, TOLERANCE
+    // // );
+    // v2_new = get_intersection_vertex(
     //   s2->curveOffset()->vertices(), tmp_bound_2,
-    //   ls_i2, ls_bi2, ls_u2, ls_bu2, e2, 0, 0, 0, is_new_2, is_new_b2, TOLERANCE
+    //   ls_i2, ls_bi2, ls_u2, ls_bu2, pmessage
     // );
-    v2_new = get_intersection_vertex(
-      s2->curveOffset()->vertices(), tmp_bound_2,
-      ls_i2, ls_bi2, ls_u2, ls_bu2, pmessage
-    );
-    trim(s2->curveOffset()->vertices(), v2_new, e2);
+    // trim(s2->curveOffset()->vertices(), v2_new, e2);
 
-    PLOG(debug) << pmessage->message("  ls_i2 = " + std::to_string(ls_i2));
+    // PLOG(debug) << pmessage->message("  ls_i2 = " + std::to_string(ls_i2));
 
-    PLOG(debug) << pmessage->message(
-      "  intersection vertex for " + s2->getName()
-      + ": " + v2_new->printString()
-    );
+    // PLOG(debug) << pmessage->message(
+    //   "  intersection vertex for " + s2->getName()
+    //   + ": " + v2_new->printString()
+    // );
 
 
 
 
-    // Adjust linking indices
+    // // Adjust linking indices
 
-    if (is_new_2) {
-      // If the intersection vertex is a new one
+    // if (is_new_2) {
+    //   // If the intersection vertex is a new one
 
-      if (e2 == 0) {
-        // At the starting end
+    //   if (e2 == 0) {
+    //     // At the starting end
 
-        if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesPairs().back()[1] + 1) {
-          // Extending case
-          // Add 1 to every offset index
-          for (auto k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
-            (s2->baseOffsetIndicesPairs()[k][1])++;
-          }
-          // Insert a new pair of (0, 0)
-          std::vector<int> id_pair_tmp{0, 0};
-          s2->baseOffsetIndicesPairs().insert(
-            s2->baseOffsetIndicesPairs().begin(), id_pair_tmp
-          );
-        }
-        else {
-          // Trimming case
-          // 1: Remove the index pairs if the offset vertex index is in the trim region
-          while (1) {
-            int id_offset_tmp = s2->baseOffsetIndicesPairs().front()[1];
-            if (id_offset_tmp > (ls_i2-1)) break;
-            s2->baseOffsetIndicesPairs().erase(s2->baseOffsetIndicesPairs().begin());
-          }
+    //     if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesPairs().back()[1] + 1) {
+    //       // Extending case
+    //       // Add 1 to every offset index
+    //       for (auto k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
+    //         (s2->baseOffsetIndicesPairs()[k][1])++;
+    //       }
+    //       // Insert a new pair of (0, 0)
+    //       std::vector<int> id_pair_tmp{0, 0};
+    //       s2->baseOffsetIndicesPairs().insert(
+    //         s2->baseOffsetIndicesPairs().begin(), id_pair_tmp
+    //       );
+    //     }
+    //     else {
+    //       // Trimming case
+    //       // 1: Remove the index pairs if the offset vertex index is in the trim region
+    //       while (1) {
+    //         int id_offset_tmp = s2->baseOffsetIndicesPairs().front()[1];
+    //         if (id_offset_tmp > (ls_i2-1)) break;
+    //         s2->baseOffsetIndicesPairs().erase(s2->baseOffsetIndicesPairs().begin());
+    //       }
 
-          // 2: Renumber indices
-          for (int k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
-            s2->baseOffsetIndicesPairs()[k][1] -= (ls_i2-1);
-          }
+    //       // 2: Renumber indices
+    //       for (int k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
+    //         s2->baseOffsetIndicesPairs()[k][1] -= (ls_i2-1);
+    //       }
 
-          // 3: Add the index pairs for the trimmed end
-          std::vector<std::vector<int>>::iterator it_tmp = s2->baseOffsetIndicesPairs().begin();
-          int id_base_tmp = s2->baseOffsetIndicesPairs().front()[0];
-          for (int k = 0; k < id_base_tmp; k++) {
-            std::vector<int> id_pair_tmp{id_base_tmp - 1 - k, 0};
-            it_tmp = s2->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-          }
-          // std::vector<int> id_pair_tmp{0, 0};
-          // it_tmp = s1->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-        }
-
-
-        // Old method
-        // if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesLink().back() + 1) {
-        //   for (auto k = 1; k < s2->baseOffsetIndicesLink().size(); k++) {
-        //     s2->baseOffsetIndicesLink()[k] += 1;
-        //   }
-        // }
-        // else {
-        //   for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
-        //     if (s2->baseOffsetIndicesLink()[k] < ls_i2) {
-        //       s2->baseOffsetIndicesLink()[k] = 0;
-        //     }
-        //     else {
-        //       s2->baseOffsetIndicesLink()[k] -= ls_i2 - 1;
-        //     }
-        //   }
-        // }
+    //       // 3: Add the index pairs for the trimmed end
+    //       std::vector<std::vector<int>>::iterator it_tmp = s2->baseOffsetIndicesPairs().begin();
+    //       int id_base_tmp = s2->baseOffsetIndicesPairs().front()[0];
+    //       for (int k = 0; k < id_base_tmp; k++) {
+    //         std::vector<int> id_pair_tmp{id_base_tmp - 1 - k, 0};
+    //         it_tmp = s2->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //       }
+    //       // std::vector<int> id_pair_tmp{0, 0};
+    //       // it_tmp = s1->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+    //     }
 
 
-      }
-      else if (e2 == 1) {
-        // At the stopping end
-
-        if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesPairs().back()[1] + 1) {
-          // Extending case
-          std::vector<int> id_pair_tmp{
-            s2->baseOffsetIndicesPairs().back()[0],
-            s2->baseOffsetIndicesPairs().back()[1] + 1
-          };
-          s2->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-        }
-        else {
-          // Trimming case
-          // 1.2: Remove the index pairs if the offset vertex index is in the trim region
-          while (1) {
-            int id_offset_tmp = s2->baseOffsetIndicesPairs().back()[1];
-            if (id_offset_tmp < ls_i2) break;
-            s2->baseOffsetIndicesPairs().pop_back();
-          }
-
-          // 3: Add the index pairs for the trimmed end
-          for (
-            auto k = s2->baseOffsetIndicesPairs().back()[0]+1;
-            k < s2->curveBase()->vertices().size(); k++
-          ) {
-            std::vector<int> id_pair_tmp{k, ls_i2};
-            s2->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-          }
-        }
+    //     // Old method
+    //     // if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesLink().back() + 1) {
+    //     //   for (auto k = 1; k < s2->baseOffsetIndicesLink().size(); k++) {
+    //     //     s2->baseOffsetIndicesLink()[k] += 1;
+    //     //   }
+    //     // }
+    //     // else {
+    //     //   for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
+    //     //     if (s2->baseOffsetIndicesLink()[k] < ls_i2) {
+    //     //       s2->baseOffsetIndicesLink()[k] = 0;
+    //     //     }
+    //     //     else {
+    //     //       s2->baseOffsetIndicesLink()[k] -= ls_i2 - 1;
+    //     //     }
+    //     //   }
+    //     // }
 
 
-        // Old method
-        // if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesLink().back() + 1) {
-        //   s2->baseOffsetIndicesLink().back() += 1;
-        // }
-        // else {
-        //   for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
-        //     if (s2->baseOffsetIndicesLink()[k] > ls_i2) {
-        //       s2->baseOffsetIndicesLink()[k] = ls_i2;
-        //     }
-        //   }
-        // }
+    //   }
+    //   else if (e2 == 1) {
+    //     // At the stopping end
 
-      }
+    //     if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesPairs().back()[1] + 1) {
+    //       // Extending case
+    //       std::vector<int> id_pair_tmp{
+    //         s2->baseOffsetIndicesPairs().back()[0],
+    //         s2->baseOffsetIndicesPairs().back()[1] + 1
+    //       };
+    //       s2->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+    //     }
+    //     else {
+    //       // Trimming case
+    //       // 1.2: Remove the index pairs if the offset vertex index is in the trim region
+    //       while (1) {
+    //         int id_offset_tmp = s2->baseOffsetIndicesPairs().back()[1];
+    //         if (id_offset_tmp < ls_i2) break;
+    //         s2->baseOffsetIndicesPairs().pop_back();
+    //       }
+
+    //       // 3: Add the index pairs for the trimmed end
+    //       for (
+    //         auto k = s2->baseOffsetIndicesPairs().back()[0]+1;
+    //         k < s2->curveBase()->vertices().size(); k++
+    //       ) {
+    //         std::vector<int> id_pair_tmp{k, ls_i2};
+    //         s2->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+    //       }
+    //     }
 
 
-    }
-    else {
-      // If the intersection vertex is an existing one
+    //     // Old method
+    //     // if (s2->curveOffset()->vertices().size() > s2->baseOffsetIndicesLink().back() + 1) {
+    //     //   s2->baseOffsetIndicesLink().back() += 1;
+    //     // }
+    //     // else {
+    //     //   for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
+    //     //     if (s2->baseOffsetIndicesLink()[k] > ls_i2) {
+    //     //       s2->baseOffsetIndicesLink()[k] = ls_i2;
+    //     //     }
+    //     //   }
+    //     // }
 
-      if (e2 == 0) {
-        for (auto k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
-          if (s2->baseOffsetIndicesPairs()[k][1] <= ls_i2) {
-            s2->baseOffsetIndicesPairs()[k][1] = 0;
-          }
-          else {
-            s2->baseOffsetIndicesPairs()[k][1] -= ls_i2;
-          }
-        }
+    //   }
 
-        // Old method
-        // for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
-        //   if (s2->baseOffsetIndicesLink()[k] <= ls_i2) {
-        //     s2->baseOffsetIndicesLink()[k] = 0;
-        //   }
-        //   else {
-        //     s2->baseOffsetIndicesLink()[k] -= ls_i2;
-        //   }
-        // }
-      }
-      else if (e2 == 1) {
 
-        for (auto k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
-          if (s2->baseOffsetIndicesPairs()[k][1] > ls_i2) {
-            s2->baseOffsetIndicesPairs()[k][1] = ls_i2;
-          }
-        }
-
-        // Old method
-        // for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
-        //   if (s2->baseOffsetIndicesLink()[k] > ls_i2) {
-        //     s2->baseOffsetIndicesLink()[k] = ls_i2;
-        //   }
-        // }
-      }
-    }
-
-    // std::cout << "\n[debug] new base-offset link:";
-    // for (auto k : s2->baseOffsetIndicesLink()) {
-    //   std::cout << " " << k;
     // }
-    // std::cout << std::endl;
+    // else {
+    //   // If the intersection vertex is an existing one
+
+    //   if (e2 == 0) {
+    //     for (auto k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
+    //       if (s2->baseOffsetIndicesPairs()[k][1] <= ls_i2) {
+    //         s2->baseOffsetIndicesPairs()[k][1] = 0;
+    //       }
+    //       else {
+    //         s2->baseOffsetIndicesPairs()[k][1] -= ls_i2;
+    //       }
+    //     }
+
+    //     // Old method
+    //     // for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
+    //     //   if (s2->baseOffsetIndicesLink()[k] <= ls_i2) {
+    //     //     s2->baseOffsetIndicesLink()[k] = 0;
+    //     //   }
+    //     //   else {
+    //     //     s2->baseOffsetIndicesLink()[k] -= ls_i2;
+    //     //   }
+    //     // }
+    //   }
+    //   else if (e2 == 1) {
+
+    //     for (auto k = 0; k < s2->baseOffsetIndicesPairs().size(); k++) {
+    //       if (s2->baseOffsetIndicesPairs()[k][1] > ls_i2) {
+    //         s2->baseOffsetIndicesPairs()[k][1] = ls_i2;
+    //       }
+    //     }
+
+    //     // Old method
+    //     // for (auto k = 0; k < s2->baseOffsetIndicesLink().size(); k++) {
+    //     //   if (s2->baseOffsetIndicesLink()[k] > ls_i2) {
+    //     //     s2->baseOffsetIndicesLink()[k] = ls_i2;
+    //     //   }
+    //     // }
+    //   }
+    // }
+
+    // // std::cout << "\n[debug] new base-offset link:";
+    // // for (auto k : s2->baseOffsetIndicesLink()) {
+    // //   std::cout << " " << k;
+    // // }
+    // // std::cout << std::endl;
 
 
 
 
-    // std::cout << "|ub1 - ub2| = " << fabs(ub1 - ub2) << std::endl;
-    if (fabs(ls_bu1 - ls_bu2) < TOLERANCE) {
-      // Two new points are close, leave one
-      v2_new = v1_new;
-      bound_vertices.push_back(v1_new);
+    // // std::cout << "|ub1 - ub2| = " << fabs(ub1 - ub2) << std::endl;
+    // if (fabs(ls_bu1 - ls_bu2) < TOLERANCE) {
+    //   // Two new points are close, leave one
+    //   v2_new = v1_new;
+    //   bound_vertices.push_back(v1_new);
 
-      if (e2 == 0) {
-        // bl2_off_new->vertices()[0] = v1_new;
-        s2->curveOffset()->vertices()[0] = v1_new;
-      }
-      else if (e2 == 1) {
-        // bl2_off_new->vertices()[bl2_off_new->vertices().size() - 1] = v1_new;
-        s2->curveOffset()->vertices()[s2->curveOffset()->vertices().size() - 1] = v1_new;
-      }
-    }
-    else {
-      if (ls_bu1 < ls_bu2) {
-        bound_vertices.push_back(v1_new);
-        bound_vertices.push_back(v2_new);
-      }
-      else {
-        bound_vertices.push_back(v2_new);
-        bound_vertices.push_back(v1_new);
-      }
-    }
+    //   if (e2 == 0) {
+    //     // bl2_off_new->vertices()[0] = v1_new;
+    //     s2->curveOffset()->vertices()[0] = v1_new;
+    //   }
+    //   else if (e2 == 1) {
+    //     // bl2_off_new->vertices()[bl2_off_new->vertices().size() - 1] = v1_new;
+    //     s2->curveOffset()->vertices()[s2->curveOffset()->vertices().size() - 1] = v1_new;
+    //   }
+    // }
+    // else {
+    //   if (ls_bu1 < ls_bu2) {
+    //     bound_vertices.push_back(v1_new);
+    //     bound_vertices.push_back(v2_new);
+    //   }
+    //   else {
+    //     bound_vertices.push_back(v2_new);
+    //     bound_vertices.push_back(v1_new);
+    //   }
+    // }
   }
   
   
@@ -1142,193 +1362,195 @@ void PComponent::joinSegments(
   // Non-step-like joint
   else if (style == 2) {
 
-    // Intersect the two offset curves
-    double u1_tmp, u2_tmp;
-    PDCELVertex *v11, *v12, *v21, *v22;
-    int i1 = 0, i2 = 0, n1, n2;
-    n1 = s1->curveOffset()->vertices().size();
-    n2 = s2->curveOffset()->vertices().size();
-    PGeoLineSegment *ls1, *ls2;
-    std::vector<PGeoLineSegment *> lss1, lss2;
-    bool found = false;
-    while (1) {
-      ls1 = nullptr;
-      ls2 = nullptr;
+    join_segments_style_2(s1, s2, e1, e2, bound_vertices, pmessage);
 
-      if (lss1.size() < n1 - 1) {
-        if (e1 == 0) {
-          v11 = s1->curveOffset()->vertices()[i1];
-          v12 = s1->curveOffset()->vertices()[i1 + 1];
-        }
-        else {
-          v11 = s1->curveOffset()->vertices()[n1 - 1 - i1];
-          v12 = s1->curveOffset()->vertices()[n1 - 2 - i1];
-        }
-        ls1 = new PGeoLineSegment(v11, v12);
-        lss1.push_back(ls1);
-      }
+    // // Intersect the two offset curves
+    // double u1_tmp, u2_tmp;
+    // PDCELVertex *v11, *v12, *v21, *v22;
+    // int i1 = 0, i2 = 0, n1, n2;
+    // n1 = s1->curveOffset()->vertices().size();
+    // n2 = s2->curveOffset()->vertices().size();
+    // PGeoLineSegment *ls1, *ls2;
+    // std::vector<PGeoLineSegment *> lss1, lss2;
+    // bool found = false;
+    // while (1) {
+    //   ls1 = nullptr;
+    //   ls2 = nullptr;
 
-      if (lss2.size() < n2 - 1) {
-        if (e2 == 0) {
-          v21 = s2->curveOffset()->vertices()[i2];
-          v22 = s2->curveOffset()->vertices()[i2 + 1];
-        }
-        else {
-          v21 = s2->curveOffset()->vertices()[n2 - 1 - i2];
-          v22 = s2->curveOffset()->vertices()[n2 - 2 - i2];
-        }
-        ls2 = new PGeoLineSegment(v21, v22);
-        lss2.push_back(ls2);
-      }
+    //   if (lss1.size() < n1 - 1) {
+    //     if (e1 == 0) {
+    //       v11 = s1->curveOffset()->vertices()[i1];
+    //       v12 = s1->curveOffset()->vertices()[i1 + 1];
+    //     }
+    //     else {
+    //       v11 = s1->curveOffset()->vertices()[n1 - 1 - i1];
+    //       v12 = s1->curveOffset()->vertices()[n1 - 2 - i1];
+    //     }
+    //     ls1 = new PGeoLineSegment(v11, v12);
+    //     lss1.push_back(ls1);
+    //   }
 
-      ls1 = lss1.back();
-      for (int i = 0; i < lss2.size(); ++i) {
-        ls2 = lss2[i];
+    //   if (lss2.size() < n2 - 1) {
+    //     if (e2 == 0) {
+    //       v21 = s2->curveOffset()->vertices()[i2];
+    //       v22 = s2->curveOffset()->vertices()[i2 + 1];
+    //     }
+    //     else {
+    //       v21 = s2->curveOffset()->vertices()[n2 - 1 - i2];
+    //       v22 = s2->curveOffset()->vertices()[n2 - 2 - i2];
+    //     }
+    //     ls2 = new PGeoLineSegment(v21, v22);
+    //     lss2.push_back(ls2);
+    //   }
 
-        // calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
-        PDCELVertex *v_intersect;
-        bool is_intersect = calc_line_intersection_2d(
-            ls1->v1(), ls1->v2(), ls2->v1(), ls2->v2(), v_intersect,
-            u1_tmp, u2_tmp, 1, 1, 1, 1
-        );
+    //   ls1 = lss1.back();
+    //   for (int i = 0; i < lss2.size(); ++i) {
+    //     ls2 = lss2[i];
 
-        if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
-          found = true;
-          i2 = i;
-          break;
-        }
-        if (ls1 == lss1.front() || ls2 == lss2.front()) {
-          if (ls1 == lss1.front() && u1_tmp < 0 && ls2 == lss2.front() &&
-              u2_tmp < 0) {
-            found = true;
-            i2 = i;
-            break;
-          }
-          if (ls1 == lss1.front() && u1_tmp < 0 && u2_tmp >= 0 && u2_tmp <= 1) {
-            found = true;
-            i2 = i;
-            break;
-          }
-          if (ls2 == lss2.front() && u2_tmp < 0 && u1_tmp >= 0 && u1_tmp <= 1) {
-            found = true;
-            i2 = i;
-            break;
-          }
-        }
-      }
+    //     // calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
+    //     PDCELVertex *v_intersect;
+    //     bool is_intersect = calc_line_intersection_2d(
+    //         ls1->v1(), ls1->v2(), ls2->v1(), ls2->v2(), v_intersect,
+    //         u1_tmp, u2_tmp, 1, 1, 1, 1
+    //     );
 
-      if (!found) {
-        ls2 = lss2.back();
-        for (int i = 0; i < lss1.size(); ++i) {
-          ls1 = lss1[i];
+    //     if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
+    //       found = true;
+    //       i2 = i;
+    //       break;
+    //     }
+    //     if (ls1 == lss1.front() || ls2 == lss2.front()) {
+    //       if (ls1 == lss1.front() && u1_tmp < 0 && ls2 == lss2.front() &&
+    //           u2_tmp < 0) {
+    //         found = true;
+    //         i2 = i;
+    //         break;
+    //       }
+    //       if (ls1 == lss1.front() && u1_tmp < 0 && u2_tmp >= 0 && u2_tmp <= 1) {
+    //         found = true;
+    //         i2 = i;
+    //         break;
+    //       }
+    //       if (ls2 == lss2.front() && u2_tmp < 0 && u1_tmp >= 0 && u1_tmp <= 1) {
+    //         found = true;
+    //         i2 = i;
+    //         break;
+    //       }
+    //     }
+    //   }
 
-          // calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
-          PDCELVertex *v_intersect;
-          bool is_intersect = calc_line_intersection_2d(
-            ls1->v1(), ls1->v2(), ls2->v1(), ls2->v2(), v_intersect,
-            u1_tmp, u2_tmp, 1, 1, 1, 1
-          );
+    //   if (!found) {
+    //     ls2 = lss2.back();
+    //     for (int i = 0; i < lss1.size(); ++i) {
+    //       ls1 = lss1[i];
 
-          if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
-            found = true;
-            i1 = i;
-            break;
-          }
-          if (ls1 == lss1.front() || ls2 == lss2.front()) {
-            if (ls1 == lss1.front() && u1_tmp < 0 && ls2 == lss2.front() &&
-                u2_tmp < 0) {
-              found = true;
-              i1 = i;
-              break;
-            }
-            if (ls1 == lss1.front() && u1_tmp < 0 && u2_tmp >= 0 &&
-                u2_tmp <= 1) {
-              found = true;
-              i1 = i;
-              break;
-            }
-            if (ls2 == lss2.front() && u2_tmp < 0 && u1_tmp >= 0 &&
-                u1_tmp <= 1) {
-              found = true;
-              i1 = i;
-              break;
-            }
-          }
-        }
-      }
+    //       // calcLineIntersection2D(ls1, ls2, u1_tmp, u2_tmp, TOLERANCE);
+    //       PDCELVertex *v_intersect;
+    //       bool is_intersect = calc_line_intersection_2d(
+    //         ls1->v1(), ls1->v2(), ls2->v1(), ls2->v2(), v_intersect,
+    //         u1_tmp, u2_tmp, 1, 1, 1, 1
+    //       );
 
-      if (found || (i1 == n1 - 2 && i2 == n2 - 2)) {
-        break;
-      } else {
-        if (i1 < n1 - 2) {
-          i1++;
-        }
-        if (i2 < n2 - 2) {
-          i2++;
-        }
-      }
-    }
+    //       if (u1_tmp >= 0 && u1_tmp <= 1 && u2_tmp >= 0 && u2_tmp <= 1) {
+    //         found = true;
+    //         i1 = i;
+    //         break;
+    //       }
+    //       if (ls1 == lss1.front() || ls2 == lss2.front()) {
+    //         if (ls1 == lss1.front() && u1_tmp < 0 && ls2 == lss2.front() &&
+    //             u2_tmp < 0) {
+    //           found = true;
+    //           i1 = i;
+    //           break;
+    //         }
+    //         if (ls1 == lss1.front() && u1_tmp < 0 && u2_tmp >= 0 &&
+    //             u2_tmp <= 1) {
+    //           found = true;
+    //           i1 = i;
+    //           break;
+    //         }
+    //         if (ls2 == lss2.front() && u2_tmp < 0 && u1_tmp >= 0 &&
+    //             u1_tmp <= 1) {
+    //           found = true;
+    //           i1 = i;
+    //           break;
+    //         }
+    //       }
+    //     }
+    //   }
 
-    if (found) {
-      if (fabs(u1_tmp) < TOLERANCE) {
-        i1 += 1;
-        v_intersect = ls1->v1();
-      }
-      else if (fabs(1 - u1_tmp) < TOLERANCE) {
-        i1 += 2;
-        v_intersect = ls1->v2();
-      }
-      else {
-        i1 += 1;
-        v_intersect = ls1->getParametricVertex(u1_tmp);
-      }
+    //   if (found || (i1 == n1 - 2 && i2 == n2 - 2)) {
+    //     break;
+    //   } else {
+    //     if (i1 < n1 - 2) {
+    //       i1++;
+    //     }
+    //     if (i2 < n2 - 2) {
+    //       i2++;
+    //     }
+    //   }
+    // }
 
-      if (fabs(u2_tmp) < TOLERANCE) {
-        i2 += 1;
-      }
-      else if (fabs(1 - u2_tmp) < TOLERANCE) {
-        i2 += 2;
-      }
-      else {
-        i2 += 1;
-      }
+    // if (found) {
+    //   if (fabs(u1_tmp) < TOLERANCE) {
+    //     i1 += 1;
+    //     v_intersect = ls1->v1();
+    //   }
+    //   else if (fabs(1 - u1_tmp) < TOLERANCE) {
+    //     i1 += 2;
+    //     v_intersect = ls1->v2();
+    //   }
+    //   else {
+    //     i1 += 1;
+    //     v_intersect = ls1->getParametricVertex(u1_tmp);
+    //   }
 
-      bl1_off_new = new Baseline();
-      if (e1 == 0) {
-        bl1_off_new->addPVertex(v_intersect);
-        for (int i = i1; i < n1; ++i) {
-          bl1_off_new->addPVertex(s1->curveOffset()->vertices()[i]);
-        }
-      }
-      else if (e1 == 1) {
-        for (int i = 0; i < n1 - i1; ++i) {
-          bl1_off_new->addPVertex(s1->curveOffset()->vertices()[i]);
-        }
-        bl1_off_new->addPVertex(v_intersect);
-      }
+    //   if (fabs(u2_tmp) < TOLERANCE) {
+    //     i2 += 1;
+    //   }
+    //   else if (fabs(1 - u2_tmp) < TOLERANCE) {
+    //     i2 += 2;
+    //   }
+    //   else {
+    //     i2 += 1;
+    //   }
 
-      bl2_off_new = new Baseline();
-      if (e2 == 0) {
-        bl2_off_new->addPVertex(v_intersect);
-        for (int i = i2; i < n2; ++i) {
-          bl2_off_new->addPVertex(s2->curveOffset()->vertices()[i]);
-        }
-      }
-      else if (e2 == 1) {
-        for (int i = 0; i < n2 - i2; ++i) {
-          bl2_off_new->addPVertex(s2->curveOffset()->vertices()[i]);
-        }
-        bl2_off_new->addPVertex(v_intersect);
-      }
+    //   bl1_off_new = new Baseline();
+    //   if (e1 == 0) {
+    //     bl1_off_new->addPVertex(v_intersect);
+    //     for (int i = i1; i < n1; ++i) {
+    //       bl1_off_new->addPVertex(s1->curveOffset()->vertices()[i]);
+    //     }
+    //   }
+    //   else if (e1 == 1) {
+    //     for (int i = 0; i < n1 - i1; ++i) {
+    //       bl1_off_new->addPVertex(s1->curveOffset()->vertices()[i]);
+    //     }
+    //     bl1_off_new->addPVertex(v_intersect);
+    //   }
 
-      v1_new = v_intersect;
-      v2_new = v_intersect;
+    //   bl2_off_new = new Baseline();
+    //   if (e2 == 0) {
+    //     bl2_off_new->addPVertex(v_intersect);
+    //     for (int i = i2; i < n2; ++i) {
+    //       bl2_off_new->addPVertex(s2->curveOffset()->vertices()[i]);
+    //     }
+    //   }
+    //   else if (e2 == 1) {
+    //     for (int i = 0; i < n2 - i2; ++i) {
+    //       bl2_off_new->addPVertex(s2->curveOffset()->vertices()[i]);
+    //     }
+    //     bl2_off_new->addPVertex(v_intersect);
+    //   }
 
-      bound_vertices.push_back(v_intersect);
-    }
+    //   v1_new = v_intersect;
+    //   v2_new = v_intersect;
 
-    s1->setCurveOffset(bl1_off_new);
-    s2->setCurveOffset(bl2_off_new);
+    //   bound_vertices.push_back(v_intersect);
+    // }
+
+    // s1->setCurveOffset(bl1_off_new);
+    // s2->setCurveOffset(bl2_off_new);
   }
 
   // std::cout << "        bound_vertices:" << std::endl;
@@ -1336,19 +1558,19 @@ void PComponent::joinSegments(
   //   v->printWithAddress();
   // }
 
-  if (e1 == 0) {
-    s1->setHeadVertexOffset(v1_new);
-  }
-  else if (e1 == 1) {
-    s1->setTailVertexOffset(v1_new);
-  }
+  // if (e1 == 0) {
+  //   s1->setHeadVertexOffset(v1_new);
+  // }
+  // else if (e1 == 1) {
+  //   s1->setTailVertexOffset(v1_new);
+  // }
 
-  if (e2 == 0) {
-    s2->setHeadVertexOffset(v2_new);
-  }
-  else if (e2 == 1) {
-    s2->setTailVertexOffset(v2_new);
-  }
+  // if (e2 == 0) {
+  //   s2->setHeadVertexOffset(v2_new);
+  // }
+  // else if (e2 == 1) {
+  //   s2->setTailVertexOffset(v2_new);
+  // }
 
   // std::cout << "\n[debug] new offset vertices of segment " << s1->getName() << std::endl;
   // for (auto v : s1->curveOffset()->vertices()) {

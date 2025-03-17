@@ -127,8 +127,10 @@ public:
   PDCELVertex *getBeginVertex();
   PDCELVertex *getEndVertex();
 
-  PDCELVertex *headVertexOffset() { return _head_vertex_offset; }
-  PDCELVertex *tailVertexOffset() { return _tail_vertex_offset; }
+  // PDCELVertex *headVertexOffset() { return _head_vertex_offset; }
+  // PDCELVertex *tailVertexOffset() { return _tail_vertex_offset; }
+  PDCELVertex *headVertexOffset() { return _curve_offset->vertices().front(); }
+  PDCELVertex *tailVertexOffset() { return _curve_offset->vertices().back(); }
 
   SVector3 getBeginTangent();
   SVector3 getEndTangent();

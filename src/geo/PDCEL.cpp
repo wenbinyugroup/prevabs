@@ -1494,6 +1494,61 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PGeoLineSegment *ls) {
 
 
 
+/// @brief Update the inner loops of a face
+/// @param f The face to update
+void PDCEL::update_face_inner_loops(PDCELFace *f) {
+  // Check for null face
+  if (f == nullptr) {
+    PLOG(error) << "Cannot update inner loops of null face";
+    return;
+  }
+
+  PDCELHalfEdgeLoop *hel_out = f->outer();
+  // Check if the face has an outer loop
+  if (hel_out == nullptr) {
+    PLOG(error) << "Face has no outer loop";
+    return;
+  }
+
+  // Link half edge loops to establish adjacency relationships
+  linkHalfEdgeLoops();
+  
+  // Iterate through all half edge loops
+  for (auto heli : halfedgeloops()) {
+    // Skip null loops and loops that should be kept
+    if (heli == nullptr || heli->keep()) {
+      continue;
+    }
+    
+    // Follow the adjacency chain to find the outermost containing loop
+    PDCELHalfEdgeLoop *helj = heli;
+    while (helj != nullptr && helj->adjacentLoop() != nullptr) {
+      helj = helj->adjacentLoop();
+    }
+    
+    // If the outermost loop is the outer loop of our face
+    if (helj == hel_out) {
+      // Check if the loop has a valid incident edge
+      if (heli->incidentEdge() == nullptr) {
+        PLOG(warning) << "Inner loop has no incident edge, skipping";
+        continue;
+      }
+      
+      // Set the face of the inner loop and add it as an inner component
+      heli->setFace(f);
+      f->addInnerComponent(heli->incidentEdge());
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
 // ===================================================================
 //
 // Private helper functions

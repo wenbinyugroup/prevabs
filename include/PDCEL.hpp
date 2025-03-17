@@ -144,4 +144,5 @@ public:
   
   /// Split a bounded face (convex) by a line or line segment
   std::list<PDCELFace *> splitFace(PDCELFace *f, PGeoLineSegment *ls);
+  void update_face_inner_loops(PDCELFace *f);
 };

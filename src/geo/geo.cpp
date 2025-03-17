@@ -62,6 +62,30 @@ double calcPolylineLength(const std::vector<PDCELVertex *> ps) {
 }
 
 
+
+
+/// @brief Calculate the curvilinear length of a parametric coordinate (segment index, in-segment parametric coordinate) from the beginning of the polyline.
+/// @param c The polyline.
+/// @param i The index of the segment.
+/// @param u The in-segment parametric coordinate.
+/// @return The curvilinear length.
+double calc_curve_length_of_segment_param_coord_from_start(
+  const std::vector<PDCELVertex *> &c, const int &i, const double &u
+) {
+  double length = 0;
+  for (auto j = 0; j <= i; j++) {
+    double _l = calcDistanceSquared(c[j], c[j+1]);
+    double _u = j < i ? 1 : u;
+    length += std::sqrt(_l) * _u;
+  }
+
+  return length;
+}
+
+
+
+
+
 /**
  * @brief Finds a point on a polyline by a specified coordinate.
  *
@@ -79,7 +103,7 @@ double calcPolylineLength(const std::vector<PDCELVertex *> ps) {
  */
 PDCELVertex *findPointOnPolylineByCoordinate(
   const std::vector<PDCELVertex *> &ps, const std::string label,
-  const double loc,   double tol,double &param,
+  const double loc, double tol, double &param,
   const int count, const std::string by 
 ) {
   PDCELVertex *pv = new PDCELVertex(label);
@@ -269,15 +293,36 @@ bool get_vertex_on_polyline_by_segment_param_coord(
 
 
 int getTurningSide(SVector3 vec1, SVector3 vec2) {
-  SVector3 n;
-  n = crossprod(vec1, vec2);
+  // Check for zero vectors
+  double norm1 = vec1.norm();
+  double norm2 = vec2.norm();
+  
+  if (norm1 < ABS_TOL || norm2 < ABS_TOL) {
+    PLOG(warning) << "getTurningSide: near-zero vector detected";
+    return 0; // can't determine turning side with zero vectors
+  }
 
-  if (fabs(n[0]) < TOLERANCE) {
-    return 0; // collinear
-  } else if (n[0] > 0) {
-    return 1; // left
+  // Normalize vectors for more consistent results
+  SVector3 v1 = vec1 * (1.0/norm1);
+  SVector3 v2 = vec2 * (1.0/norm2);
+  
+  SVector3 n = crossprod(v1, v2);
+  
+  // Use a more robust check with absolute tolerance
+  if (fabs(n[0]) < ABS_TOL) {
+    // Check if vectors are parallel or anti-parallel
+    double dot = v1.dot(v2);
+    if (dot > 0) {
+      return 0; // parallel (same direction)
+    } else {
+      return 0; // anti-parallel (opposite direction)
+    }
+  } else if (n[0] > ABS_TOL) {
+    return 1; // left turn
+  } else if (n[0] < -ABS_TOL) {
+    return -1; // right turn
   } else {
-    return -1; // right
+    return 0; // too close to determine reliably
   }
 }
 
@@ -291,18 +336,52 @@ int getTurningSide(SVector3 vec1, SVector3 vec2) {
 
 
 double calcDistanceSquared(PDCELVertex *v1, PDCELVertex *v2) {
+  // Check for null pointers
+  if (v1 == nullptr || v2 == nullptr) {
+    PLOG(error) << "calcDistanceSquared: null vertex pointer";
+    return std::numeric_limits<double>::max();
+  }
+  
+  // Calculate squared differences
   double dx = v1->x() - v2->x();
   double dy = v1->y() - v2->y();
   double dz = v1->z() - v2->z();
 
+  // Return squared distance
   return dx * dx + dy * dy + dz * dz;
 }
 
 
 
 
+/// @brief Check if two vertices are close to each other
+/// @param v1 The first vertex
+/// @param v2 The second vertex
+/// @return True if the vertices are close to each other, false otherwise
+bool is_close(PDCELVertex *v1, PDCELVertex *v2) {
+  return calcDistanceSquared(v1, v2) < ABS_TOL * ABS_TOL;
+}
 
 
+
+
+
+/// @brief Replace a vertex in a vector of vertices with a new vertex
+/// @param vertices The vector of vertices
+/// @param old_v The old vertex to be replaced
+/// @param new_v The new vertex to replace the old vertex
+void replace_vertex(
+  std::vector<PDCELVertex *> &vertices, PDCELVertex *old_v, PDCELVertex *new_v
+) {
+  for (auto &v : vertices) {
+    if (v == old_v) {
+      v = new_v;
+      PLOG(debug) << "replaced vertex " << old_v << " with " << new_v;
+      return;
+    }
+  }
+  PLOG(error) << "vertex " << old_v << " not found in vector";
+}
 
 
 
