@@ -599,11 +599,29 @@ void join_segments_style_1(
   bound_vertices.push_back(v);
   bound_vertices.push_back(tmp_v);
 
-  // Intersect offset curve with the bound for each segment
+  // Intersect offset curve with the bound for segment 1
+  double param_loc_1 = e1 == 0 ? 0.0 : 1.0;
+  double param_loc_2 = e2 == 0 ? 0.0 : 1.0;
+  int i1, i2;
+  double u1, u2;
+  bool is_new_1, is_new_2;
+  PDCELVertex *v_new = get_polylines_intersection_close_to(
+    s1->curveOffset()->vertices(), bound_vertices,
+    param_loc_1, param_loc_2, 1, 1, 1, 1,
+    i1, u1, i2, u2, is_new_1, is_new_2,
+    pmessage
+  );
   
-  PDCELVertex *v1_new;
-
+  trim(s1->curveOffset()->vertices(), v_new, e1);
+  
+  PLOG(debug) << pmessage->message("  intersection vertex for ")
+  << s1->getName() << ": " << v_new;
+  
   // Update linking indices
+  s1->updateBaseOffsetIndexPairs(pmessage);
+
+
+  // Intersect offset curve with the bound for segment 2
 }
 
 
