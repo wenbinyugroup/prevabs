@@ -1365,7 +1365,7 @@ int find_open_polylines_intersections(
 /// @param c The curve.
 /// @param ii The indices of the line segments of the intersections.
 /// @param uu The non-dimensional locations of the intersections on the line segments.
-/// @param param_coord The parametric coordinate.
+/// @param param_coord The parametric coordinate. The beginning of the curve is 0, the end is 1.
 /// @param ex1 The extension flag for the starting point of the line segment.
 /// @param ex2 The extension flag for the ending point of the line segment.
 /// @param side The side from which to consider the distance to the parametric coordinate (-1: from the beginning, 1: from the ending, 0: either side).
@@ -1384,51 +1384,40 @@ int get_intersection_close_to_param_coord(
 
   int j = 0;
 
+  auto nls = c.size() - 1;
   double length = calcPolylineLength(c);
 
-  int ls_i = ii[0];
-  double u = uu[0];
+  double d = INF;
 
   for (auto k = 1; k < ii.size(); k++) {
 
-    if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
-      if (which_end == 0) {
-        // Closer to the beginning side
-        if (ii[k] < ls_i) {
-          // If the current segment index is smaller
-          ls_i = ii[k];
-          u = uu[k];
-          j = k;
-        }
-        else if (ii[k] == ls_i) {
-          // If the current segment index is the same
-          if (uu[k] < u) {
-            // If the current parametric coordinate is smaller
-            u = uu[k];
-            j = k;
-          }
+    int _i = ii[k];
+    double _u = uu[k];
 
-        }
+    // Calculate the parametric coordinate
+    double _l;
+    if (_i == 0 && _u < 0) {
+      // The intersection is before the beginning of the curve
+      _l = _u * std::sqrt(calcDistanceSquared(c[_i], c[_i+1]));
+    } else if (_i == nls - 1 && _u > 1) {
+      // The intersection is after the end of the curve
+      _l = length + _u * std::sqrt(calcDistanceSquared(c[_i], c[_i+1]));
+    } else {
+      _l = calc_curve_length_of_segment_param_coord_from_start(c, _i, _u);
+    }
 
-      }
-      else if (which_end == 1) {
-        // Closer to the ending side
-        if (ii[k] > ls_i) {
-          // If the current segment index is larger
-          ls_i = ii[k];
-          u = uu[k];
-          j = k;
-        }
-        else if (ii[k] == ls_i) {
-          // If the current segment index is the same
-          if (uu[k] > u) {
-            // If the current parametric coordinate is larger
-            u = uu[k];
-            j = k;
-          }
+    double _l_nd = _l / length;
 
-        }
-
+    double _d = fabs(_l_nd - param_coord);
+    if (_d < d) {
+      if (_l_nd < param_coord && (side == -1 || side == 0)) {
+        // The intersection is before the parametric coordinate
+        d = _d;
+        j = k;
+      } else if (_l_nd > param_coord && (side == 1 || side == 0)) {
+        // The intersection is after the parametric coordinate
+        d = _d;
+        j = k;
       }
     }
 
