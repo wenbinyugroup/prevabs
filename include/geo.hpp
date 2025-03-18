@@ -208,9 +208,10 @@ SVector3 getVectorFromAngle(double &angle, const int &plane);
 
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
 bool get_vertex_by_param_coord_of_two_vertices(
-  const PDCELVertex *, const PDCELVertex *, const double &,
-  PDCELVertex *
-)
+    const PDCELVertex *, const PDCELVertex *, const double &,
+    PDCELVertex *);
+
+double calc_curv_coord_of_vertex_on_polyline(const std::vector<PDCELVertex *> &c, const PDCELVertex *v);
 
 bool isParallel(PGeoLineSegment *, PGeoLineSegment *);
 bool isCollinear(PGeoLineSegment *, PGeoLineSegment *);
@@ -334,12 +335,12 @@ int find_open_polylines_intersections(
  * @param pmessage    A pointer to a Message object used for logging.
  * @return            A double representing the parametric location of the closest intersection.
  */
-double getIntersectionLocation(
-  std::vector<PDCELVertex *> &c,
-  const std::vector<int> &ii, std::vector<double> &uu,
-  const int &which_end, const int &inner_only,
-  int &ls_i, int &j, Message *
-);
+// double getIntersectionLocation(
+//   std::vector<PDCELVertex *> &c,
+//   const std::vector<int> &ii, std::vector<double> &uu,
+//   const int &which_end, const int &inner_only,
+//   int &ls_i, int &j, Message *
+// );
 
 int get_intersection_closer_to(
   const std::vector<PDCELVertex *> &,
@@ -348,14 +349,14 @@ int get_intersection_closer_to(
   Message *
 );
 
-PDCELVertex *getIntersectionVertex(
-  std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
-  int &i1, int &i2, const double &u1, const double &u2,
-  const int &which_end_1, const int &which_end_2,
-  const int &inner_only_1, const int &inner_only_2,
-  int &is_new_1, int &is_new_2,
-  const double &tol
-);
+// PDCELVertex *getIntersectionVertex(
+//   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
+//   int &i1, int &i2, const double &u1, const double &u2,
+//   const int &which_end_1, const int &which_end_2,
+//   const int &inner_only_1, const int &inner_only_2,
+//   int &is_new_1, int &is_new_2,
+//   const double &tol
+// );
 
 PDCELVertex *get_intersection_vertex(
   std::vector<PDCELVertex *> &, std::vector<PDCELVertex *> &,

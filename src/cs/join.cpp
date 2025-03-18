@@ -39,13 +39,20 @@ void PComponent::join_segment_to_dependency(
 
   // 1.
   PLOG(debug) << pmessage->message("step 1: find the outer half edge loop");
-  if (_ref_vertex == nullptr) {
+  double ref_v_nd;  // Normalized distance of the reference point from the start of the segment
+  double curve_length = calcPolylineLength(s->curveBase()->vertices());
+  if (_ref_vertex != nullptr) {
+    ref_v_nd = calc_curv_coord_of_vertex_on_polyline(s->curveBase()->vertices(), _ref_vertex) / curve_length;
+  } else {
     _ref_vertex = s->curveBase()->refVertex();
-    if (_ref_vertex == nullptr) {
+    if (_ref_vertex != nullptr) {
+      ref_v_nd = calc_curv_coord_of_vertex_on_polyline(s->curveBase()->vertices(), _ref_vertex) / curve_length;
+    } else {
       if (s->curveBase()->vertices().size() > 2) {
         // More than 2 vertices
         int i = std::floor(s->curveBase()->vertices().size() / 2);
         _ref_vertex = s->curveBase()->vertices()[i];
+        ref_v_nd = calc_curv_coord_of_vertex_on_polyline(s->curveBase()->vertices(), _ref_vertex) / curve_length;
       }
       else {
         // Only 2 vertices
@@ -54,6 +61,7 @@ void PComponent::join_segment_to_dependency(
           (s->curveBase()->vertices().front()->point() +
            s->curveBase()->vertices().back()->point()) / 2
         );
+        ref_v_nd = 0.5;
       }
     }
   }

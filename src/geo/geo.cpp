@@ -677,6 +677,38 @@ bool get_vertex_by_param_coord_of_two_vertices(
 
 
 
+/// @brief Calculate the curvilinear coordinate of a vertex on a polyline.
+/// @param c The polyline.
+/// @param v The vertex.
+/// @return The curvilinear coordinate of the vertex.
+double calc_curv_coord_of_vertex_on_polyline(
+  const std::vector<PDCELVertex *> &c, const PDCELVertex *v
+  ) {
+  double length = 0;
+
+  if (v != c.front()) {
+    for (auto i = 1; i < c.size(); i++) {
+      double _l = calcDistanceSquared(c[i-1], c[i]);
+
+      length += std::sqrt(_l);
+
+      if (v == c[i]) {
+        break;
+      }
+    }
+  }
+
+  return length;
+}
+
+
+
+
+
+
+
+
+
 bool isParallel(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   SVector3 vec1, vec2, vecn;
   vec1 = ls1->toVector();
