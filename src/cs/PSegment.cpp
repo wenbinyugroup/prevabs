@@ -325,10 +325,26 @@ void Segment::offsetCurveBase(Message *pmessage) {
 
 
 
+/// @brief Update the base-offset index pairs
+/// @param pmessage 
 void Segment::updateBaseOffsetIndexPairs(Message *pmessage) {
   pmessage->increaseIndent();
 
   PLOG(info) << pmessage->message("updating base-offset index pairs");
+
+  // Check if curves exist
+  if (!_curve_base || !_curve_offset) {
+    PLOG(error) << pmessage->message("cannot update base-offset index pairs: curves not initialized");
+    pmessage->decreaseIndent();
+    return;
+  }
+
+  // Check if vertices exist
+  if (_curve_base->vertices().empty() || _curve_offset->vertices().empty()) {
+    PLOG(error) << pmessage->message("cannot update base-offset index pairs: empty vertex lists");
+    pmessage->decreaseIndent();
+    return;
+  }
 
   // Clear the existing pairs
   _base_offset_indices_pairs.clear();
@@ -343,12 +359,16 @@ void Segment::updateBaseOffsetIndexPairs(Message *pmessage) {
     _base_offset_indices_pairs.insert(_base_offset_indices_pairs.begin(), {0, 0});
   }
 
-  // Check if the last pair is the one of the last vertex index of the base and offset, if not, add it
-  if (_base_offset_indices_pairs.back()[0] != _curve_base->vertices().size() - 1 &&
-      _base_offset_indices_pairs.back()[1] != _curve_offset->vertices().size() - 1) {
+  // Get the last indices for base and offset curves
+  size_t last_base_idx = _curve_base->vertices().size() - 1;
+  size_t last_offset_idx = _curve_offset->vertices().size() - 1;
+
+  // Check if the last pair contains the last vertices, if not, add it
+  if (_base_offset_indices_pairs.back()[0] != static_cast<int>(last_base_idx) || 
+      _base_offset_indices_pairs.back()[1] != static_cast<int>(last_offset_idx)) {
     _base_offset_indices_pairs.push_back({
-      _curve_base->vertices().size() - 1,
-      _curve_offset->vertices().size() - 1
+      static_cast<int>(last_base_idx),
+      static_cast<int>(last_offset_idx)
     });
   }
 

@@ -1001,20 +1001,41 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
 
 
 
+/// @brief Trim the curve at the vertex v
+/// @param c The curve
+/// @param v The vertex
+/// @param remove The direction to remove (0: beginning, 1: ending)
+/// @return 0
 int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
   // Trim the curve c at the vertex v
-  // Remove the one that is closer to the end remove
-
+  // Remove the portion that is closer to the specified end (beginning or ending)
   // remove: beginning (0) or ending (1)
 
-  // std::cout << "\n[debug] function: trim\n";
+  // Check for invalid inputs
+  if (c.empty() || v == nullptr || (remove != 0 && remove != 1)) {
+    PLOG(warning) << "trim: Invalid input parameters";
+    return -1;
+  }
+
+  // Check if vertex exists in the curve
+  bool vertex_found = false;
+  for (auto vertex : c) {
+    if (vertex == v) {
+      vertex_found = true;
+      break;
+    }
+  }
+  
+  if (!vertex_found) {
+    PLOG(warning) << "trim: Vertex not found in curve";
+    return -1;
+  }
 
   // Split the curve
   std::vector<PDCELVertex *> tmp_c1, tmp_c2;
-
   int s = 0;
 
-  for (auto i = 0; i < c.size(); i++) {
+  for (size_t i = 0; i < c.size(); i++) {
     if (c[i] == v) {
       tmp_c1.push_back(c[i]);
       tmp_c2.push_back(c[i]);
@@ -1030,16 +1051,19 @@ int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
     }
   }
 
-  c.clear();
-  if (remove == 0) {
-    for (auto v : tmp_c2) c.push_back(v);
-  }
-  else if (remove == 1) {
-    for (auto v : tmp_c1) c.push_back(v);
+  // Ensure we found the vertex and split the curve
+  if (tmp_c1.size() <= 1 || tmp_c2.size() <= 1) {
+    PLOG(warning) << "trim: Vertex at curve endpoint or curve too short";
+    return -1;
   }
 
-  // std::cout << "resulting curve\n";
-  // for (auto v : c) std::cout << v << std::endl;
+  c.clear();
+  if (remove == 0) {
+    c.assign(tmp_c2.begin(), tmp_c2.end());
+  }
+  else if (remove == 1) {
+    c.assign(tmp_c1.begin(), tmp_c1.end());
+  }
 
   return 0;
 }

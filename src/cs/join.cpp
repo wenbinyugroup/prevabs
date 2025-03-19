@@ -24,14 +24,19 @@
 #include <string>
 
 
+/// @brief Join a segment to its dependency
+/// @param s The segment to be joined
+/// @param e The end of the segment to be joined
+/// @param pmessage The message to be printed
 void PComponent::join_segment_to_dependency(
-  Segment *s, int e, PDCELVertex *v, Message *pmessage) {
+  Segment *s, int e, Message *pmessage) {
 
   // 1. Use the reference point of the component to find the outer
   // half edge loop that enclosing this point
   // 2. Find all inner half edge loops inside the outer half edge loop
   // 3. For each found loop, calculate intersections and
-  //    keep the intersection(s) closest to the reference point
+  //    keep the intersection closest to the reference point
+  // 4. Update the base-offset index pairs
 
   PLOG(debug) << pmessage->message("joining segment to dependency: ") << _name << "." << s->getName() << " " << e;
 
@@ -124,16 +129,113 @@ void PComponent::join_segment_to_dependency(
 
   // 3.1. For the base curve
   PLOG(debug) << pmessage->message("step 3.1: for the base curve");
-  std::vector<PDCELVertex *> vertices_intersect;
+
+  // 3.1.1. Find all intersections between the base curve and all half-edge loops
+  int i_base;
+  double u_base;
+  double d_base = INF;
   for (auto hel : hels) {
-    if (!hel->keep()) {}
+    if (!hel->keep()) {
+      // Find all intersections as the (segment index, non-dimensional location) pairs
+      std::vector<int> _i1s, _i2s;
+      std::vector<double> _u1s, _u2s;
+      calc_all_intersections_between_polyline_and_half_edge_loop(
+        s->curveBase()->vertices(), hel, 1, 1, _i1s, _i2s, _u1s, _u2s, pmessage
+      );
+
+      // Calculate the non-dimensional curvilinear coordinate of the intersection(s)
+      for (auto i = 0; i < i1s.size(); i++) {
+        double _nd = calc_curve_length_of_segment_param_coord_from_start(
+          s->curveBase()->vertices(), _i1s[i], _u1s[i]
+        );
+        // 3.1.2. Keep the intersection closest to the reference point
+        if (e == 0 && _nd < ref_v_nd && fabs(_nd - ref_v_nd) < d_base) {
+          // Before the reference point
+          d_base = fabs(_nd - ref_v_nd);
+          i_base = _i1s[i];
+          u_base = _u1s[i];
+        }
+        else if (e == 1 && _nd > ref_v_nd && fabs(_nd - ref_v_nd) < d_base) {
+          // After the reference point
+          d_base = fabs(_nd - ref_v_nd);
+          i_base = _i1s[i];
+          u_base = _u1s[i];
+        }
+      }
+    }
   }
+
+  // 3.1.3. Get the intersection
+  PDCELVertex *v_intersect_base;
+  bool is_new_intersect_base = get_vertex_on_polyline_by_segment_param_coord(
+    s->curveBase()->vertices(), i_base, u_base, v_intersect_base
+  );
+
+  if (is_new_intersect_base) {
+    // Insert the new vertex into the base curve
+    s->curveBase()->vertices().insert(s->curveBase()->vertices().begin() + i_base + 1, v_intersect_base);
+  }
+
+  // 3.1.4. Trim the base curve
+  trim(s->curveBase()->vertices(), v_intersect_base, 0);
+
+
 
   // 3.2. For the offset curve
   PLOG(debug) << pmessage->message("step 3.2: for the offset curve");
 
+  // 3.2.1. Find all intersections between the offset curve and all half-edge loops
+  int i_offset;
+  double u_offset;
+  double d_offset = INF;
+  for (auto hel : hels) {
+    if (!hel->keep()) {
+      // Find all intersections as the (segment index, non-dimensional location) pairs
+      std::vector<int> _i1s, _i2s;
+      std::vector<double> _u1s, _u2s;
+      calc_all_intersections_between_polyline_and_half_edge_loop(
+        s->curveOffset()->vertices(), hel, 1, 1, _i1s, _i2s, _u1s, _u2s, pmessage
+      );
+
+      // Calculate the non-dimensional curvilinear coordinate of the intersection(s)
+      for (auto i = 0; i < i1s.size(); i++) {
+        double _nd = calc_curve_length_of_segment_param_coord_from_start(
+          s->curveOffset()->vertices(), _i1s[i], _u1s[i]
+        );
+        // 3.2.2. Keep the intersection closest to the reference point
+        if (e == 0 && _nd < ref_v_nd && fabs(_nd - ref_v_nd) < d_offset) {
+          // Before the reference point
+          d_offset = fabs(_nd - ref_v_nd);
+          i_offset = _i1s[i];
+          u_offset = _u1s[i];
+        }
+        else if (e == 1 && _nd > ref_v_nd && fabs(_nd - ref_v_nd) < d_offset) {
+          // After the reference point
+          d_offset = fabs(_nd - ref_v_nd);
+          i_offset = _i1s[i];
+          u_offset = _u1s[i];
+        }
+      }
+    }
+  }
+
+  // 3.2.3. Get the intersection
+  PDCELVertex *v_intersect_offset;
+  bool is_new_intersect_offset = get_vertex_on_polyline_by_segment_param_coord(
+    s->curveOffset()->vertices(), i_offset, u_offset, v_intersect_offset
+  );
+
+  if (is_new_intersect_offset) {
+    // Insert the new vertex into the base curve
+    s->curveOffset()->vertices().insert(s->curveOffset()->vertices().begin() + i_offset + 1, v_intersect_offset);
+  }
+
+  // 3.2.4. Trim the offset curve
+  trim(s->curveOffset()->vertices(), v_intersect_offset, 0);
 
 
+  // 4. Update the base-offset index pairs
+  s->updateBaseOffsetIndexPairs(pmessage);
 
 }
 
@@ -174,479 +276,481 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
     else {
 
-      PDCELHalfEdge *he_tool, *he;
-      int ls_i, ls_i_prev, ls_i_tmp;
-      double u1, u2, u1_tmp, u2_tmp;
-      PDCELVertex *v_new;
-
-      if (e == 0) {
-        u1 = -INF;
-        ls_i_prev = -1;
-      }
-      else if (e == 1) {
-        u1 = INF;
-        ls_i_prev = s->curveBase()->vertices().size();
-      }
-
-
-
-      // 1. Use the reference point of the component to find the outer
-      // half edge loop that enclosing this point
-      // 2. Find all inner half edge loops inside the outer half edge loop
-      // 3. For each found loop, calculate intersections and
-      //    keep the intersection(s) closest to the reference point
-
-      if (_ref_vertex == nullptr) {
-        _ref_vertex = _segments[0]->curveBase()->refVertex();
-        if (_ref_vertex == nullptr) {
-          int i = std::floor(_segments[0]->curveBase()->vertices().size() / 2);
-          _ref_vertex = _segments[0]->curveBase()->vertices()[i];
-        }
-      }
-
-      PLOG(debug) << pmessage->message("ref vertex: ") << _ref_vertex;
-
-      bool to_be_removed;
-      if (_ref_vertex->dcel() != nullptr) {
-        to_be_removed = false;
-      }
-      else {
-        _pmodel->dcel()->addVertex(_ref_vertex);
-        to_be_removed = true;
-      }
-
-
-
-
-      // 1.
-      // std::cout << "\n[debug] step 1\n";
-      PLOG(debug) << pmessage->message("step 1: find the outer half edge loop");
-
-      std::vector<PDCELHalfEdgeLoop *> hels;
-      PDCELHalfEdgeLoop *tmp_hel_out;
-      tmp_hel_out = _pmodel->dcel()->findEnclosingLoop(_ref_vertex);
-      // std::cout << "\ntmp_hel_out\n";
-      // tmp_hel_out->print();
-      // std::cout << "\ntmp_hel_out->incidentEdge(): " << tmp_hel_out->incidentEdge() << std::endl;
-      // std::cout << "\ndcel->halfedges.front(): " << _pmodel->dcel()->halfedges().front() << std::endl;
-      if (tmp_hel_out != _pmodel->dcel()->halfedgeloops().front()) {
-        // Not the first loop with INF size
-        hels.push_back(tmp_hel_out);
-      }
-
-      // _pmodel->dcel()->print_dcel();
-
-
-
-
-      // 2.
-      // std::cout << "\n[debug] step 2\n";
-      PLOG(debug) << pmessage->message("step 2: find all inner half edge loops");
-
-      PDCELFace *tmp_face = tmp_hel_out->face();
-      // std::cout << "\ntmp_face:\n";
-      if (tmp_face != nullptr) {
-        // tmp_face->print();
-        // Try to update inner loops first
-        if (tmp_face->inners().size() == 0) {
-          _pmodel->dcel()->linkHalfEdgeLoops();
-          for (auto heli : _pmodel->dcel()->halfedgeloops()) {
-            if (!heli->keep()) {
-              PDCELHalfEdgeLoop *helj = heli;
-              while (helj->adjacentLoop() != nullptr) {
-                helj = helj->adjacentLoop();
-              }
-              if (helj == tmp_hel_out) {
-                // hels.push_back(helj);
-                heli->setFace(tmp_face);
-                tmp_face->addInnerComponent(heli->incidentEdge());
-              }
-            }
-          }
-        }
-
-        for (auto tmp_he : tmp_face->inners()) {
-          hels.push_back(tmp_he->loop());
-        }
-      }
-      else {
-        // std::cout << "nullptr\n";
-      }
-
-      if (to_be_removed) {
-        _pmodel->dcel()->removeVertex(_ref_vertex);
-      }
-
-      // delete tmp_face;
-      // delete tmp_hel_out;
-
-      if (config.debug) {
-        std::cout << "\nhels:\n";
-        PLOG(debug) << pmessage->message("found half edge loops");
-        for (auto hel : hels) {
-          tmp_hel_out->log();
-        }
-        // std::cout << "\n";
-        // hel->print();
-      }
-
-
-
-
-      // 3.
-      PLOG(debug) << pmessage->message("step 3: calculate intersections");
-
-      // 3.1. For the base curve
-      PLOG(debug) << pmessage->message("step 3.1: for the base curve");
-
-      // for (auto hel : _pmodel->dcel()->halfedgeloops()) {
-      for (auto hel : hels) {
-        if (!hel->keep()) {
-          // std::cout << "        half edge loop hel:" << std::endl;
-          // hel->print();
-
-          // he = findCurvesIntersection(s->curveBase()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
-          // he = findCurvesIntersection(tmp_vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
-          he = find_curves_intersection(
-            s->curveBase()->vertices(), hel, e, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
-          );
-
-          // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
-          // std::cout << "ls_i_tmp = " << ls_i_tmp << std::endl;
-          // pmessage->print(9, "u1_tmp = " + std::to_string(u1_tmp));
-          // pmessage->print(9, "u2_tmp = " + std::to_string(u2_tmp));
-          // if (he != nullptr && u1_tmp < u1) {
-          if (he != nullptr) {
-            if (e == 0) {
-              if (
-                (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1)  // before the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i > ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp > u1) // same line segment but inner u
-                ) {
-                u1 = u1_tmp;
-                u2 = u2_tmp;
-                he_tool = he;
-                ls_i_prev = ls_i_tmp;
-                // hel_tool = hel;
-              }
-            }
-            else if (e == 1) {
-              if (
-                ((ls_i_tmp == s->curveBase()->vertices().size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
-                // ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i < ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp < u1) // same line segment but inner u
-                ) {
-                u1 = u1_tmp;
-                u2 = u2_tmp;
-                he_tool = he;
-                ls_i_prev = ls_i_tmp;
-                // hel_tool = hel;
-              }
-            }
-          }
-        }
-      }
-      ls_i = ls_i_prev;
-      if ((fabs(1 - u1_tmp) <= TOLERANCE) || e == 1) ls_i += 1;
-
-      // std::cout << "final intersection" << std::endl;
-      // pmessage->print(9, "u1 = " + std::to_string(u1));
-      // pmessage->print(9, "u2 = " + std::to_string(u2));
-      // std::cout << "he_tool: " << he_tool << std::endl;
-      PLOG(debug) << pmessage->message("  u1 = " + std::to_string(u1));
-      PLOG(debug) << pmessage->message("  u2 = " + std::to_string(u2));
-
-      if (fabs(u1) == INF) {
-        PLOG(debug) << pmessage->message("making segment end because of not touching any other components although with dependency.");
-        createSegmentFreeEnd(s, e, pmessage);
-        pmessage->decreaseIndent();
-        return;
-      }
-      else {
-        // This end is trimmed by some other components
-        if (fabs(u2) <= TOLERANCE) {
-          v_new = he_tool->source();
-        }
-        else if (fabs(1 - u2) <= TOLERANCE) {
-          v_new = he_tool->target();
-        }
-        else {
-          v_new = he_tool->toLineSegment()->getParametricVertex(u2);
-          _pmodel->dcel()->splitEdge(he_tool, v_new);
-          // std::cout << "        half edges of vertex v_new: " << v_new <<
-          // std::endl; v_new->printAllLeavingHalfEdges();
-        }
-      }
-      PLOG(debug) << pmessage->message("  v_new = ") << v_new->printString();
-
-      int ls_i_base = ls_i;
-      // std::cout << "ls_i = " << ls_i << std::endl;
-      // std::cout << "u1 = " << u1 << std::endl;
-      // std::cout << "v_new = " << v_new << std::endl;
-      PLOG(debug) << pmessage->message("  ls_i = " + std::to_string(ls_i));
-
-      // std::stringstream ss;
-      // ss << "v_new: " << v_new;
-      // pmessage->print(9, ss.str());
-
-      if (e == 0) {
-        for (auto k = 0; k < ls_i; k++) {
-          s->curveBase()->vertices().erase(s->curveBase()->vertices().begin());
-          s->baseOffsetIndicesLink().erase(s->baseOffsetIndicesLink().begin());
-        }
-
-        s->curveBase()->vertices()[0] = v_new;
-        // std::cout << "        half edges of vertex
-        // s->curveBase()->vertices().front(): " <<
-        // s->curveBase()->vertices().front() << std::endl;
-        // s->curveBase()->vertices().front()->printAllLeavingHalfEdges();
-      }
-      else if (e == 1) {
-        // ls_i = ls_i + _index_off;
-        int n = s->curveBase()->vertices().size();
-        for (auto k = ls_i; k < n - 1; k++) {
-          s->curveBase()->vertices().pop_back();
-          s->baseOffsetIndicesLink().pop_back();
-        }
-        s->curveBase()->vertices().back() = v_new;
-        // std::cout << "        half edges of vertex
-        // s->curveBase()->vertices().back(): " <<
-        // s->curveBase()->vertices().back() << std::endl;
-        // s->curveBase()->vertices().back()->printAllLeavingHalfEdges();
-      }
-
-
-
-
-
-      // 3.2. For the offset curve
-      PLOG(debug) << pmessage->message("step 3.2: for the offset curve");
-
-      if (e == 0) {
-        u1 = -INF;
-        ls_i_prev = -1;
-      }
-      else if (e == 1) {
-        u1 = INF;
-        ls_i_prev = s->curveOffset()->vertices().size();
-      }
-
-
-      // for (auto hel : _pmodel->dcel()->halfedgeloops()) {
-      for (auto hel : hels) {
-        if (!hel->keep()) {
-
-          // he = findCurvesIntersection(s->curveOffset()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
-          // he = findCurvesIntersection(tmp_vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
-          he = find_curves_intersection(
-            s->curveOffset()->vertices(), hel, e, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
-          );
-
-          // std::cout << "ls_i_tmp = " << ls_i_tmp << std::endl;
-          // pmessage->print(9, "u1_tmp = " + std::to_string(u1_tmp));
-          // pmessage->print(9, "u2_tmp = " + std::to_string(u2_tmp));
-          // if (he != nullptr && u1_tmp < u1) {
-          if (he != nullptr) {
-            PLOG(debug) << pmessage->message("he: ") << he->printString();
-            if (e == 0) {
-              if (
-                (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1)  // before the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i > ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp > u1) // same line segment but inner u
-                ) {
-                u1 = u1_tmp;
-                u2 = u2_tmp;
-                he_tool = he;
-                ls_i_prev = ls_i_tmp;
-                // hel_tool = hel;
-              }
-            }
-            else if (e == 1) {
-              if (
-                ((ls_i_tmp == s->curveOffset()->vertices().size() - 2) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
-                // ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i < ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp < u1) // same line segment but inner u
-                ) {
-                u1 = u1_tmp;
-                u2 = u2_tmp;
-                he_tool = he;
-                ls_i_prev = ls_i_tmp;
-                // hel_tool = hel;
-              }
-            }
-          }
-        }
-      }
-      ls_i = ls_i_prev;
-      if ((fabs(1 - u1_tmp) <= TOLERANCE) || e == 1) ls_i += 1;
-
-      // std::cout << "final intersection" << std::endl;
-      // pmessage->print(9, "u1 = " + std::to_string(u1));
-      // pmessage->print(9, "u2 = " + std::to_string(u2));
-      // std::cout << "he_tool: " << he_tool << std::endl;
-      PLOG(debug) << pmessage->message("  u1 = " + std::to_string(u1));
-      PLOG(debug) << pmessage->message("  u2 = " + std::to_string(u2));
-
-      // This end is trimmed by some other components
-      if (fabs(u2) <= TOLERANCE) {
-        v_new = he_tool->source();
-      }
-      else if (fabs(1 - u2) <= TOLERANCE) {
-        v_new = he_tool->target();
-      }
-      else {
-        v_new = he_tool->toLineSegment()->getParametricVertex(u2);
-        _pmodel->dcel()->splitEdge(he_tool, v_new);
-        // std::cout << "        half edges of vertex v_new: " << v_new <<
-        // std::endl; v_new->printAllLeavingHalfEdges();
-      }
-      PLOG(debug) << pmessage->message("  v_new = ") << v_new->printString();
-
-      int ls_i_offset = ls_i;
-      // std::cout << "ls_i = " << ls_i << std::endl;
-      // std::cout << "u1 = " << u1 << std::endl;
-      // std::cout << "v_new = " << v_new << std::endl;
-      PLOG(debug) << pmessage->message("  ls_i = " + std::to_string(ls_i));
-
-      if (e == 0) {
-        for (auto k = 0; k < ls_i; k++) {
-          s->curveOffset()->vertices().erase(s->curveOffset()->vertices().begin());
-        }
-
-        s->curveOffset()->vertices()[0] = v_new;
-        s->setHeadVertexOffset(v_new);
-      }
-      else if (e == 1) {
-        // ls_i = ls_i + _index_off;
-        int n = s->curveOffset()->vertices().size();
-        for (auto k = ls_i; k < n - 1; k++) {
-          s->curveOffset()->vertices().pop_back();
-        }
-        s->curveOffset()->vertices().back() = v_new;
-        s->setTailVertexOffset(v_new);
-      }
-
-
-
-      // Adjust base-offset linking indicies
-      // 1. Remove the index pairs is they are in the trim region
-      // 2. Renumber the indices (if trim start end)
-      // 3. Add the pairs for the trimmed end
-      PLOG(debug) << pmessage->message("adjust base-offset linking indices");
-
-      int nv_base = s->curveBase()->vertices().size();
-      int nv_offset = s->curveOffset()->vertices().size();
-      PLOG(debug) << pmessage->message("  nv_base = " + std::to_string(nv_base));
-      PLOG(debug) << pmessage->message("  nv_offset = " + std::to_string(nv_offset));
-
-      if (e == 0) {
-
-        // 1.1: Remove the index pairs if the base vertex index is in the trim region
-        while (1) {
-          int id_base_tmp = s->baseOffsetIndicesPairs().front()[0];
-          if (id_base_tmp > ls_i_base) break;
-          s->baseOffsetIndicesPairs().erase(s->baseOffsetIndicesPairs().begin());
-        }
-
-        // 1.2: Remove the index pairs if the offset vertex index is in the trim region
-        while (1) {
-          int id_offset_tmp = s->baseOffsetIndicesPairs().front()[1];
-          if (id_offset_tmp > ls_i_offset) break;
-          s->baseOffsetIndicesPairs().erase(s->baseOffsetIndicesPairs().begin());
-        }
-
-        // 2: Renumber indices
-        for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
-          s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
-          s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
-        }
-
-        // 3: Add the index pairs for the trimmed end
-        int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-        PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
-
-        std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
-        for (int k = 0; k < nv_diff; k++) {
-          if (ls_i_base > ls_i_offset) {
-            std::vector<int> id_pair_tmp{0, nv_diff - k};
-            it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-          }
-          else if (ls_i_base < ls_i_offset) {
-            std::vector<int> id_pair_tmp{nv_diff - k, 0};
-            it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-          }
-        }
-        std::vector<int> id_pair_tmp{0, 0};
-        it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-
-
-
-        // Old method
-        for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
-          if (k <= ls_i) {
-            s->baseOffsetIndicesLink()[k] = 0;
-          }
-          else {
-            s->baseOffsetIndicesLink()[k] -= ls_i;
-          }
-        }
-
-      }
-      else if (e == 1) {
-
-        // 1.1: Remove the index pairs if the base vertex index is in the trim region
-        while (1) {
-          int id_base_tmp = s->baseOffsetIndicesPairs().back()[0];
-          if (id_base_tmp < ls_i_base) break;
-          s->baseOffsetIndicesPairs().pop_back();
-        }
-
-        // 1.2: Remove the index pairs if the offset vertex index is in the trim region
-        while (1) {
-          int id_offset_tmp = s->baseOffsetIndicesPairs().back()[1];
-          if (id_offset_tmp < ls_i_offset) break;
-          s->baseOffsetIndicesPairs().pop_back();
-        }
-
-        // 2: Renumber indices
-        // for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
-        //   s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
-        //   s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
-        // }
-
-        // 3: Add the index pairs for the trimmed end
-        int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-        PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
-
-        // std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
-        int id_base_last_tmp = s->baseOffsetIndicesPairs().back()[0];
-        int id_offset_last_tmp = s->baseOffsetIndicesPairs().back()[1];
-        for (int k = 0; k < nv_diff; k++) {
-          std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
-          s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-          if (ls_i_base > ls_i_offset) {
-            id_base_last_tmp++;
-          }
-          else if (ls_i_base < ls_i_offset) {
-            id_offset_last_tmp++;
-            // std::vector<int> id_pair_tmp{nv_diff - k, 0};
-            // it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
-          }
-        }
-        std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
-        s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
-
-
-        // Old method
-        for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
-          if (k >= ls_i) {
-            s->baseOffsetIndicesLink()[k] = s->curveOffset()->vertices().size() - 1;
-          }
-        }
-
-      }
+      join_segment_to_dependency(s, e, pmessage);
+
+      // PDCELHalfEdge *he_tool, *he;
+      // int ls_i, ls_i_prev, ls_i_tmp;
+      // double u1, u2, u1_tmp, u2_tmp;
+      // PDCELVertex *v_new;
+
+      // if (e == 0) {
+      //   u1 = -INF;
+      //   ls_i_prev = -1;
+      // }
+      // else if (e == 1) {
+      //   u1 = INF;
+      //   ls_i_prev = s->curveBase()->vertices().size();
+      // }
+
+
+
+      // // 1. Use the reference point of the component to find the outer
+      // // half edge loop that enclosing this point
+      // // 2. Find all inner half edge loops inside the outer half edge loop
+      // // 3. For each found loop, calculate intersections and
+      // //    keep the intersection(s) closest to the reference point
+
+      // if (_ref_vertex == nullptr) {
+      //   _ref_vertex = _segments[0]->curveBase()->refVertex();
+      //   if (_ref_vertex == nullptr) {
+      //     int i = std::floor(_segments[0]->curveBase()->vertices().size() / 2);
+      //     _ref_vertex = _segments[0]->curveBase()->vertices()[i];
+      //   }
+      // }
+
+      // PLOG(debug) << pmessage->message("ref vertex: ") << _ref_vertex;
+
+      // bool to_be_removed;
+      // if (_ref_vertex->dcel() != nullptr) {
+      //   to_be_removed = false;
+      // }
+      // else {
+      //   _pmodel->dcel()->addVertex(_ref_vertex);
+      //   to_be_removed = true;
+      // }
+
+
+
+
+      // // 1.
+      // // std::cout << "\n[debug] step 1\n";
+      // PLOG(debug) << pmessage->message("step 1: find the outer half edge loop");
+
+      // std::vector<PDCELHalfEdgeLoop *> hels;
+      // PDCELHalfEdgeLoop *tmp_hel_out;
+      // tmp_hel_out = _pmodel->dcel()->findEnclosingLoop(_ref_vertex);
+      // // std::cout << "\ntmp_hel_out\n";
+      // // tmp_hel_out->print();
+      // // std::cout << "\ntmp_hel_out->incidentEdge(): " << tmp_hel_out->incidentEdge() << std::endl;
+      // // std::cout << "\ndcel->halfedges.front(): " << _pmodel->dcel()->halfedges().front() << std::endl;
+      // if (tmp_hel_out != _pmodel->dcel()->halfedgeloops().front()) {
+      //   // Not the first loop with INF size
+      //   hels.push_back(tmp_hel_out);
+      // }
+
+      // // _pmodel->dcel()->print_dcel();
+
+
+
+
+      // // 2.
+      // // std::cout << "\n[debug] step 2\n";
+      // PLOG(debug) << pmessage->message("step 2: find all inner half edge loops");
+
+      // PDCELFace *tmp_face = tmp_hel_out->face();
+      // // std::cout << "\ntmp_face:\n";
+      // if (tmp_face != nullptr) {
+      //   // tmp_face->print();
+      //   // Try to update inner loops first
+      //   if (tmp_face->inners().size() == 0) {
+      //     _pmodel->dcel()->linkHalfEdgeLoops();
+      //     for (auto heli : _pmodel->dcel()->halfedgeloops()) {
+      //       if (!heli->keep()) {
+      //         PDCELHalfEdgeLoop *helj = heli;
+      //         while (helj->adjacentLoop() != nullptr) {
+      //           helj = helj->adjacentLoop();
+      //         }
+      //         if (helj == tmp_hel_out) {
+      //           // hels.push_back(helj);
+      //           heli->setFace(tmp_face);
+      //           tmp_face->addInnerComponent(heli->incidentEdge());
+      //         }
+      //       }
+      //     }
+      //   }
+
+      //   for (auto tmp_he : tmp_face->inners()) {
+      //     hels.push_back(tmp_he->loop());
+      //   }
+      // }
+      // else {
+      //   // std::cout << "nullptr\n";
+      // }
+
+      // if (to_be_removed) {
+      //   _pmodel->dcel()->removeVertex(_ref_vertex);
+      // }
+
+      // // delete tmp_face;
+      // // delete tmp_hel_out;
+
+      // if (config.debug) {
+      //   std::cout << "\nhels:\n";
+      //   PLOG(debug) << pmessage->message("found half edge loops");
+      //   for (auto hel : hels) {
+      //     tmp_hel_out->log();
+      //   }
+      //   // std::cout << "\n";
+      //   // hel->print();
+      // }
+
+
+
+
+      // // 3.
+      // PLOG(debug) << pmessage->message("step 3: calculate intersections");
+
+      // // 3.1. For the base curve
+      // PLOG(debug) << pmessage->message("step 3.1: for the base curve");
+
+      // // for (auto hel : _pmodel->dcel()->halfedgeloops()) {
+      // for (auto hel : hels) {
+      //   if (!hel->keep()) {
+      //     // std::cout << "        half edge loop hel:" << std::endl;
+      //     // hel->print();
+
+      //     // he = findCurvesIntersection(s->curveBase()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+      //     // he = findCurvesIntersection(tmp_vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
+      //     he = find_curves_intersection(
+      //       s->curveBase()->vertices(), hel, e, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
+      //     );
+
+      //     // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
+      //     // std::cout << "ls_i_tmp = " << ls_i_tmp << std::endl;
+      //     // pmessage->print(9, "u1_tmp = " + std::to_string(u1_tmp));
+      //     // pmessage->print(9, "u2_tmp = " + std::to_string(u2_tmp));
+      //     // if (he != nullptr && u1_tmp < u1) {
+      //     if (he != nullptr) {
+      //       if (e == 0) {
+      //         if (
+      //           (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1)  // before the first vertex
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i > ls_i_prev)  // inner line segment
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp > u1) // same line segment but inner u
+      //           ) {
+      //           u1 = u1_tmp;
+      //           u2 = u2_tmp;
+      //           he_tool = he;
+      //           ls_i_prev = ls_i_tmp;
+      //           // hel_tool = hel;
+      //         }
+      //       }
+      //       else if (e == 1) {
+      //         if (
+      //           ((ls_i_tmp == s->curveBase()->vertices().size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
+      //           // ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i < ls_i_prev)  // inner line segment
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp < u1) // same line segment but inner u
+      //           ) {
+      //           u1 = u1_tmp;
+      //           u2 = u2_tmp;
+      //           he_tool = he;
+      //           ls_i_prev = ls_i_tmp;
+      //           // hel_tool = hel;
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      // ls_i = ls_i_prev;
+      // if ((fabs(1 - u1_tmp) <= TOLERANCE) || e == 1) ls_i += 1;
+
+      // // std::cout << "final intersection" << std::endl;
+      // // pmessage->print(9, "u1 = " + std::to_string(u1));
+      // // pmessage->print(9, "u2 = " + std::to_string(u2));
+      // // std::cout << "he_tool: " << he_tool << std::endl;
+      // PLOG(debug) << pmessage->message("  u1 = " + std::to_string(u1));
+      // PLOG(debug) << pmessage->message("  u2 = " + std::to_string(u2));
+
+      // if (fabs(u1) == INF) {
+      //   PLOG(debug) << pmessage->message("making segment end because of not touching any other components although with dependency.");
+      //   createSegmentFreeEnd(s, e, pmessage);
+      //   pmessage->decreaseIndent();
+      //   return;
+      // }
+      // else {
+      //   // This end is trimmed by some other components
+      //   if (fabs(u2) <= TOLERANCE) {
+      //     v_new = he_tool->source();
+      //   }
+      //   else if (fabs(1 - u2) <= TOLERANCE) {
+      //     v_new = he_tool->target();
+      //   }
+      //   else {
+      //     v_new = he_tool->toLineSegment()->getParametricVertex(u2);
+      //     _pmodel->dcel()->splitEdge(he_tool, v_new);
+      //     // std::cout << "        half edges of vertex v_new: " << v_new <<
+      //     // std::endl; v_new->printAllLeavingHalfEdges();
+      //   }
+      // }
+      // PLOG(debug) << pmessage->message("  v_new = ") << v_new->printString();
+
+      // int ls_i_base = ls_i;
+      // // std::cout << "ls_i = " << ls_i << std::endl;
+      // // std::cout << "u1 = " << u1 << std::endl;
+      // // std::cout << "v_new = " << v_new << std::endl;
+      // PLOG(debug) << pmessage->message("  ls_i = " + std::to_string(ls_i));
+
+      // // std::stringstream ss;
+      // // ss << "v_new: " << v_new;
+      // // pmessage->print(9, ss.str());
+
+      // if (e == 0) {
+      //   for (auto k = 0; k < ls_i; k++) {
+      //     s->curveBase()->vertices().erase(s->curveBase()->vertices().begin());
+      //     s->baseOffsetIndicesLink().erase(s->baseOffsetIndicesLink().begin());
+      //   }
+
+      //   s->curveBase()->vertices()[0] = v_new;
+      //   // std::cout << "        half edges of vertex
+      //   // s->curveBase()->vertices().front(): " <<
+      //   // s->curveBase()->vertices().front() << std::endl;
+      //   // s->curveBase()->vertices().front()->printAllLeavingHalfEdges();
+      // }
+      // else if (e == 1) {
+      //   // ls_i = ls_i + _index_off;
+      //   int n = s->curveBase()->vertices().size();
+      //   for (auto k = ls_i; k < n - 1; k++) {
+      //     s->curveBase()->vertices().pop_back();
+      //     s->baseOffsetIndicesLink().pop_back();
+      //   }
+      //   s->curveBase()->vertices().back() = v_new;
+      //   // std::cout << "        half edges of vertex
+      //   // s->curveBase()->vertices().back(): " <<
+      //   // s->curveBase()->vertices().back() << std::endl;
+      //   // s->curveBase()->vertices().back()->printAllLeavingHalfEdges();
+      // }
+
+
+
+
+
+      // // 3.2. For the offset curve
+      // PLOG(debug) << pmessage->message("step 3.2: for the offset curve");
+
+      // if (e == 0) {
+      //   u1 = -INF;
+      //   ls_i_prev = -1;
+      // }
+      // else if (e == 1) {
+      //   u1 = INF;
+      //   ls_i_prev = s->curveOffset()->vertices().size();
+      // }
+
+
+      // // for (auto hel : _pmodel->dcel()->halfedgeloops()) {
+      // for (auto hel : hels) {
+      //   if (!hel->keep()) {
+
+      //     // he = findCurvesIntersection(s->curveOffset()->vertices(), hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+      //     // he = findCurvesIntersection(tmp_vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
+      //     he = find_curves_intersection(
+      //       s->curveOffset()->vertices(), hel, e, 1, ls_i_tmp, u1_tmp, u2_tmp, pmessage
+      //     );
+
+      //     // std::cout << "ls_i_tmp = " << ls_i_tmp << std::endl;
+      //     // pmessage->print(9, "u1_tmp = " + std::to_string(u1_tmp));
+      //     // pmessage->print(9, "u2_tmp = " + std::to_string(u2_tmp));
+      //     // if (he != nullptr && u1_tmp < u1) {
+      //     if (he != nullptr) {
+      //       PLOG(debug) << pmessage->message("he: ") << he->printString();
+      //       if (e == 0) {
+      //         if (
+      //           (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1)  // before the first vertex
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i > ls_i_prev)  // inner line segment
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp > u1) // same line segment but inner u
+      //           ) {
+      //           u1 = u1_tmp;
+      //           u2 = u2_tmp;
+      //           he_tool = he;
+      //           ls_i_prev = ls_i_tmp;
+      //           // hel_tool = hel;
+      //         }
+      //       }
+      //       else if (e == 1) {
+      //         if (
+      //           ((ls_i_tmp == s->curveOffset()->vertices().size() - 2) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
+      //           // ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i < ls_i_prev)  // inner line segment
+      //           || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp < u1) // same line segment but inner u
+      //           ) {
+      //           u1 = u1_tmp;
+      //           u2 = u2_tmp;
+      //           he_tool = he;
+      //           ls_i_prev = ls_i_tmp;
+      //           // hel_tool = hel;
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      // ls_i = ls_i_prev;
+      // if ((fabs(1 - u1_tmp) <= TOLERANCE) || e == 1) ls_i += 1;
+
+      // // std::cout << "final intersection" << std::endl;
+      // // pmessage->print(9, "u1 = " + std::to_string(u1));
+      // // pmessage->print(9, "u2 = " + std::to_string(u2));
+      // // std::cout << "he_tool: " << he_tool << std::endl;
+      // PLOG(debug) << pmessage->message("  u1 = " + std::to_string(u1));
+      // PLOG(debug) << pmessage->message("  u2 = " + std::to_string(u2));
+
+      // // This end is trimmed by some other components
+      // if (fabs(u2) <= TOLERANCE) {
+      //   v_new = he_tool->source();
+      // }
+      // else if (fabs(1 - u2) <= TOLERANCE) {
+      //   v_new = he_tool->target();
+      // }
+      // else {
+      //   v_new = he_tool->toLineSegment()->getParametricVertex(u2);
+      //   _pmodel->dcel()->splitEdge(he_tool, v_new);
+      //   // std::cout << "        half edges of vertex v_new: " << v_new <<
+      //   // std::endl; v_new->printAllLeavingHalfEdges();
+      // }
+      // PLOG(debug) << pmessage->message("  v_new = ") << v_new->printString();
+
+      // int ls_i_offset = ls_i;
+      // // std::cout << "ls_i = " << ls_i << std::endl;
+      // // std::cout << "u1 = " << u1 << std::endl;
+      // // std::cout << "v_new = " << v_new << std::endl;
+      // PLOG(debug) << pmessage->message("  ls_i = " + std::to_string(ls_i));
+
+      // if (e == 0) {
+      //   for (auto k = 0; k < ls_i; k++) {
+      //     s->curveOffset()->vertices().erase(s->curveOffset()->vertices().begin());
+      //   }
+
+      //   s->curveOffset()->vertices()[0] = v_new;
+      //   s->setHeadVertexOffset(v_new);
+      // }
+      // else if (e == 1) {
+      //   // ls_i = ls_i + _index_off;
+      //   int n = s->curveOffset()->vertices().size();
+      //   for (auto k = ls_i; k < n - 1; k++) {
+      //     s->curveOffset()->vertices().pop_back();
+      //   }
+      //   s->curveOffset()->vertices().back() = v_new;
+      //   s->setTailVertexOffset(v_new);
+      // }
+
+
+
+      // // Adjust base-offset linking indicies
+      // // 1. Remove the index pairs is they are in the trim region
+      // // 2. Renumber the indices (if trim start end)
+      // // 3. Add the pairs for the trimmed end
+      // PLOG(debug) << pmessage->message("adjust base-offset linking indices");
+
+      // int nv_base = s->curveBase()->vertices().size();
+      // int nv_offset = s->curveOffset()->vertices().size();
+      // PLOG(debug) << pmessage->message("  nv_base = " + std::to_string(nv_base));
+      // PLOG(debug) << pmessage->message("  nv_offset = " + std::to_string(nv_offset));
+
+      // if (e == 0) {
+
+      //   // 1.1: Remove the index pairs if the base vertex index is in the trim region
+      //   while (1) {
+      //     int id_base_tmp = s->baseOffsetIndicesPairs().front()[0];
+      //     if (id_base_tmp > ls_i_base) break;
+      //     s->baseOffsetIndicesPairs().erase(s->baseOffsetIndicesPairs().begin());
+      //   }
+
+      //   // 1.2: Remove the index pairs if the offset vertex index is in the trim region
+      //   while (1) {
+      //     int id_offset_tmp = s->baseOffsetIndicesPairs().front()[1];
+      //     if (id_offset_tmp > ls_i_offset) break;
+      //     s->baseOffsetIndicesPairs().erase(s->baseOffsetIndicesPairs().begin());
+      //   }
+
+      //   // 2: Renumber indices
+      //   for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
+      //     s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
+      //     s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
+      //   }
+
+      //   // 3: Add the index pairs for the trimmed end
+      //   int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
+      //   PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
+
+      //   std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
+      //   for (int k = 0; k < nv_diff; k++) {
+      //     if (ls_i_base > ls_i_offset) {
+      //       std::vector<int> id_pair_tmp{0, nv_diff - k};
+      //       it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+      //     }
+      //     else if (ls_i_base < ls_i_offset) {
+      //       std::vector<int> id_pair_tmp{nv_diff - k, 0};
+      //       it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+      //     }
+      //   }
+      //   std::vector<int> id_pair_tmp{0, 0};
+      //   it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+
+
+
+      //   // Old method
+      //   for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
+      //     if (k <= ls_i) {
+      //       s->baseOffsetIndicesLink()[k] = 0;
+      //     }
+      //     else {
+      //       s->baseOffsetIndicesLink()[k] -= ls_i;
+      //     }
+      //   }
+
+      // }
+      // else if (e == 1) {
+
+      //   // 1.1: Remove the index pairs if the base vertex index is in the trim region
+      //   while (1) {
+      //     int id_base_tmp = s->baseOffsetIndicesPairs().back()[0];
+      //     if (id_base_tmp < ls_i_base) break;
+      //     s->baseOffsetIndicesPairs().pop_back();
+      //   }
+
+      //   // 1.2: Remove the index pairs if the offset vertex index is in the trim region
+      //   while (1) {
+      //     int id_offset_tmp = s->baseOffsetIndicesPairs().back()[1];
+      //     if (id_offset_tmp < ls_i_offset) break;
+      //     s->baseOffsetIndicesPairs().pop_back();
+      //   }
+
+      //   // 2: Renumber indices
+      //   // for (int k = 0; k < s->baseOffsetIndicesPairs().size(); k++) {
+      //   //   s->baseOffsetIndicesPairs()[k][0] -= ls_i_base;
+      //   //   s->baseOffsetIndicesPairs()[k][1] -= ls_i_offset;
+      //   // }
+
+      //   // 3: Add the index pairs for the trimmed end
+      //   int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
+      //   PLOG(debug) << pmessage->message("  nv_diff = " + std::to_string(nv_diff));
+
+      //   // std::vector<std::vector<int>>::iterator it_tmp = s->baseOffsetIndicesPairs().begin();
+      //   int id_base_last_tmp = s->baseOffsetIndicesPairs().back()[0];
+      //   int id_offset_last_tmp = s->baseOffsetIndicesPairs().back()[1];
+      //   for (int k = 0; k < nv_diff; k++) {
+      //     std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
+      //     s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+      //     if (ls_i_base > ls_i_offset) {
+      //       id_base_last_tmp++;
+      //     }
+      //     else if (ls_i_base < ls_i_offset) {
+      //       id_offset_last_tmp++;
+      //       // std::vector<int> id_pair_tmp{nv_diff - k, 0};
+      //       // it_tmp = s->baseOffsetIndicesPairs().insert(it_tmp, id_pair_tmp);
+      //     }
+      //   }
+      //   std::vector<int> id_pair_tmp{id_base_last_tmp+1, id_offset_last_tmp+1};
+      //   s->baseOffsetIndicesPairs().push_back(id_pair_tmp);
+
+
+      //   // Old method
+      //   for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
+      //     if (k >= ls_i) {
+      //       s->baseOffsetIndicesLink()[k] = s->curveOffset()->vertices().size() - 1;
+      //     }
+      //   }
+
+      // }
 
     }
   }
@@ -810,11 +914,12 @@ void join_segments_style_1(
 
 
 /// @brief Join two segments with a non-step-like joint
-/// @param s1 
-/// @param s2 
-/// @param e1 
-/// @param e2 
-/// @param pmessage 
+/// @param s1 First segment
+/// @param s2 Second segment
+/// @param e1 Which end of the first segment to join
+/// @param e2 Which end of the second segment to join
+/// @param bound_vertices Boundary vertices
+/// @param pmessage Message object for logging
 void join_segments_style_2(
   Segment *s1, Segment *s2, int e1, int e2, std::vector<PDCELVertex *> bound_vertices,
   Message *pmessage

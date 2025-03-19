@@ -26,6 +26,18 @@
 #include <vector>
 
 
+/// @brief Build the areas of the segment
+///
+/// Build the areas of the segment by splitting the face into areas
+/// and then splitting the areas into layers.
+/// Things to do:
+/// - Build the dividing walls between areas
+/// - Based on the layup, split the walls
+/// Things to consider:
+/// - The segment is closed or open
+/// - For open segments, check if the intermediate walls intersect with the first and last walls of the segment
+///
+/// @param pmessage Message object for logging
 void Segment::buildAreas(Message *pmessage) {
   pmessage->increaseIndent();
 

@@ -768,43 +768,49 @@ PDCELVertex *get_polylines_intersection_close_to(
     bool inner_only;
     int j;
     if (param_loc_1 != -1) {
-      if (param_loc_1 == 0) {
-        which_end = 0;
-        if (ex11) {
-          inner_only = false;
-        } else {
-          inner_only = true;
-        }
-      } else if (param_loc_1 == 1) {
-        which_end = 1;
-        if (ex12) {
-          inner_only = false;
-        } else {
-          inner_only = true;
-        }
-      }
-      j = get_intersection_closer_to(
-        polyline_1, is1, us1, which_end, inner_only, pmessage
+      j = get_intersection_close_to_param_coord(
+        polyline_1, is1, us1, param_loc_1, ex11, ex12, 0, pmessage
       );
+      // if (param_loc_1 == 0) {
+      //   which_end = 0;
+      //   if (ex11) {
+      //     inner_only = false;
+      //   } else {
+      //     inner_only = true;
+      //   }
+      // } else if (param_loc_1 == 1) {
+      //   which_end = 1;
+      //   if (ex12) {
+      //     inner_only = false;
+      //   } else {
+      //     inner_only = true;
+      //   }
+      // }
+      // j = get_intersection_closer_to(
+      //   polyline_1, is1, us1, which_end, inner_only, pmessage
+      // );
     } else if (param_loc_2 != -1) {
-      if (param_loc_2 == 0) {
-        which_end = 0;
-        if (ex21) {
-          inner_only = false;
-        } else {
-          inner_only = true;
-        }
-      } else if (param_loc_2 == 1) {
-        which_end = 1;
-        if (ex22) {
-          inner_only = false;
-        } else {
-          inner_only = true;
-        }
-      }
-      j = get_intersection_closer_to(
-        polyline_2, is2, us2, which_end, inner_only, pmessage
+      j = get_intersection_close_to_param_coord(
+        polyline_2, is2, us2, param_loc_2, ex21, ex22, 0, pmessage
       );
+      // if (param_loc_2 == 0) {
+      //   which_end = 0;
+      //   if (ex21) {
+      //     inner_only = false;
+      //   } else {
+      //     inner_only = true;
+      //   }
+      // } else if (param_loc_2 == 1) {
+      //   which_end = 1;
+      //   if (ex22) {
+      //     inner_only = false;
+      //   } else {
+      //     inner_only = true;
+      //   }
+      // }
+      // j = get_intersection_closer_to(
+      //   polyline_2, is2, us2, which_end, inner_only, pmessage
+      // );
     }
 
     // Get output and return values
@@ -839,6 +845,66 @@ PDCELVertex *get_polylines_intersection_close_to(
 
 
 
+/// @brief Calculate all intersections between a polyline and a half-edge loop.
+/// @param polyline The polyline.
+/// @param hel The half-edge loop.
+/// @param ex1 Whether to consider the extension of the polyline before the beginning.
+/// @param ex2 Whether to consider the extension of the polyline after the ending.
+/// @param i1s The indices of the intersections on the polyline.
+/// @param i2s The indices of the intersections on the half-edge loop.
+/// @param u1s The non-dimensional locations of the intersections on the polyline.
+/// @param u2s The non-dimensional locations of the intersections on the half-edge loop.
+/// @param pmessage The message.
+/// @return Whether there is at least one intersection.
+bool calc_all_intersections_between_polyline_and_half_edge_loop(
+  std::vector<PDCELVertex *> &polyline, PDCELHalfEdgeLoop *hel,
+  const int &ex1, const int &ex2,
+  std::vector<int> &i1s, std::vector<int> &i2s,
+  std::vector<double> &u1s, std::vector<double> &u2s,
+  Message *pmessage
+  ) {
+  pmessage->increaseIndent();
+
+  PLOG(debug) << pmessage->message("in function: calc_all_intersections_between_polyline_and_half_edge_loop");
+
+  PDCELHalfEdge *he = nullptr;
+
+
+  // Convert the half-edge loop to a list of vertices
+  std::vector<PDCELVertex *> vertices_hel;
+  PDCELHalfEdge *hei = hel->incidentEdge();
+  vertices_hel.push_back(hei->source());
+  do {
+    vertices_hel.push_back(hei->target());
+    hei = hei->next();
+  } while (hei != hel->incidentEdge());
+
+  // Find all intersections between the curves and the half-edge loop
+  find_open_polylines_intersections(
+    polyline, vertices_hel, i1s, i2s, u1s, u2s,
+    ex1, ex2, 0, 0,
+    pmessage
+  );
+
+
+  pmessage->decreaseIndent();
+
+  return i1s.size() > 0;
+}
+
+
+
+
+/// @brief Find the intersection of a polyline and a half-edge loop.
+/// @param vertices The vertices of the polyline.
+/// @param hel The half-edge loop.
+/// @param end The end of the polyline to consider (0 for start, 1 for end).
+/// @param ex Whether to consider the intersection before the beginning or after the ending of the polyline.
+/// @param ls_i The index of the line segment of the polyline that contains the intersection.
+/// @param u1 The non-dimensional location of the intersection on the line segment of the polyline.
+/// @param u2 The non-dimensional location of the intersection on the line segment of the half-edge loop.
+/// @param pmessage The message.
+/// @return The half-edge that contains the intersection.
 PDCELHalfEdge *find_curves_intersection(
   std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
   const int &end, const int &ex, int &ls_i, double &u1, double &u2,
@@ -1163,6 +1229,19 @@ PDCELHalfEdge *find_curves_intersection(
 
 
 
+/// @brief Calculate all intersections between two open polylines.
+/// @param[in] c1 The first polyline.
+/// @param[in] c2 The second polyline.
+/// @param[out] i1s The indices of the intersections on the first polyline.
+/// @param[out] i2s The indices of the intersections on the second polyline.
+/// @param[out] u1s The non-dimensional locations of the intersections on the first polyline.
+/// @param[out] u2s The non-dimensional locations of the intersections on the second polyline.
+/// @param[in] ex11 Whether to consider the extension of the first polyline before the beginning.
+/// @param[in] ex12 Whether to consider the extension of the first polyline after the ending.
+/// @param[in] ex21 Whether to consider the extension of the second polyline before the beginning.
+/// @param[in] ex22 Whether to consider the extension of the second polyline after the ending.
+/// @param[in] pmessage The message.
+/// @return 
 int find_open_polylines_intersections(
   const std::vector<PDCELVertex *> &c1,
   const std::vector<PDCELVertex *> &c2,
