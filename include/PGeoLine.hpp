@@ -59,6 +59,7 @@ public:
   PDCELHalfEdge *he21() { return _he21; }
   PDCELVertex *vin(); // The left bottom vertex
   PDCELVertex *vout(); // The right top vertex
+  std::vector<PDCELVertex *> vertices() { return {_v1, _v2}; }
 
   void setV1(PDCELVertex *v) { _v1 = v; }
   void setV2(PDCELVertex *v) { _v2 = v; }

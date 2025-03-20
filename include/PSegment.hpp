@@ -156,6 +156,7 @@ public:
     return _base_offset_indices_pairs;
   }
 
+  std::vector<PArea *> &areas() { return _areas; }
   PDCELFace *face() { return _face; }
 
   void setMatOrient1(std::string orient) { _mat_orient_e1 = orient; }
