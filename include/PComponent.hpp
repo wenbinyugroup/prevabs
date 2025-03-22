@@ -66,6 +66,7 @@ private:
   // void calcBoundingVertices(Segment *s1, PDCELVertex *v, Segment *s2);
 
   void createSegmentFreeEnd(Segment *s, int e, Message *);
+  void join_segment_to_dependency(Segment *s, int e, Message *pmessage);
   void joinSegments(Segment *s, int e, PDCELVertex *v, Message *);
   void joinSegments(Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v, int style, Message *);
   void buildLaminate(Message *);

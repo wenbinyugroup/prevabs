@@ -1,47 +1,10 @@
-2025-03-02 18:40:19 [info] - prevabs start (2025-03-02 18:40:19)
-2025-03-02 18:40:19 [info] - reading input files
-2025-03-02 18:40:19 [info]     -   
+[info] - prevabs start (2025-03-22 15:13:10)
+[info] - reading input files
+[info]     - reading main input file: t3_v\v.xml
+[error]       - unable   
   
-    
-  
-  
-  
-  
-  
-  
-  
-  ========================================
-  
-  
-  ========================================
-  
-ase\MaterialDB.xml
-2025-03-02 18:40:19 [info]   - reading input files -- done
-2025-03-02 18:40:19 [info]   - building the shape
-2025-03-02 18:40:19 [info]     - building the cross section, step 1
-2025-03-02 18:40:19 [info]       - building component: surface
-2025-03-02 18:40:19 [info]     - building the cross section, step 2
-2025-03-02 18:40:19 [info]       - building component details: surface
-2025-03-02 18:40:19 [info]         - updating base-offset index pairs
-2025-03-02 18:40:19 [info]     - fixing geometry
-2025-03-02 18:40:19 [info]   - building the shape -- done
-2025-03-02 18:40:19 [info]   - modeling in Gmsh
-2025-03-02 18:40:19 [info]     - creating gmsh vertices
-2025-03-02 18:40:19 [info]     - creating gmsh edges
-2025-03-02 18:40:19 [info]     - creating gmsh faces
-2025-03-02 18:40:19 [info]     - creating physical groups
-2025-03-02 18:40:19 [info]     - meshing
-2025-03-02 18:40:19 [info]   - modeling in Gmsh -- done
-2025-03-02 18:40:19 [info]   - writing outputs
-2025-03-02 18:40:19 [info]     - writing gmsh .opt file: t3_v\v.opt
-2025-03-02 18:40:19 [info]     - writing gmsh .geo file: t3_v\v.geo_unrolled
-2025-03-02 18:40:19 [info]     - writing gmsh .msh file: t3_v\v.msh
-2025-03-02 18:40:19 [info]     - writing sg file: t3_v\v.sg
-2025-03-02 18:40:19 [info]       - writing nodes
-2025-03-02 18:40:19 [info]       - writing elements
-2025-03-02 18:40:19 [info]         -   writing connectivity
-2025-03-02 18:40:19 [info]         -   writing local orientation
-2025-03-02 18:40:19 [info]     - writing material id-name file: t3_v\v.sg.mat
-2025-03-02 18:40:19 [info]   - writing outputs -- done
-2025-03-02 18:40:19 [info]   - prevabs finished (2025-03-02 18:40:19)
-2025-03-02 18:40:19 [info] total running time: 0.159 sec
+file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: surface

@@ -821,7 +821,7 @@ PDCELVertex *get_polylines_intersection_close_to(
   }
 
   // Get the intersection point
-  PDCELVertex *v1, v2;
+  PDCELVertex *v1, *v2;
   is_new_1 = get_vertex_by_param_coord_of_two_vertices(
     polyline_1[i1], polyline_1[i1 + 1], u1, v1
   );
@@ -933,10 +933,10 @@ PDCELHalfEdge *find_curves_intersection(
     param_loc = 1.0;
   }
   int i1, i2;
-  double u1, u2;
+  // double u1, u2;
   bool is_new_1, is_new_2;
-  PDCELVertex v_intersect = get_polylines_intersection_close_to(
-    vertices, vertices_hel, param_loc, ex, ex, 0, 0,
+  PDCELVertex *v_intersect = get_polylines_intersection_close_to(
+    vertices, vertices_hel, param_loc, -1, ex, ex, 0, 0,
     i1, u1, i2, u2, is_new_1, is_new_2, pmessage
   );
 

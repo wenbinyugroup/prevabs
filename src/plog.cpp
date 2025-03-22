@@ -30,9 +30,10 @@ namespace attrs = boost::log::attributes;
 namespace keywords = boost::log::keywords;
 
 
-BOOST_LOG_ATTRIBUTE_KEYWORD(line_id, "LineID", unsigned int)
-BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
+// BOOST_LOG_ATTRIBUTE_KEYWORD(line_id, "LineID", unsigned int)
+// BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
 BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", logging::trivial::severity_level)
+// BOOST_LOG_ATTRIBUTE_KEYWORD(function_name, "Function", std::string)
 
 
 BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
@@ -42,28 +43,27 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
   plogger.add_attribute("LineID", attrs::counter<unsigned int>(1));
   plogger.add_attribute("TimeStamp", attrs::local_clock());
 
-  // Add a text sink
+  // Sink setup
   using text_sink = sinks::synchronous_sink<sinks::text_ostream_backend>;
   auto sink = boost::make_shared<text_sink>();
 
-  // Add a log file stream to the sink
+  // Add log file stream
   sink->locked_backend()->add_stream(
-    boost::make_shared<std::ofstream>(config.file_name_log));
+      boost::make_shared<std::ofstream>(config.file_name_log));
   sink->locked_backend()->auto_flush(true);
 
-  // Add a console output stream to the sink
+  // Add console output stream
   sink->locked_backend()->add_stream(
-    boost::shared_ptr<std::ostream>(&std::clog, boost::null_deleter()));
+      boost::shared_ptr<std::ostream>(&std::clog, boost::null_deleter()));
 
-  // Specify the format
+  // Define the custom formatter
   logging::formatter fmt = expr::stream
-    // << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
-    << "[" << logging::trivial::severity << "]"
-    << " " << expr::message;
+      << "[" << severity << "] "
+      << expr::smessage;
 
   sink->set_formatter(fmt);
 
-  // Set filter
+  // Set the filter severity level
   sink->set_filter(severity >= config.log_severity_level);
 
   // Register the sink

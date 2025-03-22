@@ -1,12 +1,11 @@
-2025-03-02 18:40:23 [info] - prevabs start (2025-03-02 18:40:23)
-2025-03-02 18:40:23 [info] - reading input files
-2025-03-02 18:40:23 [info]     -   
+[info] - prevabs start (2025-03-22 15:13:17)
+[info] - reading input files
+[info]     - reading main input file: t5_T\t.xml
+[error]       - unable   
   
-main input file: t5_T\t.xml
-2025-03-02 18:40:23 [error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-2025-03-02 18:40:23 [info]         - reading materials file: t5_T\materials.xml
-2025-03-02 18:40:23 [info]   - reading input files -- done
-2025-03-02 18:40:23 [info]   - building the shape
-2025-03-02 18:40:23 [info]     - building the cross section, step 1
-2025-03-02 18:40:23 [info]       - building component: cpflange
-2025-03-02 18:40:23 [info]         - building component: cpwebl
+file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]         - reading materials file: t5_T\materials.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: cpflange

@@ -311,8 +311,8 @@ int getTurningSide(SVector3 vec1, SVector3 vec2) {
   // Use a more robust check with absolute tolerance
   if (fabs(n[0]) < ABS_TOL) {
     // Check if vectors are parallel or anti-parallel
-    double dot = v1.dot(v2);
-    if (dot > 0) {
+    double _dot = dot(v1, v2);
+    if (_dot > 0) {
       return 0; // parallel (same direction)
     } else {
       return 0; // anti-parallel (opposite direction)
@@ -632,7 +632,7 @@ SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u) {
 
 
 bool get_vertex_by_param_coord_of_two_vertices(
-  const PDCELVertex *v1, const PDCELVertex *v2, const double &u,
+  PDCELVertex *v1, PDCELVertex *v2, const double &u,
   PDCELVertex *v
 ) {
   PLOG(debug) << "get_vertex_by_param_coord_of_two_vertices";

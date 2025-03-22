@@ -32,7 +32,7 @@ void set_local_orientation(
   const bool &use_offset_as_base
   ) {
   Segment *segment = area->segment();
-  PGeoLineSegment *ls_base;
+  PGeoLineSegment *ls_base, *ls_layup;
   if (!use_offset_as_base) {
     ls_base = new PGeoLineSegment(
       segment->curveBase()->vertices()[base_vector_index - 1], segment->curveBase()->vertices()[base_vector_index]
@@ -52,9 +52,9 @@ void set_local_orientation(
   if (segment->getMatOrient2() == "baseline") {
     area->setLocaly2(ls_base->toVector());
   }
-  else if (segment->getMatOrient2() == "layup") {
-    area->setLocaly2(ls_layup->toVector());
-  }
+  // else if (segment->getMatOrient2() == "layup") {
+  //   area->setLocaly2(ls_layup->toVector());
+  // }
 }
 
 
@@ -184,7 +184,7 @@ void divide_end_wall_by_layup(
 /// @return Pointer to the area
 PArea *build_area(
   Segment *segment, const int &base_vector_index, const int &offset_vector_index,
-  const std::string &slayupside, const int &end,
+  const std::string &slayupside, const int &end, const bool &use_offset_as_base,
   PDCELFace *face, std::vector<PDCELVertex *> prev_bound_vertices,
   Message *pmessage
   ) {
@@ -198,10 +198,10 @@ PArea *build_area(
 
   // 2.2. Create new area
   PArea *area = new PArea(segment->pmodel(), segment);
-  if (segment->getLayupSide() == "left") {
+  if (segment->getLayupside() == "left") {
     area->setFace(new_faces.front());
     face = new_faces.back();
-  } else if (segment->getLayupSide() == "right") {
+  } else if (segment->getLayupside() == "right") {
     area->setFace(new_faces.back());
     face = new_faces.front();
   }
@@ -524,7 +524,8 @@ void Segment::buildAreas(Message *pmessage) {
       use_offset_as_base = true;
     }
 
-    area = build_area(this, vbi_tmp, voi_tmp, _face, prev_bound_vertices_tmp, pmessage);
+    area = build_area(this, vbi_tmp, voi_tmp, slayupside, 0, use_offset_as_base,
+                      _face, prev_bound_vertices_tmp, pmessage);
 
     // vb_tmp = _curve_base->vertices()[vbi_tmp];
     // vo_tmp = _curve_offset->vertices()[voi_tmp];

@@ -102,6 +102,10 @@ PDCELVertex *findParamPointOnPolyline(
   const double &, bool &, int &, const double &
 );
 
+bool get_vertex_on_polyline_by_segment_param_coord(
+  std::vector<PDCELVertex *> &polyline,
+  const int &i, const double &u, PDCELVertex *&v);
+
 PDCELVertex *findPointOnPolylineByCoordinate(
   const std::vector<PDCELVertex *> &, const std::string ,
   const double ,   double ,double &,
@@ -208,7 +212,7 @@ SVector3 getVectorFromAngle(double &angle, const int &plane);
 
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
 bool get_vertex_by_param_coord_of_two_vertices(
-    const PDCELVertex *, const PDCELVertex *, const double &,
+    PDCELVertex *, PDCELVertex *, const double &,
     PDCELVertex *);
 
 double calc_curv_coord_of_vertex_on_polyline(const std::vector<PDCELVertex *> &c, const PDCELVertex *v);
@@ -280,6 +284,8 @@ PDCELVertex *get_polylines_intersection_close_to(
   const int &ex11, const int &ex12, const int &ex21, const int &ex22,
   int &i1, double &u1, int &i2, double &u2, bool &is_new_1, bool &is_new_2,
   Message *pmessage);
+
+bool calc_all_intersections_between_polyline_and_half_edge_loop(std::vector<PDCELVertex *> &polyline, PDCELHalfEdgeLoop *hel, const int &ex1, const int &ex2, std::vector<int> &i1s, std::vector<int> &i2s, std::vector<double> &u1s, std::vector<double> &u2s, Message *pmessage);
 
 /**
  * @brief Finds the intersection of curves within a given tolerance.

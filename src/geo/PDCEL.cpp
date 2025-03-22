@@ -1503,7 +1503,7 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
     return;
   }
 
-  PDCELHalfEdgeLoop *hel_out = f->outer();
+  PDCELHalfEdgeLoop *hel_out = f->outer()->loop();
   // Check if the face has an outer loop
   if (hel_out == nullptr) {
     PLOG(error) << "Face has no outer loop";

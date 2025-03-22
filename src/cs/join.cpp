@@ -65,7 +65,7 @@ void PComponent::join_segment_to_dependency(
         // Create a new temporary vertex as the reference point
         _ref_vertex = new PDCELVertex(
           (s->curveBase()->vertices().front()->point() +
-           s->curveBase()->vertices().back()->point()) / 2
+           s->curveBase()->vertices().back()->point()) * 0.5
         );
         ref_v_nd = 0.5;
       }
@@ -145,7 +145,7 @@ void PComponent::join_segment_to_dependency(
       );
 
       // Calculate the non-dimensional curvilinear coordinate of the intersection(s)
-      for (auto i = 0; i < i1s.size(); i++) {
+      for (auto i = 0; i < _i1s.size(); i++) {
         double _nd = calc_curve_length_of_segment_param_coord_from_start(
           s->curveBase()->vertices(), _i1s[i], _u1s[i]
         );
@@ -199,7 +199,7 @@ void PComponent::join_segment_to_dependency(
       );
 
       // Calculate the non-dimensional curvilinear coordinate of the intersection(s)
-      for (auto i = 0; i < i1s.size(); i++) {
+      for (auto i = 0; i < _i1s.size(); i++) {
         double _nd = calc_curve_length_of_segment_param_coord_from_start(
           s->curveOffset()->vertices(), _i1s[i], _u1s[i]
         );
@@ -814,9 +814,12 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 /// @param s2 Segment 2
 /// @param e1 Which end of segment 1 to join
 /// @param e2 Which end of segment 2 to join
+/// @param v The intersection vertex
+/// @param bound_vertices Boundary vertices
 /// @param pmessage Message object for logging
 void join_segments_style_1(
-  Segment *s1, Segment *s2, int e1, int e2, std::vector<PDCELVertex *> bound_vertices,
+  Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v,
+  std::vector<PDCELVertex *> bound_vertices,
   Message *pmessage
   ) {
 
@@ -992,7 +995,7 @@ void PComponent::joinSegments(
   // then there will be a step change at the joint
   if (style == 1) {
 
-    join_segments_style_1(s1, s2, e1, e2, bound_vertices, pmessage);
+    join_segments_style_1(s1, s2, e1, e2, v, bound_vertices, pmessage);
 
 
     // // Calculate the bounding vector and line segment
@@ -1765,7 +1768,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
 
     // Intersect the bound and the offset curve
 
-    int is_new_1, is_new_2;
+    bool is_new_1, is_new_2;
     double u1, u2;
     int ls_i1, ls_i2;
     PDCELVertex *ip = get_polylines_intersection_close_to(
@@ -1875,7 +1878,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
     b.assign({s->getBaseline()->vertices().back(), p});
 
     // Intersect the bound and the offset curve
-    int is_new_1, is_new_2;
+    bool is_new_1, is_new_2;
     double u1, u2;
     int ls_i1, ls_i2;
     PDCELVertex *ip = get_polylines_intersection_close_to(

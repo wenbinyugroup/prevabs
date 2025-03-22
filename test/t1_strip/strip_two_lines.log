@@ -1,47 +1,10 @@
-2025-03-02 18:40:18 [info] - prevabs start (2025-03-02 18:40:18)
-2025-03-02 18:40:18 [info] - reading input files
-2025-03-02 18:40:18 [info]     -   
+[info] - prevabs start (2025-03-22 15:13:05)
+[info] - reading input files
+[info]     - reading main input file: t1_strip\strip_two_lines.xml
+[erro  
   
-    
-  
-  
-  
-  
-  
-  
-  
-  ========================================
-  
-  
-  ========================================
-  
-bs\build_msvc\Release\MaterialDB.xml
-2025-03-02 18:40:18 [info]   - reading input files -- done
-2025-03-02 18:40:18 [info]   - building the shape
-2025-03-02 18:40:18 [info]     - building the cross section, step 1
-2025-03-02 18:40:18 [info]       - building component: top
-2025-03-02 18:40:18 [info]     - building the cross section, step 2
-2025-03-02 18:40:18 [info]       - building component details: top
-2025-03-02 18:40:18 [info]         - updating base-offset index pairs
-2025-03-02 18:40:18 [info]     - fixing geometry
-2025-03-02 18:40:18 [info]   - building the shape -- done
-2025-03-02 18:40:18 [info]   - modeling in Gmsh
-2025-03-02 18:40:18 [info]     - creating gmsh vertices
-2025-03-02 18:40:18 [info]     - creating gmsh edges
-2025-03-02 18:40:18 [info]     - creating gmsh faces
-2025-03-02 18:40:18 [info]     - creating physical groups
-2025-03-02 18:40:18 [info]     - meshing
-2025-03-02 18:40:19 [info]   - modeling in Gmsh -- done
-2025-03-02 18:40:19 [info]   - writing outputs
-2025-03-02 18:40:19 [info]     - writing gmsh .opt file: t1_strip\strip_two_lines.opt
-2025-03-02 18:40:19 [info]     - writing gmsh .geo file: t1_strip\strip_two_lines.geo_unrolled
-2025-03-02 18:40:19 [info]     - writing gmsh .msh file: t1_strip\strip_two_lines.msh
-2025-03-02 18:40:19 [info]     - writing sg file: t1_strip\strip_two_lines.sg
-2025-03-02 18:40:19 [info]       - writing nodes
-2025-03-02 18:40:19 [info]       - writing elements
-2025-03-02 18:40:19 [info]         -   writing connectivity
-2025-03-02 18:40:19 [info]         -   writing local orientation
-2025-03-02 18:40:19 [info]     - writing material id-name file: t1_strip\strip_two_lines.sg.mat
-2025-03-02 18:40:19 [info]   - writing outputs -- done
-2025-03-02 18:40:19 [info]   - prevabs finished (2025-03-02 18:40:19)
-2025-03-02 18:40:19 [info] total running time: 0.107 sec
+ - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: top
