@@ -1313,7 +1313,7 @@ int find_open_polylines_intersections(
       // bool not_parallel;
       
       if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
-        throw std::runtime_error("null pointer reference in findAllIntersections");
+        throw std::runtime_error("null pointer reference in find_open_polylines_intersections");
       }
       
       // ss.str("");

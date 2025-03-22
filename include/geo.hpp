@@ -274,11 +274,18 @@ void combineVertexLists(std::vector<PDCELVertex *> &,
 // int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
 //               PDCELVertex *intersect);
 
+PDCELVertex *get_polylines_intersection_close_to(
+  std::vector<PDCELVertex *> &polyline_1, std::vector<PDCELVertex *> &polyline_2,
+  const double &param_loc_1, const double &param_loc_2,
+  const int &ex11, const int &ex12, const int &ex21, const int &ex22,
+  int &i1, double &u1, int &i2, double &u2, bool &is_new_1, bool &is_new_2,
+  Message *pmessage);
+
 /**
  * @brief Finds the intersection of curves within a given tolerance.
  *
- * This function iterates through the half-edges of a given half-edge loop (hel) 
- * and finds the intersection points with the provided vertices. It logs the 
+ * This function iterates through the half-edges of a given half-edge loop (hel)
+ * and finds the intersection points with the provided vertices. It logs the
  * process and updates the intersection parameters (u1, u2) and the index (ls_i).
  *
  * @param vertices  A vector of pointers to PDCELVertex objects representing the vertices.
@@ -342,12 +349,17 @@ int find_open_polylines_intersections(
 //   int &ls_i, int &j, Message *
 // );
 
+int get_intersection_close_to_param_coord(
+  const std::vector<PDCELVertex *> &c,
+  const std::vector<int> &ii, const std::vector<double> &uu,
+  const double &param_coord, const int &ex1, const int &ex2, const int &side,
+  Message *pmessage);
+
 int get_intersection_closer_to(
-  const std::vector<PDCELVertex *> &,
-  const std::vector<int> &, const std::vector<double> &,
-  const int &, const bool &,
-  Message *
-);
+    const std::vector<PDCELVertex *> &,
+    const std::vector<int> &, const std::vector<double> &,
+    const int &, const bool &,
+    Message *);
 
 // PDCELVertex *getIntersectionVertex(
 //   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
