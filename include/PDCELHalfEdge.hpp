@@ -1,17 +1,17 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
+// #include "declarations.hpp"
+// #include "PDCELFace.hpp"
+// #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
+// #include "PGeoClasses.hpp"
 
 // #include "gmsh/GEdge.h"
 #include "gmsh_mod/SVector3.h"
 
 class PDCELFace;
 class PDCELHalfEdgeLoop;
-class PDCELVertex;
+// class PDCELVertex;
 class PGeoLineSegment;
 
 /** @ingroup geo

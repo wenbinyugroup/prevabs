@@ -1,12 +1,12 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PComponent.hpp"
-#include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
-#include "PModel.hpp"
+// #include "declarations.hpp"
+// #include "PComponent.hpp"
+// #include "PDCELVertex.hpp"
+// #include "PGeoClasses.hpp"
+// #include "PModel.hpp"
 #include "globalConstants.hpp"
-#include "PBaseLine.hpp"
+// #include "PBaseLine.hpp"
 
 #include "gmsh_mod/STensor3.h"
 #include "rapidxml/rapidxml.hpp"
@@ -20,6 +20,11 @@
 using namespace rapidxml;
 
 class PGeoArc;
+class Baseline;
+class PDCELVertex;
+class Message;
+class Material;
+class PModel;
 
 class Message {
 private:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "declarations.hpp"
+// #include "declarations.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 
@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 // class PGeoLine {
 // private:

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "declarations.hpp"
+// #include "declarations.hpp"
 #include "Material.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
-#include "PModel.hpp"
+// #include "PModel.hpp"
 #include "PSegment.hpp"
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
@@ -13,12 +13,12 @@
 #include <string>
 #include <vector>
 
-class Baseline;
-class Material;
-class PDCELFace;
-class PDCELVertex;
+// class Baseline;
+// class Material;
+// class PDCELFace;
+// class PDCELVertex;
 class PModel;
-class Segment;
+// class Segment;
 
 /** @ingroup cs
  * A cross-sectional component class.

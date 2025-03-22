@@ -1,9 +1,9 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PBaseLine.hpp"
-#include "PDCEL.hpp"
-#include "PDCELHalfEdge.hpp"
+// #include "declarations.hpp"
+// #include "PBaseLine.hpp"
+// #include "PDCEL.hpp"
+// #include "PDCELHalfEdge.hpp"
 
 // #include "gmsh/GVertex.h"
 #include "gmsh_mod/SPoint2.h"
@@ -14,6 +14,7 @@
 
 class PDCEL;
 class PDCELHalfEdge;
+class Baseline;
 
 /** @ingroup geo
  * A DCEL vertex class.

@@ -4,7 +4,7 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
+#include "PGeoLine.hpp"
 #include "gmsh_mod/SVector3.h"
 // #include "gmsh/GEdge.h"
 

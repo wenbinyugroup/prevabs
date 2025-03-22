@@ -1,10 +1,13 @@
 #pragma once
 
-#include "declarations.hpp"
+// #include "declarations.hpp"
 #include "Material.hpp"
 #include "PDCEL.hpp"
 #include "PSegment.hpp"
+#include "CrossSection.hpp"
+#include "PMeshClasses.hpp"
 #include "utilities.hpp"
+#include "PDataClasses.hpp"
 
 // #include "gmsh/GModel.h"
 

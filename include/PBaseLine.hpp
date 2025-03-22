@@ -1,9 +1,10 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "CrossSection.hpp"
-#include "globalConstants.hpp"
-#include "Material.hpp"
+// Forward declarations
+class PDCELVertex;
+class Message;
+class SVector3;
+
 #include "PDCELVertex.hpp"
 #include "utilities.hpp"
 #include "gmsh_mod/SVector3.h"
@@ -11,11 +12,6 @@
 #include <list>
 #include <string>
 #include <vector>
-
-
-class PDCELVertex;
-class CrossSection;
-class Message;
 
 
 /** @ingroup cs

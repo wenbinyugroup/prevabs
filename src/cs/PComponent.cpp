@@ -11,6 +11,7 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "PModel.hpp"
 
 #include <algorithm>
 #include <cmath>

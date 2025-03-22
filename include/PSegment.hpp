@@ -1,12 +1,12 @@
 #pragma once
 
-#include "declarations.hpp"
+// #include "declarations.hpp"
 #include "Material.hpp"
 #include "PArea.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
-#include "PModel.hpp"
+// #include "PModel.hpp"
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
@@ -18,12 +18,14 @@
 #include <string>
 #include <vector>
 
-class Baseline;
-class PArea;
-class PDCELVertex;
-class PDCELFace;
-class PGeoLineSegment;
+// Forward declarations
+// class Baseline;
+// class PArea;
+// class PDCELVertex;
+// class PDCELFace;
+// class PGeoLineSegment;
 class PModel;
+
 
 /** @ingroup cs
  * A cross-sectional segment class.

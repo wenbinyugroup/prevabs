@@ -1,7 +1,7 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PBaseLine.hpp"
+// #include "declarations.hpp"
+// #include "PBaseLine.hpp"
 #include "PBST.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
@@ -13,12 +13,12 @@
 #include <vector>
 
 class Baseline;
-class PDCELVertex;
-class PDCELHalfEdge;
-class PDCELHalfEdgeLoop;
-class PDCELFace;
-class PAVLTreeVertex;
-class PGeoLineSegment;
+// class PDCELVertex;
+// class PDCELHalfEdge;
+// class PDCELHalfEdgeLoop;
+// class PDCELFace;
+// class PAVLTreeVertex;
+// class PGeoLineSegment;
 
 
 /** @ingroup geo

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Material.hpp"
+#include "PDCELVertex.hpp"
 #include "PBaseLine.hpp"
 #include "PDCELFace.hpp"
-#include "PDCELVertex.hpp"
 #include "PDataClasses.hpp"
 #include "PModel.hpp"
-#include "declarations.hpp"
+// #include "declarations.hpp"
 #include "utilities.hpp"
 
 #include "rapidxml/rapidxml.hpp"

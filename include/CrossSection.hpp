@@ -1,13 +1,13 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "Material.hpp"
-#include "PComponent.hpp"
-#include "PModel.hpp"
-#include "PSegment.hpp"
-#include "utilities.hpp"
+// #include "declarations.hpp"
 #include "globalConstants.hpp"
+#include "utilities.hpp"
+#include "Material.hpp"
 #include "PBaseLine.hpp"
+#include "PSegment.hpp"
+#include "PComponent.hpp"
+// #include "PModel.hpp"
 
 #include "gmsh_mod/SPoint3.h"
 #include "gmsh_mod/STensor3.h"
@@ -16,11 +16,11 @@
 #include <string>
 #include <vector>
 
-class Segment;
+// class Segment;
 // class Connection;
-class Filling;
+// class Filling;
 class PModel;
-class PComponent;
+// class PComponent;
 
 // ===================================================================
 

@@ -1,22 +1,22 @@
 #pragma once
 
-#include "declarations.hpp"
+// #include "declarations.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
-#include "PModel.hpp"
-#include "PSegment.hpp"
+#include "PGeoLine.hpp"
+// #include "PModel.hpp"
+// #include "PSegment.hpp"
 #include "utilities.hpp"
 #include "gmsh_mod/SVector3.h"
 
 #include <list>
 #include <vector>
 
-class PDCELVertex;
-class PDCELHalfEdge;
-class PDCELFace;
-class PGeoLineSegment;
+// class PDCELVertex;
+// class PDCELHalfEdge;
+// class PDCELFace;
+// class PGeoLineSegment;
 class Segment;
 class PModel;
 

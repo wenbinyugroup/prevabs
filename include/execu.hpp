@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
-#include "PModel.hpp"
+// #include "PModel.hpp"
 #include "utilities.hpp"
+
+class PModel;
 
 void runVABS(const std::string &, const std::vector<std::string> &, Message *);
 void runSC(const std::string &, const std::vector<std::string> &, Message *);

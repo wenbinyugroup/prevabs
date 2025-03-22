@@ -9,6 +9,7 @@
 #include "globalVariables.hpp"
 #include "PBaseLine.hpp"
 #include "overloadOperator.hpp"
+#include "PModel.hpp"
 
 // #include "gmsh/SPoint3.h"
 // #include "gmsh/STensor3.h"

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PDCELFace.hpp"
+// #include "declarations.hpp"
+// #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 
-class PDCELHalfEdge;
+// class PDCELHalfEdge;
 class PDCELFace;
-class PDCELVertex;
+// class PDCELVertex;
 
 /** @ingroup geo
  * A DCEL half edge loop class.

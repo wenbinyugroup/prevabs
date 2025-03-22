@@ -4,7 +4,7 @@
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
+#include "PGeoLine.hpp"
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
 

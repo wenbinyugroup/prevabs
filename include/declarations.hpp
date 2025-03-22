@@ -1,26 +1,26 @@
-#include "PGeoClasses.hpp"
-#include "PGeoLine.hpp"
+// #include "PGeoClasses.hpp"
+// #include "PGeoLine.hpp"
 
-#include "PBST.hpp"
-#include "PDCEL.hpp"
-#include "PDCELVertex.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELFace.hpp"
+// #include "PBST.hpp"
+// #include "PDCEL.hpp"
+// #include "PDCELVertex.hpp"
+// #include "PDCELHalfEdge.hpp"
+// #include "PDCELHalfEdgeLoop.hpp"
+// #include "PDCELFace.hpp"
 
-#include "Material.hpp"
-#include "PBaseLine.hpp"
-#include "CrossSection.hpp"
+// #include "Material.hpp"
+// #include "PBaseLine.hpp"
+// #include "CrossSection.hpp"
 
-#include "PSegment.hpp"
-#include "PArea.hpp"
-#include "PComponent.hpp"
-#include "PModel.hpp"
+// #include "PSegment.hpp"
+// #include "PArea.hpp"
+// #include "PComponent.hpp"
+// #include "PModel.hpp"
 
-#include "PMeshClasses.hpp"
-#include "PDataClasses.hpp"
+// #include "PMeshClasses.hpp"
+// #include "PDataClasses.hpp"
 
-#include "utilities.hpp"
+// #include "utilities.hpp"
 
 class Material;
 class Lamina;
