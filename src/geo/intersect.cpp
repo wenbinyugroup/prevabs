@@ -325,8 +325,8 @@ bool calc_line_intersection_2d(
   const int &ex11, const int &ex12, const int &ex21, const int &ex22
   ) {
   
-  PLOG(debug) << "calc_line_intersection_2d"
-    << " line 1: " << ls1v1 << " - " << ls1v2
+  PLOG(debug) << "calc_line_intersection_2d\n"
+              << " line 1: " << ls1v1 << " - " << ls1v2 << "\n"
     << " line 2: " << ls2v1 << " - " << ls2v2;
 
   double ipx, ipy;
@@ -741,9 +741,12 @@ PDCELVertex *get_polylines_intersection_close_to(
   int &i1, double &u1, int &i2, double &u2, bool &is_new_1, bool &is_new_2,
   Message *pmessage
 ) {
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
   PLOG(debug) << pmessage->message("in function: get_polylines_intersection_close_to");
+
+  PLOG(debug) << "  polyline_1:\n" << vertices_to_string(polyline_1);
+  PLOG(debug) << "  polyline_2:\n" << vertices_to_string(polyline_2);
 
   PDCELVertex *v_intersect = nullptr;
 
@@ -771,46 +774,10 @@ PDCELVertex *get_polylines_intersection_close_to(
       j = get_intersection_close_to_param_coord(
         polyline_1, is1, us1, param_loc_1, ex11, ex12, 0, pmessage
       );
-      // if (param_loc_1 == 0) {
-      //   which_end = 0;
-      //   if (ex11) {
-      //     inner_only = false;
-      //   } else {
-      //     inner_only = true;
-      //   }
-      // } else if (param_loc_1 == 1) {
-      //   which_end = 1;
-      //   if (ex12) {
-      //     inner_only = false;
-      //   } else {
-      //     inner_only = true;
-      //   }
-      // }
-      // j = get_intersection_closer_to(
-      //   polyline_1, is1, us1, which_end, inner_only, pmessage
-      // );
     } else if (param_loc_2 != -1) {
       j = get_intersection_close_to_param_coord(
         polyline_2, is2, us2, param_loc_2, ex21, ex22, 0, pmessage
       );
-      // if (param_loc_2 == 0) {
-      //   which_end = 0;
-      //   if (ex21) {
-      //     inner_only = false;
-      //   } else {
-      //     inner_only = true;
-      //   }
-      // } else if (param_loc_2 == 1) {
-      //   which_end = 1;
-      //   if (ex22) {
-      //     inner_only = false;
-      //   } else {
-      //     inner_only = true;
-      //   }
-      // }
-      // j = get_intersection_closer_to(
-      //   polyline_2, is2, us2, which_end, inner_only, pmessage
-      // );
     }
 
     // Get output and return values
@@ -820,14 +787,24 @@ PDCELVertex *get_polylines_intersection_close_to(
     u2 = us2[j];
   }
 
+  PLOG(debug) << "  i1 = " << i1
+              << ", u1 = " << u1;
+  PLOG(debug) << "  i2 = " << i2
+              << ", u2 = " << u2;
+
   // Get the intersection point
   PDCELVertex *v1, *v2;
-  is_new_1 = get_vertex_by_param_coord_of_two_vertices(
-    polyline_1[i1], polyline_1[i1 + 1], u1, v1
+  v1 = get_vertex_by_param_coord_of_two_vertices(
+    polyline_1[i1], polyline_1[i1 + 1], u1, is_new_1
   );
-  is_new_2 = get_vertex_by_param_coord_of_two_vertices(
-    polyline_2[i2], polyline_2[i2 + 1], u2, v2
+  v2 = get_vertex_by_param_coord_of_two_vertices(
+    polyline_2[i2], polyline_2[i2 + 1], u2, is_new_2
   );
+
+  PLOG(debug) << "  v1 = " << v1
+              << ", is_new_1 = " << is_new_1;
+  PLOG(debug) << "  v2 = " << v2
+              << ", is_new_2 = " << is_new_2;
 
   if (is_new_1 && is_new_2) {
     v_intersect = v1;
@@ -837,7 +814,11 @@ PDCELVertex *get_polylines_intersection_close_to(
     v_intersect = v2;
   }
 
-  pmessage->decreaseIndent();
+  PLOG(debug) << "  v_intersect = " << v_intersect;
+
+  // pmessage->decreaseIndent();
+
+  PLOG(debug) << "done";
 
   return v_intersect;
 }
@@ -1250,7 +1231,7 @@ int find_open_polylines_intersections(
   const int &ex11, const int &ex12, const int &ex21, const int &ex22,
   Message *pmessage
 ) {
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
   PLOG(debug) << pmessage->message("find_open_polylines_intersections");
 
@@ -1310,18 +1291,11 @@ int find_open_polylines_intersections(
       }
 
       // Check intersection
-      // bool not_parallel;
       
       if (v11 == nullptr || v12 == nullptr || v21 == nullptr || v22 == nullptr) {
         throw std::runtime_error("null pointer reference in find_open_polylines_intersections");
       }
-      
-      // ss.str("");
-      // ss << "  find intersection:\n";
-      // ss << "  polyline 1 segment " << i + 1 << " v11 = " << v11 << ", v12 = " << v12 << "\n";
-      // ss << "  polyline 2 segment " << j + 1 << " v21 = " << v21 << ", v22 = " << v22 << std::endl;
-      // PLOG(debug) << pmessage->message(ss.str());
-      
+
       double u1, u2;
       PDCELVertex *ip;
       bool not_parallel = calc_line_intersection_2d(
@@ -1343,7 +1317,7 @@ int find_open_polylines_intersections(
 
   }
 
-  pmessage->decreaseIndent();
+  // pmessage->decreaseIndent();
 
   return 0;
 }

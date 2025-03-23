@@ -85,6 +85,8 @@ void writeVectorToFile(FILE *, std::vector<double>, std::string="%16e", bool=tru
 void printVector(const std::vector<double> &);
 void printVector(const std::vector<int> &);
 
+std::string vertices_to_string(const std::vector<PDCELVertex *> &vertices);
+
 int openFile(std::ifstream &, const std::string &);
 int closeFile(std::ifstream &);
 int parseXMLDoc(xml_document<> &, std::ifstream &, const std::string &);

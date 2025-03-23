@@ -58,9 +58,10 @@ public:
         _gbuild(true), _degenerated(0) {}
 
   // void printBasepoint();
-  friend std::ostream &operator<<(std::ostream &, PDCELVertex *);
+  friend std::ostream &operator<<(std::ostream &, const PDCELVertex *);
   void print();
-  std::string printString();
+  std::string printString() const;
+  std::string to_string() const;
   void printWithAddress();
   void printAllLeavingHalfEdges(const int &direction = 1);
 

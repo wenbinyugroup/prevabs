@@ -36,6 +36,11 @@ private:
   // excluding vertices on the base curve and offset curve
   std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
 
+  // vertices on the previous/next wall of the area for layer division
+  // only consider the vertices on the walls that correspond to the layers
+  // ignore other vertices on the walls
+  std::vector<PDCELVertex *> _prev_wall_vertices, _next_wall_vertices;
+
 
   PDCELFace *_face;
   PGeoLineSegment *_line_segment_base;
@@ -56,6 +61,12 @@ public:
   }
   std::vector<PDCELVertex *> &nextBoundVertices() {
     return _next_bound_vertices;
+  }
+  std::vector<PDCELVertex *> &prevWallVertices() {
+    return _prev_wall_vertices;
+  }
+  std::vector<PDCELVertex *> &nextWallVertices() {
+    return _next_wall_vertices;
   }
   PDCELFace *face() { return _face; }
   PGeoLineSegment *lineSegmentBase() { return _line_segment_base; }

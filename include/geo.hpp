@@ -102,9 +102,8 @@ PDCELVertex *findParamPointOnPolyline(
   const double &, bool &, int &, const double &
 );
 
-bool get_vertex_on_polyline_by_segment_param_coord(
-  std::vector<PDCELVertex *> &polyline,
-  const int &i, const double &u, PDCELVertex *&v);
+PDCELVertex *get_vertex_on_polyline_by_segment_param_coord(std::vector<PDCELVertex *> &polyline, const int &i, const double &u, bool &is_new);
+
 
 PDCELVertex *findPointOnPolylineByCoordinate(
   const std::vector<PDCELVertex *> &, const std::string ,
@@ -211,9 +210,8 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end);
 SVector3 getVectorFromAngle(double &angle, const int &plane);
 
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
-bool get_vertex_by_param_coord_of_two_vertices(
-    PDCELVertex *, PDCELVertex *, const double &,
-    PDCELVertex *);
+PDCELVertex *get_vertex_by_param_coord_of_two_vertices(PDCELVertex *v1, PDCELVertex *v2, const double &u, bool &is_new);
+
 
 double calc_curv_coord_of_vertex_on_polyline(const std::vector<PDCELVertex *> &c, const PDCELVertex *v);
 

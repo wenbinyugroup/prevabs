@@ -111,6 +111,13 @@ void divide_end_wall_by_layup(
   ) {
   PLOG(debug) << "dividing end wall by layup";
 
+  if (config.debug) {
+    PLOG(debug) << "  wall_vertices:";
+    for (auto v : wall_vertices) {
+      PLOG(debug) << "    " << v->point();
+    }
+  }
+
   // The end wall can be arbitrary shape,
   // so the method is to, for each layer,
   // 1. offset the base line segment by the cumulative thickness of the
@@ -130,6 +137,7 @@ void divide_end_wall_by_layup(
   PGeoLineSegment *ls_offset;
   for (int i = 0; i < layup->getLayers().size() - 1; ++i) {
     // For all layers except the last one
+    PLOG(debug) << "dividing end wall by layup: layer " << i;
 
     // 1. offset the base line segment by the cumulative thickness of the
     //    previous layers
@@ -161,14 +169,25 @@ void divide_end_wall_by_layup(
         i1, u1, i2, u2, is_new_1, is_new_2, pmessage);
     }
 
+    PLOG(debug) << "  v_intersect = " << v_intersect->point()
+                << ", i1 = " << i1
+                << ", is_new_1 = " << is_new_1;
+
     // 3. insert the intersection point to the wall_vertices vector and split
     //    the edge
     if (is_new_1) {
-      wall_vertices.insert(wall_vertices.begin() + i1, v_intersect);
+      wall_vertices.insert(wall_vertices.begin() + i1 + 1, v_intersect);
+
+      if (config.debug) {
+        PLOG(debug) << "  wall_vertices:";
+        for (auto v : wall_vertices) {
+          PLOG(debug) << "    " << v->point();
+        }
+      }
 
       // Split the edge
       // Find the intersecting half-edge
-      PDCELHalfEdge *_he = dcel->findHalfEdge(wall_vertices[i1], wall_vertices[i1 + 1]);
+      PDCELHalfEdge *_he = dcel->findHalfEdge(wall_vertices[i1], wall_vertices[i1 + 2]);
       dcel->splitEdge(_he, v_intersect);
 
     }
@@ -177,6 +196,8 @@ void divide_end_wall_by_layup(
     layer_div_vertices.push_back(v_intersect);
 
   }
+
+  layer_div_vertices.push_back(v_offset);
 
   PLOG(debug) << "done";
 }
@@ -285,6 +306,10 @@ void Segment::buildAreas(Message *pmessage) {
 
   PLOG(debug) << pmessage->message("1. creating the beginning bound of the first area");
 
+
+  PLOG(debug) << "  _prev_bound_vertices:\n"
+              << vertices_to_string(_prev_bound_vertices);
+
   // pmessage->increaseIndent();
   if (_closed) {
     PLOG(debug) << pmessage->message("closed segment");
@@ -295,7 +320,7 @@ void Segment::buildAreas(Message *pmessage) {
     prev_bound_vertices_tmp = {vb_tmp, vo_tmp};
 
     divide_interior_wall_by_layup(
-      _layup, prev_bound_vertices_tmp, _pmodel->dcel());
+      _layup, _prev_bound_vertices, _pmodel->dcel());
 
 
     // cumu_thk = 0;
@@ -369,7 +394,7 @@ void Segment::buildAreas(Message *pmessage) {
 
     // Divide the wall by the layup
     divide_end_wall_by_layup(
-      _layup, ls_base, slayupside, 0, prev_bound_vertices_tmp,
+      _layup, ls_base, slayupside, 0, _prev_bound_vertices,
       layer_div_vertices, _pmodel->dcel(), pmessage);
 
 

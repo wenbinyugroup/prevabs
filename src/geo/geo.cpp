@@ -270,18 +270,20 @@ PDCELVertex *findParamPointOnPolyline(
 
 
 
-bool get_vertex_on_polyline_by_segment_param_coord(
+PDCELVertex *get_vertex_on_polyline_by_segment_param_coord(
   std::vector<PDCELVertex *> &polyline, const int &i, const double &u,
-  PDCELVertex *&v
+  bool &is_new
 ) {
   PLOG(debug) << "get_vertex_on_polyline_by_segment_param_coord";
 
   PDCELVertex *v1 = polyline[i];
   PDCELVertex *v2 = polyline[i+1];
 
-  bool is_new = get_vertex_by_param_coord_of_two_vertices(v1, v2, u, v);
+  PDCELVertex *v;
 
-  return is_new;
+  v = get_vertex_by_param_coord_of_two_vertices(v1, v2, u, is_new);
+
+  return v;
 }
 
 
@@ -631,13 +633,18 @@ SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u) {
 
 
 
-bool get_vertex_by_param_coord_of_two_vertices(
-  PDCELVertex *v1, PDCELVertex *v2, const double &u,
-  PDCELVertex *v
+PDCELVertex *get_vertex_by_param_coord_of_two_vertices(
+  PDCELVertex *v1, PDCELVertex *v2, const double &u, bool &is_new
 ) {
   PLOG(debug) << "get_vertex_by_param_coord_of_two_vertices";
 
-  bool is_new = false;
+  PLOG(debug) << "  v1 = " << v1
+              << ", v2 = " << v2
+              << ", u = " << u;
+
+  // bool is_new = false;
+
+  PDCELVertex *v;
 
   if (is_close(u, 0.0)) {
     // Vertex is the beginning point (v1) of the line segment i
@@ -666,7 +673,12 @@ bool get_vertex_by_param_coord_of_two_vertices(
     );
   }
 
-  return is_new;
+  PLOG(debug) << "  v = " << v
+              << ", is_new = " << is_new;
+
+  PLOG(debug) << "done";
+
+  return v;
 }
 
 

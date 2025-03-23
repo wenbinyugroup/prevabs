@@ -303,6 +303,17 @@ void printVector(const std::vector<int> &v) {
 }
 
 
+std::string vertices_to_string(const std::vector<PDCELVertex *> &vertices) {
+  std::string s;
+  int i = 0;
+  for (auto v : vertices) {
+    s += "  " + std::to_string(i) + ": " + v->printString() + "\n";
+    i++;
+  }
+  return s;
+}
+
+
 
 
 

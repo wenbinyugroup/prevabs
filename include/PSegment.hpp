@@ -50,7 +50,6 @@ private:
   std::string _mat_orient_e1{"normal"};
   std::string _mat_orient_e2{"baseline"};
 
-  // excluding vertices on the base curve and offset curve
   std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
   std::vector<int> _prev_bound_indices, _next_bound_indices;
   std::list<PDCELVertex *> _vertices_outer;

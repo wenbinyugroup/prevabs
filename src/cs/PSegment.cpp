@@ -159,36 +159,12 @@ int Segment::layupSide() {
 }
 
 
-
-
-
-
-
-
-
-
 PDCELVertex *Segment::getBeginVertex() {
   return _curve_base->vertices().front();
 }
 
 
-
-
-
-
-
-
-
-
 PDCELVertex *Segment::getEndVertex() { return _curve_base->vertices().back(); }
-
-
-
-
-
-
-
-
 
 
 SVector3 Segment::getBeginTangent() {
@@ -197,52 +173,19 @@ SVector3 Segment::getBeginTangent() {
 }
 
 
-
-
-
-
-
-
-
-
 SVector3 Segment::getEndTangent() {
   std::size_t n = _curve_base->vertices().size();
   return SVector3(_curve_base->vertices()[n - 2]->point(),
                   _curve_base->vertices()[n - 1]->point());
 }
 
-// void Segment::setPModel(PModel *pmodel) { _pmodel = pmodel; }
-
-
-
-
-
-
-
 
 void Segment::addArea(PArea *area) { _areas.push_back(area); }
 
-// void Segment::setLevel(int level) { slevel = level; }
-
-// void Segment::setPrevSegment(Segment *prev) { _prev = prev; }
-
-// void Segment::setNextSegment(Segment *next) { _next = next; }
-
-// void Segment::setPrevBound(SVector3 &prev) { _prev_bound = prev; }
-
-// void Segment::setNextBound(SVector3 &next) { _next_bound = next; }
 
 void Segment::setPrevBoundVertices(std::vector<PDCELVertex *> vertices) {
   _prev_bound_vertices = vertices;
 }
-
-
-
-
-
-
-
-
 
 
 void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
@@ -259,17 +202,9 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
 
 
 void Segment::offsetCurveBase(Message *pmessage) {
-  // pmessage->increaseIndent();
-  // if (config.debug) {
-  //   pmessage->print(9, "offsetting the base curve of segment: " + _name);
-  // }
-  PLOG(debug) << "offsetting the base curve of segment: " << _name;
-  // pmessage->print(9, "offsetting the base curve of segment: " + _name);
 
-  // std::cout << "\n[debug] base line:" << std::endl;
-  // for (auto v : _curve_base->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
+  PLOG(debug) << "offsetting the base curve of segment: " << _name;
+
 
   if (_curve_base->vertices().front() == _curve_base->vertices().back()) {
     _closed = true;
@@ -302,21 +237,7 @@ void Segment::offsetCurveBase(Message *pmessage) {
 
   updateBaseOffsetIndexPairs(pmessage);
 
-  // std::cout << "\n[debug] curve _curve_offset:" << std::endl;
-  // for (auto v : _curve_offset->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
-  // std::cout << "        _offset_vertices_link_to:" << std::endl;
-  // for (auto i = 0; i < _offset_vertices_link_to.size(); i++) {
-  //   std::cout << "        " << i << " -- " << _offset_vertices_link_to[i] << std::endl;
-  // }
-
-  // std::cout << "        base-offset linking indices:" << std::endl;
-  // for (auto i = 0; i < _offset_indices_base_link_to.size(); i++) {
-  //   std::cout << "        " << i << " -- " << _offset_indices_base_link_to[i] << std::endl;
-  // }
-  // pmessage->decreaseIndent();
+  PLOG(debug) << "done";
 }
 
 

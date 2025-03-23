@@ -12,7 +12,14 @@
 #include <sstream>
 #include <iostream>
 
-std::string PDCELVertex::printString() {
+std::string PDCELVertex::printString() const {
+  std::stringstream ss;
+  ss << "( " << _point.x() << " , " << _point.y() << " , " << _point.z()
+      << " )";
+  return ss.str();
+}
+
+std::string PDCELVertex::to_string() const {
   std::stringstream ss;
   ss << "( " << _point.x() << " , " << _point.y() << " , " << _point.z()
       << " )";
@@ -22,8 +29,8 @@ std::string PDCELVertex::printString() {
 
 
 
-std::ostream &operator<<(std::ostream &out, PDCELVertex *v) {
-  out << v->printString();
+std::ostream &operator<<(std::ostream &out, const PDCELVertex *v) {
+  out << v->to_string();
   return out;
 }
 
@@ -31,7 +38,7 @@ std::ostream &operator<<(std::ostream &out, PDCELVertex *v) {
 
 
 void PDCELVertex::print() {
-  std::cout << printString();
+  std::cout << to_string();
 }
 
 
