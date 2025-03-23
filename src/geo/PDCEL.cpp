@@ -837,11 +837,19 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
   do {
     PLOG(debug) << "  handling half edge: " << hei;
     hei->setLoop(hel);
-    // hel->updateVertexEdge(hei);
+
     hei = hei->next();
+
+    if (hei == nullptr) {
+      PLOG(warning) << "  half edge is nullptr";
+      break;
+    }
+
   } while (hei != he);
 
   _halfedge_loops.push_back(hel);
+
+  PLOG(debug) << "done";
 
   return hel;
 }

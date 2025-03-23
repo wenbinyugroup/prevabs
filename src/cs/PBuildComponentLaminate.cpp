@@ -32,20 +32,10 @@ void PComponent::buildLaminate(Message *pmessage) {
 
     PLOG(debug) << "building segment: " << seg->getName();
 
-    // seg->curveBase()->print(pmessage, 9);
     if (seg->curveOffset() == nullptr) {
       PLOG(debug) << "segment has no offset curve";
       seg->offsetCurveBase(pmessage);
     }
-
-    // std::cout << "base line: " <<  seg->curveBase()->vertices().front();
-    // std::cout << " -> " <<  seg->curveBase()->vertices().back() << std::endl;
-    // std::cout << "offset line: " <<  seg->curveOffset()->vertices().front();
-    // std::cout << " -> " <<  seg->curveOffset()->vertices().back() << std::endl;
-
-    // if (config.debug) {
-    //   seg->curveOffset()->print(pmessage, 9);
-    // }
 
     if (seg->closed()) {
       PLOG(debug) << "segment is closed";
@@ -55,8 +45,6 @@ void PComponent::buildLaminate(Message *pmessage) {
                                 seg->curveOffset()->vertices()[0]);
       continue;
     }
-
-    // seg->curveBase()->print(pmessage, 9);
 
     bool found_begin = false;
     bool found_end = false;

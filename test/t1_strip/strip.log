@@ -1,8 +1,9 @@
-[info] [main: 296] - prevabs start (2025-03-22 17:32:39)
-[info] [PModel::homogenize: 778] - reading input files
+[info] [main: 296] - prevabs start (2025-03-22 22:18:23)
+[info] [PModel::homogenize: 779] - reading input files
 [info] [readCrossSection: 764]       
   
-g main input file: strip.xml
+      
+nput file: .\strip.xml
 [debug] [readCrossSection: 793]     - found cross-section: strip
 [debug] [read_general: 208]     - reading general...
 [debug] [read_general: 281]     - tolerance = 1e-12
@@ -36,7 +37,7 @@ g main input file: strip.xml
 [debug] [read_geometry: 532]     -  
 [debug] [read_geometry: 536]     - finished reading geometry.
 [debug] [read_materials: 552]     - reading materials...
-[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
 [debug] [readXMLElementMaterial: 193]           - reading material: iso5_1
 [debug] [readXMLElementLamina: 584]           - reading lamina: la_iso5_1_0005
 [debug] [read_materials: 607]       - finished reading materials.
@@ -47,55 +48,188 @@ g main input file: strip.xml
 [debug] [read_components: 679]       - reading components...
 [debug] [readXMLElementComponent: 44]       - reading component: top
 [debug] [read_components: 740]       - finished reading components.
-[info] [PModel::homogenize: 783]   - reading input files -- done
-[info] [PModel::homogenize: 791]   - building the shape
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
+[info] [PModel::homogenize: 784]   - reading input files -- done
+[info] [PModel::homogenize: 792]   - building the shape
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
 [debug] [PDCEL::addHalfEdgeLoop: 832] adding half edge loop with half edge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
 [debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 159] updateVertexEdge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 162]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 129]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
 [debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 159] updateVertexEdge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 166]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 133]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
 [debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 159] updateVertexEdge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 166]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 133]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
 [debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 159] updateVertexEdge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCEL::addHalfEdgeLoop: 852] done
 [info] [CrossSection::build: 301]     - building the cross section, step 1
-[info] [PComponent::buildLaminate: 29]       - building component: top
-[debug] [Segment::offsetCurveBase: 266]         - offsetting the base curve of segment: sgm_1
-[debug] [offset_2: 949]           -   base curve:
-[debug] [offset_2: 951]           -     0: ( 0 , -1 , 0 )
-[debug] [offset_2: 951]           -     1: ( 0 , 1 , 0 )
-[debug] [offset_2: 957]           - offsetting a polyline
-[debug] [offset_2: 965]           - the base curve has only two vertices
-[debug] [Segment::offsetCurveBase: 296]           - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
-[debug] [Segment::offsetCurveBase: 299]           - offset line: ( 0 , -1 , 0.08 ) -> ( 0 , 1 , 0.08 )
-[debug] [Segment::build: 407]           - building the overall shape of segment: sgm_1
-[debug] [Segment::build: 409]           - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
-[debug] [Segment::build: 416]           - creating half edges for the base curve
-[debug] [Segment::build: 419]           - number of vertices of the base curve: 2
+[info] [PComponent::buildLaminate: 29]     - building component: top
+[debug] [PComponent::buildLaminate: 33] building segment: sgm_1
+[debug] [PComponent::buildLaminate: 36] segment has no offset curve
+[debug] [Segment::offsetCurveBase: 266] offsetting the base curve of segment: sgm_1
+[debug] [offset_2: 949]       -   base curve:
+[debug] [offset_2: 951]       -     0: ( 0 , -1 , 0 )
+[debug] [offset_2: 951]       -     1: ( 0 , 1 , 0 )
+[debug] [offset_2: 957]       - offsetting a polyline
+[debug] [offset_2: 965]       - the base curve has only two vertices
+[debug] [Segment::offsetCurveBase: 296]       - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+[debug] [Segment::offsetCurveBase: 299]       - offset line: ( 0 , -1 , 0.08 ) -> ( 0 , 1 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 335]         - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 379]         - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 381]         - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 381]         - 1 -- 1
+[debug] [PComponent::buildLaminate: 54] handle the segment ends
+[debug] [PComponent::buildLaminate: 137] segment sgm_1 does not connect to any other segment at the head
+[debug] [PComponent::buildLaminate: 138] creating a free end at the head
+[debug] [PComponent::joinSegments: 255]         - making segment end: top.sgm_1 0
+[debug] [PComponent::joinSegments: 257]         - number of dependencies: 0
+[debug] [PComponent::joinSegments: 260]         - making segment end because of no dependency.
+[debug] [PComponent::createSegmentFreeEnd: 1756]         - createSegmentFreeEnd: sgm_1 0
+[debug] [PComponent::createSegmentFreeEnd: 2008]         - curve base:
+[debug] [Baseline::print: 36]           - name: bl
+[debug] [Baseline::print: 38]           - type: straight
+[debug] [Baseline::print: 40]           - point: (x, y, z)
+[debug] [Baseline::print: 44]           - 1 [lc]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]           - 2 [rc]: ( 0 , 1 , 0 )
+[debug] [PComponent::createSegmentFreeEnd: 2010]         - curve offset:
+[debug] [Baseline::print: 36]           - name: 
+[debug] [Baseline::print: 38]           - type: 
+[debug] [Baseline::print: 40]           - point: (x, y, z)
+[debug] [Baseline::print: 44]           - 1 []: ( 0 , -1 , 0.08 )
+[debug] [Baseline::print: 44]           - 2 []: ( 0 , 1 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 124]         - base vertices -- base_link_to_offset_indices
+[debug] [Segment::printBaseOffsetPairs: 127]         - number of pairs: 2
+[debug] [Segment::printBaseOffsetPairs: 138]         - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 138]         - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1 , 0.08 )
+[debug] [PDCEL::addEdge: 460] adding edge: ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.08 )
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PComponent::buildLaminate: 145] segment sgm_1 does not connect to any other segment at the tail
+[debug] [PComponent::buildLaminate: 146] creating a free end at the tail
+[debug] [PComponent::joinSegments: 255]         - making segment end: top.sgm_1 1
+[debug] [PComponent::joinSegments: 257]         - number of dependencies: 0
+[debug] [PComponent::joinSegments: 260]         - making segment end because of no dependency.
+[debug] [PComponent::createSegmentFreeEnd: 1756]         - createSegmentFreeEnd: sgm_1 1
+[debug] [PComponent::createSegmentFreeEnd: 2008]         - curve base:
+[debug] [Baseline::print: 36]           - name: bl
+[debug] [Baseline::print: 38]           - type: straight
+[debug] [Baseline::print: 40]           - point: (x, y, z)
+[debug] [Baseline::print: 44]           - 1 [lc]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]           - 2 [rc]: ( 0 , 1 , 0 )
+[debug] [PComponent::createSegmentFreeEnd: 2010]         - curve offset:
+[debug] [Baseline::print: 36]           - name: 
+[debug] [Baseline::print: 38]           - type: 
+[debug] [Baseline::print: 40]           - point: (x, y, z)
+[debug] [Baseline::print: 44]           - 1 []: ( 0 , -1 , 0.08 )
+[debug] [Baseline::print: 44]           - 2 []: ( 0 , 1 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 124]         - base vertices -- base_link_to_offset_indices
+[debug] [Segment::printBaseOffsetPairs: 127]         - number of pairs: 2
+[debug] [Segment::printBaseOffsetPairs: 138]         - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 138]         - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1 , 0.08 )
+[debug] [PDCEL::addEdge: 460] adding edge: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.08 )
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PComponent::buildLaminate: 161] building half edge loops for each segment
+[debug] [Segment::build: 409]         - building the overall shape of segment: sgm_1
+[debug] [Segment::build: 411]         - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+[debug] [Segment::build: 418]         - creating half edges for the base curve
+[debug] [Segment::build: 421]         - number of vertices of the base curve: 2
 [debug] [PDCEL::findHalfEdge: 738] looking for half edge: v1 ( 0 , -1 , 0 ) -> v2 ( 0 , 1 , 0 )
-[debug] [PDCEL::findHalfEdge: 743]   v1 has no incident edge
+[debug] [PDCEL::findHalfEdge: 756] half edge not found
 [debug] [PDCEL::addEdge: 460] adding edge: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [Segment::build: 441]           - creating half edges for the offset curve
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [Segment::build: 443]         - creating half edges for the offset curve
 [debug] [PDCEL::addEdge: 460] adding edge: ( 0 , -1 , 0.08 ) -> ( 0 , 1 , 0.08 )
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [PDCEL::updateEdgeNeighbors: 1567] updateEdgeNeighbors
-[debug] [Segment::build: 454]           - creating the half edge loop and face
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1575] updateEdgeNeighbors
+[debug] [Segment::build: 452]         - creating the half edge loop and face
 [debug] [PDCEL::findHalfEdge: 738] looking for half edge: v1 ( 0 , -1 , 0 ) -> v2 ( 0 , 1 , 0 )
 [debug] [PDCEL::findHalfEdge: 750] found half edge: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) sign: 1
 [debug] [PDCEL::addHalfEdgeLoop: 832] adding half edge loop with half edge: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) sign: 1
 [debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 159] updateVertexEdge: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 162]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 129]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.08 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.08 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , 1 , 0.08 ) -> ( 0 , -1 , 0.08 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , 1 , 0.08 ) -> ( 0 , -1 , 0.08 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCEL::addHalfEdgeLoop: 838]   handling half edge: ( 0 , -1 , 0.08 ) -> ( 0 , -1 , 0 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , -1 , 0.08 ) -> ( 0 , -1 , 0 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCEL::addHalfEdgeLoop: 852] done
+[debug] [PDCELHalfEdgeLoop::log: 12] direction: outer
+[debug] [PDCELHalfEdgeLoop::log: 14] keep: no
+[debug] [PDCELHalfEdgeLoop::log: 16] face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 21] half edges:
+[debug] [PDCELHalfEdgeLoop::log: 24] ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 24] ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.08 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 24] ( 0 , 1 , 0.08 ) -> ( 0 , -1 , 0.08 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 24] ( 0 , -1 , 0.08 ) -> ( 0 , -1 , 0 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 29] adjacent loop:nullptr
+[debug] [PDCELFace::print: 70] name: sgm_1_face
+[debug] [PDCELFace::print: 78] outer boundary: 
+[debug] [PDCELFace::print: 81] ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_1_face
+[debug] [PDCELFace::print: 81] ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.08 ) | loop: temp | face: sgm_1_face
+[debug] [PDCELFace::print: 81] ( 0 , 1 , 0.08 ) -> ( 0 , -1 , 0.08 ) | loop: temp | face: sgm_1_face
+[debug] [PDCELFace::print: 81] ( 0 , -1 , 0.08 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_face
+[info] [PModel::createGmshVertices: 61]       - creating gmsh vertices
+[info] [PModel::createGmshEdges: 205]       - creating gmsh edges
+[info] [PModel::createGmshFaces: 261]       - creating gmsh faces
+[debug] [PModel::createGmshFaces: 273]       - 
+[debug] [PModel::createGmshFaces: 274]       -   face: background
+[debug] [PModel::createGmshFaces: 273]       - 
+[debug] [PModel::createGmshFaces: 274]       -   face: sgm_1_face
+[debug] [PModel::createGmshFaces: 291]       -   adding outer loop
+[debug] [PModel::createGmshFaces: 316]       -   adding inner loops
+[debug] [PModel::createGmshFaces: 349]       -   adding local mesh size
+[info] [PModel::writeGmshGeo: 364]         - writing gmsh .geo file: .\strip_debug_1.geo_unrolled
+[info] [PModel::writeGmshOpt: 482]         - writing gmsh .opt file: .\strip_debug.opt
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.08 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 129]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , -1 , 0.08 ) -> ( 0 , 1 , 0.08 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , 1 , 0.08 ) -> ( 0 , 1 , 0 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 126] updateVertexEdge: ( 0 , 1 , 0 ) -> ( 0 , -1 , 0 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 138] done
+[info] [PModel::createGmshVertices: 61]       - creating gmsh vertices
+[info] [PModel::createGmshEdges: 205]       - creating gmsh edges
+[info] [PModel::createGmshFaces: 261]       - creating gmsh faces
+[debug] [PModel::createGmshFaces: 273]       - 
+[debug] [PModel::createGmshFaces: 274]       -   face: background
+[debug] [PModel::createGmshFaces: 273]       - 
+[debug] [PModel::createGmshFaces: 274]       -   face: sgm_1_face
+[debug] [PModel::createGmshFaces: 291]       -   adding outer loop
+[debug] [PModel::createGmshFaces: 316]       -   adding inner loops
+[debug] [PModel::createGmshFaces: 349]       -   adding local mesh size
+[info] [PModel::writeGmshGeo: 364]         - writing gmsh .geo file: .\strip_debug_2.geo_unrolled
+[info] [CrossSection::build: 345]       - building the cross section, step 2
+[info] [PComponent::buildDetails: 124]         - building component details: top
+[info] [Segment::updateBaseOffsetIndexPairs: 335]           - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 379]           - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 381]           - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 381]           - 1 -- 1
+[debug] [Segment::buildAreas: 253]           - building areas of segment: sgm_1
+[debug] [Segment::buildAreas: 270]           - 1. creating the beginning bound of the first area
+[debug] [Segment::buildAreas: 319]           - open segment
+[debug] [Segment::buildAreas: 324]           - first vertex of the base: ( 0 , -1 , 0 )
+[debug] [Segment::buildAreas: 325]           - first vertex of the offset: ( 0 , -1 , 0.08 )
+[debug] [Segment::buildAreas: 351]           -  ls_base: ( 0 , -1 , 0 ) - ( 0 , 1 , 0 )

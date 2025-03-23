@@ -552,6 +552,7 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
   if (create_gmsh_geo) {
     // initGmshModel(pmessage);
     createGmshGeo(pmessage);
+    gmsh::model::geo::synchronize();
   }
 
   debug_plot_count++;

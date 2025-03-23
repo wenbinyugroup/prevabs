@@ -31,6 +31,8 @@ void set_local_orientation(
   const int &base_vector_index, const int &offset_vector_index,
   const bool &use_offset_as_base
   ) {
+  PLOG(debug) << "setting local orientation";
+
   Segment *segment = area->segment();
   PGeoLineSegment *ls_base, *ls_layup;
   if (!use_offset_as_base) {
@@ -55,12 +57,16 @@ void set_local_orientation(
   // else if (segment->getMatOrient2() == "layup") {
   //   area->setLocaly2(ls_layup->toVector());
   // }
+
+  PLOG(debug) << "done";
 }
 
 
 void divide_interior_wall_by_layup(
   Layup *layup, std::vector<PDCELVertex *> &wall_vertices, PDCEL *dcel
   ) {
+  PLOG(debug) << "dividing interior wall by layup";
+
   double cumu_thk = 0;  // Cumulative thickness of the layup
   PDCELVertex *v_base = wall_vertices.front();
   PDCELVertex *v_offset = wall_vertices.back();
@@ -84,6 +90,8 @@ void divide_interior_wall_by_layup(
 
     v_layer_prev = v_layer;
   }
+
+  PLOG(debug) << "done";
 }
 
 
@@ -101,6 +109,8 @@ void divide_end_wall_by_layup(
   std::vector<PDCELVertex *> &layer_div_vertices, PDCEL *dcel,
   Message *pmessage
   ) {
+  PLOG(debug) << "dividing end wall by layup";
+
   // The end wall can be arbitrary shape,
   // so the method is to, for each layer,
   // 1. offset the base line segment by the cumulative thickness of the
@@ -166,7 +176,9 @@ void divide_end_wall_by_layup(
     // 4. add the intersection point to the layer_div_vertices vector
     layer_div_vertices.push_back(v_intersect);
 
- }
+  }
+
+  PLOG(debug) << "done";
 }
 
 
@@ -188,6 +200,8 @@ PArea *build_area(
   PDCELFace *face, std::vector<PDCELVertex *> prev_bound_vertices,
   Message *pmessage
   ) {
+  PLOG(info) << "building area";
+
   PDCELVertex *v_base = segment->curveBase()->vertices()[base_vector_index];
   PDCELVertex *v_offset = segment->curveOffset()->vertices()[offset_vector_index];
 
@@ -229,6 +243,8 @@ PArea *build_area(
 
   area->setNextBoundVertices(next_wall_vertices);
 
+  PLOG(info) << "done";
+
   return area;
 }
 
@@ -248,7 +264,7 @@ PArea *build_area(
 ///
 /// @param pmessage Message object for logging
 void Segment::buildAreas(Message *pmessage) {
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
   PLOG(debug) << pmessage->message("building areas of segment: " + _name);
 
@@ -325,12 +341,12 @@ void Segment::buildAreas(Message *pmessage) {
     PLOG(debug) << pmessage->message("first vertex of the offset: ") << vo_tmp;
 
 
-    // bool use_offset_as_base = false;
+    bool use_offset_as_base = false;
     if (_base_offset_indices_pairs[0][0] == _base_offset_indices_pairs[1][0]) {
       // If the first two vertices of the base curve are the same
       //   then use the offset curve as the new base curve
       PLOG(debug) << pmessage->message("  set the offset curve as the new 'base' curve");
-      // use_offset_as_base = true;
+      use_offset_as_base = true;
       // PLOG(debug) << pmessage->message("degenerated case");
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
         _curve_offset->vertices()[0], _curve_offset->vertices()[1]);
@@ -836,6 +852,6 @@ void Segment::buildAreas(Message *pmessage) {
     area->buildLayers(pmessage);
   }
 
-  pmessage->decreaseIndent();
+  // pmessage->decreaseIndent();
 }
 

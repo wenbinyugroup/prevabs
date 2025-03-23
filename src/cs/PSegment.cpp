@@ -443,10 +443,6 @@ void Segment::build(Message *pmessage) {
   PLOG(debug) << pmessage->message("creating half edges for the offset curve");
 
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
-    // PLOG(debug) << pmessage->message("  half edge: ")
-    //   << i << " " << _curve_offset->vertices()[i]->printString()
-    //   << " -- " << i + 1 << " " << _curve_offset->vertices()[i + 1]->printString();
-
     _pmodel->dcel()->addEdge(_curve_offset->vertices()[i],
                              _curve_offset->vertices()[i + 1]);
   }
@@ -458,8 +454,6 @@ void Segment::build(Message *pmessage) {
   PDCELHalfEdgeLoop *hel;
   he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[0],
                                      _curve_base->vertices()[1]);
-
-  // PLOG(debug) << pmessage->message("  found half edge: ") << he;
 
   if (slayupside == "right") {
     he = he->twin();

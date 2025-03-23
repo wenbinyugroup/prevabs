@@ -35,6 +35,8 @@ private:
 
   // excluding vertices on the base curve and offset curve
   std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
+
+
   PDCELFace *_face;
   PGeoLineSegment *_line_segment_base;
 

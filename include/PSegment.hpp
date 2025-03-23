@@ -56,6 +56,8 @@ private:
   std::list<PDCELVertex *> _vertices_outer;
   PDCELFace *_face;
   int _free; // Free end. 0 (head) or 1 (tail)
+
+  // these two vertices indicate whether the segment head and tail have been processed or not.
   PDCELVertex *_head_vertex_offset, *_tail_vertex_offset;
 
   // Has the size of base curve - 2 (excluding the two ends)
@@ -129,10 +131,10 @@ public:
   PDCELVertex *getBeginVertex();
   PDCELVertex *getEndVertex();
 
-  // PDCELVertex *headVertexOffset() { return _head_vertex_offset; }
-  // PDCELVertex *tailVertexOffset() { return _tail_vertex_offset; }
-  PDCELVertex *headVertexOffset() { return _curve_offset->vertices().front(); }
-  PDCELVertex *tailVertexOffset() { return _curve_offset->vertices().back(); }
+  PDCELVertex *headVertexOffset() { return _head_vertex_offset; }
+  PDCELVertex *tailVertexOffset() { return _tail_vertex_offset; }
+  // PDCELVertex *headVertexOffset() { return _curve_offset->vertices().front(); }
+  // PDCELVertex *tailVertexOffset() { return _curve_offset->vertices().back(); }
 
   SVector3 getBeginTangent();
   SVector3 getEndTangent();
