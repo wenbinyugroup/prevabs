@@ -88,7 +88,3 @@ Curve Loop(13) = {37, 31, -4, -18};
 Plane Surface(13) = {13};
 Curve Loop(14) = {36, 30, -37, -17};
 Plane Surface(14) = {14};
-Physical Surface(1) = {1, 6, 8, 13};
-Physical Surface(2) = {2, 7, 9, 14};
-Physical Surface(3) = {3, 5, 10, 12};
-Physical Surface(4) = {4, 11};

@@ -55,6 +55,8 @@ public:
   void print();
   void print2();
 
+  void log();
+
   void write_to_file(std::ofstream &file);
 
   PDCELVertex *source() { return _source; }

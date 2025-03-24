@@ -43,7 +43,8 @@ private:
   std::vector<PArea *> _areas;
   std::string slayupside;
   int slevel;
-  Segment *_prev, *_next;
+  Segment *_prev=nullptr, *_next=nullptr;  // prev/next segments
+  int _prev_end, _next_end;  // which end of the prev/next segment is connected to this segment (0: head, 1: tail)
   SVector3 _prev_bound, _next_bound;
   bool _closed;
 
@@ -140,6 +141,8 @@ public:
 
   Segment *prevSegment() { return _prev; }
   Segment *nextSegment() { return _next; }
+  int prevEnd() { return _prev_end; }
+  int nextEnd() { return _next_end; }
   SVector3 prevBound() { return _prev_bound; }
   SVector3 nextBound() { return _next_bound; }
   std::vector<PDCELVertex *> &prevBoundVertices() {
@@ -183,6 +186,8 @@ public:
   void setFreeEnd(int fe) { _free = fe; }
   void setPrevSegment(Segment *seg) { _prev = seg; }
   void setNextSegment(Segment *seg) { _next = seg; }
+  void setPrevEnd(int pe) { _prev_end = pe; }
+  void setNextEnd(int ne) { _next_end = ne; }
   void setPrevBound(SVector3 &bound) { _prev_bound = bound; }
   void setNextBound(SVector3 &bound) { _next_bound = bound; }
   void setPrevBound(double x1, double x2, double x3) { _prev_bound = SVector3(x1, x2, x3); }

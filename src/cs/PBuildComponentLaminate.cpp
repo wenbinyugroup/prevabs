@@ -83,12 +83,20 @@ void PComponent::buildLaminate(Message *pmessage) {
             // Head to head
             PLOG(debug) << "head of segment " << seg->getName() << " connects to head of segment " << seg_p->getName();
             found_begin = true;
+            seg->setPrevSegment(seg_p);
+            seg->setPrevEnd(0);
+            seg_p->setPrevSegment(seg);
+            seg_p->setPrevEnd(0);
             joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, pmessage);
             // break;
           } else if (seg->getBeginVertex() == seg_p->getEndVertex()) {
             // Head to tail
             PLOG(debug) << "head of segment " << seg->getName() << " connects to tail of segment " << seg_p->getName();
             found_begin = true;
+            seg->setPrevSegment(seg_p);
+            seg->setPrevEnd(1);
+            seg_p->setNextSegment(seg);
+            seg_p->setNextEnd(0);
             joinSegments(seg, seg_p, 0, 1, seg->getBeginVertex(), js, pmessage);
             // break;
           }
@@ -112,12 +120,20 @@ void PComponent::buildLaminate(Message *pmessage) {
             // Tail to head
             PLOG(debug) << "tail of segment " << seg->getName() << " connects to head of segment " << seg_p->getName();
             found_end = true;
+            seg->setNextSegment(seg_p);
+            seg->setNextEnd(0);
+            seg_p->setPrevSegment(seg);
+            seg_p->setPrevEnd(1);
             joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, pmessage);
             // break;
           } else if (seg->getEndVertex() == seg_p->getEndVertex()) {
             // Tail to tail
             PLOG(debug) << "tail of segment " << seg->getName() << " connects to tail of segment " << seg_p->getName();
             found_end = true;
+            seg->setNextSegment(seg_p);
+            seg->setNextEnd(1);
+            seg_p->setNextSegment(seg);
+            seg_p->setNextEnd(1);
             joinSegments(seg, seg_p, 1, 1, seg->getEndVertex(), js, pmessage);
             // break;
           }
@@ -147,13 +163,9 @@ void PComponent::buildLaminate(Message *pmessage) {
         joinSegments(seg, 1, seg->getEndVertex(), pmessage);
       }
 
-      // seg->curveBase()->print(pmessage, 9);
     }
-    // seg->curveBase()->print(pmessage, 9);
-
 
   }
-
 
 
   // Build for each segment
@@ -167,6 +179,12 @@ void PComponent::buildLaminate(Message *pmessage) {
 
   }
 
+
+  // Check DCEL for debug
+  if (config.debug) {
+    PLOG(debug) << "writing DCEL to file after building segments";
+    _pmodel->dcel()->write_dcel_to_file(config.file_directory + config.file_base_name + "_dcel_done_building_segments_general_shape.txt");
+  }
 
   // pmessage->decreaseIndent();
 

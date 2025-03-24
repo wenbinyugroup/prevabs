@@ -821,7 +821,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 /// @param pmessage Message object for logging
 void join_segments_style_1(
   Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v,
-  std::vector<PDCELVertex *> bound_vertices,
+  std::vector<PDCELVertex *> &bound_vertices,
   Message *pmessage
   ) {
 
@@ -892,10 +892,12 @@ void join_segments_style_1(
     // If not, replace one of them with the other
     if (v_new_1 != v_new_2) {
       replace_vertex(s2->curveOffset()->vertices(), v_new_2, v_new_1);
+      v_new_2 = v_new_1;
     }
 
     // Add the intersection vertex to the bound vertices
     bound_vertices.push_back(v_new_1);
+
   } else {
     // Add both intersection vertices to the bound vertices
     // Add first the one that is closer to the first vertex of the bound
@@ -908,6 +910,37 @@ void join_segments_style_1(
       bound_vertices.push_back(v_new_1);
     }
   }
+
+  // Set the indicators that the joint is done
+  if (e1 == 0) {
+    s1->setHeadVertexOffset(s1->curveOffset()->vertices().front());
+  } else {
+    s1->setTailVertexOffset(s1->curveOffset()->vertices().back());
+  }
+
+  if (e2 == 0) {
+    s2->setHeadVertexOffset(s2->curveOffset()->vertices().front());
+  } else {
+    s2->setTailVertexOffset(s2->curveOffset()->vertices().back());
+  }
+
+  // Set the end bound vertices for the segments
+  if (e1 == 0) {
+    s1->setPrevBoundVertices(bound_vertices);
+  } else {
+    s1->setNextBoundVertices(bound_vertices);
+  }
+
+  if (e2 == 0) {
+    s2->setPrevBoundVertices(bound_vertices);
+  } else {
+    s2->setNextBoundVertices(bound_vertices);
+  }
+
+  PLOG(debug) << "bound_vertices:";
+  PLOG(debug) << vertices_to_string(bound_vertices);
+
+  PLOG(debug) << "done";
 
 }
 
@@ -927,7 +960,7 @@ void join_segments_style_1(
 /// @param bound_vertices Boundary vertices
 /// @param pmessage Message object for logging
 void join_segments_style_2(
-  Segment *s1, Segment *s2, int e1, int e2, std::vector<PDCELVertex *> bound_vertices,
+  Segment *s1, Segment *s2, int e1, int e2, std::vector<PDCELVertex *> &bound_vertices,
   Message *pmessage
   ) {
 
@@ -973,9 +1006,9 @@ void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
   PDCELVertex *v, int style, Message *pmessage
   ) {
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("joining segments ends: ")
+  PLOG(info) << pmessage->message("joining segments ends: ")
     << s1->getName() << " " << e1 << ", " << s2->getName() << " " << e2;
 
 
@@ -1701,6 +1734,9 @@ void PComponent::joinSegments(
   //   std::cout << v << std::endl;
   // }
 
+  PLOG(debug) << "bound_vertices:";
+  PLOG(debug) << vertices_to_string(bound_vertices);
+
   // Create half edges
   PDCELHalfEdge *he_new;
   for (int i = 0; i < bound_vertices.size() - 1; ++i) {
@@ -1732,7 +1768,9 @@ void PComponent::joinSegments(
     );
   }
 
-  pmessage->decreaseIndent();
+  PLOG(info) << pmessage->message("done joining segments");
+
+  // pmessage->decreaseIndent();
 }
 
 

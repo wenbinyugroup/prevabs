@@ -65,6 +65,8 @@ public:
   void printWithAddress();
   void printAllLeavingHalfEdges(const int &direction = 1);
 
+  void log_all_leaving_half_edges(const int &direction);
+
   friend bool operator==(PDCELVertex &, PDCELVertex &);
   friend bool operator!=(PDCELVertex &, PDCELVertex &);
   friend bool operator<(PDCELVertex &, PDCELVertex &);

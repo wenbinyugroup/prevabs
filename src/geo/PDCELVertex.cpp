@@ -3,6 +3,7 @@
 #include "PDCELHalfEdge.hpp"
 #include "globalConstants.hpp"
 #include "utilities.hpp"
+#include "plog.hpp"
 
 #include "gmsh_mod/SPoint3.h"
 #include "gmsh_mod/STensor3.h"
@@ -92,6 +93,30 @@ void PDCELVertex::printAllLeavingHalfEdges(const int &direction) {
   } while (he != _incident_edge);
   std::cout << "stop" << std::endl;
 }
+
+
+void PDCELVertex::log_all_leaving_half_edges(const int &direction) {
+  PDCELHalfEdge *he = _incident_edge;
+  do {
+    if (he == nullptr) {
+      break;
+    }
+    he->log();
+    if (direction > 0) {
+      // counter-clockwise
+      if (he->prev() != nullptr) {
+        he = he->prev()->twin();
+      } else {
+        break;
+      }
+    } else if (direction < 0) {
+      // clockwise
+      he = he->twin()->next();
+    }
+  } while (he != _incident_edge);
+  PLOG(debug) << "stop";
+}
+
 
 int PDCELVertex::degree() {
   PDCELHalfEdge *he = _incident_edge;

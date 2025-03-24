@@ -65,7 +65,7 @@ void set_local_orientation(
 
 
 void divide_interior_wall_by_layup(
-  Layup *layup, std::vector<PDCELVertex *> &wall_vertices, PDCEL *dcel
+  Layup *layup, std::vector<PDCELVertex *> &wall_vertices, PDCEL *&dcel
   ) {
   PLOG(debug) << "dividing interior wall by layup";
 
@@ -110,7 +110,7 @@ void divide_interior_wall_by_layup(
 void divide_end_wall_by_layup(
   Layup *layup, PGeoLineSegment *ls_base, const std::string &slayupside, const int &end,
   std::vector<PDCELVertex *> &wall_vertices,
-  std::vector<PDCELVertex *> &layer_div_vertices, PDCEL *dcel,
+  std::vector<PDCELVertex *> &layer_div_vertices, PDCEL *&dcel,
   Message *pmessage
   ) {
   PLOG(debug) << "dividing end wall by layup";
@@ -190,6 +190,10 @@ void divide_end_wall_by_layup(
         for (auto v : wall_vertices) {
           PLOG(debug) << "    " << v->point();
         }
+
+        // Check the half edges connected to the vertices
+        wall_vertices[i1]->log_all_leaving_half_edges(1);
+        wall_vertices[i1 + 2]->log_all_leaving_half_edges(1);
       }
 
       // Split the edge
@@ -225,7 +229,7 @@ void divide_end_wall_by_layup(
 PArea *build_area(
   Segment *segment, const int &base_vector_index, const int &offset_vector_index,
   const std::string &slayupside, const int &end, const bool &use_offset_as_base,
-  PDCELFace *&face, std::vector<PDCELVertex *> prev_wall_vertices,
+  PDCELFace *&face, std::vector<PDCELVertex *> prev_wall_vertices, PDCEL *&dcel,
   Message *pmessage
   ) {
   PLOG(info) << "building area";
@@ -238,7 +242,7 @@ PArea *build_area(
 
   // 2.1. Split background face
   PGeoLineSegment *ls_wall = new PGeoLineSegment(v_base, v_offset);
-  std::list<PDCELFace *> new_faces = segment->pmodel()->dcel()->splitFace(face, v_base, v_offset);
+  std::list<PDCELFace *> new_faces = dcel->splitFace(face, v_base, v_offset);
 
   PLOG(debug) << "new faces:";
   for (auto f : new_faces) {
@@ -271,7 +275,7 @@ PArea *build_area(
 
   if (end == -1) {
     divide_interior_wall_by_layup(
-      segment->getLayup(), next_wall_vertices, segment->pmodel()->dcel());
+      segment->getLayup(), next_wall_vertices, dcel);
   }
   else {
     // divide_end_wall_by_layup(
@@ -322,7 +326,7 @@ void Segment::buildAreas(Message *pmessage) {
   std::string name;
   double cumu_thk = 0, norm_thk, u1_tmp, u2_tmp;
 
-
+  PDCEL *dcel = _pmodel->dcel();
 
   // 1. Build the beginning bound of the first area
   // The goal is to calculate dividing points on the line that create layers
@@ -343,7 +347,7 @@ void Segment::buildAreas(Message *pmessage) {
     // prev_bound_vertices_tmp = {vb_tmp, vo_tmp};
 
     divide_interior_wall_by_layup(
-      _layup, _prev_bound_vertices, _pmodel->dcel());
+      _layup, _prev_bound_vertices, dcel);
 
 
     // cumu_thk = 0;
@@ -418,7 +422,7 @@ void Segment::buildAreas(Message *pmessage) {
     // Divide the wall by the layup
     divide_end_wall_by_layup(
       _layup, ls_base, slayupside, 0, _prev_bound_vertices,
-      layer_div_vertices, _pmodel->dcel(), pmessage);
+      layer_div_vertices, dcel, pmessage);
 
 
 
@@ -575,6 +579,11 @@ void Segment::buildAreas(Message *pmessage) {
   // 2.3. Create new area
   // 2.4. Split bound according to the layup
 
+  PLOG(debug) << "_base_offset_indices_pairs:";
+  for (auto i : _base_offset_indices_pairs) {
+    PLOG(debug) << i[0] << " " << i[1];
+  }
+
   int offset_v_index = 0;
   int count = 0;
 
@@ -592,7 +601,7 @@ void Segment::buildAreas(Message *pmessage) {
     }
 
     area = build_area(this, vbi_tmp, voi_tmp, slayupside, -1, use_offset_as_base,
-                      _face, prev_bound_vertices_tmp, pmessage);
+                      _face, prev_bound_vertices_tmp, dcel, pmessage);
 
     PLOG(debug) << "_face after build_area:";
     _face->print();
@@ -771,11 +780,13 @@ void Segment::buildAreas(Message *pmessage) {
     // Calculate and set the local orientation
     set_local_orientation(area, count, count, use_offset_as_base);
 
+    PLOG(debug) << "_next_bound_vertices:";
+    PLOG(debug) << vertices_to_string(_next_bound_vertices);
 
     // Divide the end wall by the layup
     divide_end_wall_by_layup(
       _layup, ls_base, slayupside, 1, _next_bound_vertices,
-      layer_div_vertices, _pmodel->dcel(), pmessage);
+      layer_div_vertices, dcel, pmessage);
 
     area->setNextWallVertices(layer_div_vertices);
 
@@ -908,13 +919,42 @@ void Segment::buildAreas(Message *pmessage) {
 
   _areas.push_back(area);
 
-  // pmessage->decreaseIndent();
 
   // Slice layers
   for (auto area : _areas) {
     area->buildLayers(pmessage);
   }
 
-  // pmessage->decreaseIndent();
+
+  // (debug) check the prev/next bound vertices of the segment
+  PLOG(debug) << "_prev_bound_vertices:\n"
+              << vertices_to_string(_prev_bound_vertices);
+  PLOG(debug) << "_next_bound_vertices:\n"
+              << vertices_to_string(_next_bound_vertices);
+
+
+  // If the segment is open,
+  // update the prev/next bound vertices shared by prev/next segments
+  if (!_closed) {
+    if (_prev) {
+      if (_prev_end == 0) {
+        _prev->setPrevBoundVertices(_prev_bound_vertices);
+      }
+      else {
+        _prev->setNextBoundVertices(_prev_bound_vertices);
+      }
+    }
+
+    if (_next) {
+      if (_next_end == 0) {
+        _next->setPrevBoundVertices(_next_bound_vertices);
+      }
+      else {
+        _next->setNextBoundVertices(_next_bound_vertices);
+      }
+    }
+  }
+
+  PLOG(debug) << "done building areas of segment " << _name;
 }
 

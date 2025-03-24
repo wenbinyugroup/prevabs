@@ -6,6 +6,7 @@
 #include "PDCELVertex.hpp"
 #include "PGeoLine.hpp"
 #include "gmsh_mod/SVector3.h"
+#include "plog.hpp"
 // #include "gmsh/GEdge.h"
 
 #include <cmath>
@@ -96,6 +97,31 @@ void PDCELHalfEdge::print2() {
   // printf("%p", (void *)this);
 
   std::cout << std::endl;
+}
+
+
+void PDCELHalfEdge::log() {
+  PLOG(debug) << _source->point2() << " -> " << _twin->_source->point2();
+
+  PLOG(debug) << " | loop: ";
+  if (_loop == nullptr) {
+    PLOG(debug) << "nullptr";
+  } else {
+    if (_loop->keep()) {
+      PLOG(debug) << "keep";
+    } else {
+      PLOG(debug) << "temp";
+    }
+  }
+
+  PLOG(debug) << " | face: ";
+  if (_face == nullptr) {
+    PLOG(debug) << "nullptr";
+  } else {
+    PLOG(debug) << _face->name();
+  }
+
+  PLOG(debug) << std::endl;
 }
 
 
