@@ -130,20 +130,20 @@ private:
   PDCEL *_dcel;
 
   double _global_mesh_size;
-  unsigned int _element_type; // 1: linear, 2: quadratic
+  int _element_type = 1; // 1: linear, 2: quadratic
 
   // Analysis
-  unsigned int _analysis_model_dim; // model dimension (1: beam, 2: plate/shell, 3: solid)
-  unsigned int _analysis_model; // structural model (0: classical, 1: timoshenko)
-  unsigned int _analysis_dehomo; // 1: nonlinear, 2: linear
-  unsigned int _analysis_damping; // 0: off, 1: on
-  unsigned int _analysis_thermal;
-  unsigned int _analysis_curvature;
-  unsigned int _analysis_oblique;
-  unsigned int _analysis_trapeze;
-  unsigned int _analysis_vlasov;
-  std::vector<double> _analysis_curvatures;
-  std::vector<double> _analysis_obliques;
+  int _analysis_model_dim = 1; // model dimension (1: beam, 2: plate/shell, 3: solid)
+  int _analysis_model = 0; // structural model (0: classical, 1: timoshenko)
+  int _analysis_dehomo = 2; // 1: nonlinear, 2: linear
+  int _analysis_damping = 0; // 0: off, 1: on
+  int _analysis_thermal = 0;
+  int _analysis_curvature = 0;
+  int _analysis_oblique = 0;
+  int _analysis_trapeze = 0;
+  int _analysis_vlasov = 0;
+  std::vector<double> _analysis_curvatures = {0.0, 0.0, 0.0};
+  std::vector<double> _analysis_obliques = {1.0, 0.0};
 
   // analysis physics
   // 0: elastic
@@ -155,7 +155,7 @@ private:
   // 6: thermopiezoelectromagnetic
   // 7: viscoelastic
   // 8: thermoviscoelastic
-  unsigned int _physics{0};
+  int _physics{0};
 
   // Repositories
   // std::vector<Material *> _materials;
@@ -218,19 +218,19 @@ public:
   PDCEL *dcel() { return _dcel; }
 
   double globalMeshSize() { return _global_mesh_size; }
-  unsigned int elementType() { return _element_type; }
+  int elementType() { return _element_type; }
 
-  unsigned int analysisModelDim() { return _analysis_model_dim; }
-  unsigned int analysisModel() { return _analysis_model; }
-  unsigned int analysisDehomo() { return _analysis_dehomo; }
-  unsigned int analysisDamping() { return _analysis_damping; }
-  unsigned int analysisThermal() { return _analysis_thermal; }
-  unsigned int analysisCurvature() { return _analysis_curvature; }
-  unsigned int analysisOblique() { return _analysis_oblique; }
-  unsigned int analysisTrapeze() { return _analysis_trapeze; }
-  unsigned int analysisVlasov() { return _analysis_vlasov; }
+  int analysisModelDim() { return _analysis_model_dim; }
+  int analysisModel() { return _analysis_model; }
+  int analysisDehomo() { return _analysis_dehomo; }
+  int analysisDamping() { return _analysis_damping; }
+  int analysisThermal() { return _analysis_thermal; }
+  int analysisCurvature() { return _analysis_curvature; }
+  int analysisOblique() { return _analysis_oblique; }
+  int analysisTrapeze() { return _analysis_trapeze; }
+  int analysisVlasov() { return _analysis_vlasov; }
 
-  unsigned int analysisPhysics() { return _physics; }
+  int analysisPhysics() { return _physics; }
 
   std::vector<double> &curvatures() { return _analysis_curvatures; }
   std::vector<double> &obliques() { return _analysis_obliques; }

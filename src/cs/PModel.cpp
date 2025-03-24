@@ -70,6 +70,7 @@ void PModel::finalize() {
 
 
 
+
 PDCELVertex *PModel::getPointByName(std::string name) {
   for (auto p : _vertices) {
     if (p->name() == name) {
@@ -365,6 +366,7 @@ void PModel::build(Message *pmessage) {
   _cross_section->build(pmessage);
 
   // _dcel->print_dcel();
+  _dcel->write_dcel_to_file("dcel.txt");
 
   // _dcel->vertextree()->printInOrder();
 
@@ -547,6 +549,8 @@ void PModel::build(Message *pmessage) {
 
 void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
 
+  PLOG(debug) << pmessage->message("plotting geometry for debugging");
+
   gmsh::initialize();
 
   if (create_gmsh_geo) {
@@ -575,6 +579,8 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
   }
 
   gmsh::finalize();
+
+  PLOG(debug) << pmessage->message("done");
 
 }
 

@@ -304,54 +304,72 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
 // ===================================================================
 
 void writeSettingsVABS(FILE *file, PModel *model) {
-  std::vector<std::size_t> inums;
+  // std::vector<int> inums;
 
-  // inums = {1, model->cs()->getNumOfUsedLayerTypes()};
-  inums.push_back(1);
-  inums.push_back(model->cs()->getNumOfUsedLayerTypes());
-  writeNumbers(file, "%8d", inums);
-  fprintf(file, "\n");
+  PLOG(debug) << "number of layer types = " << model->cs()->getNumOfUsedLayerTypes();
+  // inums.push_back(1);  // New format
+  // inums.push_back(model->cs()->getNumOfUsedLayerTypes());
+  // PLOG(debug) << "inums (" << inums.size() << ") = " << inums[0] << ", " << inums[1];
+  // writeNumbers(file, "%8d", inums);
+  fprintf(file, "%8d", 1);
+  fprintf(file, "%8zd", model->cs()->getNumOfUsedLayerTypes());
+  fprintf(file, "\n\n");
 
-  inums.clear();
+  // inums.clear();
+  PLOG(debug) << "analysis model = " << model->analysisModel()
+              << ", damping = " << model->analysisDamping()
+              << ", thermal = " << model->analysisThermal();
   unsigned int recover = config.dehomo ? 1 : 0;
-  // inums = {model->analysisModel(), recover, model->analysisThermal()};
-  inums.push_back(model->analysisModel());
-  // inums.push_back(recover);
-  inums.push_back(model->analysisDamping());
-  inums.push_back(model->analysisThermal());
-  writeNumbers(file, "%8d", inums);
+  // inums.push_back(model->analysisModel());
+  // inums.push_back(model->analysisDamping());
+  // inums.push_back(model->analysisThermal());
+  // PLOG(debug) << "inums (" << inums.size() << ") = " << inums[0] << ", " << inums[1] << ", " << inums[2];
+  // writeNumbers(file, "%8d", inums);
+  fprintf(file, "%8d", model->analysisModel());
+  fprintf(file, "%8d", model->analysisDamping());
+  fprintf(file, "%8d", model->analysisThermal());
+  fprintf(file, "\n\n");
+
+  // inums.clear();
+  PLOG(debug) << "curvature = " << model->analysisCurvature()
+              << ", oblique = " << model->analysisOblique()
+              << ", trapeze = " << model->analysisTrapeze()
+              << ", vlasov = " << model->analysisVlasov();
+  // inums.push_back(model->analysisCurvature());
+  // inums.push_back(model->analysisOblique());
+  // inums.push_back(model->analysisTrapeze());
+  // inums.push_back(model->analysisVlasov());
+  // PLOG(debug) << "inums (" << inums.size() << ") = " << inums[0] << ", " << inums[1] << ", " << inums[2] << ", " << inums[3];
+  // writeNumbers(file, "%8d", inums);
+  fprintf(file, "%8d", 1);
+  fprintf(file, "%8d", 1);
+  fprintf(file, "%8d", model->analysisTrapeze());
+  fprintf(file, "%8d", model->analysisVlasov());
+  fprintf(file, "\n\n");
+
+  // if (model->analysisCurvature()) {
+  writeNumbers(file, "%16e", model->curvatures());
   fprintf(file, "\n");
+  // }
 
-  inums.clear();
-  // inums = {model->analysisCurvature(), model->analysisOblique(),
-  //          model->analysisTrapeze(), model->analysisVlasov()};
-  inums.push_back(model->analysisCurvature());
-  inums.push_back(model->analysisOblique());
-  inums.push_back(model->analysisTrapeze());
-  inums.push_back(model->analysisVlasov());
-  writeNumbers(file, "%8d", inums);
+  // if (model->analysisOblique()) {
+  writeNumbers(file, "%16e", model->obliques());
   fprintf(file, "\n");
+  // }
 
-  if (model->analysisCurvature()) {
-    writeNumbers(file, "%16e", model->curvatures());
-    fprintf(file, "\n");
-  }
-
-  if (model->analysisOblique()) {
-    writeNumbers(file, "%16e", model->obliques());
-    fprintf(file, "\n");
-  }
-
-  inums.clear();
-  // inums = {model->gmodel()->indexMeshVertices(true, 0),
-  //          model->indexGmshElements(), model->cs()->getNumOfUsedMaterials()};
-  // inums.push_back(model->gmodel()->indexMeshVertices(true, 0));
-  inums.push_back(model->getNumOfNodes());
-  // inums.push_back(model->indexGmshElements());
-  inums.push_back(model->getNumOfElements());
-  inums.push_back(model->cs()->getNumOfUsedMaterials());
-  writeNumbers(file, "%8d", inums);
-  fprintf(file, "\n");
+  // inums.clear();
+  PLOG(debug) << "number of nodes = " << model->getNumOfNodes()
+              << ", number of elements = " << model->getNumOfElements()
+              << ", number of materials = " << model->cs()->getNumOfUsedMaterials();
+  // inums.push_back(model->getNumOfNodes());
+  // inums.push_back(model->getNumOfElements());
+  // inums.push_back(model->cs()->getNumOfUsedMaterials());
+  // PLOG(debug) << "inums (" << inums.size() << ") = " << inums[0] << ", " << inums[1] << ", " << inums[2];
+  // writeNumbers(file, "%8d", inums);
+  fprintf(file, "%8zd", model->getNumOfNodes());
+  fprintf(file, "%8zd", model->getNumOfElements());
+  fprintf(file, "%8zd", model->cs()->getNumOfUsedMaterials());
+  fprintf(file, "\n\n");
 }
 
 

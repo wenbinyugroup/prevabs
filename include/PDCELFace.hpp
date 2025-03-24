@@ -50,6 +50,8 @@ public:
 
   void print();
 
+  void write_to_file(std::ofstream &file);
+
   PArea *area() { return _area; }
   PDCELHalfEdge *outer() { return _outer; }
   std::vector<PDCELHalfEdge *> &inners() { return _inners; }

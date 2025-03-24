@@ -13,10 +13,6 @@
 #include <list>
 #include <vector>
 
-// class PDCELVertex;
-// class PDCELHalfEdge;
-// class PDCELFace;
-// class PGeoLineSegment;
 class Segment;
 class PModel;
 
@@ -84,6 +80,12 @@ public:
   void setNextBound(SVector3 &);
   void setPrevBoundVertices(std::vector<PDCELVertex *>);
   void setNextBoundVertices(std::vector<PDCELVertex *>);
+  void setPrevWallVertices(std::vector<PDCELVertex *> vs) {
+    _prev_wall_vertices = vs;
+  }
+  void setNextWallVertices(std::vector<PDCELVertex *> vs) {
+    _next_wall_vertices = vs;
+  }
   void addPrevBoundVertex(PDCELVertex *);
   void addNextBoundVertex(PDCELVertex *);
   void setFace(PDCELFace *f) { _face = f; }

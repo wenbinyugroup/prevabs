@@ -144,6 +144,49 @@ void PDCEL::print_dcel() {
 
 
 
+void PDCEL::write_dcel_to_file(const std::string &filename) {
+  std::ofstream file(filename);
+  if (!file.is_open()) {
+    PLOG(error) << "Failed to open file: " << filename;
+    return;
+  }
+
+  file << "DCEL Summary" << std::endl;
+  file << std::endl;
+
+  // Write vertices
+  file << _vertices.size() << " vertices:" << std::endl;
+  for (auto v : _vertices) {
+    file << v << " - degree " << v->degree() << std::endl;
+  }
+  file << std::endl;
+
+  // Write half edges
+  file << _halfedges.size() << " half edges:" << std::endl;
+  for (auto he : _halfedges) {
+    he->write_to_file(file);
+  }
+  file << std::endl;
+
+  // Write half edge loops
+  file << _halfedge_loops.size() << " half edge loops:" << std::endl;
+  for (auto hel : _halfedge_loops) {
+    hel->write_to_file(file);
+  }
+  file << std::endl;
+
+  // Write faces
+  file << _faces.size() << " faces:" << std::endl;
+  for (auto f : _faces) {
+    f->write_to_file(file);
+  }
+
+  file.close();
+}
+
+
+
+
 
 
 

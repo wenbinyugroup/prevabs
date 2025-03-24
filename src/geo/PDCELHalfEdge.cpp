@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <fstream>
 
 
 
@@ -19,13 +20,6 @@ std::ostream &operator<<(std::ostream &out, PDCELHalfEdge *he) {
   out << he->_source << " -> " << he->_twin->_source << " sign: " << he->_sign;
   return out;
 }
-
-
-
-
-
-
-
 
 
 std::string PDCELHalfEdge::printString() {
@@ -58,13 +52,6 @@ std::string PDCELHalfEdge::printString() {
 }
 
 
-
-
-
-
-
-
-
 std::string PDCELHalfEdge::printBrief() {
   std::stringstream ss;
 
@@ -74,24 +61,10 @@ std::string PDCELHalfEdge::printBrief() {
 }
 
 
-
-
-
-
-
-
-
 void PDCELHalfEdge::print() {
   std::cout << _source << " -> " << _twin->_source
             << " sign: " << _sign << std::endl;
 }
-
-
-
-
-
-
-
 
 
 void PDCELHalfEdge::print2() {
@@ -126,6 +99,14 @@ void PDCELHalfEdge::print2() {
 }
 
 
+void PDCELHalfEdge::write_to_file(std::ofstream& file) {
+  file << "  " << _source << " -> " << _twin->_source;
+  file << " | loop: " << (_loop ? (_loop->keep() ? "keep" : "temp") : "nullptr");
+  file << " | face: " << (_face ? _face->name() : "nullptr");
+  file << " | sign: " << _sign << std::endl;
+}
+
+
 
 
 
@@ -153,3 +134,4 @@ void PDCELHalfEdge::setLoop(PDCELHalfEdgeLoop *hel) {
   _loop = hel;
   hel->updateVertexEdge(this);
 }
+

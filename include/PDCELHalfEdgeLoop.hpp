@@ -48,4 +48,5 @@ public:
   void setKeep(bool keep) { _keep = keep; }
 
   void updateVertexEdge(PDCELHalfEdge *);
+  void write_to_file(std::ofstream &file);
 };

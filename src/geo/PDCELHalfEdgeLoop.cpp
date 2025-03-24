@@ -5,6 +5,7 @@
 #include "plog.hpp"
 
 #include <iostream>
+#include <fstream>
 
 
 void PDCELHalfEdgeLoop::log() {
@@ -136,4 +137,44 @@ void PDCELHalfEdgeLoop::updateVertexEdge(PDCELHalfEdge *he) {
   }
 
   PLOG(debug) << "done";
+}
+
+void PDCELHalfEdgeLoop::write_to_file(std::ofstream& file) {
+  file << "direction: ";
+  if (direction() == 1) {
+    file << "outer" << std::endl;
+  } else if (direction() == -1) {
+    file << "inner" << std::endl;
+  }
+
+  file << "keep: ";
+  if (_keep) {
+    file << "yes" << std::endl;
+  } else {
+    file << "no" << std::endl;
+  }
+
+  file << "face: ";
+  if (_face != nullptr) {
+    file << _face->name() << std::endl;
+  } else {
+    file << "nullptr" << std::endl;
+  }
+
+  PDCELHalfEdge *he = _incident_edge;
+  file << "half edges:" << std::endl;
+  do {
+    he->write_to_file(file);
+    he = he->next();
+  } while (he != _incident_edge);
+
+  file << "adjacent loop:";
+  if (_adjacent_loop == nullptr) {
+    file << " nullptr" << std::endl;
+  }
+  else {
+    _adjacent_loop->incidentEdge()->write_to_file(file);
+  }
+
+  file << std::endl;
 }

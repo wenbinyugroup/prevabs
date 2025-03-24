@@ -49,6 +49,8 @@ public:
 
   void print_dcel();
 
+  void write_dcel_to_file(const std::string &filename);
+
   std::list<PDCELVertex *> &vertices() { return _vertices; }
   std::list<PDCELHalfEdge *> &halfedges() { return _halfedges; }
   std::list<PDCELFace *> &faces() { return _faces; }

@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 PDCELFace::PDCELFace() {
   std::string _name = "null";
@@ -59,13 +60,6 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
 }
 
 
-
-
-
-
-
-
-
 void PDCELFace::print() {
   PLOG(debug) << "name: " << _name;
 
@@ -100,11 +94,37 @@ void PDCELFace::print() {
 }
 
 
+void PDCELFace::write_to_file(std::ofstream& file) {
+  file << "name: " << _name << std::endl;
 
+  PDCELHalfEdge *he;
+  // Print the outer boundary
+  if (_outer == nullptr) {
+    file << "unbounded face." << std::endl;
+  } else {
+    file << "outer boundary: " << std::endl;
+    he = _outer;
+    do {
+      he->write_to_file(file);
+      he = he->next();
+    } while (he != _outer);
 
+    for (auto _inner : _inners) {
+      file << "inner boundary: " << std::endl;
+      he = _inner;
+      do {
+        he->write_to_file(file);
+        he = he->next();
+      } while (he != _inner);
+    }
+  }
 
+  if (_layertype != nullptr) {
+    file << "layer type: " << _layertype << std::endl;
+  }
 
-
+  file << std::endl;
+}
 
 
 PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithSource(PDCELVertex *v) {
@@ -120,13 +140,6 @@ PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithSource(PDCELVertex *v) {
 }
 
 
-
-
-
-
-
-
-
 PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithTarget(PDCELVertex *v) {
   PDCELHalfEdge *he = _outer;
   do {
@@ -138,13 +151,6 @@ PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithTarget(PDCELVertex *v) {
 
   return nullptr;
 }
-
-
-
-
-
-
-
 
 
 PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithSource(PDCELVertex *v) {
@@ -162,13 +168,6 @@ PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithSource(PDCELVertex *v) {
 }
 
 
-
-
-
-
-
-
-
 PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithTarget(PDCELVertex *v) {
   for (auto inner : _inners) {
     PDCELHalfEdge *he = inner;
@@ -184,8 +183,6 @@ PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithTarget(PDCELVertex *v) {
 }
 
 
-
-
 double PDCELFace::calcTheta1Fromy2(SVector3 v, bool deg) {
   double theta1 = atan2(v[2], v[1]);
   if (deg) {
@@ -195,11 +192,11 @@ double PDCELFace::calcTheta1Fromy2(SVector3 v, bool deg) {
 }
 
 
-
-
 SVector3 PDCELFace::calcy2FromTheta1(double theta1, bool deg) {
   if (deg) {
     theta1 = deg2rad(theta1);
   }
   return SVector3(0, cos(theta1), sin(theta1));
 }
+
+

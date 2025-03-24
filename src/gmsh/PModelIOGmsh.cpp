@@ -388,8 +388,6 @@ int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
 
 
 int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
-  pmessage->increaseIndent();
-
 
   // open the .opt file for extra options
   std::string fn_opt;
@@ -399,8 +397,6 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
   else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
     fn_opt = fn_base + "_local.opt";
   }
-  // FILE *file_opt;
-  // file_opt = fopen(fn_opt.c_str(), "a");
 
 
   // write .msh file
@@ -455,8 +451,6 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
   }
 
   config.file_name_msh = fn_msh;
-
-  // fclose(file_opt);
 
 
   pmessage->decreaseIndent();
@@ -695,7 +689,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
 //                           const std::vector<std::string> &labels, Message *pmessage) {
 void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
   // std::cout << "_label = " << _label << std::endl;
 
@@ -872,7 +866,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
     fprintf(f_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
   }
 
-  pmessage->decreaseIndent();
+  // pmessage->decreaseIndent();
 
   return;
 

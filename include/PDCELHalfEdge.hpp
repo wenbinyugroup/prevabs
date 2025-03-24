@@ -55,6 +55,8 @@ public:
   void print();
   void print2();
 
+  void write_to_file(std::ofstream &file);
+
   PDCELVertex *source() { return _source; }
   PDCELVertex *target() { return _twin->_source; }
   PDCELHalfEdge *twin() { return _twin; }

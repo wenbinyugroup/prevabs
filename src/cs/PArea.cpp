@@ -106,65 +106,32 @@ void PArea::addNextBoundVertex(PDCELVertex *v) {
 //
 
 void PArea::buildLayers(Message *pmessage) {
-  pmessage->increaseIndent();
-  // std::cout << std::endl;
-  // std::cout << "- building layers for area: " << _face->name() << std::endl;
-  // if (config.debug) {
-  //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
-  // }
+
   PLOG(debug) << pmessage->message("building layers for area: " + _face->name());
-
-  // std::cout << "        area face:" << std::endl;
-  // _face->print();
-
-  // std::cout << "        prev bound vertices:" << std::endl;
-  // for (auto v : _prev_bound_vertices) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
-  // std::cout << "        next bound vertices:" << std::endl;
-  // for (auto v : _next_bound_vertices) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-  
-  // std::cout << "        layup:" << std::endl;
-  // _segment->getLayup()->printLayup();
 
   Layup *layup = _segment->getLayup();
   std::string lside = _segment->getLayupside();
 
   std::list<PDCELFace *> fnew;
-  // PGeoLineSegment *ls_offset, *ls_prev;
   Layer layer;
-  // double thk;
   std::string area_name = _face->name();
-
-  // std::cout << "        line segment _line_segment_base: " << _line_segment_base << std::endl;
-
   
   // For the paired vertices in both bounds
   // simply connect them
 
-  for (int i = 0; i < _prev_bound_vertices.size(); ++i) {
-    // std::cout << std::endl;
-    // std::cout << "[debug] layer " << i + 1 << std::endl;
-    if (config.debug) {
-      // fprintf(config.fdeb, "        layer %d\n", i + 1);
-    }
+  PLOG(debug) << "prev wall vertices:\n"
+              << vertices_to_string(_prev_wall_vertices);
+  PLOG(debug) << "next wall vertices:\n"
+              << vertices_to_string(_next_wall_vertices);
 
+  for (int i = 1; i < _prev_wall_vertices.size() - 1; ++i) {
+    PLOG(debug) << "layer " << i;
 
-
-    layer = layup->getLayers()[i];
-    // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
-
-
+    layer = layup->getLayers()[i - 1];
 
     // Split the face
-    // fnew = _segment->pmodel()->dcel()->splitFace(_face, ls_offset);
-    fnew = _segment->pmodel()->dcel()->splitFace(_face, _prev_bound_vertices[i], _next_bound_vertices[i]);
-    // std::cout << "        new faces:" << std::endl;
-    // fnew.front()->print();
-    // fnew.back()->print();
+    fnew = _segment->pmodel()->dcel()->splitFace(
+      _face, _prev_wall_vertices[i], _next_wall_vertices[i]);
 
     if (lside == "left") {
       _faces.push_back(fnew.back());
@@ -174,16 +141,10 @@ void PArea::buildLayers(Message *pmessage) {
       _face = fnew.back();
     }
 
-    // std::cout << "        setting new layer face properties" << std::endl;
-    // std::cout << "        name" << std::endl;
-    _faces.back()->setName(area_name + "_layer_" + std::to_string(i + 1));
-    // std::cout << "        material" << std::endl;
+    _faces.back()->setName(area_name + "_layer_" + std::to_string(i));
     _faces.back()->setMaterial(layer.getLamina()->getMaterial());
-    // std::cout << "        theta3" << std::endl;
     _faces.back()->setTheta3(layer.getAngle());
-    // std::cout << "        layer type" << std::endl;
     _faces.back()->setLayerType(layer.getLayerType());
-    // std::cout << "        local y2" << std::endl;
     _faces.back()->setLocaly1(_y1);
     _faces.back()->setLocaly2(_y2);
 
@@ -191,10 +152,6 @@ void PArea::buildLayers(Message *pmessage) {
       _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
     }
 
-    // if (_segment->getName() == "sgm_18") {
-    //   std::cout << "        new layer face:" << std::endl;
-    //   _faces.back()->print();
-    // }
     if (config.debug) {
       // fprintf(config.fdeb, "        new layer face:\n");
       // writeFace(config.fdeb, _faces.back());
@@ -202,31 +159,32 @@ void PArea::buildLayers(Message *pmessage) {
   }
 
   // The last or the only layer
-  // std::cout << "[debug] layer " << layup->getLayers().size() << std::endl;
+  PLOG(debug) << "layer " << _prev_wall_vertices.size() - 1;
+
   _faces.push_back(_face);
 
   layer = layup->getLayers().back();
-  // layer = layup->getLayers()[i];
-  // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
+
   _faces.back()->setName(area_name + "_layer_" + std::to_string(layup->getLayers().size()));
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());
   _faces.back()->setLocaly1(_y1);
   _faces.back()->setLocaly2(_y2);
+
   if (config.analysis_tool == 1) {
+    // SwiftComp
     _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
   }
-  // if (_segment->getName() == "sgm_18") {
-  //   std::cout << "        new layer face:" << std::endl;
-  //   _faces.back()->print();
-  // }
+
   if (config.debug) {
     // fprintf(config.fdeb, "        new layer face:\n");
     // writeFace(config.fdeb, _faces.back());
   }
 
-  pmessage->decreaseIndent();
+  // pmessage->decreaseIndent();
+
+  PLOG(debug) << pmessage->message("done");
 
   return;
 }

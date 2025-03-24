@@ -1,10 +1,381 @@
-[info] - prevabs start (2025-03-22 15:13:07)
-[info] - reading input files
-[info]     - reading main input file: t1_strip\strip_two_segs.xml
-[error  
+[info] [main: 296] - prevabs start (2025-03-24 00:35:46)
+[info] [PModel::homogenize: 785] - reading input files
+[info] [readCrossSection: 764]       
   
-- unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info]   - reading input files -- done
-[info]   - building the shape
-[info]     - building the cross section, step 1
-[info]       - building component: top
+g main input file: .\strip_two_segs.xml
+[debug] [readCrossSection: 793]     - found cross-section: strip
+[debug] [read_general: 208]     - reading general...
+[debug] [read_general: 281]     - tolerance = 1e-12
+[debug] [read_general: 319]     - finished reading general.
+[debug] [readCrossSection: 844]     - finding includings...
+[debug] [read_geometry: 335]     - reading geometry...
+[debug] [readXMLElementPoint: 101]       - reading point: lc
+[debug] [readXMLElementPoint: 101]       - reading point: mc
+[debug] [readXMLElementPoint: 101]       - reading point: rc
+[debug] [readXMLElementLine: 183]       - reading line: bl_1
+[debug] [Baseline::print: 36]       - name: bl_1
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [lc]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]       - 2 [mc]: ( 0 , 0 , 0 )
+[debug] [readXMLElementLine: 183]       - reading line: bl_2
+[debug] [Baseline::print: 36]       - name: bl_2
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [mc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]       - 2 [rc]: ( 0 , 1 , 0 )
+[debug] [read_geometry: 505]     -  
+[debug] [read_geometry: 506]     - summary of base lines (before transformation)
+[debug] [Baseline::print: 36]       - name: bl_1
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [lc]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]       - 2 [mc]: ( 0 , 0 , 0 )
+[debug] [read_geometry: 510]     -  
+[debug] [Baseline::print: 36]       - name: bl_2
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [mc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]       - 2 [rc]: ( 0 , 1 , 0 )
+[debug] [read_geometry: 510]     -  
+[debug] [read_geometry: 516]     - transforming base geometry
+[debug] [read_geometry: 527]     -  
+[debug] [read_geometry: 528]     - summary of base lines (after transformation)
+[debug] [Baseline::print: 36]       - name: bl_1
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [lc]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]       - 2 [mc]: ( 0 , 0 , 0 )
+[debug] [read_geometry: 532]     -  
+[debug] [Baseline::print: 36]       - name: bl_2
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [mc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]       - 2 [rc]: ( 0 , 1 , 0 )
+[debug] [read_geometry: 532]     -  
+[debug] [read_geometry: 536]     - finished reading geometry.
+[debug] [read_materials: 552]     - reading materials...
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
+[debug] [readXMLElementMaterial: 193]           - reading material: iso5_1
+[debug] [readXMLElementLamina: 584]           - reading lamina: la_iso5_1_0005
+[debug] [read_materials: 607]       - finished reading materials.
+[debug] [read_layups: 623]       - reading layups...
+[debug] [readLayups: 53]         - in function: readLayups
+[debug] [readLayups: 62]         - reading layup: layup1
+[debug] [read_layups: 665]       - finished reading layups.
+[debug] [read_components: 679]       - reading components...
+[debug] [readXMLElementComponent: 44]       - reading component: top
+[debug] [read_components: 740]       - finished reading components.
+[info] [PModel::homogenize: 790]   - reading input files -- done
+[info] [PModel::homogenize: 798]   - building the shape
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::addHalfEdgeLoop: 875] adding half edge loop with half edge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 130]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 134]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 134]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 895] done
+[info] [CrossSection::build: 301]     - building the cross section, step 1
+[info] [PComponent::buildLaminate: 29]     - building component: top
+[debug] [PComponent::buildLaminate: 33] building segment: sgm_1
+[debug] [PComponent::buildLaminate: 36] segment has no offset curve
+[debug] [Segment::offsetCurveBase: 206] offsetting the base curve of segment: sgm_1
+[debug] [offset_2: 949]       -   base curve:
+[debug] [offset_2: 951]       -     0: ( 0 , -1 , 0 )
+[debug] [offset_2: 951]       -     1: ( 0 , 0 , 0 )
+[debug] [offset_2: 957]       - offsetting a polyline
+[debug] [offset_2: 965]       - the base curve has only two vertices
+[debug] [Segment::offsetCurveBase: 231]       - base line: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )
+[debug] [Segment::offsetCurveBase: 234]       - offset line: ( 0 , -1 , 0.08 ) -> ( 0 , 0 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]         - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 1 -- 1
+[debug] [Segment::offsetCurveBase: 240] done
+[debug] [PComponent::buildLaminate: 54] handle the segment ends
+[debug] [Segment::offsetCurveBase: 206] offsetting the base curve of segment: sgm_2
+[debug] [offset_2: 949]         -   base curve:
+[debug] [offset_2: 951]         -     0: ( 0 , 0 , 0 )
+[debug] [offset_2: 951]         -     1: ( 0 , 1 , 0 )
+[debug] [offset_2: 957]         - offsetting a polyline
+[debug] [offset_2: 965]         - the base curve has only two vertices
+[debug] [Segment::offsetCurveBase: 231]         - base line: ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 )
+[debug] [Segment::offsetCurveBase: 234]         - offset line: ( 0 , 0 , 0.08 ) -> ( 0 , 1 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]           - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]           - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]           - 1 -- 1
+[debug] [Segment::offsetCurveBase: 240] done
+[debug] [PComponent::buildLaminate: 66] checking if segment sgm_1 connects to segment sgm_2
+[debug] [PComponent::buildLaminate: 69] segment sgm_1 has no offset vertex at the beginning
+[debug] [PComponent::buildLaminate: 80] joint style: 1
+[debug] [PComponent::buildLaminate: 98] segment sgm_1 has no offset vertex at the tail
+[debug] [PComponent::buildLaminate: 109] joint style: 1
+[debug] [PComponent::buildLaminate: 113] tail of segment sgm_1 connects to head of segment sgm_2
+[debug] [PComponent::joinSegments: 978]           - joining segments ends: sgm_1 1, sgm_2 0
+[debug] [join_segments_style_1: 828]           - joining segments with style 1 (step-like joint)
+[debug] [get_polylines_intersection_close_to: 746]           - in function: get_polylines_intersection_close_to
+[debug] [get_polylines_intersection_close_to: 748]   polyline_1:
+  0: ( 0 , -1 , 0.08 )
+  1: ( 0 , 0 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 749]   polyline_2:
+  0: ( 0 , 0 , 0 )
+  1: ( 0 , 0 , 2 )
+[debug] [find_open_polylines_intersections: 1236]           - find_open_polylines_intersections
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , -1 , 0.08 ) - ( 0 , 0 , 0.08 )
+ line 2: ( 0 , 0 , 0 ) - ( 0 , 0 , 2 )
+[debug] [calc_line_intersection_2d: 422]   intersection point: ( 0 , 0 , 0.08 )
+[debug] [find_open_polylines_intersections: 1305]   u1 = 1, u2 = 0.04
+[debug] [get_polylines_intersection_close_to: 790]   i1 = 0, u1 = 1
+[debug] [get_polylines_intersection_close_to: 792]   i2 = 0, u2 = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , -1 , 0.08 ), v2 = ( 0 , 0 , 0.08 ), u = 1
+[debug] [get_vertex_by_param_coord_of_two_vertices: 657]   vertex is close to v2
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = false
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , 0 , 0 ), v2 = ( 0 , 0 , 2 ), u = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 663]   vertex is new
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = true
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_polylines_intersection_close_to: 804]   v1 = ( 0 , 0 , 0.08 ), is_new_1 = false
+[debug] [get_polylines_intersection_close_to: 806]   v2 = ( 0 , 0 , 0.08 ), is_new_2 = true
+[debug] [get_polylines_intersection_close_to: 817]   v_intersect = ( 0 , 0 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 821] done
+[warning] [trim: 1068] trim: Vertex at curve endpoint or curve too short
+[debug] [join_segments_style_1: 858]           -   intersection vertex for sgm_1: ( 0 , 0 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]             - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]             - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 1 -- 1
+[debug] [get_polylines_intersection_close_to: 746]           - in function: get_polylines_intersection_close_to
+[debug] [get_polylines_intersection_close_to: 748]   polyline_1:
+  0: ( 0 , 0 , 0.08 )
+  1: ( 0 , 1 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 749]   polyline_2:
+  0: ( 0 , 0 , 0 )
+  1: ( 0 , 0 , 2 )
+[debug] [find_open_polylines_intersections: 1236]           - find_open_polylines_intersections
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , 0 , 0.08 ) - ( 0 , 1 , 0.08 )
+ line 2: ( 0 , 0 , 0 ) - ( 0 , 0 , 2 )
+[debug] [calc_line_intersection_2d: 422]   intersection point: ( 0 , 0 , 0.08 )
+[debug] [find_open_polylines_intersections: 1305]   u1 = 0, u2 = 0.04
+[debug] [get_polylines_intersection_close_to: 790]   i1 = 0, u1 = 0
+[debug] [get_polylines_intersection_close_to: 792]   i2 = 0, u2 = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , 0 , 0.08 ), v2 = ( 0 , 1 , 0.08 ), u = 0
+[debug] [get_vertex_by_param_coord_of_two_vertices: 651]   vertex is close to v1
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = false
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , 0 , 0 ), v2 = ( 0 , 0 , 2 ), u = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 663]   vertex is new
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = true
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_polylines_intersection_close_to: 804]   v1 = ( 0 , 0 , 0.08 ), is_new_1 = false
+[debug] [get_polylines_intersection_close_to: 806]   v2 = ( 0 , 0 , 0.08 ), is_new_2 = true
+[debug] [get_polylines_intersection_close_to: 817]   v_intersect = ( 0 , 0 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 821] done
+[warning] [trim: 1068] trim: Vertex at curve endpoint or curve too short
+[debug] [join_segments_style_1: 879]           -   intersection vertex for sgm_2: ( 0 , 0 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]             - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]             - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 1 -- 1
+[debug] [replace_vertex: 381] replaced vertex ( 0 , 0 , 0.08 ) with ( 0 , 0 , 0.08 )
+[debug] [PComponent::joinSegments: 1711]           -   base -- offset index pairs of segment: sgm_1
+[debug] [PComponent::joinSegments: 1715]           -   0 : ( 0 , -1 , 0 ) -- 0 : ( 0 , -1 , 0.08 )
+[debug] [PComponent::joinSegments: 1715]           -   1 : ( 0 , 0 , 0 ) -- 1 : ( 0 , 0 , 0.08 )
+[debug] [PComponent::joinSegments: 1723]           -   base -- offset index pairs of segment: sgm_2
+[debug] [PComponent::joinSegments: 1727]           -   0 : ( 0 , 0 , 0 ) -- 0 : ( 0 , 0 , 0.08 )
+[debug] [PComponent::joinSegments: 1727]           -   1 : ( 0 , 1 , 0 ) -- 1 : ( 0 , 1 , 0.08 )
+[debug] [PComponent::buildLaminate: 137] segment sgm_1 does not connect to any other segment at the head
+[debug] [PComponent::buildLaminate: 138] creating a free end at the head
+[debug] [PComponent::joinSegments: 257]           - making segment end: top.sgm_1 0
+[debug] [PComponent::joinSegments: 259]           - number of dependencies: 0
+[debug] [PComponent::joinSegments: 262]           - making segment end because of no dependency.
+[debug] [PComponent::createSegmentFreeEnd: 1758]           - createSegmentFreeEnd: sgm_1 0
+[debug] [PComponent::createSegmentFreeEnd: 1872]   _prev_bound_vertices:
+  0: ( 0 , -1 , 0 )
+  1: ( 0 , -1 , 0.08 )
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.08 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PComponent::createSegmentFreeEnd: 2037]           - curve base:
+[debug] [Baseline::print: 36]             - name: bl_1
+[debug] [Baseline::print: 38]             - type: straight
+[debug] [Baseline::print: 40]             - point: (x, y, z)
+[debug] [Baseline::print: 44]             - 1 [lc]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]             - 2 [mc]: ( 0 , 0 , 0 )
+[debug] [PComponent::createSegmentFreeEnd: 2039]           - curve offset:
+[debug] [Baseline::print: 36]             - name: 
+[debug] [Baseline::print: 38]             - type: 
+[debug] [Baseline::print: 40]             - point: (x, y, z)
+[debug] [Baseline::print: 44]             - 1 []: ( 0 , -1 , 0.08 )
+[debug] [Baseline::print: 44]             - 2 []: ( 0 , 0 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 124]           - base vertices -- base_link_to_offset_indices
+[debug] [Segment::printBaseOffsetPairs: 127]           - number of pairs: 2
+[debug] [Segment::printBaseOffsetPairs: 138]           - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 138]           - 1: ( 0 , 0 , 0 ) -- 1: ( 0 , 0 , 0.08 )
+[debug] [PComponent::createSegmentFreeEnd: 2064] done
+[debug] [PComponent::buildLaminate: 33] building segment: sgm_2
+[debug] [PComponent::buildLaminate: 54] handle the segment ends
+[debug] [PComponent::buildLaminate: 66] checking if segment sgm_2 connects to segment sgm_1
+[debug] [PComponent::buildLaminate: 69] segment sgm_2 has no offset vertex at the beginning
+[debug] [PComponent::buildLaminate: 80] joint style: 1
+[debug] [PComponent::buildLaminate: 90] head of segment sgm_2 connects to tail of segment sgm_1
+[debug] [PComponent::joinSegments: 978]           - joining segments ends: sgm_2 0, sgm_1 1
+[debug] [join_segments_style_1: 828]           - joining segments with style 1 (step-like joint)
+[debug] [get_polylines_intersection_close_to: 746]           - in function: get_polylines_intersection_close_to
+[debug] [get_polylines_intersection_close_to: 748]   polyline_1:
+  0: ( 0 , 0 , 0.08 )
+  1: ( 0 , 1 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 749]   polyline_2:
+  0: ( 0 , 0 , 0 )
+  1: ( 0 , 0 , 2 )
+[debug] [find_open_polylines_intersections: 1236]           - find_open_polylines_intersections
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , 0 , 0.08 ) - ( 0 , 1 , 0.08 )
+ line 2: ( 0 , 0 , 0 ) - ( 0 , 0 , 2 )
+[debug] [calc_line_intersection_2d: 422]   intersection point: ( 0 , 0 , 0.08 )
+[debug] [find_open_polylines_intersections: 1305]   u1 = 0, u2 = 0.04
+[debug] [get_polylines_intersection_close_to: 790]   i1 = 0, u1 = 0
+[debug] [get_polylines_intersection_close_to: 792]   i2 = 0, u2 = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , 0 , 0.08 ), v2 = ( 0 , 1 , 0.08 ), u = 0
+[debug] [get_vertex_by_param_coord_of_two_vertices: 651]   vertex is close to v1
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = false
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , 0 , 0 ), v2 = ( 0 , 0 , 2 ), u = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 663]   vertex is new
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = true
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_polylines_intersection_close_to: 804]   v1 = ( 0 , 0 , 0.08 ), is_new_1 = false
+[debug] [get_polylines_intersection_close_to: 806]   v2 = ( 0 , 0 , 0.08 ), is_new_2 = true
+[debug] [get_polylines_intersection_close_to: 817]   v_intersect = ( 0 , 0 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 821] done
+[warning] [trim: 1068] trim: Vertex at curve endpoint or curve too short
+[debug] [join_segments_style_1: 858]           -   intersection vertex for sgm_2: ( 0 , 0 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]             - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]             - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 1 -- 1
+[debug] [get_polylines_intersection_close_to: 746]           - in function: get_polylines_intersection_close_to
+[debug] [get_polylines_intersection_close_to: 748]   polyline_1:
+  0: ( 0 , -1 , 0.08 )
+  1: ( 0 , 0 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 749]   polyline_2:
+  0: ( 0 , 0 , 0 )
+  1: ( 0 , 0 , 2 )
+[debug] [find_open_polylines_intersections: 1236]           - find_open_polylines_intersections
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , -1 , 0.08 ) - ( 0 , 0 , 0.08 )
+ line 2: ( 0 , 0 , 0 ) - ( 0 , 0 , 2 )
+[debug] [calc_line_intersection_2d: 422]   intersection point: ( 0 , 0 , 0.08 )
+[debug] [find_open_polylines_intersections: 1305]   u1 = 1, u2 = 0.04
+[debug] [get_polylines_intersection_close_to: 790]   i1 = 0, u1 = 1
+[debug] [get_polylines_intersection_close_to: 792]   i2 = 0, u2 = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , -1 , 0.08 ), v2 = ( 0 , 0 , 0.08 ), u = 1
+[debug] [get_vertex_by_param_coord_of_two_vertices: 657]   vertex is close to v2
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = false
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_vertex_by_param_coord_of_two_vertices: 639] get_vertex_by_param_coord_of_two_vertices
+[debug] [get_vertex_by_param_coord_of_two_vertices: 641]   v1 = ( 0 , 0 , 0 ), v2 = ( 0 , 0 , 2 ), u = 0.04
+[debug] [get_vertex_by_param_coord_of_two_vertices: 663]   vertex is new
+[debug] [get_vertex_by_param_coord_of_two_vertices: 676]   v = ( 0 , 0 , 0.08 ), is_new = true
+[debug] [get_vertex_by_param_coord_of_two_vertices: 679] done
+[debug] [get_polylines_intersection_close_to: 804]   v1 = ( 0 , 0 , 0.08 ), is_new_1 = false
+[debug] [get_polylines_intersection_close_to: 806]   v2 = ( 0 , 0 , 0.08 ), is_new_2 = true
+[debug] [get_polylines_intersection_close_to: 817]   v_intersect = ( 0 , 0 , 0.08 )
+[debug] [get_polylines_intersection_close_to: 821] done
+[warning] [trim: 1068] trim: Vertex at curve endpoint or curve too short
+[debug] [join_segments_style_1: 879]           -   intersection vertex for sgm_1: ( 0 , 0 , 0.08 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]             - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]             - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]             - 1 -- 1
+[debug] [PComponent::joinSegments: 1711]           -   base -- offset index pairs of segment: sgm_2
+[debug] [PComponent::joinSegments: 1715]           -   0 : ( 0 , 0 , 0 ) -- 0 : ( 0 , 0 , 0.08 )
+[debug] [PComponent::joinSegments: 1715]           -   1 : ( 0 , 1 , 0 ) -- 1 : ( 0 , 1 , 0.08 )
+[debug] [PComponent::joinSegments: 1723]           -   base -- offset index pairs of segment: sgm_1
+[debug] [PComponent::joinSegments: 1727]           -   0 : ( 0 , -1 , 0 ) -- 0 : ( 0 , -1 , 0.08 )
+[debug] [PComponent::joinSegments: 1727]           -   1 : ( 0 , 0 , 0 ) -- 1 : ( 0 , 0 , 0.08 )
+[debug] [PComponent::buildLaminate: 98] segment sgm_2 has no offset vertex at the tail
+[debug] [PComponent::buildLaminate: 109] joint style: 1
+[debug] [PComponent::buildLaminate: 145] segment sgm_2 does not connect to any other segment at the tail
+[debug] [PComponent::buildLaminate: 146] creating a free end at the tail
+[debug] [PComponent::joinSegments: 257]           - making segment end: top.sgm_2 1
+[debug] [PComponent::joinSegments: 259]           - number of dependencies: 0
+[debug] [PComponent::joinSegments: 262]           - making segment end because of no dependency.
+[debug] [PComponent::createSegmentFreeEnd: 1758]           - createSegmentFreeEnd: sgm_2 1
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.08 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PComponent::createSegmentFreeEnd: 2037]           - curve base:
+[debug] [Baseline::print: 36]             - name: bl_2
+[debug] [Baseline::print: 38]             - type: straight
+[debug] [Baseline::print: 40]             - point: (x, y, z)
+[debug] [Baseline::print: 44]             - 1 [mc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]             - 2 [rc]: ( 0 , 1 , 0 )
+[debug] [PComponent::createSegmentFreeEnd: 2039]           - curve offset:
+[debug] [Baseline::print: 36]             - name: 
+[debug] [Baseline::print: 38]             - type: 
+[debug] [Baseline::print: 40]             - point: (x, y, z)
+[debug] [Baseline::print: 44]             - 1 []: ( 0 , 0 , 0.08 )
+[debug] [Baseline::print: 44]             - 2 []: ( 0 , 1 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 124]           - base vertices -- base_link_to_offset_indices
+[debug] [Segment::printBaseOffsetPairs: 127]           - number of pairs: 2
+[debug] [Segment::printBaseOffsetPairs: 138]           - 0: ( 0 , 0 , 0 ) -- 0: ( 0 , 0 , 0.08 )
+[debug] [Segment::printBaseOffsetPairs: 138]           - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1 , 0.08 )
+[debug] [PComponent::createSegmentFreeEnd: 2064] done
+[debug] [PComponent::buildLaminate: 161] building half edge loops for each segment
+[debug] [Segment::build: 330]           - building the overall shape of segment: sgm_1
+[debug] [Segment::build: 332]           - base line: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )
+[debug] [Segment::build: 339]           - creating half edges for the base curve
+[debug] [Segment::build: 342]           - number of vertices of the base curve: 2
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , -1 , 0 ) -> v2 ( 0 , 0 , 0 )
+[debug] [PDCEL::findHalfEdge: 799] half edge not found
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [Segment::build: 364]           - creating half edges for the offset curve
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -1 , 0.08 ) -> ( 0 , 0 , 0.08 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [Segment::build: 373]           - creating the half edge loop and face
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , -1 , 0 ) -> v2 ( 0 , 0 , 0 )
+[debug] [PDCEL::findHalfEdge: 793] found half edge: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 875] adding half edge loop with half edge: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 130]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[warning] [PDCEL::addHalfEdgeLoop: 887]   half edge is nullptr
+[debug] [PDCEL::addHalfEdgeLoop: 895] done
+[debug] [PDCELHalfEdgeLoop::log: 13] direction: outer
+[debug] [PDCELHalfEdgeLoop::log: 15] keep: no
+[debug] [PDCELHalfEdgeLoop::log: 17] face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 22] half edges:
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: nullptr
