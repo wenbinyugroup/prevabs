@@ -1180,6 +1180,8 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
     if (lines_group.size() == 1) {
       // If there is only one sub-line, split it to two sub-lines
 
+      PLOG(debug) << "splitting line to two sub-lines";
+
       // For a closed curve, there must be at least three line segments
       // and four vertices (first and last vertices are the same)
 
@@ -1215,6 +1217,11 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
         for (auto i = n1-1; i < n; i++) {
           l2.push_back(lines_group[0][i]);
         }
+
+        PLOG(debug) << "l1:";
+        PLOG(debug) << vertices_to_string(l1);
+        PLOG(debug) << "l2:";
+        PLOG(debug) << vertices_to_string(l2);
 
         lines_group[0] = l1;
         lines_group.push_back(l2);

@@ -237,6 +237,9 @@ PArea *build_area(
   PLOG(debug) << "face before split:";
   face->print();
 
+  PLOG(debug) << "prev_wall_vertices:";
+  PLOG(debug) << vertices_to_string(prev_wall_vertices);
+
   PDCELVertex *v_base = segment->curveBase()->vertices()[base_vector_index];
   PDCELVertex *v_offset = segment->curveOffset()->vertices()[offset_vector_index];
 

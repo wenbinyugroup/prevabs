@@ -326,14 +326,16 @@ bool calc_line_intersection_2d(
   ) {
   
   PLOG(debug) << "calc_line_intersection_2d\n"
-              << " line 1: " << ls1v1 << " - " << ls1v2 << "\n"
-    << " line 2: " << ls2v1 << " - " << ls2v2;
+              << " line 1: " << ls1v1 << " - " << ls1v2 << " ex11: " << ex11 << " ex12: " << ex12 << "\n"
+              << " line 2: " << ls2v1 << " - " << ls2v2 << " ex21: " << ex21 << " ex22: " << ex22;
 
   double ipx, ipy;
   bool is_intersect = calc_line_intersection_2d(
     ls1v1->point2()[0], ls1v1->point2()[1], ls1v2->point2()[0], ls1v2->point2()[1],
     ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
     ipx, ipy, u1, u2);
+
+  PLOG(debug) << "u1: " << u1 << " u2: " << u2;
 
   v_intersect = nullptr;
 
@@ -1235,6 +1237,8 @@ int find_open_polylines_intersections(
 
   PLOG(debug) << pmessage->message("find_open_polylines_intersections");
 
+  PLOG(debug) << "ex11: " << ex11 << " ex12: " << ex12 << " ex21: " << ex21 << " ex22: " << ex22;
+
   // std::stringstream ss;
   bool found = false;
 
@@ -1247,11 +1251,13 @@ int find_open_polylines_intersections(
   PDCELVertex *v11, *v12, *v21, *v22;
   auto nls1 = c1.size() - 1;  // number of line segments
   auto nls2 = c2.size() - 1;
+  PLOG(debug) << "nls1: " << nls1 << " nls2: " << nls2;
 
   int _ex11, _ex12, _ex21, _ex22;  // flags to consider extensions of segments
 
   for (int i = 0; i < nls1; ++i) {
     // Iterate through all line segments of the first polyline
+    PLOG(debug) << "segment i = " << i << " of polyline 1";
 
     v11 = c1[i];
     v12 = c1[i + 1];
@@ -1259,19 +1265,23 @@ int find_open_polylines_intersections(
     if (i == 0) {
       // For the first line segment
       _ex11 = ex11;  // use the same flag for the starting point
-      _ex12 = 0;  // no extension after the ending point
-    } else if (i == nls1 - 1) {
-      // For the last line segment
-      _ex11 = 0;  // no extension before the starting point
-      _ex12 = ex12;  // use the same flag for the ending point
-    } else {
+      // _ex12 = 0;  // no extension after the ending point
+    } else if (i > 0) {
       // For all other line segments, use no extension
       _ex11 = 0;
+    }
+
+    if (i == nls1 - 1) {
+      // For the last line segment
+      // _ex11 = 0;  // no extension before the starting point
+      _ex12 = ex12;  // use the same flag for the ending point
+    } else if (i < nls1 - 1) {
       _ex12 = 0;
     }
 
     for (int j = 0; j < nls2; ++j) {
       // Iterate through all line segments of the second polyline
+      PLOG(debug) << "segment j = " << j << " of polyline 2";
 
       v21 = c2[j];
       v22 = c2[j + 1];
@@ -1279,14 +1289,18 @@ int find_open_polylines_intersections(
       if (j == 0) {
         // For the first line segment
         _ex21 = ex21;  // use the same flag for the starting point
-        _ex22 = 0;  // no extension after the ending point
-      } else if (j == nls2 - 1) {
-        // For the last line segment
-        _ex21 = 0;  // no extension before the starting point
-        _ex22 = ex22;  // use the same flag for the ending point
-      } else {
+        // _ex22 = 0;  // no extension after the ending point
+      } else if (j > 0) {
         // For all other line segments, use no extension
         _ex21 = 0;
+      }
+
+      if (j == nls2 - 1) {
+        // For the last line segment
+        // _ex21 = 0;  // no extension before the starting point
+        _ex22 = ex22;  // use the same flag for the ending point
+      } else if (j < nls2 - 1) {
+        // For all other line segments, use no extension
         _ex22 = 0;
       }
 
@@ -1298,10 +1312,10 @@ int find_open_polylines_intersections(
 
       double u1, u2;
       PDCELVertex *ip;
-      bool not_parallel = calc_line_intersection_2d(
+      bool is_intersect = calc_line_intersection_2d(
         v11, v12, v21, v22, ip, u1, u2, _ex11, _ex12, _ex21, _ex22);
 
-      if (not_parallel) {
+      if (is_intersect) {
         PLOG(debug) << "  u1 = " << u1 << ", u2 = " << u2 << std::endl;
 
         i1s.push_back(i);
@@ -1310,7 +1324,7 @@ int find_open_polylines_intersections(
         u2s.push_back(u2);
 
       } else {
-        PLOG(debug) << "  parallel" << std::endl;
+        PLOG(debug) << "  not intersect" << std::endl;
       }
 
     }

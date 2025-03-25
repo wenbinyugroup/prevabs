@@ -1,0 +1,313 @@
+[info] [main: 296] - prevabs start (2025-03-24 23:45:05)
+[info] [PModel::homogenize: 785] - reading input files
+[info] [readCrossSection: 764]       
+  
+g main input file: box.xml
+[debug] [readCrossSection: 793]     - found cross-section: box
+[debug] [read_analysis: 59]     - reading analysis...
+[debug] [read_analysis: 196]     - finished reading analysis.
+[debug] [read_general: 208]     - reading general...
+[debug] [read_general: 281]     - tolerance = 1e-12
+[debug] [read_general: 319]     - finished reading general.
+[debug] [readCrossSection: 844]     - finding includings...
+[debug] [read_geometry: 335]     - reading geometry...
+[debug] [readXMLElementPoint: 101]       - reading point: o
+[debug] [readXMLElementPoint: 101]       - reading point: lb
+[debug] [readXMLElementPoint: 101]       - reading point: lt
+[debug] [readXMLElementPoint: 101]       - reading point: rt
+[debug] [readXMLElementPoint: 101]       - reading point: rb
+[debug] [readXMLElementLine: 183]       - reading line: bsl_all
+[debug] [Baseline::print: 36]       - name: bsl_all
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [rt]: ( 0 , 0.5 , 0.5 )
+[debug] [Baseline::print: 44]       - 2 [lt]: ( 0 , -0.5 , 0.5 )
+[debug] [Baseline::print: 44]       - 3 [lb]: ( 0 , -0.5 , -0.5 )
+[debug] [Baseline::print: 44]       - 4 [rb]: ( 0 , 0.5 , -0.5 )
+[debug] [Baseline::print: 44]       - 5 [rt]: ( 0 , 0.5 , 0.5 )
+[debug] [read_geometry: 505]     -  
+[debug] [read_geometry: 506]     - summary of base lines (before transformation)
+[debug] [Baseline::print: 36]       - name: bsl_all
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [rt]: ( 0 , 0.5 , 0.5 )
+[debug] [Baseline::print: 44]       - 2 [lt]: ( 0 , -0.5 , 0.5 )
+[debug] [Baseline::print: 44]       - 3 [lb]: ( 0 , -0.5 , -0.5 )
+[debug] [Baseline::print: 44]       - 4 [rb]: ( 0 , 0.5 , -0.5 )
+[debug] [Baseline::print: 44]       - 5 [rt]: ( 0 , 0.5 , 0.5 )
+[debug] [read_geometry: 510]     -  
+[debug] [read_geometry: 516]     - transforming base geometry
+[debug] [read_geometry: 527]     -  
+[debug] [read_geometry: 528]     - summary of base lines (after transformation)
+[debug] [Baseline::print: 36]       - name: bsl_all
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [rt]: ( 0 , 0.5 , 0.5 )
+[debug] [Baseline::print: 44]       - 2 [lt]: ( 0 , -0.5 , 0.5 )
+[debug] [Baseline::print: 44]       - 3 [lb]: ( 0 , -0.5 , -0.5 )
+[debug] [Baseline::print: 44]       - 4 [rb]: ( 0 , 0.5 , -0.5 )
+[debug] [Baseline::print: 44]       - 5 [rt]: ( 0 , 0.5 , 0.5 )
+[debug] [read_geometry: 532]     -  
+[debug] [read_geometry: 536]     - finished reading geometry.
+[debug] [read_materials: 552]     - reading materials...
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
+[info] [readMaterialsFile: 63]         - reading materials file: materials.xml
+[debug] [readXMLElementMaterial: 193]             - reading material: mtr_lamina
+[debug] [readXMLElementLamina: 584]             - reading lamina: la_mtr_lamina_0.01
+[debug] [readXMLElementMaterial: 193]           - reading material: mtr_lamina
+[debug] [readXMLElementLamina: 584]           - reading lamina: la_mtr_lamina_0.01
+[debug] [read_materials: 607]       - finished reading materials.
+[debug] [read_layups: 623]       - reading layups...
+[debug] [readLayups: 53]         - in function: readLayups
+[debug] [readLayups: 62]         - reading layup: layup1
+[debug] [read_layups: 665]       - finished reading layups.
+[debug] [read_components: 679]       - reading components...
+[debug] [readXMLElementComponent: 44]       - reading component: main
+[debug] [read_components: 740]       - finished reading components.
+[info] [PModel::homogenize: 790]   - reading input files -- done
+[info] [PModel::homogenize: 798]   - building the shape
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::addHalfEdgeLoop: 875] adding half edge loop with half edge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , inf , inf ) -> ( 0 , -inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 130]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 134]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 134]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , inf , -inf ) -> ( 0 , inf , inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 895] done
+[info] [CrossSection::build: 301]     - building the cross section, step 1
+[info] [PComponent::buildLaminate: 29]     - building component: main
+[debug] [PComponent::buildLaminate: 33] building segment: sgm_1
+[debug] [PComponent::buildLaminate: 36] segment has no offset curve
+[debug] [Segment::offsetCurveBase: 206] offsetting the base curve of segment: sgm_1
+[debug] [offset_2: 949]       -   base curve:
+[debug] [offset_2: 951]       -     0: ( 0 , 0.5 , 0.5 )
+[debug] [offset_2: 951]       -     1: ( 0 , -0.5 , 0.5 )
+[debug] [offset_2: 951]       -     2: ( 0 , -0.5 , -0.5 )
+[debug] [offset_2: 951]       -     3: ( 0 , 0.5 , -0.5 )
+[debug] [offset_2: 951]       -     4: ( 0 , 0.5 , 0.5 )
+[debug] [offset_2: 957]       - offsetting a polyline
+[debug] [offset_2: 983]       - 1. offset each line segment
+[debug] [offset_2: 986]       - line segment 1
+[debug] [offset_2: 1012]       -   v_offset = ( 0 , 0.5 , 0.42 )
+[debug] [offset_2: 986]       - line segment 2
+[debug] [offset_2: 1000]       - v1_prev: ( 0 , 0.5 , 0.42 ), v2_prev: ( 0 , -0.5 , 0.42 )
+[debug] [offset_2: 1002]       - v1_tmp: ( 0 , -0.42 , 0.5 ), v2_tmp: ( 0 , -0.42 , -0.5 )
+[debug] [calc_segment_intersection: 868]         - calculate intersection
+[debug] [calc_segment_intersection: 878]         - Points: [0.5,0.42] and [-0.5,0.42]
+[debug] [calc_segment_intersection: 881]         - Points: [-0.42,0.5] and [-0.42,-0.5]
+[debug] [calc_segment_intersection: 890]         - Line: [0,1,-0.42] and [1,0,0.42]
+[debug] [calc_segment_intersection: 896]         - res = 1
+[debug] [calc_segment_intersection: 904]         -   intersection points: [-0.42,0.42]
+[debug] [calc_segment_intersection: 928]         -   v_intersect = ( 0 , -0.42 , 0.42 )
+[debug] [offset_2: 1012]       -   v_offset = ( 0 , -0.42 , 0.42 )
+[debug] [offset_2: 986]       - line segment 3
+[debug] [offset_2: 1000]       - v1_prev: ( 0 , -0.42 , 0.5 ), v2_prev: ( 0 , -0.42 , -0.5 )
+[debug] [offset_2: 1002]       - v1_tmp: ( 0 , -0.5 , -0.42 ), v2_tmp: ( 0 , 0.5 , -0.42 )
+[debug] [calc_segment_intersection: 868]         - calculate intersection
+[debug] [calc_segment_intersection: 878]         - Points: [-0.42,0.5] and [-0.42,-0.5]
+[debug] [calc_segment_intersection: 881]         - Points: [-0.5,-0.42] and [0.5,-0.42]
+[debug] [calc_segment_intersection: 890]         - Line: [1,0,0.42] and [0,1,0.42]
+[debug] [calc_segment_intersection: 896]         - res = 1
+[debug] [calc_segment_intersection: 904]         -   intersection points: [-0.42,-0.42]
+[debug] [calc_segment_intersection: 928]         -   v_intersect = ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 1012]       -   v_offset = ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 986]       - line segment 4
+[debug] [offset_2: 1000]       - v1_prev: ( 0 , -0.5 , -0.42 ), v2_prev: ( 0 , 0.5 , -0.42 )
+[debug] [offset_2: 1002]       - v1_tmp: ( 0 , 0.42 , -0.5 ), v2_tmp: ( 0 , 0.42 , 0.5 )
+[debug] [calc_segment_intersection: 868]         - calculate intersection
+[debug] [calc_segment_intersection: 878]         - Points: [-0.5,-0.42] and [0.5,-0.42]
+[debug] [calc_segment_intersection: 881]         - Points: [0.42,-0.5] and [0.42,0.5]
+[debug] [calc_segment_intersection: 890]         - Line: [0,1,0.42] and [1,-0,-0.42]
+[debug] [calc_segment_intersection: 896]         - res = 1
+[debug] [calc_segment_intersection: 904]         -   intersection points: [0.42,-0.42]
+[debug] [calc_segment_intersection: 928]         -   v_intersect = ( 0 , 0.42 , -0.42 )
+[debug] [offset_2: 1012]       -   v_offset = ( 0 , 0.42 , -0.42 )
+[debug] [offset_2: 1020]       - the last line segment
+[debug] [offset_2: 1026]       -   v_offset = ( 0 , 0.42 , 0.5 )
+[debug] [offset_2: 1035]       - 2. check degenerated cases
+[debug] [offset_2: 1073]       - 3. find intersections between neighboring sub-lines
+[debug] [offset_2: 1175]       -   closed curve
+[debug] [offset_2: 1177]       -   lines_group.size() = 1
+[debug] [find_open_polylines_intersections: 1238]       - find_open_polylines_intersections
+[debug] [find_open_polylines_intersections: 1240] ex11: 1 ex12: 1 ex21: 1 ex22: 1
+[debug] [find_open_polylines_intersections: 1254] nls1: 2 nls2: 2
+[debug] [find_open_polylines_intersections: 1260] segment i = 0 of polyline 1
+[debug] [find_open_polylines_intersections: 1284] segment j = 0 of polyline 2
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , -0.42 , -0.42 ) - ( 0 , 0.42 , -0.42 ) ex11: 1 ex12: 0
+ line 2: ( 0 , 0.5 , 0.42 ) - ( 0 , -0.42 , 0.42 ) ex21: 1 ex22: 0
+[debug] [calc_line_intersection_2d: 338] u1: 2.985e-312 u2: 1.22215e-311
+[debug] [find_open_polylines_intersections: 1327]   not intersect
+[debug] [find_open_polylines_intersections: 1284] segment j = 1 of polyline 2
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , -0.42 , -0.42 ) - ( 0 , 0.42 , -0.42 ) ex11: 1 ex12: 0
+ line 2: ( 0 , -0.42 , 0.42 ) - ( 0 , -0.42 , -0.42 ) ex21: 0 ex22: 1
+[debug] [calc_line_intersection_2d: 338] u1: 9.34579e-17 u2: 1
+[debug] [calc_line_intersection_2d: 424]   intersection point: ( 0 , -0.42 , -0.42 )
+[debug] [find_open_polylines_intersections: 1319]   u1 = 9.34579e-17, u2 = 1
+[debug] [find_open_polylines_intersections: 1260] segment i = 1 of polyline 1
+[debug] [find_open_polylines_intersections: 1284] segment j = 0 of polyline 2
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , 0.42 , -0.42 ) - ( 0 , 0.42 , 0.5 ) ex11: 0 ex12: 1
+ line 2: ( 0 , 0.5 , 0.42 ) - ( 0 , -0.42 , 0.42 ) ex21: 1 ex22: 0
+[debug] [calc_line_intersection_2d: 338] u1: 0.913043 u2: 0.0869565
+[debug] [calc_line_intersection_2d: 424]   intersection point: ( 0 , 0.42 , 0.42 )
+[debug] [find_open_polylines_intersections: 1319]   u1 = 0.913043, u2 = 0.0869565
+[debug] [find_open_polylines_intersections: 1284] segment j = 1 of polyline 2
+[debug] [calc_line_intersection_2d: 328] calc_line_intersection_2d
+ line 1: ( 0 , 0.42 , -0.42 ) - ( 0 , 0.42 , 0.5 ) ex11: 0 ex12: 1
+ line 2: ( 0 , -0.42 , 0.42 ) - ( 0 , -0.42 , -0.42 ) ex21: 0 ex22: 1
+[debug] [calc_line_intersection_2d: 338] u1: 0.913043 u2: 0.0869565
+[debug] [find_open_polylines_intersections: 1327]   not intersect
+[debug] [offset_2: 1241]       -   i1s.size() = 2, i2s.size() = 2, u1s.size() = 2, u2s.size() = 2
+[debug] [offset_2: 1256]       -   nips = 1
+[debug] [get_intersection_vertex: 1765]         - in function: get_intersection_vertex
+[debug] [get_intersection_vertex: 1783]   segment 1: ( 0 , -0.42 , -0.42 ) - ( 0 , 0.42 , -0.42 )
+[debug] [get_intersection_vertex: 1784]   segment 2: ( 0 , -0.42 , 0.42 ) - ( 0 , -0.42 , -0.42 )
+[debug] [get_intersection_vertex: 1801]         -   intersection is close to the beginning point of segment 1
+[debug] [get_intersection_vertex: 1833]         -   intersection is close to the ending point of segment 2
+[debug] [get_intersection_vertex: 1843]   is_new_1 = false, i1 = 0
+[debug] [get_intersection_vertex: 1844]   is_new_2 = false, i2 = 2
+[debug] [offset_2: 1320]       -   intersection v0 = ( 0 , -0.42 , -0.42 )
+[warning] [trim: 1068] trim: Vertex at curve endpoint or curve too short
+[warning] [trim: 1068] trim: Vertex at curve endpoint or curve too short
+[debug] [offset_2: 1327]       -   lines_group.back():
+[debug] [offset_2: 1329]       -     0: ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 1329]       -     1: ( 0 , 0.42 , -0.42 )
+[debug] [offset_2: 1329]       -     2: ( 0 , 0.42 , 0.5 )
+[debug] [offset_2: 1332]       -   lines_group.front():
+[debug] [offset_2: 1334]       -     0: ( 0 , 0.5 , 0.42 )
+[debug] [offset_2: 1334]       -     1: ( 0 , -0.42 , 0.42 )
+[debug] [offset_2: 1334]       -     2: ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 1343]       -   trimmed_sublines.size() = 2
+[debug] [offset_2: 1350]       -   trimmed_sublines[0]:
+[debug] [offset_2: 1352]       -     0: ( 0 , 0.5 , 0.42 )
+[debug] [offset_2: 1352]       -     1: ( 0 , -0.42 , 0.42 )
+[debug] [offset_2: 1352]       -     2: ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 1355]       -   trimmed_sublines[ntrimmed - 1]:
+[debug] [offset_2: 1357]       -     0: ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 1357]       -     1: ( 0 , 0.42 , -0.42 )
+[debug] [offset_2: 1357]       -     2: ( 0 , 0.42 , 0.5 )
+[debug] [offset_2: 1364]       - 4. join all sub-lines
+[debug] [offset_2: 1377]       -   offset curve:
+[debug] [offset_2: 1379]       -     0: ( 0 , 0.5 , 0.42 )
+[debug] [offset_2: 1379]       -     1: ( 0 , -0.42 , 0.42 )
+[debug] [offset_2: 1379]       -     2: ( 0 , -0.42 , -0.42 )
+[debug] [offset_2: 1379]       -     3: ( 0 , 0.42 , -0.42 )
+[debug] [offset_2: 1379]       -     4: ( 0 , 0.42 , 0.5 )
+[debug] [Segment::offsetCurveBase: 231]     - base line: ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , 0.5 )
+[debug] [Segment::offsetCurveBase: 234]     - offset line: ( 0 , 0.5 , 0.42 ) -> ( 0 , 0.42 , 0.5 )
+[info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
+[debug] [Segment::updateBaseOffsetIndexPairs: 300]       - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]       - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]       - 1 -- 1
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]       - 2 -- 2
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]       - 3 -- 3
+[debug] [Segment::updateBaseOffsetIndexPairs: 302]       - 4 -- 4
+[debug] [Segment::offsetCurveBase: 240] done
+[debug] [PComponent::buildLaminate: 41] segment is closed
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , 0.42 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PComponent::buildLaminate: 173] building half edge loops for each segment
+[debug] [Segment::build: 330]       - building the overall shape of segment: sgm_1
+[debug] [Segment::build: 332]       - base line: ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , 0.5 )
+[debug] [Segment::build: 339]       - creating half edges for the base curve
+[debug] [Segment::build: 342]       - number of vertices of the base curve: 5
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , 0.5 , 0.5 ) -> v2 ( 0 , -0.5 , 0.5 )
+[debug] [PDCEL::findHalfEdge: 799] half edge not found
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , 0.5 , 0.5 ) -> ( 0 , -0.5 , 0.5 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , -0.5 , 0.5 ) -> v2 ( 0 , -0.5 , -0.5 )
+[debug] [PDCEL::findHalfEdge: 799] half edge not found
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -0.5 , 0.5 ) -> ( 0 , -0.5 , -0.5 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , -0.5 , -0.5 ) -> v2 ( 0 , 0.5 , -0.5 )
+[debug] [PDCEL::findHalfEdge: 799] half edge not found
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -0.5 , -0.5 ) -> ( 0 , 0.5 , -0.5 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , 0.5 , -0.5 ) -> v2 ( 0 , 0.5 , 0.5 )
+[debug] [PDCEL::findHalfEdge: 799] half edge not found
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , 0.5 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [Segment::build: 364]       - creating half edges for the offset curve
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , 0.5 , 0.42 ) -> ( 0 , -0.42 , 0.42 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::addEdge: 503] adding edge: ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.5 )
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [PDCEL::updateEdgeNeighbors: 1618] updateEdgeNeighbors
+[debug] [Segment::build: 373]       - creating the half edge loop and face
+[debug] [PDCEL::findHalfEdge: 781] looking for half edge: v1 ( 0 , 0.5 , 0.5 ) -> v2 ( 0 , -0.5 , 0.5 )
+[debug] [PDCEL::findHalfEdge: 793] found half edge: ( 0 , 0.5 , 0.5 ) -> ( 0 , -0.5 , 0.5 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 875] adding half edge loop with half edge: ( 0 , 0.5 , 0.5 ) -> ( 0 , -0.5 , 0.5 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , 0.5 , 0.5 ) -> ( 0 , -0.5 , 0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , 0.5 , 0.5 ) -> ( 0 , -0.5 , 0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 130]   setting incident edge for the first time
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -0.5 , 0.5 ) -> ( 0 , -0.5 , -0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -0.5 , 0.5 ) -> ( 0 , -0.5 , -0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 134]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -0.5 , -0.5 ) -> ( 0 , 0.5 , -0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -0.5 , -0.5 ) -> ( 0 , 0.5 , -0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 134]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , 0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , 0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , 0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , 0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , 0.5 , 0.42 ) -> ( 0 , -0.42 , 0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , 0.5 , 0.42 ) -> ( 0 , -0.42 , 0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[debug] [PDCEL::addHalfEdgeLoop: 881]   handling half edge: ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 127] updateVertexEdge: ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.5 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 139] done
+[warning] [PDCEL::addHalfEdgeLoop: 887]   half edge is nullptr
+[debug] [PDCEL::addHalfEdgeLoop: 895] done
+[debug] [PDCELHalfEdgeLoop::log: 13] direction: outer
+[debug] [PDCELHalfEdgeLoop::log: 15] keep: no
+[debug] [PDCELHalfEdgeLoop::log: 17] face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 22] half edges:
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , -0.5 , -0.5 ) -> ( 0 , 0.5 , -0.5 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , 0.5 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , 0.42 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , 0.5 , 0.42 ) -> ( 0 , -0.42 , 0.42 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 25] ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.5 ) | loop: temp | face: nullptr
