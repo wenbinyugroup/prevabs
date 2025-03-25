@@ -79,6 +79,8 @@ double calc_curve_length_of_segment_param_coord_from_start(
     length += std::sqrt(_l) * _u;
   }
 
+  PLOG(debug) << "done";
+
   return length;
 }
 
@@ -1003,6 +1005,38 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
     std::reverse(vi_2.begin(), vi_2.end());
 
   return;
+}
+
+
+
+
+/// @brief Insert a vertex into a polyline at a given line segment parameter coordinate
+/// @param pl The polyline
+/// @param v The vertex to insert
+/// @param lsi The index of the line segment
+/// @param lsu The parameter coordinate of the line segment
+void insert_vertex_by_line_segment_param_coord(
+  std::vector<PDCELVertex *> &pl,
+  PDCELVertex *v, const int &lsi, const double &lsu
+  ) {
+
+  if (lsu < 0) {
+    // If the parameter coordinate is negative,
+    //   then the vertex is before the beginning of the polyline
+    //   insert the vertex at the beginning of the polyline
+    pl.insert(pl.begin(), v);
+  } else if (lsu > 0 && lsu < 1) {
+    // If the parameter coordinate is between 0 and 1,
+    //   then the vertex is between the lsi-th and (lsi+1)-th vertices
+    pl.insert(pl.begin() + lsi + 1, v);
+  } else if (lsu > 1) {
+    // If the parameter coordinate is greater than 1,
+    //   then the vertex is after the end of the polyline
+    //   append the vertex to the end of the polyline
+    pl.push_back(v);
+  }
+
+
 }
 
 

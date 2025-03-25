@@ -1231,120 +1231,156 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 
     }
 
-    //
-    int ls_i1, ls_i2;
-    double ls_u1, ls_u2;
-    std::vector<int> i1s, i2s;
-    std::vector<double> u1s, u2s;
-    // int is_new_1, is_new_2;
-    // int j1;
+    int _i1, _i2;
+    double _u1, _u2;
+    bool _is_new_1, _is_new_2;
+    v0 = get_polylines_intersection_close_to(
+      lines_group.back(), lines_group.front(), 1, 0,
+      0, 1, 1, 0, _i1, _u1, _i2, _u2, _is_new_1, _is_new_2, pmessage
+    );
 
-    // findAllIntersections(
-    //     lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s);
-    find_open_polylines_intersections(
-      lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s,
-      1, 1, 1, 1, pmessage);
+    // //
+    // int ls_i1, ls_i2;
+    // double ls_u1, ls_u2;
+    // std::vector<int> i1s, i2s;
+    // std::vector<double> u1s, u2s;
+    // // int is_new_1, is_new_2;
+    // // int j1;
+
+    // // findAllIntersections(
+    // //     lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s);
+    // find_open_polylines_intersections(
+    //   lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s,
+    //   1, 1, 1, 1, pmessage);
+
+    // PLOG(debug) << pmessage->message("  ")
+    //   << "i1s.size() = " << i1s.size()
+    //   << ", i2s.size() = " << i2s.size()
+    //   << ", u1s.size() = " << u1s.size()
+    //   << ", u2s.size() = " << u2s.size() << std::endl;
+
+    // auto nips = i1s.size();  // number of intersection points
+    // if (lines_group.size() == 2) {
+    //   // If there are only two sub-lines,
+    //   //   then one of the intersection points must be the last vertex
+    //   //   of the first sub-line and the first vertex of the second sub-line
+    //   // This vertex should not be counted.
+    //   nips -= 1;
+    // }
+
+    // PLOG(debug) << pmessage->message("  ")
+    //   << "nips = " << nips << std::endl;
+
+    // if (nips == 0) {
+    //   // If there are no intersection points,
+    //   //   then the two sub-lines intersect at the extensions.
+
+    //   // Get the last two vertices of the first sub-line
+    //   auto _nvs = lines_group.back().size();
+    //   PDCELVertex *v11 = lines_group.back()[_nvs-2];
+    //   PDCELVertex *v12 = lines_group.back()[_nvs-1];
+
+    //   // Get the first two vertices of the second sub-line
+    //   PDCELVertex *v21 = lines_group.front()[0];
+    //   PDCELVertex *v22 = lines_group.front()[1];
+
+    //   // Calculate the intersection
+    //   double _ipx, _ipy, _u1, _u2;
+    //   bool is_intersect = calc_line_intersection_2d(
+    //     v11, v12, v21, v22, v0, _u1, _u2, 1, 1, 1, 1
+    //   );
+
+    //   if (!is_intersect) {
+    //     // Throw an error
+    //     PLOG(error) << pmessage->message("cannot close the offset lines");
+    //     return 0;
+    //   }
+
+    //   // v0 = new PDCELVertex(0, _ipx, _ipy);
+
+    //   // Update the last vertex of the first sub-line
+    //   //   and the first vertex of the second sub-line
+    //   lines_group.back()[_nvs-1] = v0;
+    //   lines_group.front()[0] = v0;
+
+    // } else {
+    //   if (nips == 1) {
+    //     // If there is only one intersection point,
+    //     //   then the two sub-lines intersect at this point.
+    //     ls_i1 = i1s[0];
+    //     ls_u1 = u1s[0];
+    //     ls_i2 = i2s[0];
+    //     ls_u2 = u2s[0];
+    //   } else {
+    //     // If there are more than one intersection points,
+    //     //   then use the one closest to the last vertex of the first sub-line.
+    //     // ls_u1 = getIntersectionLocation(
+    //     //     lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+    //     auto j = get_intersection_closer_to(
+    //       lines_group.back(), i1s, u1s, 1, false, pmessage
+    //     );
+    //     ls_i1 = i1s[j];
+    //     ls_u1 = u1s[j];
+    //     ls_i2 = i2s[j];
+    //     ls_u2 = u2s[j];
+    //   }
+
+    //   // v0 = getIntersectionVertex(
+    //   //     lines_group.back(), lines_group.front(),
+    //   //     ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
+    //   v0 = get_intersection_vertex(
+    //     lines_group.back(), lines_group.front(),
+    //     ls_i1, ls_i2, ls_u1, ls_u2, pmessage);
+
+    // }
 
     PLOG(debug) << pmessage->message("  ")
-      << "i1s.size() = " << i1s.size()
-      << ", i2s.size() = " << i2s.size()
-      << ", u1s.size() = " << u1s.size()
-      << ", u2s.size() = " << u2s.size() << std::endl;
+      << "intersection v0 = " << v0 << std::endl;
 
-    auto nips = i1s.size();  // number of intersection points
-    if (lines_group.size() == 2) {
-      // If there are only two sub-lines,
-      //   then one of the intersection points must be the last vertex
-      //   of the first sub-line and the first vertex of the second sub-line
-      // This vertex should not be counted.
-      nips -= 1;
-    }
-
-    PLOG(debug) << pmessage->message("  ")
-      << "nips = " << nips << std::endl;
-
-    if (nips == 0) {
-      // If there are no intersection points,
-      //   then the two sub-lines intersect at the extensions.
-
-      // Get the last two vertices of the first sub-line
-      auto _nvs = lines_group.back().size();
-      PDCELVertex *v11 = lines_group.back()[_nvs-2];
-      PDCELVertex *v12 = lines_group.back()[_nvs-1];
-
-      // Get the first two vertices of the second sub-line
-      PDCELVertex *v21 = lines_group.front()[0];
-      PDCELVertex *v22 = lines_group.front()[1];
-
-      // Calculate the intersection
-      double _ipx, _ipy, _u1, _u2;
-      bool is_intersect = calc_line_intersection_2d(
-        v11, v12, v21, v22, v0, _u1, _u2, 1, 1, 1, 1
-      );
-
-      if (!is_intersect) {
-        // Throw an error
-        PLOG(error) << pmessage->message("cannot close the offset lines");
-        return 0;
-      }
-
-      // v0 = new PDCELVertex(0, _ipx, _ipy);
-
-      // Update the last vertex of the first sub-line
-      //   and the first vertex of the second sub-line
-      lines_group.back()[_nvs-1] = v0;
-      lines_group.front()[0] = v0;
-
-    } else {
-      if (nips == 1) {
-        // If there is only one intersection point,
-        //   then the two sub-lines intersect at this point.
-        ls_i1 = i1s[0];
-        ls_u1 = u1s[0];
-        ls_i2 = i2s[0];
-        ls_u2 = u2s[0];
-      } else {
-        // If there are more than one intersection points,
-        //   then use the one closest to the last vertex of the first sub-line.
-        // ls_u1 = getIntersectionLocation(
-        //     lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
-        auto j = get_intersection_closer_to(
-          lines_group.back(), i1s, u1s, 1, false, pmessage
-        );
-        ls_i1 = i1s[j];
-        ls_u1 = u1s[j];
-        ls_i2 = i2s[j];
-        ls_u2 = u2s[j];
-      }
-
-      // v0 = getIntersectionVertex(
-      //     lines_group.back(), lines_group.front(),
-      //     ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE);
-      v0 = get_intersection_vertex(
-        lines_group.back(), lines_group.front(),
-        ls_i1, ls_i2, ls_u1, ls_u2, pmessage);
-
-      PLOG(debug) << pmessage->message("  ")
-        << "intersection v0 = " << v0 << std::endl;
-
+    if (_is_new_1) {
+      insert_vertex_by_line_segment_param_coord(
+        lines_group.back(), v0, _i1, _u1);
       trim(lines_group.back(), v0, 1);
+      // if (_u1 < 1) {
+      //   // If the intersection is before the last vertex of the first sub-line,
+      //   //   then insert the intersection vertex and trim the sub-line
+      //   lines_group.back().insert(lines_group.back().begin() + _i1 + 1, v0);
+      //   PLOG(debug) << vertices_to_string(lines_group.back());
+      //   trim(lines_group.back(), v0, 1);
+      // } else {
+      //   // If the intersection is after the last vertex of the first sub-line,
+      //   //   then directly replace the last vertex of the first sub-line with the intersection vertex
+      //   lines_group.back()[lines_group.back().size()-1] = v0;
+      // }
+    }
+    if (_is_new_2) {
+      insert_vertex_by_line_segment_param_coord(
+        lines_group.front(), v0, _i2, _u2);
       trim(lines_group.front(), v0, 0);
-
-      if (config.debug) {
-        PLOG(debug) << pmessage->message("  lines_group.back():") << std::endl;
-        for (auto i = 0; i < lines_group.back().size(); i++) {
-          PLOG(debug) << pmessage->message("    ")
-            << i << ": " << lines_group.back()[i];
-        }
-        PLOG(debug) << pmessage->message("  lines_group.front():") << std::endl;
-        for (auto i = 0; i < lines_group.front().size(); i++) {
-          PLOG(debug) << pmessage->message("    ")
-            << i << ": " << lines_group.front()[i];
-        }
-      }
-
+      // if (_u2 > 0) {
+      //   // If the intersection is after the first vertex of the second sub-line,
+      //   //   then insert the intersection vertex and trim the sub-line
+      //   lines_group.front().insert(lines_group.front().begin() + _i2 + 1, v0);
+      //   PLOG(debug) << vertices_to_string(lines_group.front());
+      // } else {
+      //   // If the intersection is before the first vertex of the second sub-line,
+      //   //   then directly replace the first vertex of the second sub-line with the intersection vertex
+      //   lines_group.front()[0] = v0;
+      // }
     }
 
+    if (config.debug) {
+      PLOG(debug) << pmessage->message("  lines_group.back():") << std::endl;
+      for (auto i = 0; i < lines_group.back().size(); i++) {
+        PLOG(debug) << pmessage->message("    ")
+          << i << ": " << lines_group.back()[i];
+      }
+      PLOG(debug) << pmessage->message("  lines_group.front():") << std::endl;
+      for (auto i = 0; i < lines_group.front().size(); i++) {
+        PLOG(debug) << pmessage->message("    ")
+          << i << ": " << lines_group.front()[i];
+      }
+    }
 
     auto ntrimmed = trimmed_sublines.size();
     PLOG(debug) << pmessage->message("  ")

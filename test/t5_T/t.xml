@@ -24,7 +24,7 @@
             <points>tl,tr</points>
         </line>
         <line name="blweb">
-            <point loc="begin">web</point>
+            <point>web</point>
             <angle>90</angle>
         </line>
         <line name="blwebl">
@@ -50,13 +50,13 @@
     <component name="cpflange">
         <segment>
             <baseline>bl1</baseline>
-            <layup direction="left">layup1</layup>
+            <layup>layup1</layup>
         </segment>
     </component>
     <component name="cpwebl" depend="cpflange">
-        <segment free="head">
+        <segment>
             <baseline>blweb</baseline>
-            <layup direction="left">layupweb</layup>
+            <layup>layupweb</layup>
         </segment>
     </component>
     <!-- <component name="cpwebr" depend="cpflange">

@@ -144,6 +144,11 @@ void PComponent::join_segment_to_dependency(
         s->curveBase()->vertices(), hel, 1, 1, _i1s, _i2s, _u1s, _u2s, pmessage
       );
 
+      PLOG(debug) << "  _i1s = " << vector_to_string(_i1s);
+      PLOG(debug) << "  _i2s = " << vector_to_string(_i2s);
+      PLOG(debug) << "  _u1s = " << vector_to_string(_u1s);
+      PLOG(debug) << "  _u2s = " << vector_to_string(_u2s);
+
       // Calculate the non-dimensional curvilinear coordinate of the intersection(s)
       for (auto i = 0; i < _i1s.size(); i++) {
         double _nd = calc_curve_length_of_segment_param_coord_from_start(
@@ -172,6 +177,11 @@ void PComponent::join_segment_to_dependency(
   v_intersect_base = get_vertex_on_polyline_by_segment_param_coord(
     s->curveBase()->vertices(), i_base, u_base, is_new_intersect_base
   );
+
+  PLOG(debug) << "  v_intersect_base = " << v_intersect_base
+              << ", i_base = " << i_base
+              << ", u_base = " << u_base
+              << ", is_new_intersect_base = " << is_new_intersect_base;
 
   if (is_new_intersect_base) {
     // Insert the new vertex into the base curve
@@ -853,10 +863,16 @@ void join_segments_style_1(
     pmessage
   );
 
-  trim(s1->curveOffset()->vertices(), v_new_1, e1);
-  
   PLOG(debug) << pmessage->message("  intersection vertex for ")
-  << s1->getName() << ": " << v_new_1;
+  << s1->getName() << ": v_new_1 = " << v_new_1;
+
+  // Insert the intersection vertex
+  //   then trim or extend the polyline
+  if (is_new_1) {
+    insert_vertex_by_line_segment_param_coord(
+      s1->curveOffset()->vertices(), v_new_1, i1, u1);
+    trim(s1->curveOffset()->vertices(), v_new_1, e1);
+  }
 
   // Update linking indices
   s1->updateBaseOffsetIndexPairs(pmessage);
@@ -870,14 +886,18 @@ void join_segments_style_1(
   PDCELVertex *v_new_2 = get_polylines_intersection_close_to(
     s2->curveOffset()->vertices(), bound_vertices,
     param_loc_2, -1, 1, 1, 1, 1,
-    i1, u1, ib1, ub1, is_new_1, is_new_b1,
+    i2, u2, ib2, ub2, is_new_2, is_new_b2,
     pmessage
   );
 
-  trim(s2->curveOffset()->vertices(), v_new_2, e2);
-  
   PLOG(debug) << pmessage->message("  intersection vertex for ")
-  << s2->getName() << ": " << v_new_2;
+  << s2->getName() << ": v_new_2 = " << v_new_2;
+
+  if (is_new_2) {
+    insert_vertex_by_line_segment_param_coord(
+      s2->curveOffset()->vertices(), v_new_2, i2, u2);
+    trim(s2->curveOffset()->vertices(), v_new_2, e2);
+  }
 
   // Update linking indices
   s2->updateBaseOffsetIndexPairs(pmessage);
@@ -888,9 +908,12 @@ void join_segments_style_1(
   // Check if the two intersection vertices are close to each other
   // If so, replace one of them with the other
   if (is_close(v_new_1, v_new_2)) {
+    PLOG(debug) << "  v_new_1 and v_new_2 are close";
     // Check if the two vertices are the same object
     // If not, replace one of them with the other
     if (v_new_1 != v_new_2) {
+      PLOG(debug) << "  v_new_1 and v_new_2 are not the same object";
+      PLOG(debug) << "  replacing v_new_2 with v_new_1";
       replace_vertex(s2->curveOffset()->vertices(), v_new_2, v_new_1);
       v_new_2 = v_new_1;
     }

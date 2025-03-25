@@ -83,7 +83,9 @@ void writeVectorToFile(std::ofstream &, std::vector<std::string>);
 void writeVectorToFile(FILE *, std::vector<double>, std::string="%16e", bool=true);
 
 void printVector(const std::vector<double> &);
+std::string vector_to_string(const std::vector<double> &v);
 void printVector(const std::vector<int> &);
+std::string vector_to_string(const std::vector<int> &v);
 
 std::string vertices_to_string(const std::vector<PDCELVertex *> &vertices);
 

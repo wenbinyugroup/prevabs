@@ -112,7 +112,7 @@ void writeElementVABS(
     inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], 0, 0, 0, 0, 0};
   } else if (elem_type == 9) {
     // 6-node 2nd order triangle
-    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], 0, node_tags[4], node_tags[5], 0, 0};
+    inums = {node_tags[0], node_tags[1], node_tags[2], 0, node_tags[3], node_tags[4], node_tags[5], 0, 0};
   } else if (elem_type == 10) {
     // 9-node 2nd order quadrilateral
     inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], node_tags[4], node_tags[5], node_tags[6], node_tags[7], node_tags[8]};

@@ -69,11 +69,16 @@ void divide_interior_wall_by_layup(
   ) {
   PLOG(debug) << "dividing interior wall by layup";
 
+  PLOG(debug) << "wall_vertices:";
+  PLOG(debug) << vertices_to_string(wall_vertices);
+
   double cumu_thk = 0;  // Cumulative thickness of the layup
   PDCELVertex *v_base = wall_vertices.front();
   PDCELVertex *v_offset = wall_vertices.back();
   PDCELVertex *v_layer_prev = v_base;
   for (int i = 0; i < layup->getLayers().size() - 1; ++i) {
+    PLOG(debug) << "layer " << i;
+
     cumu_thk += layup->getLayers()[i].getLamina()->getThickness() *
                 layup->getLayers()[i].getStack();
 
@@ -352,6 +357,7 @@ void Segment::buildAreas(Message *pmessage) {
     divide_interior_wall_by_layup(
       _layup, _prev_bound_vertices, dcel);
 
+    layer_div_vertices = _prev_bound_vertices;
 
     // cumu_thk = 0;
 

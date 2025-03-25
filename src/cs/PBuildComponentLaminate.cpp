@@ -41,6 +41,14 @@ void PComponent::buildLaminate(Message *pmessage) {
       PLOG(debug) << "segment is closed";
       seg->setHeadVertexOffset(seg->curveOffset()->vertices().front());
       seg->setTailVertexOffset(seg->curveOffset()->vertices().back());
+      seg->setPrevBoundVertices({
+        seg->curveBase()->vertices().front(),
+        seg->curveOffset()->vertices().front()
+      });
+      seg->setNextBoundVertices({
+        seg->curveBase()->vertices().back(),
+        seg->curveOffset()->vertices().back()
+      });
       _pmodel->dcel()->addEdge(seg->curveBase()->vertices()[0],
                                 seg->curveOffset()->vertices()[0]);
       continue;

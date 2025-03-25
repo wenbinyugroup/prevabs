@@ -273,6 +273,9 @@ void combineVertexLists(std::vector<PDCELVertex *> &,
                         std::vector<PDCELVertex *> &, std::vector<int> &,
                         std::vector<int> &, std::vector<PDCELVertex *> &);
 
+void insert_vertex_by_line_segment_param_coord(
+  std::vector<PDCELVertex *> &pl, PDCELVertex *v, const int &lsi, const double &lsu);
+
 // int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
 //               PDCELVertex *intersect);
 
