@@ -32,13 +32,6 @@ void PDCELHalfEdgeLoop::log() {
 }
 
 
-
-
-
-
-
-
-
 void PDCELHalfEdgeLoop::print() {
   std::cout << "direction: ";
   if (direction() == 1) {
@@ -81,13 +74,6 @@ void PDCELHalfEdgeLoop::print() {
 }
 
 
-
-
-
-
-
-
-
 int PDCELHalfEdgeLoop::direction() {
   if (_direction == 0) {
     SVector3 sv1, sv2, sv0;
@@ -103,24 +89,10 @@ int PDCELHalfEdgeLoop::direction() {
 }
 
 
-
-
-
-
-
-
-
 void PDCELHalfEdgeLoop::setFace(PDCELFace *f) {
   _face = f;
   _incident_edge->setIncidentFace(f);
 }
-
-
-
-
-
-
-
 
 
 void PDCELHalfEdgeLoop::updateVertexEdge(PDCELHalfEdge *he) {
@@ -138,6 +110,19 @@ void PDCELHalfEdgeLoop::updateVertexEdge(PDCELHalfEdge *he) {
 
   PLOG(debug) << "done";
 }
+
+
+std::vector<PDCELVertex *> PDCELHalfEdgeLoop::vertices() {
+  std::vector<PDCELVertex *> vertices;
+  PDCELHalfEdge *he = _incident_edge;
+  vertices.push_back(he->source()); 
+  do {
+    vertices.push_back(he->target());
+    he = he->next();
+  } while (he != _incident_edge);
+  return vertices;
+}
+
 
 void PDCELHalfEdgeLoop::write_to_file(std::ofstream& file) {
   file << "direction: ";

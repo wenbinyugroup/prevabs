@@ -146,7 +146,8 @@ int readXMLElementComponentLaminate(
 
 
     // If there is only one segment and trim both ends, then split
-    if (depend_names.size() > 0 && nseg == 1 && i_freeend == -1) {
+    // if (depend_names.size() > 0 && nseg == 1 && i_freeend == -1) {
+    if (false) {
 
       std::string split_by;
       PDCELVertex *v_split;

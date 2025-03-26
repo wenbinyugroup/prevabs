@@ -5,6 +5,8 @@
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 
+#include <vector>
+
 // class PDCELHalfEdge;
 class PDCELFace;
 // class PDCELVertex;
@@ -48,5 +50,6 @@ public:
   void setKeep(bool keep) { _keep = keep; }
 
   void updateVertexEdge(PDCELHalfEdge *);
+  std::vector<PDCELVertex *> vertices();
   void write_to_file(std::ofstream &file);
 };

@@ -39,12 +39,12 @@ void PComponent::join_segment_to_dependency(
   //    keep the intersection closest to the reference point
   // 4. Update the base-offset index pairs
 
-  PLOG(debug) << pmessage->message("joining segment to dependency: ") << _name << "." << s->getName() << " " << e;
+  PLOG(debug) << "joining segment to dependency: " << _name << "." << s->getName() << " " << e;
 
   std::vector<PDCELHalfEdgeLoop *> hels;  // The half edge loops that may intersect with the segment
 
   // 1.
-  PLOG(debug) << pmessage->message("step 1: find the outer half edge loop");
+  PLOG(debug) << "step 1: find the outer half edge loop";
   double ref_v_nd;  // Normalized distance of the reference point from the start of the segment
   double curve_length = calcPolylineLength(s->curveBase()->vertices());
   if (_ref_vertex != nullptr) {
@@ -72,7 +72,7 @@ void PComponent::join_segment_to_dependency(
     }
   }
 
-  PLOG(debug) << pmessage->message("ref vertex: ") << _ref_vertex;
+  PLOG(debug) << "ref vertex: " << _ref_vertex;
 
   bool to_be_removed;
   if (_ref_vertex->dcel() != nullptr) {
@@ -132,11 +132,19 @@ void PComponent::join_segment_to_dependency(
   PLOG(debug) << pmessage->message("step 3.1: for the base curve");
 
   // 3.1.1. Find all intersections between the base curve and all half-edge loops
-  int i_base;
-  double u_base;
+  int i_base, i_he_1;
+  double u_base, u_he_1;
+  bool is_new_base, is_new_he_1;
+  PDCELVertex *v_intersect_base;
   double d_base = INF;
+  PDCELHalfEdgeLoop *hel_intersect_1;
   for (auto hel : hels) {
     if (!hel->keep()) {
+      // v_intersect_base = get_polylines_intersection_close_to(
+      //   s->curveBase()->vertices(), hel->vertices(), ref_v_nd, -1,
+      //   1, 1, 0, 0, i_base, u_base, i_he, u_he, is_new_base, is_new_he, pmessage
+      // );
+
       // Find all intersections as the (segment index, non-dimensional location) pairs
       std::vector<int> _i1s, _i2s;
       std::vector<double> _u1s, _u2s;
@@ -160,46 +168,77 @@ void PComponent::join_segment_to_dependency(
           d_base = fabs(_nd - ref_v_nd);
           i_base = _i1s[i];
           u_base = _u1s[i];
+          i_he_1 = _i2s[i];
+          u_he_1 = _u2s[i];
+          hel_intersect_1 = hel;
         }
         else if (e == 1 && _nd > ref_v_nd && fabs(_nd - ref_v_nd) < d_base) {
           // After the reference point
           d_base = fabs(_nd - ref_v_nd);
           i_base = _i1s[i];
           u_base = _u1s[i];
+          i_he_1 = _i2s[i];
+          u_he_1 = _u2s[i];
+          hel_intersect_1 = hel;
         }
       }
     }
   }
 
+  if (d_base == INF) {
+    // No intersection found
+    PLOG(debug) << "no intersection found";
+    createSegmentFreeEnd(s, e, pmessage);
+    return;
+  }
+
   // 3.1.3. Get the intersection
-  PDCELVertex *v_intersect_base;
-  bool is_new_intersect_base;
   v_intersect_base = get_vertex_on_polyline_by_segment_param_coord(
-    s->curveBase()->vertices(), i_base, u_base, is_new_intersect_base
+    s->curveBase()->vertices(), i_base, u_base, is_new_base
   );
 
   PLOG(debug) << "  v_intersect_base = " << v_intersect_base
               << ", i_base = " << i_base
               << ", u_base = " << u_base
-              << ", is_new_intersect_base = " << is_new_intersect_base;
+              << ", is_new_base = " << is_new_base;
 
-  if (is_new_intersect_base) {
+  if (is_new_base) {
     // Insert the new vertex into the base curve
-    s->curveBase()->vertices().insert(s->curveBase()->vertices().begin() + i_base + 1, v_intersect_base);
+    insert_vertex_by_line_segment_param_coord(
+      s->curveBase()->vertices(), v_intersect_base, i_base, u_base
+    );
+    // s->curveBase()->vertices().insert(s->curveBase()->vertices().begin() + i_base + 1, v_intersect_base);
   }
 
   // 3.1.4. Trim the base curve
   trim(s->curveBase()->vertices(), v_intersect_base, 0);
 
+  // 3.1.5. Update the half edge loop
+  PLOG(debug) << "hel_intersect_1 vertices:";
+  PLOG(debug) << "  " << vertices_to_string(hel_intersect_1->vertices());
+  PDCELVertex *_v_he_1 = get_vertex_on_polyline_by_segment_param_coord(
+    hel_intersect_1->vertices(), i_he_1, u_he_1, is_new_he_1
+  );
+  if (is_new_he_1) {
+    // Find the half edge that the intersection point is on
+    std::vector<PDCELVertex *> _vertices = hel_intersect_1->vertices();
+    PDCELHalfEdge *_he = _pmodel->dcel()->findHalfEdge(
+      _vertices[i_he_1], _vertices[i_he_1 + 1]
+    );
+    _pmodel->dcel()->splitEdge(_he, _v_he_1);
+  }
 
 
   // 3.2. For the offset curve
   PLOG(debug) << pmessage->message("step 3.2: for the offset curve");
 
   // 3.2.1. Find all intersections between the offset curve and all half-edge loops
-  int i_offset;
-  double u_offset;
+  int i_offset, i_he_2;
+  double u_offset, u_he_2;
+  bool is_new_offset, is_new_he_2;
+  PDCELVertex *v_intersect_offset;
   double d_offset = INF;
+  PDCELHalfEdgeLoop *hel_intersect_2;
   for (auto hel : hels) {
     if (!hel->keep()) {
       // Find all intersections as the (segment index, non-dimensional location) pairs
@@ -220,31 +259,51 @@ void PComponent::join_segment_to_dependency(
           d_offset = fabs(_nd - ref_v_nd);
           i_offset = _i1s[i];
           u_offset = _u1s[i];
+          i_he_2 = _i2s[i];
+          u_he_2 = _u2s[i];
+          hel_intersect_2 = hel;
         }
         else if (e == 1 && _nd > ref_v_nd && fabs(_nd - ref_v_nd) < d_offset) {
           // After the reference point
           d_offset = fabs(_nd - ref_v_nd);
           i_offset = _i1s[i];
           u_offset = _u1s[i];
+          i_he_2 = _i2s[i];
+          u_he_2 = _u2s[i];
+          hel_intersect_2 = hel;
         }
       }
     }
   }
 
   // 3.2.3. Get the intersection
-  PDCELVertex *v_intersect_offset;
-  bool is_new_intersect_offset;
   v_intersect_offset = get_vertex_on_polyline_by_segment_param_coord(
-    s->curveOffset()->vertices(), i_offset, u_offset, is_new_intersect_offset
+    s->curveOffset()->vertices(), i_offset, u_offset, is_new_offset
   );
 
-  if (is_new_intersect_offset) {
-    // Insert the new vertex into the base curve
-    s->curveOffset()->vertices().insert(s->curveOffset()->vertices().begin() + i_offset + 1, v_intersect_offset);
+  if (is_new_offset) {
+    // Insert the new vertex into the offset curve
+    insert_vertex_by_line_segment_param_coord(
+      s->curveOffset()->vertices(), v_intersect_offset, i_offset, u_offset
+    );
+    // s->curveOffset()->vertices().insert(s->curveOffset()->vertices().begin() + i_offset + 1, v_intersect_offset);
   }
 
   // 3.2.4. Trim the offset curve
   trim(s->curveOffset()->vertices(), v_intersect_offset, 0);
+
+  // 3.2.5. Update the half edge loop
+  PDCELVertex *_v_he_2 = get_vertex_on_polyline_by_segment_param_coord(
+    hel_intersect_2->vertices(), i_he_2, u_he_2, is_new_he_2
+  );
+  if (is_new_he_2) {
+    // Find the half edge that the intersection point is on
+    std::vector<PDCELVertex *> _vertices = hel_intersect_2->vertices();
+    PDCELHalfEdge *_he = _pmodel->dcel()->findHalfEdge(
+      _vertices[i_he_2], _vertices[i_he_2 + 1]
+    );
+    _pmodel->dcel()->splitEdge(_he, _v_he_2);
+  }
 
 
   // 4. Update the base-offset index pairs
