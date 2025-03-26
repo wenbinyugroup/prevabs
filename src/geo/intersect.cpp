@@ -5,7 +5,8 @@
 #include <string>
 #include <sstream>
 #include "homog2d.hpp"
-
+#include "gmsh_mod/SVector3.h"
+#include "gmsh_mod/SPoint3.h"
 
 /**
  * @brief Calculates the intersection of two 2D lines.
@@ -104,8 +105,25 @@ bool calc_line_intersection_2d(
   ipy = pts.getY();
 
   // Calculate parametric coordinates
-  u1 = h2d::dist(l1p1, pts) / h2d::dist(l1p1, l1p2);
-  u2 = h2d::dist(l2p1, pts) / h2d::dist(l2p1, l2p2);
+  SPoint3 _l1p1(0, l1p1x, l1p1y);
+  SPoint3 _l1p2(0, l1p2x, l1p2y);
+  SPoint3 _l2p1(0, l2p1x, l2p1y);
+  SPoint3 _l2p2(0, l2p2x, l2p2y);
+  SPoint3 _ip(0, ipx, ipy);
+
+  SVector3 _v1l = _l1p2 - _l1p1;
+  SVector3 _v1p = _ip - _l1p1;
+  SVector3 _v2l = _l2p2 - _l2p1;
+  SVector3 _v2p = _ip - _l2p1;
+
+  double _dot1 = dot(_v1l, _v1p);
+  double _dot2 = dot(_v2l, _v2p);
+
+  double s1 = _dot1 > 0 ? 1 : -1;
+  double s2 = _dot2 > 0 ? 1 : -1;
+
+  u1 = s1 * h2d::dist(l1p1, pts) / h2d::dist(l1p1, l1p2);
+  u2 = s2 * h2d::dist(l2p1, pts) / h2d::dist(l2p1, l2p2);
 
   return true;
 
@@ -1310,8 +1328,8 @@ int find_open_polylines_intersections(
         throw std::runtime_error("null pointer reference in find_open_polylines_intersections");
       }
 
-      double u1, u2;
-      PDCELVertex *ip;
+      double u1=INF, u2=INF;
+      PDCELVertex *ip=nullptr;
       bool is_intersect = calc_line_intersection_2d(
         v11, v12, v21, v22, ip, u1, u2, _ex11, _ex12, _ex21, _ex22);
 

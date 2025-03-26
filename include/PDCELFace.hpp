@@ -84,8 +84,8 @@ public:
   PDCELHalfEdge *getInnerHalfEdgeWithSource(PDCELVertex *);
   PDCELHalfEdge *getInnerHalfEdgeWithTarget(PDCELVertex *);
 
-  void setOuterComponent(PDCELHalfEdge *outer) { _outer = outer; }
-  void addInnerComponent(PDCELHalfEdge *inner) { _inners.push_back(inner); }
+  void setOuterComponent(PDCELHalfEdge *outer);
+  void addInnerComponent(PDCELHalfEdge *inner);
   void setArea(PArea *area) { _area = area; }
   void setMaterial(Material *material) { _material = material; }
   void setTheta1(double theta1) { _theta1 = theta1; }

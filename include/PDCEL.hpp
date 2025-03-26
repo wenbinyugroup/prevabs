@@ -84,6 +84,7 @@ public:
     \return The half edge from v1 to v2.
    */
   PDCELHalfEdge *addEdge(PDCELVertex *v1, PDCELVertex *v2);
+  PDCELHalfEdge *find_or_add_edge(PDCELVertex *v1, PDCELVertex *v2);
   PDCELHalfEdge *addEdge(PGeoLineSegment *ls);
   void removeEdge(PDCELHalfEdge *);
 

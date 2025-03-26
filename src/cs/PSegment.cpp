@@ -329,25 +329,22 @@ void Segment::build(Message *pmessage) {
 
   PLOG(debug) << pmessage->message("building the overall shape of segment: " + _name);
 
-  PLOG(debug) << pmessage->message("base line: ")
-    << _curve_base->vertices().front()->printString() << " -> "
-    << _curve_base->vertices().back()->printString();
-
-
   PDCELHalfEdge *he;
 
   PLOG(debug) << pmessage->message("creating half edges for the base curve");
 
   // Log the number of vertices of the base curve
-  PLOG(debug) << pmessage->message("number of vertices of the base curve: ")
-    << _curve_base->vertices().size();
+  PLOG(debug) << "base curve:\n"
+              << vertices_to_string(_curve_base->vertices());
+
+  _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
 
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
     // Debug log the two vertices i and i+1
-    // PLOG(debug) << pmessage->message("  half edge: ")
-    //   << i << " " << _curve_base->vertices()[i]->printString()
-    //   << " -- " << i + 1 << " " << _curve_base->vertices()[i + 1]->printString();
+    PLOG(debug) << "  half edge: v[i] "
+      << i << " " << _curve_base->vertices()[i]
+      << " -- v[i+1] " << i + 1 << " " << _curve_base->vertices()[i + 1];
 
     he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
                                        _curve_base->vertices()[i + 1]);

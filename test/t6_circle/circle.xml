@@ -21,7 +21,7 @@
         <translate>0.0 0.0</translate>
         <scale>1.0</scale>
         <rotate>0.0</rotate>
-        <mesh_size>0.02</mesh_size>
+        <mesh_size>0.1</mesh_size>
         <element_type>linear</element_type>
     </general>
 
@@ -35,7 +35,7 @@
         <baseline name="bsl_circle" type="circle">
             <center>ct</center>
             <radius>2</radius>
-            <discrete by="angle">5</discrete>
+            <discrete by="angle">10</discrete>
             <direction>ccw</direction>
         </baseline>
         <baseline name="bsl_arc_top" type="arc">

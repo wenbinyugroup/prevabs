@@ -109,6 +109,7 @@ void PDCELFace::write_to_file(std::ofstream& file) {
       he = he->next();
     } while (he != _outer);
 
+    file << _inners.size() << " inner boundaries:" << std::endl;
     for (auto _inner : _inners) {
       file << "inner boundary: " << std::endl;
       he = _inner;
@@ -180,6 +181,20 @@ PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithTarget(PDCELVertex *v) {
   }
 
   return nullptr;
+}
+
+
+void PDCELFace::setOuterComponent(PDCELHalfEdge *outer) {
+  _outer = outer;
+
+  outer->setIncidentFace(this);
+}
+
+
+void PDCELFace::addInnerComponent(PDCELHalfEdge *inner) {
+  _inners.push_back(inner);
+
+  inner->setIncidentFace(this);
 }
 
 

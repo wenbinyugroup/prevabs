@@ -1,0 +1,39 @@
+DCEL Summary
+
+6 vertices:
+( 0 , inf , inf ) - degree 2
+( 0 , -inf , inf ) - degree 2
+( 0 , -inf , -inf ) - degree 2
+( 0 , inf , -inf ) - degree 2
+( 0 , 0.5 , 0.5 ) - degree 1
+( 0 , 0.42 , 0.42 ) - degree 1
+
+6 half edges:
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.42 , 0.42 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 0.42 , 0.42 ) -> ( 0 , 0.5 , 0.5 ) | loop: nullptr | face: nullptr | sign: -1
+
+1 half edge loops:
+direction: outer
+keep: yes
+face: background
+half edges:
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+adjacent loop: nullptr
+
+
+1 faces:
+name: background
+outer boundary: 
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+0 inner boundaries:
+

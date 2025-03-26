@@ -159,7 +159,7 @@ void PComponent::buildLaminate(Message *pmessage) {
 
       if (seg->headVertexOffset() == nullptr && !found_begin) {
         PLOG(debug) << "segment " << seg->getName() << " does not connect to any other segment at the head";
-        PLOG(debug) << "creating a free end at the head";
+        PLOG(debug) << "building the end at the head";
         joinSegments(seg, 0, seg->getBeginVertex(), pmessage);
       }
 
@@ -167,7 +167,7 @@ void PComponent::buildLaminate(Message *pmessage) {
 
       if (seg->tailVertexOffset() == nullptr && !found_end) {
         PLOG(debug) << "segment " << seg->getName() << " does not connect to any other segment at the tail";
-        PLOG(debug) << "creating a free end at the tail";
+        PLOG(debug) << "building the end at the tail";
         joinSegments(seg, 1, seg->getEndVertex(), pmessage);
       }
 

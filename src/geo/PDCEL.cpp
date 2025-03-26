@@ -145,6 +145,8 @@ void PDCEL::print_dcel() {
 
 
 void PDCEL::write_dcel_to_file(const std::string &filename) {
+  PLOG(debug) << "writing DCEL to file: " << filename;
+
   std::ofstream file(filename);
   if (!file.is_open()) {
     PLOG(error) << "Failed to open file: " << filename;
@@ -155,6 +157,7 @@ void PDCEL::write_dcel_to_file(const std::string &filename) {
   file << std::endl;
 
   // Write vertices
+  PLOG(debug) << "writing vertices";
   file << _vertices.size() << " vertices:" << std::endl;
   for (auto v : _vertices) {
     file << v << " - degree " << v->degree() << std::endl;
@@ -162,6 +165,7 @@ void PDCEL::write_dcel_to_file(const std::string &filename) {
   file << std::endl;
 
   // Write half edges
+  PLOG(debug) << "writing half edges";
   file << _halfedges.size() << " half edges:" << std::endl;
   for (auto he : _halfedges) {
     he->write_to_file(file);
@@ -169,6 +173,7 @@ void PDCEL::write_dcel_to_file(const std::string &filename) {
   file << std::endl;
 
   // Write half edge loops
+  PLOG(debug) << "writing half edge loops";
   file << _halfedge_loops.size() << " half edge loops:" << std::endl;
   for (auto hel : _halfedge_loops) {
     hel->write_to_file(file);
@@ -176,12 +181,15 @@ void PDCEL::write_dcel_to_file(const std::string &filename) {
   file << std::endl;
 
   // Write faces
+  PLOG(debug) << "writing faces";
   file << _faces.size() << " faces:" << std::endl;
   for (auto f : _faces) {
     f->write_to_file(file);
   }
 
   file.close();
+
+  PLOG(debug) << "done";
 }
 
 
@@ -254,12 +262,18 @@ void PDCEL::fixGeometry(Message *pmessage) {
 // ===================================================================
 
 void PDCEL::addVertex(PDCELVertex *v) {
+  PLOG(debug) << "start";
+
+  PLOG(debug) << "  v = " << v;
+
   if (v->dcel() == nullptr) {
-    // std::cout << "adding new vertex " << v << std::endl;
+    PLOG(debug) << "  new vertex";
     _vertices.push_back(v);
     _vertex_tree->insert(v);
     v->setDCEL(this);
   }
+
+  PLOG(debug) << "done";
 }
 
 
@@ -427,23 +441,34 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
   // Update face incident half edge if necessary
   // std::cout << "        update face incident half edge" << std::endl;
   // std::cout << "        half edge e12:" << std::endl;
-  // e12->print2();
-  // if (f12 != nullptr) {
-  //   std::cout << "        half edge f12->outer():" << std::endl;
-  //   f12->outer()->print2();
-  // }
-  if (f12 != nullptr && f12->outer() == e12) {
-    f12->setOuterComponent(e10);
+  if (f12 != nullptr) {
+    if (f12->outer() == e12) {
+      // The original half edge is the outer incident half edge of the face
+      f12->setOuterComponent(e10);
+    } else {
+      // Check inner half edges
+      for (int i=0; i<f12->inners().size(); i++) {
+        if (f12->inners()[i] == e12) {
+          f12->inners()[i] = e10;
+          break;
+        }
+      }
+    }
   }
 
-  // std::cout << "        half edge e21:" << std::endl;
-  // e21->print2();
-  // if (f21 != nullptr) {
-  //   std::cout << "        half edge f21->outer():" << std::endl;
-  //   f21->outer()->print2();
-  // }
-  if (f21 != nullptr && f21->outer() == e21) {
-    f21->setOuterComponent(e20);
+  if (f21 != nullptr) {
+    if (f21->outer() == e21) {
+      // The original half edge is the outer incident half edge of the face
+      f21->setOuterComponent(e20);
+    } else {
+      // Check inner half edges
+      for (int i=0; i<f21->inners().size(); i++) {
+        if (f21->inners()[i] == e21) {
+          f21->inners()[i] = e20;
+          break;
+        }
+      }
+    }
   }
 
   // Add the new vertex
@@ -459,22 +484,10 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
   _halfedges.push_back(e20);
   _halfedges.push_back(e01);
 
-  // std::cout << "        remove old half edges" << std::endl;
+
   _halfedges.remove(e12);
   _halfedges.remove(e21);
 
-  // std::cout << "        delete old half edges" << std::endl;
-  // delete e12;
-  // delete e21;
-
-  // std::cout << "        half edges of vertex v0: " << v0 << std::endl;
-  // v0->printAllLeavingHalfEdges();
-
-  // std::cout << "        half edges of vertex v1: " << v1 << std::endl;
-  // v1->printAllLeavingHalfEdges();
-
-  // std::cout << "        half edges of vertex v2: " << v2 << std::endl;
-  // v2->printAllLeavingHalfEdges();
 }
 
 
@@ -499,8 +512,9 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
  * @return The half edge from v1 to v2.
  */
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
-  // std::cout << "[debug] addEdge: " << v1 << ", " << v2 << std::endl;
-  PLOG(debug) << "adding edge: " << v1 << " -> " << v2;
+  PLOG(debug) << "start";
+
+  PLOG(debug) << "  adding edge: " << v1 << " -> " << v2;
 
   addVertex(v1);
   addVertex(v2);
@@ -528,7 +542,18 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   _halfedges.push_back(he12);
   _halfedges.push_back(he21);
 
+  PLOG(debug) << "done";
+
   return he12;
+}
+
+
+PDCELHalfEdge *PDCEL::find_or_add_edge(PDCELVertex *v1, PDCELVertex *v2) {
+  PDCELHalfEdge *he = findHalfEdge(v1, v2);
+  if (he == nullptr) {
+    he =  addEdge(v1, v2);
+  }
+  return he;
 }
 
 
@@ -601,38 +626,41 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
  * @param[in] he The half edge to remove from the DCEL.
  */
 void PDCEL::removeEdge(PDCELHalfEdge *he) {
-  PLOG(debug) << "removing edge: " << he;
+  PLOG(debug) << "removing half edge: " << he;
 
   PDCELHalfEdge *he2 = he->twin();
 
-  // std::cout << "he1: " << he << std::endl;
-  // std::cout << "he2: " << he2 << std::endl;
-
   // Update face incident edges
-  // std::cout << "update face incident edge\n";
+  PLOG(debug) << "  check face incident edge";
   if (he->face()) {
-    // std::cout << "he1 outer\n";
-    // he->face()->print();
-    // std::cout << he->face()->outer() << std::endl;
+    PLOG(debug) << "    the half edge belongs to a face";
     if (he->face()->outer() == he) {
+      PLOG(debug) << "      the half edge is the outer component of the face";
       if (he->next()) {
+        PLOG(debug) << "        the half edge has a next, set the outer component to the next";
         he->face()->setOuterComponent(he->next());
       } else if (he->prev()) {
+        PLOG(debug) << "        the half edge has a prev, set the outer component to the prev";
         he->face()->setOuterComponent(he->prev());
       } else {
+        PLOG(debug) << "        the half edge has no next or prev, set the outer component to nullptr";
         he->face()->setOuterComponent(nullptr);
       }
     }
 
-    // std::cout << "he1 inner\n";
+    PLOG(debug) << "    check inner half edges";
     for (int i=0; i<he->face()->inners().size(); i++) {
-      // std::cout << he->face()->inners()[i] << std::endl;
+      PLOG(debug) << "      checking inner half edge: " << he->face()->inners()[i];
       if (he->face()->inners()[i] == he) {
+        PLOG(debug) << "        the half edge is found in the inner half edges";
         if (he->next()) {
+          PLOG(debug) << "          the half edge has a next, set the inner half edge to the next";
           he->face()->inners()[i] = he->next();
         } else if (he->prev()) {
+          PLOG(debug) << "          the half edge has a prev, set the inner half edge to the prev";
           he->face()->inners()[i] = he->prev();
         } else {
+          PLOG(debug) << "          the half edge has no next or prev, set the inner half edge to nullptr";
           he->face()->inners()[i] = nullptr;
         }
         break;
@@ -640,30 +668,36 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
     }
   }
 
+  PLOG(debug) << "  check twin half edge";
   if (he2->face()) {
-    // std::cout << "he2 outer\n";
-    // std::cout << he2->face()->name() << std::endl;
-    // he2->face()->print();
-    // std::cout << he2->face()->outer() << std::endl;
+    PLOG(debug) << "    the twin half edge belongs to a face";
     if (he2->face()->outer() == he2) {
+      PLOG(debug) << "      the twin half edge is the outer component of the face";
       if (he2->next()) {
+        PLOG(debug) << "        the twin half edge has a next, set the outer component to the next";
         he2->face()->setOuterComponent(he2->next());
       } else if (he2->prev()) {
+        PLOG(debug) << "        the twin half edge has a prev, set the outer component to the prev";
         he2->face()->setOuterComponent(he2->prev());
       } else {
+        PLOG(debug) << "        the twin half edge has no next or prev, set the outer component to nullptr";
         he2->face()->setOuterComponent(nullptr);
       }
     }
 
-    // std::cout << "he2 inner\n";
+    PLOG(debug) << "    check inner half edges";
     for (int i=0; i<he2->face()->inners().size(); i++) {
-      // std::cout << he2->face()->inners()[i] << std::endl;
+      PLOG(debug) << "      checking inner half edge: " << he2->face()->inners()[i];
       if (he2->face()->inners()[i] == he2) {
+        PLOG(debug) << "        the twin half edge is found in the inner half edges";
         if (he2->next()) {
+          PLOG(debug) << "          the twin half edge has a next, set the inner half edge to the next";
           he2->face()->inners()[i] = he2->next();
         } else if (he2->prev()) {
+          PLOG(debug) << "          the twin half edge has a prev, set the inner half edge to the prev";
           he2->face()->inners()[i] = he2->prev();
         } else {
+          PLOG(debug) << "          the twin half edge has no next or prev, set the inner half edge to nullptr";
           he2->face()->inners()[i] = nullptr;
         }
         break;
@@ -671,90 +705,132 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
     }
   }
 
-
-
-  // Update loop incident edge
-  // std::cout << "update loop incident edge\n";
+  PLOG(debug) << "  check loop incident edge";
   if (he->loop()) {
-    // std::cout << he->loop()->incidentEdge() << std::endl;
+    PLOG(debug) << "    the half edge belongs to a loop";
     if (he->loop()->incidentEdge() == he) {
+      PLOG(debug) << "      the half edge is the incident edge of the loop";
       if (he->next()) {
+        PLOG(debug) << "        the half edge has a next, set the incident edge to the next";
         he->loop()->setIncidentEdge(he->next());
       } else if (he->prev()) {
+        PLOG(debug) << "        the half edge has a prev, set the incident edge to the prev";
         he->loop()->setIncidentEdge(he->prev());
       } else {
+        PLOG(debug) << "        the half edge has no next or prev, set the incident edge to nullptr";
         he->loop()->setIncidentEdge(nullptr);
       }
     }
   }
 
+  PLOG(debug) << "  check twin loop incident edge";
   if (he2->loop()) {
-    // std::cout << he2->loop()->incidentEdge() << std::endl;
+    PLOG(debug) << "    the twin half edge belongs to a loop";
     if (he2->loop()->incidentEdge() == he2) {
+      PLOG(debug) << "      the twin half edge is the incident edge of the loop";
       if (he2->next()) {
+        PLOG(debug) << "        the twin half edge has a next, set the incident edge to the next";
         he2->loop()->setIncidentEdge(he2->next());
       } else if (he2->prev()) {
+        PLOG(debug) << "        the twin half edge has a prev, set the incident edge to the prev";
         he2->loop()->setIncidentEdge(he2->prev());
       } else {
+        PLOG(debug) << "        the twin half edge has no next or prev, set the incident edge to nullptr";
         he2->loop()->setIncidentEdge(nullptr);
       }
     }
   }
 
-  // Update prev and next edges
-  // std::cout << "update prev and next edge\n";
-  if (he->prev() && he->next()) {
-    he->prev()->setNext(he->next());
-    he->next()->setPrev(he->prev());
+  PLOG(debug) << "  check prev and next edges";
+  if (he->prev()) {
+    PLOG(debug) << "    the half edge has a prev: " << he->prev();
+    if (he->prev()->twin() != he2->next()) {
+      PLOG(debug) << "      set the prev's next to the twin's next";
+      he->prev()->setNext(he2->next());
+      PLOG(debug) << "      set the twin's next's prev to the prev";
+      he2->next()->setPrev(he->prev());
+    } else {
+      PLOG(debug) << "      the prev's twin is the twin's next";
+      PLOG(debug) << "      set the prev's next to nullptr";
+      he->prev()->setNext(nullptr);
+      PLOG(debug) << "      set the twin's next's prev to nullptr";
+      he2->next()->setPrev(nullptr);
+    }
   }
-  // std::cout << he->prev()->next() << std::endl;
-  // std::cout << he->next()->prev() << std::endl;
 
-  if (he2->prev() && he2->next()) {
-    he2->prev()->setNext(he2->next());
-    he2->next()->setPrev(he2->prev());
+  if (he->next()) {
+    PLOG(debug) << "    the half edge has a next: " << he->next();
+    if (he->next()->twin() != he2->prev()) {
+      PLOG(debug) << "      set the next's prev to the twin's prev";
+      he->next()->setPrev(he2->prev());
+      PLOG(debug) << "      set the twin's prev's next to the next";
+      he2->prev()->setNext(he->next());
+    } else {
+      PLOG(debug) << "      the next's twin is the prev's twin";
+      PLOG(debug) << "      set the next's prev to nullptr";
+      he->next()->setPrev(nullptr);
+      PLOG(debug) << "      set the twin's prev's next to nullptr";
+      he2->prev()->setNext(nullptr);
+    }
   }
-  // std::cout << he2->prev()->next() << std::endl;
-  // std::cout << he2->next()->prev() << std::endl;
 
-  // Update vertex incident edge
-  // std::cout << "update vertex incident edge\n";
-  // std::cout << he->source()->edge() << std::endl;
+
+  PLOG(debug) << "  check source vertex: " << he->source();
   if (he->source()->edge() == he) {
+    PLOG(debug) << "    the half edge is the incident edge of the source vertex";
     if (he->twin()->next()) {
+      PLOG(debug) << "      the twin half edge has a next, set the incident edge to the next";
       he->source()->setIncidentEdge(he->twin()->next());
     } else if (he->prev()) {
+      PLOG(debug) << "      the twin half edge has a prev, set the incident edge to the prev";
       he->source()->setIncidentEdge(he->prev()->twin());
+    } else {
+      PLOG(debug) << "      the twin half edge has no next or prev, set the incident edge to nullptr";
+      he->source()->setIncidentEdge(nullptr);
+
+      PLOG(debug) << "      the source vertex is isolated, remove it";
+      removeVertex(he->source());
     }
   }
 
-  // std::cout << he2->source()->edge() << std::endl;
+  PLOG(debug) << "  check twin's source vertex: " << he2->source();
   if (he2->source()->edge() == he2) {
+    PLOG(debug) << "    the twin half edge is the incident edge of its source vertex";
     if (he2->twin()->next()) {
+      PLOG(debug) << "      the twin half edge has a next, set the incident edge to the next";
       he2->source()->setIncidentEdge(he2->twin()->next());
     } else if (he2->prev()) {
+      PLOG(debug) << "      the twin half edge has a prev, set the incident edge to the prev";
       he2->source()->setIncidentEdge(he2->prev()->twin());
+    } else {
+      PLOG(debug) << "      the twin half edge has no next or prev, set the incident edge to nullptr";
+      he2->source()->setIncidentEdge(nullptr);
+
+      PLOG(debug) << "      the source vertex is isolated, remove it";
+      removeVertex(he2->source());
     }
   }
 
-  // Merge source and target vertices
-  // std::cout << "merge source and target vertices\n";
-  PDCELVertex *vs = he->source();
-  PDCELVertex *vt = he->target();
-  PDCELHalfEdge *_he_tmp = vt->edge();
-  do {
-    // Outbound edge
-    _he_tmp->setSource(vs);
+  // // Merge source and target vertices
+  // // std::cout << "merge source and target vertices\n";
+  // PDCELVertex *vs = he->source();
+  // PDCELVertex *vt = he->target();
+  // PDCELHalfEdge *_he_tmp = vt->edge();
+  // do {
+  //   // Outbound edge
+  //   _he_tmp->setSource(vs);
 
-    // Inbound edge
-    _he_tmp = _he_tmp->twin();
+  //   // Inbound edge
+  //   _he_tmp = _he_tmp->twin();
 
 
-    _he_tmp = _he_tmp->next();
-  } while (_he_tmp != vt->edge());
+  //   _he_tmp = _he_tmp->next();
+  // } while (_he_tmp != vt->edge());
 
-  // Remove target vertex
-  removeVertex(vt);
+  // // Remove target vertex
+  // if (vt->edge() == nullptr) {
+  //   removeVertex(vt);
+  // }
 
   _halfedges.remove(he);
   _halfedges.remove(he2);
@@ -1615,11 +1691,15 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
  * @param he The half edge to update.
  */
 void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
-  PLOG(debug) << "updateEdgeNeighbors";
+  PLOG(debug) << "start";
+
+  PLOG(debug) << "  he = " << he;
 
   PDCELVertex *v = he->source();
   PDCELHalfEdge *het = he->twin();
 
+  PLOG(debug) << "  v = " << v << " degree = " << v->degree();
+  PLOG(debug) << "  he twin = " << het;
 
   if (v->degree() == 0) {
     // If the source vertex has degree 0, set the incident edge to be the given
@@ -1693,6 +1773,8 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     he12left->twin()->next()->setPrev(het);
     he12left->twin()->setNext(he);
   }
+
+  PLOG(debug) << "done";
 }
 
 

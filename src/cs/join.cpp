@@ -32,6 +32,8 @@
 void PComponent::join_segment_to_dependency(
   Segment *s, int e, Message *pmessage) {
 
+  PLOG(debug) << "start";
+
   // 1. Use the reference point of the component to find the outer
   // half edge loop that enclosing this point
   // 2. Find all inner half edge loops inside the outer half edge loop
@@ -188,7 +190,7 @@ void PComponent::join_segment_to_dependency(
   if (d_base == INF) {
     // No intersection found
     PLOG(debug) << "no intersection found";
-    createSegmentFreeEnd(s, e, pmessage);
+    // createSegmentFreeEnd(s, e, pmessage);
     return;
   }
 
@@ -219,13 +221,19 @@ void PComponent::join_segment_to_dependency(
   PDCELVertex *_v_he_1 = get_vertex_on_polyline_by_segment_param_coord(
     hel_intersect_1->vertices(), i_he_1, u_he_1, is_new_he_1
   );
+
+  // The vertex on the edge whose the other vertex is the intersection
+  // This is used to update the end bound vertex of the segment later
+  PDCELVertex *_v_on_edge_to_intersect_base;
+
   if (is_new_he_1) {
     // Find the half edge that the intersection point is on
     std::vector<PDCELVertex *> _vertices = hel_intersect_1->vertices();
     PDCELHalfEdge *_he = _pmodel->dcel()->findHalfEdge(
       _vertices[i_he_1], _vertices[i_he_1 + 1]
     );
-    _pmodel->dcel()->splitEdge(_he, _v_he_1);
+    _pmodel->dcel()->splitEdge(_he, v_intersect_base);
+
   }
 
 
@@ -302,12 +310,70 @@ void PComponent::join_segment_to_dependency(
     PDCELHalfEdge *_he = _pmodel->dcel()->findHalfEdge(
       _vertices[i_he_2], _vertices[i_he_2 + 1]
     );
-    _pmodel->dcel()->splitEdge(_he, _v_he_2);
+    _pmodel->dcel()->splitEdge(_he, v_intersect_offset);
   }
 
 
   // 4. Update the base-offset index pairs
   s->updateBaseOffsetIndexPairs(pmessage);
+
+
+  // 5. Update the bound vertices
+  PLOG(debug) << pmessage->message("step 5: update the bound vertices");
+
+  std::vector<PDCELVertex *> _bound_vertices;
+
+  PDCELHalfEdge *_he_base, *_he;
+  if (e == 0) {
+    // For the head of the segment, use the first line segment
+
+    // Find/Add the half edge of the first base line segment
+    _he_base = _pmodel->dcel()->find_or_add_edge(
+      s->curveBase()->vertices()[0], s->curveBase()->vertices()[1]);
+
+    // Iterate over the prev half edges to add the vertices
+    _he = _he_base;
+    do {
+      _bound_vertices.push_back(_he->source());
+      if (_he->source() == s->curveOffset()->vertices()[0]) {
+        break;
+      }
+      _he = _he->prev();
+    } while (_he != _he_base || _he != nullptr);
+
+    PLOG(debug) << "prev bound vertices: " << vertices_to_string(_bound_vertices);
+
+    s->setPrevBoundVertices(_bound_vertices);
+  }
+  else if (e == 1) {
+    // For the tail of the segment, use the last line segment
+
+    // Find/Add the half edge of the last base line segment
+    _he_base = _pmodel->dcel()->find_or_add_edge(
+      s->curveBase()->vertices()[s->curveBase()->vertices().size() - 2],
+      s->curveBase()->vertices()[s->curveBase()->vertices().size() - 1]);
+
+    // Iterate over the next half edges to add the vertices
+    _he = _he_base;
+    do {
+      _bound_vertices.push_back(_he->target());
+      if (_he->target() == s->curveOffset()->vertices()[s->curveOffset()->vertices().size() - 1]) {
+        break;
+      }
+      _he = _he->next();
+    } while (_he != _he_base || _he != nullptr);
+
+    PLOG(debug) << "next bound vertices: " << vertices_to_string(_bound_vertices);
+
+    s->setNextBoundVertices(_bound_vertices);
+  }
+
+  // Finally, remove the temporary half edge for base
+  //   since the base curve could change later
+  _pmodel->dcel()->removeEdge(_he_base);
+
+
+  PLOG(debug) << "done";
 
 }
 
