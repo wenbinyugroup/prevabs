@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-03-26 18:32:51)
+[info] [main: 296] - prevabs start (2025-03-26 21:19:25)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -15,7 +15,7 @@
   
   ========================================
   
-lease\MaterialDB.xml
+\MaterialDB.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
 [info] [CrossSection::build: 301]     - building the cross section, step 1
@@ -45,5 +45,5 @@ lease\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]         -   writing local orientation
 [info] [PModel::writeSG: 158]     - writing material id-name file: t1_strip\strip.sg.mat
 [info] [PModel::homogenize: 838]   - writing outputs -- done
-[info] [main: 367]   - prevabs finished (2025-03-26 18:32:51)
-[info] [main: 369] total running time: 0.102 sec
+[info] [main: 367]   - prevabs finished (2025-03-26 21:19:26)
+[info] [main: 369] total running time: 0.178 sec

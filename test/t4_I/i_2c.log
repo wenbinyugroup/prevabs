@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-03-26 18:44:23)
+[info] [main: 296] - prevabs start (2025-03-26 21:20:38)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -115,7 +115,7 @@ g main input file: i_2c.xml
 [debug] [read_geometry: 532]     -  
 [debug] [read_geometry: 536]     - finished reading geometry.
 [debug] [read_materials: 552]     - reading materials...
-[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: materials.xml
 [debug] [readXMLElementMaterial: 193]             - reading material: iso5_1
 [debug] [readXMLElementMaterial: 193]             - reading material: iso5_2

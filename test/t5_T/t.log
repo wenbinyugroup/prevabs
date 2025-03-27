@@ -1,9 +1,9 @@
-[info] [main: 296] - prevabs start (2025-03-26 18:32:56)
+[info] [main: 296] - prevabs start (2025-03-26 21:19:27)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
 g main input file: t5_T\t.xml
-[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t5_T\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
