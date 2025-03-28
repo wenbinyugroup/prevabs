@@ -96,6 +96,7 @@ void PDCELVertex::printAllLeavingHalfEdges(const int &direction) {
 
 
 void PDCELVertex::log_all_leaving_half_edges(const int &direction) {
+  PLOG(debug) << "all leaving half edges of vertex " << this;
   PDCELHalfEdge *he = _incident_edge;
   do {
     if (he == nullptr) {
@@ -114,7 +115,7 @@ void PDCELVertex::log_all_leaving_half_edges(const int &direction) {
       he = he->twin()->next();
     }
   } while (he != _incident_edge);
-  PLOG(debug) << "stop";
+  PLOG(debug) << "done";
 }
 
 

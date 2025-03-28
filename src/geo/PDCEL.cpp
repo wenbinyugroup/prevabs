@@ -46,37 +46,47 @@ PDCEL::~PDCEL() {
  * unbounded face.
  */
 void PDCEL::initialize() {
+
+  _vertex_tree = new PAVLTreeVertex();
+
   // Create the infinite bounding box
   PDCELVertex *v_top_right = new PDCELVertex(0, INF, INF, false);
   PDCELVertex *v_top_left = new PDCELVertex(0, -INF, INF, false);
   PDCELVertex *v_bottom_left = new PDCELVertex(0, -INF, -INF, false);
   PDCELVertex *v_bottom_right = new PDCELVertex(0, INF, -INF, false);
 
-  PGeoLineSegment *ls_top = new PGeoLineSegment(v_top_right, v_top_left);
-  PGeoLineSegment *ls_left = new PGeoLineSegment(v_top_left, v_bottom_left);
-  PGeoLineSegment *ls_bottom = new PGeoLineSegment(v_bottom_left, v_bottom_right);
-  PGeoLineSegment *ls_right = new PGeoLineSegment(v_bottom_right, v_top_right);
+  addVertex(v_top_right);
+  addVertex(v_top_left);
+  addVertex(v_bottom_left);
+  addVertex(v_bottom_right);
 
-  PDCELHalfEdge *he_top = addEdge(ls_top);
-  PDCELHalfEdge *he_left = addEdge(ls_left);
-  PDCELHalfEdge *he_bottom = addEdge(ls_bottom);
-  PDCELHalfEdge *he_right = addEdge(ls_right);
+  // PGeoLineSegment *ls_top = new PGeoLineSegment(v_top_right, v_top_left);
+  // PGeoLineSegment *ls_left = new PGeoLineSegment(v_top_left, v_bottom_left);
+  // PGeoLineSegment *ls_bottom = new PGeoLineSegment(v_bottom_left, v_bottom_right);
+  // PGeoLineSegment *ls_right = new PGeoLineSegment(v_bottom_right, v_top_right);
+
+  PDCELHalfEdge *he_top = addEdge(v_top_right, v_top_left);
+  PDCELHalfEdge *he_left = addEdge(v_top_left, v_bottom_left);
+  PDCELHalfEdge *he_bottom = addEdge(v_bottom_left, v_bottom_right);
+  PDCELHalfEdge *he_right = addEdge(v_bottom_right, v_top_right);
 
   PDCELHalfEdgeLoop *hel = addHalfEdgeLoop(he_top);
 
   PDCELFace *f = new PDCELFace(he_top, false); // The unbounded face
   f->setName("background");
 
-  _vertex_tree = new PAVLTreeVertex();
-
   hel->setDirection(1);
   hel->setFace(f);
   hel->setKeep(true);
 
-  _vertices.push_back(v_top_right);
-  _vertices.push_back(v_top_left);
-  _vertices.push_back(v_bottom_left);
-  _vertices.push_back(v_bottom_right);
+  // _vertices.push_back(v_top_right);
+  // _vertices.push_back(v_top_left);
+  // _vertices.push_back(v_bottom_left);
+  // _vertices.push_back(v_bottom_right);
+  // v_top_right->setDCEL(this);
+  // v_top_left->setDCEL(this);
+  // v_bottom_left->setDCEL(this);
+  // v_bottom_right->setDCEL(this);
 
   // Remove the half edges which are not part of the unbounded face
   _halfedges.remove(he_top->twin());
@@ -269,8 +279,13 @@ void PDCEL::addVertex(PDCELVertex *v) {
   if (v->dcel() == nullptr) {
     PLOG(debug) << "  new vertex";
     _vertices.push_back(v);
+    PLOG(debug) << "  vertex added to _vertices";
+    PLOG(debug) << "  _vertices.size() = " << _vertices.size();
     _vertex_tree->insert(v);
+    PLOG(debug) << "  vertex inserted into _vertex_tree";
     v->setDCEL(this);
+  } else {
+    PLOG(debug) << "  vertex already in DCEL";
   }
 
   PLOG(debug) << "done";
@@ -501,49 +516,60 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
 /**
  * @brief Add a new edge to the DCEL.
  *
- * This function first adds the two vertices to the DCEL if they are not
- * already in the DCEL. Then it creates two half edges, one from v1 to v2
- * and one from v2 to v1, and a PGeoLineSegment to represent the line
- * segment between the two vertices.  The half edges are then added to the
- * DCEL and the edge neighbors of the two vertices are updated.
+ * This function adds a new edge between two vertices in the DCEL. It handles:
+ * 1. Input validation
+ * 2. Vertex addition if not already present
+ * 3. Creation of twin half-edges
+ * 4. Creation and linking of the line segment
+ * 5. Updating edge neighbors
+ * 6. Adding the new edges to the DCEL
  *
- * @param v1 The source vertex of the edge.
- * @param v2 The target vertex of the edge.
- * @return The half edge from v1 to v2.
+ * @param v1 The source vertex of the edge
+ * @param v2 The target vertex of the edge
+ * @return The half edge from v1 to v2, or nullptr if operation fails
+ * @throws std::invalid_argument if input vertices are invalid
+ * @throws std::runtime_error if edge creation fails
  */
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
-  PLOG(debug) << "start";
+  PLOG(debug) << "Adding edge between vertices: " << v1 << " -> " << v2;
 
-  PLOG(debug) << "  adding edge: " << v1 << " -> " << v2;
+  // Input validation
+  if (!v1 || !v2) {
+    PLOG(error) << "Invalid vertex input: v1=" << v1 << ", v2=" << v2;
+    throw std::invalid_argument("Invalid vertex input");
+  }
 
+  // Add vertices if not already in DCEL
   addVertex(v1);
   addVertex(v2);
 
+  // Create line segment
   PGeoLineSegment *ls = new PGeoLineSegment(v1, v2);
 
+  // Create twin half-edges
   PDCELHalfEdge *he12 = new PDCELHalfEdge(v1, 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(v2, -1);
 
+  // Link half-edges with line segment
   he12->setLineSegment(ls);
   he21->setLineSegment(ls);
-
   ls->setHalfEdge(he12);
   ls->setHalfEdge(he21);
-
   he12->setTwin(he21);
   he21->setTwin(he12);
 
-  // std::cout << "v1 degree = " << v1->degree() << std::endl;
+  // Update edge neighbors
   updateEdgeNeighbors(he12);
-
-  // std::cout << "v2 degree = " << v2->degree() << std::endl;
   updateEdgeNeighbors(he21);
 
+  // Add edges to DCEL
   _halfedges.push_back(he12);
   _halfedges.push_back(he21);
 
-  PLOG(debug) << "done";
+  v1->log_all_leaving_half_edges(1);
+  v2->log_all_leaving_half_edges(1);
 
+  PLOG(debug) << "Successfully added edge";
   return he12;
 }
 
@@ -599,7 +625,7 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
   he21->setTwin(he12);
 
   updateEdgeNeighbors(he12);
-  updateEdgeNeighbors(he21);
+  // updateEdgeNeighbors(he21);
 
   _halfedges.push_back(he12);
   _halfedges.push_back(he21);
@@ -1691,88 +1717,100 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
  * @param he The half edge to update.
  */
 void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
-  PLOG(debug) << "start";
+  PLOG(debug) << "Updating neighbors of edge " << he;
 
-  PLOG(debug) << "  he = " << he;
-
-  PDCELVertex *v = he->source();
-  PDCELHalfEdge *het = he->twin();
-
-  PLOG(debug) << "  v = " << v << " degree = " << v->degree();
-  PLOG(debug) << "  he twin = " << het;
-
-  if (v->degree() == 0) {
-    // If the source vertex has degree 0, set the incident edge to be the given
-    // half edge.
-    v->setIncidentEdge(he);
-  } else if (v->degree() == 1) {
-    // If the source vertex has degree 1, set the previous and next half edges
-    // to form a cycle.
-    he->setPrev(v->edge()->twin());
-    v->edge()->twin()->setNext(he);
-    het->setNext(v->edge());
-    v->edge()->setPrev(het);
-  } else {
-    // Two or more edges
-    // Find the closest one on the left to the new edge
-    std::list<PDCELHalfEdge *> cycle_list, cycle_list_2;
-    PDCELHalfEdge *hei;
-    int list_num = 1;
-
-    hei = v->edge();
-    cycle_list.push_back(hei);
-    hei = hei->prev()->twin();
-    do {
-      // If the angle of the current half edge is less than the angle of the
-      // last half edge in the list, then the list number is 2.
-      if (hei->angle() < cycle_list.back()->angle()) {
-        list_num = 2;
-      }
-      // Add the current half edge to the list.
-      if (list_num == 1) {
-        cycle_list.push_back(hei);
-      } else if (list_num == 2) {
-        cycle_list_2.push_back(hei);
-      }
-      // Move to the previous half edge.
-      hei = hei->prev()->twin();
-    } while (hei != v->edge());
-
-    // If the second list is not empty, then the first list is the list of
-    // half edges that are on the left of the new edge and the second list is
-    // the list of half edges that are on the right of the new edge.
-    // Splice the second list into the first list.
-    if (cycle_list_2.size() > 0) {
-      cycle_list.splice(cycle_list.begin(), cycle_list_2);
-      // Now the list stores leaving edges sorted from (-pi, pi]
-    }
-
-    // Insert the new edge according to the angle
-    std::list<PDCELHalfEdge *>::iterator it;
-    for (it = cycle_list.begin(); it != cycle_list.end(); ++it) {
-      // If the angle of the new edge is less than the angle of the current
-      // half edge, then insert the new edge before the current half edge.
-      if (he->angle() < (*it)->angle())
-        break;
-    }
-    cycle_list.insert(it, he);
-
-    // Update prev and next
-    PDCELHalfEdge *he12left;
-    if (it == cycle_list.end()) {
-      // If the new edge is inserted at the end of the list, then the left
-      // neighbor of the new edge is the first half edge in the list.
-      he12left = cycle_list.front();
-    } else {
-      // Otherwise, the left neighbor of the new edge is the current half edge.
-      he12left = *it;
-    }
-
-    he->setPrev(he12left->twin());
-    het->setNext(he12left->twin()->next());
-    he12left->twin()->next()->setPrev(het);
-    he12left->twin()->setNext(he);
+  if (!he || !he->twin() || !he->source()) {
+    PLOG(error) << "Invalid half edge or missing required components";
+    return;
   }
+
+  PDCELHalfEdge *het = he->twin();
+  PDCELVertex *v = he->source();
+  
+  // Handle degree 0 case - vertex has no incident edges
+  if (v->degree() == 0) {
+    PLOG(debug) << "Vertex has no incident edges";
+    v->setIncidentEdge(he);
+    return;
+  }
+
+  // Handle degree 1 case - vertex has one incident edge
+  if (v->degree() == 1) {
+    PLOG(debug) << "Vertex has one incident edge";
+    PDCELHalfEdge *existing_edge = v->edge();
+    if (!existing_edge) {
+      PLOG(error) << "Vertex with degree 1 has no incident edge";
+      return;
+    }
+    
+    // Form a cycle with the existing edge
+    he->setPrev(existing_edge->twin());
+    existing_edge->twin()->setNext(he);
+    het->setNext(existing_edge);
+    existing_edge->setPrev(het);
+    return;
+  }
+
+  PLOG(debug) << "Vertex has degree >= 2";
+
+  // Handle degree >= 2 case - need to find correct position in sorted cycle
+  std::vector<PDCELHalfEdge *> sorted_edges;
+  PDCELHalfEdge *current = v->edge();
+  
+  if (!current) {
+    PLOG(error) << "Vertex with degree >= 2 has no incident edge";
+    return;
+  }
+
+  // Collect all edges in sorted order based on angle
+  do {
+    sorted_edges.push_back(current);
+    current = current->prev()->twin();
+  } while (current != v->edge());
+
+  PLOG(debug) << "Unsorted edges:";
+  for (auto he : sorted_edges) {
+    PLOG(debug) << "  " << he << " " << he->angle();
+  }
+
+  // Sort edges by angle
+  std::sort(sorted_edges.begin(), sorted_edges.end(),
+    [](PDCELHalfEdge* a, PDCELHalfEdge* b) {
+      return a->angle() < b->angle();
+    });
+
+  PLOG(debug) << "Sorted edges:";
+  for (auto he : sorted_edges) {
+    PLOG(debug) << "  " << he << " " << he->angle();
+  }
+
+  // Find insertion point for new edge
+  auto it = std::lower_bound(sorted_edges.begin(), sorted_edges.end(), he,
+    [](PDCELHalfEdge* a, PDCELHalfEdge* b) {
+      return a->angle() < b->angle();
+    });
+
+  // Update prev/next pointers
+  PDCELHalfEdge *prev_edge = (it == sorted_edges.begin()) ? sorted_edges.back() : *(it - 1);
+  PDCELHalfEdge *next_edge = (it == sorted_edges.end()) ? sorted_edges.front() : *it;
+
+  PLOG(debug) << "Setting prev/next pointers";
+  PLOG(debug) << "  prev_edge: " << prev_edge;
+  PLOG(debug) << "  next_edge: " << next_edge;
+
+  // Insert new edge
+  sorted_edges.insert(it, he);
+
+  PLOG(debug) << "Updated sorted edges:";
+  for (auto he : sorted_edges) {
+    PLOG(debug) << "  " << he << " " << he->angle();
+  }
+
+  he->setPrev(next_edge->twin());
+  next_edge->twin()->setNext(he);
+
+  het->setNext(prev_edge);
+  prev_edge->setPrev(het);
 
   PLOG(debug) << "done";
 }

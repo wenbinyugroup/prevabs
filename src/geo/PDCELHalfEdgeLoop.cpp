@@ -125,6 +125,8 @@ std::vector<PDCELVertex *> PDCELHalfEdgeLoop::vertices() {
 
 
 void PDCELHalfEdgeLoop::write_to_file(std::ofstream& file) {
+  PLOG(debug) << "writing half edge loop to file";
+
   file << "direction: ";
   if (direction() == 1) {
     file << "outer" << std::endl;
@@ -162,4 +164,6 @@ void PDCELHalfEdgeLoop::write_to_file(std::ofstream& file) {
   }
 
   file << std::endl;
+
+  PLOG(debug) << "done";
 }

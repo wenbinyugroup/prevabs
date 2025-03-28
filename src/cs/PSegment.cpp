@@ -325,7 +325,7 @@ void Segment::updateBaseOffsetIndexPairs(Message *pmessage) {
 
 
 void Segment::build(Message *pmessage) {
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
   PLOG(debug) << pmessage->message("building the overall shape of segment: " + _name);
 
@@ -337,7 +337,7 @@ void Segment::build(Message *pmessage) {
   PLOG(debug) << "base curve:\n"
               << vertices_to_string(_curve_base->vertices());
 
-  _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
+  // _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
 
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
@@ -389,7 +389,9 @@ void Segment::build(Message *pmessage) {
   hel->setKeep(true);
   hel->setFace(_face);
 
-  pmessage->decreaseIndent();
+  _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
+
+  // pmessage->decreaseIndent();
 }
 
 
