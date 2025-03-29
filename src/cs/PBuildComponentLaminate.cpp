@@ -173,26 +173,29 @@ void PComponent::buildLaminate(Message *pmessage) {
 
     }
 
+    // Build for each segment
+    // Create half edge loops for each segment (outer boundary)
+    PLOG(debug) << "building half edge loops for each segment";
+    for (auto seg : _segments) {
+
+      seg->build(pmessage);
+
+      if (config.debug) _pmodel->plotGeoDebug(pmessage);
+
+    }
+
+
+    // Check DCEL for debug
+    if (config.debug) {
+      PLOG(debug) << "writing DCEL to file after building segments";
+      _pmodel->dcel()->write_dcel_to_file(config.file_directory + config.file_base_name + "_dcel_done_building_segments_general_shape.txt");
+    }
+
+
   }
 
 
-  // Build for each segment
-  // Create half edge loops for each segment (outer boundary)
-  PLOG(debug) << "building half edge loops for each segment";
-  for (auto seg : _segments) {
 
-    seg->build(pmessage);
-
-    if (config.debug) _pmodel->plotGeoDebug(pmessage);
-
-  }
-
-
-  // Check DCEL for debug
-  if (config.debug) {
-    PLOG(debug) << "writing DCEL to file after building segments";
-    _pmodel->dcel()->write_dcel_to_file(config.file_directory + config.file_base_name + "_dcel_done_building_segments_general_shape.txt");
-  }
 
   // pmessage->decreaseIndent();
 

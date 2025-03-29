@@ -164,7 +164,7 @@ bool calc_line_intersection_2d(
 bool calc_line_intersection_2d(
   PDCELVertex *ls1v1, PDCELVertex *ls1v2,
   PDCELVertex *ls2v1, PDCELVertex *ls2v2,
-  PDCELVertex *v_intersect, double &u1, double &u2,
+  PDCELVertex *&v_intersect, double &u1, double &u2,
   const int &ex11, const int &ex12, const int &ex21, const int &ex22
   );
 // bool calcLineIntersection2D(

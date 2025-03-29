@@ -346,13 +346,16 @@ void Segment::build(Message *pmessage) {
       << i << " " << _curve_base->vertices()[i]
       << " -- v[i+1] " << i + 1 << " " << _curve_base->vertices()[i + 1];
 
-    he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
-                                       _curve_base->vertices()[i + 1]);
+    he = _pmodel->dcel()->find_or_add_edge(_curve_base->vertices()[i],  
+                                           _curve_base->vertices()[i + 1]);
 
-    if (he == nullptr) {
-      _pmodel->dcel()->addEdge(_curve_base->vertices()[i],
-                               _curve_base->vertices()[i + 1]);
-    }
+    // he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
+    //                                    _curve_base->vertices()[i + 1]);
+
+    // if (he == nullptr) {
+    //   _pmodel->dcel()->addEdge(_curve_base->vertices()[i],
+    //                            _curve_base->vertices()[i + 1]);
+    // }
 
   }
   // _pmodel->dcel()->print_dcel();
@@ -361,8 +364,10 @@ void Segment::build(Message *pmessage) {
   PLOG(debug) << pmessage->message("creating half edges for the offset curve");
 
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
-    _pmodel->dcel()->addEdge(_curve_offset->vertices()[i],
-                             _curve_offset->vertices()[i + 1]);
+    he = _pmodel->dcel()->find_or_add_edge(_curve_offset->vertices()[i],
+                                           _curve_offset->vertices()[i + 1]);
+    // _pmodel->dcel()->addEdge(_curve_offset->vertices()[i],
+    //                          _curve_offset->vertices()[i + 1]);
   }
 
   // Create half edge loop and face
@@ -388,6 +393,15 @@ void Segment::build(Message *pmessage) {
 
   hel->setKeep(true);
   hel->setFace(_face);
+
+  // Update other loops and faces
+  he->twin()->log();
+  if (he->twin()->loop() == nullptr) {
+    PLOG(debug) << "twin half edge belongs to no loop";
+  }
+
+
+  _pmodel->dcel()->linkHalfEdgeLoops();
 
   _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
 

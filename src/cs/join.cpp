@@ -86,17 +86,26 @@ void PComponent::join_segment_to_dependency(
   }
 
   // Find the outer half edge loop that encloses the reference point
+
+  // // Try to update inner loops first
+  // for (auto tmp_face : _pmodel->dcel()->faces()) {
+  //   _pmodel->dcel()->update_face_inner_loops(tmp_face);
+  // }
+
   PDCELHalfEdgeLoop *tmp_hel_out = _pmodel->dcel()->findEnclosingLoop(_ref_vertex);
+  PDCELFace *tmp_face = tmp_hel_out->face();
+  PLOG(debug) << "tmp_hel_out:";
+  tmp_hel_out->log();
+  PLOG(debug) << "first loop:";
+  _pmodel->dcel()->halfedgeloops().front()->log();
   if (tmp_hel_out != _pmodel->dcel()->halfedgeloops().front()) {
     // Not the first loop with INF size
     hels.push_back(tmp_hel_out);
   }
 
-  PDCELFace *tmp_face = tmp_hel_out->face();
   if (config.debug) {
     tmp_face->print();
   }
-
 
   // 2. Find all inner half edge loops inside the outer half edge loop
   PLOG(debug) << pmessage->message("step 2: find all inner half edge loops");

@@ -29,6 +29,7 @@ void PDCELHalfEdgeLoop::log() {
 
   PLOG(debug) << "adjacent loop:" << (_adjacent_loop ? _adjacent_loop->incidentEdge()->printBrief() : "nullptr");
 
+  PLOG(debug) << "done";
 }
 
 
@@ -91,7 +92,13 @@ int PDCELHalfEdgeLoop::direction() {
 
 void PDCELHalfEdgeLoop::setFace(PDCELFace *f) {
   _face = f;
-  _incident_edge->setIncidentFace(f);
+
+  // Set the incident face for all half edges in the loop
+  PDCELHalfEdge *he = _incident_edge;
+  do {
+    he->setIncidentFace(f);
+    he = he->next();
+  } while (he != _incident_edge);
 }
 
 

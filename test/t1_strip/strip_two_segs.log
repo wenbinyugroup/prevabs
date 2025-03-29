@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-03-26 21:19:26)
+[info] [main: 296] - prevabs start (2025-03-29 16:08:36)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -15,21 +15,22 @@
     
     ========================================
     
+xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
 [info] [CrossSection::build: 301]     - building the cross section, step 1
 [info] [PComponent::buildLaminate: 29]     - building component: top
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
-[info] [PComponent::joinSegments: 1159]         - joining segments ends: sgm_1 1, sgm_2 0
+[info] [PComponent::joinSegments: 1163]         - joining segments ends: sgm_1 1, sgm_2 0
 [info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
 [info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
-[info] [PComponent::joinSegments: 1919]         - done joining segments
+[info] [PComponent::joinSegments: 1923]         - done joining segments
 [info] [CrossSection::build: 345]         - building the cross section, step 2
 [info] [PComponent::buildDetails: 124]           - building component details: top
 [info] [Segment::updateBaseOffsetIndexPairs: 256]             - updating base-offset index pairs
 [info] [Segment::updateBaseOffsetIndexPairs: 256]             - updating base-offset index pairs
-[info] [PDCEL::fixGeometry: 210]         - fixing geometry by removing small edges
+[info] [PDCEL::fixGeometry: 221]         - fixing geometry by removing small edges
 [info] [PModel::homogenize: 802]       - building the shape -- done
 [info] [PModel::homogenize: 812]       - modeling in Gmsh
 [info] [PModel::createGmshVertices: 61]         - creating gmsh vertices
@@ -50,5 +51,5 @@
 [info] [PModel::writeElementsVABS: 226]           -   writing local orientation
 [info] [PModel::writeSG: 158]       - writing material id-name file: t1_strip\strip_two_segs.sg.mat
 [info] [PModel::homogenize: 838]     - writing outputs -- done
-[info] [main: 367]     - prevabs finished (2025-03-26 21:19:26)
-[info] [main: 369] total running time: 0.155 sec
+[info] [main: 367]     - prevabs finished (2025-03-29 16:08:36)
+[info] [main: 369] total running time: 0.131 sec

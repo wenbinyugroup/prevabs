@@ -21,6 +21,7 @@
 #include <limits>
 #include <list>
 #include <vector>
+#include <set>
 
 #include <typeinfo>
 
@@ -970,6 +971,7 @@ void PDCEL::addEdgesFromCurve(Baseline *bl) {
 
 /**
  * Add a half edge loop to the data structure.
+ * Update the pointer to the loop for each half edge in the loop.
  * @param[in] he a half edge of the loop
  * @return the newly created half edge loop
  */
@@ -986,7 +988,7 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
     hei = hei->next();
 
     if (hei == nullptr) {
-      PLOG(warning) << "  half edge is nullptr";
+      PLOG(error) << "  half edge is nullptr";
       break;
     }
 
@@ -1111,14 +1113,19 @@ void PDCEL::clearHalfEdgeLoops() {
  * @return the nearest loop
  */
 PDCELHalfEdgeLoop *PDCEL::findNearestLoop(PDCELHalfEdgeLoop *loop) {
+  PLOG(debug) << "finding nearest loop";
+
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
   PGeoLineSegment *ls_below =
       findLineSegmentBelowVertex(loop->bottomLeftVertex());
+
   if (ls_below != nullptr) {
     PDCELHalfEdge *he = findHalfEdge(ls_below->vin(), ls_below->vout());
     loop_near = he->loop();
   }
+
+  PLOG(debug) << "done";
 
   return loop_near;
 }
@@ -1194,15 +1201,20 @@ void PDCEL::createTempLoops() {
  * should have a path linking to an outer loop.
  */
 void PDCEL::linkHalfEdgeLoops() {
+  PLOG(debug) << "linking half edge loops";
+
   PDCELHalfEdgeLoop *hel;
-  std::list<PDCELHalfEdgeLoop *>::iterator lit;
-  for (lit = _halfedge_loops.begin(); lit != _halfedge_loops.end(); ++lit) {
-    if ((*lit)->direction() < 0) {
+  for (auto hel : _halfedge_loops) {
+    hel->log();
+    if (hel->direction() < 0) {
       // Each inner loop should have a path linking to an outer loop
-      hel = findNearestLoop((*lit));
-      (*lit)->setAdjacentLoop(hel);
+      hel = findNearestLoop(hel);
+      hel->setAdjacentLoop(hel);
     }
   }
+
+  PLOG(debug) << "done";
+
 }
 
 
@@ -1218,31 +1230,34 @@ void PDCEL::linkHalfEdgeLoops() {
  * The algorithm works by first finding a line segment below the vertex, then
  * traversing the half edge loop chain until it reaches an outer loop.
  * @param[in] v the vertex to find the enclosing loop for
- * @return the enclosing loop
+ * @return the enclosing loop, or nullptr if no valid enclosing loop is found
  */
 PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
-  // std::cout << "\n[debug] findEnclosingLoop: " << v << std::endl;
+  PLOG(debug) << "finding loop enclosing vertex: " << v;
+
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
   PGeoLineSegment *ls_below = findLineSegmentBelowVertex(v);
+  PLOG(debug) << "ls_below: " << ls_below;
+
   if (ls_below != nullptr) {
-    // std::cout << "        line segment ls_below: " << ls_below << std::endl;
-    // std::cout << "        vertex ls_below->vin(): " << ls_below->vin() << std::endl;
-    // std::cout << "        vertex ls_below->vout(): " << ls_below->vout() << std::endl;
+
     PDCELHalfEdge *he = findHalfEdge(ls_below->vin(), ls_below->vout());
-    // std::cout << "        half edge he: " << he << std::endl;
+    PLOG(debug) << "he: " << he;
     
     loop_near = he->loop();
-    // std::cout << "        half edge loop loop_near:" << std::endl;
-    // loop_near->print();
+    loop_near->log();
 
+    // if (loop_near->direction() != 1)
     while (loop_near->adjacentLoop() != nullptr) {
       // Need to return the outer loop
       loop_near = loop_near->adjacentLoop();
     }
   }
 
-  // loop_near->print();
+  loop_near->log();
+
+  PLOG(debug) << "done";
 
   return loop_near;
 }
@@ -1414,6 +1429,16 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
 //
 // ===================================================================
 
+/// @brief Create a new face from a half edge loop and add it to the DCEL.
+///
+/// This function:
+/// - creates a new face
+/// - sets the outer component to the half edge loop
+/// - sets the incident face for each half edge in the loop
+/// - adds the face to the DCEL
+///
+/// @param hel the half edge loop to create the face from
+/// @return the newly created face
 PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
   // std::cout << "[debug] addFace" << std::endl;
 
@@ -1683,7 +1708,7 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
     if (helj == hel_out) {
       // Check if the loop has a valid incident edge
       if (heli->incidentEdge() == nullptr) {
-        PLOG(warning) << "Inner loop has no incident edge, skipping";
+        PLOG(error) << "Inner loop has no incident edge, skipping";
         continue;
       }
       
@@ -1824,14 +1849,37 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
 
 
 /**
- * @brief Find all line segments at the sweep line at a given vertex.
+ * @brief Find all line segments that intersect with a vertical sweep line at a given vertex.
  *
- * Find all line segments at the sweep line at a given vertex. The sweep line
- * is a vertical line passing through the given vertex. The function returns a
- * list of line segments that intersect with the sweep line.
+ * This function implements part of a sweep line algorithm to find all line segments
+ * that intersect with a vertical sweep line passing through a given vertex. The sweep
+ * line moves from left to right through the plane, and this function maintains the
+ * active set of line segments that intersect with the sweep line at the given vertex.
  *
- * @param v The vertex that the sweep line passes through.
- * @return A list of line segments that intersect with the sweep line.
+ * Algorithm:
+ * 1. Get all vertices in order from left to right using the vertex tree
+ * 2. For each vertex encountered before the target vertex:
+ *    - For each half-edge leaving the vertex:
+ *      a. If the vertex is on the left/bottom of the edge:
+ *         - Create a line segment if it doesn't exist
+ *         - Add the line segment to the active set
+ *      b. If the vertex is on the right/top of the edge:
+ *         - Remove the line segment from the active set
+ *         - Clear the line segment references
+ * 3. Return the final set of active line segments
+ *
+ * @param v The vertex through which the sweep line passes. This vertex must be
+ *          present in the vertex tree and must be a valid vertex in the DCEL.
+ * @return A list of PGeoLineSegment pointers representing all line segments that
+ *         intersect with the vertical sweep line at the given vertex. The list is
+ *         ordered based on the sweep line's position.
+ * @note The function assumes that the vertex tree (_vertex_tree) is properly
+ *       initialized and maintained. It also assumes that the DCEL structure is
+ *       valid and consistent.
+ * @note The function manages line segment memory by creating new segments when
+ *       needed and clearing them when they are no longer active.
+ * @note The sweep line algorithm is used to efficiently find intersections and
+ *       maintain the active set of line segments during geometric computations.
  */
 std::list<PGeoLineSegment *>
 PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
@@ -1902,11 +1950,50 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
 
 
 /**
- * Find the line segment below a given vertex.
- * The method returns the line segment below the given vertex by sweeping a
- * vertical line through the vertex from the top to the bottom.
- * @param[in] v The vertex to find the line segment below
- * @return The line segment below the given vertex
+ * @brief Find the closest line segment below a given vertex by sweeping a vertical line.
+ *
+ * This function implements a vertical sweep line algorithm to find the closest line segment
+ * that lies below a given vertex. It works by:
+ * 1. Finding all line segments that intersect with a vertical sweep line at the vertex
+ * 2. Creating a temporary vertical line segment from the vertex
+ * 3. Finding intersections between this vertical line and all active line segments
+ * 4. Selecting the closest intersection point below the vertex
+ *
+ * Algorithm Details:
+ * 1. Get all active line segments at the vertex's x-coordinate using findLineSegmentsAtSweepLine
+ * 2. Create a temporary vertical line segment from the vertex to a point above it
+ * 3. For each active line segment:
+ *    a. Calculate intersection with the vertical line
+ *    b. If segments intersect:
+ *       - Check if intersection is below the vertex
+ *       - Update closest segment if this intersection is closer
+ *    c. If segments are parallel:
+ *       - Check if they are collinear
+ *       - If collinear, consider the bottom vertex of the segment
+ * 4. Return the closest line segment found
+ *
+ * @param[in] v The vertex to find the line segment below. Must be a valid vertex
+ *              in the DCEL structure.
+ * @return A pointer to the closest line segment below the vertex, or nullptr if:
+ *         - No valid line segments are found
+ *         - The vertex is invalid
+ *         - All intersections are above the vertex
+ *         - No line segments intersect with the vertical line
+ *
+ * @note The function assumes that:
+ *       - The input vertex is valid and part of the DCEL
+ *       - The line segments are properly initialized
+ *       - The sweep line algorithm has been properly set up
+ *
+ * @note Memory Management:
+ *       - Creates temporary vertices and line segments that should be cleaned up
+ *       - Does not take ownership of returned line segments
+ *
+ * @note Geometric Considerations:
+ *       - Uses vertical sweep line for efficiency
+ *       - Handles both intersecting and parallel line segments
+ *       - Considers collinear segments for vertical alignment
+ *       - Uses parametric coordinates for precise intersection calculations
  */
 PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
   // std::cout << "[debug] findLineSegmentBelowVertex: " << v << std::endl;
@@ -1964,11 +2051,10 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
         }
       }
     }
-
-    // std::cout << "        vertex vbelow: " << vbelow << std::endl;
   }
 
-  // std::cout << "[debug] function findLineSegmentBelowVertex done" << std::endl;
+  PLOG(debug) << "ls_below: " << ls_below;
 
+  PLOG(debug) << "done";
   return ls_below;
 }

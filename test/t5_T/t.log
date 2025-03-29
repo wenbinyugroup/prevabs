@@ -1,9 +1,9 @@
-[info] [main: 296] - prevabs start (2025-03-26 21:19:27)
+[info] [main: 296] - prevabs start (2025-03-29 16:08:41)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
 g main input file: t5_T\t.xml
-[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t5_T\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
@@ -15,4 +15,4 @@ g main input file: t5_T\t.xml
 [warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
 [warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
 [info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
-[warning] [PDCEL::addHalfEdgeLoop: 963]   half edge is nullptr
+[warning] [PDCEL::addHalfEdgeLoop: 990]   half edge is nullptr
