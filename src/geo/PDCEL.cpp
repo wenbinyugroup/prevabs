@@ -934,6 +934,16 @@ void PDCEL::addEdgesFromCurve(Baseline *bl) {
 
 
 
+// TODO:
+/// @brief Update the loop pointer of a half edge
+/// @param he The half edge to update the loop pointer for
+void PDCEL::update_edge_loop(PDCELHalfEdge *he) {
+  
+}
+
+
+
+
 
 
 

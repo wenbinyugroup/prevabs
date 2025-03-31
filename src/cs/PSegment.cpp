@@ -394,7 +394,10 @@ void Segment::build(Message *pmessage) {
   hel->setKeep(true);
   hel->setFace(_face);
 
+  // TODO:
   // Update other loops and faces
+  // For each half edge of the loop,
+  //   check if the twin half edge belongs to another loop
   he->twin()->log();
   if (he->twin()->loop() == nullptr) {
     PLOG(debug) << "twin half edge belongs to no loop";
