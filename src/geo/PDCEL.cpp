@@ -938,7 +938,38 @@ void PDCEL::addEdgesFromCurve(Baseline *bl) {
 /// @brief Update the loop pointer of a half edge
 /// @param he The half edge to update the loop pointer for
 void PDCEL::update_edge_loop(PDCELHalfEdge *he) {
-  
+  // 1. Go through the chain of "next" half edges of he
+  //      and get the first half edge that has a loop
+  // 2. Go through the chain of "next" half edges of he again,
+  //      and set the loop pointer of each half edge to the loop
+
+  PLOG(debug) << "updating edge loop for half edge: " << he;
+
+  // 1.
+  PDCELHalfEdgeLoop *_loop = nullptr;
+  PDCELHalfEdge *_he = he;
+  do {
+    if (_he == nullptr) {
+      PLOG(error) << "  half edge is nullptr";
+      break;
+    }
+    PLOG(debug) << "  checking half edge: " << _he;
+    if (_he->loop() != nullptr) {
+      PLOG(debug) << "    found loop: " << _he->loop();
+      _loop = _he->loop();
+      break;
+    }
+    _he = _he->next();
+  } while (_he != he);
+
+  // 2.
+  _he = he;
+  do {
+    _he->setLoop(_loop);
+    _he = _he->next();
+  } while (_he != he);
+
+  PLOG(debug) << "done";
 }
 
 

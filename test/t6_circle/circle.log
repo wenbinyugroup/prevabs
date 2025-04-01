@@ -1,120 +1,12 @@
-[info] [main: 296] - prevabs start (2025-03-29 16:08:43)
+[info] [main: 296] - prevabs start (2025-03-31 14:49:09)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
-    
-  
-  
-  
-  
-  
-
-
-========================================
-
-
-========================================
-
-rk\dev\prevabs\build_msvc\Release\MaterialDB.xml
+g main input file: t6_circle\circle.xml
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t6_circle\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
 [info] [CrossSection::build: 301]     - building the cross section, step 1
 [info] [PComponent::buildLaminate: 29]     - building component: in
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [CrossSection::build: 345]     - building the cross section, step 2
-[info] [PComponent::buildDetails: 124]       - building component details: in
-[info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [PDCEL::fixGeometry: 221]     - fixing geometry by removing small edges
-[info] [PModel::homogenize: 802]   - building the shape -- done
-[info] [PModel::homogenize: 812]   - modeling in Gmsh
-[info] [PModel::createGmshVertices: 61]     - creating gmsh vertices
-[info] [PModel::createGmshEdges: 205]     - creating gmsh edges
-[info] [PModel::createGmshFaces: 261]     - creating gmsh faces
-[info] [PModel::createGmshPhyscialGroups: 431]     - creating physical groups
-[info] [PModel::writeGmshGeo: 364]       - writing gmsh .geo file: t6_circle\geo_before_mesh.geo_unrolled
-[info] [PModel::buildGmsh: 563]     - meshing
-[info] [PModel::homogenize: 816]   - modeling in Gmsh -- done
-[info] [PModel::homogenize: 826]   - writing outputs
-[info] [PModel::writeGmshOpt: 476]     - writing gmsh .opt file: t6_circle\circle.opt
-[info] [PModel::writeGmshGeo: 364]     - writing gmsh .geo file: t6_circle\circle.geo_unrolled
-[info] [PModel::writeGmshMsh: 407]   - writing gmsh .msh file: t6_circle\circle.msh
-[info] [PModel::writeSG: 55]   - writing sg file: t6_circle\circle.sg
-[info] [PModel::writeNodes: 65]     - writing nodes
-[info] [PModel::writeElements: 143]     - writing elements
-[info] [PModel::writeElementsVABS: 178]       -   writing connectivity
-[info] [PModel::writeElementsVABS: 226]       -   writing local orientation
-[info] [PModel::writeSG: 158]   - writing material id-name file: t6_circle\circle.sg.mat
-[info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-03-29 16:08:43)
-[info] [main: 369] total running time: 0.546 sec

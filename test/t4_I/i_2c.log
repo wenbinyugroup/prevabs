@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-03-29 16:08:38)
+[info] [main: 296] - prevabs start (2025-03-31 14:49:04)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -70,5 +70,5 @@ prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]       -   writing local orientation
 [info] [PModel::writeSG: 158]   - writing material id-name file: t4_I\i_2c.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-03-29 16:08:38)
-[info] [main: 369] total running time: 0.173 sec
+[info] [main: 367] - prevabs finished (2025-03-31 14:49:04)
+[info] [main: 369] total running time: 0.168 sec

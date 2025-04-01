@@ -93,6 +93,8 @@ public:
 
   void addEdgesFromCurve(Baseline *);
 
+  void update_edge_loop(PDCELHalfEdge *he);
+
   // =================================================================
   // HALF EDGE LOOP
 

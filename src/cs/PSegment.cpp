@@ -398,13 +398,14 @@ void Segment::build(Message *pmessage) {
   // Update other loops and faces
   // For each half edge of the loop,
   //   check if the twin half edge belongs to another loop
-  he->twin()->log();
-  if (he->twin()->loop() == nullptr) {
-    PLOG(debug) << "twin half edge belongs to no loop";
-  }
+  // he->twin()->log();
+  // if (he->twin()->loop() == nullptr) {
+  //   _pmodel->dcel()->update_edge_loop(he->twin());
+  //   PLOG(debug) << "twin half edge belongs to no loop";
+  // }
 
 
-  _pmodel->dcel()->linkHalfEdgeLoops();
+  // _pmodel->dcel()->linkHalfEdgeLoops();
 
   _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
 
