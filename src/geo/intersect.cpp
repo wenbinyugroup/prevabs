@@ -353,7 +353,7 @@ bool calc_line_intersection_2d(
     ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
     ipx, ipy, u1, u2);
 
-  PLOG(debug) << "u1: " << u1 << " u2: " << u2;
+  PLOG(debug) << "is_intersect: " << is_intersect << " u1: " << u1 << " u2: " << u2;
 
   v_intersect = nullptr;
 

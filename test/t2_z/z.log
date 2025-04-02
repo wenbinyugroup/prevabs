@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-03-26 21:19:26)
+[info] [main: 296] - prevabs start (2025-04-01 22:24:23)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -29,7 +29,7 @@ build_msvc\Release\MaterialDB.xml
 [info] [build_area: 301] done
 [info] [build_area: 240] building area
 [info] [build_area: 301] done
-[info] [PDCEL::fixGeometry: 210]     - fixing geometry by removing small edges
+[info] [PDCEL::fixGeometry: 220]     - fixing geometry by removing small edges
 [info] [PModel::homogenize: 802]   - building the shape -- done
 [info] [PModel::homogenize: 812]   - modeling in Gmsh
 [info] [PModel::createGmshVertices: 61]     - creating gmsh vertices
@@ -50,5 +50,5 @@ build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]       -   writing local orientation
 [info] [PModel::writeSG: 158]   - writing material id-name file: t2_z\z.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-03-26 21:19:26)
-[info] [main: 369] total running time: 0.094 sec
+[info] [main: 367] - prevabs finished (2025-04-01 22:24:23)
+[info] [main: 369] total running time: 0.104 sec

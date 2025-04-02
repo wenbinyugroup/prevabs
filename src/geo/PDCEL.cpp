@@ -1221,7 +1221,8 @@ void PDCEL::linkHalfEdgeLoops() {
  * @return the enclosing loop
  */
 PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
-  // std::cout << "\n[debug] findEnclosingLoop: " << v << std::endl;
+  PLOG(debug) << "finding enclosing loop for vertex: " << v;
+
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
   PGeoLineSegment *ls_below = findLineSegmentBelowVertex(v);
@@ -1240,9 +1241,14 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
       // Need to return the outer loop
       loop_near = loop_near->adjacentLoop();
     }
+  } else {
+    PLOG(debug) << "no finite line segments found, returning background infinite loop";
+    loop_near = _halfedge_loops.front();
   }
 
-  // loop_near->print();
+  loop_near->log();
+
+  PLOG(debug) << "done.";
 
   return loop_near;
 }
@@ -1835,7 +1841,7 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
  */
 std::list<PGeoLineSegment *>
 PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
-  // std::cout << "[debug] findLineSegmentsAtSweepLine: " << v << std::endl;
+  PLOG(debug) << "finding line segments at sweep line at vertex " << v;
 
   std::list<PGeoLineSegment *> ls_list;
 
@@ -1854,10 +1860,17 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
     // std::cout << "node: " << node << std::endl;
 
     vi = node->vertex();
-    // std::cout << "all leaving half edges:\n";
-    // vi->printAllLeavingHalfEdges(-1);
+    PLOG(debug) << "vi: " << vi;
+
     if (vi == v) {
       break;
+    }
+
+    // If the vertex is one of the four infinite corners, skip it
+    if (vi->y() == INF || vi->y() == -INF || vi->z() == INF || vi->z() == -INF) {
+      PLOG(debug) << "vertex is one of the four infinite corners, skipping";
+      node_list.pop_front();
+      continue;
     }
 
     // For each line segment having this vertex,
@@ -1888,7 +1901,7 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
     node_list.pop_front();
   }
 
-  // std::cout << "[debug] function findLineSegmentsAtSweepLine done" << std::endl;
+  PLOG(debug) << "done.";
 
   return ls_list;
 }
@@ -1909,15 +1922,26 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
  * @return The line segment below the given vertex
  */
 PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
-  // std::cout << "[debug] findLineSegmentBelowVertex: " << v << std::endl;
+  PLOG(debug) << "finding line segment below vertex " << v;
 
   PGeoLineSegment *ls_below = nullptr, *ls_tmp;
 
-  std::list<PGeoLineSegment *> ls_list;
-  ls_list = findLineSegmentsAtSweepLine(v);
+  std::list<PGeoLineSegment *> ls_list = findLineSegmentsAtSweepLine(v);
+
+  // If the list is empty, return the bottom infinite line segment
+  if (ls_list.empty()) {
+    // ls_below = new PGeoLineSegment(_vertices[2], _vertices[3]);
+    PLOG(debug) << "no finite line segments found.";
+    return ls_below;
+  }
+
+  PLOG(debug) << "ls_list:";
+  for (auto ls : ls_list) {
+    PLOG(debug) << "  " << ls;
+  }
 
   PDCELVertex *vt = new PDCELVertex(v->x(), v->y(), v->z() + 1);
-  PDCELVertex *vbelow;
+  PDCELVertex *vbelow = nullptr;
 
   ls_tmp = new PGeoLineSegment(v, vt);
 
@@ -1925,19 +1949,25 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
   bool is_intersect;
 
   std::list<PGeoLineSegment *>::iterator lsit;
-  for (lsit = ls_list.begin(); lsit != ls_list.end(); ++lsit) {
-    // std::cout << "        line segment *lsit: " << (*lsit) << std::endl;
+  // for (lsit = ls_list.begin(); lsit != ls_list.end(); ++lsit) {
+  for (auto ls : ls_list) {
+    PLOG(debug) << "ls: " << ls;
     // is_intersect = calcLineIntersection2D(v, vt, (*lsit)->v1(),
     // (*lsit)->v2(), u1_tmp, u2);
     // is_intersect = calcLineIntersection2D(ls_tmp, (*lsit), u1_tmp, u2, TOLERANCE);
     PDCELVertex *v_intersect;
     is_intersect = calc_line_intersection_2d(
       ls_tmp->v1(), ls_tmp->v2(),
-      (*lsit)->v1(), (*lsit)->v2(),
-      v_intersect, u1, u2, 1, 1, 1, 1
+      ls->v1(), ls->v2(),
+      v_intersect, u1_tmp, u2, 1, 1, 1, 1
     );
 
+    PLOG(debug) << "is_intersect: " << is_intersect
+                << ", u1_tmp: " << u1_tmp
+                << ", u2: " << u2;
+
     if (is_intersect) {
+      PLOG(debug) << "intersect";
       // not parallel
       if (u1_tmp < 0) {
         // the intersection point is below the vertex
@@ -1945,30 +1975,33 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
         // if (ls_below == nullptr || vbelow->point() < vintersect->point()) {
         if (ls_below == nullptr || fabs(u1_tmp) < fabs(u1)) {
           u1 = u1_tmp;
-          ls_below = (*lsit);
-          vbelow = (*lsit)->getParametricVertex(u2);
+          ls_below = ls;
+          vbelow = ls->getParametricVertex(u2);
         }
       }
     } else {
+      PLOG(debug) << "not intersect";
       // parallel, i.e. the line segment is also vertical
-      if (!isCollinear(ls_tmp, (*lsit))) {
+      if (!isCollinear(ls_tmp, ls)) {
         continue;
       }
 
-      if ((*lsit)->vout()->point() < v->point()) {
-        if (ls_below == nullptr || calcDistanceSquared(v, (*lsit)->vout()) <
+      if (ls->vout()->point() < v->point()) {
+        if (ls_below == nullptr || calcDistanceSquared(v, ls->vout()) <
             calcDistanceSquared(v, vbelow)) {
-          ls_below = (*lsit);
-          vbelow = (*lsit)->vout();
+          ls_below = ls;
+          vbelow = ls->vout();
           u1 = ls_tmp->getParametricLocation(vbelow);
         }
       }
     }
 
-    // std::cout << "        vertex vbelow: " << vbelow << std::endl;
+    // PLOG(debug) << "vbelow: " << vbelow;
   }
 
-  // std::cout << "[debug] function findLineSegmentBelowVertex done" << std::endl;
+  // PLOG(debug) << "ls_below: " << ls_below;
+
+  PLOG(debug) << "done.";
 
   return ls_below;
 }
