@@ -1996,10 +1996,10 @@ PGeoLineSegment *PDCEL::findLineSegmentBelowVertex(PDCELVertex *v) {
       }
     }
 
-    // PLOG(debug) << "vbelow: " << vbelow;
+    PLOG(debug) << "vbelow: " << (vbelow ? vbelow->to_string() : "nullptr");
   }
 
-  // PLOG(debug) << "ls_below: " << ls_below;
+  PLOG(debug) << "ls_below: " << (ls_below ? ls_below->printString() : "nullptr");
 
   PLOG(debug) << "done.";
 

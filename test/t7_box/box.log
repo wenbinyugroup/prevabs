@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-04-01 22:24:25)
+[info] [main: 296] - prevabs start (2025-04-02 09:53:26)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -15,7 +15,7 @@
 
 ========================================
 
-abs\build_msvc\Release\MaterialDB.xml
+\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t7_box\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
@@ -52,5 +52,5 @@ abs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]       -   writing local orientation
 [info] [PModel::writeSG: 158]   - writing material id-name file: t7_box\box.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-04-01 22:24:25)
-[info] [main: 369] total running time: 0.253 sec
+[info] [main: 367] - prevabs finished (2025-04-02 09:53:26)
+[info] [main: 369] total running time: 0.184 sec

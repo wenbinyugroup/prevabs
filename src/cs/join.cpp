@@ -190,7 +190,7 @@ void PComponent::join_segment_to_dependency(
   if (d_base == INF) {
     // No intersection found
     PLOG(debug) << "no intersection found";
-    // createSegmentFreeEnd(s, e, pmessage);
+    createSegmentFreeEnd(s, e, pmessage);
     return;
   }
 
