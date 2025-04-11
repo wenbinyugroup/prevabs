@@ -970,6 +970,11 @@ void PDCEL::addEdgesFromCurve(Baseline *bl) {
 
 /**
  * Add a half edge loop to the data structure.
+ * 
+ * 1. Create a new half edge loop.
+ * 2. Go through the chain of half edges and set the half edge loop of each half edge.
+ * 3. Add the half edge loop to the list of half edge loops.
+ * 
  * @param[in] he a half edge of the loop
  * @return the newly created half edge loop
  */
@@ -1085,6 +1090,49 @@ void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
 
 
 
+/**
+ * Remove a half edge loop from the DCEL.
+ * The method removes the loop and all its half edges from the DCEL.
+ * The method also resets the loop pointer of each half edge.
+ * @param[in] hel the half edge loop to remove
+ */
+void PDCEL::remove_half_edge_loop(PDCELHalfEdgeLoop *hel) {
+  PLOG(debug) << "removing half edge loop";
+
+  // Reset the loop pointer of each half edge
+  PDCELHalfEdge *he = hel->incidentEdge();
+  do {
+    if (he->loop() == hel) {
+      he->resetLoop();
+    }
+    he = he->next();
+  } while (he != hel->incidentEdge());
+
+  // Remove the pointer from the face
+  if (hel->face() != nullptr) {
+    // Check the outer loop edge
+    if (hel->incidentEdge() == hel->face()->outer()) {
+      hel->face()->setOuterComponent(nullptr);
+    }
+
+    // Check the inner loops
+    auto it = std::find(hel->face()->inners().begin(),
+                        hel->face()->inners().end(),
+                        hel->incidentEdge());
+    if (it != hel->face()->inners().end()) {
+      // Remove the edge from the vector of inner loops
+      hel->face()->inners().erase(it);
+    }
+  }
+
+  _halfedge_loops.remove(hel);
+
+  delete hel;
+}
+
+
+
+
 
 
 
@@ -1181,7 +1229,20 @@ void PDCEL::createTempLoops() {
 
 
 
+/**
+ * Link an inner half edge loop to its nearest outer half edge loop.
+ * @param[in] hel the inner half edge loop to link
+ */
+void PDCEL::link_inner_half_edge_loop(PDCELHalfEdgeLoop *hel) {
+  PLOG(debug) << "linking inner half edge loop";
 
+  PDCELHalfEdgeLoop *adj_hel = findNearestLoop(hel);
+  PLOG(debug) << "adjacent loop: ";
+  adj_hel->log();
+  hel->setAdjacentLoop(adj_hel);
+
+  PLOG(debug) << "done.";
+}
 
 
 
@@ -1195,14 +1256,19 @@ void PDCEL::createTempLoops() {
  */
 void PDCEL::linkHalfEdgeLoops() {
   PDCELHalfEdgeLoop *hel;
-  std::list<PDCELHalfEdgeLoop *>::iterator lit;
-  for (lit = _halfedge_loops.begin(); lit != _halfedge_loops.end(); ++lit) {
-    if ((*lit)->direction() < 0) {
-      // Each inner loop should have a path linking to an outer loop
-      hel = findNearestLoop((*lit));
-      (*lit)->setAdjacentLoop(hel);
+  for (auto hel : _halfedge_loops) {
+    if (hel->direction() < 0 && hel->adjacentLoop() == nullptr) {
+      link_inner_half_edge_loop(hel);
     }
   }
+  // std::list<PDCELHalfEdgeLoop *>::iterator lit;
+  // for (lit = _halfedge_loops.begin(); lit != _halfedge_loops.end(); ++lit) {
+  //   if ((*lit)->direction() < 0) {
+  //     // Each inner loop should have a path linking to an outer loop
+  //     hel = findNearestLoop((*lit));
+  //     (*lit)->setAdjacentLoop(hel);
+  //   }
+  // }
 }
 
 
@@ -1251,6 +1317,114 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
   PLOG(debug) << "done.";
 
   return loop_near;
+}
+
+
+
+
+bool PDCEL::is_same(PDCELHalfEdgeLoop *a, PDCELHalfEdgeLoop *b) const {
+
+  if (a->direction() != b->direction()) {
+    PLOG(debug) << "direction mismatch";
+    return false;
+  }
+
+  if (a->bottomLeftVertex() != b->bottomLeftVertex()) {
+    PLOG(debug) << "bottom left vertex mismatch";
+    return false;
+  }
+
+  if (a->incidentEdge() != b->incidentEdge()) {
+    PLOG(debug) << "incident edge mismatch";
+    return false;
+  }
+
+  // if (_adjacent_loop != other->adjacentLoop()) {
+  //   return false;
+  // }
+
+  // if (_keep != other->keep()) {
+  //   return false;
+  // }
+
+  // if (_face != other->face()) {
+  //   return false;
+  // }
+
+  return true;
+}
+
+
+
+
+/**
+ * Update the half edge loop of all half edges from a chain starting from a given half edge.
+ * 
+ * 1. Go through the chain of half edges and get the first half edge loop.
+ * 2. If no half edge loop is found, create a new one.
+ * 3. Go through the chain again and set the half edge loop of each half edge.
+ * 
+ * @param[in] he the starting half edge
+ * @return the half edge loop
+ */
+PDCELHalfEdgeLoop *PDCEL::update_half_edge_loop(PDCELHalfEdge *he) {
+  PLOG(debug) << "updating half edge loop" << he;
+
+  PDCELHalfEdge *hei = he;
+  PDCELHalfEdgeLoop *hel = nullptr;
+  std::list<PDCELHalfEdgeLoop *> hels_to_remove;
+  do {
+    if (hei->loop() != nullptr) {
+      if (hel == nullptr) {
+        hel = hei->loop();
+      }
+
+      // If the half edge loop is not the same as the one we are updating, add it to the list of half edge loops to remove
+      if (!is_same(hei->loop(), hel)) {
+        // Check if the loop is already in the list of half edge loops to remove
+        if (std::find(hels_to_remove.begin(), hels_to_remove.end(), hei->loop()) == hels_to_remove.end()) {
+          PLOG(debug) << "adding half edge loop to remove: ";
+          hei->loop()->log();
+          hels_to_remove.push_back(hei->loop());
+        }
+      }
+    }
+    hei = hei->next();
+  } while (hei != he);
+
+  if (hel != nullptr) {
+    PLOG(debug) << "half edge loop found: ";
+    // hel->log();
+    PLOG(debug) << "  direction: " << hel->direction();
+    PLOG(debug) << "  bottom left vertex: " << hel->bottomLeftVertex();
+    PLOG(debug) << "  incident edge: " << hel->incidentEdge();
+  } else {
+    PLOG(debug) << "no half edge loop found, creating a new one";
+    hel = new PDCELHalfEdgeLoop();
+    _halfedge_loops.push_back(hel);
+  }
+
+  hei = he;
+  do {
+    hei->setLoop(hel);
+    hei = hei->next();
+  } while (hei != he);
+
+
+  // Remove the half edge loops that are not the same as the one we are updating
+  for (auto hel : hels_to_remove) {
+    // _halfedge_loops.remove(hel);
+    remove_half_edge_loop(hel);
+  }
+
+  PLOG(debug) << "half edge loops after update:";
+  for (auto hel : _halfedge_loops) {
+    hel->log();
+  }
+
+  PLOG(debug) << "done.";
+
+  return hel;
 }
 
 
@@ -1656,6 +1830,8 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PGeoLineSegment *ls) {
 /// @brief Update the inner loops of a face
 /// @param f The face to update
 void PDCEL::update_face_inner_loops(PDCELFace *f) {
+  PLOG(debug) << "updating face inner loops";
+
   // Check for null face
   if (f == nullptr) {
     PLOG(error) << "Cannot update inner loops of null face";
@@ -1670,21 +1846,21 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
   }
 
   // Link half edge loops to establish adjacency relationships
-  linkHalfEdgeLoops();
-  
+  // linkHalfEdgeLoops();
+
   // Iterate through all half edge loops
   for (auto heli : halfedgeloops()) {
     // Skip null loops and loops that should be kept
     if (heli == nullptr || heli->keep()) {
       continue;
     }
-    
+
     // Follow the adjacency chain to find the outermost containing loop
     PDCELHalfEdgeLoop *helj = heli;
     while (helj != nullptr && helj->adjacentLoop() != nullptr) {
       helj = helj->adjacentLoop();
     }
-    
+
     // If the outermost loop is the outer loop of our face
     if (helj == hel_out) {
       // Check if the loop has a valid incident edge
@@ -1692,12 +1868,17 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
         PLOG(warning) << "Inner loop has no incident edge, skipping";
         continue;
       }
-      
+
+      PLOG(debug) << "  heli: ";
+      heli->log();
+
       // Set the face of the inner loop and add it as an inner component
       heli->setFace(f);
       f->addInnerComponent(heli->incidentEdge());
     }
   }
+
+  PLOG(debug) << "done.";
 }
 
 

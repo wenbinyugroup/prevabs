@@ -1,8 +1,7 @@
-[info] [main: 296] - prevabs start (2025-04-02 09:53:24)
+[info] [main: 296] - prevabs start (2025-04-11 18:45:28)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
-      
     
     
     
@@ -15,19 +14,19 @@
   
   ========================================
   
-terialDB.xml
+lease\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t5_T\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
-[info] [CrossSection::build: 301]     - building the cross section, step 1
-[info] [PComponent::buildLaminate: 29]     - building component: cpflange
+[info] [CrossSection::build: 302] building the cross section, step 1
+[info] [PComponent::buildLaminate: 30] building component: cpflange
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
-[info] [PComponent::buildLaminate: 29]       - building component: cpwebl
+[info] [PComponent::buildLaminate: 30] building component: cpwebl
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
 [warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
 [info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
-[info] [CrossSection::build: 345]       - building the cross section, step 2
+[info] [CrossSection::build: 346] building the cross section, step 2
 [info] [PComponent::buildDetails: 124]         - building component details: cpflange
 [info] [Segment::updateBaseOffsetIndexPairs: 256]           - updating base-offset index pairs
 [info] [PComponent::buildDetails: 124]         - building component details: cpwebl
@@ -55,5 +54,5 @@ terialDB.xml
 [info] [PModel::writeElementsVABS: 226]         -   writing local orientation
 [info] [PModel::writeSG: 158]     - writing material id-name file: t5_T\t.sg.mat
 [info] [PModel::homogenize: 838]   - writing outputs -- done
-[info] [main: 367]   - prevabs finished (2025-04-02 09:53:24)
-[info] [main: 369] total running time: 0.123 sec
+[info] [main: 367]   - prevabs finished (2025-04-11 18:45:28)
+[info] [main: 369] total running time: 0.172 sec

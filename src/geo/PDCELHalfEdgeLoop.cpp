@@ -8,6 +8,50 @@
 #include <fstream>
 
 
+PDCELHalfEdgeLoop::PDCELHalfEdgeLoop() {
+  PLOG(debug) << "new half edge loop created";
+}
+
+
+// // Overload the == operator
+// bool PDCELHalfEdgeLoop::operator==(PDCELHalfEdgeLoop *other) const {
+
+//   if (_direction != other->direction()) {
+//     PLOG(debug) << "direction mismatch";
+//     return false;
+//   }
+
+//   if (_bottom_left_vertex != other->bottomLeftVertex()) {
+//     PLOG(debug) << "bottom left vertex mismatch";
+//     return false;
+//   }
+
+//   if (_incident_edge != other->incidentEdge()) {
+//     PLOG(debug) << "incident edge mismatch";
+//     return false;
+//   }
+
+//   // if (_adjacent_loop != other->adjacentLoop()) {
+//   //   return false;
+//   // }
+
+//   // if (_keep != other->keep()) {
+//   //   return false;
+//   // }
+
+//   // if (_face != other->face()) {
+//   //   return false;
+//   // }
+
+//   return true;
+// // }
+
+
+// bool PDCELHalfEdgeLoop::operator!=(PDCELHalfEdgeLoop *other) const {
+//   return !(*this == other);
+// }
+
+
 void PDCELHalfEdgeLoop::log() {
 
   PLOG(debug) << "direction: " << ((direction() == 1) ? "outer" : "inner");

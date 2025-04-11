@@ -1,8 +1,7 @@
-[info] [main: 296] - prevabs start (2025-04-02 09:53:25)
+[info] [main: 296] - prevabs start (2025-04-11 18:45:29)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
-    
   
   
   
@@ -15,14 +14,14 @@
 
 ========================================
 
-rk\dev\prevabs\build_msvc\Release\MaterialDB.xml
+n50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t6_circle\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
-[info] [CrossSection::build: 301]     - building the cross section, step 1
-[info] [PComponent::buildLaminate: 29]     - building component: in
+[info] [CrossSection::build: 302] building the cross section, step 1
+[info] [PComponent::buildLaminate: 30] building component: in
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [CrossSection::build: 345]     - building the cross section, step 2
+[info] [CrossSection::build: 346] building the cross section, step 2
 [info] [PComponent::buildDetails: 124]       - building component details: in
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [build_area: 240] building area
@@ -116,5 +115,5 @@ rk\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]       -   writing local orientation
 [info] [PModel::writeSG: 158]   - writing material id-name file: t6_circle\circle.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-04-02 09:53:25)
-[info] [main: 369] total running time: 0.561 sec
+[info] [main: 367] - prevabs finished (2025-04-11 18:45:29)
+[info] [main: 369] total running time: 0.596 sec

@@ -1,8 +1,7 @@
-[info] [main: 296] - prevabs start (2025-04-02 09:53:20)
+[info] [main: 296] - prevabs start (2025-04-11 18:45:26)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
-    
   
   
   
@@ -15,13 +14,13 @@
 
 ========================================
 
-vabs\build_msvc\Release\MaterialDB.xml
+ev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
-[info] [CrossSection::build: 301]     - building the cross section, step 1
-[info] [PComponent::buildLaminate: 29]     - building component: surface
+[info] [CrossSection::build: 302] building the cross section, step 1
+[info] [PComponent::buildLaminate: 30] building component: surface
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [CrossSection::build: 345]     - building the cross section, step 2
+[info] [CrossSection::build: 346] building the cross section, step 2
 [info] [PComponent::buildDetails: 124]       - building component details: surface
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [build_area: 240] building area
@@ -47,5 +46,5 @@ vabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]       -   writing local orientation
 [info] [PModel::writeSG: 158]   - writing material id-name file: t3_v\v.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-04-02 09:53:20)
-[info] [main: 369] total running time: 0.152 sec
+[info] [main: 367] - prevabs finished (2025-04-11 18:45:26)
+[info] [main: 369] total running time: 0.15 sec

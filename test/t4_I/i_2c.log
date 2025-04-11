@@ -1,8 +1,7 @@
-[info] [main: 296] - prevabs start (2025-04-02 09:53:22)
+[info] [main: 296] - prevabs start (2025-04-11 18:45:27)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
-    
   
   
   
@@ -15,20 +14,20 @@
 
 ========================================
 
-prevabs\build_msvc\Release\MaterialDB.xml
+k\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t4_I\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
-[info] [CrossSection::build: 301]     - building the cross section, step 1
-[info] [PComponent::buildLaminate: 29]     - building component: top
+[info] [CrossSection::build: 302] building the cross section, step 1
+[info] [PComponent::buildLaminate: 30] building component: top
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [PComponent::buildLaminate: 29]     - building component: bottom
+[info] [PComponent::buildLaminate: 30] building component: bottom
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [PComponent::buildLaminate: 29]     - building component: c_left
+[info] [PComponent::buildLaminate: 30] building component: c_left
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [PComponent::buildLaminate: 29]     - building component: c_right
+[info] [PComponent::buildLaminate: 30] building component: c_right
 [info] [Segment::updateBaseOffsetIndexPairs: 256]       - updating base-offset index pairs
-[info] [CrossSection::build: 345]     - building the cross section, step 2
+[info] [CrossSection::build: 346] building the cross section, step 2
 [info] [PComponent::buildDetails: 124]       - building component details: top
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [build_area: 240] building area
@@ -70,5 +69,5 @@ prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 226]       -   writing local orientation
 [info] [PModel::writeSG: 158]   - writing material id-name file: t4_I\i_2c.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-04-02 09:53:22)
-[info] [main: 369] total running time: 0.176 sec
+[info] [main: 367] - prevabs finished (2025-04-11 18:45:27)
+[info] [main: 369] total running time: 0.171 sec

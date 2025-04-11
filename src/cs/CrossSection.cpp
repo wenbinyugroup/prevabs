@@ -298,7 +298,8 @@ void CrossSection::build(Message *pmessage) {
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
-  PLOG(info) << pmessage->message("building the cross section, step 1");
+  PLOG(debug) << "\n\n" << std::string(60, '=');
+  PLOG(info) << "building the cross section, step 1";
 
 
   for (auto cmp : _components) {
@@ -311,10 +312,10 @@ void CrossSection::build(Message *pmessage) {
     // }
 
     // Remove all half edge loops, excluding segments face boundaries
-    _pmodel->dcel()->removeTempLoops();
+    // _pmodel->dcel()->removeTempLoops();
 
     // Create new half edge loops, excluding segments face boundaries
-    _pmodel->dcel()->createTempLoops();
+    // _pmodel->dcel()->createTempLoops();
 
     // For each inner loop, find and connect to the nearest loop
     // _pmodel->dcel()->linkHalfEdgeLoops();
@@ -341,8 +342,8 @@ void CrossSection::build(Message *pmessage) {
   // _pmodel->dcel()->print_dcel();
 
   // Build details (mainly slice layers for each segment)
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("building the cross section, step 2");
+  PLOG(debug) << "\n\n" << std::string(60, '=');
+  PLOG(info) << "building the cross section, step 2";
 
 
   for (auto cmp : _components) {

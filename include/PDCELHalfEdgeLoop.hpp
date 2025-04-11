@@ -17,17 +17,20 @@ class PDCELFace;
 class PDCELHalfEdgeLoop {
 private:
   // int _direction; // 1: outer boundary; -1: inner boundary
-  PDCELHalfEdge *_incident_edge;
-  PDCELHalfEdgeLoop *_adjacent_loop;
-  PDCELFace *_face;
-  PDCELVertex *_bottom_left_vertex;
-  int _direction;
-  bool _keep;
+  PDCELHalfEdge *_incident_edge = nullptr;
+  PDCELHalfEdgeLoop *_adjacent_loop = nullptr;
+  PDCELFace *_face = nullptr;
+  PDCELVertex *_bottom_left_vertex = nullptr;
+  int _direction = 0;
+  bool _keep = false;
 
 public:
-  PDCELHalfEdgeLoop()
-      : _incident_edge(nullptr), _adjacent_loop(nullptr),
-        _face(nullptr), _bottom_left_vertex(nullptr), _direction(0), _keep(false) {};
+  PDCELHalfEdgeLoop();
+      // : _incident_edge(nullptr), _adjacent_loop(nullptr),
+      //   _face(nullptr), _bottom_left_vertex(nullptr), _direction(0), _keep(false) {};
+
+  // bool operator==(PDCELHalfEdgeLoop *other) const;
+  // bool operator!=(PDCELHalfEdgeLoop *other) const;
 
   void log();
   void print();

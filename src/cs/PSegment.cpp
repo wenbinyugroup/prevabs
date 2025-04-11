@@ -389,6 +389,12 @@ void Segment::build(Message *pmessage) {
   hel->setKeep(true);
   hel->setFace(_face);
 
+  // Set the half edge loop for the twin half edge
+  PDCELHalfEdgeLoop *hel_twin = _pmodel->dcel()->update_half_edge_loop(he->twin());
+  _pmodel->dcel()->link_inner_half_edge_loop(hel_twin);
+  PLOG(debug) << "hel_twin: ";
+  hel_twin->log();
+
   _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
 
   // pmessage->decreaseIndent();

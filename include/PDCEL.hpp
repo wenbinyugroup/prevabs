@@ -109,14 +109,20 @@ public:
   PDCELHalfEdgeLoop *addHalfEdgeLoop(PDCELHalfEdge *he);
   PDCELHalfEdgeLoop *addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop);
   void removeHalfEdgeLoop(PDCELHalfEdgeLoop *);
+  void remove_half_edge_loop(PDCELHalfEdgeLoop *hel);
   void clearHalfEdgeLoops();
 
   void removeTempLoops();
   void createTempLoops();
+  void link_inner_half_edge_loop(PDCELHalfEdgeLoop *hel);
   PDCELHalfEdgeLoop *findNearestLoop(PDCELHalfEdgeLoop *);
   void linkHalfEdgeLoops();
 
   PDCELHalfEdgeLoop *findEnclosingLoop(PDCELVertex *);
+
+  bool is_same(PDCELHalfEdgeLoop *a, PDCELHalfEdgeLoop *b) const;
+
+  PDCELHalfEdgeLoop *update_half_edge_loop(PDCELHalfEdge *he);
 
   /// Find intersection points between a half edge loop and a straight line. 
   /// Both loop and line will be updated using the intersecting vertices

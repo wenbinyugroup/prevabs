@@ -31,13 +31,13 @@ DCEL Summary
   ( 0 , 0.5 , -0.5 ) -> ( 0 , -0.5 , -0.5 ) | loop: temp | face: nullptr | sign: -1
   ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , 0.5 ) | loop: temp | face: sgm_1_area_3_layer_1 | sign: 1
   ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 ) | loop: temp | face: nullptr | sign: -1
-  ( 0 , 0.42 , 0.42 ) -> ( 0 , -0.42 , 0.42 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0.42 , 0.42 ) -> ( 0 , -0.42 , 0.42 ) | loop: nullptr | face: nullptr | sign: 1
   ( 0 , -0.42 , 0.42 ) -> ( 0 , 0.42 , 0.42 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
-  ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 ) | loop: nullptr | face: nullptr | sign: 1
   ( 0 , -0.42 , -0.42 ) -> ( 0 , -0.42 , 0.42 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
-  ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: nullptr | face: nullptr | sign: 1
   ( 0 , 0.42 , -0.42 ) -> ( 0 , -0.42 , -0.42 ) | loop: temp | face: sgm_1_area_2_layer_2 | sign: -1
-  ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.42 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.42 ) | loop: nullptr | face: nullptr | sign: 1
   ( 0 , 0.42 , 0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: temp | face: sgm_1_area_3_layer_2 | sign: -1
   ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.46 , 0.46 ) | loop: temp | face: sgm_1_area_3_layer_1 | sign: 1
   ( 0 , 0.46 , 0.46 ) -> ( 0 , 0.42 , 0.42 ) | loop: temp | face: sgm_1_area_3_layer_2 | sign: 1
@@ -64,7 +64,7 @@ DCEL Summary
   ( 0 , 0.46 , -0.46 ) -> ( 0 , 0.46 , 0.46 ) | loop: temp | face: sgm_1_area_3_layer_2 | sign: 1
   ( 0 , 0.46 , 0.46 ) -> ( 0 , 0.46 , -0.46 ) | loop: temp | face: sgm_1_area_3_layer_1 | sign: -1
 
-11 half edge loops:
+10 half edge loops:
 direction: outer
 keep: yes
 face: background
@@ -83,17 +83,7 @@ half edges:
   ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , 0.5 ) | loop: temp | face: nullptr | sign: -1
   ( 0 , 0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 ) | loop: temp | face: nullptr | sign: -1
   ( 0 , 0.5 , -0.5 ) -> ( 0 , -0.5 , -0.5 ) | loop: temp | face: nullptr | sign: -1
-adjacent loop: nullptr
-
-direction: outer
-keep: no
-face: nullptr
-half edges:
-  ( 0 , -0.42 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: temp | face: nullptr | sign: 1
-  ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.42 ) | loop: temp | face: nullptr | sign: 1
-  ( 0 , 0.42 , 0.42 ) -> ( 0 , -0.42 , 0.42 ) | loop: temp | face: nullptr | sign: 1
-  ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.42 , -0.42 ) | loop: temp | face: nullptr | sign: 1
-adjacent loop: nullptr
+adjacent loop:  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
 
 direction: outer
 keep: no

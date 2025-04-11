@@ -81,7 +81,7 @@ half edges:
   ( 0 , 1 , 0.11 ) -> ( 0 , 1 , 0 ) | loop: temp | face: nullptr | sign: -1
   ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: nullptr | sign: -1
   ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: temp | face: nullptr | sign: -1
-adjacent loop: nullptr
+adjacent loop:  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
 
 direction: outer
 keep: yes
