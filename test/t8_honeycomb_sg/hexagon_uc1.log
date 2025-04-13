@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-04-12 14:54:10)
+[info] [main: 296] - prevabs start (2025-04-13 17:21:08)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -72,17 +72,19 @@
 [info] [PModel::createGmshEdges: 205]     - creating gmsh edges
 [info] [PModel::createGmshFaces: 261]     - creating gmsh faces
 [info] [PModel::createGmshPhyscialGroups: 431]     - creating physical groups
-[info] [PModel::writeGmshGeo: 364]       - writing gmsh .geo file: .\t8_honeycomb_sg\geo_before_mesh.geo_unrolled
+[info] [PModel::writeGmshGeo: 464]       - writing gmsh .geo file: .\t8_honeycomb_sg\geo_before_mesh.geo_unrolled
 [info] [PModel::buildGmsh: 563]     - meshing
 [info] [PModel::homogenize: 816]   - modeling in Gmsh -- done
 [info] [PModel::homogenize: 826]   - writing outputs
-[info] [PModel::writeGmshOpt: 476]     - writing gmsh .opt file: .\t8_honeycomb_sg\hexagon_uc1.opt
-[info] [PModel::writeGmshGeo: 364]     - writing gmsh .geo file: .\t8_honeycomb_sg\hexagon_uc1.geo_unrolled
-[info] [PModel::writeGmshMsh: 407]   - writing gmsh .msh file: .\t8_honeycomb_sg\hexagon_uc1.msh
+[info] [PModel::writeGmshOpt: 576]     - writing gmsh .opt file: .\t8_honeycomb_sg\hexagon_uc1.opt
+[info] [PModel::writeGmshGeo: 464]     - writing gmsh .geo file: .\t8_honeycomb_sg\hexagon_uc1.geo_unrolled
+[info] [PModel::writeGmshMsh: 507]   - writing gmsh .msh file: .\t8_honeycomb_sg\hexagon_uc1.msh
 [info] [PModel::writeSG: 55]   - writing sg file: .\t8_honeycomb_sg\hexagon_uc1.sg
 [info] [PModel::writeNodes: 65]     - writing nodes
-[info] [PModel::writeElements: 143]     - writing elements
-[info] [PModel::writeSG: 158]   - writing material id-name file: .\t8_honeycomb_sg\hexagon_uc1.sg.mat
+[info] [PModel::writeElements: 109]     - writing elements
+[info] [PModel::writeElementsSC: 339]   writing connectivity
+[info] [PModel::writeElementsSC: 382]   writing local orientation
+[info] [PModel::writeSG: 163]   - writing material id-name file: .\t8_honeycomb_sg\hexagon_uc1.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-04-12 14:54:11)
-[info] [main: 369] total running time: 0.192 sec
+[info] [main: 367] - prevabs finished (2025-04-13 17:21:09)
+[info] [main: 369] total running time: 0.2 sec

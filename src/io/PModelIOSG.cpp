@@ -70,7 +70,8 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   std::vector<std::vector<int>> face_elem_types;
   std::vector<std::vector<std::vector<size_t>>> face_elem_tags, face_elem_node_tags;
   std::vector<size_t> face_prop_tags;
-  std::vector<double> face_local_orients;
+  std::vector<double> face_local_orients;  // theta_1
+  std::vector<std::vector<double>> face_local_orients_v;  // a1, a2, a3, b1, b2, b3
 
   for (auto f : _dcel->faces()) {
     if (f->gfaceTag() != 0) {
@@ -93,6 +94,10 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
       face_prop_tags.push_back(f->layertype()->id());
       face_local_orients.push_back(f->theta1());
+      face_local_orients_v.push_back(
+        {f->localy1()[0], f->localy1()[1], f->localy1()[2],
+         f->localy2()[0], f->localy2()[1], f->localy2()[2]}
+        );
     }
   }
 
@@ -123,7 +128,7 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   writeElements(
     fsg,
     face_elem_types, face_elem_tags, face_elem_node_tags,
-    face_prop_tags, face_local_orients,
+    face_prop_tags, face_local_orients, face_local_orients_v,
     pmessage);
 
   // if (config.analysis_tool == 1) {

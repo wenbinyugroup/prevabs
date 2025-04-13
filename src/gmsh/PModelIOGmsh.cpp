@@ -94,6 +94,45 @@ void PModel::writeNodes(
 
 
 
+void PModel::writeElements(
+  FILE *file,
+  const std::vector<std::vector<int>> &face_elem_types,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
+  const std::vector<size_t> &face_prop_tags,
+  const std::vector<double> &face_local_orients,
+  const std::vector<std::vector<double>> &face_local_orients_v,
+  Message *pmessage
+  ) {
+
+  pmessage->increaseIndent();
+  PLOG(info) << pmessage->message("writing elements");
+
+  if (config.analysis_tool == 1) {
+    writeElementsVABS(
+      file,
+      face_elem_types, face_elem_tags, face_elem_node_tags,
+      face_prop_tags, face_local_orients,
+      pmessage
+      );
+  }
+
+  else if (config.analysis_tool == 2) {
+    writeElementsSC(
+      file,
+      face_elem_types, face_elem_tags, face_elem_node_tags,
+      face_prop_tags, face_local_orients_v,
+      pmessage
+      );
+  }
+
+  pmessage->decreaseIndent();
+
+}
+
+
+
+
 void writeElementVABS(
   FILE *file, std::size_t elem_tag, std::vector<std::size_t> node_tags,
   int elem_type,
@@ -124,39 +163,6 @@ void writeElementVABS(
   writeNumbers(file, "%8d", inums);
 
   return;
-}
-
-
-
-
-void PModel::writeElements(
-  FILE *file,
-  const std::vector<std::vector<int>> &face_elem_types,
-  const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
-  const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
-  const std::vector<size_t> &face_prop_tags,
-  const std::vector<double> &face_local_orients,
-  Message *pmessage
-  ) {
-
-  pmessage->increaseIndent();
-  PLOG(info) << pmessage->message("writing elements");
-
-  if (config.analysis_tool == 1) {
-    writeElementsVABS(
-      file,
-      face_elem_types, face_elem_tags, face_elem_node_tags,
-      face_prop_tags, face_local_orients,
-      pmessage
-      );
-  }
-
-  else if (config.analysis_tool == 2) {
-    writeElementsSC(file, pmessage);
-  }
-
-  pmessage->decreaseIndent();
-
 }
 
 
@@ -224,7 +230,7 @@ void PModel::writeElementsVABS(
 
   // Wirte local coordinate for each element
   PLOG(info) << pmessage->message("  writing local orientation");
-  std::vector<double> dnums;
+  // std::vector<double> dnums;
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
     PLOG(debug) << pmessage->message("  face " + std::to_string(_face_i));
@@ -275,10 +281,32 @@ void PModel::writeElementsVABS(
 
 
 void writeElementSC(
-  FILE *file, int elem_tag, int mid,
+  FILE *file, std::size_t elem_tag, std::size_t prop_id,
   std::vector<std::size_t> node_tags, int elem_type,
-  Message *pmessage) {
-  // std::vector<int> inums(9, 0);
+  Message *pmessage
+  ) {
+
+  fprintf(file, "%8zd%8zd", elem_tag, prop_id);
+
+  std::vector<std::size_t> inums(9, 0);
+
+  if (elem_type == 2) {
+    // 3-node triangle
+    inums = {node_tags[0], node_tags[1], node_tags[2], 0, 0, 0, 0, 0, 0};
+  } else if (elem_type == 3) {
+    // 4-node quadrilateral
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], 0, 0, 0, 0, 0};
+  } else if (elem_type == 9) {
+    // 6-node 2nd order triangle
+    inums = {node_tags[0], node_tags[1], node_tags[2], 0, node_tags[3], node_tags[4], node_tags[5], 0, 0};
+  } else if (elem_type == 10) {
+    // 9-node 2nd order quadrilateral
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], node_tags[4], node_tags[5], node_tags[6], node_tags[7], node_tags[8]};
+  } else if (elem_type == 16) {
+    // 8-node 2nd order quadrilateral
+    inums = {node_tags[0], node_tags[1], node_tags[2], node_tags[3], node_tags[4], node_tags[5], node_tags[6], node_tags[7], 0};
+  }
+
   // fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
   // for (int i = 0; i < elem->getNumVertices(); ++i) {
   //   if (i < 3) {
@@ -287,15 +315,60 @@ void writeElementSC(
   //     inums[i + 1] = elem->getVertex(i)->getIndex();
   //   }
   // }
-  // writeNumbers(file, "%8d", inums);
+
+  writeNumbers(file, "%8zd", inums);
+
+  return;
 }
 
 
 
 
-void PModel::writeElementsSC(FILE *file, Message *pmessage) {
+void PModel::writeElementsSC(
+  FILE *file,
+  const std::vector<std::vector<int>> &face_elem_types,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
+  const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
+  const std::vector<size_t> &face_prop_tags,
+  const std::vector<std::vector<double>> &face_local_orients_v,
+  Message *pmessage
+  ) {
 
-  // // Write connectivity for each element
+
+  // Write connectivity for each element
+  PLOG(info) << "  writing connectivity";
+
+  for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
+    PLOG(debug) << "  face " << _face_i;
+
+    for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
+
+      auto elem_type = face_elem_types[_face_i][_elem_type_i];
+
+      // Get properties of the element type
+      std::string etype_name;
+      int etype_dim, etype_order, etype_nnodes, etype_nnodes_primary;
+      std::vector<double> etype_local_coords;
+      gmsh::model::mesh::getElementProperties(
+        elem_type, etype_name, etype_dim, etype_order,
+        etype_nnodes, etype_local_coords, etype_nnodes_primary);
+
+      auto elem_tags = face_elem_tags[_face_i][_elem_type_i];
+      auto elem_node_tags = face_elem_node_tags[_face_i][_elem_type_i];
+
+      for (auto _j = 0; _j < elem_tags.size(); ++_j) {
+        // Get the slice of the element nodes
+        std::vector<size_t> node_tags = std::vector<std::size_t>(
+          elem_node_tags.begin() + _j * etype_nnodes,
+          elem_node_tags.begin() + (_j + 1) * etype_nnodes);
+
+        writeElementSC(
+          file, elem_tags[_j], face_prop_tags[_face_i], node_tags, elem_type, pmessage);
+      }
+
+    }
+  }
+
   // for (auto f : model->dcel()->faces()) {
   //   if (f->gface() != nullptr) {
   //     for (auto elem : f->gface()->triangles) {
@@ -303,10 +376,37 @@ void PModel::writeElementsSC(FILE *file, Message *pmessage) {
   //     }
   //   }
   // }
-  // fprintf(file, "\n");
+  fprintf(file, "\n");
 
-  // // Wirte local coordinate for each element
-  // std::vector<double> dnums;
+  // Wirte local coordinate for each element
+  PLOG(info) << "  writing local orientation";
+
+  for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
+    PLOG(debug) << "  face " << _face_i;
+
+    auto face_local_orient = face_local_orients_v[_face_i];
+
+    // For each element type of the face
+    for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
+
+      auto elem_tags = face_elem_tags[_face_i][_elem_type_i];
+
+      for (auto _etag : elem_tags) {
+
+        fprintf(file, "%8zd", _etag);
+
+        std::vector<double> dnums = {
+          face_local_orient[0], face_local_orient[1], face_local_orient[2], 
+          face_local_orient[3], face_local_orient[4], face_local_orient[5], 
+          0.0, 0.0, 0.0
+        };
+        writeNumbers(file, "%16e", dnums);
+
+      }
+
+    }
+  }
+
   // for (auto f : model->dcel()->faces()) {
   //   if (f->gface() != nullptr) {
   //     for (auto elem : f->gface()->triangles) {
@@ -321,7 +421,7 @@ void PModel::writeElementsSC(FILE *file, Message *pmessage) {
   //     }
   //   }
   // }
-  // fprintf(file, "\n");
+  fprintf(file, "\n");
 
   return;
 }

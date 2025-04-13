@@ -411,6 +411,7 @@ public:
     const std::vector<std::vector<std::vector<size_t>>> &,
     const std::vector<size_t> &,
     const std::vector<double> &,
+    const std::vector<std::vector<double>> &,
     Message *
     );
 
@@ -424,7 +425,15 @@ public:
     Message *
     );
 
-  void writeElementsSC(FILE *, Message *);
+  void writeElementsSC(
+    FILE *,
+    const std::vector<std::vector<int>> &,
+    const std::vector<std::vector<std::vector<size_t>>> &,
+    const std::vector<std::vector<std::vector<size_t>>> &,
+    const std::vector<size_t> &,
+    const std::vector<std::vector<double>> &,
+    Message *
+    );
   // void writeMaterialsVABS(FILE *, Message *);
   // void writeSettingsVABS(FILE *, Message *);
   int writeGLB(std::string fn, Message *);
