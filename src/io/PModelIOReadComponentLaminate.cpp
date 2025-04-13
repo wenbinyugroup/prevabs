@@ -97,8 +97,7 @@ int readXMLElementComponentLaminate(
 
     Baseline *p_baseline = pmodel->getBaselineByNameCopy(baselineName);
     if (p_baseline == nullptr) {
-      std::cout << "[error] cannot find base line: " << baselineName
-                << std::endl;
+      PLOG(error) << "cannot find base line: " << baselineName;
     }
     Layup *p_layup;
     // for (auto it = pmodel->baselines.begin(); it !=
@@ -138,7 +137,7 @@ int readXMLElementComponentLaminate(
     }
     else {
       // Raise exception
-      std::cout << "[error] cannot find layup: " << layupName << std::endl;
+      PLOG(error) << "cannot find layup: " << layupName;
     }
     p_layups.push_back(p_layup);
 
@@ -247,11 +246,13 @@ int readXMLElementComponentLaminate(
         if (p_xn_location) {
           loc = p_xn_location->value();
         }
+        PLOG(debug) << "  location: " << loc;
 
         xml_node<> *p_xn_direction{p_xn_trim->first_node("direction")};
         if (p_xn_direction) {
           std::stringstream ss{p_xn_direction->value()};
           ss >> x2 >> x3;
+          PLOG(debug) << "  direction: " << x2 << " " << x3;
           if (loc == "head") {
             p_segment->setPrevBound(0, x2, x3);
           }
@@ -282,8 +283,7 @@ int readXMLElementComponentLaminate(
     std::string s_bsl_name{p_xn_segments->first_node("baseline")->value()};
     Baseline *p_bsl = pmodel->getBaselineByName(s_bsl_name);
     if (p_bsl == nullptr) {
-      std::cout << "[error] cannot find base line: " << s_bsl_name
-                << std::endl;
+      PLOG(error) << "cannot find base line: " << s_bsl_name;
     }
 
     std::string s_layup_side{"left"};
@@ -450,16 +450,15 @@ int readXMLElementComponentLaminate(
       }
       else {
         // Raise exception
-        std::cout << "[error] cannot find layup: " << s_layup_name << std::endl;
+        PLOG(error) << "cannot find layup: " << s_layup_name;
       }
       v_p_layup.push_back(p_layup_temp);
 
     }
 
     if (config.debug) {
-      std::cout << "\nsorted list of points" << std::endl;
-      for (auto u : v_u_sorted) std::cout << " " << u;
-      std::cout << std::endl;
+      PLOG(debug) << "sorted list of points";
+      for (auto u : v_u_sorted) PLOG(debug) << " " << u;
     }
 
     // int n_sgms = v_p_layup.size();

@@ -1941,17 +1941,19 @@ void PComponent::joinSegments(
 
 void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
 
-  PLOG(debug) << pmessage->message("createSegmentFreeEnd: ") << s->getName() << " " << e;
+  PLOG(debug) << "creating free end of segment: " << s->getName() << " " << e;
 
   // Trim head
   if (e == 0) {
+
+    PLOG(debug) << "  prev bound: " << s->prevBound();
 
     if (s->prevBound().normSq() != 0) {
       // The head bound is in a different direction
       // other than perpendicular to the baseline
 
       SPoint3 sp0{s->curveBase()->vertices().front()->point()};  // start point
-      SVector3 sv1{s->prevBound()};  // vector
+      SVector3 sv1{s->prevBound()};  // bound direction
       SPoint3 sp1{sp0 + sv1.point()};
       PDCELVertex *p = new PDCELVertex(sp1);
 
@@ -2068,8 +2070,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
   // Trim tail
   else if (e == 1) {
 
-    if (s->nextBound().normSq() != 0) {
+    PLOG(debug) << "  next bound: " << s->nextBound();
 
+    if (s->nextBound().normSq() != 0) {
 
       SPoint3 sp0{s->curveBase()->vertices().back()->point()};
       SVector3 sv1{s->nextBound()};
