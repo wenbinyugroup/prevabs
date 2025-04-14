@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-04-11 18:45:25)
+[info] [main: 296] - prevabs start (2025-04-13 22:56:27)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -14,7 +14,7 @@
     
     ========================================
     
-aterialDB.xml
+alDB.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
 [info] [CrossSection::build: 302] building the cross section, step 1
@@ -36,19 +36,19 @@ aterialDB.xml
 [info] [PModel::createGmshEdges: 205]         - creating gmsh edges
 [info] [PModel::createGmshFaces: 261]         - creating gmsh faces
 [info] [PModel::createGmshPhyscialGroups: 431]         - creating physical groups
-[info] [PModel::writeGmshGeo: 364]           - writing gmsh .geo file: t1_strip\geo_before_mesh.geo_unrolled
+[info] [PModel::writeGmshGeo: 464]           - writing gmsh .geo file: t1_strip\geo_before_mesh.geo_unrolled
 [info] [PModel::buildGmsh: 563]         - meshing
 [info] [PModel::homogenize: 816]       - modeling in Gmsh -- done
 [info] [PModel::homogenize: 826]       - writing outputs
-[info] [PModel::writeGmshOpt: 476]         - writing gmsh .opt file: t1_strip\strip_two_segs.opt
-[info] [PModel::writeGmshGeo: 364]         - writing gmsh .geo file: t1_strip\strip_two_segs.geo_unrolled
-[info] [PModel::writeGmshMsh: 407]       - writing gmsh .msh file: t1_strip\strip_two_segs.msh
+[info] [PModel::writeGmshOpt: 576]         - writing gmsh .opt file: t1_strip\strip_two_segs.opt
+[info] [PModel::writeGmshGeo: 464]         - writing gmsh .geo file: t1_strip\strip_two_segs.geo_unrolled
+[info] [PModel::writeGmshMsh: 507]       - writing gmsh .msh file: t1_strip\strip_two_segs.msh
 [info] [PModel::writeSG: 55]       - writing sg file: t1_strip\strip_two_segs.sg
 [info] [PModel::writeNodes: 65]         - writing nodes
-[info] [PModel::writeElements: 143]         - writing elements
-[info] [PModel::writeElementsVABS: 178]           -   writing connectivity
-[info] [PModel::writeElementsVABS: 226]           -   writing local orientation
-[info] [PModel::writeSG: 158]       - writing material id-name file: t1_strip\strip_two_segs.sg.mat
+[info] [PModel::writeElements: 109]         - writing elements
+[info] [PModel::writeElementsVABS: 184]           -   writing connectivity
+[info] [PModel::writeElementsVABS: 232]           -   writing local orientation
+[info] [PModel::writeSG: 163]       - writing material id-name file: t1_strip\strip_two_segs.sg.mat
 [info] [PModel::homogenize: 838]     - writing outputs -- done
-[info] [main: 367]     - prevabs finished (2025-04-11 18:45:25)
-[info] [main: 369] total running time: 0.122 sec
+[info] [main: 367]     - prevabs finished (2025-04-13 22:56:27)
+[info] [main: 369] total running time: 0.184 sec

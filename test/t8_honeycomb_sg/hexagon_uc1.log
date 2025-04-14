@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-04-13 18:21:27)
+[info] [main: 296] - prevabs start (2025-04-13 22:55:26)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -7,14 +7,15 @@
   
   
   
-  
-  
-  ========================================
-  
-  
-  ========================================
-  
-ebug] [read_analysis: 59]     - reading analysis...
+
+
+========================================
+
+
+========================================
+
+exagon_uc1
+[debug] [read_analysis: 59]     - reading analysis...
 [debug] [read_analysis: 196]     - finished reading analysis.
 [debug] [read_general: 208]     - reading general...
 [debug] [read_general: 281]     - tolerance = 1e-12
@@ -154,7 +155,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [read_geometry: 532]     -  
 [debug] [read_geometry: 536]     - finished reading geometry.
 [debug] [read_materials: 552]     - reading materials...
-[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\foxta\work\prevabs\build_msvc\Release\MaterialDB.xml
 [debug] [readXMLElementMaterial: 193]           - reading material: aluminum
 [debug] [readXMLElementLamina: 584]           - reading lamina: la_m1
 [debug] [read_materials: 607]       - finished reading materials.
@@ -1436,7 +1437,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_2 0
 [debug] [PComponent::createSegmentFreeEnd: 1949]   prev bound: (0, 0, 0)
-[debug] [PComponent::createSegmentFreeEnd: 2060]   _prev_bound_vertices:
+[debug] [PComponent::createSegmentFreeEnd: 2068]   _prev_bound_vertices:
   0: ( 0 , 0 , 3 )
   1: ( 0 , 0.05 , 3 )
 [debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 )
@@ -1475,14 +1476,14 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_tr
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [pt]: ( 0 , 0 , 3 )
 [debug] [Baseline::print: 44]         - 2 [p1]: ( 0 , 0 , 2 )
 [debug] [Baseline::print: 44]         - 3 [p6]: ( 0 , 1.732 , 1 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
@@ -1494,14 +1495,15 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 0 , 3 ) -- 0: ( 0 , 0.05 , 3 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , 2 ) -- 1: ( 0 , 0.05 , 2.02887 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 1.732 , 1 ) -- 2: ( 0 , 1.757 , 1.0433 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 170] segment sgm_2 does not connect to any other segment at the tail
 [debug] [PComponent::buildLaminate: 171] building the end at the tail
 [debug] [PComponent::joinSegments: 392]       - making segment end: hex_tr.sgm_2 1
 [debug] [PComponent::joinSegments: 394]       - number of dependencies: 0
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_2 1
-[debug] [PComponent::createSegmentFreeEnd: 2073]   next bound: (0, 0, 1)
+[debug] [PComponent::createSegmentFreeEnd: 2081]   next bound: (0, 0, 1)
+[debug] [PComponent::createSegmentFreeEnd: 2095]   bound vertices: ( 0 , 1.732 , 1 ), ( 0 , 1.732 , 2 )
 [debug] [get_polylines_intersection_close_to: 766]       - in function: get_polylines_intersection_close_to
 [debug] [get_polylines_intersection_close_to: 768]   polyline_1:
   0: ( 0 , 0.05 , 3 )
@@ -1544,26 +1546,25 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [get_polylines_intersection_close_to: 826]   v2 = ( 0 , 1.732 , 1.05774 ), is_new_2 = true
 [debug] [get_polylines_intersection_close_to: 837]   v_intersect = ( 0 , 1.732 , 1.05774 )
 [debug] [get_polylines_intersection_close_to: 841] done
-[debug] [PComponent::createSegmentFreeEnd: 2128]       - ip = ( 0 , 1.732 , 1.05774 )
-[warning] [trim: 1076] trim: Vertex not found in curve
+[debug] [PComponent::createSegmentFreeEnd: 2138] ip = ( 0 , 1.732 , 1.05774 )
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [debug] [Segment::updateBaseOffsetIndexPairs: 300]         - updated base-offset index pairs:
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 0 -- 0
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 1 -- 1
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 2 -- 2
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.732 , 1 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.757 , 1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 280]   new vertex
 [debug] [PDCEL::addVertex: 282]   vertex added to _vertices
 [debug] [PDCEL::addVertex: 283]   _vertices.size() = 19
 [debug] [PDCEL::addVertex: 285]   vertex inserted into _vertex_tree
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1 -1.5708
@@ -1576,10 +1577,10 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , 1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1919] Vertex has no incident edges
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.732 , 1 )
 [debug] [PDCELHalfEdge::log: 104] (1.732, 1) -> (1.732, -1)
@@ -1588,7 +1589,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (1.732, 1) -> (1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (1.732, 1) -> (1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -1601,8 +1602,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 121] sgm_1_face
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.757 , 1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (1.757, 1.0433) -> (1.732, 1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.732 , 1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (1.732, 1.05774) -> (1.732, 1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -1610,26 +1611,26 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_tr
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [pt]: ( 0 , 0 , 3 )
 [debug] [Baseline::print: 44]         - 2 [p1]: ( 0 , 0 , 2 )
 [debug] [Baseline::print: 44]         - 3 [p6]: ( 0 , 1.732 , 1 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 []: ( 0 , 0.05 , 3 )
 [debug] [Baseline::print: 44]         - 2 []: ( 0 , 0.05 , 2.02887 )
-[debug] [Baseline::print: 44]         - 3 []: ( 0 , 1.757 , 1.0433 )
+[debug] [Baseline::print: 44]         - 3 []: ( 0 , 1.732 , 1.05774 )
 [debug] [Segment::printBaseOffsetPairs: 124]       - base vertices -- base_link_to_offset_indices
 [debug] [Segment::printBaseOffsetPairs: 127]       - number of pairs: 3
 [debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 0 , 3 ) -- 0: ( 0 , 0.05 , 3 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , 2 ) -- 1: ( 0 , 0.05 , 2.02887 )
-[debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 1.732 , 1 ) -- 2: ( 0 , 1.757 , 1.0433 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 1.732 , 1 ) -- 2: ( 0 , 1.732 , 1.05774 )
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 182] building half edge loops for each segment
 [debug] [Segment::build: 330]     - building the overall shape of segment: sgm_2
 [debug] [Segment::build: 334]     - creating half edges for the base curve
@@ -1754,18 +1755,18 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 0.05 , 2.02887 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.757 , 1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0.05 , 2.02887 )
 [debug] [PDCELHalfEdge::log: 104] (0.05, 2.02887) -> (0.05, 3)
@@ -1774,21 +1775,21 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (0.05, 2.02887) -> (1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (0.05, 2.02887) -> (1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.757 , 1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (1.757, 1.0433) -> (1.732, 1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.732 , 1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (1.732, 1.05774) -> (1.732, 1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (1.757, 1.0433) -> (0.05, 2.02887)
+[debug] [PDCELHalfEdge::log: 104] (1.732, 1.05774) -> (0.05, 2.02887)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -1809,11 +1810,11 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) sign: -1
@@ -1827,8 +1828,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: temp | face: nullptr
@@ -1836,8 +1837,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 64] name: sgm_2_face
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: sgm_2_face
-[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: sgm_2_face
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: sgm_2_face
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: sgm_2_face
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: sgm_2_face
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: sgm_2_face
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: temp | face: sgm_2_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: temp | face: sgm_2_face
@@ -1852,9 +1853,9 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
@@ -1904,8 +1905,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
@@ -1915,8 +1916,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_2_face
@@ -1953,8 +1954,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
@@ -2057,6 +2058,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_3 0
 [debug] [PComponent::createSegmentFreeEnd: 1949]   prev bound: (0, 0, 1)
+[debug] [PComponent::createSegmentFreeEnd: 1963]   bound vertices: ( 0 , -1.732 , 1 ), ( 0 , -1.732 , 2 )
 [debug] [get_polylines_intersection_close_to: 766]       - in function: get_polylines_intersection_close_to
 [debug] [get_polylines_intersection_close_to: 768]   polyline_1:
   0: ( 0 , -1.757 , 1.0433 )
@@ -2099,29 +2101,28 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [get_polylines_intersection_close_to: 826]   v2 = ( 0 , -1.732 , 1.05774 ), is_new_2 = true
 [debug] [get_polylines_intersection_close_to: 837]   v_intersect = ( 0 , -1.732 , 1.05774 )
 [debug] [get_polylines_intersection_close_to: 841] done
-[debug] [PComponent::createSegmentFreeEnd: 1997]       - ip = ( 0 , -1.732 , 1.05774 )
-[warning] [trim: 1076] trim: Vertex not found in curve
+[debug] [PComponent::createSegmentFreeEnd: 1999] ip = ( 0 , -1.732 , 1.05774 )
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [debug] [Segment::updateBaseOffsetIndexPairs: 300]         - updated base-offset index pairs:
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 0 -- 0
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 1 -- 1
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 2 -- 2
-[debug] [PComponent::createSegmentFreeEnd: 2060]   _prev_bound_vertices:
+[debug] [PComponent::createSegmentFreeEnd: 2068]   _prev_bound_vertices:
   0: ( 0 , -1.732 , 1 )
-  1: ( 0 , -1.757 , 1.0433 )
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 )
+  1: ( 0 , -1.732 , 1.05774 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.732 , 1 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.757 , 1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 280]   new vertex
 [debug] [PDCEL::addVertex: 282]   vertex added to _vertices
 [debug] [PDCEL::addVertex: 283]   _vertices.size() = 21
 [debug] [PDCEL::addVertex: 285]   vertex inserted into _vertex_tree
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1 0.523611
@@ -2135,9 +2136,9 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , -1 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1 0.523611
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) sign: 1 2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1919] Vertex has no incident edges
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.732 , 1 )
 [debug] [PDCELHalfEdge::log: 104] (-1.732, 1) -> (0, 2)
@@ -2146,7 +2147,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-1.732, 1) -> (-1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-1.732, 1) -> (-1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2159,8 +2160,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 121] sgm_1_face
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.757 , 1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (-1.757, 1.0433) -> (-1.732, 1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.732 , 1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (-1.732, 1.05774) -> (-1.732, 1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2168,33 +2169,33 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_tl
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [p2]: ( 0 , -1.732 , 1 )
 [debug] [Baseline::print: 44]         - 2 [p1]: ( 0 , 0 , 2 )
 [debug] [Baseline::print: 44]         - 3 [pt]: ( 0 , 0 , 3 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
-[debug] [Baseline::print: 44]         - 1 []: ( 0 , -1.757 , 1.0433 )
+[debug] [Baseline::print: 44]         - 1 []: ( 0 , -1.732 , 1.05774 )
 [debug] [Baseline::print: 44]         - 2 []: ( 0 , -0.05 , 2.02887 )
 [debug] [Baseline::print: 44]         - 3 []: ( 0 , -0.05 , 3 )
 [debug] [Segment::printBaseOffsetPairs: 124]       - base vertices -- base_link_to_offset_indices
 [debug] [Segment::printBaseOffsetPairs: 127]       - number of pairs: 3
-[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , -1.732 , 1 ) -- 0: ( 0 , -1.757 , 1.0433 )
+[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , -1.732 , 1 ) -- 0: ( 0 , -1.732 , 1.05774 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , 2 ) -- 1: ( 0 , -0.05 , 2.02887 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 0 , 3 ) -- 2: ( 0 , -0.05 , 3 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 170] segment sgm_3 does not connect to any other segment at the tail
 [debug] [PComponent::buildLaminate: 171] building the end at the tail
 [debug] [PComponent::joinSegments: 392]       - making segment end: hex_tl.sgm_3 1
 [debug] [PComponent::joinSegments: 394]       - number of dependencies: 0
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_3 1
-[debug] [PComponent::createSegmentFreeEnd: 2073]   next bound: (0, 0, 0)
+[debug] [PComponent::createSegmentFreeEnd: 2081]   next bound: (0, 0, 0)
 [debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 0 , 3 )
@@ -2254,26 +2255,26 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_tl
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [p2]: ( 0 , -1.732 , 1 )
 [debug] [Baseline::print: 44]         - 2 [p1]: ( 0 , 0 , 2 )
 [debug] [Baseline::print: 44]         - 3 [pt]: ( 0 , 0 , 3 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
-[debug] [Baseline::print: 44]         - 1 []: ( 0 , -1.757 , 1.0433 )
+[debug] [Baseline::print: 44]         - 1 []: ( 0 , -1.732 , 1.05774 )
 [debug] [Baseline::print: 44]         - 2 []: ( 0 , -0.05 , 2.02887 )
 [debug] [Baseline::print: 44]         - 3 []: ( 0 , -0.05 , 3 )
 [debug] [Segment::printBaseOffsetPairs: 124]       - base vertices -- base_link_to_offset_indices
 [debug] [Segment::printBaseOffsetPairs: 127]       - number of pairs: 3
-[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , -1.732 , 1 ) -- 0: ( 0 , -1.757 , 1.0433 )
+[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , -1.732 , 1 ) -- 0: ( 0 , -1.732 , 1.05774 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , 2 ) -- 1: ( 0 , -0.05 , 2.02887 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 0 , 3 ) -- 2: ( 0 , -0.05 , 3 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 182] building half edge loops for each segment
 [debug] [Segment::build: 330]     - building the overall shape of segment: sgm_3
 [debug] [Segment::build: 334]     - creating half edges for the base curve
@@ -2288,9 +2289,9 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::findHalfEdge: 883] looking for half edge: v1 ( 0 , 0 , 2 ) -> v2 ( 0 , 0 , 3 )
 [debug] [PDCEL::findHalfEdge: 895] found half edge: ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) sign: -1
 [debug] [Segment::build: 361]     - creating half edges for the offset curve
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 )
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.757 , 1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.732 , 1.05774 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
@@ -2300,18 +2301,18 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::addVertex: 283]   _vertices.size() = 23
 [debug] [PDCEL::addVertex: 285]   vertex inserted into _vertex_tree
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1919] Vertex has no incident edges
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.757 , 1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (-1.757, 1.0433) -> (-1.732, 1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.732 , 1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (-1.732, 1.05774) -> (-1.732, 1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-1.757, 1.0433) -> (-0.05, 2.02887)
+[debug] [PDCELHalfEdge::log: 104] (-1.732, 1.05774) -> (-0.05, 2.02887)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2319,7 +2320,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -0.05 , 2.02887 )
-[debug] [PDCELHalfEdge::log: 104] (-0.05, 2.02887) -> (-1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-0.05, 2.02887) -> (-1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2341,7 +2342,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -0.05 , 2.02887 )
-[debug] [PDCELHalfEdge::log: 104] (-0.05, 2.02887) -> (-1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-0.05, 2.02887) -> (-1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2387,33 +2388,32 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 1002] done
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: no
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCELFace::print: 64] name: sgm_3_face
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: temp | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: temp | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 ) | loop: temp | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: sgm_3_face
-[debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: sgm_3_face
+[debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: temp | face: sgm_3_face
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: sgm_3_face
 [debug] [PDCEL::update_half_edge_loop: 1371] updating half edge loop( 0 , 0 , 2 ) -> ( 0 , -1.732 , 1 ) sign: 1
 [debug] [PDCEL::update_half_edge_loop: 1396] half edge loop found: 
 [debug] [PDCEL::update_half_edge_loop: 1398]   direction: 1
@@ -2481,14 +2481,14 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) | loop: nullptr | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) | loop: nullptr | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) | loop: nullptr | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 ) | loop: nullptr | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) | loop: nullptr | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: nullptr | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
@@ -2498,8 +2498,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_2_face
@@ -2508,12 +2508,12 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) | loop: keep | face: sgm_3_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCEL::update_half_edge_loop: 1425] done.
 [debug] [PDCEL::link_inner_half_edge_loop: 1237] linking inner half edge loop
@@ -2523,32 +2523,9 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2052] vertex is one of the four infinite corners, skipping
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -inf , inf )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2052] vertex is one of the four infinite corners, skipping
-[debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.757 , 1.0433 )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.732 , -1 )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2085] done.
-[debug] [PDCEL::findLineSegmentBelowVertex: 2119] ls_list:
-[debug] [PDCEL::findLineSegmentBelowVertex: 2121]   ( 0 , -1.732 , 1 ) - ( 0 , -1.757 , 1.0433 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2121]   ( 0 , -1.757 , 1.0433 ) - ( 0 , -0.05 , 2.02887 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2135] ls: ( 0 , -1.732 , 1 ) - ( 0 , -1.757 , 1.0433 )
-[debug] [calc_line_intersection_2d: 346] calc_line_intersection_2d
- line 1: ( 0 , -1.732 , -1 ) - ( 0 , -1.732 , 0 ) ex11: 1 ex12: 1
- line 2: ( 0 , -1.732 , 1 ) - ( 0 , -1.757 , 1.0433 ) ex21: 1 ex22: 1
-[debug] [calc_line_intersection_2d: 356] is_intersect: true u1: 2 u2: 2.66454e-14
-[debug] [calc_line_intersection_2d: 442]   intersection point: ( 0 , -1.732 , 1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2146] is_intersect: true, u1_tmp: 2, u2: 2.66454e-14
-[debug] [PDCEL::findLineSegmentBelowVertex: 2151] intersect
-[debug] [PDCEL::findLineSegmentBelowVertex: 2180] vbelow: nullptr
-[debug] [PDCEL::findLineSegmentBelowVertex: 2135] ls: ( 0 , -1.757 , 1.0433 ) - ( 0 , -0.05 , 2.02887 )
-[debug] [calc_line_intersection_2d: 346] calc_line_intersection_2d
- line 1: ( 0 , -1.732 , -1 ) - ( 0 , -1.732 , 0 ) ex11: 1 ex12: 1
- line 2: ( 0 , -1.757 , 1.0433 ) - ( 0 , -0.05 , 2.02887 ) ex21: 1 ex22: 1
-[debug] [calc_line_intersection_2d: 356] is_intersect: true u1: 2.05774 u2: 0.0146459
-[debug] [calc_line_intersection_2d: 442]   intersection point: ( 0 , -1.732 , 1.05774 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2146] is_intersect: true, u1_tmp: 2.05774, u2: 0.0146459
-[debug] [PDCEL::findLineSegmentBelowVertex: 2151] intersect
-[debug] [PDCEL::findLineSegmentBelowVertex: 2180] vbelow: nullptr
-[debug] [PDCEL::findLineSegmentBelowVertex: 2183] ls_below: nullptr
-[debug] [PDCEL::findLineSegmentBelowVertex: 2185] done.
+[debug] [PDCEL::findLineSegmentBelowVertex: 2115] no finite line segments found.
 [debug] [PDCEL::link_inner_half_edge_loop: 1240] adjacent loop: 
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
@@ -2687,7 +2664,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_4 0
 [debug] [PComponent::createSegmentFreeEnd: 1949]   prev bound: (0, 0, 0)
-[debug] [PComponent::createSegmentFreeEnd: 2060]   _prev_bound_vertices:
+[debug] [PComponent::createSegmentFreeEnd: 2068]   _prev_bound_vertices:
   0: ( 0 , 0 , -3 )
   1: ( 0 , -0.05 , -3 )
 [debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0 , -3 ) -> ( 0 , -0.05 , -3 )
@@ -2726,14 +2703,14 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_bl
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [pb]: ( 0 , 0 , -3 )
 [debug] [Baseline::print: 44]         - 2 [p4]: ( 0 , 0 , -2 )
 [debug] [Baseline::print: 44]         - 3 [p3]: ( 0 , -1.732 , -1 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
@@ -2745,14 +2722,15 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 0 , -3 ) -- 0: ( 0 , -0.05 , -3 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , -2 ) -- 1: ( 0 , -0.05 , -2.02887 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , -1.732 , -1 ) -- 2: ( 0 , -1.757 , -1.0433 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 170] segment sgm_4 does not connect to any other segment at the tail
 [debug] [PComponent::buildLaminate: 171] building the end at the tail
 [debug] [PComponent::joinSegments: 392]       - making segment end: hex_bl.sgm_4 1
 [debug] [PComponent::joinSegments: 394]       - number of dependencies: 0
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_4 1
-[debug] [PComponent::createSegmentFreeEnd: 2073]   next bound: (0, 0, 1)
+[debug] [PComponent::createSegmentFreeEnd: 2081]   next bound: (0, 0, 1)
+[debug] [PComponent::createSegmentFreeEnd: 2095]   bound vertices: ( 0 , -1.732 , -1 ), ( 0 , -1.732 , 0 )
 [debug] [get_polylines_intersection_close_to: 766]       - in function: get_polylines_intersection_close_to
 [debug] [get_polylines_intersection_close_to: 768]   polyline_1:
   0: ( 0 , -0.05 , -3 )
@@ -2795,26 +2773,25 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [get_polylines_intersection_close_to: 826]   v2 = ( 0 , -1.732 , -1.05774 ), is_new_2 = true
 [debug] [get_polylines_intersection_close_to: 837]   v_intersect = ( 0 , -1.732 , -1.05774 )
 [debug] [get_polylines_intersection_close_to: 841] done
-[debug] [PComponent::createSegmentFreeEnd: 2128]       - ip = ( 0 , -1.732 , -1.05774 )
-[warning] [trim: 1076] trim: Vertex not found in curve
+[debug] [PComponent::createSegmentFreeEnd: 2138] ip = ( 0 , -1.732 , -1.05774 )
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [debug] [Segment::updateBaseOffsetIndexPairs: 300]         - updated base-offset index pairs:
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 0 -- 0
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 1 -- 1
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 2 -- 2
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.732 , -1 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.757 , -1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 280]   new vertex
 [debug] [PDCEL::addVertex: 282]   vertex added to _vertices
 [debug] [PDCEL::addVertex: 283]   _vertices.size() = 26
 [debug] [PDCEL::addVertex: 285]   vertex inserted into _vertex_tree
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1 1.5708
@@ -2826,11 +2803,11 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , -1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 -2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , -1.05774 ) -> ( 0 , -1.732 , -1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1919] Vertex has no incident edges
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.732 , -1 )
 [debug] [PDCELHalfEdge::log: 104] (-1.732, -1) -> (-1.732, 1)
@@ -2839,7 +2816,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-1.732, -1) -> (-1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-1.732, -1) -> (-1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2852,8 +2829,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 121] sgm_1_face
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.757 , -1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (-1.757, -1.0433) -> (-1.732, -1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.732 , -1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (-1.732, -1.05774) -> (-1.732, -1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -2861,26 +2838,26 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_bl
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [pb]: ( 0 , 0 , -3 )
 [debug] [Baseline::print: 44]         - 2 [p4]: ( 0 , 0 , -2 )
 [debug] [Baseline::print: 44]         - 3 [p3]: ( 0 , -1.732 , -1 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 []: ( 0 , -0.05 , -3 )
 [debug] [Baseline::print: 44]         - 2 []: ( 0 , -0.05 , -2.02887 )
-[debug] [Baseline::print: 44]         - 3 []: ( 0 , -1.757 , -1.0433 )
+[debug] [Baseline::print: 44]         - 3 []: ( 0 , -1.732 , -1.05774 )
 [debug] [Segment::printBaseOffsetPairs: 124]       - base vertices -- base_link_to_offset_indices
 [debug] [Segment::printBaseOffsetPairs: 127]       - number of pairs: 3
 [debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 0 , -3 ) -- 0: ( 0 , -0.05 , -3 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , -2 ) -- 1: ( 0 , -0.05 , -2.02887 )
-[debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , -1.732 , -1 ) -- 2: ( 0 , -1.757 , -1.0433 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , -1.732 , -1 ) -- 2: ( 0 , -1.732 , -1.05774 )
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 182] building half edge loops for each segment
 [debug] [Segment::build: 330]     - building the overall shape of segment: sgm_4
 [debug] [Segment::build: 334]     - creating half edges for the base curve
@@ -2996,18 +2973,18 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , -0.05 , -2.02887 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.757 , -1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , -1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -0.05 , -2.02887 )
 [debug] [PDCELHalfEdge::log: 104] (-0.05, -2.02887) -> (-0.05, -3)
@@ -3016,21 +2993,21 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-0.05, -2.02887) -> (-1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-0.05, -2.02887) -> (-1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.757 , -1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (-1.757, -1.0433) -> (-1.732, -1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -1.732 , -1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (-1.732, -1.05774) -> (-1.732, -1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-1.757, -1.0433) -> (-0.05, -2.02887)
+[debug] [PDCELHalfEdge::log: 104] (-1.732, -1.05774) -> (-0.05, -2.02887)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -3050,13 +3027,12 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) sign: -1
@@ -3069,21 +3045,21 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: no
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCELFace::print: 64] name: sgm_4_face
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: sgm_4_face
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: sgm_4_face
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) | loop: temp | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -3 ) -> ( 0 , 0 , -2 ) | loop: temp | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: sgm_4_face
-[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: sgm_4_face
 [debug] [PDCEL::update_half_edge_loop: 1371] updating half edge loop( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) sign: -1
 [debug] [PDCEL::update_half_edge_loop: 1396] half edge loop found: 
 [debug] [PDCEL::update_half_edge_loop: 1398]   direction: -1
@@ -3095,16 +3071,15 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , -3 ) -> ( 0 , -0.05 , -2.02887 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1.05774 ) -> ( 0 , -1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
@@ -3114,9 +3089,9 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
@@ -3155,30 +3130,30 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: no
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , -0.05 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_2_face
@@ -3187,33 +3162,33 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) | loop: keep | face: sgm_3_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: keep | face: sgm_4_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: keep | face: sgm_4_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , 0 , -2 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: keep | face: sgm_4_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCEL::update_half_edge_loop: 1425] done.
 [debug] [PDCEL::link_inner_half_edge_loop: 1237] linking inner half edge loop
-[debug] [PDCEL::findLineSegmentBelowVertex: 2106] finding line segment below vertex ( 0 , -1.757 , -1.0433 )
-[debug] [PDCEL::findLineSegmentsAtSweepLine: 2025] finding line segments at sweep line at vertex ( 0 , -1.757 , -1.0433 )
+[debug] [PDCEL::findLineSegmentBelowVertex: 2106] finding line segment below vertex ( 0 , -1.732 , -1 )
+[debug] [PDCEL::findLineSegmentsAtSweepLine: 2025] finding line segments at sweep line at vertex ( 0 , -1.732 , -1 )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -inf , -inf )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2052] vertex is one of the four infinite corners, skipping
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -inf , inf )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2052] vertex is one of the four infinite corners, skipping
-[debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.757 , -1.0433 )
+[debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.732 , -1 )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2085] done.
 [debug] [PDCEL::findLineSegmentBelowVertex: 2115] no finite line segments found.
 [debug] [PDCEL::link_inner_half_edge_loop: 1240] adjacent loop: 
@@ -3232,22 +3207,22 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: no
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , -0.05 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
 [debug] [PDCEL::write_dcel_to_file: 158] writing DCEL to file: _tmp_dcel.txt
 [debug] [PDCEL::write_dcel_to_file: 170] writing vertices
@@ -3365,6 +3340,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_5 0
 [debug] [PComponent::createSegmentFreeEnd: 1949]   prev bound: (0, 0, 1)
+[debug] [PComponent::createSegmentFreeEnd: 1963]   bound vertices: ( 0 , 1.732 , -1 ), ( 0 , 1.732 , 0 )
 [debug] [get_polylines_intersection_close_to: 766]       - in function: get_polylines_intersection_close_to
 [debug] [get_polylines_intersection_close_to: 768]   polyline_1:
   0: ( 0 , 1.757 , -1.0433 )
@@ -3407,29 +3383,28 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [get_polylines_intersection_close_to: 826]   v2 = ( 0 , 1.732 , -1.05774 ), is_new_2 = true
 [debug] [get_polylines_intersection_close_to: 837]   v_intersect = ( 0 , 1.732 , -1.05774 )
 [debug] [get_polylines_intersection_close_to: 841] done
-[debug] [PComponent::createSegmentFreeEnd: 1997]       - ip = ( 0 , 1.732 , -1.05774 )
-[warning] [trim: 1076] trim: Vertex not found in curve
+[debug] [PComponent::createSegmentFreeEnd: 1999] ip = ( 0 , 1.732 , -1.05774 )
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [debug] [Segment::updateBaseOffsetIndexPairs: 300]         - updated base-offset index pairs:
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 0 -- 0
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 1 -- 1
 [debug] [Segment::updateBaseOffsetIndexPairs: 302]         - 2 -- 2
-[debug] [PComponent::createSegmentFreeEnd: 2060]   _prev_bound_vertices:
+[debug] [PComponent::createSegmentFreeEnd: 2068]   _prev_bound_vertices:
   0: ( 0 , 1.732 , -1 )
-  1: ( 0 , 1.757 , -1.0433 )
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 )
+  1: ( 0 , 1.732 , -1.05774 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.732 , -1 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.757 , -1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 280]   new vertex
 [debug] [PDCEL::addVertex: 282]   vertex added to _vertices
 [debug] [PDCEL::addVertex: 283]   _vertices.size() = 28
 [debug] [PDCEL::addVertex: 285]   vertex inserted into _vertex_tree
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1 -2.61798
@@ -3442,10 +3417,10 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , 1 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1 -2.61798
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) sign: 1 -1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , 1 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1919] Vertex has no incident edges
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.732 , -1 )
 [debug] [PDCELHalfEdge::log: 104] (1.732, -1) -> (0, -2)
@@ -3454,7 +3429,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (1.732, -1) -> (1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (1.732, -1) -> (1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -3467,8 +3442,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 121] sgm_1_face
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.757 , -1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (1.757, -1.0433) -> (1.732, -1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.732 , -1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (1.732, -1.05774) -> (1.732, -1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -3476,33 +3451,33 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_br
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [p5]: ( 0 , 1.732 , -1 )
 [debug] [Baseline::print: 44]         - 2 [p4]: ( 0 , 0 , -2 )
 [debug] [Baseline::print: 44]         - 3 [pb]: ( 0 , 0 , -3 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
-[debug] [Baseline::print: 44]         - 1 []: ( 0 , 1.757 , -1.0433 )
+[debug] [Baseline::print: 44]         - 1 []: ( 0 , 1.732 , -1.05774 )
 [debug] [Baseline::print: 44]         - 2 []: ( 0 , 0.05 , -2.02887 )
 [debug] [Baseline::print: 44]         - 3 []: ( 0 , 0.05 , -3 )
 [debug] [Segment::printBaseOffsetPairs: 124]       - base vertices -- base_link_to_offset_indices
 [debug] [Segment::printBaseOffsetPairs: 127]       - number of pairs: 3
-[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 1.732 , -1 ) -- 0: ( 0 , 1.757 , -1.0433 )
+[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 1.732 , -1 ) -- 0: ( 0 , 1.732 , -1.05774 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , -2 ) -- 1: ( 0 , 0.05 , -2.02887 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 0 , -3 ) -- 2: ( 0 , 0.05 , -3 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 170] segment sgm_5 does not connect to any other segment at the tail
 [debug] [PComponent::buildLaminate: 171] building the end at the tail
 [debug] [PComponent::joinSegments: 392]       - making segment end: hex_br.sgm_5 1
 [debug] [PComponent::joinSegments: 394]       - number of dependencies: 0
 [debug] [PComponent::joinSegments: 397]       - making segment end because of no dependency.
 [debug] [PComponent::createSegmentFreeEnd: 1944] creating free end of segment: sgm_5 1
-[debug] [PComponent::createSegmentFreeEnd: 2073]   next bound: (0, 0, 0)
+[debug] [PComponent::createSegmentFreeEnd: 2081]   next bound: (0, 0, 0)
 [debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0 , -3 ) -> ( 0 , 0.05 , -3 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 0 , -3 )
@@ -3562,26 +3537,26 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCEL::addEdge: 572] Successfully added edge
-[debug] [PComponent::createSegmentFreeEnd: 2226]       - curve base:
+[debug] [PComponent::createSegmentFreeEnd: 2242]       - curve base:
 [debug] [Baseline::print: 36]         - name: ln_hex_br
 [debug] [Baseline::print: 38]         - type: straight
 [debug] [Baseline::print: 40]         - point: (x, y, z)
 [debug] [Baseline::print: 44]         - 1 [p5]: ( 0 , 1.732 , -1 )
 [debug] [Baseline::print: 44]         - 2 [p4]: ( 0 , 0 , -2 )
 [debug] [Baseline::print: 44]         - 3 [pb]: ( 0 , 0 , -3 )
-[debug] [PComponent::createSegmentFreeEnd: 2228]       - curve offset:
+[debug] [PComponent::createSegmentFreeEnd: 2244]       - curve offset:
 [debug] [Baseline::print: 36]         - name: 
 [debug] [Baseline::print: 38]         - type: 
 [debug] [Baseline::print: 40]         - point: (x, y, z)
-[debug] [Baseline::print: 44]         - 1 []: ( 0 , 1.757 , -1.0433 )
+[debug] [Baseline::print: 44]         - 1 []: ( 0 , 1.732 , -1.05774 )
 [debug] [Baseline::print: 44]         - 2 []: ( 0 , 0.05 , -2.02887 )
 [debug] [Baseline::print: 44]         - 3 []: ( 0 , 0.05 , -3 )
 [debug] [Segment::printBaseOffsetPairs: 124]       - base vertices -- base_link_to_offset_indices
 [debug] [Segment::printBaseOffsetPairs: 127]       - number of pairs: 3
-[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 1.732 , -1 ) -- 0: ( 0 , 1.757 , -1.0433 )
+[debug] [Segment::printBaseOffsetPairs: 138]       - 0: ( 0 , 1.732 , -1 ) -- 0: ( 0 , 1.732 , -1.05774 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 1: ( 0 , 0 , -2 ) -- 1: ( 0 , 0.05 , -2.02887 )
 [debug] [Segment::printBaseOffsetPairs: 138]       - 2: ( 0 , 0 , -3 ) -- 2: ( 0 , 0.05 , -3 )
-[debug] [PComponent::createSegmentFreeEnd: 2253] done
+[debug] [PComponent::createSegmentFreeEnd: 2269] done
 [debug] [PComponent::buildLaminate: 182] building half edge loops for each segment
 [debug] [Segment::build: 330]     - building the overall shape of segment: sgm_5
 [debug] [Segment::build: 334]     - creating half edges for the base curve
@@ -3596,9 +3571,9 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::findHalfEdge: 883] looking for half edge: v1 ( 0 , 0 , -2 ) -> v2 ( 0 , 0 , -3 )
 [debug] [PDCEL::findHalfEdge: 895] found half edge: ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) sign: -1
 [debug] [Segment::build: 361]     - creating half edges for the offset curve
-[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 1.757 , -1.0433 ) -> ( 0 , 0.05 , -2.02887 )
+[debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 1.732 , -1.05774 ) -> ( 0 , 0.05 , -2.02887 )
 [debug] [PDCEL::addVertex: 275] start
-[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.757 , -1.0433 )
+[debug] [PDCEL::addVertex: 277]   v = ( 0 , 1.732 , -1.05774 )
 [debug] [PDCEL::addVertex: 288]   vertex already in DCEL
 [debug] [PDCEL::addVertex: 291] done
 [debug] [PDCEL::addVertex: 275] start
@@ -3608,18 +3583,18 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::addVertex: 283]   _vertices.size() = 30
 [debug] [PDCEL::addVertex: 285]   vertex inserted into _vertex_tree
 [debug] [PDCEL::addVertex: 291] done
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.757 , -1.0433 ) -> ( 0 , 0.05 , -2.02887 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.732 , -1.05774 ) -> ( 0 , 0.05 , -2.02887 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
-[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1919] Vertex has no incident edges
-[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.757 , -1.0433 )
-[debug] [PDCELHalfEdge::log: 104] (1.757, -1.0433) -> (1.732, -1)
+[debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 1.732 , -1.05774 )
+[debug] [PDCELHalfEdge::log: 104] (1.732, -1.05774) -> (1.732, -1)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (1.757, -1.0433) -> (0.05, -2.02887)
+[debug] [PDCELHalfEdge::log: 104] (1.732, -1.05774) -> (0.05, -2.02887)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -3627,7 +3602,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0.05 , -2.02887 )
-[debug] [PDCELHalfEdge::log: 104] (0.05, -2.02887) -> (1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (0.05, -2.02887) -> (1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -3649,7 +3624,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1926] Vertex has one incident edge
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0.05 , -2.02887 )
-[debug] [PDCELHalfEdge::log: 104] (0.05, -2.02887) -> (1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (0.05, -2.02887) -> (1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -3697,11 +3672,11 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 1002] done
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
@@ -3710,8 +3685,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , 0.05 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
@@ -3719,8 +3694,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -3 ) -> ( 0 , 0.05 , -3 ) | loop: temp | face: sgm_5_face
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) | loop: temp | face: sgm_5_face
-[debug] [PDCELFace::print: 75] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) | loop: temp | face: sgm_5_face
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: sgm_5_face
+[debug] [PDCELFace::print: 75] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) | loop: temp | face: sgm_5_face
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: sgm_5_face
 [debug] [PDCELFace::print: 75] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: sgm_5_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_5_face
 [debug] [PDCEL::update_half_edge_loop: 1371] updating half edge loop( 0 , 0 , -2 ) -> ( 0 , 1.732 , -1 ) sign: 1
@@ -3789,32 +3764,32 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: no
 [debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) | loop: nullptr | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 0.05 , -2.02887 ) | loop: nullptr | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 ) | loop: nullptr | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1.05774 ) -> ( 0 , 0.05 , -2.02887 ) | loop: nullptr | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0.05 , -3 ) | loop: nullptr | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: nullptr | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , -0.05 , -3 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_2_face
@@ -3823,23 +3798,23 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) | loop: keep | face: sgm_3_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
 [debug] [PDCELHalfEdgeLoop::log: 61] face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: keep | face: sgm_4_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: keep | face: sgm_4_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , 0 , -2 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: keep | face: sgm_4_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
 [debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
@@ -3847,8 +3822,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , 0.05 , -3 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) | loop: keep | face: sgm_5_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) | loop: keep | face: sgm_5_face
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) | loop: keep | face: sgm_5_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) | loop: keep | face: sgm_5_face
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
@@ -3860,79 +3835,19 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2052] vertex is one of the four infinite corners, skipping
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -inf , inf )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2052] vertex is one of the four infinite corners, skipping
-[debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.757 , -1.0433 )
-[debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.757 , 1.0433 )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2044] vi: ( 0 , -1.732 , -1 )
 [debug] [PDCEL::findLineSegmentsAtSweepLine: 2085] done.
-[debug] [PDCEL::findLineSegmentBelowVertex: 2119] ls_list:
-[debug] [PDCEL::findLineSegmentBelowVertex: 2121]   ( 0 , -1.732 , -1 ) - ( 0 , -1.757 , -1.0433 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2121]   ( 0 , -0.05 , -2.02887 ) - ( 0 , -1.757 , -1.0433 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2121]   ( 0 , -1.732 , 1 ) - ( 0 , -1.757 , 1.0433 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2121]   ( 0 , -1.757 , 1.0433 ) - ( 0 , -0.05 , 2.02887 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2135] ls: ( 0 , -1.732 , -1 ) - ( 0 , -1.757 , -1.0433 )
-[debug] [calc_line_intersection_2d: 346] calc_line_intersection_2d
- line 1: ( 0 , -1.732 , -1 ) - ( 0 , -1.732 , 0 ) ex11: 1 ex12: 1
- line 2: ( 0 , -1.732 , -1 ) - ( 0 , -1.757 , -1.0433 ) ex21: 1 ex22: 1
-[debug] [calc_line_intersection_2d: 356] is_intersect: true u1: -1.33227e-15 u2: 2.66454e-14
-[debug] [calc_line_intersection_2d: 442]   intersection point: ( 0 , -1.732 , -1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2146] is_intersect: true, u1_tmp: -1.33227e-15, u2: 2.66454e-14
-[debug] [PDCEL::findLineSegmentBelowVertex: 2151] intersect
-[debug] [PDCEL::findLineSegmentBelowVertex: 2180] vbelow: ( 0 , -1.732 , -1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2135] ls: ( 0 , -0.05 , -2.02887 ) - ( 0 , -1.757 , -1.0433 )
-[debug] [calc_line_intersection_2d: 346] calc_line_intersection_2d
- line 1: ( 0 , -1.732 , -1 ) - ( 0 , -1.732 , 0 ) ex11: 1 ex12: 1
- line 2: ( 0 , -0.05 , -2.02887 ) - ( 0 , -1.757 , -1.0433 ) ex21: 1 ex22: 1
-[debug] [calc_line_intersection_2d: 356] is_intersect: true u1: -0.0577355 u2: 0.985354
-[debug] [calc_line_intersection_2d: 442]   intersection point: ( 0 , -1.732 , -1.05774 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2146] is_intersect: true, u1_tmp: -0.0577355, u2: 0.985354
-[debug] [PDCEL::findLineSegmentBelowVertex: 2151] intersect
-[debug] [PDCEL::findLineSegmentBelowVertex: 2180] vbelow: ( 0 , -1.732 , -1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2135] ls: ( 0 , -1.732 , 1 ) - ( 0 , -1.757 , 1.0433 )
-[debug] [calc_line_intersection_2d: 346] calc_line_intersection_2d
- line 1: ( 0 , -1.732 , -1 ) - ( 0 , -1.732 , 0 ) ex11: 1 ex12: 1
- line 2: ( 0 , -1.732 , 1 ) - ( 0 , -1.757 , 1.0433 ) ex21: 1 ex22: 1
-[debug] [calc_line_intersection_2d: 356] is_intersect: true u1: 2 u2: 2.66454e-14
-[debug] [calc_line_intersection_2d: 442]   intersection point: ( 0 , -1.732 , 1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2146] is_intersect: true, u1_tmp: 2, u2: 2.66454e-14
-[debug] [PDCEL::findLineSegmentBelowVertex: 2151] intersect
-[debug] [PDCEL::findLineSegmentBelowVertex: 2180] vbelow: ( 0 , -1.732 , -1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2135] ls: ( 0 , -1.757 , 1.0433 ) - ( 0 , -0.05 , 2.02887 )
-[debug] [calc_line_intersection_2d: 346] calc_line_intersection_2d
- line 1: ( 0 , -1.732 , -1 ) - ( 0 , -1.732 , 0 ) ex11: 1 ex12: 1
- line 2: ( 0 , -1.757 , 1.0433 ) - ( 0 , -0.05 , 2.02887 ) ex21: 1 ex22: 1
-[debug] [calc_line_intersection_2d: 356] is_intersect: true u1: 2.05774 u2: 0.0146459
-[debug] [calc_line_intersection_2d: 442]   intersection point: ( 0 , -1.732 , 1.05774 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2146] is_intersect: true, u1_tmp: 2.05774, u2: 0.0146459
-[debug] [PDCEL::findLineSegmentBelowVertex: 2151] intersect
-[debug] [PDCEL::findLineSegmentBelowVertex: 2180] vbelow: ( 0 , -1.732 , -1 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2183] ls_below: ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 )
-[debug] [PDCEL::findLineSegmentBelowVertex: 2185] done.
-[debug] [PDCEL::findHalfEdge: 883] looking for half edge: v1 ( 0 , -1.757 , -1.0433 ) -> v2 ( 0 , -1.732 , -1 )
-[debug] [PDCEL::findHalfEdge: 895] found half edge: ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) sign: -1
+[debug] [PDCEL::findLineSegmentBelowVertex: 2115] no finite line segments found.
 [debug] [PDCEL::link_inner_half_edge_loop: 1240] adjacent loop: 
-[debug] [PDCELHalfEdgeLoop::log: 57] direction: inner
-[debug] [PDCELHalfEdgeLoop::log: 59] keep: no
-[debug] [PDCELHalfEdgeLoop::log: 61] face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
+[debug] [PDCELHalfEdgeLoop::log: 59] keep: yes
+[debug] [PDCELHalfEdgeLoop::log: 61] face: background
 [debug] [PDCELHalfEdgeLoop::log: 66] half edges:
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 3 ) -> ( 0 , 0.05 , 3 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 3 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) | loop: nullptr | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 0.05 , -2.02887 ) | loop: nullptr | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0.05 , -3 ) | loop: nullptr | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: nullptr | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , -3 ) -> ( 0 , -0.05 , -3 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -3 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: nullptr
-[debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr
+[debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:nullptr
 [debug] [PDCEL::link_inner_half_edge_loop: 1244] done.
 [debug] [Segment::build: 395] hel_twin: 
 [debug] [PDCELHalfEdgeLoop::log: 57] direction: outer
@@ -3953,7 +3868,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 2.22045e-16 , 1.94226 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_1_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , 0 , 2 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_1_face
 [debug] [PDCELHalfEdgeLoop::log: 69] ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , -1 ) | loop: keep | face: sgm_1_face
-[debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:( 0 , -1.757 , -1.0433 ) -> ( 0 , -1.732 , -1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::log: 74] adjacent loop:( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) sign: 1
 [debug] [PDCEL::write_dcel_to_file: 158] writing DCEL to file: _tmp_dcel.txt
 [debug] [PDCEL::write_dcel_to_file: 170] writing vertices
 [debug] [PDCEL::write_dcel_to_file: 178] writing half edges
@@ -4130,12 +4045,12 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1 0.523611
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) sign: 1 2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , -1 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , -1 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1 0.523611
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) sign: 1 2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , -1 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1
@@ -4143,7 +4058,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , -1 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.682 , 0.971133 ) sign: 1 -0.523592
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1 0.523611
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.757 , 1.0433 ) sign: 1 2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , 1 ) -> ( 0 , -1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
 [debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -1.682 , 0.971133 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
@@ -4168,7 +4083,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 121] sgm_3_face
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-1.732, 1) -> (-1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-1.732, 1) -> (-1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 113] temp
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -4366,17 +4281,17 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1 1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 -2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 -2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , -1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 -2.09441
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.682 , -0.971133 ) sign: 1 0.523592
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , 1 ) sign: -1 1.5708
@@ -4404,7 +4319,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-1.732, -1) -> (-1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-1.732, -1) -> (-1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 111] keep
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -4796,18 +4711,18 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1 -2.61798
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) sign: 1 -1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , 1 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1 -2.61798
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) sign: 1 -1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , 1 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , 1 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1 -2.61798
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.757 , -1.0433 ) sign: 1 -1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , -1.05774 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.732 , 1 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , -1 ) -> ( 0 , 1.682 , -0.971133 ) sign: 1 2.618
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
@@ -4834,7 +4749,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 121] sgm_5_face
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (1.732, -1) -> (1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (1.732, -1) -> (1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 108] nullptr
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -4992,11 +4907,11 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , 1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: 1
@@ -5004,7 +4919,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.682 , 0.971133 ) sign: 1 -2.618
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , -1 ) sign: -1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 1.04718
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
 [debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 1.682 , 0.971133 ) -> ( 0 , 1.732 , 1 ) sign: -1
@@ -5030,7 +4945,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (1.732, 1) -> (1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (1.732, 1) -> (1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 111] keep
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -5313,8 +5228,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 64] name: sgm_2_face
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: keep | face: sgm_2_face
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: keep | face: sgm_2_face
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 3 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_2_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 3 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_2_face
@@ -5356,16 +5271,16 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) sign: -1 1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 -0.523611
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 -0.523611
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) sign: -1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) sign: -1
-[debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) sign: -1 -2.618
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1 -0.523611
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1 -0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0.05 , 3 ) sign: -1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0 , 2 )
@@ -5413,7 +5328,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (0.05, 2.02887) -> (1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (0.05, 2.02887) -> (1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 113] temp
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -5447,11 +5362,11 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 1002] done
 [debug] [build_area: 255] new faces:
@@ -5464,16 +5379,16 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) | loop: temp | face: 
 [debug] [build_area: 262] slayupside: left
 [debug] [build_area: 272] face after split:
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) | loop: temp | face: 
 [debug] [set_local_orientation: 34] setting local orientation
 [debug] [set_local_orientation: 48]   ls_base: ( 0 , 0 , 3 ) - ( 0 , 0 , 2 )
@@ -5494,8 +5409,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) | loop: temp | face: 
 [debug] [Segment::buildAreas: 710]       - 3. creating the last area
 [debug] [Segment::buildAreas: 715]       - area 2
@@ -5503,26 +5418,26 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 1.732 , 1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.757 , 1.0433 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , 1.0433 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1 ) -> ( 0 , 1.732 , 1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , 1.05774 ) -> ( 0 , 0.05 , 2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) | loop: temp | face: 
 [debug] [set_local_orientation: 34] setting local orientation
 [debug] [set_local_orientation: 48]   ls_base: ( 0 , 0 , 2 ) - ( 0 , 1.732 , 1 )
 [debug] [set_local_orientation: 63] done
 [debug] [Segment::buildAreas: 792] _next_bound_vertices:
 [debug] [Segment::buildAreas: 793]   0: ( 0 , 1.732 , 1 )
-  1: ( 0 , 1.757 , 1.0433 )
+  1: ( 0 , 1.732 , 1.05774 )
 [debug] [divide_end_wall_by_layup: 121] dividing end wall by layup
 [debug] [divide_end_wall_by_layup: 124]   wall_vertices:
 [debug] [divide_end_wall_by_layup: 126]     (0, 1.732, 1)
-[debug] [divide_end_wall_by_layup: 126]     (0, 1.757, 1.0433)
+[debug] [divide_end_wall_by_layup: 126]     (0, 1.732, 1.05774)
 [debug] [divide_end_wall_by_layup: 218] done
 [debug] [Segment::buildAreas: 924] prev wall vertices:
   0: ( 0 , 0 , 2 )
   1: ( 0 , 0.05 , 2.02887 )
 [debug] [Segment::buildAreas: 926] next wall vertices:
   0: ( 0 , 1.732 , 1 )
-  1: ( 0 , 1.757 , 1.0433 )
+  1: ( 0 , 1.732 , 1.05774 )
 [debug] [PArea::buildLayers: 110]       - building layers for area: sgm_2_area_0
 [debug] [PArea::buildLayers: 122] prev wall vertices:
   0: ( 0 , 0 , 3 )
@@ -5538,7 +5453,7 @@ ebug] [read_analysis: 59]     - reading analysis...
   1: ( 0 , 0.05 , 2.02887 )
 [debug] [PArea::buildLayers: 124] next wall vertices:
   0: ( 0 , 1.732 , 1 )
-  1: ( 0 , 1.757 , 1.0433 )
+  1: ( 0 , 1.732 , 1.05774 )
 [debug] [PArea::buildLayers: 162] layer 1
 [debug] [PArea::buildLayers: 187]       - done
 [debug] [Segment::buildAreas: 939] _prev_bound_vertices:
@@ -5546,7 +5461,7 @@ ebug] [read_analysis: 59]     - reading analysis...
   1: ( 0 , 0.05 , 3 )
 [debug] [Segment::buildAreas: 941] _next_bound_vertices:
   0: ( 0 , 1.732 , 1 )
-  1: ( 0 , 1.757 , 1.0433 )
+  1: ( 0 , 1.732 , 1.05774 )
 [debug] [Segment::buildAreas: 967] done building areas of segment sgm_2
 [debug] [PModel::plotGeoDebug: 552]       - plotting geometry for debugging
 [info] [PModel::createGmshVertices: 61]       - creating gmsh vertices
@@ -5621,15 +5536,15 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [Segment::buildAreas: 342]       - 1. creating the beginning bound of the first area
 [debug] [Segment::buildAreas: 345]   _prev_bound_vertices:
   0: ( 0 , -1.732 , 1 )
-  1: ( 0 , -1.757 , 1.0433 )
+  1: ( 0 , -1.732 , 1.05774 )
 [debug] [Segment::buildAreas: 396]       - open segment
 [debug] [Segment::buildAreas: 401]       - first vertex of the base: ( 0 , -1.732 , 1 )
-[debug] [Segment::buildAreas: 402]       - first vertex of the offset: ( 0 , -1.757 , 1.0433 )
+[debug] [Segment::buildAreas: 402]       - first vertex of the offset: ( 0 , -1.732 , 1.05774 )
 [debug] [Segment::buildAreas: 428]       -  ls_base: ( 0 , -1.732 , 1 ) - ( 0 , 0 , 2 )
 [debug] [divide_end_wall_by_layup: 121] dividing end wall by layup
 [debug] [divide_end_wall_by_layup: 124]   wall_vertices:
 [debug] [divide_end_wall_by_layup: 126]     (0, -1.732, 1)
-[debug] [divide_end_wall_by_layup: 126]     (0, -1.757, 1.0433)
+[debug] [divide_end_wall_by_layup: 126]     (0, -1.732, 1.05774)
 [debug] [divide_end_wall_by_layup: 218] done
 [debug] [Segment::buildAreas: 581]       - 2. creating areas before the last one
 [debug] [Segment::buildAreas: 591] _base_offset_indices_pairs:
@@ -5641,15 +5556,15 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [build_area: 242] face before split:
 [debug] [PDCELFace::print: 64] name: sgm_3_face
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , 0 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 3 ) -> ( 0 , -0.05 , 3 ) | loop: keep | face: sgm_3_face
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , 3 ) -> ( 0 , -0.05 , 2.02887 ) | loop: keep | face: sgm_3_face
-[debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: keep | face: sgm_3_face
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: keep | face: sgm_3_face
 [debug] [build_area: 245] prev_wall_vertices:
 [debug] [build_area: 246]   0: ( 0 , -1.732 , 1 )
-  1: ( 0 , -1.757 , 1.0433 )
+  1: ( 0 , -1.732 , 1.05774 )
 [debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0 , 2 ) -> ( 0 , -0.05 , 2.02887 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 0 , 2 )
@@ -5687,16 +5602,16 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , -0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1 -2.61798
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1 -2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1 -2.61798
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1 -2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
-[debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1 -2.61798
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1 -2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) sign: -1 -0.523592
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , 2.02887 ) -> ( 0 , -0.05 , 3 ) sign: 1 1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
@@ -5739,7 +5654,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , -0.05 , 2.02887 )
-[debug] [PDCELHalfEdge::log: 104] (-0.05, 2.02887) -> (-1.757, 1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-0.05, 2.02887) -> (-1.732, 1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 111] keep
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -5765,16 +5680,17 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0 , 2 ) -> ( 0 , -0.05 , 2.02887 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 146]   setting incident edge for the first time
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 1002] done
 [debug] [PDCEL::addHalfEdgeLoop: 982] adding half edge loop with half edge: ( 0 , -0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) sign: -1
@@ -5796,10 +5712,10 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [build_area: 255] new faces:
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , 1.0433 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , -1.732 , 1 ) -> ( 0 , 0 , 2 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , 2 ) -> ( 0 , -0.05 , 2.02887 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.757 , 1.0433 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , -1.732 , 1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , 1.05774 ) -> ( 0 , -1.732 , 1 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , 2.02887 ) -> ( 0 , 0 , 2 ) | loop: temp | face: 
@@ -5824,7 +5740,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [divide_interior_wall_by_layup: 103] done
 [debug] [build_area: 296] prev wall vertices:
   0: ( 0 , -1.732 , 1 )
-  1: ( 0 , -1.757 , 1.0433 )
+  1: ( 0 , -1.732 , 1.05774 )
 [debug] [build_area: 298] next wall vertices:
   0: ( 0 , 0 , 2 )
   1: ( 0 , -0.05 , 2.02887 )
@@ -5865,7 +5781,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PArea::buildLayers: 110]       - building layers for area: sgm_3_area_0
 [debug] [PArea::buildLayers: 122] prev wall vertices:
   0: ( 0 , -1.732 , 1 )
-  1: ( 0 , -1.757 , 1.0433 )
+  1: ( 0 , -1.732 , 1.05774 )
 [debug] [PArea::buildLayers: 124] next wall vertices:
   0: ( 0 , 0 , 2 )
   1: ( 0 , -0.05 , 2.02887 )
@@ -5882,7 +5798,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PArea::buildLayers: 187]       - done
 [debug] [Segment::buildAreas: 939] _prev_bound_vertices:
   0: ( 0 , -1.732 , 1 )
-  1: ( 0 , -1.757 , 1.0433 )
+  1: ( 0 , -1.732 , 1.05774 )
 [debug] [Segment::buildAreas: 941] _next_bound_vertices:
   0: ( 0 , 0 , 3 )
   1: ( 0 , -0.05 , 3 )
@@ -5985,12 +5901,12 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [build_area: 242] face before split:
 [debug] [PDCELFace::print: 64] name: sgm_4_face
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: keep | face: sgm_4_face
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: keep | face: sgm_4_face
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -3 ) -> ( 0 , 0 , -2 ) | loop: keep | face: sgm_4_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: keep | face: sgm_4_face
-[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: keep | face: sgm_4_face
 [debug] [build_area: 245] prev_wall_vertices:
 [debug] [build_area: 246]   0: ( 0 , 0 , -3 )
   1: ( 0 , -0.05 , -3 )
@@ -6029,17 +5945,17 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) sign: -1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 2.61798
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) sign: -1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 2.61798
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
 [debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) sign: -1
-[debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
+[debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -0.05 , -3 ) sign: -1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) sign: -1 0.523592
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1 2.61798
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , -0.05 , -2.02887 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1 2.61798
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0 , -2 )
 [debug] [PDCELHalfEdge::log: 104] (0, -2) -> (-1.732, -1)
@@ -6086,7 +6002,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 117]  | face: 
 [debug] [PDCELHalfEdge::log: 119] nullptr
 [debug] [PDCELHalfEdge::log: 124] 
-[debug] [PDCELHalfEdge::log: 104] (-0.05, -2.02887) -> (-1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (-0.05, -2.02887) -> (-1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 113] temp
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -6120,13 +6036,12 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) sign: 1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 150]   setting incident edge to a smaller one
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 1002] done
 [debug] [build_area: 255] new faces:
@@ -6138,18 +6053,18 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: 
 [debug] [build_area: 262] slayupside: left
 [debug] [build_area: 272] face after split:
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: 
 [debug] [set_local_orientation: 34] setting local orientation
 [debug] [set_local_orientation: 48]   ls_base: ( 0 , 0 , -3 ) - ( 0 , 0 , -2 )
 [debug] [set_local_orientation: 63] done
@@ -6168,36 +6083,36 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [Segment::buildAreas: 615] _face after build_area:
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: 
 [debug] [Segment::buildAreas: 710]       - 3. creating the last area
 [debug] [Segment::buildAreas: 715]       - area 2
 [debug] [Segment::buildAreas: 717] _face:
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.757 , -1.0433 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.732 , -1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1.05774 ) -> ( 0 , -0.05 , -2.02887 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , -0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , -1.732 , -1 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , -1.732 , -1 ) -> ( 0 , -1.757 , -1.0433 ) | loop: temp | face: 
 [debug] [set_local_orientation: 34] setting local orientation
 [debug] [set_local_orientation: 48]   ls_base: ( 0 , 0 , -2 ) - ( 0 , -1.732 , -1 )
 [debug] [set_local_orientation: 63] done
 [debug] [Segment::buildAreas: 792] _next_bound_vertices:
 [debug] [Segment::buildAreas: 793]   0: ( 0 , -1.732 , -1 )
-  1: ( 0 , -1.757 , -1.0433 )
+  1: ( 0 , -1.732 , -1.05774 )
 [debug] [divide_end_wall_by_layup: 121] dividing end wall by layup
 [debug] [divide_end_wall_by_layup: 124]   wall_vertices:
 [debug] [divide_end_wall_by_layup: 126]     (0, -1.732, -1)
-[debug] [divide_end_wall_by_layup: 126]     (0, -1.757, -1.0433)
+[debug] [divide_end_wall_by_layup: 126]     (0, -1.732, -1.05774)
 [debug] [divide_end_wall_by_layup: 218] done
 [debug] [Segment::buildAreas: 924] prev wall vertices:
   0: ( 0 , 0 , -2 )
   1: ( 0 , -0.05 , -2.02887 )
 [debug] [Segment::buildAreas: 926] next wall vertices:
   0: ( 0 , -1.732 , -1 )
-  1: ( 0 , -1.757 , -1.0433 )
+  1: ( 0 , -1.732 , -1.05774 )
 [debug] [PArea::buildLayers: 110]       - building layers for area: sgm_4_area_0
 [debug] [PArea::buildLayers: 122] prev wall vertices:
   0: ( 0 , 0 , -3 )
@@ -6213,7 +6128,7 @@ ebug] [read_analysis: 59]     - reading analysis...
   1: ( 0 , -0.05 , -2.02887 )
 [debug] [PArea::buildLayers: 124] next wall vertices:
   0: ( 0 , -1.732 , -1 )
-  1: ( 0 , -1.757 , -1.0433 )
+  1: ( 0 , -1.732 , -1.05774 )
 [debug] [PArea::buildLayers: 162] layer 1
 [debug] [PArea::buildLayers: 187]       - done
 [debug] [Segment::buildAreas: 939] _prev_bound_vertices:
@@ -6221,7 +6136,7 @@ ebug] [read_analysis: 59]     - reading analysis...
   1: ( 0 , -0.05 , -3 )
 [debug] [Segment::buildAreas: 941] _next_bound_vertices:
   0: ( 0 , -1.732 , -1 )
-  1: ( 0 , -1.757 , -1.0433 )
+  1: ( 0 , -1.732 , -1.05774 )
 [debug] [Segment::buildAreas: 967] done building areas of segment sgm_4
 [debug] [PModel::plotGeoDebug: 552]       - plotting geometry for debugging
 [info] [PModel::createGmshVertices: 61]       - creating gmsh vertices
@@ -6306,15 +6221,15 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [Segment::buildAreas: 342]       - 1. creating the beginning bound of the first area
 [debug] [Segment::buildAreas: 345]   _prev_bound_vertices:
   0: ( 0 , 1.732 , -1 )
-  1: ( 0 , 1.757 , -1.0433 )
+  1: ( 0 , 1.732 , -1.05774 )
 [debug] [Segment::buildAreas: 396]       - open segment
 [debug] [Segment::buildAreas: 401]       - first vertex of the base: ( 0 , 1.732 , -1 )
-[debug] [Segment::buildAreas: 402]       - first vertex of the offset: ( 0 , 1.757 , -1.0433 )
+[debug] [Segment::buildAreas: 402]       - first vertex of the offset: ( 0 , 1.732 , -1.05774 )
 [debug] [Segment::buildAreas: 428]       -  ls_base: ( 0 , 1.732 , -1 ) - ( 0 , 0 , -2 )
 [debug] [divide_end_wall_by_layup: 121] dividing end wall by layup
 [debug] [divide_end_wall_by_layup: 124]   wall_vertices:
 [debug] [divide_end_wall_by_layup: 126]     (0, 1.732, -1)
-[debug] [divide_end_wall_by_layup: 126]     (0, 1.757, -1.0433)
+[debug] [divide_end_wall_by_layup: 126]     (0, 1.732, -1.05774)
 [debug] [divide_end_wall_by_layup: 218] done
 [debug] [Segment::buildAreas: 581]       - 2. creating areas before the last one
 [debug] [Segment::buildAreas: 591] _base_offset_indices_pairs:
@@ -6328,13 +6243,13 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -3 ) -> ( 0 , 0.05 , -3 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELFace::print: 75] ( 0 , 0.05 , -3 ) -> ( 0 , 0.05 , -2.02887 ) | loop: keep | face: sgm_5_face
-[debug] [PDCELFace::print: 75] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) | loop: keep | face: sgm_5_face
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) | loop: keep | face: sgm_5_face
+[debug] [PDCELFace::print: 75] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) | loop: keep | face: sgm_5_face
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELFace::print: 75] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: keep | face: sgm_5_face
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_5_face
 [debug] [build_area: 245] prev_wall_vertices:
 [debug] [build_area: 246]   0: ( 0 , 1.732 , -1 )
-  1: ( 0 , 1.757 , -1.0433 )
+  1: ( 0 , 1.732 , -1.05774 )
 [debug] [PDCEL::addEdge: 534] Adding edge between vertices: ( 0 , 0 , -2 ) -> ( 0 , 0.05 , -2.02887 )
 [debug] [PDCEL::addVertex: 275] start
 [debug] [PDCEL::addVertex: 277]   v = ( 0 , 0 , -2 )
@@ -6372,17 +6287,17 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCEL::updateEdgeNeighbors: 1907] Updating neighbors of edge ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1941] Vertex has degree >= 2
 [debug] [PDCEL::updateEdgeNeighbors: 1958] Unsorted edges:
-[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1 0.523611
+[debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1 0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1960]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0.05 , -3 ) sign: 1 -1.5708
 [debug] [PDCEL::updateEdgeNeighbors: 1969] Sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0.05 , -3 ) sign: 1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1 0.523611
+[debug] [PDCEL::updateEdgeNeighbors: 1971]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1 0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1984] Setting prev/next pointers
-[debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1
+[debug] [PDCEL::updateEdgeNeighbors: 1985]   prev_edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1
 [debug] [PDCEL::updateEdgeNeighbors: 1986]   next_edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0.05 , -3 ) sign: 1
 [debug] [PDCEL::updateEdgeNeighbors: 1991] Updated sorted edges:
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0.05 , -3 ) sign: 1 -1.5708
-[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1 0.523611
+[debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1 0.523611
 [debug] [PDCEL::updateEdgeNeighbors: 1993]   ( 0 , 0.05 , -2.02887 ) -> ( 0 , 0 , -2 ) sign: -1 2.618
 [debug] [PDCEL::updateEdgeNeighbors: 2002] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0 , -2 )
@@ -6424,7 +6339,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdge::log: 124] 
 [debug] [PDCELVertex::log_all_leaving_half_edges: 118] done
 [debug] [PDCELVertex::log_all_leaving_half_edges: 99] all leaving half edges of vertex ( 0 , 0.05 , -2.02887 )
-[debug] [PDCELHalfEdge::log: 104] (0.05, -2.02887) -> (1.757, -1.0433)
+[debug] [PDCELHalfEdge::log: 104] (0.05, -2.02887) -> (1.732, -1.05774)
 [debug] [PDCELHalfEdge::log: 106]  | loop: 
 [debug] [PDCELHalfEdge::log: 111] keep
 [debug] [PDCELHalfEdge::log: 117]  | face: 
@@ -6450,11 +6365,11 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0 , -2 ) -> ( 0 , 0.05 , -2.02887 ) sign: 1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 146]   setting incident edge for the first time
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
-[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) sign: -1
-[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) sign: -1
+[debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) sign: -1
+[debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 155] done
 [debug] [PDCEL::addHalfEdgeLoop: 988]   handling half edge: ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1
 [debug] [PDCELHalfEdgeLoop::updateVertexEdge: 143] updateVertexEdge: ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) sign: -1
@@ -6482,8 +6397,8 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
 [debug] [PDCELFace::print: 75] ( 0 , 0 , -2 ) -> ( 0 , 0.05 , -2.02887 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.757 , -1.0433 ) | loop: temp | face: 
-[debug] [PDCELFace::print: 75] ( 0 , 1.757 , -1.0433 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 0.05 , -2.02887 ) -> ( 0 , 1.732 , -1.05774 ) | loop: temp | face: 
+[debug] [PDCELFace::print: 75] ( 0 , 1.732 , -1.05774 ) -> ( 0 , 1.732 , -1 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 75] ( 0 , 1.732 , -1 ) -> ( 0 , 0 , -2 ) | loop: temp | face: 
 [debug] [PDCELFace::print: 64] name: 
 [debug] [PDCELFace::print: 72] outer boundary: 
@@ -6509,7 +6424,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [divide_interior_wall_by_layup: 103] done
 [debug] [build_area: 296] prev wall vertices:
   0: ( 0 , 1.732 , -1 )
-  1: ( 0 , 1.757 , -1.0433 )
+  1: ( 0 , 1.732 , -1.05774 )
 [debug] [build_area: 298] next wall vertices:
   0: ( 0 , 0 , -2 )
   1: ( 0 , 0.05 , -2.02887 )
@@ -6550,7 +6465,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PArea::buildLayers: 110]       - building layers for area: sgm_5_area_0
 [debug] [PArea::buildLayers: 122] prev wall vertices:
   0: ( 0 , 1.732 , -1 )
-  1: ( 0 , 1.757 , -1.0433 )
+  1: ( 0 , 1.732 , -1.05774 )
 [debug] [PArea::buildLayers: 124] next wall vertices:
   0: ( 0 , 0 , -2 )
   1: ( 0 , 0.05 , -2.02887 )
@@ -6567,7 +6482,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PArea::buildLayers: 187]       - done
 [debug] [Segment::buildAreas: 939] _prev_bound_vertices:
   0: ( 0 , 1.732 , -1 )
-  1: ( 0 , 1.757 , -1.0433 )
+  1: ( 0 , 1.732 , -1.05774 )
 [debug] [Segment::buildAreas: 941] _next_bound_vertices:
   0: ( 0 , 0 , -3 )
   1: ( 0 , 0.05 , -3 )
@@ -6846,9 +6761,12 @@ ebug] [read_analysis: 59]     - reading analysis...
 [info] [PModel::buildGmsh: 563]     - meshing
 [info] [PModel::homogenize: 816]   - modeling in Gmsh -- done
 [info] [PModel::homogenize: 826]   - writing outputs
-[info] [PModel::writeSG: 55]     - writing sg file: .\t8_honeycomb_sg\hexagon_uc1.sg
-[info] [PModel::writeNodes: 65]       - writing nodes
-[info] [PModel::writeElements: 109]       - writing elements
+[info] [PModel::writeGmshOpt: 576]     - writing gmsh .opt file: .\t8_honeycomb_sg\hexagon_uc1.opt
+[info] [PModel::writeGmshGeo: 464]     - writing gmsh .geo file: .\t8_honeycomb_sg\hexagon_uc1.geo_unrolled
+[info] [PModel::writeGmshMsh: 507]   - writing gmsh .msh file: .\t8_honeycomb_sg\hexagon_uc1.msh
+[info] [PModel::writeSG: 55]   - writing sg file: .\t8_honeycomb_sg\hexagon_uc1.sg
+[info] [PModel::writeNodes: 65]     - writing nodes
+[info] [PModel::writeElements: 109]     - writing elements
 [info] [PModel::writeElementsSC: 339]   writing connectivity
 [debug] [PModel::writeElementsSC: 342]   face 0
 [debug] [PModel::writeElementsSC: 342]   face 1
@@ -6879,7 +6797,7 @@ ebug] [read_analysis: 59]     - reading analysis...
 [debug] [PModel::writeElementsSC: 385]   face 11
 [debug] [PModel::writeElementsSC: 385]   face 12
 [debug] [PModel::writeElementsSC: 385]   face 13
-[info] [PModel::writeSG: 163]     - writing material id-name file: .\t8_honeycomb_sg\hexagon_uc1.sg.mat
-[info] [PModel::homogenize: 838]   - writing outputs -- done
-[info] [main: 367]   - prevabs finished (2025-04-13 18:21:27)
-[info] [main: 369] total running time: 0.521 sec
+[info] [PModel::writeSG: 163]   - writing material id-name file: .\t8_honeycomb_sg\hexagon_uc1.sg.mat
+[info] [PModel::homogenize: 838] - writing outputs -- done
+[info] [main: 367] - prevabs finished (2025-04-13 22:55:27)
+[info] [main: 369] total running time: 0.76 sec

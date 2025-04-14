@@ -1960,6 +1960,8 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
       std::vector<PDCELVertex *> b;
       b.assign({s->curveBase()->vertices().front(), p});
 
+      PLOG(debug) << "  bound vertices: " << b[0] << ", " << b[1];
+
       // Intersect the bound and the offset curve
 
       bool is_new_1, is_new_2;
@@ -1994,7 +1996,13 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
       //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
       // );
 
-      PLOG(debug) << pmessage->message("ip = " + ip->printString());
+      PLOG(debug) << "ip = " << ip;
+
+      if (is_new_1) {
+        insert_vertex_by_line_segment_param_coord(
+          s->curveOffset()->vertices(), ip, ls_i1, u1
+        );
+      }
 
       trim(s->curveOffset()->vertices(), ip, 0);
 
@@ -2084,6 +2092,8 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
       std::vector<PDCELVertex *> b;
       b.assign({s->curveBase()->vertices().back(), p});
 
+      PLOG(debug) << "  bound vertices: " << b[0] << ", " << b[1];
+
       // Intersect the bound and the offset curve
       bool is_new_1, is_new_2;
       double u1, u2;
@@ -2125,7 +2135,13 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
       //   s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, pmessage
       // );
       // std::cout << "ip = " << ip->point() << std::endl;
-      PLOG(debug) << pmessage->message("ip = " + ip->printString());
+      PLOG(debug) << "ip = " << ip;
+
+      if (is_new_1) {
+        insert_vertex_by_line_segment_param_coord(
+          s->curveOffset()->vertices(), ip, ls_i1, u1
+        );
+      }
 
       trim(s->curveOffset()->vertices(), ip, 1);
 
