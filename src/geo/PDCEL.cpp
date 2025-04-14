@@ -1606,6 +1606,8 @@ PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
     hei = hei->next();
   } while (hei != hel->incidentEdge());
 
+  hel->setFace(fnew);
+
   _faces.push_back(fnew);
 
   // PDCELHalfEdge *he = fnew->outer();
@@ -1851,7 +1853,7 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
   // Iterate through all half edge loops
   for (auto heli : halfedgeloops()) {
     // Skip null loops and loops that should be kept
-    if (heli == nullptr || heli->keep()) {
+    if (heli == nullptr || heli->keep() || heli->direction() > 0) {
       continue;
     }
 

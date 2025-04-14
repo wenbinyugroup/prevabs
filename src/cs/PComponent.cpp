@@ -102,6 +102,80 @@ void PComponent::build(Message *pmessage) {
 
   }
 
+
+
+
+  // Update the DCEL (half edge loops)
+
+  // Set the half edge loop for the twin half edge
+  Segment *sgm = _segments[0];
+  std::string slayupside = sgm->getLayupside();
+
+  // Use the base curve of the first segment
+  PDCELHalfEdge *he_base = _pmodel->dcel()->findHalfEdge(
+    sgm->curveBase()->vertices()[0],
+    sgm->curveBase()->vertices()[1]
+  );
+  if (slayupside == "right") {
+    he_base = he_base->twin();
+  }
+  PLOG(debug) << "he_base: " << he_base;
+  PDCELHalfEdgeLoop *hel_base_twin = _pmodel->dcel()->update_half_edge_loop(he_base->twin());
+  if (hel_base_twin->direction() > 0) {
+    // If this is an outer loop, check if there is a face attached to it
+    if (hel_base_twin->face() == nullptr) {
+      PDCELFace *fnew = _pmodel->dcel()->addFace(hel_base_twin);
+      fnew->setName("_temp");
+      fnew->setGBuild(false);
+    }
+  }
+  else if (hel_base_twin->direction() < 0) {
+    // If this is an inner loop, link it to the outer loop
+    _pmodel->dcel()->link_inner_half_edge_loop(hel_base_twin);
+  }
+  PLOG(debug) << "hel_base_twin: ";
+  hel_base_twin->log();
+
+  // Check the offset curve of the first segment
+  PDCELHalfEdge *he_offset = _pmodel->dcel()->findHalfEdge(
+    sgm->curveOffset()->vertices()[0],
+    sgm->curveOffset()->vertices()[1]
+  );
+  if (slayupside == "left") {
+    he_offset = he_offset->twin();
+  }
+  PLOG(debug) << "he_offset: " << he_offset;
+  PDCELHalfEdgeLoop *hel_offset_twin = _pmodel->dcel()->update_half_edge_loop(he_offset->twin());
+  if (hel_offset_twin->direction() > 0) {
+    // If this is an outer loop, check if there is a face attached to it
+    if (hel_offset_twin->face() == nullptr) {
+      PDCELFace *fnew = _pmodel->dcel()->addFace(hel_offset_twin);
+      fnew->setName("_temp");
+      fnew->setGBuild(false);
+    }
+  }
+  else if (hel_offset_twin->direction() < 0) {
+    // If this is an inner loop, link it to the outer loop
+    _pmodel->dcel()->link_inner_half_edge_loop(hel_offset_twin);
+  }
+  PLOG(debug) << "hel_offset_twin: ";
+  hel_offset_twin->log();
+
+
+
+
+  // Check DCEL for debug
+  if (config.debug) {
+    PLOG(debug) << "writing DCEL to file after building segments";
+    _pmodel->dcel()->write_dcel_to_file(
+      config.file_directory 
+      + config.file_base_name
+      + "_dcel_after_building_general_shape_component_"
+      + _name
+      + ".txt"
+    );
+  }
+
   // pmessage->decreaseIndent();
 
 }

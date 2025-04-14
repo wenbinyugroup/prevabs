@@ -34,14 +34,14 @@ private:
   std::vector<PDCELVertex *> _embedded_vertices;
 
   // Gmsh
-  bool _gbuild;
+  bool _gbuild = false;
   // GFace *_gface;
   int _gface_tag = 0;
   std::vector<int> _embedded_gvertex_tags;
   std::vector<int> _embedded_gedge_tags;
   int _gmsh_physical_group_tag = 0;
 
-  std::string _name;
+  std::string _name = "";
 
 public:
   PDCELFace();

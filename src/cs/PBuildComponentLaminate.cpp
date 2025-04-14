@@ -188,19 +188,6 @@ void PComponent::buildLaminate(Message *pmessage) {
 
   }
 
-
-  // Check DCEL for debug
-  if (config.debug) {
-    PLOG(debug) << "writing DCEL to file after building segments";
-    _pmodel->dcel()->write_dcel_to_file(
-      config.file_directory 
-      + config.file_base_name
-      + "_dcel_after_building_general_shape_component_"
-      + _name
-      + ".txt"
-    );
-  }
-
   // pmessage->decreaseIndent();
 
 

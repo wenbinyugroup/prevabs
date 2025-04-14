@@ -140,6 +140,7 @@ void PComponent::join_segment_to_dependency(
   PDCELVertex *v_intersect_base;
   double d_base = INF;
   PDCELHalfEdgeLoop *hel_intersect_1;
+  double l_base = calcPolylineLength(s->curveBase()->vertices());
   for (auto hel : hels) {
     if (!hel->keep()) {
       // v_intersect_base = get_polylines_intersection_close_to(
@@ -161,9 +162,17 @@ void PComponent::join_segment_to_dependency(
 
       // Calculate the non-dimensional curvilinear coordinate of the intersection(s)
       for (auto i = 0; i < _i1s.size(); i++) {
+        PLOG(debug) << "  i = " << i
+                    << ", _i1s[i] = " << _i1s[i]
+                    << ", _u1s[i] = " << _u1s[i];
         double _nd = calc_curve_length_of_segment_param_coord_from_start(
           s->curveBase()->vertices(), _i1s[i], _u1s[i]
         );
+        _nd = _nd / l_base;
+        PLOG(debug) << "    _nd = " << _nd;
+        PLOG(debug) << "    ref_v_nd = " << ref_v_nd;
+        PLOG(debug) << "    fabs(_nd - ref_v_nd) = " << fabs(_nd - ref_v_nd);
+        PLOG(debug) << "    d_base = " << d_base;
         // 3.1.2. Keep the intersection closest to the reference point
         if (e == 0 && _nd < ref_v_nd && fabs(_nd - ref_v_nd) < d_base) {
           // Before the reference point
@@ -213,7 +222,9 @@ void PComponent::join_segment_to_dependency(
   }
 
   // 3.1.4. Trim the base curve
-  trim(s->curveBase()->vertices(), v_intersect_base, 0);
+  trim(s->curveBase()->vertices(), v_intersect_base, e);
+  PLOG(debug) << "  trimmed s->curveBase()->vertices():";
+  PLOG(debug) << "  " << vertices_to_string(s->curveBase()->vertices());
 
   // 3.1.5. Update the half edge loop
   PLOG(debug) << "hel_intersect_1 vertices:";
@@ -247,6 +258,7 @@ void PComponent::join_segment_to_dependency(
   PDCELVertex *v_intersect_offset;
   double d_offset = INF;
   PDCELHalfEdgeLoop *hel_intersect_2;
+  double l_offset = calcPolylineLength(s->curveOffset()->vertices());
   for (auto hel : hels) {
     if (!hel->keep()) {
       // Find all intersections as the (segment index, non-dimensional location) pairs
@@ -261,6 +273,7 @@ void PComponent::join_segment_to_dependency(
         double _nd = calc_curve_length_of_segment_param_coord_from_start(
           s->curveOffset()->vertices(), _i1s[i], _u1s[i]
         );
+        _nd = _nd / l_offset;
         // 3.2.2. Keep the intersection closest to the reference point
         if (e == 0 && _nd < ref_v_nd && fabs(_nd - ref_v_nd) < d_offset) {
           // Before the reference point
@@ -298,7 +311,9 @@ void PComponent::join_segment_to_dependency(
   }
 
   // 3.2.4. Trim the offset curve
-  trim(s->curveOffset()->vertices(), v_intersect_offset, 0);
+  trim(s->curveOffset()->vertices(), v_intersect_offset, e);
+  PLOG(debug) << "  trimmed s->curveOffset()->vertices():";
+  PLOG(debug) << "  " << vertices_to_string(s->curveOffset()->vertices());
 
   // 3.2.5. Update the half edge loop
   PDCELVertex *_v_he_2 = get_vertex_on_polyline_by_segment_param_coord(

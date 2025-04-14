@@ -365,7 +365,7 @@ void Segment::build(Message *pmessage) {
                              _curve_offset->vertices()[i + 1]);
   }
 
-  // Create half edge loop and face
+  // Create outer half edge loop and face
 
   PLOG(debug) << pmessage->message("creating the half edge loop and face");
 
@@ -390,12 +390,12 @@ void Segment::build(Message *pmessage) {
   hel->setFace(_face);
 
   // Set the half edge loop for the twin half edge
-  PDCELHalfEdgeLoop *hel_twin = _pmodel->dcel()->update_half_edge_loop(he->twin());
-  _pmodel->dcel()->link_inner_half_edge_loop(hel_twin);
-  PLOG(debug) << "hel_twin: ";
-  hel_twin->log();
+  // PDCELHalfEdgeLoop *hel_twin = _pmodel->dcel()->update_half_edge_loop(he->twin());
+  // _pmodel->dcel()->link_inner_half_edge_loop(hel_twin);
+  // PLOG(debug) << "hel_twin: ";
+  // hel_twin->log();
 
-  _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
+  // _pmodel->dcel()->write_dcel_to_file("_tmp_dcel.txt");
 
   // pmessage->decreaseIndent();
 }

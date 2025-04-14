@@ -16,12 +16,11 @@ class PDCELFace;
  */
 class PDCELHalfEdgeLoop {
 private:
-  // int _direction; // 1: outer boundary; -1: inner boundary
   PDCELHalfEdge *_incident_edge = nullptr;
   PDCELHalfEdgeLoop *_adjacent_loop = nullptr;
   PDCELFace *_face = nullptr;
   PDCELVertex *_bottom_left_vertex = nullptr;
-  int _direction = 0;
+  int _direction = 0; // 1: outer boundary; -1: inner boundary
   bool _keep = false;
 
 public:

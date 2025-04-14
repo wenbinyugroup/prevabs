@@ -1,4 +1,4 @@
-[info] [main: 296] - prevabs start (2025-04-13 22:56:29)
+[info] [main: 296] - prevabs start (2025-04-14 18:09:04)
 [info] [PModel::homogenize: 785] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -14,7 +14,7 @@
 
 ========================================
 
-k\prevabs\build_msvc\Release\MaterialDB.xml
+rk\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t4_I\materials.xml
 [info] [PModel::homogenize: 790]   - reading input files -- done
 [info] [PModel::homogenize: 798]   - building the shape
@@ -30,15 +30,15 @@ k\prevabs\build_msvc\Release\MaterialDB.xml
 [warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [CrossSection::build: 346] building the cross section, step 2
-[info] [PComponent::buildDetails: 124]       - building component details: top
+[info] [PComponent::buildDetails: 198]       - building component details: top
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [build_area: 240] building area
 [info] [build_area: 301] done
-[info] [PComponent::buildDetails: 124]       - building component details: bottom
+[info] [PComponent::buildDetails: 198]       - building component details: bottom
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [build_area: 240] building area
 [info] [build_area: 301] done
-[info] [PComponent::buildDetails: 124]       - building component details: web
+[info] [PComponent::buildDetails: 198]       - building component details: web
 [info] [Segment::updateBaseOffsetIndexPairs: 256]         - updating base-offset index pairs
 [info] [build_area: 240] building area
 [info] [build_area: 301] done
@@ -65,5 +65,5 @@ k\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 232]       -   writing local orientation
 [info] [PModel::writeSG: 163]   - writing material id-name file: t4_I\i_web.sg.mat
 [info] [PModel::homogenize: 838] - writing outputs -- done
-[info] [main: 367] - prevabs finished (2025-04-13 22:56:29)
-[info] [main: 369] total running time: 0.166 sec
+[info] [main: 367] - prevabs finished (2025-04-14 18:09:04)
+[info] [main: 369] total running time: 0.106 sec
