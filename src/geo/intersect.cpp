@@ -361,83 +361,139 @@ bool calc_line_intersection_2d(
     return false;
   }
 
-  if (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1) {
-    // Intersection is inside both line segments
-    v_intersect = new PDCELVertex(0, ipx, ipy);
-  } else if (ex11 && ex12 && ex21 && ex22) {
-    // Consider the two line segments as infinite lines
-    v_intersect = new PDCELVertex(0, ipx, ipy);
-  } else if (ex11 && u1 < 0) {
-    // Extend the first line segment before the starting point
-    if (ex21 && u2 < 0) {
-      // Extend the second line segment before the starting point
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (u2 >= 0 && u2 <= 1) {
-      // Intersection is inside the second line segment
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (ex22 && u2 > 1) {
-      // Extend the second line segment after the ending point
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (is_close(u2, 0.0)) {
-      // Intersection is very close to the starting point of the second line segment
+  bool in_range_1 = (u1 >= (0.0 - ABS_TOL) && u1 <= (1.0 + ABS_TOL)) || (ex11 && u1 <= (1.0 + ABS_TOL)) || (ex12 && u1 >= (0.0 - ABS_TOL));
+  bool in_range_2 = (u2 >= (0.0 - ABS_TOL) && u2 <= (1.0 + ABS_TOL)) || (ex21 && u2 <= (1.0 + ABS_TOL)) || (ex22 && u2 >= (0.0 - ABS_TOL));
+
+  if (in_range_1 && in_range_2) {
+    if (is_close(u1, 0.0)) {
+      v_intersect = ls1v1;
+    }
+    else if (is_close(u1, 1.0)) {
+      v_intersect = ls1v2;
+    }
+
+    else if (is_close(u2, 0.0)) {
       v_intersect = ls2v1;
-    } else if (is_close(u2, 1.0)) {
-      // Intersection is very close to the ending point of the second line segment
+    }
+    else if (is_close(u2, 1.0)) {
       v_intersect = ls2v2;
-    } else {
-      // Two line segments intersect outside the desired range
-      return false;
     }
-  } else if (u1 >= 0 && u1 <= 1) {
-    // Intersection is inside the first line segment
-    if (ex21 && u2 < 0) {
-      // Extend the second line segment before the starting point
+
+    else {
       v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (u2 >= 0 && u2 <= 1) {
-      // Intersection is inside the second line segment
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (ex22 && u2 > 1) {
-      // Extend the second line segment after the ending point
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else {
-      // Two line segments intersect outside the desired range
-      return false;
     }
-  } else if (ex12 && u1 > 0) {
-    // Extend the first line segment after the ending point
-    if (ex21 && u2 < 0) {
-      // Extend the second line segment before the starting point
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (u2 >= 0 && u2 <= 1) {
-      // Intersection is inside the second line segment
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (ex22 && u2 > 1) {
-      // Extend the second line segment after the ending point
-      v_intersect = new PDCELVertex(0, ipx, ipy);
-    } else if (is_close(u2, 0.0)) {
-      // Intersection is very close to the starting point of the second line segment
-      v_intersect = ls2v1;
-    } else if (is_close(u2, 1.0)) {
-      // Intersection is very close to the ending point of the second line segment
-      v_intersect = ls2v2;
-    } else {
-      // Two line segments intersect outside the desired range
-      return false;
-    }
-  } else {
+  }
+
+  // if (u1 >= 0.0 && u1 <= 1.0 && u2 >= 0.0 && u2 <= 1.0) {
+  //   // Intersection is inside both line segments
+  //   PLOG(debug) << "  intersection is inside both line segments";
+  //   v_intersect = new PDCELVertex(0, ipx, ipy);
+  // }
+
+  // else if (ex11 && ex12 && ex21 && ex22) {
+  //   // Consider the two line segments as infinite lines
+  //   PLOG(debug) << "  intersection is inside both line segments";
+  //   v_intersect = new PDCELVertex(0, ipx, ipy);
+  // }
+
+  // else if (ex11 && u1 < 0.0) {
+  //   // Extend the first line segment before the starting point
+  //   if (ex21 && u2 < 0.0) {
+  //     // Extend the second line segment before the starting point
+  //     PLOG(debug) << "  intersection is inside both line segments";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (u2 >= 0.0 && u2 <= 1.0) {
+  //     // Intersection is inside the second line segment
+  //     PLOG(debug) << "  intersection is inside the second line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (ex22 && u2 > 1.0) {
+  //     // Extend the second line segment after the ending point
+  //     PLOG(debug) << "  intersection is inside the second line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (is_close(u2, 0.0)) {
+  //     // Intersection is very close to the starting point of the second line segment
+  //     PLOG(debug) << "  intersection is very close to the starting point of the second line segment";
+  //     v_intersect = ls2v1;
+  //   } else if (is_close(u2, 1.0)) {
+  //     // Intersection is very close to the ending point of the second line segment
+  //     PLOG(debug) << "  intersection is very close to the ending point of the second line segment";
+  //     v_intersect = ls2v2;
+  //   } else {
+  //     // Two line segments intersect outside the desired range
+  //     PLOG(debug) << "  two line segments intersect outside the desired range";
+  //     return false;
+  //   }
+  // }
+
+  // else if (u1 >= 0.0 && u1 <= 1.0) {
+  //   // Intersection is inside the first line segment
+  //   if (ex21 && u2 < 0.0) {
+  //     // Extend the second line segment before the starting point
+  //     PLOG(debug) << "  intersection is inside the first line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (u2 >= 0.0 && u2 <= 1.0) {
+  //     // Intersection is inside the second line segment
+  //     PLOG(debug) << "  intersection is inside the second line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (ex22 && u2 > 1.0) {
+  //     // Extend the second line segment after the ending point
+  //     PLOG(debug) << "  intersection is inside the second line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else {
+  //     // Two line segments intersect outside the desired range
+  //     PLOG(debug) << "  two line segments intersect outside the desired range";
+  //     return false;
+  //   }
+  // }
+
+  // else if (ex12 && u1 > 0) {
+  //   // Extend the first line segment after the ending point
+  //   if (ex21 && u2 < 0.0) {
+  //     // Extend the second line segment before the starting point
+  //     PLOG(debug) << "  intersection is inside the first line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (u2 >= 0.0 && u2 <= 1.0) {
+  //     // Intersection is inside the second line segment
+  //     PLOG(debug) << "  intersection is inside the second line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (ex22 && u2 > 1.0) {
+  //     // Extend the second line segment after the ending point
+  //     PLOG(debug) << "  intersection is inside the second line segment";
+  //     v_intersect = new PDCELVertex(0, ipx, ipy);
+  //   } else if (is_close(u2, 0.0)) {
+  //     // Intersection is very close to the starting point of the second line segment
+  //     PLOG(debug) << "  intersection is very close to the starting point of the second line segment";
+  //     v_intersect = ls2v1;
+  //   } else if (is_close(u2, 1.0)) {
+  //     // Intersection is very close to the ending point of the second line segment
+  //     PLOG(debug) << "  intersection is very close to the ending point of the second line segment";
+  //     v_intersect = ls2v2;
+  //   } else {
+  //     // Two line segments intersect outside the desired range
+  //     PLOG(debug) << "  two line segments intersect outside the desired range";
+  //     return false;
+  //   }
+  // }
+
+  else {
     // Two line segments intersect outside the desired range
+    PLOG(debug) << "  two line segments intersect outside the desired range";
     return false;
   }
 
-  if (is_close(u1, 0.0)) {
-    v_intersect = ls1v1;
-  } else if (is_close(u1, 1.0)) {
-    v_intersect = ls1v2;
-  } else if (is_close(u2, 0.0)) {
-    v_intersect = ls2v1;
-  } else if (is_close(u2, 1.0)) {
-    v_intersect = ls2v2;
-  }
+  // if (is_close(u1, 0.0)) {
+  //   PLOG(debug) << "  intersection is very close to the starting point of the first line segment";
+  //   v_intersect = ls1v1;
+  // } else if (is_close(u1, 1.0)) {
+  //   PLOG(debug) << "  intersection is very close to the ending point of the first line segment";
+  //   v_intersect = ls1v2;
+  // } else if (is_close(u2, 0.0)) {
+  //   PLOG(debug) << "  intersection is very close to the starting point of the second line segment";
+  //   v_intersect = ls2v1;
+  // } else if (is_close(u2, 1.0)) {
+  //   PLOG(debug) << "  intersection is very close to the ending point of the second line segment";
+  //   v_intersect = ls2v2;
+  // }
 
   PLOG(debug) << "  intersection point: " << v_intersect;
 
@@ -779,6 +835,11 @@ PDCELVertex *get_polylines_intersection_close_to(
     pmessage
   );
 
+  PLOG(debug) << "  is1: " << vector_to_string(is1);
+  PLOG(debug) << "  is2: " << vector_to_string(is2);
+  PLOG(debug) << "  us1: " << vector_to_string(us1);
+  PLOG(debug) << "  us2: " << vector_to_string(us2);
+
   if (is1.size() == 1) {
     // Only one intersection
     i1 = is1[0];
@@ -799,6 +860,7 @@ PDCELVertex *get_polylines_intersection_close_to(
         polyline_2, is2, us2, param_loc_2, ex21, ex22, 0, pmessage
       );
     }
+    PLOG(debug) << "  j: " << j;
 
     // Get output and return values
     i1 = is1[j];
@@ -1463,21 +1525,33 @@ int get_intersection_close_to_param_coord(
   Message *pmessage
 ) {
 
-  pmessage->increaseIndent();
+  // pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("in function: get_intersection_close_to_param_coord");
+  // PLOG(debug) << pmessage->message("in function: get_intersection_close_to_param_coord");
 
-  int j = 0;
+  PLOG(debug) << "c:\n" << vertices_to_string(c);
+  PLOG(debug) << "ii: " << vector_to_string(ii);
+  PLOG(debug) << "uu: " << vector_to_string(uu);
+  PLOG(debug) << "param_coord: " << param_coord;
+  PLOG(debug) << "ex1: " << ex1;
+  PLOG(debug) << "ex2: " << ex2;
+  PLOG(debug) << "side: " << side;
 
-  auto nls = c.size() - 1;
-  double length = calcPolylineLength(c);
+  int j = 0;  // The index of the line segment of the intersection
+
+  auto nls = c.size() - 1;  // The number of line segments
+  double length = calcPolylineLength(c);  // The length of the curve
+  PLOG(debug) << "nls: " << nls;
+  PLOG(debug) << "length: " << length;
 
   double d = INF;
 
-  for (auto k = 1; k < ii.size(); k++) {
+  for (auto k = 0; k < ii.size(); k++) {
 
     int _i = ii[k];
     double _u = uu[k];
+
+    PLOG(debug) << "  _i: " << _i << ", _u: " << _u;
 
     // Calculate the parametric coordinate
     double _l;
@@ -1491,15 +1565,22 @@ int get_intersection_close_to_param_coord(
       _l = calc_curve_length_of_segment_param_coord_from_start(c, _i, _u);
     }
 
+    PLOG(debug) << "  _l: " << _l;
+
     double _l_nd = _l / length;
 
+    PLOG(debug) << "  _l_nd: " << _l_nd;
+
     double _d = fabs(_l_nd - param_coord);
+
+    PLOG(debug) << "  _d: " << _d;
+
     if (_d < d) {
-      if (_l_nd < param_coord && (side == -1 || side == 0)) {
+      if (_l_nd <= param_coord && (side == -1 || side == 0)) {
         // The intersection is before the parametric coordinate
         d = _d;
         j = k;
-      } else if (_l_nd > param_coord && (side == 1 || side == 0)) {
+      } else if (_l_nd >= param_coord && (side == 1 || side == 0)) {
         // The intersection is after the parametric coordinate
         d = _d;
         j = k;
@@ -1508,7 +1589,9 @@ int get_intersection_close_to_param_coord(
 
   }
 
-  pmessage->decreaseIndent();
+  // pmessage->decreaseIndent();
+
+  PLOG(debug) << "done";
 
   return j;
 

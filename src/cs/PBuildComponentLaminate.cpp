@@ -67,9 +67,9 @@ void PComponent::buildLaminate(Message *pmessage) {
           continue;
         }
 
-        if (seg_p->curveOffset() == nullptr) {
-          seg_p->offsetCurveBase(pmessage);
-        }
+        // if (seg_p->curveOffset() == nullptr) {
+        //   seg_p->offsetCurveBase(pmessage);
+        // }
 
         // if (seg_p != seg) {
         PLOG(debug) << "checking if segment " << seg->getName() << " connects to segment " << seg_p->getName();
@@ -89,6 +89,9 @@ void PComponent::buildLaminate(Message *pmessage) {
           PLOG(debug) << "joint style: " << js;
 
           if (seg->getBeginVertex() == seg_p->getBeginVertex()) {
+            if (seg_p->curveOffset() == nullptr) {
+              seg_p->offsetCurveBase(pmessage);
+            }
             // Head to head
             PLOG(debug) << "head of segment " << seg->getName() << " connects to head of segment " << seg_p->getName();
             found_begin = true;
@@ -99,6 +102,9 @@ void PComponent::buildLaminate(Message *pmessage) {
             joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, pmessage);
             // break;
           } else if (seg->getBeginVertex() == seg_p->getEndVertex()) {
+            if (seg_p->curveOffset() == nullptr) {
+              seg_p->offsetCurveBase(pmessage);
+            }
             // Head to tail
             PLOG(debug) << "head of segment " << seg->getName() << " connects to tail of segment " << seg_p->getName();
             found_begin = true;
@@ -126,6 +132,9 @@ void PComponent::buildLaminate(Message *pmessage) {
           PLOG(debug) << "joint style: " << js;
 
           if (seg->getEndVertex() == seg_p->getBeginVertex()) {
+            if (seg_p->curveOffset() == nullptr) {
+              seg_p->offsetCurveBase(pmessage);
+            }
             // Tail to head
             PLOG(debug) << "tail of segment " << seg->getName() << " connects to head of segment " << seg_p->getName();
             found_end = true;
@@ -136,6 +145,9 @@ void PComponent::buildLaminate(Message *pmessage) {
             joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, pmessage);
             // break;
           } else if (seg->getEndVertex() == seg_p->getEndVertex()) {
+            if (seg_p->curveOffset() == nullptr) {
+              seg_p->offsetCurveBase(pmessage);
+            }
             // Tail to tail
             PLOG(debug) << "tail of segment " << seg->getName() << " connects to tail of segment " << seg_p->getName();
             found_end = true;
@@ -173,6 +185,8 @@ void PComponent::buildLaminate(Message *pmessage) {
       }
 
     }
+
+    seg->log_segment_summary();
 
   }
 

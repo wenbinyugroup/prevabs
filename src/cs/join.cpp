@@ -1180,9 +1180,10 @@ void PComponent::joinSegments(
   std::vector<PDCELVertex *> bound_vertices;
   bound_vertices.push_back(v);
 
+  PLOG(debug) << "  bound_vertices:\n" << vertices_to_string(bound_vertices);
 
-
-
+  s1->log_segment_summary();
+  s2->log_segment_summary();
 
 
   // Step-like joint
@@ -1907,29 +1908,32 @@ void PComponent::joinSegments(
     // std::cout << "        new half edge: " << he_new << std::endl;
   }
 
-  PLOG(debug) << pmessage->message("  base -- offset index pairs of segment: " + s1->getName());
-  for (auto i = 0; i < s1->baseOffsetIndicesPairs().size(); i++) {
-    // std::cout << "        " << i << ": " << base[i]
-    // << " -- " << link_to_2[i] << std::endl;
-    PLOG(debug) << pmessage->message(
-      "  " + std::to_string(s1->baseOffsetIndicesPairs()[i][0]) + " : "
-      + s1->curveBase()->vertices()[s1->baseOffsetIndicesPairs()[i][0]]->printString()
-      + " -- " + std::to_string(s1->baseOffsetIndicesPairs()[i][1]) + " : "
-      + s1->curveOffset()->vertices()[s1->baseOffsetIndicesPairs()[i][1]]->printString()
-    );
-  }
+  s1->log_segment_summary();
+  s2->log_segment_summary();
 
-  PLOG(debug) << pmessage->message("  base -- offset index pairs of segment: " + s2->getName());
-  for (auto i = 0; i < s2->baseOffsetIndicesPairs().size(); i++) {
-    // std::cout << "        " << i << ": " << base[i]
-    // << " -- " << link_to_2[i] << std::endl;
-    PLOG(debug) << pmessage->message(
-      "  " + std::to_string(s2->baseOffsetIndicesPairs()[i][0]) + " : "
-      + s2->curveBase()->vertices()[s2->baseOffsetIndicesPairs()[i][0]]->printString()
-      + " -- " + std::to_string(s2->baseOffsetIndicesPairs()[i][1]) + " : "
-      + s2->curveOffset()->vertices()[s2->baseOffsetIndicesPairs()[i][1]]->printString()
-    );
-  }
+  // PLOG(debug) << pmessage->message("  base -- offset index pairs of segment: " + s1->getName());
+  // for (auto i = 0; i < s1->baseOffsetIndicesPairs().size(); i++) {
+  //   // std::cout << "        " << i << ": " << base[i]
+  //   // << " -- " << link_to_2[i] << std::endl;
+  //   PLOG(debug) << pmessage->message(
+  //     "  " + std::to_string(s1->baseOffsetIndicesPairs()[i][0]) + " : "
+  //     + s1->curveBase()->vertices()[s1->baseOffsetIndicesPairs()[i][0]]->printString()
+  //     + " -- " + std::to_string(s1->baseOffsetIndicesPairs()[i][1]) + " : "
+  //     + s1->curveOffset()->vertices()[s1->baseOffsetIndicesPairs()[i][1]]->printString()
+  //   );
+  // }
+
+  // PLOG(debug) << pmessage->message("  base -- offset index pairs of segment: " + s2->getName());
+  // for (auto i = 0; i < s2->baseOffsetIndicesPairs().size(); i++) {
+  //   // std::cout << "        " << i << ": " << base[i]
+  //   // << " -- " << link_to_2[i] << std::endl;
+  //   PLOG(debug) << pmessage->message(
+  //     "  " + std::to_string(s2->baseOffsetIndicesPairs()[i][0]) + " : "
+  //     + s2->curveBase()->vertices()[s2->baseOffsetIndicesPairs()[i][0]]->printString()
+  //     + " -- " + std::to_string(s2->baseOffsetIndicesPairs()[i][1]) + " : "
+  //     + s2->curveOffset()->vertices()[s2->baseOffsetIndicesPairs()[i][1]]->printString()
+  //   );
+  // }
 
   PLOG(info) << pmessage->message("done joining segments");
 

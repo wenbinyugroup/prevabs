@@ -22,7 +22,7 @@
     <scale></scale>
     <rotate>30</rotate> -->
         <mesh_size>0.01</mesh_size>
-        <element_type>2</element_type>
+        <element_type>1</element_type>
     </general>
 
     <materials>

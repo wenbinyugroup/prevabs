@@ -1392,6 +1392,26 @@ PDCELHalfEdgeLoop *PDCEL::update_half_edge_loop(PDCELHalfEdge *he) {
     hei = hei->next();
   } while (hei != he);
 
+
+  if (hel != nullptr) {
+    // Check if the half edge loop's incident edge is in the current chain of half edges
+    bool found = false;
+    PDCELHalfEdge *_hei = he;
+    do {
+      if (hel->incidentEdge() == _hei) {
+        found = true;
+        break;
+      }
+      _hei = _hei->next();
+    } while (_hei != he);
+
+    if (!found) {
+      // hels_to_remove.push_back(hel);
+      hel = nullptr;
+    }
+  }
+
+
   if (hel != nullptr) {
     PLOG(debug) << "half edge loop found: ";
     // hel->log();

@@ -297,7 +297,7 @@ void printVector(const std::vector<double> &v) {
 std::string vector_to_string(const std::vector<double> &v) {
   std::string s;
   for (auto n : v) {
-    s += std::to_string(n) + " ";
+    s += std::to_string(n) + ", ";
   }
   return s;
 }
@@ -315,7 +315,7 @@ void printVector(const std::vector<int> &v) {
 std::string vector_to_string(const std::vector<int> &v) {
   std::string s;
   for (auto n : v) {
-    s += std::to_string(n) + " ";
+    s += std::to_string(n) + ", ";
   }
   return s;
 }

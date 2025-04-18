@@ -214,8 +214,8 @@ void PComponent::buildFilling(Message *pmessage) {
     _fill_face = _pmodel->dcel()->addFace(hel_out);
     _fill_face->setName(_name + "_fill_face");
     _fill_face->setMaterial(_fill_material);
-    PLOG(debug) << "fill_face: ";
-    _fill_face->print();
+    // PLOG(debug) << "fill_face: ";
+    // _fill_face->print();
 
     hel_out->setKeep(true);
     hel_out->setFace(_fill_face);
@@ -226,18 +226,27 @@ void PComponent::buildFilling(Message *pmessage) {
     LayerType *lt = _pmodel->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
     _fill_face->setLayerType(lt);
     _fill_face->setTheta1(_fill_theta1);
+    // PLOG(debug) << "fill_face: ";
+    // _fill_face->print();
 
     // Update all corresponding inner boundaries, if there are any
     _pmodel->dcel()->linkHalfEdgeLoops();
     for (auto heli : _pmodel->dcel()->halfedgeloops()) {
       if (heli->direction() < 0 && !heli->keep()) {
-        // heli->print();
+
+        // PLOG(debug) << "heli: ";
+        // heli->log();
+
         PDCELHalfEdgeLoop *helj = heli;
         while (helj->adjacentLoop() != nullptr) {
           // helj->print();
           helj = helj->adjacentLoop();
         }
         if (helj == hel_out) {
+
+          // PLOG(debug) << "helj: ";
+          // helj->log();
+
           heli->setKeep(true);
           heli->setFace(_fill_face);
           _fill_face->addInnerComponent(heli->incidentEdge());
@@ -259,5 +268,6 @@ void PComponent::buildFilling(Message *pmessage) {
     }
   }
 
+  PLOG(debug) << "done.";
 
 }

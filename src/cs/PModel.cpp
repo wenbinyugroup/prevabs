@@ -825,9 +825,9 @@ void PModel::homogenize(Message *pmessage) {
       pmessage->printBlank();
       PLOG(info) << pmessage->message("writing outputs");
 
-      if (config.plot) {
-        writeGmsh(config.file_directory + config.file_base_name, pmessage);
-      }
+      // if (config.plot) {
+      writeGmsh(config.file_directory + config.file_base_name, pmessage);
+      // }
       writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
 
       if (_itf_output) {
@@ -982,12 +982,12 @@ void PModel::plot(Message *pmessage) {
     // pmessage->printBlank();
   }
 
-  if (config.execute) {
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("running Gmsh for visualization");
-  
-    runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
-  }
+  // if (config.execute) {
+  pmessage->printBlank();
+  PLOG(info) << pmessage->message("running Gmsh for visualization");
+
+  runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
+  // }
 
   return;
 }

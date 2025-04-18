@@ -111,6 +111,8 @@ public:
   void printBaseOffsetLink();
   void printBaseOffsetPairs(Message *);
 
+  void log_segment_summary();
+
   PModel *pmodel() { return _pmodel; }
   std::string getName() { return _name; }
   Baseline *getBaseline() { return _curve_base; }

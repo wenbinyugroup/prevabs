@@ -41,12 +41,6 @@ std::ostream &operator<<(std::ostream &out, Segment *s) {
 
 
 
-
-
-
-
-
-
 void Segment::print() {
   std::cout << "segment: " << _name << std::endl;
   std::cout << "prev segment: ";
@@ -90,11 +84,6 @@ void Segment::print() {
 
 
 
-
-
-
-
-
 void Segment::printBaseOffsetLink() {
   std::size_t n = _curve_base->vertices().size();
   std::cout << "\nsegment " << _name << std::endl;
@@ -110,11 +99,6 @@ void Segment::printBaseOffsetLink() {
     std::cout << std::endl;
   }
 }
-
-
-
-
-
 
 
 
@@ -138,6 +122,67 @@ void Segment::printBaseOffsetPairs(Message *pmessage) {
     PLOG(debug) << pmessage->message(s);
   }
 
+}
+
+
+
+
+void Segment::log_segment_summary() {
+  PLOG(debug) << "";
+  PLOG(debug) << "**********";
+  PLOG(debug) << "segment: " << _name;
+
+  // base-offset vertices
+  PLOG(debug) << "base vertices:\n" << vertices_to_string(_curve_base->vertices());
+  PLOG(debug) << "offset vertices:\n" << vertices_to_string(_curve_offset->vertices());
+
+  PLOG(debug) << "base -- offset index pairs: " << _base_offset_indices_pairs.size();
+  for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
+    PLOG(debug) << _base_offset_indices_pairs[i][0] << ": "
+                << _curve_base->vertices()[_base_offset_indices_pairs[i][0]]
+                << " -- " << _base_offset_indices_pairs[i][1] << ": "
+                << _curve_offset->vertices()[_base_offset_indices_pairs[i][1]];
+  }
+
+  // prev and next segment
+  PLOG(debug) << "prev segment: ";
+  if (_prev) {
+    PLOG(debug) << _prev->getName();
+  } else {
+    PLOG(debug) << "nullptr";
+  }
+  PLOG(debug) << "prev bound vector: " << _prev_bound;
+  PLOG(debug) << "prev bound vertices: ";
+  for (int i = 0; i < _prev_bound_vertices.size(); ++i) {
+    PLOG(debug) << " " << _prev_bound_vertices[i];
+    for (int vi : _prev_bound_indices) {
+      if (i == vi) {
+        PLOG(debug) << " - layer interface";
+      }
+    }
+    PLOG(debug) << "";
+  }
+
+  PLOG(debug) << "next segment: ";
+  if (_next) {
+    PLOG(debug) << _next->getName();
+  } else {
+    PLOG(debug) << "nullptr";
+  }
+  PLOG(debug) << "next bound vector: " << _next_bound;
+  PLOG(debug) << "next bound vertices: ";
+  for (int i = 0; i < _next_bound_vertices.size(); ++i) {
+    PLOG(debug) << " " << _next_bound_vertices[i];
+    for (int vi : _next_bound_indices) {
+      if (i == vi) {
+        std::cout << " - layer interface";
+      }
+    }
+    PLOG(debug) << "";
+  }
+
+  PLOG(debug) << "**********";
+  PLOG(debug) << "";
 }
 
 

@@ -76,40 +76,15 @@ void PComponent::addDependent(PComponent *component) {
 
 
 
+void PComponent::update_dcel_half_edge_loops() {
 
-
-
-
-
-void PComponent::build(Message *pmessage) {
-
-  // pmessage->increaseIndent();
-
-  // PLOG(info) << pmessage->message("building component: " + _name);
-
-  // Laminate type component
-  if (_type == 1) {
-
-    buildLaminate(pmessage);
-
-  }
-
-
-  // Fill type component
-  else if (_type == 2) {
-
-    buildFilling(pmessage);
-
-  }
-
-
-
-
-  // Update the DCEL (half edge loops)
+  PLOG(debug) << "updating DCEL half edge loops after building component: " << _name;
 
   // Set the half edge loop for the twin half edge
   Segment *sgm = _segments[0];
   std::string slayupside = sgm->getLayupside();
+
+
 
   // Use the base curve of the first segment
   PDCELHalfEdge *he_base = _pmodel->dcel()->findHalfEdge(
@@ -136,6 +111,8 @@ void PComponent::build(Message *pmessage) {
   PLOG(debug) << "hel_base_twin: ";
   hel_base_twin->log();
 
+
+
   // Check the offset curve of the first segment
   PDCELHalfEdge *he_offset = _pmodel->dcel()->findHalfEdge(
     sgm->curveOffset()->vertices()[0],
@@ -160,8 +137,35 @@ void PComponent::build(Message *pmessage) {
   }
   PLOG(debug) << "hel_offset_twin: ";
   hel_offset_twin->log();
+}
 
 
+
+
+
+void PComponent::build(Message *pmessage) {
+
+  // pmessage->increaseIndent();
+
+  // PLOG(info) << pmessage->message("building component: " + _name);
+
+  // Laminate type component
+  if (_type == 1) {
+
+    buildLaminate(pmessage);
+
+    // Update the DCEL (half edge loops)
+    update_dcel_half_edge_loops();
+
+  }
+
+
+  // Fill type component
+  else if (_type == 2) {
+
+    buildFilling(pmessage);
+
+  }
 
 
   // Check DCEL for debug

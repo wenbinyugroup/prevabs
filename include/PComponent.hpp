@@ -125,6 +125,7 @@ public:
   void setType(int t) { _type = t; }
   void setStyle(int style) { _style = style; }
   void addDependent(PComponent *);
+  void update_dcel_half_edge_loops();
   void setMeshSize(double ms) { _mesh_size = ms; }
   void addEmbeddedVertex(PDCELVertex *v) { _embedded_vertices.push_back(v); }
 

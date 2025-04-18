@@ -12,10 +12,13 @@ set TEST_FILES=^
     t4_I\i_web ^
     t5_T\t ^
     t6_circle\circle ^
-    t7_box\box
+    t7_box\box ^
+    t7_box\box_web ^
+    t7_box\box_web_2 ^
+    t7_box\box_fill
 
 set EXE_PATH=..\build_msvc\Release\prevabs.exe
-set PARAMS=-h -vabs -v
+set PARAMS=-h -vabs
 
 cd test
 

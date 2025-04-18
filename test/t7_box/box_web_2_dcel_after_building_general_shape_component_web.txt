@@ -52,15 +52,15 @@ DCEL Summary
   ( 0 , -0.42 , 0.42 ) -> ( 0 , -0.0071768 , 0.42 ) | loop: keep | face: sgm_1_face | sign: -1
   ( 0 , -0.0071768 , 0.42 ) -> ( 0 , 0.0740573 , 0.42 ) | loop: keep | face: sgm_1_face | sign: -1
   ( 0 , -0.0740573 , -0.42 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_2_face | sign: 1
-  ( 0 , 0 , 0 ) -> ( 0 , -0.0740573 , -0.42 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -0.0740573 , -0.42 ) | loop: temp | face: _temp | sign: -1
   ( 0 , 0 , 0 ) -> ( 0 , 0.0740573 , 0.42 ) | loop: keep | face: sgm_2_face | sign: 1
-  ( 0 , 0.0740573 , 0.42 ) -> ( 0 , 0 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.0740573 , 0.42 ) -> ( 0 , 0 , 0 ) | loop: temp | face: _temp | sign: -1
   ( 0 , -0.155291 , -0.42 ) -> ( 0 , -0.0787846 , 0.0138919 ) | loop: temp | face: nullptr | sign: 1
   ( 0 , -0.0787846 , 0.0138919 ) -> ( 0 , -0.155291 , -0.42 ) | loop: keep | face: sgm_2_face | sign: -1
   ( 0 , -0.0787846 , 0.0138919 ) -> ( 0 , -0.0071768 , 0.42 ) | loop: temp | face: nullptr | sign: 1
   ( 0 , -0.0071768 , 0.42 ) -> ( 0 , -0.0787846 , 0.0138919 ) | loop: keep | face: sgm_2_face | sign: -1
 
-5 half edge loops:
+6 half edge loops:
 direction: outer
 keep: yes
 face: background
@@ -124,8 +124,19 @@ half edges:
   ( 0 , -0.0787846 , 0.0138919 ) -> ( 0 , -0.155291 , -0.42 ) | loop: keep | face: sgm_2_face | sign: -1
 adjacent loop: nullptr
 
+direction: outer
+keep: no
+face: _temp
+half edges:
+  ( 0 , -0.0740573 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.42 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42 , 0.42 ) -> ( 0 , 0.0740573 , 0.42 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.0740573 , 0.42 ) -> ( 0 , 0 , 0 ) | loop: temp | face: _temp | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -0.0740573 , -0.42 ) | loop: temp | face: _temp | sign: -1
+adjacent loop: nullptr
 
-4 faces:
+
+5 faces:
 name: background
 outer boundary: 
   ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
@@ -169,5 +180,14 @@ outer boundary:
   ( 0 , 0.0740573 , 0.42 ) -> ( 0 , -0.0071768 , 0.42 ) | loop: keep | face: sgm_2_face | sign: 1
   ( 0 , -0.0071768 , 0.42 ) -> ( 0 , -0.0787846 , 0.0138919 ) | loop: keep | face: sgm_2_face | sign: -1
   ( 0 , -0.0787846 , 0.0138919 ) -> ( 0 , -0.155291 , -0.42 ) | loop: keep | face: sgm_2_face | sign: -1
+0 inner boundaries:
+
+name: _temp
+outer boundary: 
+  ( 0 , -0.0740573 , -0.42 ) -> ( 0 , 0.42 , -0.42 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42 , -0.42 ) -> ( 0 , 0.42 , 0.42 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42 , 0.42 ) -> ( 0 , 0.0740573 , 0.42 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.0740573 , 0.42 ) -> ( 0 , 0 , 0 ) | loop: temp | face: _temp | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -0.0740573 , -0.42 ) | loop: temp | face: _temp | sign: -1
 0 inner boundaries:
 
