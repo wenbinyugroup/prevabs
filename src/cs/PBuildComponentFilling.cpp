@@ -24,6 +24,9 @@
 
 void PComponent::buildFilling(Message *pmessage) {
 
+  PLOG(debug) << "\n\n" << std::string(60, '-');
+  PLOG(info) << "building component: " + _name;
+
   if (!_fill_baseline_groups.empty()) {
 
     std::list<Baseline *> bl_closed;
@@ -197,20 +200,28 @@ void PComponent::buildFilling(Message *pmessage) {
     }
   }
 
-
+  PLOG(debug) << "hel_out: ";
+  hel_out->log();
 
 
   // Keep the loop and create a new face
   if (hel_out == _pmodel->dcel()->halfedgeloops().front()) {
     // The location is outside the shape
     // Raise the exception
+    throw std::runtime_error("The location is outside the shape");
   }
   else {
     _fill_face = _pmodel->dcel()->addFace(hel_out);
     _fill_face->setName(_name + "_fill_face");
     _fill_face->setMaterial(_fill_material);
+    PLOG(debug) << "fill_face: ";
+    _fill_face->print();
+
     hel_out->setKeep(true);
     hel_out->setFace(_fill_face);
+
+    PLOG(debug) << "hel_out: ";
+    hel_out->log();
 
     LayerType *lt = _pmodel->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
     _fill_face->setLayerType(lt);
@@ -219,7 +230,7 @@ void PComponent::buildFilling(Message *pmessage) {
     // Update all corresponding inner boundaries, if there are any
     _pmodel->dcel()->linkHalfEdgeLoops();
     for (auto heli : _pmodel->dcel()->halfedgeloops()) {
-      if (!heli->keep()) {
+      if (heli->direction() < 0 && !heli->keep()) {
         // heli->print();
         PDCELHalfEdgeLoop *helj = heli;
         while (helj->adjacentLoop() != nullptr) {
@@ -241,7 +252,7 @@ void PComponent::buildFilling(Message *pmessage) {
 
   // Set local mesh size
   if (_mesh_size != -1) {
-    // std::cout << _mesh_size << std::endl;
+    PLOG(debug) << "set local mesh size: " << _mesh_size;
     _fill_face->setMeshSize(_mesh_size);
     for (auto v : _embedded_vertices) {
       _fill_face->addEmbeddedVertex(v);
