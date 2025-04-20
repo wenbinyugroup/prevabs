@@ -1,5 +1,5 @@
-[info] [main: 296] - prevabs start (2025-04-18 19:16:31)
-[info] [PModel::homogenize: 785] - reading input files
+[info] [main: 309] - prevabs start (2025-04-20 00:44:22)
+[info] [PModel::homogenize: 792] - reading input files
 [info] [readCrossSection: 764]       
   
       
@@ -14,9 +14,9 @@
     
     ========================================
     
-aterialDB.xml
-[info] [PModel::homogenize: 790]   - reading input files -- done
-[info] [PModel::homogenize: 798]   - building the shape
+alDB.xml
+[info] [PModel::homogenize: 797]   - reading input files -- done
+[info] [PModel::homogenize: 805]   - building the shape
 [info] [CrossSection::build: 302] building the cross section, step 1
 [info] [PComponent::buildLaminate: 30] building component: top
 [info] [Segment::updateBaseOffsetIndexPairs: 301]         - updating base-offset index pairs
@@ -26,20 +26,26 @@ aterialDB.xml
 [info] [Segment::updateBaseOffsetIndexPairs: 301]           - updating base-offset index pairs
 [info] [PComponent::joinSegments: 1938]         - done joining segments
 [info] [CrossSection::build: 346] building the cross section, step 2
-[info] [PComponent::buildDetails: 202]           - building component details: top
-[info] [Segment::updateBaseOffsetIndexPairs: 301]             - updating base-offset index pairs
-[info] [Segment::updateBaseOffsetIndexPairs: 301]             - updating base-offset index pairs
+[info] [PComponent::buildDetails: 200] building details of component: top
+[info] [PComponent::buildDetails: 204] building details of segment: sgm_1
+[info] [Segment::updateBaseOffsetIndexPairs: 301]           - updating base-offset index pairs
+[info] [PComponent::buildDetails: 212] done building details of segment: sgm_1
+[info] [PComponent::buildDetails: 204] building details of segment: sgm_2
+[info] [Segment::updateBaseOffsetIndexPairs: 301]           - updating base-offset index pairs
+[info] [PComponent::buildDetails: 212] done building details of segment: sgm_2
+[info] [PComponent::buildDetails: 218] done building details of component: top
+[info] [PModel::build: 368] done building cross section
 [info] [PDCEL::fixGeometry: 220]         - fixing geometry by removing small edges
-[info] [PModel::homogenize: 802]       - building the shape -- done
-[info] [PModel::homogenize: 812]       - modeling in Gmsh
+[info] [PModel::homogenize: 809]       - building the shape -- done
+[info] [PModel::homogenize: 819]       - modeling in Gmsh
 [info] [PModel::createGmshVertices: 61]         - creating gmsh vertices
 [info] [PModel::createGmshEdges: 205]         - creating gmsh edges
-[info] [PModel::createGmshFaces: 261]         - creating gmsh faces
+[info] [PModel::createGmshFaces: 261] creating gmsh faces
 [info] [PModel::createGmshPhyscialGroups: 431]         - creating physical groups
 [info] [PModel::writeGmshGeo: 464]           - writing gmsh .geo file: t1_strip\geo_before_mesh.geo_unrolled
 [info] [PModel::buildGmsh: 563]         - meshing
-[info] [PModel::homogenize: 816]       - modeling in Gmsh -- done
-[info] [PModel::homogenize: 826]       - writing outputs
+[info] [PModel::homogenize: 823]       - modeling in Gmsh -- done
+[info] [PModel::homogenize: 833]       - writing outputs
 [info] [PModel::writeGmshOpt: 576]         - writing gmsh .opt file: t1_strip\strip_two_segs.opt
 [info] [PModel::writeGmshGeo: 464]         - writing gmsh .geo file: t1_strip\strip_two_segs.geo_unrolled
 [info] [PModel::writeGmshMsh: 507]       - writing gmsh .msh file: t1_strip\strip_two_segs.msh
@@ -49,6 +55,6 @@ aterialDB.xml
 [info] [PModel::writeElementsVABS: 184]           -   writing connectivity
 [info] [PModel::writeElementsVABS: 232]           -   writing local orientation
 [info] [PModel::writeSG: 163]       - writing material id-name file: t1_strip\strip_two_segs.sg.mat
-[info] [PModel::homogenize: 838]     - writing outputs -- done
-[info] [main: 367]     - prevabs finished (2025-04-18 19:16:31)
-[info] [main: 369] total running time: 0.136 sec
+[info] [PModel::homogenize: 845]     - writing outputs -- done
+[info] [main: 380]     - prevabs finished (2025-04-20 00:44:22)
+[info] [main: 382] total running time: 0.157 sec

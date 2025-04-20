@@ -1782,46 +1782,76 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
 
 std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PDCELVertex *v1,
                                         PDCELVertex *v2) {
-  // std::cout << "[debug] splitFace:" << std::endl;
-  // f->print();
+  PLOG(debug) << "Starting face split operation";
+    
+    // Input validation
+    if (!f || !v1 || !v2) {
+        PLOG(error) << "Invalid input: face=" << f << ", v1=" << v1 << ", v2=" << v2;
+        throw std::invalid_argument("Null input parameters");
+    }
 
-  // std::cout << "        vertex v1 = " << v1 << std::endl;
-  // std::cout << "        vertex v2 = " << v2 << std::endl;
+    if (v1 == v2) {
+        PLOG(error) << "Cannot split face using the same vertex";
+        throw std::invalid_argument("Split vertices must be different");
+    }
 
-  PDCELHalfEdge *he12, *he21;
-  PDCELHalfEdgeLoop *hel = f->outer()->loop();
+    if (!f->outer()) {
+        PLOG(error) << "Face has no outer component";
+        throw std::runtime_error("Invalid face structure");
+    }
 
-  // std::cout << "        creating new half edges" << std::endl;
-  he12 = addEdge(v1, v2);
-  he21 = he12->twin();
+    PDCELHalfEdgeLoop *hel = f->outer()->loop();
+    if (!hel) {
+        PLOG(error) << "Face has no valid half-edge loop";
+        throw std::runtime_error("Invalid face structure");
+    }
 
-  // Create new half edge loops
-  // std::cout << "        creating new half edge loops" << std::endl;
-  PDCELHalfEdgeLoop *hel12 = addHalfEdgeLoop(he12);
-  PDCELHalfEdgeLoop *hel21 = addHalfEdgeLoop(he21);
+    PLOG(debug) << "Creating new half edges between vertices";
+    try {
+        // Create new half edges
+        PDCELHalfEdge *he12 = addEdge(v1, v2);
+        PDCELHalfEdge *he21 = he12->twin();
+        if (!he12 || !he21) {
+            PLOG(error) << "Failed to create half edges";
+            throw std::runtime_error("Edge creation failed");
+        }
 
-  // Create new faces
-  // std::cout << "        creating new faces" << std::endl;
-  PDCELFace *f12 = addFace(hel12);
-  PDCELFace *f21 = addFace(hel21);
+        // Create new half edge loops
+        PLOG(debug) << "Creating new half edge loops";
+        PDCELHalfEdgeLoop *hel12 = addHalfEdgeLoop(he12);
+        PDCELHalfEdgeLoop *hel21 = addHalfEdgeLoop(he21);
+        if (!hel12 || !hel21) {
+            PLOG(error) << "Failed to create half edge loops";
+            throw std::runtime_error("Half edge loop creation failed");
+        }
 
-  _faces.remove(f);
-  // delete f;
+        // Create new faces
+        PLOG(debug) << "Creating new faces";
+        PDCELFace *f12 = addFace(hel12);
+        PDCELFace *f21 = addFace(hel21);
+        if (!f12 || !f21) {
+            PLOG(error) << "Failed to create new faces";
+            throw std::runtime_error("Face creation failed");
+        }
 
-  _halfedge_loops.remove(hel);
-  // delete hel;
+        // Clean up old structures
+        PLOG(debug) << "Cleaning up old structures";
+        _faces.remove(f);
+        _halfedge_loops.remove(hel);
+        delete f;    // Clean up the old face
+        delete hel;  // Clean up the old half-edge loop
 
-  std::list<PDCELFace *> new_faces;
-  new_faces.push_back(f12);
-  new_faces.push_back(f21);
+        std::list<PDCELFace *> new_faces;
+        new_faces.push_back(f12);
+        new_faces.push_back(f21);
 
-  // std::cout << "        new face f12:" << std::endl;
-  // f12->print();
+        PLOG(debug) << "Face split completed successfully";
+        return new_faces;
 
-  // std::cout << "        new face f21:" << std::endl;
-  // f21->print();
-
-  return new_faces;
+    } catch (const std::exception& e) {
+        PLOG(error) << "Error during face split: " << e.what();
+        throw; // Re-throw the exception after logging
+    }
 }
 
 

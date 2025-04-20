@@ -169,45 +169,80 @@ std::vector<PDCELVertex *> PDCELHalfEdgeLoop::vertices() {
 
 
 void PDCELHalfEdgeLoop::write_to_file(std::ofstream& file) {
-  PLOG(debug) << "writing half edge loop to file";
+  PLOG(debug) << "Starting to write half edge loop to file";
 
-  file << "direction: ";
-  if (direction() == 1) {
-    file << "outer" << std::endl;
-  } else if (direction() == -1) {
-    file << "inner" << std::endl;
+  try {
+    PLOG(debug) << "Writing direction information";
+    file << "direction: ";
+    if (direction() == 1) {
+      file << "outer" << std::endl;
+    } else if (direction() == -1) {
+      file << "inner" << std::endl;
+    } else {
+      PLOG(warning) << "Unexpected direction value: " << direction();
+      file << "unknown" << std::endl;
+    }
+
+    PLOG(debug) << "Writing keep status";
+    file << "keep: ";
+    if (_keep) {
+      file << "yes" << std::endl;
+    } else {
+      file << "no" << std::endl;
+    }
+
+    PLOG(debug) << "Writing face information";
+    file << "face: ";
+    if (_face != nullptr) {
+      file << _face->name() << std::endl;
+    } else {
+      PLOG(debug) << "Face is nullptr";
+      file << "nullptr" << std::endl;
+    }
+
+    PLOG(debug) << "Starting to write half edges";
+    PDCELHalfEdge *he = _incident_edge;
+    if (he == nullptr) {
+      PLOG(error) << "Incident edge is nullptr";
+      throw std::runtime_error("Incident edge is nullptr");
+    }
+
+    file << "half edges:" << std::endl;
+    int edge_count = 0;
+    do {
+      PLOG(debug) << "Writing half edge " << edge_count;
+      he->write_to_file(file);
+      he = he->next();
+      edge_count++;
+      
+      if (edge_count > 1000) { // Prevent infinite loops
+        PLOG(error) << "Too many edges in loop, possible circular reference";
+        throw std::runtime_error("Too many edges in loop");
+      }
+    } while (he != _incident_edge);
+    PLOG(debug) << "Wrote " << edge_count << " half edges";
+
+    PLOG(debug) << "Writing adjacent loop information";
+    file << "adjacent loop:";
+    if (_adjacent_loop == nullptr) {
+      PLOG(debug) << "Adjacent loop is nullptr";
+      file << " nullptr" << std::endl;
+    }
+    else {
+      if (_adjacent_loop->incidentEdge() == nullptr) {
+        PLOG(error) << "Adjacent loop's incident edge is nullptr";
+        throw std::runtime_error("Adjacent loop's incident edge is nullptr");
+      }
+      _adjacent_loop->incidentEdge()->write_to_file(file);
+    }
+
+    file << std::endl;
+    PLOG(debug) << "Successfully completed writing half edge loop to file";
+  } catch (const std::exception& e) {
+    PLOG(error) << "Error while writing half edge loop to file: " << e.what();
+    throw; // Re-throw to maintain original error handling
+  } catch (...) {
+    PLOG(error) << "Unknown error while writing half edge loop to file";
+    throw;
   }
-
-  file << "keep: ";
-  if (_keep) {
-    file << "yes" << std::endl;
-  } else {
-    file << "no" << std::endl;
-  }
-
-  file << "face: ";
-  if (_face != nullptr) {
-    file << _face->name() << std::endl;
-  } else {
-    file << "nullptr" << std::endl;
-  }
-
-  PDCELHalfEdge *he = _incident_edge;
-  file << "half edges:" << std::endl;
-  do {
-    he->write_to_file(file);
-    he = he->next();
-  } while (he != _incident_edge);
-
-  file << "adjacent loop:";
-  if (_adjacent_loop == nullptr) {
-    file << " nullptr" << std::endl;
-  }
-  else {
-    _adjacent_loop->incidentEdge()->write_to_file(file);
-  }
-
-  file << std::endl;
-
-  PLOG(debug) << "done";
 }

@@ -127,14 +127,14 @@
   </component>
 
   <!-- <component name="le" depend="main_spar">
-    <segment name="le_top">
+    <segment name="le">
       <baseline>bsl_front</baseline>
       <layup>layup_cap</layup>
     </segment>
   </component> -->
 
   <component name="te" depend="main_spar">
-    <segment name="te_top">
+    <segment name="te">
       <baseline>bsl_back</baseline>
       <layup>layup_tail</layup>
     </segment>
