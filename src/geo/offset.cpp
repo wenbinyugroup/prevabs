@@ -865,7 +865,7 @@ PDCELVertex *calc_segment_intersection(PDCELVertex *s1v1, PDCELVertex *s1v2,
   PDCELVertex *v_intersect = nullptr;
   std::stringstream ss;
 
-  PLOG(debug) << pmessage->message("calculate intersection");
+  PLOG(trace) << pmessage->message("calculate intersection");
 
   // New intersection method (h2d)
   h2d::Point2d _s1p1(s1v1->point2()[0], s1v1->point2()[1]);
@@ -875,10 +875,10 @@ PDCELVertex *calc_segment_intersection(PDCELVertex *s1v1, PDCELVertex *s1v2,
 
   ss.str("");
   ss << "Points: " << _s1p1 << " and " << _s1p2 << std::endl;
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(trace) << pmessage->message(ss.str());
   ss.str("");
   ss << "Points: " << _s2p1 << " and " << _s2p2 << std::endl;
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(trace) << pmessage->message(ss.str());
 
   // h2d::Segment seg1(_p1_prev, _p2_prev);
   // h2d::Segment seg2(_p1_tmp, _p2_tmp);
@@ -887,13 +887,13 @@ PDCELVertex *calc_segment_intersection(PDCELVertex *s1v1, PDCELVertex *s1v2,
 
   ss.str("");
   ss << "Line: " << seg1 << " and " << seg2 << std::endl;
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(trace) << pmessage->message(ss.str());
 
   auto res = seg1.intersects(seg2);
 
   ss.str("");
   ss << "res = " << res() << std::endl;
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(trace) << pmessage->message(ss.str());
 
   if (res())
   {
@@ -901,7 +901,7 @@ PDCELVertex *calc_segment_intersection(PDCELVertex *s1v1, PDCELVertex *s1v2,
 
     ss.str("");
     ss << "  intersection points: " << pts << std::endl;
-    PLOG(debug) << pmessage->message(ss.str());
+    PLOG(trace) << pmessage->message(ss.str());
     
     // Check the distance between the intersection point and the segment ends
     if (isClose(pts.getX(), pts.getY(), _s1p1.getX(), _s1p1.getY(), ABS_TOL, REL_TOL))
@@ -925,7 +925,7 @@ PDCELVertex *calc_segment_intersection(PDCELVertex *s1v1, PDCELVertex *s1v2,
 
   ss.str("");
   ss << "  v_intersect = " << v_intersect << std::endl;
-  PLOG(debug) << pmessage->message(ss.str());
+  PLOG(trace) << pmessage->message(ss.str());
   
   pmessage->decreaseIndent();
 
@@ -983,7 +983,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
   PLOG(debug) << pmessage->message("1. offset each line segment");
 
   for (int i = 0; i < size - 1; ++i) {  // For each line segment
-    PLOG(debug) << pmessage->message("line segment " + std::to_string(i+1));
+    PLOG(trace) << pmessage->message("line segment " + std::to_string(i+1));
 
     v1_tmp = new PDCELVertex();
     v2_tmp = new PDCELVertex();
@@ -997,9 +997,9 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
       // Calculate intersection
 
       // PLOG(debug) << pmessage->message("calculate intersection");
-      PLOG(debug) << pmessage->message(
+      PLOG(trace) << pmessage->message(
           "v1_prev: " + v1_prev->printString() + ", v2_prev: " + v2_prev->printString());
-      PLOG(debug) << pmessage->message(
+      PLOG(trace) << pmessage->message(
           "v1_tmp: " + v1_tmp->printString() + ", v2_tmp: " + v2_tmp->printString());
 
       v_offset = calc_segment_intersection(
@@ -1009,7 +1009,7 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
 
     ss.str("");
     ss << "  v_offset = " << v_offset << std::endl;
-    PLOG(debug) << pmessage->message(ss.str());
+    PLOG(trace) << pmessage->message(ss.str());
     
     vertices_tmp.push_back(v_offset);
 
@@ -1017,13 +1017,13 @@ int offset_2(const std::vector<PDCELVertex *> &base, int side, double dist,
     v2_prev = v2_tmp;
 
     if (i == size - 2) {  // The last line segment
-      PLOG(debug) << pmessage->message("the last line segment");
+      PLOG(trace) << pmessage->message("the last line segment");
 
       v_offset = v2_tmp;
 
       ss.str("");
       ss << "  v_offset = " << v_offset << std::endl;
-      PLOG(debug) << pmessage->message(ss.str());
+      PLOG(trace) << pmessage->message(ss.str());
 
       vertices_tmp.push_back(v_offset);
       // vertices_tmp.push_back(v2_tmp);

@@ -1,0 +1,573 @@
+DCEL Summary
+
+82 vertices:
+( 0 , inf , inf ) - degree 2
+( 0 , -inf , inf ) - degree 2
+( 0 , -inf , -inf ) - degree 2
+( 0 , inf , -inf ) - degree 2
+( 0 , 0.543375 , 0.0221195 ) - degree 3
+( 0 , 0.536975 , 0.016449 ) - degree 3
+( 0 , 0.542582 , 0.0222307 ) - degree 2
+( 0 , 0.535376 , 0.0230826 ) - degree 2
+( 0 , 0.528169 , 0.0237823 ) - degree 2
+( 0 , 0.520963 , 0.024372 ) - degree 2
+( 0 , 0.513757 , 0.0248762 ) - degree 2
+( 0 , 0.50655 , 0.0252976 ) - degree 2
+( 0 , 0.499344 , 0.0256369 ) - degree 2
+( 0 , 0.492138 , 0.0258939 ) - degree 2
+( 0 , 0.484931 , 0.0260716 ) - degree 2
+( 0 , 0.477724 , 0.0261831 ) - degree 2
+( 0 , 0.470518 , 0.0262365 ) - degree 2
+( 0 , 0.463312 , 0.0262426 ) - degree 2
+( 0 , 0.456106 , 0.0262105 ) - degree 2
+( 0 , 0.446497 , 0.0261203 ) - degree 2
+( 0 , 0.436888 , 0.025978 ) - degree 2
+( 0 , 0.42728 , 0.0257872 ) - degree 2
+( 0 , 0.417671 , 0.02555 ) - degree 2
+( 0 , 0.408063 , 0.0252688 ) - degree 2
+( 0 , 0.401625 , 0.0250526 ) - degree 2
+( 0 , 0.401625 , -0.0177908 ) - degree 2
+( 0 , 0.408063 , -0.0179427 ) - degree 2
+( 0 , 0.417671 , -0.0181402 ) - degree 2
+( 0 , 0.42728 , -0.0183065 ) - degree 2
+( 0 , 0.436888 , -0.0184403 ) - degree 2
+( 0 , 0.446497 , -0.018539 ) - degree 2
+( 0 , 0.456106 , -0.0186014 ) - degree 2
+( 0 , 0.463312 , -0.0186231 ) - degree 2
+( 0 , 0.470518 , -0.0186212 ) - degree 2
+( 0 , 0.477724 , -0.0185919 ) - degree 2
+( 0 , 0.484931 , -0.0185338 ) - degree 2
+( 0 , 0.492138 , -0.0184426 ) - degree 2
+( 0 , 0.499344 , -0.018315 ) - degree 2
+( 0 , 0.50655 , -0.0181468 ) - degree 2
+( 0 , 0.513757 , -0.0179304 ) - degree 2
+( 0 , 0.520963 , -0.0176583 ) - degree 2
+( 0 , 0.528169 , -0.0173218 ) - degree 2
+( 0 , 0.535376 , -0.0169131 ) - degree 2
+( 0 , 0.542582 , -0.0164241 ) - degree 2
+( 0 , 0.543375 , -0.0163621 ) - degree 2
+( 0 , 0.534691 , 0.016719 ) - degree 2
+( 0 , 0.527599 , 0.0174076 ) - degree 2
+( 0 , 0.520479 , 0.0179903 ) - degree 2
+( 0 , 0.513347 , 0.0184892 ) - degree 2
+( 0 , 0.506213 , 0.0189064 ) - degree 2
+( 0 , 0.499079 , 0.0192423 ) - degree 2
+( 0 , 0.491945 , 0.0194968 ) - degree 2
+( 0 , 0.484803 , 0.0196728 ) - degree 2
+( 0 , 0.477651 , 0.0197835 ) - degree 2
+( 0 , 0.470492 , 0.0198365 ) - degree 2
+( 0 , 0.463323 , 0.0198426 ) - degree 2
+( 0 , 0.45615 , 0.0198107 ) - degree 2
+( 0 , 0.446574 , 0.0197207 ) - degree 2
+( 0 , 0.436999 , 0.019579 ) - degree 2
+( 0 , 0.427422 , 0.0193887 ) - degree 2
+( 0 , 0.417844 , 0.0191523 ) - degree 2
+( 0 , 0.408264 , 0.018872 ) - degree 2
+( 0 , 0.408025 , 0.0188639 ) - degree 2
+( 0 , 0.408025 , -0.01154 ) - degree 2
+( 0 , 0.408204 , -0.0115443 ) - degree 2
+( 0 , 0.417792 , -0.0117414 ) - degree 2
+( 0 , 0.42738 , -0.0119073 ) - degree 2
+( 0 , 0.436966 , -0.0120407 ) - degree 2
+( 0 , 0.446551 , -0.0121392 ) - degree 2
+( 0 , 0.456136 , -0.0122014 ) - degree 2
+( 0 , 0.463321 , -0.0122231 ) - degree 2
+( 0 , 0.470504 , -0.0122212 ) - degree 2
+( 0 , 0.477686 , -0.012192 ) - degree 2
+( 0 , 0.484865 , -0.0121341 ) - degree 2
+( 0 , 0.49204 , -0.0120433 ) - degree 2
+( 0 , 0.499212 , -0.0119164 ) - degree 2
+( 0 , 0.50638 , -0.0117491 ) - degree 2
+( 0 , 0.51354 , -0.0115341 ) - degree 2
+( 0 , 0.520693 , -0.0112639 ) - degree 2
+( 0 , 0.527839 , -0.0109303 ) - degree 2
+( 0 , 0.534978 , -0.0105254 ) - degree 2
+( 0 , 0.536975 , -0.0103899 ) - degree 2
+
+162 half edges:
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.542582 , 0.0222307 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.542582 , 0.0222307 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.542582 , 0.0222307 ) -> ( 0 , 0.535376 , 0.0230826 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.535376 , 0.0230826 ) -> ( 0 , 0.542582 , 0.0222307 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.535376 , 0.0230826 ) -> ( 0 , 0.528169 , 0.0237823 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.528169 , 0.0237823 ) -> ( 0 , 0.535376 , 0.0230826 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.528169 , 0.0237823 ) -> ( 0 , 0.520963 , 0.024372 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.520963 , 0.024372 ) -> ( 0 , 0.528169 , 0.0237823 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.520963 , 0.024372 ) -> ( 0 , 0.513757 , 0.0248762 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.513757 , 0.0248762 ) -> ( 0 , 0.520963 , 0.024372 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.513757 , 0.0248762 ) -> ( 0 , 0.50655 , 0.0252976 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.50655 , 0.0252976 ) -> ( 0 , 0.513757 , 0.0248762 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.50655 , 0.0252976 ) -> ( 0 , 0.499344 , 0.0256369 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.499344 , 0.0256369 ) -> ( 0 , 0.50655 , 0.0252976 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.499344 , 0.0256369 ) -> ( 0 , 0.492138 , 0.0258939 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.492138 , 0.0258939 ) -> ( 0 , 0.499344 , 0.0256369 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.492138 , 0.0258939 ) -> ( 0 , 0.484931 , 0.0260716 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.484931 , 0.0260716 ) -> ( 0 , 0.492138 , 0.0258939 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.484931 , 0.0260716 ) -> ( 0 , 0.477724 , 0.0261831 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.477724 , 0.0261831 ) -> ( 0 , 0.484931 , 0.0260716 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.477724 , 0.0261831 ) -> ( 0 , 0.470518 , 0.0262365 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.470518 , 0.0262365 ) -> ( 0 , 0.477724 , 0.0261831 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.470518 , 0.0262365 ) -> ( 0 , 0.463312 , 0.0262426 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.463312 , 0.0262426 ) -> ( 0 , 0.470518 , 0.0262365 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.463312 , 0.0262426 ) -> ( 0 , 0.456106 , 0.0262105 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.456106 , 0.0262105 ) -> ( 0 , 0.463312 , 0.0262426 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.456106 , 0.0262105 ) -> ( 0 , 0.446497 , 0.0261203 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.446497 , 0.0261203 ) -> ( 0 , 0.456106 , 0.0262105 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.446497 , 0.0261203 ) -> ( 0 , 0.436888 , 0.025978 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.436888 , 0.025978 ) -> ( 0 , 0.446497 , 0.0261203 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.436888 , 0.025978 ) -> ( 0 , 0.42728 , 0.0257872 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.42728 , 0.0257872 ) -> ( 0 , 0.436888 , 0.025978 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.42728 , 0.0257872 ) -> ( 0 , 0.417671 , 0.02555 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.417671 , 0.02555 ) -> ( 0 , 0.42728 , 0.0257872 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.417671 , 0.02555 ) -> ( 0 , 0.408063 , 0.0252688 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.408063 , 0.0252688 ) -> ( 0 , 0.417671 , 0.02555 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.408063 , 0.0252688 ) -> ( 0 , 0.401625 , 0.0250526 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.401625 , 0.0250526 ) -> ( 0 , 0.408063 , 0.0252688 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.401625 , 0.0250526 ) -> ( 0 , 0.401625 , -0.0177908 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.401625 , -0.0177908 ) -> ( 0 , 0.401625 , 0.0250526 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.401625 , -0.0177908 ) -> ( 0 , 0.408063 , -0.0179427 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.408063 , -0.0179427 ) -> ( 0 , 0.401625 , -0.0177908 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.408063 , -0.0179427 ) -> ( 0 , 0.417671 , -0.0181402 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.417671 , -0.0181402 ) -> ( 0 , 0.408063 , -0.0179427 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.417671 , -0.0181402 ) -> ( 0 , 0.42728 , -0.0183065 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.42728 , -0.0183065 ) -> ( 0 , 0.417671 , -0.0181402 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.42728 , -0.0183065 ) -> ( 0 , 0.436888 , -0.0184403 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.436888 , -0.0184403 ) -> ( 0 , 0.42728 , -0.0183065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.436888 , -0.0184403 ) -> ( 0 , 0.446497 , -0.018539 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.446497 , -0.018539 ) -> ( 0 , 0.436888 , -0.0184403 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.446497 , -0.018539 ) -> ( 0 , 0.456106 , -0.0186014 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.456106 , -0.0186014 ) -> ( 0 , 0.446497 , -0.018539 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.456106 , -0.0186014 ) -> ( 0 , 0.463312 , -0.0186231 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.463312 , -0.0186231 ) -> ( 0 , 0.456106 , -0.0186014 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.463312 , -0.0186231 ) -> ( 0 , 0.470518 , -0.0186212 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.470518 , -0.0186212 ) -> ( 0 , 0.463312 , -0.0186231 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.470518 , -0.0186212 ) -> ( 0 , 0.477724 , -0.0185919 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.477724 , -0.0185919 ) -> ( 0 , 0.470518 , -0.0186212 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.477724 , -0.0185919 ) -> ( 0 , 0.484931 , -0.0185338 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.484931 , -0.0185338 ) -> ( 0 , 0.477724 , -0.0185919 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.484931 , -0.0185338 ) -> ( 0 , 0.492138 , -0.0184426 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.492138 , -0.0184426 ) -> ( 0 , 0.484931 , -0.0185338 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.492138 , -0.0184426 ) -> ( 0 , 0.499344 , -0.018315 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.499344 , -0.018315 ) -> ( 0 , 0.492138 , -0.0184426 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.499344 , -0.018315 ) -> ( 0 , 0.50655 , -0.0181468 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.50655 , -0.0181468 ) -> ( 0 , 0.499344 , -0.018315 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.50655 , -0.0181468 ) -> ( 0 , 0.513757 , -0.0179304 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.513757 , -0.0179304 ) -> ( 0 , 0.50655 , -0.0181468 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.513757 , -0.0179304 ) -> ( 0 , 0.520963 , -0.0176583 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.520963 , -0.0176583 ) -> ( 0 , 0.513757 , -0.0179304 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.520963 , -0.0176583 ) -> ( 0 , 0.528169 , -0.0173218 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.528169 , -0.0173218 ) -> ( 0 , 0.520963 , -0.0176583 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.528169 , -0.0173218 ) -> ( 0 , 0.535376 , -0.0169131 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.535376 , -0.0169131 ) -> ( 0 , 0.528169 , -0.0173218 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.535376 , -0.0169131 ) -> ( 0 , 0.542582 , -0.0164241 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.542582 , -0.0164241 ) -> ( 0 , 0.535376 , -0.0169131 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.542582 , -0.0164241 ) -> ( 0 , 0.543375 , -0.0163621 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.543375 , -0.0163621 ) -> ( 0 , 0.542582 , -0.0164241 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.543375 , -0.0163621 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.543375 , -0.0163621 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.534691 , 0.016719 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.534691 , 0.016719 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.534691 , 0.016719 ) -> ( 0 , 0.527599 , 0.0174076 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.527599 , 0.0174076 ) -> ( 0 , 0.534691 , 0.016719 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.527599 , 0.0174076 ) -> ( 0 , 0.520479 , 0.0179903 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.520479 , 0.0179903 ) -> ( 0 , 0.527599 , 0.0174076 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.520479 , 0.0179903 ) -> ( 0 , 0.513347 , 0.0184892 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.513347 , 0.0184892 ) -> ( 0 , 0.520479 , 0.0179903 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.513347 , 0.0184892 ) -> ( 0 , 0.506213 , 0.0189064 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.506213 , 0.0189064 ) -> ( 0 , 0.513347 , 0.0184892 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.506213 , 0.0189064 ) -> ( 0 , 0.499079 , 0.0192423 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.499079 , 0.0192423 ) -> ( 0 , 0.506213 , 0.0189064 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.499079 , 0.0192423 ) -> ( 0 , 0.491945 , 0.0194968 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.491945 , 0.0194968 ) -> ( 0 , 0.499079 , 0.0192423 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.491945 , 0.0194968 ) -> ( 0 , 0.484803 , 0.0196728 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.484803 , 0.0196728 ) -> ( 0 , 0.491945 , 0.0194968 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.484803 , 0.0196728 ) -> ( 0 , 0.477651 , 0.0197835 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.477651 , 0.0197835 ) -> ( 0 , 0.484803 , 0.0196728 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.477651 , 0.0197835 ) -> ( 0 , 0.470492 , 0.0198365 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.470492 , 0.0198365 ) -> ( 0 , 0.477651 , 0.0197835 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.470492 , 0.0198365 ) -> ( 0 , 0.463323 , 0.0198426 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.463323 , 0.0198426 ) -> ( 0 , 0.470492 , 0.0198365 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.463323 , 0.0198426 ) -> ( 0 , 0.45615 , 0.0198107 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.45615 , 0.0198107 ) -> ( 0 , 0.463323 , 0.0198426 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.45615 , 0.0198107 ) -> ( 0 , 0.446574 , 0.0197207 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.446574 , 0.0197207 ) -> ( 0 , 0.45615 , 0.0198107 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.446574 , 0.0197207 ) -> ( 0 , 0.436999 , 0.019579 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.436999 , 0.019579 ) -> ( 0 , 0.446574 , 0.0197207 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.436999 , 0.019579 ) -> ( 0 , 0.427422 , 0.0193887 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.427422 , 0.0193887 ) -> ( 0 , 0.436999 , 0.019579 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.427422 , 0.0193887 ) -> ( 0 , 0.417844 , 0.0191523 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.417844 , 0.0191523 ) -> ( 0 , 0.427422 , 0.0193887 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.417844 , 0.0191523 ) -> ( 0 , 0.408264 , 0.018872 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408264 , 0.018872 ) -> ( 0 , 0.417844 , 0.0191523 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408264 , 0.018872 ) -> ( 0 , 0.408025 , 0.0188639 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408025 , 0.0188639 ) -> ( 0 , 0.408264 , 0.018872 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408025 , 0.0188639 ) -> ( 0 , 0.408025 , -0.01154 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408025 , -0.01154 ) -> ( 0 , 0.408025 , 0.0188639 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408025 , -0.01154 ) -> ( 0 , 0.408204 , -0.0115443 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408204 , -0.0115443 ) -> ( 0 , 0.408025 , -0.01154 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408204 , -0.0115443 ) -> ( 0 , 0.417792 , -0.0117414 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.417792 , -0.0117414 ) -> ( 0 , 0.408204 , -0.0115443 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.417792 , -0.0117414 ) -> ( 0 , 0.42738 , -0.0119073 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42738 , -0.0119073 ) -> ( 0 , 0.417792 , -0.0117414 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.42738 , -0.0119073 ) -> ( 0 , 0.436966 , -0.0120407 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.436966 , -0.0120407 ) -> ( 0 , 0.42738 , -0.0119073 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.436966 , -0.0120407 ) -> ( 0 , 0.446551 , -0.0121392 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.446551 , -0.0121392 ) -> ( 0 , 0.436966 , -0.0120407 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.446551 , -0.0121392 ) -> ( 0 , 0.456136 , -0.0122014 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.456136 , -0.0122014 ) -> ( 0 , 0.446551 , -0.0121392 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.456136 , -0.0122014 ) -> ( 0 , 0.463321 , -0.0122231 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.463321 , -0.0122231 ) -> ( 0 , 0.456136 , -0.0122014 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.463321 , -0.0122231 ) -> ( 0 , 0.470504 , -0.0122212 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.470504 , -0.0122212 ) -> ( 0 , 0.463321 , -0.0122231 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.470504 , -0.0122212 ) -> ( 0 , 0.477686 , -0.012192 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.477686 , -0.012192 ) -> ( 0 , 0.470504 , -0.0122212 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.477686 , -0.012192 ) -> ( 0 , 0.484865 , -0.0121341 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.484865 , -0.0121341 ) -> ( 0 , 0.477686 , -0.012192 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.484865 , -0.0121341 ) -> ( 0 , 0.49204 , -0.0120433 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.49204 , -0.0120433 ) -> ( 0 , 0.484865 , -0.0121341 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.49204 , -0.0120433 ) -> ( 0 , 0.499212 , -0.0119164 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.499212 , -0.0119164 ) -> ( 0 , 0.49204 , -0.0120433 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.499212 , -0.0119164 ) -> ( 0 , 0.50638 , -0.0117491 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.50638 , -0.0117491 ) -> ( 0 , 0.499212 , -0.0119164 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.50638 , -0.0117491 ) -> ( 0 , 0.51354 , -0.0115341 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.51354 , -0.0115341 ) -> ( 0 , 0.50638 , -0.0117491 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.51354 , -0.0115341 ) -> ( 0 , 0.520693 , -0.0112639 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.520693 , -0.0112639 ) -> ( 0 , 0.51354 , -0.0115341 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.520693 , -0.0112639 ) -> ( 0 , 0.527839 , -0.0109303 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.527839 , -0.0109303 ) -> ( 0 , 0.520693 , -0.0112639 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.527839 , -0.0109303 ) -> ( 0 , 0.534978 , -0.0105254 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.534978 , -0.0105254 ) -> ( 0 , 0.527839 , -0.0109303 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.534978 , -0.0105254 ) -> ( 0 , 0.536975 , -0.0103899 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.536975 , -0.0103899 ) -> ( 0 , 0.534978 , -0.0105254 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.536975 , -0.0103899 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.536975 , -0.0103899 ) | loop: keep | face: main_spar_face | sign: -1
+
+4 half edge loops:
+direction: outer
+keep: yes
+face: background
+half edges:
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: yes
+face: main_spar_face
+half edges:
+  ( 0 , 0.401625 , -0.0177908 ) -> ( 0 , 0.408063 , -0.0179427 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.408063 , -0.0179427 ) -> ( 0 , 0.417671 , -0.0181402 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.417671 , -0.0181402 ) -> ( 0 , 0.42728 , -0.0183065 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.42728 , -0.0183065 ) -> ( 0 , 0.436888 , -0.0184403 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.436888 , -0.0184403 ) -> ( 0 , 0.446497 , -0.018539 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.446497 , -0.018539 ) -> ( 0 , 0.456106 , -0.0186014 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.456106 , -0.0186014 ) -> ( 0 , 0.463312 , -0.0186231 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.463312 , -0.0186231 ) -> ( 0 , 0.470518 , -0.0186212 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.470518 , -0.0186212 ) -> ( 0 , 0.477724 , -0.0185919 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.477724 , -0.0185919 ) -> ( 0 , 0.484931 , -0.0185338 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.484931 , -0.0185338 ) -> ( 0 , 0.492138 , -0.0184426 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.492138 , -0.0184426 ) -> ( 0 , 0.499344 , -0.018315 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.499344 , -0.018315 ) -> ( 0 , 0.50655 , -0.0181468 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.50655 , -0.0181468 ) -> ( 0 , 0.513757 , -0.0179304 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.513757 , -0.0179304 ) -> ( 0 , 0.520963 , -0.0176583 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.520963 , -0.0176583 ) -> ( 0 , 0.528169 , -0.0173218 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.528169 , -0.0173218 ) -> ( 0 , 0.535376 , -0.0169131 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.535376 , -0.0169131 ) -> ( 0 , 0.542582 , -0.0164241 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.542582 , -0.0164241 ) -> ( 0 , 0.543375 , -0.0163621 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.543375 , -0.0163621 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.536975 , -0.0103899 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.536975 , -0.0103899 ) -> ( 0 , 0.534978 , -0.0105254 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.534978 , -0.0105254 ) -> ( 0 , 0.527839 , -0.0109303 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.527839 , -0.0109303 ) -> ( 0 , 0.520693 , -0.0112639 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.520693 , -0.0112639 ) -> ( 0 , 0.51354 , -0.0115341 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.51354 , -0.0115341 ) -> ( 0 , 0.50638 , -0.0117491 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.50638 , -0.0117491 ) -> ( 0 , 0.499212 , -0.0119164 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.499212 , -0.0119164 ) -> ( 0 , 0.49204 , -0.0120433 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.49204 , -0.0120433 ) -> ( 0 , 0.484865 , -0.0121341 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.484865 , -0.0121341 ) -> ( 0 , 0.477686 , -0.012192 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.477686 , -0.012192 ) -> ( 0 , 0.470504 , -0.0122212 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.470504 , -0.0122212 ) -> ( 0 , 0.463321 , -0.0122231 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.463321 , -0.0122231 ) -> ( 0 , 0.456136 , -0.0122014 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.456136 , -0.0122014 ) -> ( 0 , 0.446551 , -0.0121392 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.446551 , -0.0121392 ) -> ( 0 , 0.436966 , -0.0120407 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.436966 , -0.0120407 ) -> ( 0 , 0.42738 , -0.0119073 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.42738 , -0.0119073 ) -> ( 0 , 0.417792 , -0.0117414 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.417792 , -0.0117414 ) -> ( 0 , 0.408204 , -0.0115443 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408204 , -0.0115443 ) -> ( 0 , 0.408025 , -0.01154 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408025 , -0.01154 ) -> ( 0 , 0.408025 , 0.0188639 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408025 , 0.0188639 ) -> ( 0 , 0.408264 , 0.018872 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408264 , 0.018872 ) -> ( 0 , 0.417844 , 0.0191523 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.417844 , 0.0191523 ) -> ( 0 , 0.427422 , 0.0193887 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.427422 , 0.0193887 ) -> ( 0 , 0.436999 , 0.019579 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.436999 , 0.019579 ) -> ( 0 , 0.446574 , 0.0197207 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.446574 , 0.0197207 ) -> ( 0 , 0.45615 , 0.0198107 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.45615 , 0.0198107 ) -> ( 0 , 0.463323 , 0.0198426 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.463323 , 0.0198426 ) -> ( 0 , 0.470492 , 0.0198365 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.470492 , 0.0198365 ) -> ( 0 , 0.477651 , 0.0197835 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.477651 , 0.0197835 ) -> ( 0 , 0.484803 , 0.0196728 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.484803 , 0.0196728 ) -> ( 0 , 0.491945 , 0.0194968 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.491945 , 0.0194968 ) -> ( 0 , 0.499079 , 0.0192423 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.499079 , 0.0192423 ) -> ( 0 , 0.506213 , 0.0189064 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.506213 , 0.0189064 ) -> ( 0 , 0.513347 , 0.0184892 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.513347 , 0.0184892 ) -> ( 0 , 0.520479 , 0.0179903 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.520479 , 0.0179903 ) -> ( 0 , 0.527599 , 0.0174076 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.527599 , 0.0174076 ) -> ( 0 , 0.534691 , 0.016719 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.534691 , 0.016719 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.542582 , 0.0222307 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.542582 , 0.0222307 ) -> ( 0 , 0.535376 , 0.0230826 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.535376 , 0.0230826 ) -> ( 0 , 0.528169 , 0.0237823 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.528169 , 0.0237823 ) -> ( 0 , 0.520963 , 0.024372 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.520963 , 0.024372 ) -> ( 0 , 0.513757 , 0.0248762 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.513757 , 0.0248762 ) -> ( 0 , 0.50655 , 0.0252976 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.50655 , 0.0252976 ) -> ( 0 , 0.499344 , 0.0256369 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.499344 , 0.0256369 ) -> ( 0 , 0.492138 , 0.0258939 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.492138 , 0.0258939 ) -> ( 0 , 0.484931 , 0.0260716 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.484931 , 0.0260716 ) -> ( 0 , 0.477724 , 0.0261831 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.477724 , 0.0261831 ) -> ( 0 , 0.470518 , 0.0262365 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.470518 , 0.0262365 ) -> ( 0 , 0.463312 , 0.0262426 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.463312 , 0.0262426 ) -> ( 0 , 0.456106 , 0.0262105 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.456106 , 0.0262105 ) -> ( 0 , 0.446497 , 0.0261203 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.446497 , 0.0261203 ) -> ( 0 , 0.436888 , 0.025978 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.436888 , 0.025978 ) -> ( 0 , 0.42728 , 0.0257872 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.42728 , 0.0257872 ) -> ( 0 , 0.417671 , 0.02555 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.417671 , 0.02555 ) -> ( 0 , 0.408063 , 0.0252688 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.408063 , 0.0252688 ) -> ( 0 , 0.401625 , 0.0250526 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.401625 , 0.0250526 ) -> ( 0 , 0.401625 , -0.0177908 ) | loop: keep | face: main_spar_face | sign: 1
+adjacent loop: nullptr
+
+direction: inner
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0.401625 , -0.0177908 ) -> ( 0 , 0.401625 , 0.0250526 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.401625 , 0.0250526 ) -> ( 0 , 0.408063 , 0.0252688 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.408063 , 0.0252688 ) -> ( 0 , 0.417671 , 0.02555 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.417671 , 0.02555 ) -> ( 0 , 0.42728 , 0.0257872 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.42728 , 0.0257872 ) -> ( 0 , 0.436888 , 0.025978 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.436888 , 0.025978 ) -> ( 0 , 0.446497 , 0.0261203 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.446497 , 0.0261203 ) -> ( 0 , 0.456106 , 0.0262105 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.456106 , 0.0262105 ) -> ( 0 , 0.463312 , 0.0262426 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.463312 , 0.0262426 ) -> ( 0 , 0.470518 , 0.0262365 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.470518 , 0.0262365 ) -> ( 0 , 0.477724 , 0.0261831 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.477724 , 0.0261831 ) -> ( 0 , 0.484931 , 0.0260716 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.484931 , 0.0260716 ) -> ( 0 , 0.492138 , 0.0258939 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.492138 , 0.0258939 ) -> ( 0 , 0.499344 , 0.0256369 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.499344 , 0.0256369 ) -> ( 0 , 0.50655 , 0.0252976 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.50655 , 0.0252976 ) -> ( 0 , 0.513757 , 0.0248762 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.513757 , 0.0248762 ) -> ( 0 , 0.520963 , 0.024372 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.520963 , 0.024372 ) -> ( 0 , 0.528169 , 0.0237823 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.528169 , 0.0237823 ) -> ( 0 , 0.535376 , 0.0230826 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.535376 , 0.0230826 ) -> ( 0 , 0.542582 , 0.0222307 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.542582 , 0.0222307 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.543375 , -0.0163621 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.543375 , -0.0163621 ) -> ( 0 , 0.542582 , -0.0164241 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.542582 , -0.0164241 ) -> ( 0 , 0.535376 , -0.0169131 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.535376 , -0.0169131 ) -> ( 0 , 0.528169 , -0.0173218 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.528169 , -0.0173218 ) -> ( 0 , 0.520963 , -0.0176583 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.520963 , -0.0176583 ) -> ( 0 , 0.513757 , -0.0179304 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.513757 , -0.0179304 ) -> ( 0 , 0.50655 , -0.0181468 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.50655 , -0.0181468 ) -> ( 0 , 0.499344 , -0.018315 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.499344 , -0.018315 ) -> ( 0 , 0.492138 , -0.0184426 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.492138 , -0.0184426 ) -> ( 0 , 0.484931 , -0.0185338 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.484931 , -0.0185338 ) -> ( 0 , 0.477724 , -0.0185919 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.477724 , -0.0185919 ) -> ( 0 , 0.470518 , -0.0186212 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.470518 , -0.0186212 ) -> ( 0 , 0.463312 , -0.0186231 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.463312 , -0.0186231 ) -> ( 0 , 0.456106 , -0.0186014 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.456106 , -0.0186014 ) -> ( 0 , 0.446497 , -0.018539 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.446497 , -0.018539 ) -> ( 0 , 0.436888 , -0.0184403 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.436888 , -0.0184403 ) -> ( 0 , 0.42728 , -0.0183065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.42728 , -0.0183065 ) -> ( 0 , 0.417671 , -0.0181402 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.417671 , -0.0181402 ) -> ( 0 , 0.408063 , -0.0179427 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0.408063 , -0.0179427 ) -> ( 0 , 0.401625 , -0.0177908 ) | loop: temp | face: nullptr | sign: -1
+adjacent loop:  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+
+direction: outer
+keep: no
+face: _temp
+half edges:
+  ( 0 , 0.408025 , -0.01154 ) -> ( 0 , 0.408204 , -0.0115443 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408204 , -0.0115443 ) -> ( 0 , 0.417792 , -0.0117414 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.417792 , -0.0117414 ) -> ( 0 , 0.42738 , -0.0119073 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42738 , -0.0119073 ) -> ( 0 , 0.436966 , -0.0120407 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.436966 , -0.0120407 ) -> ( 0 , 0.446551 , -0.0121392 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.446551 , -0.0121392 ) -> ( 0 , 0.456136 , -0.0122014 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.456136 , -0.0122014 ) -> ( 0 , 0.463321 , -0.0122231 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.463321 , -0.0122231 ) -> ( 0 , 0.470504 , -0.0122212 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.470504 , -0.0122212 ) -> ( 0 , 0.477686 , -0.012192 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.477686 , -0.012192 ) -> ( 0 , 0.484865 , -0.0121341 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.484865 , -0.0121341 ) -> ( 0 , 0.49204 , -0.0120433 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.49204 , -0.0120433 ) -> ( 0 , 0.499212 , -0.0119164 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.499212 , -0.0119164 ) -> ( 0 , 0.50638 , -0.0117491 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.50638 , -0.0117491 ) -> ( 0 , 0.51354 , -0.0115341 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.51354 , -0.0115341 ) -> ( 0 , 0.520693 , -0.0112639 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.520693 , -0.0112639 ) -> ( 0 , 0.527839 , -0.0109303 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.527839 , -0.0109303 ) -> ( 0 , 0.534978 , -0.0105254 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.534978 , -0.0105254 ) -> ( 0 , 0.536975 , -0.0103899 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.536975 , -0.0103899 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.534691 , 0.016719 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.534691 , 0.016719 ) -> ( 0 , 0.527599 , 0.0174076 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.527599 , 0.0174076 ) -> ( 0 , 0.520479 , 0.0179903 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.520479 , 0.0179903 ) -> ( 0 , 0.513347 , 0.0184892 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.513347 , 0.0184892 ) -> ( 0 , 0.506213 , 0.0189064 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.506213 , 0.0189064 ) -> ( 0 , 0.499079 , 0.0192423 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.499079 , 0.0192423 ) -> ( 0 , 0.491945 , 0.0194968 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.491945 , 0.0194968 ) -> ( 0 , 0.484803 , 0.0196728 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.484803 , 0.0196728 ) -> ( 0 , 0.477651 , 0.0197835 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.477651 , 0.0197835 ) -> ( 0 , 0.470492 , 0.0198365 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.470492 , 0.0198365 ) -> ( 0 , 0.463323 , 0.0198426 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.463323 , 0.0198426 ) -> ( 0 , 0.45615 , 0.0198107 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.45615 , 0.0198107 ) -> ( 0 , 0.446574 , 0.0197207 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.446574 , 0.0197207 ) -> ( 0 , 0.436999 , 0.019579 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.436999 , 0.019579 ) -> ( 0 , 0.427422 , 0.0193887 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.427422 , 0.0193887 ) -> ( 0 , 0.417844 , 0.0191523 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.417844 , 0.0191523 ) -> ( 0 , 0.408264 , 0.018872 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408264 , 0.018872 ) -> ( 0 , 0.408025 , 0.0188639 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408025 , 0.0188639 ) -> ( 0 , 0.408025 , -0.01154 ) | loop: temp | face: _temp | sign: 1
+adjacent loop: nullptr
+
+
+3 faces:
+name: background
+outer boundary: 
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+0 inner boundaries:
+
+name: main_spar_face
+outer boundary: 
+  ( 0 , 0.401625 , -0.0177908 ) -> ( 0 , 0.408063 , -0.0179427 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.408063 , -0.0179427 ) -> ( 0 , 0.417671 , -0.0181402 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.417671 , -0.0181402 ) -> ( 0 , 0.42728 , -0.0183065 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.42728 , -0.0183065 ) -> ( 0 , 0.436888 , -0.0184403 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.436888 , -0.0184403 ) -> ( 0 , 0.446497 , -0.018539 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.446497 , -0.018539 ) -> ( 0 , 0.456106 , -0.0186014 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.456106 , -0.0186014 ) -> ( 0 , 0.463312 , -0.0186231 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.463312 , -0.0186231 ) -> ( 0 , 0.470518 , -0.0186212 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.470518 , -0.0186212 ) -> ( 0 , 0.477724 , -0.0185919 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.477724 , -0.0185919 ) -> ( 0 , 0.484931 , -0.0185338 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.484931 , -0.0185338 ) -> ( 0 , 0.492138 , -0.0184426 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.492138 , -0.0184426 ) -> ( 0 , 0.499344 , -0.018315 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.499344 , -0.018315 ) -> ( 0 , 0.50655 , -0.0181468 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.50655 , -0.0181468 ) -> ( 0 , 0.513757 , -0.0179304 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.513757 , -0.0179304 ) -> ( 0 , 0.520963 , -0.0176583 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.520963 , -0.0176583 ) -> ( 0 , 0.528169 , -0.0173218 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.528169 , -0.0173218 ) -> ( 0 , 0.535376 , -0.0169131 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.535376 , -0.0169131 ) -> ( 0 , 0.542582 , -0.0164241 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.542582 , -0.0164241 ) -> ( 0 , 0.543375 , -0.0163621 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.543375 , -0.0163621 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.536975 , -0.0103899 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.536975 , -0.0103899 ) -> ( 0 , 0.534978 , -0.0105254 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.534978 , -0.0105254 ) -> ( 0 , 0.527839 , -0.0109303 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.527839 , -0.0109303 ) -> ( 0 , 0.520693 , -0.0112639 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.520693 , -0.0112639 ) -> ( 0 , 0.51354 , -0.0115341 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.51354 , -0.0115341 ) -> ( 0 , 0.50638 , -0.0117491 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.50638 , -0.0117491 ) -> ( 0 , 0.499212 , -0.0119164 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.499212 , -0.0119164 ) -> ( 0 , 0.49204 , -0.0120433 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.49204 , -0.0120433 ) -> ( 0 , 0.484865 , -0.0121341 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.484865 , -0.0121341 ) -> ( 0 , 0.477686 , -0.012192 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.477686 , -0.012192 ) -> ( 0 , 0.470504 , -0.0122212 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.470504 , -0.0122212 ) -> ( 0 , 0.463321 , -0.0122231 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.463321 , -0.0122231 ) -> ( 0 , 0.456136 , -0.0122014 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.456136 , -0.0122014 ) -> ( 0 , 0.446551 , -0.0121392 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.446551 , -0.0121392 ) -> ( 0 , 0.436966 , -0.0120407 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.436966 , -0.0120407 ) -> ( 0 , 0.42738 , -0.0119073 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.42738 , -0.0119073 ) -> ( 0 , 0.417792 , -0.0117414 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.417792 , -0.0117414 ) -> ( 0 , 0.408204 , -0.0115443 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408204 , -0.0115443 ) -> ( 0 , 0.408025 , -0.01154 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408025 , -0.01154 ) -> ( 0 , 0.408025 , 0.0188639 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408025 , 0.0188639 ) -> ( 0 , 0.408264 , 0.018872 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.408264 , 0.018872 ) -> ( 0 , 0.417844 , 0.0191523 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.417844 , 0.0191523 ) -> ( 0 , 0.427422 , 0.0193887 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.427422 , 0.0193887 ) -> ( 0 , 0.436999 , 0.019579 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.436999 , 0.019579 ) -> ( 0 , 0.446574 , 0.0197207 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.446574 , 0.0197207 ) -> ( 0 , 0.45615 , 0.0198107 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.45615 , 0.0198107 ) -> ( 0 , 0.463323 , 0.0198426 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.463323 , 0.0198426 ) -> ( 0 , 0.470492 , 0.0198365 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.470492 , 0.0198365 ) -> ( 0 , 0.477651 , 0.0197835 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.477651 , 0.0197835 ) -> ( 0 , 0.484803 , 0.0196728 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.484803 , 0.0196728 ) -> ( 0 , 0.491945 , 0.0194968 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.491945 , 0.0194968 ) -> ( 0 , 0.499079 , 0.0192423 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.499079 , 0.0192423 ) -> ( 0 , 0.506213 , 0.0189064 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.506213 , 0.0189064 ) -> ( 0 , 0.513347 , 0.0184892 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.513347 , 0.0184892 ) -> ( 0 , 0.520479 , 0.0179903 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.520479 , 0.0179903 ) -> ( 0 , 0.527599 , 0.0174076 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.527599 , 0.0174076 ) -> ( 0 , 0.534691 , 0.016719 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.534691 , 0.016719 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.543375 , 0.0221195 ) | loop: keep | face: main_spar_face | sign: -1
+  ( 0 , 0.543375 , 0.0221195 ) -> ( 0 , 0.542582 , 0.0222307 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.542582 , 0.0222307 ) -> ( 0 , 0.535376 , 0.0230826 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.535376 , 0.0230826 ) -> ( 0 , 0.528169 , 0.0237823 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.528169 , 0.0237823 ) -> ( 0 , 0.520963 , 0.024372 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.520963 , 0.024372 ) -> ( 0 , 0.513757 , 0.0248762 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.513757 , 0.0248762 ) -> ( 0 , 0.50655 , 0.0252976 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.50655 , 0.0252976 ) -> ( 0 , 0.499344 , 0.0256369 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.499344 , 0.0256369 ) -> ( 0 , 0.492138 , 0.0258939 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.492138 , 0.0258939 ) -> ( 0 , 0.484931 , 0.0260716 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.484931 , 0.0260716 ) -> ( 0 , 0.477724 , 0.0261831 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.477724 , 0.0261831 ) -> ( 0 , 0.470518 , 0.0262365 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.470518 , 0.0262365 ) -> ( 0 , 0.463312 , 0.0262426 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.463312 , 0.0262426 ) -> ( 0 , 0.456106 , 0.0262105 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.456106 , 0.0262105 ) -> ( 0 , 0.446497 , 0.0261203 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.446497 , 0.0261203 ) -> ( 0 , 0.436888 , 0.025978 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.436888 , 0.025978 ) -> ( 0 , 0.42728 , 0.0257872 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.42728 , 0.0257872 ) -> ( 0 , 0.417671 , 0.02555 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.417671 , 0.02555 ) -> ( 0 , 0.408063 , 0.0252688 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.408063 , 0.0252688 ) -> ( 0 , 0.401625 , 0.0250526 ) | loop: keep | face: main_spar_face | sign: 1
+  ( 0 , 0.401625 , 0.0250526 ) -> ( 0 , 0.401625 , -0.0177908 ) | loop: keep | face: main_spar_face | sign: 1
+0 inner boundaries:
+
+name: _temp
+outer boundary: 
+  ( 0 , 0.408025 , -0.01154 ) -> ( 0 , 0.408204 , -0.0115443 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408204 , -0.0115443 ) -> ( 0 , 0.417792 , -0.0117414 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.417792 , -0.0117414 ) -> ( 0 , 0.42738 , -0.0119073 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.42738 , -0.0119073 ) -> ( 0 , 0.436966 , -0.0120407 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.436966 , -0.0120407 ) -> ( 0 , 0.446551 , -0.0121392 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.446551 , -0.0121392 ) -> ( 0 , 0.456136 , -0.0122014 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.456136 , -0.0122014 ) -> ( 0 , 0.463321 , -0.0122231 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.463321 , -0.0122231 ) -> ( 0 , 0.470504 , -0.0122212 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.470504 , -0.0122212 ) -> ( 0 , 0.477686 , -0.012192 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.477686 , -0.012192 ) -> ( 0 , 0.484865 , -0.0121341 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.484865 , -0.0121341 ) -> ( 0 , 0.49204 , -0.0120433 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.49204 , -0.0120433 ) -> ( 0 , 0.499212 , -0.0119164 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.499212 , -0.0119164 ) -> ( 0 , 0.50638 , -0.0117491 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.50638 , -0.0117491 ) -> ( 0 , 0.51354 , -0.0115341 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.51354 , -0.0115341 ) -> ( 0 , 0.520693 , -0.0112639 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.520693 , -0.0112639 ) -> ( 0 , 0.527839 , -0.0109303 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.527839 , -0.0109303 ) -> ( 0 , 0.534978 , -0.0105254 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.534978 , -0.0105254 ) -> ( 0 , 0.536975 , -0.0103899 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.536975 , -0.0103899 ) -> ( 0 , 0.536975 , 0.016449 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.536975 , 0.016449 ) -> ( 0 , 0.534691 , 0.016719 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.534691 , 0.016719 ) -> ( 0 , 0.527599 , 0.0174076 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.527599 , 0.0174076 ) -> ( 0 , 0.520479 , 0.0179903 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.520479 , 0.0179903 ) -> ( 0 , 0.513347 , 0.0184892 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.513347 , 0.0184892 ) -> ( 0 , 0.506213 , 0.0189064 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.506213 , 0.0189064 ) -> ( 0 , 0.499079 , 0.0192423 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.499079 , 0.0192423 ) -> ( 0 , 0.491945 , 0.0194968 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.491945 , 0.0194968 ) -> ( 0 , 0.484803 , 0.0196728 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.484803 , 0.0196728 ) -> ( 0 , 0.477651 , 0.0197835 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.477651 , 0.0197835 ) -> ( 0 , 0.470492 , 0.0198365 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.470492 , 0.0198365 ) -> ( 0 , 0.463323 , 0.0198426 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.463323 , 0.0198426 ) -> ( 0 , 0.45615 , 0.0198107 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.45615 , 0.0198107 ) -> ( 0 , 0.446574 , 0.0197207 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.446574 , 0.0197207 ) -> ( 0 , 0.436999 , 0.019579 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.436999 , 0.019579 ) -> ( 0 , 0.427422 , 0.0193887 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.427422 , 0.0193887 ) -> ( 0 , 0.417844 , 0.0191523 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.417844 , 0.0191523 ) -> ( 0 , 0.408264 , 0.018872 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408264 , 0.018872 ) -> ( 0 , 0.408025 , 0.0188639 ) | loop: temp | face: _temp | sign: 1
+  ( 0 , 0.408025 , 0.0188639 ) -> ( 0 , 0.408025 , -0.01154 ) | loop: temp | face: _temp | sign: 1
+0 inner boundaries:
+

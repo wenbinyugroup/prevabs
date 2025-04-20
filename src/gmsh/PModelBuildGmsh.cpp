@@ -258,7 +258,7 @@ void PModel::createGmshEdges(Message *pmessage) {
 
 
 void PModel::createGmshFaces(Message *pmessage) {
-  PLOG(info) << pmessage->message("creating gmsh faces");
+  PLOG(info) << "creating gmsh faces";
 
   // GVertex *gv;
   // GEdge *ge;
@@ -270,8 +270,8 @@ void PModel::createGmshFaces(Message *pmessage) {
 
   for (auto f : _dcel->faces()) {
 
-    PLOG(debug) << pmessage->message("");
-    PLOG(debug) << pmessage->message("  face: " + f->name());
+    PLOG(trace) << "";
+    PLOG(trace) << "  face: " + f->name();
 
     if (f->gbuild() && f->outer() != nullptr) {
 
@@ -288,7 +288,7 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
       // Add outer loop
-      PLOG(debug) << pmessage->message("  adding outer loop");
+      PLOG(trace) << "  adding outer loop";
       PDCELHalfEdge *he = f->outer();
       do {
 
@@ -313,7 +313,7 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
       // Add inner loops
-      PLOG(debug) << pmessage->message("  adding inner loops");
+      PLOG(trace) << "  adding inner loops";
       for (auto hei : f->inners()) {
 
         // gesloop.clear();
@@ -346,7 +346,7 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
       // Create embedded entities and set local mesh sizes
-      PLOG(debug) << pmessage->message("  adding local mesh size");
+      PLOG(trace) << "  adding local mesh size";
       if (f->getMeshSize() != -1) {
         // std::cout << f->getMeshSize() << std::endl;
         // PDCELVertex *v = f->getEmbeddedVertex();

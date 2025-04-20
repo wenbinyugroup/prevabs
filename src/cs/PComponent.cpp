@@ -194,14 +194,14 @@ void PComponent::build(Message *pmessage) {
 
 void PComponent::buildDetails(Message *pmessage) {
 
-  // i_indent++;
-  pmessage->increaseIndent();
 
   if (_type == 1) {
 
-    PLOG(info) << pmessage->message("building component details: " + _name);
+    PLOG(info) << "building details of component: " << _name;
 
     for (auto sgm : _segments) {
+
+      PLOG(info) << "building details of segment: " << sgm->getName();
 
       sgm->updateBaseOffsetIndexPairs(pmessage);
 
@@ -209,12 +209,13 @@ void PComponent::buildDetails(Message *pmessage) {
 
       if (config.debug) _pmodel->plotGeoDebug(pmessage);
 
+      PLOG(info) << "done building details of segment: " << sgm->getName();
+
     }
 
   }
 
-  // i_indent--;
-  pmessage->decreaseIndent();
+  PLOG(info) << "done building details of component: " << _name;
 
 }
 

@@ -272,23 +272,23 @@ void PDCEL::fixGeometry(Message *pmessage) {
 // ===================================================================
 
 void PDCEL::addVertex(PDCELVertex *v) {
-  PLOG(debug) << "start";
+  PLOG(trace) << "start";
 
-  PLOG(debug) << "  v = " << v;
+  PLOG(trace) << "  v = " << v;
 
   if (v->dcel() == nullptr) {
-    PLOG(debug) << "  new vertex";
+    PLOG(trace) << "  new vertex";
     _vertices.push_back(v);
-    PLOG(debug) << "  vertex added to _vertices";
-    PLOG(debug) << "  _vertices.size() = " << _vertices.size();
+    PLOG(trace) << "  vertex added to _vertices";
+    PLOG(trace) << "  _vertices.size() = " << _vertices.size();
     _vertex_tree->insert(v);
-    PLOG(debug) << "  vertex inserted into _vertex_tree";
+    PLOG(trace) << "  vertex inserted into _vertex_tree";
     v->setDCEL(this);
   } else {
-    PLOG(debug) << "  vertex already in DCEL";
+    PLOG(trace) << "  vertex already in DCEL";
   }
 
-  PLOG(debug) << "done";
+  PLOG(trace) << "done";
 }
 
 
@@ -531,7 +531,7 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
  * @throws std::runtime_error if edge creation fails
  */
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
-  PLOG(debug) << "Adding edge between vertices: " << v1 << " -> " << v2;
+  PLOG(trace) << "Adding edge between vertices: " << v1 << " -> " << v2;
 
   // Input validation
   if (!v1 || !v2) {
@@ -569,7 +569,7 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   v1->log_all_leaving_half_edges(1);
   v2->log_all_leaving_half_edges(1);
 
-  PLOG(debug) << "Successfully added edge";
+  PLOG(trace) << "Successfully added edge";
   return he12;
 }
 
@@ -880,25 +880,25 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
  */
 PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
 
-  PLOG(debug) << "looking for half edge: v1 " << v1 << " -> v2 " << v2;
+  PLOG(trace) << "looking for half edge: v1 " << v1 << " -> v2 " << v2;
 
   PDCELHalfEdge *he1 = v1->edge();
 
   if (he1 == nullptr) {
-    PLOG(debug) << "  v1 has no incident edge";
+    PLOG(trace) << "  v1 has no incident edge";
     return nullptr;
   }
 
   PDCELHalfEdge *heit = he1;
   do {
     if (heit->target() == v2) {
-      PLOG(debug) << "found half edge: " << heit;
+      PLOG(trace) << "found half edge: " << heit;
       return heit;
     }
     heit = heit->twin()->next();
   } while (heit != he1 && heit != nullptr);
 
-  PLOG(debug) << "half edge not found";
+  PLOG(trace) << "half edge not found";
 
   return nullptr;
 }
@@ -979,13 +979,13 @@ void PDCEL::addEdgesFromCurve(Baseline *bl) {
  * @return the newly created half edge loop
  */
 PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
-  PLOG(debug) << "adding half edge loop with half edge: " << he;
+  PLOG(trace) << "adding half edge loop with half edge: " << he;
 
   PDCELHalfEdgeLoop *hel = new PDCELHalfEdgeLoop();
 
   PDCELHalfEdge *hei = he;
   do {
-    PLOG(debug) << "  handling half edge: " << hei;
+    PLOG(trace) << "  handling half edge: " << hei;
     hei->setLoop(hel);
 
     hei = hei->next();
@@ -999,7 +999,7 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
 
   _halfedge_loops.push_back(hel);
 
-  PLOG(debug) << "done";
+  PLOG(trace) << "done";
 
   return hel;
 }
@@ -1075,7 +1075,7 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop)
  * @param[in] hel the half edge loop to remove
  */
 void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
-  PLOG(debug) << "removing half edge loop";
+  PLOG(trace) << "removing half edge loop";
   PDCELHalfEdge *he = hel->incidentEdge();
   do {
     he->resetLoop();
@@ -1097,7 +1097,7 @@ void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
  * @param[in] hel the half edge loop to remove
  */
 void PDCEL::remove_half_edge_loop(PDCELHalfEdgeLoop *hel) {
-  PLOG(debug) << "removing half edge loop";
+  PLOG(trace) << "removing half edge loop";
 
   // Reset the loop pointer of each half edge
   PDCELHalfEdge *he = hel->incidentEdge();
@@ -1926,7 +1926,7 @@ void PDCEL::update_face_inner_loops(PDCELFace *f) {
  * @param he The half edge to update.
  */
 void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
-  PLOG(debug) << "Updating neighbors of edge " << he;
+  PLOG(trace) << "Updating neighbors of edge " << he;
 
   if (!he || !he->twin() || !he->source()) {
     PLOG(error) << "Invalid half edge or missing required components";
@@ -1938,14 +1938,14 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
   
   // Handle degree 0 case - vertex has no incident edges
   if (v->degree() == 0) {
-    PLOG(debug) << "Vertex has no incident edges";
+    PLOG(trace) << "Vertex has no incident edges";
     v->setIncidentEdge(he);
     return;
   }
 
   // Handle degree 1 case - vertex has one incident edge
   if (v->degree() == 1) {
-    PLOG(debug) << "Vertex has one incident edge";
+    PLOG(trace) << "Vertex has one incident edge";
     PDCELHalfEdge *existing_edge = v->edge();
     if (!existing_edge) {
       PLOG(error) << "Vertex with degree 1 has no incident edge";
@@ -1960,7 +1960,7 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     return;
   }
 
-  PLOG(debug) << "Vertex has degree >= 2";
+  PLOG(trace) << "Vertex has degree >= 2";
 
   // Handle degree >= 2 case - need to find correct position in sorted cycle
   std::vector<PDCELHalfEdge *> sorted_edges;
@@ -1977,9 +1977,9 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     current = current->prev()->twin();
   } while (current != v->edge());
 
-  PLOG(debug) << "Unsorted edges:";
+  PLOG(trace) << "Unsorted edges:";
   for (auto he : sorted_edges) {
-    PLOG(debug) << "  " << he << " " << he->angle();
+    PLOG(trace) << "  " << he << " " << he->angle();
   }
 
   // Sort edges by angle
@@ -1988,9 +1988,9 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
       return a->angle() < b->angle();
     });
 
-  PLOG(debug) << "Sorted edges:";
+  PLOG(trace) << "Sorted edges:";
   for (auto he : sorted_edges) {
-    PLOG(debug) << "  " << he << " " << he->angle();
+    PLOG(trace) << "  " << he << " " << he->angle();
   }
 
   // Find insertion point for new edge
@@ -2003,16 +2003,16 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
   PDCELHalfEdge *prev_edge = (it == sorted_edges.begin()) ? sorted_edges.back() : *(it - 1);
   PDCELHalfEdge *next_edge = (it == sorted_edges.end()) ? sorted_edges.front() : *it;
 
-  PLOG(debug) << "Setting prev/next pointers";
-  PLOG(debug) << "  prev_edge: " << prev_edge;
-  PLOG(debug) << "  next_edge: " << next_edge;
+  PLOG(trace) << "Setting prev/next pointers";
+  PLOG(trace) << "  prev_edge: " << prev_edge;
+  PLOG(trace) << "  next_edge: " << next_edge;
 
   // Insert new edge
   sorted_edges.insert(it, he);
 
-  PLOG(debug) << "Updated sorted edges:";
+  PLOG(trace) << "Updated sorted edges:";
   for (auto he : sorted_edges) {
-    PLOG(debug) << "  " << he << " " << he->angle();
+    PLOG(trace) << "  " << he << " " << he->angle();
   }
 
   he->setPrev(next_edge->twin());
@@ -2021,7 +2021,7 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
   het->setNext(prev_edge);
   prev_edge->setPrev(het);
 
-  PLOG(debug) << "done";
+  PLOG(trace) << "done";
 }
 
 

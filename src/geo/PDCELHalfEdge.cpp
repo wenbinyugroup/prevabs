@@ -101,27 +101,27 @@ void PDCELHalfEdge::print2() {
 
 
 void PDCELHalfEdge::log() {
-  PLOG(debug) << _source->point2() << " -> " << _twin->_source->point2();
+  PLOG(trace) << _source->point2() << " -> " << _twin->_source->point2();
 
-  PLOG(debug) << " | loop: ";
+  PLOG(trace) << " | loop: ";
   if (_loop == nullptr) {
-    PLOG(debug) << "nullptr";
+    PLOG(trace) << "nullptr";
   } else {
     if (_loop->keep()) {
-      PLOG(debug) << "keep";
+      PLOG(trace) << "keep";
     } else {
-      PLOG(debug) << "temp";
+      PLOG(trace) << "temp";
     }
   }
 
-  PLOG(debug) << " | face: ";
+  PLOG(trace) << " | face: ";
   if (_face == nullptr) {
-    PLOG(debug) << "nullptr";
+    PLOG(trace) << "nullptr";
   } else {
-    PLOG(debug) << _face->name();
+    PLOG(trace) << _face->name();
   }
 
-  PLOG(debug) << std::endl;
+  PLOG(trace) << std::endl;
 }
 
 

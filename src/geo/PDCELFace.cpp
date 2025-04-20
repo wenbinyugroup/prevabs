@@ -61,33 +61,33 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
 
 
 void PDCELFace::print() {
-  PLOG(debug) << "name: " << _name;
+  PLOG(trace) << "name: " << _name;
 
 
   PDCELHalfEdge *he;
   // Print the outer boundary
   if (_outer == nullptr) {
-    PLOG(debug) << "unbounded face.";
+    PLOG(trace) << "unbounded face.";
   } else {
-    PLOG(debug) << "outer boundary: ";
+    PLOG(trace) << "outer boundary: ";
     he = _outer;
     do {
-      PLOG(debug) << he->printString();
+      PLOG(trace) << he->printString();
       he = he->next();
     } while (he != _outer);
 
     for (auto _inner : _inners) {
-      PLOG(debug) << "inner boundary: ";
+      PLOG(trace) << "inner boundary: ";
       he = _inner;
       do {
-        PLOG(debug) << he->printString();
+        PLOG(trace) << he->printString();
         he = he->next();
       } while (he != _inner);
     }
   }
 
   if (_layertype != nullptr) {
-    PLOG(debug) << "layer type: " << _layertype;
+    PLOG(trace) << "layer type: " << _layertype;
   }
 
   std::cout << std::endl;

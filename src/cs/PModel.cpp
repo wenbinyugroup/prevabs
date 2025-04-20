@@ -365,8 +365,15 @@ void PModel::build(Message *pmessage) {
   // }
   _cross_section->build(pmessage);
 
-  // _dcel->print_dcel();
-  _dcel->write_dcel_to_file("dcel.txt");
+  PLOG(info) << "done building cross section";
+
+  if (config.debug) {
+    plotGeoDebug(pmessage);
+  }
+
+  if (config.debug) {
+    _dcel->write_dcel_to_file("dcel.txt");
+  }
 
   // _dcel->vertextree()->printInOrder();
 

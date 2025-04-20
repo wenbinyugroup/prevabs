@@ -43,17 +43,18 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
   plogger.add_attribute("LineID", attrs::counter<unsigned int>(1));
   plogger.add_attribute("TimeStamp", attrs::local_clock());
 
-  // Sink setup
+  // Create file sink
   using text_sink = sinks::synchronous_sink<sinks::text_ostream_backend>;
-  auto sink = boost::make_shared<text_sink>();
-
+  auto file_sink = boost::make_shared<text_sink>();
+  
   // Add log file stream
-  sink->locked_backend()->add_stream(
+  file_sink->locked_backend()->add_stream(
       boost::make_shared<std::ofstream>(config.file_name_log));
-  sink->locked_backend()->auto_flush(true);
+  file_sink->locked_backend()->auto_flush(true);
 
-  // Add console output stream
-  sink->locked_backend()->add_stream(
+  // Create console sink
+  auto console_sink = boost::make_shared<text_sink>();
+  console_sink->locked_backend()->add_stream(
       boost::shared_ptr<std::ostream>(&std::clog, boost::null_deleter()));
 
   // Define the custom formatter
@@ -61,13 +62,20 @@ BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
       << "[" << severity << "] "
       << expr::smessage;
 
-  sink->set_formatter(fmt);
+  // Set formatters
+  file_sink->set_formatter(fmt);
+  console_sink->set_formatter(fmt);
 
-  // Set the filter severity level
-  sink->set_filter(severity >= config.log_severity_level);
+  // Set different filters for file and console
+  // File gets all messages (trace level)
+  file_sink->set_filter(severity >= config.log_severity_level_file);
+  
+  // Console gets messages at or above the configured level
+  console_sink->set_filter(severity >= config.log_severity_level);
 
-  // Register the sink
-  logging::core::get()->add_sink(sink);
+  // Register the sinks
+  logging::core::get()->add_sink(file_sink);
+  logging::core::get()->add_sink(console_sink);
 
   return plogger;
 }

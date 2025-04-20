@@ -54,24 +54,24 @@ PDCELHalfEdgeLoop::PDCELHalfEdgeLoop() {
 
 void PDCELHalfEdgeLoop::log() {
 
-  PLOG(debug) << "direction: " << ((direction() == 1) ? "outer" : "inner");
+  PLOG(trace) << "direction: " << ((direction() == 1) ? "outer" : "inner");
 
-  PLOG(debug) << "keep: " << (_keep ? "yes" : "no");
+  PLOG(trace) << "keep: " << (_keep ? "yes" : "no");
 
-  PLOG(debug) << "face: " << (_face ? _face->name() : "nullptr");
+  PLOG(trace) << "face: " << (_face ? _face->name() : "nullptr");
 
 
   PDCELHalfEdge *he = _incident_edge;
 
-  PLOG(debug) << "half edges:";
+  PLOG(trace) << "half edges:";
   do {
     // he->print2();
-    PLOG(debug) << he->printString();
+    PLOG(trace) << he->printString();
     he = he->next();
   } while (he != _incident_edge);
 
 
-  PLOG(debug) << "adjacent loop:" << (_adjacent_loop ? _adjacent_loop->incidentEdge()->printBrief() : "nullptr");
+  PLOG(trace) << "adjacent loop:" << (_adjacent_loop ? _adjacent_loop->incidentEdge()->printBrief() : "nullptr");
 
 }
 
@@ -140,19 +140,19 @@ void PDCELHalfEdgeLoop::setFace(PDCELFace *f) {
 
 
 void PDCELHalfEdgeLoop::updateVertexEdge(PDCELHalfEdge *he) {
-  PLOG(debug) << "updateVertexEdge: " << he;
+  PLOG(trace) << "updateVertexEdge: " << he;
 
   if (_incident_edge == nullptr) {
-    PLOG(debug) << "  setting incident edge for the first time";
+    PLOG(trace) << "  setting incident edge for the first time";
     _incident_edge = he;
     _bottom_left_vertex = he->source();
   } else if (he->source()->point() < _bottom_left_vertex->point()) {
-    PLOG(debug) << "  setting incident edge to a smaller one";
+    PLOG(trace) << "  setting incident edge to a smaller one";
     _incident_edge = he;
     _bottom_left_vertex = he->source();
   }
 
-  PLOG(debug) << "done";
+  PLOG(trace) << "done";
 }
 
 

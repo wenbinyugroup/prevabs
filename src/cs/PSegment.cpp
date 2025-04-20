@@ -387,7 +387,7 @@ void Segment::build(Message *pmessage) {
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
     // Debug log the two vertices i and i+1
-    PLOG(debug) << "  half edge: v[i] "
+    PLOG(trace) << "  half edge: v[i] "
       << i << " " << _curve_base->vertices()[i]
       << " -- v[i+1] " << i + 1 << " " << _curve_base->vertices()[i + 1];
 

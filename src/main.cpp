@@ -91,6 +91,8 @@ void printCliHelp() {
   std::cout << " -e      Execute VABS/SwiftComp.\n";
   std::cout << " -v      Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.\n";
   std::cout << " -debug  Debug mode.\n";
+  std::cout << " -log-c  Log to console level (0-5).\n";
+  std::cout << " -log-f  Log to file level (0-5).\n";
   std::cout << std::endl;
 }
 
@@ -148,6 +150,12 @@ void parseArguments(int argc, char** argv) {
     if (std::string{argv[i]} == "-debug") {
       config.debug = true;
     }
+    if (std::string{argv[i]} == "-log-c") {
+      config.log_severity_level = std::stoi(argv[i + 1]);
+    }
+    if (std::string{argv[i]} == "-log-f") {
+      config.log_severity_level_file = std::stoi(argv[i + 1]);
+    }
   }
 
   // throw exception
@@ -202,6 +210,11 @@ void processConfigVariables() {
 
   if (config.debug) {
     config.log_severity_level = 1;
+    config.log_severity_level_file = 1;
+  }
+
+  if (config.log_severity_level <= 1 || config.log_severity_level_file <= 1) {
+    config.debug = true;
   }
 
   std::vector<std::string> v_filename{gmshSplitFileName(config.main_input)};

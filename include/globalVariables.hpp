@@ -52,6 +52,7 @@ struct PConfig {
 
   bool debug = false;
   int log_severity_level = 2;
+  int log_severity_level_file = 2;
 
   int gmsh_views = 0;
 

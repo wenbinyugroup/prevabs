@@ -22,5 +22,6 @@ namespace keywords = boost::log::keywords;
 // #define LOGFILE "test.log"
 
 typedef src::severity_logger_mt< logging::trivial::severity_level > plogger_mt;
+// using plogger_mt = src::severity_logger_mt<logging::trivial::severity_level>;
 
 BOOST_LOG_GLOBAL_LOGGER(plogger, plogger_mt)

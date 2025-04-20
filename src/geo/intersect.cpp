@@ -343,7 +343,7 @@ bool calc_line_intersection_2d(
   const int &ex11, const int &ex12, const int &ex21, const int &ex22
   ) {
   
-  PLOG(debug) << "calc_line_intersection_2d\n"
+  PLOG(trace) << "calc_line_intersection_2d\n"
               << " line 1: " << ls1v1 << " - " << ls1v2 << " ex11: " << ex11 << " ex12: " << ex12 << "\n"
               << " line 2: " << ls2v1 << " - " << ls2v2 << " ex21: " << ex21 << " ex22: " << ex22;
 
@@ -353,7 +353,7 @@ bool calc_line_intersection_2d(
     ls2v1->point2()[0], ls2v1->point2()[1], ls2v2->point2()[0], ls2v2->point2()[1],
     ipx, ipy, u1, u2);
 
-  PLOG(debug) << "is_intersect: " << is_intersect << " u1: " << u1 << " u2: " << u2;
+  PLOG(trace) << "is_intersect: " << is_intersect << " u1: " << u1 << " u2: " << u2;
 
   v_intersect = nullptr;
 
@@ -477,7 +477,7 @@ bool calc_line_intersection_2d(
 
   else {
     // Two line segments intersect outside the desired range
-    PLOG(debug) << "  two line segments intersect outside the desired range";
+    PLOG(trace) << "  two line segments intersect outside the desired range";
     return false;
   }
 
@@ -495,7 +495,7 @@ bool calc_line_intersection_2d(
   //   v_intersect = ls2v2;
   // }
 
-  PLOG(debug) << "  intersection point: " << v_intersect;
+  PLOG(trace) << "  intersection point: " << v_intersect;
 
   return is_intersect;
 }
@@ -1337,7 +1337,7 @@ int find_open_polylines_intersections(
 
   for (int i = 0; i < nls1; ++i) {
     // Iterate through all line segments of the first polyline
-    PLOG(debug) << "segment i = " << i << " of polyline 1";
+    PLOG(trace) << "segment i = " << i << " of polyline 1";
 
     v11 = c1[i];
     v12 = c1[i + 1];
@@ -1361,7 +1361,7 @@ int find_open_polylines_intersections(
 
     for (int j = 0; j < nls2; ++j) {
       // Iterate through all line segments of the second polyline
-      PLOG(debug) << "segment j = " << j << " of polyline 2";
+      PLOG(trace) << "segment j = " << j << " of polyline 2";
 
       v21 = c2[j];
       v22 = c2[j + 1];
@@ -1396,7 +1396,7 @@ int find_open_polylines_intersections(
         v11, v12, v21, v22, ip, u1, u2, _ex11, _ex12, _ex21, _ex22);
 
       if (is_intersect) {
-        PLOG(debug) << "  u1 = " << u1 << ", u2 = " << u2 << std::endl;
+        PLOG(trace) << "  u1 = " << u1 << ", u2 = " << u2 << std::endl;
 
         i1s.push_back(i);
         i2s.push_back(j);
@@ -1404,7 +1404,7 @@ int find_open_polylines_intersections(
         u2s.push_back(u2);
 
       } else {
-        PLOG(debug) << "  not intersect" << std::endl;
+        PLOG(trace) << "  not intersect" << std::endl;
       }
 
     }
