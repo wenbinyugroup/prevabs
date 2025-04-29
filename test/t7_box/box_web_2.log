@@ -1,4 +1,4 @@
-[info] [main: 309] - prevabs start (2025-04-20 00:44:25)
+[info] [main: 309] - prevabs start (2025-04-20 16:32:48)
 [info] [PModel::homogenize: 792] - reading input files
 [info] [readCrossSection: 764]       
   
@@ -14,7 +14,7 @@
 
 ========================================
 
-ta\work\prevabs\build_msvc\Release\MaterialDB.xml
+n50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [readMaterialsFile: 63]         - reading materials file: t7_box\materials.xml
 [info] [PModel::homogenize: 797]   - reading input files -- done
 [info] [PModel::homogenize: 805]   - building the shape
@@ -56,7 +56,7 @@ ta\work\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PComponent::buildDetails: 212] done building details of segment: sgm_3
 [info] [PComponent::buildDetails: 218] done building details of component: web_2
 [info] [PModel::build: 368] done building cross section
-[info] [PDCEL::fixGeometry: 220]     - fixing geometry by removing small edges
+[info] [PDCEL::fixGeometry: 222]     - fixing geometry by removing small edges
 [info] [PModel::homogenize: 809]   - building the shape -- done
 [info] [PModel::homogenize: 819]   - modeling in Gmsh
 [info] [PModel::createGmshVertices: 61]     - creating gmsh vertices
@@ -77,5 +77,5 @@ ta\work\prevabs\build_msvc\Release\MaterialDB.xml
 [info] [PModel::writeElementsVABS: 232]       -   writing local orientation
 [info] [PModel::writeSG: 163]   - writing material id-name file: t7_box\box_web_2.sg.mat
 [info] [PModel::homogenize: 845] - writing outputs -- done
-[info] [main: 380] - prevabs finished (2025-04-20 00:44:25)
-[info] [main: 382] total running time: 0.241 sec
+[info] [main: 380] - prevabs finished (2025-04-20 16:32:48)
+[info] [main: 382] total running time: 0.168 sec

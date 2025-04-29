@@ -55,6 +55,10 @@ public:
   PArea *area() { return _area; }
   PDCELHalfEdge *outer() { return _outer; }
   std::vector<PDCELHalfEdge *> &inners() { return _inners; }
+
+  const PDCELHalfEdge *outer() const { return _outer; }
+  const std::vector<PDCELHalfEdge *> &inners() const { return _inners; }
+
   Material *material() { return _material; }
   double theta3() { return _theta3; }
   double theta1() { return _theta1; }

@@ -1,79 +1,166 @@
-[info] [main: 309] - prevabs start (2025-04-20 00:44:23)
+[info] [main: 309] - prevabs start (2025-04-20 16:54:00)
 [info] [PModel::homogenize: 792] - reading input files
 [info] [readCrossSection: 764]       
   
-  
-  
-  
-  
-  
-
-
-========================================
-
-
-========================================
-
-k\prevabs\build_msvc\Release\MaterialDB.xml
-[info] [readMaterialsFile: 63]         - reading materials file: t4_I\materials.xml
+      X [error] DCEL validation failed after adding vertex
+      
+      ========================================
+      
+      
+      ========================================
+      
+ - tolerance = 1e-12
+[debug] [read_general: 319]     - finished reading general.
+[debug] [readCrossSection: 844]     - finding includings...
+[debug] [read_geometry: 335]     - reading geometry...
+[debug] [readXMLElementPoint: 101]       - reading point: tl
+[debug] [readXMLElementPoint: 101]       - reading point: tc
+[debug] [readXMLElementPoint: 101]       - reading point: tr
+[debug] [readXMLElementPoint: 101]       - reading point: br
+[debug] [readXMLElementPoint: 101]       - reading point: bc
+[debug] [readXMLElementPoint: 101]       - reading point: bl
+[debug] [readXMLElementPoint: 101]       - reading point: web
+[debug] [readXMLElementLine: 183]       - reading line: bl_top
+[debug] [Baseline::print: 36]       - name: bl_top
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [tl]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]       - 2 [tc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]       - 3 [tr]: ( 0 , 1 , 0 )
+[debug] [readXMLElementLine: 183]       - reading line: bl_bottom
+[debug] [Baseline::print: 36]       - name: bl_bottom
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] [Baseline::print: 44]       - 2 [bc]: ( 0 , 0 , -3 )
+[debug] [Baseline::print: 44]       - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] [readXMLElementLine: 183]       - reading line: bl_web
+[debug] [Baseline::print: 36]       - name: bl_web
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 []: ( 0 , 0.04 , -3 )
+[debug] [Baseline::print: 44]       - 2 [web]: ( 0 , 0.04 , -2 )
+[debug] [Baseline::print: 44]       - 3 []: ( 0 , 0.04 , -1 )
+[debug] [read_geometry: 505]     -  
+[debug] [read_geometry: 506]     - summary of base lines (before transformation)
+[debug] [Baseline::print: 36]       - name: bl_top
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [tl]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]       - 2 [tc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]       - 3 [tr]: ( 0 , 1 , 0 )
+[debug] [read_geometry: 510]     -  
+[debug] [Baseline::print: 36]       - name: bl_bottom
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] [Baseline::print: 44]       - 2 [bc]: ( 0 , 0 , -3 )
+[debug] [Baseline::print: 44]       - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] [read_geometry: 510]     -  
+[debug] [Baseline::print: 36]       - name: bl_web
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 []: ( 0 , 0.04 , -3 )
+[debug] [Baseline::print: 44]       - 2 [web]: ( 0 , 0.04 , -2 )
+[debug] [Baseline::print: 44]       - 3 []: ( 0 , 0.04 , -1 )
+[debug] [read_geometry: 510]     -  
+[debug] [read_geometry: 516]     - transforming base geometry
+[debug] [read_geometry: 527]     -  
+[debug] [read_geometry: 528]     - summary of base lines (after transformation)
+[debug] [Baseline::print: 36]       - name: bl_top
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [tl]: ( 0 , -1 , 0 )
+[debug] [Baseline::print: 44]       - 2 [tc]: ( 0 , 0 , 0 )
+[debug] [Baseline::print: 44]       - 3 [tr]: ( 0 , 1 , 0 )
+[debug] [read_geometry: 532]     -  
+[debug] [Baseline::print: 36]       - name: bl_bottom
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] [Baseline::print: 44]       - 2 [bc]: ( 0 , 0 , -3 )
+[debug] [Baseline::print: 44]       - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] [read_geometry: 532]     -  
+[debug] [Baseline::print: 36]       - name: bl_web
+[debug] [Baseline::print: 38]       - type: straight
+[debug] [Baseline::print: 40]       - point: (x, y, z)
+[debug] [Baseline::print: 44]       - 1 []: ( 0 , 0.04 , -3 )
+[debug] [Baseline::print: 44]       - 2 [web]: ( 0 , 0.04 , -2 )
+[debug] [Baseline::print: 44]       - 3 []: ( 0 , 0.04 , -1 )
+[debug] [read_geometry: 532]     -  
+[debug] [read_geometry: 536]     - finished reading geometry.
+[debug] [read_materials: 552]     - reading materials...
+[error] [readMaterialsFile: 59]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info] [readMaterialsFile: 63]         - reading materials file: .\t4_I\materials.xml
+[debug] [readXMLElementMaterial: 193]             - reading material: iso5_1
+[debug] [readXMLElementMaterial: 193]             - reading material: iso5_2
+[debug] [readXMLElementMaterial: 193]             - reading material: iso5_3
+[debug] [readXMLElementMaterial: 193]             - reading material: iso5_4
+[debug] [readXMLElementMaterial: 193]             - reading material: iso5_5
+[debug] [readXMLElementLamina: 584]             - reading lamina: la_iso5_1_003
+[debug] [readXMLElementLamina: 584]             - reading lamina: la_iso5_2_005
+[debug] [readXMLElementLamina: 584]             - reading lamina: la_iso5_3_0015
+[debug] [readXMLElementLamina: 584]             - reading lamina: la_iso5_4_002
+[debug] [readXMLElementLamina: 584]             - reading lamina: la_iso5_5_002
+[debug] [read_materials: 607]       - finished reading materials.
+[debug] [read_layups: 623]       - reading layups...
+[debug] [readLayups: 53]         - in function: readLayups
+[debug] [readLayups: 62]         - reading layup: layup_1
+[debug] [readLayups: 62]         - reading layup: layup_2
+[debug] [readLayups: 62]         - reading layup: layup_web
+[debug] [read_layups: 665]       - finished reading layups.
+[debug] [read_components: 679]       - reading components...
+[debug] [readXMLElementComponent: 44]       - reading component: top
+[debug] [readXMLElementComponent: 44]       - reading component: bottom
+[debug] [readXMLElementComponent: 44]       - reading component: web
+[debug] [read_components: 740]       - finished reading components.
 [info] [PModel::homogenize: 797]   - reading input files -- done
 [info] [PModel::homogenize: 805]   - building the shape
+[debug] [PDCELHalfEdgeLoop::PDCELHalfEdgeLoop: 12] new half edge loop created
+[debug] [CrossSection::build: 301] 
+
+============================================================
 [info] [CrossSection::build: 302] building the cross section, step 1
+[debug] [PComponent::buildLaminate: 29] 
+
+------------------------------------------------------------
 [info] [PComponent::buildLaminate: 30] building component: top
+[debug] [PComponent::buildLaminate: 34] building segment: sgtop
+[debug] [PComponent::buildLaminate: 37] segment has no offset curve
+[debug] [Segment::offsetCurveBase: 251] offsetting the base curve of segment: sgtop
+[debug] [offset_2: 949]       -   base curve:
+[debug] [offset_2: 951]       -     0: ( 0 , -1 , 0 )
+[debug] [offset_2: 951]       -     1: ( 0 , 0 , 0 )
+[debug] [offset_2: 951]       -     2: ( 0 , 1 , 0 )
+[debug] [offset_2: 957]       - offsetting a polyline
+[debug] [offset_2: 983]       - 1. offset each line segment
+[debug] [offset_2: 1035]       - 2. check degenerated cases
+[debug] [offset_2: 1073]       - 3. find intersections between neighboring sub-lines
+[debug] [offset_2: 1407]       - 4. join all sub-lines
+[debug] [offset_2: 1420]       -   offset curve:
+[debug] [offset_2: 1422]       -     0: ( 0 , -1 , 0.11 )
+[debug] [offset_2: 1422]       -     1: ( 0 , 0 , 0.11 )
+[debug] [offset_2: 1422]       -     2: ( 0 , 1 , 0.11 )
+[debug] [Segment::offsetCurveBase: 276]     - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+[debug] [Segment::offsetCurveBase: 279]     - offset line: ( 0 , -1 , 0.11 ) -> ( 0 , 1 , 0.11 )
 [info] [Segment::updateBaseOffsetIndexPairs: 301]       - updating base-offset index pairs
-[info] [PComponent::buildLaminate: 30] building component: bottom
-[info] [Segment::updateBaseOffsetIndexPairs: 301]       - updating base-offset index pairs
-[info] [PComponent::buildLaminate: 30] building component: web
-[info] [Segment::updateBaseOffsetIndexPairs: 301]       - updating base-offset index pairs
-[info] [Segment::updateBaseOffsetIndexPairs: 301]         - updating base-offset index pairs
-[warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
-[warning] [trim: 1102] trim: Vertex at curve endpoint or curve too short
-[info] [Segment::updateBaseOffsetIndexPairs: 301]         - updating base-offset index pairs
-[info] [CrossSection::build: 346] building the cross section, step 2
-[info] [PComponent::buildDetails: 200] building details of component: top
-[info] [PComponent::buildDetails: 204] building details of segment: sgtop
-[info] [Segment::updateBaseOffsetIndexPairs: 301]       - updating base-offset index pairs
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [PComponent::buildDetails: 212] done building details of segment: sgtop
-[info] [PComponent::buildDetails: 218] done building details of component: top
-[info] [PComponent::buildDetails: 200] building details of component: bottom
-[info] [PComponent::buildDetails: 204] building details of segment: sgbottom
-[info] [Segment::updateBaseOffsetIndexPairs: 301]       - updating base-offset index pairs
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [PComponent::buildDetails: 212] done building details of segment: sgbottom
-[info] [PComponent::buildDetails: 218] done building details of component: bottom
-[info] [PComponent::buildDetails: 200] building details of component: web
-[info] [PComponent::buildDetails: 204] building details of segment: sgm_1
-[info] [Segment::updateBaseOffsetIndexPairs: 301]       - updating base-offset index pairs
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [build_area: 240] building area
-[info] [build_area: 301] done
-[info] [PComponent::buildDetails: 212] done building details of segment: sgm_1
-[info] [PComponent::buildDetails: 218] done building details of component: web
-[info] [PModel::build: 368] done building cross section
-[info] [PDCEL::fixGeometry: 220]     - fixing geometry by removing small edges
-[info] [PModel::homogenize: 809]   - building the shape -- done
-[info] [PModel::homogenize: 819]   - modeling in Gmsh
-[info] [PModel::createGmshVertices: 61]     - creating gmsh vertices
-[info] [PModel::createGmshEdges: 205]     - creating gmsh edges
-[info] [PModel::createGmshFaces: 261] creating gmsh faces
-[info] [PModel::createGmshPhyscialGroups: 431]     - creating physical groups
-[info] [PModel::writeGmshGeo: 464]       - writing gmsh .geo file: t4_I\geo_before_mesh.geo_unrolled
-[info] [PModel::buildGmsh: 563]     - meshing
-[info] [PModel::homogenize: 823]   - modeling in Gmsh -- done
-[info] [PModel::homogenize: 833]   - writing outputs
-[info] [PModel::writeGmshOpt: 576]     - writing gmsh .opt file: t4_I\i_web.opt
-[info] [PModel::writeGmshGeo: 464]     - writing gmsh .geo file: t4_I\i_web.geo_unrolled
-[info] [PModel::writeGmshMsh: 507]   - writing gmsh .msh file: t4_I\i_web.msh
-[info] [PModel::writeSG: 55]   - writing sg file: t4_I\i_web.sg
-[info] [PModel::writeNodes: 65]     - writing nodes
-[info] [PModel::writeElements: 109]     - writing elements
-[info] [PModel::writeElementsVABS: 184]       -   writing connectivity
-[info] [PModel::writeElementsVABS: 232]       -   writing local orientation
-[info] [PModel::writeSG: 163]   - writing material id-name file: t4_I\i_web.sg.mat
-[info] [PModel::homogenize: 845] - writing outputs -- done
-[info] [main: 380] - prevabs finished (2025-04-20 00:44:23)
-[info] [main: 382] total running time: 0.133 sec
+[debug] [Segment::updateBaseOffsetIndexPairs: 345]       - updated base-offset index pairs:
+[debug] [Segment::updateBaseOffsetIndexPairs: 347]       - 0 -- 0
+[debug] [Segment::updateBaseOffsetIndexPairs: 347]       - 1 -- 1
+[debug] [Segment::updateBaseOffsetIndexPairs: 347]       - 2 -- 2
+[debug] [Segment::offsetCurveBase: 285] done
+[debug] [PComponent::buildLaminate: 63] handle the segment ends
+[debug] [PComponent::buildLaminate: 174] segment sgtop does not connect to any other segment at the head
+[debug] [PComponent::buildLaminate: 175] building the end at the head
+[debug] [PComponent::joinSegments: 407]       - making segment end: top.sgtop 0
+[debug] [PComponent::joinSegments: 409]       - number of dependencies: 0
+[debug] [PComponent::joinSegments: 412]       - making segment end because of no dependency.
+[debug] [PComponent::createSegmentFreeEnd: 1963] creating free end of segment: sgtop 0
+[debug] [PComponent::createSegmentFreeEnd: 1968]   prev bound: (0, 0, 0)
+[debug] [PComponent::createSegmentFreeEnd: 2087]   _prev_bound_vertices:
+  0: ( 0 , -1 , 0 )
+  1: ( 0 , -1 , 0.11 )
+[error] [PDCELValidator::validateDCEL: 40] Invalid loop found: Half-edge in loop not properly linked to face
+[error] [PDCEL::addVertex: 295] DCEL validation failed after adding vertex: Half-edge in loop not properly linked to face
+[info] [main: 380]       - prevabs finished (2025-04-20 16:54:01)
+[info] [main: 382] total running time: 0.008 sec

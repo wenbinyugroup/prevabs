@@ -66,6 +66,15 @@ public:
   PDCELHalfEdge *next() { return _next; }
   PDCELHalfEdgeLoop *loop() { return _loop; }
   PDCELFace *face() { return _face; }
+
+  const PDCELVertex *source() const { return _source; }
+  const PDCELVertex *target() const { return _twin->_source; }
+  const PDCELHalfEdge *twin() const { return _twin; }
+  const PDCELHalfEdge *prev() const { return _prev; }
+  const PDCELHalfEdge *next() const { return _next; }
+  const PDCELHalfEdgeLoop *loop() const { return _loop; }
+  const PDCELFace *face() const { return _face; }
+
   PGeoLineSegment *lineSegment() { return _line_segment; }
 
   bool isFinite();

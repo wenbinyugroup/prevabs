@@ -1,10 +1,10 @@
 #include "PDCEL.hpp"
-
 #include "PBST.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
+#include "PDCELValidator.hpp"
 #include "PGeoClasses.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
@@ -12,6 +12,7 @@
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "PDCELTransaction.hpp"
 
 #include "gmsh_mod/SPoint2.h"
 #include "gmsh_mod/SVector3.h"
@@ -23,6 +24,7 @@
 #include <vector>
 
 #include <typeinfo>
+#include <stdexcept>
 
 PDCEL::~PDCEL() {
   for (auto v : _vertices)
@@ -288,6 +290,12 @@ void PDCEL::addVertex(PDCELVertex *v) {
     PLOG(trace) << "  vertex already in DCEL";
   }
 
+  // Validate the DCEL after adding the vertex
+  if (!PDCELValidator::validateDCEL(this)) {
+    PLOG(error) << "DCEL validation failed after adding vertex: " << PDCELValidator::getLastError();
+    throw std::runtime_error("DCEL validation failed after adding vertex");
+  }
+
   PLOG(trace) << "done";
 }
 
@@ -539,38 +547,64 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
     throw std::invalid_argument("Invalid vertex input");
   }
 
+  // Check if edge already exists
+  PDCELHalfEdge *existingEdge = findHalfEdge(v1, v2);
+  if (existingEdge) {
+    PLOG(warning) << "Edge already exists between vertices: " << v1 << " -> " << v2;
+    return existingEdge;
+  }
+
   // Add vertices if not already in DCEL
   addVertex(v1);
   addVertex(v2);
 
   // Create line segment
-  PGeoLineSegment *ls = new PGeoLineSegment(v1, v2);
+  PGeoLineSegment *ls = nullptr;
+  PDCELHalfEdge *he12 = nullptr;
+  PDCELHalfEdge *he21 = nullptr;
 
-  // Create twin half-edges
-  PDCELHalfEdge *he12 = new PDCELHalfEdge(v1, 1);
-  PDCELHalfEdge *he21 = new PDCELHalfEdge(v2, -1);
+  try {
+    // Create line segment
+    ls = new PGeoLineSegment(v1, v2);
 
-  // Link half-edges with line segment
-  he12->setLineSegment(ls);
-  he21->setLineSegment(ls);
-  ls->setHalfEdge(he12);
-  ls->setHalfEdge(he21);
-  he12->setTwin(he21);
-  he21->setTwin(he12);
+    // Create twin half-edges
+    he12 = new PDCELHalfEdge(v1, 1);
+    he21 = new PDCELHalfEdge(v2, -1);
 
-  // Update edge neighbors
-  updateEdgeNeighbors(he12);
-  updateEdgeNeighbors(he21);
+    // Link half-edges with line segment
+    he12->setLineSegment(ls);
+    he21->setLineSegment(ls);
+    ls->setHalfEdge(he12);
+    ls->setHalfEdge(he21);
+    he12->setTwin(he21);
+    he21->setTwin(he12);
 
-  // Add edges to DCEL
-  _halfedges.push_back(he12);
-  _halfedges.push_back(he21);
+    // Update edge neighbors
+    updateEdgeNeighbors(he12);
+    updateEdgeNeighbors(he21);
 
-  v1->log_all_leaving_half_edges(1);
-  v2->log_all_leaving_half_edges(1);
+    // Add edges to DCEL
+    _halfedges.push_back(he12);
+    _halfedges.push_back(he21);
 
-  PLOG(trace) << "Successfully added edge";
-  return he12;
+    // Validate the DCEL after adding the edge
+    if (!PDCELValidator::validateDCEL(this)) {
+      PLOG(error) << "DCEL validation failed after adding edge: " << PDCELValidator::getLastError();
+      throw std::runtime_error("DCEL validation failed after adding edge");
+    }
+
+    v1->log_all_leaving_half_edges(1);
+    v2->log_all_leaving_half_edges(1);
+
+    PLOG(trace) << "Successfully added edge";
+    return he12;
+  } catch (const std::exception& e) {
+    // Cleanup in case of error
+    if (he12) delete he12;
+    if (he21) delete he21;
+    if (ls) delete ls;
+    throw;
+  }
 }
 
 
@@ -653,6 +687,12 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
  */
 void PDCEL::removeEdge(PDCELHalfEdge *he) {
   PLOG(debug) << "removing half edge: " << he;
+
+  // Validate the edge before removal
+  if (!PDCELValidator::validateHalfEdge(he)) {
+    PLOG(error) << "Invalid half-edge before removal: " << PDCELValidator::getLastError();
+    throw std::runtime_error("Invalid half-edge before removal");
+  }
 
   PDCELHalfEdge *he2 = he->twin();
 
@@ -860,6 +900,12 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
 
   _halfedges.remove(he);
   _halfedges.remove(he2);
+
+  // Validate the DCEL after removal
+  if (!PDCELValidator::validateDCEL(this)) {
+    PLOG(error) << "DCEL validation failed after removing edge: " << PDCELValidator::getLastError();
+    throw std::runtime_error("DCEL validation failed after removing edge");
+  }
 }
 
 
@@ -1099,6 +1145,12 @@ void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
 void PDCEL::remove_half_edge_loop(PDCELHalfEdgeLoop *hel) {
   PLOG(trace) << "removing half edge loop";
 
+  // Validate the loop before removal
+  if (!PDCELValidator::validateLoop(hel)) {
+    PLOG(error) << "Invalid half-edge loop before removal: " << PDCELValidator::getLastError();
+    throw std::runtime_error("Invalid half-edge loop before removal");
+  }
+
   // Reset the loop pointer of each half edge
   PDCELHalfEdge *he = hel->incidentEdge();
   do {
@@ -1128,6 +1180,12 @@ void PDCEL::remove_half_edge_loop(PDCELHalfEdgeLoop *hel) {
   _halfedge_loops.remove(hel);
 
   delete hel;
+
+  // Validate the DCEL after removal
+  // if (!PDCELValidator::validateDCEL(this)) {
+  //   PLOG(error) << "DCEL validation failed after removing loop: " << PDCELValidator::getLastError();
+  //   throw std::runtime_error("DCEL validation failed after removing loop");
+  // }
 }
 
 
@@ -1615,7 +1673,11 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
 // ===================================================================
 
 PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
-  // std::cout << "[debug] addFace" << std::endl;
+  // Validate the loop before creating the face
+  if (!PDCELValidator::validateLoop(hel)) {
+    PLOG(error) << "Invalid half-edge loop before creating face: " << PDCELValidator::getLastError();
+    throw std::runtime_error("Invalid half-edge loop before creating face");
+  }
 
   PDCELFace *fnew = new PDCELFace();
 
@@ -1630,11 +1692,11 @@ PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
 
   _faces.push_back(fnew);
 
-  // PDCELHalfEdge *he = fnew->outer();
-  // do {
-  //   std::cout << "        " << he << std::endl;
-  //   he = he->next();
-  // } while (he != fnew->outer());
+  // Validate the DCEL after adding the face
+  // if (!PDCELValidator::validateDCEL(this)) {
+  //   PLOG(error) << "DCEL validation failed after adding face: " << PDCELValidator::getLastError();
+  //   throw std::runtime_error("DCEL validation failed after adding face");
+  // }
 
   return fnew;
 }

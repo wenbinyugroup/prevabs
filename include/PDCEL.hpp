@@ -57,6 +57,11 @@ public:
 
   std::list<PDCELHalfEdgeLoop *> &halfedgeloops() { return _halfedge_loops; }
 
+  const std::list<PDCELVertex *> &vertices() const { return _vertices; }
+  const std::list<PDCELHalfEdge *> &halfedges() const { return _halfedges; }
+  const std::list<PDCELHalfEdgeLoop *> &halfedgeloops() const { return _halfedge_loops; }
+  const std::list<PDCELFace *> &faces() const { return _faces; }
+
   PAVLTreeVertex *vertextree() { return _vertex_tree; }
 
   void fixGeometry(Message *);

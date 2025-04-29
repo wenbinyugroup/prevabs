@@ -39,6 +39,12 @@ public:
   PDCELHalfEdgeLoop *adjacentLoop() { return _adjacent_loop; }
   PDCELFace *face() { return _face; }
   PDCELVertex *bottomLeftVertex() { return _bottom_left_vertex; }
+
+  const PDCELHalfEdge *incidentEdge() const { return _incident_edge; }
+  const PDCELHalfEdgeLoop *adjacentLoop() const { return _adjacent_loop; }
+  const PDCELFace *face() const { return _face; }
+  const PDCELVertex *bottomLeftVertex() const { return _bottom_left_vertex; }
+
   bool keep() { return _keep; }
   // int isOuterOrInnerBoundary();
 

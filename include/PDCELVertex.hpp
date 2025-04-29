@@ -93,6 +93,10 @@ public:
 
   PDCEL *dcel() { return _dcel; }
   PDCELHalfEdge *edge() { return _incident_edge; }
+
+  const PDCEL *dcel() const { return _dcel; }
+  const PDCELHalfEdge *edge() const { return _incident_edge; }
+
   int degree();
   PDCELHalfEdge *getEdgeTo(PDCELVertex *);
 
