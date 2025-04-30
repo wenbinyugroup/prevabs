@@ -35,14 +35,14 @@ Manual
         ..  toctree::
             :maxdepth: 2
 
-            /contents/start/index
+            /contents/start/index.md
 
     ..  grid-item-card::
 
         ..  toctree::
             :maxdepth: 2
 
-            /contents/guide/index
+            /contents/guide/index.md
 
     ..  grid-item-card::
 

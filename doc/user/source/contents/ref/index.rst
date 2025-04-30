@@ -4,7 +4,7 @@ References
 ..  toctree::
     :maxdepth: 2
 
-    xml
+    xml.md
     bib
     changelog
 

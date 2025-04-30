@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Root element -->
+  <xs:element name="cross_section">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- Optional elements that can appear in any order -->
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="include">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="file" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="analysis" type="analysisType"/>
+          <xs:element name="general" type="generalType"/>
+          <xs:element name="baselines" type="baselinesType"/>
+          <xs:element name="layups" type="layupsType"/>
+          <xs:element name="global" type="globalType"/>
+        </xs:choice>
+        <!-- Required component elements -->
+        <xs:element name="component" type="componentType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="format" type="xs:integer" use="optional" default="0"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Component Type -->
+  <xs:complexType name="componentType">
+    <xs:choice>
+      <xs:sequence>
+        <!-- Laminate-type component -->
+        <xs:choice>
+          <!-- Individual segment definition -->
+          <xs:sequence>
+            <xs:element name="segment" minOccurs="1" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="baseline" type="xs:string"/>
+                  <xs:element name="layup">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="direction" default="left">
+                            <xs:simpleType>
+                              <xs:restriction base="xs:string">
+                                <xs:enumeration value="left"/>
+                                <xs:enumeration value="right"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" use="required"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="joint" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute name="style" default="1">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:enumeration value="1"/>
+                          <xs:enumeration value="2"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:attribute>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <!-- Collective segment definition -->
+          <xs:element name="segments">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="baseline" type="xs:string"/>
+                <xs:element name="layup_side" minOccurs="0">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="left"/>
+                      <xs:enumeration value="right"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+                <xs:element name="layup" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="begin" type="xs:decimal"/>
+                        <xs:attribute name="end" type="xs:decimal"/>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:sequence>
+      <!-- Fill-type component -->
+      <xs:sequence>
+        <xs:element name="location" type="xs:string" minOccurs="0"/>
+        <xs:element name="baseline" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="fillside">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="left"/>
+                      <xs:enumeration value="right"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="material" type="xs:string"/>
+        <xs:element name="mesh_size" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:decimal">
+                <xs:attribute name="at" type="xs:string" use="required"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="type" default="laminate">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="laminate"/>
+          <xs:enumeration value="fill"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="depend" type="xs:string"/>
+  </xs:complexType>
+
+  <!-- Materials Type -->
+  <xs:element name="materials">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="material" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="density" type="xs:decimal" minOccurs="0" default="1.0"/>
+              <xs:element name="elastic">
+                <xs:complexType>
+                  <xs:choice>
+                    <!-- Isotropic -->
+                    <xs:sequence>
+                      <xs:element name="e" type="xs:decimal"/>
+                      <xs:element name="nu" type="xs:decimal"/>
+                    </xs:sequence>
+                    <!-- Lamina -->
+                    <xs:sequence>
+                      <xs:element name="e1" type="xs:decimal"/>
+                      <xs:element name="e2" type="xs:decimal"/>
+                      <xs:element name="nu12" type="xs:decimal"/>
+                      <xs:element name="g12" type="xs:decimal"/>
+                    </xs:sequence>
+                    <!-- Orthotropic -->
+                    <xs:sequence>
+                      <xs:element name="e1" type="xs:decimal"/>
+                      <xs:element name="e2" type="xs:decimal"/>
+                      <xs:element name="e3" type="xs:decimal"/>
+                      <xs:element name="g12" type="xs:decimal"/>
+                      <xs:element name="g13" type="xs:decimal"/>
+                      <xs:element name="g23" type="xs:decimal"/>
+                      <xs:element name="nu12" type="xs:decimal"/>
+                      <xs:element name="nu13" type="xs:decimal"/>
+                      <xs:element name="nu23" type="xs:decimal"/>
+                    </xs:sequence>
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="strength" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="xt" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="yt" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="zt" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="xc" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="yc" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="zc" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="r" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="t" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="s" type="xs:decimal" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="failure_criterion" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="max_principal_stress"/>
+                    <xs:enumeration value="max_principal_strain"/>
+                    <xs:enumeration value="max_shear_stress"/>
+                    <xs:enumeration value="max_shear_strain"/>
+                    <xs:enumeration value="mises"/>
+                    <xs:enumeration value="max_stress"/>
+                    <xs:enumeration value="max_strain"/>
+                    <xs:enumeration value="tsai_hill"/>
+                    <xs:enumeration value="tsai_wu"/>
+                    <xs:enumeration value="hashin"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="type" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="isotropic"/>
+                  <xs:enumeration value="orthotropic"/>
+                  <xs:enumeration value="anisotropic"/>
+                  <xs:enumeration value="lamina"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Placeholder types that would need to be defined based on additional documentation -->
+  <xs:complexType name="analysisType">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="generalType">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="baselinesType">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="layupsType">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="globalType">
+    <xs:sequence/>
+  </xs:complexType>
+
+</xs:schema>

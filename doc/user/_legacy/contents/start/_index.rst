@@ -4,7 +4,7 @@ Getting Started
 ..  toctree::
     :maxdepth: 2
 
-    install
-    run
+    install.md
+    run.md
 
 
