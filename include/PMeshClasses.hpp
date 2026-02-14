@@ -60,6 +60,7 @@ private:
 
 public:
   PMesh() = default;
+  ~PMesh();
 
   std::vector<PNode *> getNodes() { return _nodes; }
   std::vector<PElement *> getElements() { return _elements; }
@@ -69,3 +70,10 @@ public:
 
   void writeGmshMsh(FILE *, Message *);
 };
+
+inline PMesh::~PMesh() {
+  for (auto n : _nodes)
+    delete n;
+  for (auto e : _elements)
+    delete e;
+}

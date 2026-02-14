@@ -31,6 +31,8 @@ PDCEL::~PDCEL() {
     delete e;
   for (auto f : _faces)
     delete f;
+  for (auto l : _halfedge_loops)
+    delete l;
 }
 
 

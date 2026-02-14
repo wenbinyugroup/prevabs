@@ -19,6 +19,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <memory>
 
 
 #ifdef _WIN32
@@ -279,7 +280,7 @@ int main(int argc, char** argv) {
   // -----------------------------------------------------------------
 
   // Message *pmessage = new Message(v_filename[0] + v_filename[1] + ".txt");
-  Message *pmessage = new Message(config.file_name_log);
+  auto pmessage = std::unique_ptr<Message>(new Message(config.file_name_log));
   pmessage->openFile();
 
   int start_s = clock();
@@ -287,7 +288,8 @@ int main(int argc, char** argv) {
   pmessage->printTitle();
 
   PModel *pmodel = new PModel(config.file_base_name);
-  pmodel->initialize();
+  auto pmodel_uptr = std::unique_ptr<PModel>(pmodel);
+  pmodel_uptr->initialize();
 
 
   // Log current date and time
@@ -301,21 +303,18 @@ int main(int argc, char** argv) {
 
 
 
-
-
   if (config.homo) {
 
-    pmodel->homogenize(pmessage);
+    pmodel_uptr->homogenize(pmessage.get());
 
   }
-
 
 
 
   else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
     try {
       pmessage->printBlank();
-      pmodel->dehomogenize(pmessage);
+      pmodel_uptr->dehomogenize(pmessage.get());
       pmessage->printBlank();
     }
     catch (std::exception &exception) {
@@ -328,30 +327,25 @@ int main(int argc, char** argv) {
 
 
 
-
-
-
-
   // =========
   // EXECUTION
   // =========
 
   if (config.execute) {
 
-    pmodel->run(pmessage);
+    pmodel_uptr->run(pmessage.get());
 
   }
-
 
 
 
   if (config.plot) {
 
-    pmodel->plot(pmessage);
+    pmodel_uptr->plot(pmessage.get());
 
   }
 
-  pmodel->finalize();
+  pmodel_uptr->finalize();
 
 
   std::string s_dt_finish = getCurrentDateTimeString();

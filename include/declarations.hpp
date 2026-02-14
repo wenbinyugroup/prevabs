@@ -1,3 +1,5 @@
+#pragma once
+
 #include "PGeoClasses.hpp"
 #include "PGeoLine.hpp"
 
