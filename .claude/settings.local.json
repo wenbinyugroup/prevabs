@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(PowerShell.exe -Command \"\n$bytes = [System.IO.File]::ReadAllBytes\\(''c:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\src\\\\cs\\\\PModel.cpp''\\)\n$crCount = \\($bytes | Where-Object { $_ -eq 0x0D }\\).Count\n$lfCount = \\($bytes | Where-Object { $_ -eq 0x0A }\\).Count\n\"\"CR count: $crCount, LF count: $lfCount\"\"\n\")",
+      "Bash(PowerShell.exe -NoProfile -Command \"[System.IO.File]::ReadAllBytes\\(''c:/Users/tian50/work/dev/prevabs/src/cs/PModel.cpp''\\) | Where-Object { $_ -eq 0x0D } | Measure-Object | Select -ExpandProperty Count\")",
+      "Bash(cmd /c \"tools\\\\build_msvc.bat fast\")",
+      "Bash(cmd /c \"tools\\\\build_msvc.bat fast 2>&1\")",
+      "Bash(cmd /c \"cmake --build . --config Release 2>&1\")",
+      "Bash(PowerShell.exe -NoProfile -Command \"& ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\Common7\\\\Tools\\\\VsDevCmd.bat''; cmake --build ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\build_msvc'' --config Release\")",
+      "Bash(cmd /c:*)",
+      "Bash(cmake --build:*)"
+    ]
+  }
+}

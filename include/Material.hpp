@@ -1,5 +1,9 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Message;
+
 #include "declarations.hpp"
 #include "utilities.hpp"
 

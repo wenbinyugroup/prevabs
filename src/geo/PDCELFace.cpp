@@ -23,9 +23,7 @@ PDCELFace::PDCELFace() {
 
   _y2 = SVector3(0, 1, 0);
 
-  _gbuild = true;
-  // _gface = nullptr;
-  _gface_tag = 0;
+  _real_geometry = true;
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
@@ -38,9 +36,7 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
 
   _y2 = SVector3(0, 1, 0);
 
-  _gbuild = true;
-  // _gface = nullptr;
-  _gface_tag = 0;
+  _real_geometry = true;
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
@@ -53,9 +49,7 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
 
   _y2 = SVector3(0, 1, 0);
 
-  _gbuild = build;
-  // _gface = nullptr;
-  _gface_tag = 0;
+  _real_geometry = build;
 }
 
 

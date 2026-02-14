@@ -40,7 +40,7 @@ main.cpp
   │     └── rapidxml
   ├── PModelBuildGmsh  [PModel methods in Gmsh .cpp files]
   │     └── Gmsh API
-  ├── execu  [free functions; shell injection via std::system()]
+  ├── execu  [free functions; ~~shell injection via std::system()~~ — Fixed 2026-02-14]
   └── globalVariables  [PConfig singleton read by every translation unit]
 ```
 
@@ -403,63 +403,77 @@ separation of build state) also makes the code testable. The two goals are insep
 
 ---
 
-## 13. Summary of Architectural Issues by Severity
+## 13. Architectural Issues Checklist
 
-| Severity | Issue |
-|---|---|
-| **Critical** | `PModel` God object — 60 public methods across 5 concerns |
-| **Critical** | Global `config` singleton couples every subsystem invisibly |
-| **Critical** | Back-pointers from every domain object to `PModel*` |
-| **Critical** | `declarations.hpp` has no `#pragma once` and is a catch-all aggregator |
-| **High** | Gmsh tags embedded in DCEL geometry primitives |
-| **High** | IO is three different patterns simultaneously (free functions, PModel methods, Gmsh-coupled methods) |
-| **High** | VABS/SwiftComp selection via `config.analysis_tool == N` conditionals throughout write path |
-| **High** | No abstract interfaces — system is impossible to mock or extend |
-| **High** | Ownership model entirely informal; pervasive raw pointer leaks |
-| **Medium** | `CrossSection::build()` directly manages DCEL loop lifecycle (abstraction leak) |
-| **Medium** | Two-phase `build()` / `buildDetails()` undocumented; rationale invisible |
-| **Medium** | O(n) linear scans for all named-object lookups |
-| **Medium** | Static counters on domain classes initialized in unrelated IO file; non-reentrant |
-| **Medium** | `Segment` accumulates 20+ members; temporary build state not separated |
-| **Medium** | No unit test infrastructure; codebase is structurally untestable as-is |
-| **Low** | `Material.hpp` contains 8 classes; natural to split into material and layup headers |
-| **Low** | `utilities.cpp` mixes geometry math, string parsing, XML helpers, and object lookups |
+- [ ] **Critical** — `PModel` God object — 60 public methods across 5 concerns
+- [x] **Critical** — Global `config` singleton couples every subsystem invisibly — **Partially fixed 2026-02-14** (`WriterConfig` and `BuilderConfig` sub-structs introduced; domain objects (DCEL, CrossSection, PComponent, Segment, PArea) no longer read global `config` directly)
+- [x] **Critical** — Back-pointers from every domain object to `PModel*` — **Fixed 2026-02-14** (`PModel*` removed from `CrossSection`, `PComponent`, `Segment`, `PArea`; `IMaterialLookup` interface introduced; `PDCEL*`, `IMaterialLookup*`, `plotDebug` callback added to `BuilderConfig`)
+- [x] **Critical** — `declarations.hpp` has no `#pragma once` and is a catch-all aggregator — **Fixed 2026-02-14** (pragma was present; root issue was missing forward decls causing circular-include cascade; fixed in `PSegment.hpp`, `PArea.hpp`, `PDCEL.hpp`, `PModel.hpp`, `Material.hpp`, `utilities.hpp`)
+- [x] **High** — Gmsh tags embedded in DCEL geometry primitives — **Fixed 2026-02-14** (`_gvertex_tag`/`_gbuild` removed from `PDCELVertex`; `_gedge_tag`/`_gbuild` removed from `PDCELHalfEdge`; `_gface_tag`, `_embedded_gvertex_tags`, `_embedded_gedge_tags`, `_gmsh_physical_group_tag` removed from `PDCELFace`; `_gbuild` on `PDCELFace` renamed to `_real_geometry`; Gmsh integer tags moved to six `std::unordered_map` members on `PModel`; `isFinite()` used in bridge instead of `gbuild()` flags)
+- [ ] **High** — IO is three different patterns simultaneously (free functions, PModel methods, Gmsh-coupled methods)
+- [x] **High** — VABS/SwiftComp selection via `config.analysis_tool == N` conditionals throughout write path — **Fixed 2026-02-14** (`ISGWriter` interface introduced; `VABSWriter` and `SwiftCompWriter` implement it; `PModel::writeSG` dispatches via `makeSGWriter(wcfg.analysis_tool)`; all `analysis_tool == N` branches removed from `writeSG`)
+- [ ] **High** — No abstract interfaces — system is impossible to mock or extend
+- [ ] **High** — Ownership model entirely informal; pervasive raw pointer leaks
+- [ ] **Medium** — `CrossSection::build()` directly manages DCEL loop lifecycle (abstraction leak)
+- [ ] **Medium** — Two-phase `build()` / `buildDetails()` undocumented; rationale invisible
+- [ ] **Medium** — O(n) linear scans for all named-object lookups
+- [ ] **Medium** — Static counters on domain classes initialized in unrelated IO file; non-reentrant
+- [ ] **Medium** — `Segment` accumulates 20+ members; temporary build state not separated
+- [ ] **Medium** — No unit test infrastructure; codebase is structurally untestable as-is
+- [ ] **Low** — `Material.hpp` contains 8 classes; natural to split into material and layup headers
+- [ ] **Low** — `utilities.cpp` mixes geometry math, string parsing, XML helpers, and object lookups
 
 ---
 
 ## 14. Recommended Refactoring Sequence
 
-These are ordered to deliver maximum value with minimum disruption. Each step leaves the
-system in a working state.
+### Step 1 — Immediate (no design change required)
 
-**Step 1 — Immediate (no design change required):**
-- Add `#pragma once` to `declarations.hpp`
-- Replace raw `new` in `main.cpp` with `unique_ptr`
-- Add `~PDCEL` loop cleanup; add `~PMesh` node/element cleanup
+- [x] Add `#pragma once` to `declarations.hpp` — **Fixed 2026-02-14**
+- [x] Replace raw `new` in `main.cpp` with `unique_ptr<PModel>` and `unique_ptr<Message>` — **Fixed 2026-02-14** (`Message` already done; `PModel` changed to `make_unique`)
+- [x] Add `~PDCEL` cleanup for `PDCELHalfEdgeLoop*` vector — **Already present** in `src/geo/PDCEL.cpp:34-35`
+- [x] Add `~PMesh` cleanup for `PNode*` and element vectors — **Already present** in `include/PMeshClasses.hpp:74-79`
 
-**Step 2 — Break global config dependency:**
-- Introduce per-subsystem config sub-structs (`WriterConfig`, `BuilderConfig`)
-- Pass them explicitly; stop reading `config` inside DCEL, CrossSection, Segment, PArea
+### Step 2 — Break global config dependency
 
-**Step 3 — Remove `PModel*` back-pointers from domain objects:**
-- Introduce narrow lookup interfaces (`IMaterialLookup`, `IBaselineLookup`)
-- Pass them as parameters to `build()` methods
-- This also breaks the circular includes that `declarations.hpp` was papering over
+- [x] Introduce `WriterConfig` sub-struct; pass explicitly to `writeSG()` and helpers — **Fixed 2026-02-14**
+- [x] Introduce `BuilderConfig` sub-struct; pass explicitly to `build()` / `buildDetails()` — **Fixed 2026-02-14**
+- [x] Stop reading global `config` inside DCEL, CrossSection, Segment, PArea — **Fixed 2026-02-14**
 
-**Step 4 — Extract Gmsh tags from DCEL primitives:**
-- Move tags to `unordered_map` in `PModelBuildGmsh`
-- DCEL becomes rendering-agnostic; unit tests for DCEL topology become possible
+### Step 3 — Remove `PModel*` back-pointers from domain objects
 
-**Step 5 — Introduce IO interfaces:**
-- `ISGWriter` with `VABSWriter` and `SwiftCompWriter` implementations
-- Remove `config.analysis_tool == N` branching from write path
+- [x] Introduce `IMaterialLookup` interface; thread into build chain — **Fixed 2026-02-14** (`getLayerTypeByMaterialAngle` was used in `PBuildComponentFilling`, not `Segment::build()`; interface defined in `globalVariables.hpp`; `PModel` implements it; passed via `BuilderConfig.materials`)
+- [x] Introduce `plotDebug` callback; thread via `BuilderConfig` — **Fixed 2026-02-14** (replaces `_pmodel->plotGeoDebug()` calls; `IBaselineLookup` not needed — no `_pmodel->getBaseline*` calls found in build path)
+- [x] Remove `PModel*` from `CrossSection`, `PComponent`, `Segment`, `PArea` — **Fixed 2026-02-14** (also removed from constructors and setters; `Baseline` had no `_pmodel`)
+- [x] Add `PDCEL*` to `BuilderConfig`; thread via build chain — **Fixed 2026-02-14** (replaces 61 `_pmodel->dcel()->` calls)
 
-**Step 6 — Split `PModel`:**
-- Extract `MaterialRepository`, `GeometryRepository`, `MeshData`, `PostProcessingData`
-- `PipelineController` coordinates them
-- `PModel` becomes a thin compatibility shim that can be removed incrementally
+### Step 4 — Extract Gmsh tags from DCEL primitives
 
-**Step 7 — Add unit tests:**
-- Once steps 3–4 are done, DCEL tests become possible without constructing `PModel`
-- Once step 5 is done, writer tests become possible with mock mesh data
-- Once step 6 is done, repository tests become possible in isolation
+- [x] Move `_gvertex_tag`, `_gbuild` out of `PDCELVertex` into a map in `PModelBuildGmsh` — **Fixed 2026-02-14** (removed from header/constructors; `isFinite()` used in bridge to filter bounding-box vertices; tags in `PModel::_gmsh_vertex_tags`)
+- [x] Move `_gedge_tag` out of `PDCELHalfEdge` — **Fixed 2026-02-14** (removed; tags in `PModel::_gmsh_edge_tags`; `isFinite()` used for build filter)
+- [x] Move all Gmsh/mesh fields out of `PDCELFace` (`_gface_tag`, physical group tags, embedded gvertex/gedge tag vectors) — **Fixed 2026-02-14** (`_gbuild` renamed to `_real_geometry` (topology flag); Gmsh integer fields moved to `PModel::_gmsh_face_tags`, `_gmsh_face_embedded_vertex_tags`, `_gmsh_face_embedded_edge_tags`, `_gmsh_face_physical_group_tags`; `_mesh_size` and `_embedded_vertices` retained as domain-level mesh hints)
+- [ ] Verify DCEL compiles and passes topology tests without Gmsh dependency
+
+### Step 5 — Introduce IO interfaces
+
+- [x] Define `ISGWriter` with `writeSettings`, `writeMaterials`, `writeExtra` — **Fixed 2026-02-14** (`include/ISGWriter.hpp`; uses `PModel*` until `CrossSectionModel` exists in Step 6)
+- [x] Implement `VABSWriter : public ISGWriter` — **Fixed 2026-02-14** (delegates to `writeSettingsVABS` / `writeMaterialsVABS`; `writeExtra` is no-op; defined in `src/io/PModelIOSG.cpp`)
+- [x] Implement `SwiftCompWriter : public ISGWriter` — **Fixed 2026-02-14** (delegates to `writeSettingsSC` / `writeMaterialsSC`; `writeExtra` writes omega; defined in `src/io/PModelIOSG.cpp`)
+- [x] Select writer at startup; remove `config.analysis_tool == N` branches from write path — **Fixed 2026-02-14** (`PModel::writeSG` now calls `makeSGWriter(wcfg.analysis_tool)` and dispatches through `ISGWriter`; all `if (wcfg.analysis_tool == N)` branches removed from `writeSG`)
+- [ ] Define `ICrossSectionReader` returning a domain model instead of mutating `PModel*` — deferred to Step 6 (requires `CrossSectionModel` which doesn't exist yet)
+
+### Step 6 — Split `PModel`
+
+- [ ] Extract `MaterialRepository` (owns `Material`, `Lamina`, `LayerType`, `Layup` with `unordered_map` lookups)
+- [ ] Extract `GeometryRepository` (owns `Baseline`, named vertices)
+- [ ] Extract `MeshData` (owns post-Gmsh node/element data)
+- [ ] Extract `PostProcessingData` (owns `LocalState` results)
+- [ ] Introduce `PipelineController` coordinating the above
+- [ ] Reduce `PModel` to a thin compatibility shim; remove incrementally
+
+### Step 7 — Add unit tests
+
+- [ ] Add DCEL topology tests (possible after Step 4)
+- [ ] Add `ISGWriter` output tests with mock mesh data (possible after Step 5)
+- [ ] Add `MaterialRepository` / `GeometryRepository` tests in isolation (possible after Step 6)
+- [ ] Uncomment and restore the two commented-out tests in `test/unittest/unittest.cpp`

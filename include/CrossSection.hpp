@@ -29,8 +29,6 @@ class PComponent;
  */
 class CrossSection {
 private:
-  PModel *_pmodel;
-
   // // Analysis
   // int csflag_model; // structural model (0: classical, 1: timoshenko)
   // int csflag_thermal;
@@ -70,7 +68,6 @@ public:
   static int used_layertype_index;
 
   CrossSection(std::string); // assign name, others default
-  CrossSection(std::string, PModel *);
   // CrossSection(std::string name, std::string type, SPoint2 origin,
   //              std::vector<double> translate, double scale, double rotate,
   //              STensor3 rotatem, double meshsize, std::string elementtype,
@@ -84,8 +81,6 @@ public:
   //       csfillings(fillings) {}
 
   void printCrossSection();
-
-  PModel *pmodel() { return _pmodel; }
 
   std::string getName() { return csname; }
 
@@ -110,8 +105,6 @@ public:
   // std::vector<Filling> getFillings() { return csfillings; }
   std::list<PComponent *> components() { return _components; }
 
-  void setPModel(PModel *pmodel) { _pmodel = pmodel; }
-
   void setOrigin(SPoint3);
   // void setTranslate(std::vector<double>);
   // void setScale(double);
@@ -128,5 +121,5 @@ public:
 
   void sortComponents();
 
-  void build(Message *);
+  void build(const BuilderConfig &, Message *);
 };

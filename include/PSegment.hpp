@@ -1,11 +1,25 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Baseline;
+class LayerType;
+class Layup;
+class Material;
+class Message;
+class PArea;
+class PDCELVertex;
+class PDCELFace;
+class PGeoLineSegment;
+class PModel;
+
 #include "declarations.hpp"
 #include "Material.hpp"
 #include "PArea.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
+#include "globalVariables.hpp"
 #include "PModel.hpp"
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
@@ -18,19 +32,11 @@
 #include <string>
 #include <vector>
 
-class Baseline;
-class PArea;
-class PDCELVertex;
-class PDCELFace;
-class PGeoLineSegment;
-class PModel;
-
 /** @ingroup cs
  * A cross-sectional segment class.
  */
 class Segment {
 private:
-  PModel *_pmodel;
   std::string _name;
   Baseline *_curve_base, *_curve_offset;
 
@@ -88,26 +94,11 @@ public:
     _ib_begin = 0;
     _ib_end = 0;
   }
-  Segment(PModel *pmodel, std::string name, Baseline *p_baseline,
-          Layup *p_layup, std::string layupside, int level = 1)
-      : _pmodel(pmodel), _name(name), _curve_base(p_baseline),
-        _curve_offset(nullptr), _layup(p_layup), slayupside(layupside),
-        slevel(level), _head_vertex_offset(nullptr),
-        _tail_vertex_offset(nullptr) {
-    _prev = nullptr;
-    _next = nullptr;
-    _prev_bound = SVector3(0, 0, 0);
-    _next_bound = SVector3(0, 0, 0);
-    _ib_begin = 0;
-    _ib_end = 0;
-  }
-
   friend std::ostream &operator<<(std::ostream &, Segment *);
   void print();
   void printBaseOffsetLink();
   void printBaseOffsetPairs(Message *);
 
-  PModel *pmodel() { return _pmodel; }
   std::string getName() { return _name; }
   Baseline *getBaseline() { return _curve_base; }
   Baseline *curveBase() { return _curve_base; }
@@ -164,7 +155,6 @@ public:
   void setUBegin(double u) { _u_begin = u; }
   void setUEnd(double u) { _u_end = u; }
 
-  void setPModel(PModel *pmodel) { _pmodel = pmodel; }
   void addArea(PArea *);
 
   void setHeadVertexOffset(PDCELVertex *v) { _head_vertex_offset = v; }
@@ -193,8 +183,8 @@ public:
 
   void offsetCurveBase(Message *);
 
-  void build(Message *);
-  void buildAreas(Message *);
+  void build(const BuilderConfig &, Message *);
+  void buildAreas(const BuilderConfig &, Message *);
 };
 
 // ===================================================================

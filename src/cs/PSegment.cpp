@@ -343,9 +343,9 @@ void Segment::offsetCurveBase(Message *pmessage) {
 
 
 
-void Segment::build(Message *pmessage) {
+void Segment::build(const BuilderConfig &bcfg, Message *pmessage) {
   pmessage->increaseIndent();
-  if (config.debug) {
+  if (bcfg.debug) {
     // std::cout << "[debug] building the overall shape of segment: " << _name
     //           << std::endl;
     // fprintf(config.fdeb, "- building segment areas: %s\n", _name.c_str());
@@ -374,11 +374,11 @@ void Segment::build(Message *pmessage) {
     // Debug log the two vertices i and i+1
     PLOG(debug) << pmessage->message("vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1));
 
-    he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[i],
+    he = bcfg.dcel->findHalfEdge(_curve_base->vertices()[i],
                                        _curve_base->vertices()[i + 1]);
 
     if (he == nullptr) {
-      _pmodel->dcel()->addEdge(_curve_base->vertices()[i],
+      bcfg.dcel->addEdge(_curve_base->vertices()[i],
                                _curve_base->vertices()[i + 1]);
     }
 
@@ -393,7 +393,7 @@ void Segment::build(Message *pmessage) {
   PLOG(debug) << pmessage->message("creating half edges for the offset curve");
   // pmessage->print(9, "creating half edges for the offset curve");
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
-    _pmodel->dcel()->addEdge(_curve_offset->vertices()[i],
+    bcfg.dcel->addEdge(_curve_offset->vertices()[i],
                              _curve_offset->vertices()[i + 1]);
   }
 
@@ -404,7 +404,7 @@ void Segment::build(Message *pmessage) {
   PLOG(debug) << pmessage->message("creating the half edge loop and face");
   // pmessage->print(9, "creating the half edge loop and face");
   PDCELHalfEdgeLoop *hel;
-  he = _pmodel->dcel()->findHalfEdge(_curve_base->vertices()[0],
+  he = bcfg.dcel->findHalfEdge(_curve_base->vertices()[0],
                                      _curve_base->vertices()[1]);
   if (slayupside == "right") {
     he = he->twin();
@@ -414,11 +414,11 @@ void Segment::build(Message *pmessage) {
   // he->target()->printAllLeavingHalfEdges();
 
   // std::cout << "\n[debug] half edge he: " << he << std::endl;
-  hel = _pmodel->dcel()->addHalfEdgeLoop(he);
+  hel = bcfg.dcel->addHalfEdgeLoop(he);
   // std::cout << "\nhalf edge loop:\n";
   // std::cout << hel << std::endl;
 
-  _face = _pmodel->dcel()->addFace(hel);
+  _face = bcfg.dcel->addFace(hel);
   _face->setName(_name + "_face");
   // std::cout << "        face _face:" << std::endl;
   // _face->print();

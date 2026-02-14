@@ -15,7 +15,8 @@ void PModel::plotDehomo(Message *pmessage) {
   // if (config.analysis_tool == 1) {
     // postVABS(pmessage);
   // Read sg input (.sg)
-  readSG(config.file_name_vsc, this, pmessage);
+  WriterConfig wcfg{config.analysis_tool, config.dehomo, config.tool_ver, config.file_name_vsc};
+  readSG(config.file_name_vsc, this, wcfg, pmessage);
 
   // Read dehomogenization output
   readOutputDehomo(config.file_name_vsc, this, pmessage);

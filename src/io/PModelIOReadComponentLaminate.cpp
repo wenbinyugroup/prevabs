@@ -206,7 +206,7 @@ int readXMLElementComponentLaminate(
       pmodel->addBaseline(p_bsl_1);
       pmodel->addBaseline(p_bsl_2);
 
-      p_sgm_1 = new Segment(pmodel, name_1, p_bsl_1, p_layup, layupSide, 0);
+      p_sgm_1 = new Segment(name_1, p_bsl_1, p_layup, layupSide, 0);
       if (i_freeend == 0 || i_freeend == -1) {
         p_sgm_1->setFreeEnd(i_freeend);
       }
@@ -215,7 +215,7 @@ int readXMLElementComponentLaminate(
       p_sgm_1->setMatOrient2(p_component->getMatOrient2());
       p_component->addSegment(p_sgm_1);
 
-      p_sgm_2 = new Segment(pmodel, name_2, p_bsl_2, p_layup, layupSide, 0);
+      p_sgm_2 = new Segment(name_2, p_bsl_2, p_layup, layupSide, 0);
       if (i_freeend == 1 || i_freeend == -1) {
         p_sgm_2->setFreeEnd(i_freeend);
       }
@@ -229,7 +229,7 @@ int readXMLElementComponentLaminate(
 
     else {
       p_segment =
-          new Segment(pmodel, segmentName, p_baseline, p_layup, layupSide, 0);
+          new Segment(segmentName, p_baseline, p_layup, layupSide, 0);
       p_segment->setFreeEnd(i_freeend);
       p_segment->setClosed(false);
       p_segment->setMatOrient1(p_component->getMatOrient1());
@@ -647,7 +647,7 @@ int readXMLElementComponentLaminate(
       std::string s_sgm_name = "sgm_" + std::to_string(Segment::count_tmp);
       int i_freeend = -1;
       Segment *p_sgm = new Segment(
-        pmodel, s_sgm_name, v_p_bsl[i], v_p_layup_combined[i], s_layup_side, 0
+        s_sgm_name, v_p_bsl[i], v_p_layup_combined[i], s_layup_side, 0
       );
       // p_sgm->setUBegin(v_u_begin[i]);
       // p_sgm->setUEnd(v_u_end[i]);

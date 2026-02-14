@@ -108,7 +108,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   PLOG(debug) << pmessage->message("find cross-section: " + csName);
 
   // CrossSection cs{csName};
-  CrossSection *cs = new CrossSection(csName, pmodel);
+  CrossSection *cs = new CrossSection(csName);
 
 
   double d_fmt{1};

@@ -416,7 +416,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
   else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
 
-    for (auto state : _local_states) {  // For each laod case
+    for (auto state : _pp_data.local_states) {  // For each load case
 
       std::string case_name = state->name();
       if (case_name == "") {
@@ -437,7 +437,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
       fprintf(f_msh, "$EndMeshFormat\n");
 
       // Write nodes and elements
-      _pmesh->writeGmshMsh(f_msh, pmessage);
+      _mesh_data.mesh->writeGmshMsh(f_msh, pmessage);
       // fclose(f_msh);
 
 

@@ -21,7 +21,7 @@
 #include <string>
 
 
-void PComponent::buildFilling(Message *pmessage) {
+void PComponent::buildFilling(const BuilderConfig &bcfg, Message *pmessage) {
 
   if (!_fill_baseline_groups.empty()) {
 
@@ -61,7 +61,7 @@ void PComponent::buildFilling(Message *pmessage) {
       PDCELHalfEdge *he_tool_head, *he_tool_tail, *he;
       PDCELHalfEdgeLoop *hel_tool_head, *hel_tool_tail;
 
-      for (auto hel : _pmodel->dcel()->halfedgeloops()) {
+      for (auto hel : bcfg.dcel->halfedgeloops()) {
         if (!hel->keep()) {
           // he = findCurvesIntersection(bl, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
           tmp_vertices = {bl->vertices()[0], bl->vertices()[1]};
@@ -114,7 +114,7 @@ void PComponent::buildFilling(Message *pmessage) {
         ls = new PGeoLineSegment(he_tool_head->source(),
                                   he_tool_head->target());
         vnew = ls->getParametricVertex(u2_head);
-        _pmodel->dcel()->splitEdge(he_tool_head, vnew);
+        bcfg.dcel->splitEdge(he_tool_head, vnew);
       }
       bl->vertices()[0] = vnew;
 
@@ -126,7 +126,7 @@ void PComponent::buildFilling(Message *pmessage) {
         ls = new PGeoLineSegment(he_tool_tail->source(),
                                   he_tool_tail->target());
         vnew = ls->getParametricVertex(u2_tail);
-        _pmodel->dcel()->splitEdge(he_tool_tail, vnew);
+        bcfg.dcel->splitEdge(he_tool_tail, vnew);
       }
       bl->vertices()[bl->vertices().size() - 1] = vnew;
 
@@ -141,18 +141,18 @@ void PComponent::buildFilling(Message *pmessage) {
       //   v->printWithAddress();
       // }
 
-      _pmodel->dcel()->addEdgesFromCurve(bl);
+      bcfg.dcel->addEdgesFromCurve(bl);
     }
 
     for (auto bl : bl_closed) {
-      _pmodel->dcel()->addEdgesFromCurve(bl);
+      bcfg.dcel->addEdgesFromCurve(bl);
     }
 
-    _pmodel->dcel()->removeTempLoops();
-    _pmodel->dcel()->createTempLoops();
-    _pmodel->dcel()->linkHalfEdgeLoops();
+    bcfg.dcel->removeTempLoops();
+    bcfg.dcel->createTempLoops();
+    bcfg.dcel->linkHalfEdgeLoops();
 
-    // _pmodel->dcel()->print_dcel();
+    // bcfg.dcel->print_dcel();
   }
 
 
@@ -164,17 +164,17 @@ void PComponent::buildFilling(Message *pmessage) {
     // has been already created
 
     // Find the half edge loop enclosing the point
-    _pmodel->dcel()->addVertex(_fill_location);
-    hel_out = _pmodel->dcel()->findEnclosingLoop(_fill_location);
+    bcfg.dcel->addVertex(_fill_location);
+    hel_out = bcfg.dcel->findEnclosingLoop(_fill_location);
     // std::cout << "[debug] half edge loop hel_out:" << std::endl;
     // hel_out->print();
-    _pmodel->dcel()->removeVertex(_fill_location);
+    bcfg.dcel->removeVertex(_fill_location);
   }
 
   else {
     // The filling area is defined by the side of some baseline
     PDCELHalfEdge *he;
-    he = _pmodel->dcel()->findHalfEdge(_fill_ref_baseline->vertices()[0],
+    he = bcfg.dcel->findHalfEdge(_fill_ref_baseline->vertices()[0],
                                         _fill_ref_baseline->vertices()[1]);
 
     // std::cout << "        half edge he:" << he << std::endl;
@@ -194,24 +194,24 @@ void PComponent::buildFilling(Message *pmessage) {
 
 
   // Keep the loop and create a new face
-  if (hel_out == _pmodel->dcel()->halfedgeloops().front()) {
+  if (hel_out == bcfg.dcel->halfedgeloops().front()) {
     // The location is outside the shape
     // Raise the exception
   }
   else {
-    _fill_face = _pmodel->dcel()->addFace(hel_out);
+    _fill_face = bcfg.dcel->addFace(hel_out);
     _fill_face->setName(_name + "_fill_face");
     _fill_face->setMaterial(_fill_material);
     hel_out->setKeep(true);
     hel_out->setFace(_fill_face);
 
-    LayerType *lt = _pmodel->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
+    LayerType *lt = bcfg.materials->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
     _fill_face->setLayerType(lt);
     _fill_face->setTheta1(_fill_theta1);
 
     // Update all corresponding inner boundaries, if there are any
-    _pmodel->dcel()->linkHalfEdgeLoops();
-    for (auto heli : _pmodel->dcel()->halfedgeloops()) {
+    bcfg.dcel->linkHalfEdgeLoops();
+    for (auto heli : bcfg.dcel->halfedgeloops()) {
       if (!heli->keep()) {
         // heli->print();
         PDCELHalfEdgeLoop *helj = heli;

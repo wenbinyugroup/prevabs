@@ -287,8 +287,7 @@ int main(int argc, char** argv) {
 
   pmessage->printTitle();
 
-  PModel *pmodel = new PModel(config.file_base_name);
-  auto pmodel_uptr = std::unique_ptr<PModel>(pmodel);
+  auto pmodel_uptr = std::make_unique<PModel>(config.file_base_name);
   pmodel_uptr->initialize();
 
 

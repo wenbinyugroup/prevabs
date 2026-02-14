@@ -26,7 +26,7 @@
 #include <vector>
 
 
-void Segment::buildAreas(Message *pmessage) {
+void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   pmessage->increaseIndent();
   // std::cout << std::endl;
   // if (config.debug) {
@@ -94,9 +94,9 @@ void Segment::buildAreas(Message *pmessage) {
       }
       v2_tmp = vo_tmp;
 
-      he_tmp = _pmodel->dcel()->findHalfEdge(v1_tmp, v2_tmp);
+      he_tmp = bcfg.dcel->findHalfEdge(v1_tmp, v2_tmp);
       // std::cout << "        half edge he_tmp: " << he_tmp << std::endl;
-      _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+      bcfg.dcel->splitEdge(he_tmp, v_layer);
 
       v_layer_prev = v_layer;
 
@@ -170,7 +170,7 @@ void Segment::buildAreas(Message *pmessage) {
       // v_layer = nullptr;
       // Each time search from the base vertex
       // std::cout << "        v_layer_prev = " << v_layer_prev << std::endl;
-      he_tmp = _pmodel->dcel()->findHalfEdge(v_layer_prev, _face);
+      he_tmp = bcfg.dcel->findHalfEdge(v_layer_prev, _face);
       PDCELHalfEdge *he_base = he_tmp;
       if (slayupside == "left") {
         he_tmp = he_tmp->prev();
@@ -197,11 +197,11 @@ void Segment::buildAreas(Message *pmessage) {
 
         if (not_parallel) {
           if (u1_tmp >= 0 && u1_tmp <= 1) {
-            if (fabs(u1_tmp) < config.tol) {
+            if (fabs(u1_tmp) < bcfg.tol) {
               PLOG(debug) << pmessage->message("  case 1: intersect at source");
               v_layer = he_tmp->source();
             }
-            else if (fabs(1 - u1_tmp) < config.tol) {
+            else if (fabs(1 - u1_tmp) < bcfg.tol) {
               PLOG(debug) << pmessage->message("  case 2: intersect at target");
               v_layer = he_tmp->target();
             }
@@ -209,7 +209,7 @@ void Segment::buildAreas(Message *pmessage) {
               PLOG(debug) << pmessage->message("  case 3: intersect current edge");
               v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
               PLOG(debug) << pmessage->message("  v_layer: " + v_layer->printString());
-              _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+              bcfg.dcel->splitEdge(he_tmp, v_layer);
             }
             break;
           }
@@ -262,7 +262,7 @@ void Segment::buildAreas(Message *pmessage) {
         //       // std::cout << "        case 3" << std::endl;
         //       PLOG(debug) << pmessage->message("  case 3");
         //       v_layer = he_tmp->toLineSegment()->getParametricVertex(u1_tmp);
-        //       _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+        //       bcfg.dcel->splitEdge(he_tmp, v_layer);
         //       // }
         //       break;
         //     }
@@ -298,7 +298,7 @@ void Segment::buildAreas(Message *pmessage) {
         //       // std::cout << "        case 3" << std::endl;
         //       PLOG(debug) << pmessage->message("  case 3");
         //       v_layer = he_tmp->toLineSegment()->getParametricVertex(u1_tmp);
-        //       _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+        //       bcfg.dcel->splitEdge(he_tmp, v_layer);
         //       // }
         //       break;
         //     }
@@ -396,11 +396,11 @@ void Segment::buildAreas(Message *pmessage) {
 
     // 2.
     // PLOG(debug) << pmessage->message("  2.2");
-    new_faces = _pmodel->dcel()->splitFace(_face, vb_tmp, vo_tmp);
+    new_faces = bcfg.dcel->splitFace(_face, vb_tmp, vo_tmp);
 
     // 3.
     // PLOG(debug) << pmessage->message("  2.3");
-    area = new PArea(_pmodel, this);
+    area = new PArea(this);
     count++;
     if (slayupside == "left") {
       area->setFace(new_faces.front());
@@ -458,9 +458,9 @@ void Segment::buildAreas(Message *pmessage) {
       }
       v2_tmp = vo_tmp;
 
-      he_tmp = _pmodel->dcel()->findHalfEdge(v1_tmp, v2_tmp);
+      he_tmp = bcfg.dcel->findHalfEdge(v1_tmp, v2_tmp);
       // std::cout << "        half edge he_tmp: " << he_tmp << std::endl;
-      _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+      bcfg.dcel->splitEdge(he_tmp, v_layer);
 
       area->addNextBoundVertex(v_layer);
 
@@ -485,7 +485,7 @@ void Segment::buildAreas(Message *pmessage) {
 
   pmessage->increaseIndent();
 
-  area = new PArea(_pmodel, this);
+  area = new PArea(this);
   count++;
   // std::cout << "        count = " << count << std::endl;
   area->setFace(_face);
@@ -524,7 +524,7 @@ void Segment::buildAreas(Message *pmessage) {
   //           << std::endl;
   // std::cout << "        new area face: " << area->face()->name() <<
   // std::endl; area->face()->print();
-  if (config.debug) {
+  if (bcfg.debug) {
     // fprintf(config.fdeb, "        new area face:\n");
     // writeFace(config.fdeb, area->face());
   }
@@ -592,7 +592,7 @@ void Segment::buildAreas(Message *pmessage) {
       // Find the intersecting line segment
       // v_layer = nullptr;
       // Each time search from the base vertex
-      he_tmp = _pmodel->dcel()->findHalfEdge(v_layer_prev, _face);
+      he_tmp = bcfg.dcel->findHalfEdge(v_layer_prev, _face);
       PDCELHalfEdge *he_base = he_tmp;
       if (slayupside == "right") {
         he_tmp = he_tmp->prev();
@@ -618,12 +618,12 @@ void Segment::buildAreas(Message *pmessage) {
 
 
         if (not_parallel) {
-          if (fabs(u1_tmp) < config.tol) {
+          if (fabs(u1_tmp) < bcfg.tol) {
             PLOG(debug) << pmessage->message("  case 1: intersect at source");
             v_layer = he_tmp->source();
             break;
           }
-          else if (fabs(1 - u1_tmp) < config.tol) {
+          else if (fabs(1 - u1_tmp) < bcfg.tol) {
             PLOG(debug) << pmessage->message("  case 2: intersect at target");
             v_layer = he_tmp->target();
             break;
@@ -639,7 +639,7 @@ void Segment::buildAreas(Message *pmessage) {
           else if (u1_tmp > 0 && u1_tmp < 1) {
             PLOG(debug) << pmessage->message("  case 5: intersect current edge");
             v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
-            _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+            bcfg.dcel->splitEdge(he_tmp, v_layer);
             break;
           }
         }
@@ -681,7 +681,7 @@ void Segment::buildAreas(Message *pmessage) {
         //       // } else {
         //       // std::cout << "        case 3" << std::endl;
         //       v_layer = he_tmp->toLineSegment()->getParametricVertex(u1_tmp);
-        //       _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+        //       bcfg.dcel->splitEdge(he_tmp, v_layer);
         //       // }
         //       break;
         //     }
@@ -714,7 +714,7 @@ void Segment::buildAreas(Message *pmessage) {
         //       // } else {
         //       // std::cout << "        case 3" << std::endl;
         //       v_layer = he_tmp->toLineSegment()->getParametricVertex(u1_tmp);
-        //       _pmodel->dcel()->splitEdge(he_tmp, v_layer);
+        //       bcfg.dcel->splitEdge(he_tmp, v_layer);
         //       // }
         //       break;
         //     }
@@ -757,7 +757,7 @@ void Segment::buildAreas(Message *pmessage) {
 
   // Slice layers
   for (auto area : _areas) {
-    area->buildLayers(pmessage);
+    area->buildLayers(bcfg, pmessage);
   }
 
   pmessage->decreaseIndent();

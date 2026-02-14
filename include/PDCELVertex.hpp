@@ -29,32 +29,29 @@ private:
   Baseline *_p_on_line = nullptr;
   bool _on_joint = false;
 
-  bool _gbuild;
-  // GVertex *_gvertex;
-  int _gvertex_tag = 0;
-
 public:
   PDCELVertex()
-      : _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+      : _dcel(nullptr), _incident_edge(nullptr),
         _degenerated(0) {}
   PDCELVertex(std::string name)
-      : _s_name(name), _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+      : _s_name(name), _dcel(nullptr), _incident_edge(nullptr),
         _degenerated(0) {}
   PDCELVertex(double x, double y, double z)
-      : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
-        _degenerated(0) {}
-  PDCELVertex(double x, double y, double z, bool build)
       : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
-        _gbuild(build), _degenerated(0) {}
+        _degenerated(0) {}
+  // build parameter kept for call-site compatibility; use isFinite() instead
+  PDCELVertex(double x, double y, double z, bool /*build*/)
+      : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
+        _degenerated(0) {}
   PDCELVertex(SPoint3 point)
-      : _point(point), _dcel(nullptr), _incident_edge(nullptr), _gbuild(true),
+      : _point(point), _dcel(nullptr), _incident_edge(nullptr),
         _degenerated(0) {}
   PDCELVertex(std::string name, double x, double y, double z)
       : _s_name(name), _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
-        _gbuild(true), _degenerated(0) {}
+        _degenerated(0) {}
   PDCELVertex(std::string name, SPoint3 point)
       : _s_name(name), _point(point), _dcel(nullptr), _incident_edge(nullptr),
-        _gbuild(true), _degenerated(0) {}
+        _degenerated(0) {}
 
   // void printBasepoint();
   friend std::ostream &operator<<(std::ostream &, PDCELVertex *);
@@ -105,17 +102,7 @@ public:
   void setDCEL(PDCEL *dcel) { _dcel = dcel; }
   void setIncidentEdge(PDCELHalfEdge *);
 
-  // void setGVertex(GVertex *);
-  void setGVertexTag(int tag) { _gvertex_tag = tag; }
-  // void resetGVertex() { _gvertex = nullptr; }
-  void resetGVertexTag() { _gvertex_tag = 0; }
-
   void setOnJoint(bool on_joint) { _on_joint = on_joint; }
-
-  bool gbuild() { return _gbuild; }
-  void setGBuild(bool build) { _gbuild = build; }
-  // GVertex *gvertex() { return _gvertex; }
-  int gvertexTag() { return _gvertex_tag; }
 
   // void setName(std::string name) {_s_name = name; }
 };

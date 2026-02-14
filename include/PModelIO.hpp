@@ -110,7 +110,7 @@ int readInputDehomo(const std::string &, const std::string &, PModel *,
 /** @ingroup io
  * Read data in the SG input file.
  */
-int readSG(const std::string &, PModel *, Message *);
+int readSG(const std::string &, PModel *, const WriterConfig &, Message *);
 // int readSGVABS(const std::string &, PModel *, Message *);
 // int readSGSC(const std::string &, PModel *, Message *);
 /** @ingroup io
@@ -161,7 +161,7 @@ int writeFace(FILE *, PDCELFace *);
 /** @ingroup io
  * Write header settings block in VABS format to a file.
  */
-void writeSettingsVABS(FILE *, PModel *);
+void writeSettingsVABS(FILE *, PModel *, const WriterConfig &);
 
 /** @ingroup io
  * Write the element block in VABS format to a file.
@@ -175,7 +175,7 @@ void writeMaterialsVABS(FILE *, PModel *);
 
 void writeMaterialStrength(FILE *, Material *);
 
-void writeSettingsSC(FILE *, PModel *);
+void writeSettingsSC(FILE *, PModel *, const WriterConfig &);
 // void writeElementsSC(FILE *, PModel *);
 void writeMaterialsSC(FILE *, PModel *);
 

@@ -60,23 +60,14 @@
 void PModel::createGmshVertices(Message *pmessage) {
   PLOG(info) << pmessage->message("creating gmsh vertices");
 
-  // GVertex *gv;
   int _gv_tag;
 
   for (auto v : _dcel->vertices()) {
 
-    if (v->gbuild()) {
-      // gv = _gmodel->addVertex(v->x(), v->y(), v->z(), _global_mesh_size);
-
-      // if (v->onJoint()) {
-      //   gv->tags.push_back("joint");
-      // }
-
-      // v->setGVertex(gv);
-
+    if (v->isFinite()) {
       _gv_tag = gmsh::model::geo::addPoint(
         v->x(), v->y(), v->z(), _global_mesh_size);
-      v->setGVertexTag(_gv_tag);
+      _gmsh_vertex_tags[v] = _gv_tag;
     }
 
   }
@@ -204,35 +195,28 @@ void PModel::createGmshEdges(Message *pmessage) {
 
   PLOG(info) << pmessage->message("creating gmsh edges");
 
-  // GEdge *ge;
   int _ge_tag;
-  // GEdgeSigned *ges;
 
   for (auto he : _dcel->halfedges()) {
 
-    if (he->source()->gbuild() && he->target()->gbuild()) {
+    if (he->isFinite()) {
 
-      // Check if the GEdge twin has been created
-      // ge = he->twin()->gedge();
-      _ge_tag = he->twin()->gedgeTag();
+      // Check if the Gmsh edge for the twin has been created already
+      auto it_twin = _gmsh_edge_tags.find(he->twin());
+      _ge_tag = (it_twin != _gmsh_edge_tags.end()) ? it_twin->second : 0;
 
-      // if (ge == nullptr) {
       if (_ge_tag == 0) {
 
-        // New GEdge for the pair of half edges
+        // New Gmsh line for the pair of half edges
         if (he->sign() > 0) {
-          // ge = _gmodel->addLine(he->source()->gvertex(),
-          //                       he->target()->gvertex());
           _ge_tag = gmsh::model::geo::addLine(
-            he->source()->gvertexTag(),
-            he->target()->gvertexTag());
+            _gmsh_vertex_tags[he->source()],
+            _gmsh_vertex_tags[he->target()]);
         }
         else {
-          // ge = _gmodel->addLine(he->twin()->source()->gvertex(),
-          //                       he->twin()->target()->gvertex());
           _ge_tag = gmsh::model::geo::addLine(
-            he->twin()->source()->gvertexTag(),
-            he->twin()->target()->gvertexTag());
+            _gmsh_vertex_tags[he->twin()->source()],
+            _gmsh_vertex_tags[he->twin()->target()]);
         }
 
         // Interface
@@ -243,8 +227,7 @@ void PModel::createGmshEdges(Message *pmessage) {
         }
 
       }
-      // he->setGEdge(ge);
-      he->setGEdgeTag(_ge_tag);
+      _gmsh_edge_tags[he] = _ge_tag;
     }
   }
 }
@@ -260,10 +243,6 @@ void PModel::createGmshEdges(Message *pmessage) {
 void PModel::createGmshFaces(Message *pmessage) {
   PLOG(info) << pmessage->message("creating gmsh faces");
 
-  // GVertex *gv;
-  // GEdge *ge;
-  // GFace *gf;
-  // int _gv_tag;  // gmsh vertex tag
   int _ge_tag;  // gmsh edge tag
   int _gel_tag;  // gmsh edge loop tag
   int _gf_tag;  // gmsh face tag
@@ -273,12 +252,7 @@ void PModel::createGmshFaces(Message *pmessage) {
     PLOG(debug) << pmessage->message("");
     PLOG(debug) << pmessage->message("  face: " + f->name());
 
-    if (f->gbuild() && f->outer() != nullptr) {
-
-      // std::vector<GEdge *> geloop;
-      // std::vector<std::vector<GEdge *>> geloops;
-      // std::vector<GEdgeSigned> gesloop;
-      // std::vector<std::vector<GEdgeSigned>> gesloops;
+    if (f->realGeometry() && f->outer() != nullptr) {
 
       // Vector of edge tags of a loop
       std::vector<int> _ge_tags;
@@ -292,12 +266,11 @@ void PModel::createGmshFaces(Message *pmessage) {
       PDCELHalfEdge *he = f->outer();
       do {
 
-        // gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
-        // std::cout << he << std::endl;
-        int _tag = he->gedgeTag();
-        // std::cout << "tag: " << _tag << std::endl;
+        auto it_he = _gmsh_edge_tags.find(he);
+        int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
         if (_tag == 0) {
-          _tag = he->twin()->gedgeTag();
+          auto it_tw = _gmsh_edge_tags.find(he->twin());
+          _tag = (it_tw != _gmsh_edge_tags.end()) ? it_tw->second : 0;
         }
         if (he->sign() < 0) {
           _tag = -1 * _tag;
@@ -306,8 +279,6 @@ void PModel::createGmshFaces(Message *pmessage) {
         he = he->next();
 
       } while (he != f->outer());
-      // gesloops.push_back(gesloop);
-      // printVector(_ge_tags);
       _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
       _geloop_tags.push_back(_gel_tag);
 
@@ -316,73 +287,49 @@ void PModel::createGmshFaces(Message *pmessage) {
       PLOG(debug) << pmessage->message("  adding inner loops");
       for (auto hei : f->inners()) {
 
-        // gesloop.clear();
         _ge_tags.clear();
         he = hei;
         do {
-          // gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
-          int _tag = he->gedgeTag();
+          auto it_he = _gmsh_edge_tags.find(he);
+          int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
           if (_tag == 0) {
-            _tag = -1 * he->twin()->gedgeTag();
+            auto it_tw = _gmsh_edge_tags.find(he->twin());
+            _tag = (it_tw != _gmsh_edge_tags.end()) ? -(it_tw->second) : 0;
           }
           _ge_tags.push_back(_tag);
           he = he->next();
         }
         while (he != hei);
-        // gesloops.push_back(gesloop);
         _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
         _geloop_tags.push_back(_gel_tag);
 
       }
 
-      // gf = _gmodel->addPlanarFace(gesloops);
-      // f->setGFace(gf);
       _gf_tag = gmsh::model::geo::addPlaneSurface(_geloop_tags);
-      f->setGFaceTag(_gf_tag);
-
-
-      // Set physical entity id
-      // gf->addPhysicalEntity(f->layertype()->id());
+      _gmsh_face_tags[f] = _gf_tag;
 
 
       // Create embedded entities and set local mesh sizes
       PLOG(debug) << pmessage->message("  adding local mesh size");
       if (f->getMeshSize() != -1) {
-        // std::cout << f->getMeshSize() << std::endl;
-        // PDCELVertex *v = f->getEmbeddedVertex();
-        // std::vector<GVertex *> gvs;
         int _gv_tag_prev = 0;
         int _gv_tag_curr = 0;
 
         for (auto v : f->getEmbeddedVertices()) {
 
-          // gv = _gmodel->addVertex(v->x(), v->y(), v->z(), f->getMeshSize());
           _gv_tag_curr = gmsh::model::geo::addPoint(
             v->x(), v->y(), v->z(), f->getMeshSize());
-          // v->setGVertex(gv);
-          // v->setGVertexTag(_gv_tag_curr);
-          // gvs.push_back(gv);
-          // gf->addEmbeddedVertex(gv);
-          f->addEmbeddedGVertexTag(_gv_tag_curr);
+          _gmsh_face_embedded_vertex_tags[f].push_back(_gv_tag_curr);
 
           // If there are more than one embedded vertices, add embedded edges
           if (_gv_tag_prev != 0) {
             _ge_tag = gmsh::model::geo::addLine(_gv_tag_prev, _gv_tag_curr);
-            f->addEmbeddedGEdgeTag(_ge_tag);
+            _gmsh_face_embedded_edge_tags[f].push_back(_ge_tag);
           }
 
           _gv_tag_prev = _gv_tag_curr;
 
         }
-
-        // if (gvs.size() > 1) {
-
-        //   for (auto i = 0; i < gvs.size() - 1; i++) {
-        //     ge = _gmodel->addLine(gvs[i], gvs[i+1]);
-        //     gf->addEmbeddedEdge(ge);
-        //   }
-
-        // }
       }
     }
   }
@@ -403,15 +350,15 @@ void PModel::createGmshEmbeddedEntities(Message *pmessage) {
 
     PLOG(debug) << pmessage->message("");
     PLOG(debug) << pmessage->message("  face: " + f->name());
-    // debug_print = false;
 
-    if (f->getEmbeddedGVertexTags().size() > 0) {
-      gmsh::model::mesh::embed(0, f->getEmbeddedGVertexTags(), 2, f->gfaceTag());
+    auto it_ev = _gmsh_face_embedded_vertex_tags.find(f);
+    if (it_ev != _gmsh_face_embedded_vertex_tags.end() && !it_ev->second.empty()) {
+      gmsh::model::mesh::embed(0, it_ev->second, 2, _gmsh_face_tags[f]);
 
-      if (f->getEmbeddedGEdgeTags().size() > 0) {
-        gmsh::model::mesh::embed(1, f->getEmbeddedGEdgeTags(), 2, f->gfaceTag());
+      auto it_ee = _gmsh_face_embedded_edge_tags.find(f);
+      if (it_ee != _gmsh_face_embedded_edge_tags.end() && !it_ee->second.empty()) {
+        gmsh::model::mesh::embed(1, it_ee->second, 2, _gmsh_face_tags[f]);
       }
-
     }
   }
 
@@ -438,7 +385,7 @@ void PModel::createGmshPhyscialGroups(Message *pmessage) {
     PLOG(debug) << pmessage->message("");
     PLOG(debug) << pmessage->message("  face: " + f->name());
 
-    if (f->gbuild() && f->outer() != nullptr) {
+    if (f->realGeometry() && f->outer() != nullptr) {
 
       PLOG(debug) << pmessage->message(
         "  id: " + std::to_string(f->layertype()->id())
@@ -463,10 +410,9 @@ void PModel::createGmshPhyscialGroups(Message *pmessage) {
       }
 
       // Add face tag to the group
-      group_face_tags[index].push_back(f->gfaceTag());
+      group_face_tags[index].push_back(_gmsh_face_tags[f]);
 
-      // gf->addPhysicalEntity(f->layertype()->id());
-      f->setGmshPhysicalGroupTag(f->layertype()->id());
+      _gmsh_face_physical_group_tags[f] = f->layertype()->id();
 
     }
   }

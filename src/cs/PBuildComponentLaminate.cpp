@@ -21,7 +21,7 @@
 #include <string>
 
 
-void PComponent::buildLaminate(Message *pmessage) {
+void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
 
   for (auto seg : _segments) {
 
@@ -42,8 +42,8 @@ void PComponent::buildLaminate(Message *pmessage) {
     if (seg->closed()) {
       seg->setHeadVertexOffset(seg->curveOffset()->vertices().front());
       seg->setTailVertexOffset(seg->curveOffset()->vertices().back());
-      _pmodel->dcel()->addEdge(seg->curveBase()->vertices()[0],
-                                seg->curveOffset()->vertices()[0]);
+      bcfg.dcel->addEdge(seg->curveBase()->vertices()[0],
+                         seg->curveOffset()->vertices()[0]);
       continue;
     }
 
@@ -76,12 +76,12 @@ void PComponent::buildLaminate(Message *pmessage) {
             if (seg->getBeginVertex() == seg_p->getBeginVertex()) {
               // Head to head
               found_begin = true;
-              joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, pmessage);
+              joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, bcfg, pmessage);
               // break;
             } else if (seg->getBeginVertex() == seg_p->getEndVertex()) {
               // Head to tail
               found_begin = true;
-              joinSegments(seg, seg_p, 0, 1, seg->getBeginVertex(), js, pmessage);
+              joinSegments(seg, seg_p, 0, 1, seg->getBeginVertex(), js, bcfg, pmessage);
               // break;
             }
           }
@@ -99,12 +99,12 @@ void PComponent::buildLaminate(Message *pmessage) {
             if (seg->getEndVertex() == seg_p->getBeginVertex()) {
               // Tail to head
               found_end = true;
-              joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, pmessage);
+              joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, bcfg, pmessage);
               // break;
             } else if (seg->getEndVertex() == seg_p->getEndVertex()) {
               // Tail to tail
               found_end = true;
-              joinSegments(seg, seg_p, 1, 1, seg->getEndVertex(), js, pmessage);
+              joinSegments(seg, seg_p, 1, 1, seg->getEndVertex(), js, bcfg, pmessage);
               // break;
             }
           }
@@ -119,13 +119,13 @@ void PComponent::buildLaminate(Message *pmessage) {
       // seg->curveBase()->print(pmessage, 9);
 
       if (seg->headVertexOffset() == nullptr && !found_begin) {
-        joinSegments(seg, 0, seg->getBeginVertex(), pmessage);
+        joinSegments(seg, 0, seg->getBeginVertex(), bcfg, pmessage);
       }
 
       // seg->curveBase()->print(pmessage, 9);
 
       if (seg->tailVertexOffset() == nullptr && !found_end) {
-        joinSegments(seg, 1, seg->getEndVertex(), pmessage);
+        joinSegments(seg, 1, seg->getEndVertex(), bcfg, pmessage);
       }
 
       // seg->curveBase()->print(pmessage, 9);
@@ -141,9 +141,9 @@ void PComponent::buildLaminate(Message *pmessage) {
   // Create half edge loops for each segment (outer boundary)
   for (auto seg : _segments) {
 
-    seg->build(pmessage);
+    seg->build(bcfg, pmessage);
 
-    if (config.debug) _pmodel->plotGeoDebug(pmessage);
+    if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(pmessage);
 
   }
 

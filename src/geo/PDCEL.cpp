@@ -153,7 +153,7 @@ void PDCEL::print_dcel() {
 
 
 
-void PDCEL::fixGeometry(Message *pmessage) {
+void PDCEL::fixGeometry(const BuilderConfig &bcfg, Message *pmessage) {
   pmessage->increaseIndent();
   PLOG(info) << pmessage->message("fixing geometry");
   // Remove very small edges (very close points)
@@ -173,7 +173,7 @@ void PDCEL::fixGeometry(Message *pmessage) {
 
     // Calculate edge length
     double sqlen = calcDistanceSquared(he->source(), he->target());
-    if (sqlen <= config.geo_tol*config.geo_tol) {
+    if (sqlen <= bcfg.geo_tol*bcfg.geo_tol) {
       small_edges.push_back(he);
     }
   }

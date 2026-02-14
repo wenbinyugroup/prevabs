@@ -27,27 +27,23 @@ private:
   int _sign;
   bool _on_joint = false;
 
-  bool _gbuild;
-  // GEdge *_gedge;
-  int _gedge_tag = 0;
-
 public:
   PDCELHalfEdge()
       : _source(nullptr), _twin(nullptr), _prev(nullptr), _next(nullptr),
         _loop(nullptr), _face(nullptr),
-        _line_segment(nullptr), _gbuild(true) {}
+        _line_segment(nullptr) {}
   PDCELHalfEdge(PDCELVertex *source)
       : _source(source), _twin(nullptr), _prev(nullptr), _next(nullptr),
         _loop(nullptr), _face(nullptr),
-        _line_segment(nullptr), _gbuild(true) {}
-  PDCELHalfEdge(PDCELVertex *source, bool build)
+        _line_segment(nullptr) {}
+  PDCELHalfEdge(PDCELVertex *source, bool /*build*/)
       : _source(source), _twin(nullptr), _prev(nullptr), _next(nullptr),
         _loop(nullptr), _face(nullptr),
-        _line_segment(nullptr), _gbuild(build) {}
+        _line_segment(nullptr) {}
   PDCELHalfEdge(PDCELVertex *source, int sign)
       : _source(source), _twin(nullptr), _prev(nullptr), _next(nullptr),
         _loop(nullptr), _face(nullptr), _sign(sign),
-        _line_segment(nullptr), _gbuild(true) {}
+        _line_segment(nullptr) {}
 
   friend std::ostream &operator<<(std::ostream &, PDCELHalfEdge *);
   std::string printString();
@@ -88,13 +84,4 @@ public:
 
   void setOnJoint(bool on_joint) { _on_joint = on_joint; }
 
-  // Gmsh
-  bool gbuild() { return _gbuild; }
-  // GEdge *gedge() { return _gedge; }
-  int gedgeTag() { return _gedge_tag; }
-  void setGBuild(bool build) { _gbuild = build; }
-  // void setGEdge(GEdge *gedge) { _gedge = gedge; }
-  void setGEdgeTag(int tag) { _gedge_tag = tag; }
-  // void resetGEdge() { _gedge = nullptr; }
-  void resetGEdgeTag() { _gedge_tag = 0; }
 };

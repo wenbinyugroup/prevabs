@@ -30,7 +30,7 @@ PComponent *readXMLElementComponent(
   CrossSection *cs, PModel *pmodel, Message *pmessage
   ) {
 
-  PComponent *p_component = new PComponent(pmodel);
+  PComponent *p_component = new PComponent();
 
   std::string cmp_name;
   xml_attribute<> *p_xa_name = xn_component->first_attribute("name");

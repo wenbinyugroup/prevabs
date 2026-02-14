@@ -1,5 +1,16 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Baseline;
+class Message;
+class PAVLTreeVertex;
+class PDCELVertex;
+class PDCELHalfEdge;
+class PDCELHalfEdgeLoop;
+class PDCELFace;
+class PGeoLineSegment;
+
 #include "declarations.hpp"
 #include "PBaseLine.hpp"
 #include "PBST.hpp"
@@ -8,17 +19,10 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
+#include "globalVariables.hpp"
 
 #include <list>
 #include <vector>
-
-class Baseline;
-class PDCELVertex;
-class PDCELHalfEdge;
-class PDCELHalfEdgeLoop;
-class PDCELFace;
-class PAVLTreeVertex;
-class PGeoLineSegment;
 
 
 /** @ingroup geo
@@ -57,7 +61,7 @@ public:
 
   PAVLTreeVertex *vertextree() { return _vertex_tree; }
 
-  void fixGeometry(Message *);
+  void fixGeometry(const BuilderConfig &, Message *);
 
   // =================================================================
   // VERTEX

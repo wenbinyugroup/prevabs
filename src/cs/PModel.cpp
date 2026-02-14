@@ -70,107 +70,45 @@ void PModel::finalize() {
 
 
 
-PDCELVertex *PModel::getPointByName(std::string name) {
-  for (auto p : _vertices) {
-    if (p->name() == name) {
-      return p;
-    }
-  }
-  return nullptr;
-}
+// getPointByName, getBaselineByName, getBaselineByNameCopy,
+// getMaterialByName, getLaminaByName, getLayerTypeByMaterialAngle,
+// getLayerTypeByMaterialNameAngle, getLayupByName
+// — all implemented inline in PModel.hpp, delegating to sub-repositories.
 
 
 
 
 
-Baseline *PModel::getBaselineByName(std::string name) {
-  for (auto l : _baselines) {
-    if (l->getName() == name) {
-      return l;
-    }
-  }
-  return nullptr;
-}
 
 
 
 
 
-Baseline *PModel::getBaselineByNameCopy(std::string name) {
-  Baseline *bl;
-  for (auto l : _baselines) {
-    if (l->getName() == name) {
-      bl = new Baseline(l);
-      return bl;
-    }
-  }
-  return nullptr;
-}
 
 
 
 
 
-Material *PModel::getMaterialByName(std::string name) {
-  for (auto m : _materials) {
-    if (m->getName() == name) {
-      return m;
-    }
-  }
-  return nullptr;
-}
 
 
 
 
 
-Lamina *PModel::getLaminaByName(std::string name) {
-  for (auto l : _laminas) {
-    if (l->getName() == name) {
-      return l;
-    }
-  }
-  return nullptr;
-}
 
 
 
 
 
-LayerType *PModel::getLayerTypeByMaterialAngle(Material *m, double angle) {
-  for (auto lt : _layertypes) {
-    if (lt->material() == m && lt->angle() == angle) {
-      return lt;
-    }
-  }
-  return nullptr;
-}
 
 
 
 
 
-LayerType *PModel::getLayerTypeByMaterialNameAngle(std::string name, double angle) {
-  for (auto lt : _layertypes) {
-    if (lt->material()->getName() == name && lt->angle() == angle) {
-      return lt;
-    }
-  }
-  return nullptr;
-}
 
 
 
 
 
-Layup *PModel::getLayupByName(std::string name) {
-  for (auto l : _layups) {
-    if (l->getName() == name) {
-      return l;
-    }
-  }
-  return nullptr;
-}
 
 // std::vector<int> &PModel::getIntParamsForGmsh() {
 //   std::vector<int> i_params(13, 0);
@@ -233,20 +171,12 @@ void PModel::setObliques(double cos11, double cos21) {
 
 
 
-void PModel::addLayerType(Material *m, double a) {
-  LayerType *lt = new LayerType(0, m, a);
-  _layertypes.push_back(lt);
-}
+// addLayerType — implemented inline in PModel.hpp, delegating to MaterialRepository.
 
 
 
 
 
-void PModel::addLayerType(std::string name, double a) {
-  Material *m = getMaterialByName(name);
-  LayerType *lt = new LayerType(0, m, a);
-  _layertypes.push_back(lt);
-}
 
 
 
@@ -275,7 +205,7 @@ void PModel::summary(Message *pmessage) {
   //   std::cout << bp << std::endl;
   pmessage->printBlank();
   pmessage->print(9, "summary of base points");
-  for (auto bp : _vertices) {
+  for (auto bp : _geo_repo.vertices()) {
     std::stringstream ss;
     ss << bp;
     pmessage->print(9, ss);
@@ -294,7 +224,7 @@ void PModel::summary(Message *pmessage) {
   //             << std::endl;
   pmessage->printBlank();
   pmessage->print(9, "summary of base lines");
-  for (auto bsl : _baselines) {
+  for (auto bsl : _geo_repo.baselines()) {
     bsl->print(pmessage);
     pmessage->printBlank();
   }
@@ -302,11 +232,11 @@ void PModel::summary(Message *pmessage) {
   // std::cout << doubleLine80 << std::endl;
   pmessage->print(9, doubleLine80);
 
-  std::cout << "MATERIALS" << std::setw(8) << _materials.size() << std::endl;
+  std::cout << "MATERIALS" << std::setw(8) << _mat_repo.numMaterials() << std::endl;
   std::cout << singleLine80 << std::endl;
   std::cout << std::setw(16) << "ID" << std::setw(16) << "Name" << std::setw(32)
             << "Type" << std::setw(16) << "Density" << std::endl;
-  for (auto m : _materials)
+  for (auto m : _mat_repo.materials())
     std::cout << std::setw(16) << m->id() << std::setw(16) << m->getName()
               << std::setw(32) << m->getType() << std::setw(16)
               << m->getDensity() << std::endl;
@@ -314,28 +244,28 @@ void PModel::summary(Message *pmessage) {
   // std::cout << doubleLine80 << std::endl;
   pmessage->print(9, doubleLine80);
 
-  std::cout << "LAYER TYPES" << std::setw(8) << _layertypes.size() << std::endl;
+  std::cout << "LAYER TYPES" << std::setw(8) << _mat_repo.numLayerTypes() << std::endl;
   std::cout << singleLine80 << std::endl;
   std::cout << std::setw(16) << "ID" << std::setw(16) << "Material ID"
             << std::setw(16) << "Angle" << std::setw(16) << "Material Name"
             << std::endl;
-  for (auto plt : _layertypes)
+  for (auto plt : _mat_repo.layertypes())
     std::cout << plt << std::endl;
 
   std::cout << doubleLine80 << std::endl;
 
-  std::cout << "LAYUPS" << std::setw(8) << _layups.size() << std::endl;
+  std::cout << "LAYUPS" << std::setw(8) << _mat_repo.layups().size() << std::endl;
   std::cout << singleLine80 << std::endl;
   std::cout << std::setw(32) << "Name" << std::setw(16) << "# Plies"
             << std::setw(16) << "Thickness" << std::endl;
-  for (auto l : _layups)
+  for (auto l : _mat_repo.layups())
     std::cout << std::setw(32) << l->getName() << std::setw(16)
               << l->getPlies().size() << std::setw(16) << l->getThickness()
               << std::endl;
 
   pmessage->printBlank();
   pmessage->print(9, "summary of layups");
-  for (auto lyp : _layups) {
+  for (auto lyp : _mat_repo.layups()) {
     lyp->print(pmessage, 9);
     pmessage->printBlank();
   }
@@ -359,17 +289,23 @@ void PModel::build(Message *pmessage) {
   _dcel = new PDCEL();
   _dcel->initialize();
 
+  BuilderConfig bcfg{
+    config.debug, config.analysis_tool, config.tol, config.geo_tol,
+    _dcel, this,
+    [this](Message *m) { this->plotGeoDebug(m); }
+  };
+
   // for (auto cs : crosssections) {
   //   cs->build();
   // }
-  _cross_section->build(pmessage);
+  _cross_section->build(bcfg, pmessage);
 
   // _dcel->print_dcel();
 
   // _dcel->vertextree()->printInOrder();
 
   pmessage->printBlank();
-  _dcel->fixGeometry(pmessage);
+  _dcel->fixGeometry(bcfg, pmessage);
 }
 
 
@@ -561,15 +497,12 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
     writeGmshOpt(fn_base, pmessage);
   }
 
-  for (auto v : _dcel->vertices()) {
-    // if (v->gvertex()) v->resetGVertex();
-    if (v->gvertexTag() != 0) v->resetGVertexTag();
-  }
-
-  for (auto he : _dcel->halfedges()) {
-    // if (he->gedge()) he->resetGEdge();
-    if (he->gedgeTag() != 0) he->resetGEdgeTag();
-  }
+  _gmsh_vertex_tags.clear();
+  _gmsh_edge_tags.clear();
+  _gmsh_face_tags.clear();
+  _gmsh_face_embedded_vertex_tags.clear();
+  _gmsh_face_embedded_edge_tags.clear();
+  _gmsh_face_physical_group_tags.clear();
 
 }
 
@@ -815,7 +748,8 @@ void PModel::homogenize(Message *pmessage) {
       if (config.plot) {
         writeGmsh(config.file_directory + config.file_base_name, pmessage);
       }
-      writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
+      WriterConfig wcfg{config.analysis_tool, config.dehomo, config.tool_ver, config.file_name_vsc};
+      writeSG(config.file_name_vsc, wcfg, pmessage);
 
       if (_itf_output) {
         // Write supplement files
@@ -890,11 +824,7 @@ void PModel::run(Message *pmessage) {
   if (config.analysis_tool == 1) {
     cmd_args.push_back(config.file_name_vsc);
     // VABS
-    if (config.integrated_solver) {
-      runIntegratedVABS(config.file_name_vsc, this, pmessage);
-    }
-
-    else {
+    {
       if (config.dehomo) {
         config.vabs_option = "2";
         if (config.dehomo_nl) {
@@ -902,8 +832,8 @@ void PModel::run(Message *pmessage) {
         }
       }
       cmd_args.push_back(config.vabs_option);
-      if (_load_cases.size() > 1) {
-        cmd_args.push_back(std::to_string(_load_cases.size()));
+      if (_pp_data.load_cases.size() > 1) {
+        cmd_args.push_back(std::to_string(_pp_data.load_cases.size()));
       }
 
       runVABS(config.vabs_name, cmd_args, pmessage);

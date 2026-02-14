@@ -17,6 +17,15 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 
 ### Windows (MSVC)
 
+Environment: Use "Developer PowerShell for VS 2022" (or "x64 Native Tools Command Prompt for VS 2022")
+Command line profile:
+
+```bash
+powershell.exe -NoExit -Command "&{Import-Module """C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"""; Enter-VsDevShell 36b298b6 -SkipAutomaticLocation -DevCmdArguments """-arch=x64 -host_arch=x64"""}"
+```
+
+Always use this environment to build the project.
+
 ```bash
 # Full rebuild (cleans and rebuilds)
 tools\build_msvc.bat full
@@ -45,6 +54,7 @@ make
 ### Running Tests
 
 **Unit tests:**
+
 ```bash
 cd test/unittest
 mkdir build && cd build
@@ -54,6 +64,7 @@ make
 ```
 
 **Integration tests:**
+
 ```bash
 # Run all examples
 test\test_all_examples.bat   # Windows
@@ -133,6 +144,7 @@ src/              # Source files (.cpp)
 - **Pointers**: Use `*` attached to type: `PElementNodeData* _u`
 
 Example:
+
 ```cpp
 void PModel::initialize() {
   if (config.debug) {
@@ -285,18 +297,19 @@ The following issues are documented for tracking. See `local/review-20260213.md`
 
 | Priority | Issue | Location |
 |---|---|---|
+| Critical | ~~`PModel*` back-pointers in every domain object~~ — **Fixed 2026-02-14** (`PModel*` removed from `CrossSection`, `PComponent`, `Segment`, `PArea`; `IMaterialLookup` interface + `PDCEL*` + `plotDebug` callback added to `BuilderConfig`; see `local/issue-20260214-remove-pmodel-backpointers.md`) | `include/CrossSection.hpp`, `PComponent.hpp`, `PSegment.hpp`, `PArea.hpp` |
 | Critical | `Message*`/`PModel*` never deleted — use `unique_ptr` | `main.cpp:282,289` |
 | Critical | Null deref on missing XML attributes/nodes | `PModelIOReadCrossSection.cpp:98,321,558` |
 | Critical | `argv[i+1]` out-of-bounds in legacy CLI parser | `main.cpp:103` |
-| Critical | Shell injection via `std::system()` | `execu.cpp:95` |
-| High | `declarations.hpp` missing `#pragma once` | `include/declarations.hpp` |
-| High | `log_severity_level` declared but never defined | `globalVariables.hpp:66` |
+| Critical | ~~Shell injection via `std::system()`~~ — **Fixed 2026-02-14** | `execu.cpp` — replaced with `CreateProcess`/`execvp`; see `local/issue-20260214-execu-critical-fixes.md` |
+| High | ~~`declarations.hpp` missing `#pragma once`~~ — **Not applicable** (pragma was present; root issue was missing forward decls causing circular-include cascade — **Fixed 2026-02-14**) | `include/PSegment.hpp`, `PArea.hpp`, `PDCEL.hpp`, `PModel.hpp`, `Material.hpp`, `utilities.hpp` |
+| High | ~~`log_severity_level` declared but never defined~~ — **Fixed 2026-02-14** (removed stale `extern std::string log_severity_level` from `globalVariables.hpp:66`) | `include/globalVariables.hpp` |
 | High | `atoi()` used to parse `double` values | `PModelIOReadCrossSection.cpp:441,452` |
 | High | `fopen()` return value not checked | `PModel.cpp:43` |
 | High | `PDCELHalfEdgeLoop` objects not deleted in destructor | `PDCEL.cpp` |
-| Medium | PI constant has insufficient precision | `globalConstants.hpp:21` |
-| Medium | `PConfig.hpp` is an empty dead file | `include/PConfig.hpp` |
-| Medium | Large volumes of commented-out dead code | Throughout `src/` |
+| Medium | ~~PI constant has insufficient precision~~ — **Fixed 2026-02-14** (updated to `3.141592653589793`) | `include/globalConstants.hpp:21` |
+| Medium | ~~`PConfig.hpp` is an empty dead file~~ — **Fixed 2026-02-14** (replaced empty class body with comment; empty `class PConfig {}` shadowed the real struct in `globalVariables.hpp`) | `include/PConfig.hpp` |
+| Medium | ~~Large volumes of commented-out dead code~~ — **Fixed 2026-02-14** (`execu.cpp` reduced from 544 to 178 lines; `runIntegratedVABS()` stub removed; `exec()`, `NE_1D`, unused includes removed) | `src/execu.cpp` — see `local/issue-20260214-execu-medium-fixes.md` |
 | Medium | `GLOB_RECURSE` for source files in CMake | `CMakeLists.txt` |
 | Medium | No compiler warning flags (`-Wall`, `/W4`) | `CMakeLists.txt` |
 | Medium | CMake minimum version too old (3.0 → 3.14) | `CMakeLists.txt` |

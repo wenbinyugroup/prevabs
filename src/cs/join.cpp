@@ -24,7 +24,7 @@
 #include <string>
 
 
-void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessage) {
+void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &bcfg, Message *pmessage) {
 
   pmessage->increaseIndent();
 
@@ -34,7 +34,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
   if (_dependencies.empty()) {
     PLOG(debug) << pmessage->message("making segment end because of no dependency.");
-    createSegmentFreeEnd(s, e, pmessage);
+    createSegmentFreeEnd(s, e, bcfg, pmessage);
     pmessage->decreaseIndent();
     return;
   }
@@ -46,7 +46,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
     if (e == s->free()) {
       PLOG(debug) << pmessage->message("making segment end because of free end set although with dependency.");
-      createSegmentFreeEnd(s, e, pmessage);
+      createSegmentFreeEnd(s, e, bcfg, pmessage);
       pmessage->decreaseIndent();
       return;
     }
@@ -90,7 +90,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
         to_be_removed = false;
       }
       else {
-        _pmodel->dcel()->addVertex(_ref_vertex);
+        bcfg.dcel->addVertex(_ref_vertex);
         to_be_removed = true;
       }
 
@@ -103,17 +103,17 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
       std::vector<PDCELHalfEdgeLoop *> hels;
       PDCELHalfEdgeLoop *tmp_hel_out;
-      tmp_hel_out = _pmodel->dcel()->findEnclosingLoop(_ref_vertex);
+      tmp_hel_out = bcfg.dcel->findEnclosingLoop(_ref_vertex);
       // std::cout << "\ntmp_hel_out\n";
       // tmp_hel_out->print();
       // std::cout << "\ntmp_hel_out->incidentEdge(): " << tmp_hel_out->incidentEdge() << std::endl;
-      // std::cout << "\ndcel->halfedges.front(): " << _pmodel->dcel()->halfedges().front() << std::endl;
-      if (tmp_hel_out != _pmodel->dcel()->halfedgeloops().front()) {
+      // std::cout << "\ndcel->halfedges.front(): " << bcfg.dcel->halfedges().front() << std::endl;
+      if (tmp_hel_out != bcfg.dcel->halfedgeloops().front()) {
         // Not the first loop with INF size
         hels.push_back(tmp_hel_out);
       }
 
-      // _pmodel->dcel()->print_dcel();
+      // bcfg.dcel->print_dcel();
 
 
 
@@ -128,8 +128,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
         // tmp_face->print();
         // Try to update inner loops first
         if (tmp_face->inners().size() == 0) {
-          _pmodel->dcel()->linkHalfEdgeLoops();
-          for (auto heli : _pmodel->dcel()->halfedgeloops()) {
+          bcfg.dcel->linkHalfEdgeLoops();
+          for (auto heli : bcfg.dcel->halfedgeloops()) {
             if (!heli->keep()) {
               PDCELHalfEdgeLoop *helj = heli;
               while (helj->adjacentLoop() != nullptr) {
@@ -153,13 +153,13 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
       }
 
       if (to_be_removed) {
-        _pmodel->dcel()->removeVertex(_ref_vertex);
+        bcfg.dcel->removeVertex(_ref_vertex);
       }
 
       // delete tmp_face;
       // delete tmp_hel_out;
 
-      if (config.debug) {
+      if (bcfg.debug) {
         std::cout << "\nhels:\n";
         PLOG(debug) << pmessage->message("found half edge loops");
         for (auto hel : hels) {
@@ -178,7 +178,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
       // 3.1. For the base curve
       PLOG(debug) << pmessage->message("step 3.1: for the base curve");
 
-      // for (auto hel : _pmodel->dcel()->halfedgeloops()) {
+      // for (auto hel : bcfg.dcel->halfedgeloops()) {
       for (auto hel : hels) {
         if (!hel->keep()) {
           // std::cout << "        half edge loop hel:" << std::endl;
@@ -235,7 +235,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
       if (fabs(u1) == INF) {
         PLOG(debug) << pmessage->message("making segment end because of not touching any other components although with dependency.");
-        createSegmentFreeEnd(s, e, pmessage);
+        createSegmentFreeEnd(s, e, bcfg, pmessage);
         pmessage->decreaseIndent();
         return;
       }
@@ -249,7 +249,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
         }
         else {
           v_new = he_tool->toLineSegment()->getParametricVertex(u2);
-          _pmodel->dcel()->splitEdge(he_tool, v_new);
+          bcfg.dcel->splitEdge(he_tool, v_new);
           // std::cout << "        half edges of vertex v_new: " << v_new <<
           // std::endl; v_new->printAllLeavingHalfEdges();
         }
@@ -309,7 +309,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
       }
 
 
-      // for (auto hel : _pmodel->dcel()->halfedgeloops()) {
+      // for (auto hel : bcfg.dcel->halfedgeloops()) {
       for (auto hel : hels) {
         if (!hel->keep()) {
 
@@ -371,7 +371,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
       }
       else {
         v_new = he_tool->toLineSegment()->getParametricVertex(u2);
-        _pmodel->dcel()->splitEdge(he_tool, v_new);
+        bcfg.dcel->splitEdge(he_tool, v_new);
         // std::cout << "        half edges of vertex v_new: " << v_new <<
         // std::endl; v_new->printAllLeavingHalfEdges();
       }
@@ -582,7 +582,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, Message *pmessa
 
 void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
-  PDCELVertex *v, int style, Message *pmessage
+  PDCELVertex *v, int style, const BuilderConfig &bcfg, Message *pmessage
   ) {
   pmessage->increaseIndent();
 
@@ -1288,7 +1288,7 @@ void PComponent::joinSegments(
   // Create half edges
   PDCELHalfEdge *he_new;
   for (int i = 0; i < bound_vertices.size() - 1; ++i) {
-    he_new = _pmodel->dcel()->addEdge(bound_vertices[i], bound_vertices[i + 1]);
+    he_new = bcfg.dcel->addEdge(bound_vertices[i], bound_vertices[i + 1]);
     // std::cout << "        new half edge: " << he_new << std::endl;
   }
 
@@ -1337,7 +1337,7 @@ void PComponent::joinSegments(
 
 
 
-void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
+void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bcfg, Message *pmessage) {
   // std::cout << "[debug] createSegmentFreeEnd: " << s->getName() << " " << e
   // << std::endl;
   PLOG(debug) << pmessage->message("createSegmentFreeEnd: " + s->getName() + " " + std::to_string(e));
@@ -1574,7 +1574,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
   if (e == 0) {
     // s->getBaseline()->vertices().front()->printWithAddress();
 
-    _pmodel->dcel()->addEdge(s->getBaseline()->vertices().front(),
+    bcfg.dcel->addEdge(s->getBaseline()->vertices().front(),
                              s->curveOffset()->vertices().front());
     s->setHeadVertexOffset(s->curveOffset()->vertices().front());
 
@@ -1583,7 +1583,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, Message *pmessage) {
   else if (e == 1) {
     // s->getBaseline()->vertices().front()->printWithAddress();
 
-    _pmodel->dcel()->addEdge(s->getBaseline()->vertices().back(),
+    bcfg.dcel->addEdge(s->getBaseline()->vertices().back(),
                              s->curveOffset()->vertices().back());
     s->setTailVertexOffset(s->curveOffset()->vertices().back());
 

@@ -8,6 +8,7 @@
 #include "PSegment.hpp"
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
+#include "globalVariables.hpp"
 
 #include <list>
 #include <string>
@@ -25,7 +26,6 @@ class Segment;
  */
 class PComponent {
 private:
-  PModel *_pmodel;
   std::string _name;
   int _order; // The number deciding the building order
   int _type;  // 0: reserved; 1: laminate; 2: fill
@@ -65,11 +65,11 @@ private:
   // void calcBoundingVertices(Segment *s, PDCELVertex *v);
   // void calcBoundingVertices(Segment *s1, PDCELVertex *v, Segment *s2);
 
-  void createSegmentFreeEnd(Segment *s, int e, Message *);
-  void joinSegments(Segment *s, int e, PDCELVertex *v, Message *);
-  void joinSegments(Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v, int style, Message *);
-  void buildLaminate(Message *);
-  void buildFilling(Message *);
+  void createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &, Message *);
+  void joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &, Message *);
+  void joinSegments(Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v, int style, const BuilderConfig &, Message *);
+  void buildLaminate(const BuilderConfig &, Message *);
+  void buildFilling(const BuilderConfig &, Message *);
 
 public:
   static int count_tmp;
@@ -77,12 +77,6 @@ public:
   PComponent()
       : _order(0), _type(0), _style(1), _fill_location(nullptr),
         _fill_ref_baseline(nullptr){};
-  PComponent(PModel *model)
-      : _pmodel(model), _order(0), _type(0), _style(1), _cycle(false),
-        _fill_location(nullptr), _fill_ref_baseline(nullptr){};
-  PComponent(std::string name, PModel *model)
-      : _name(name), _pmodel(model), _order(0), _type(0), _style(1),
-        _cycle(false), _fill_location(nullptr), _fill_ref_baseline(nullptr){};
 
   void print();
   void print(Message *, int, int = 0);
@@ -92,7 +86,6 @@ public:
   int order();
   int type() { return _type; }
   int style() { return _style; }
-  PModel *pmodel() { return _pmodel; }
   bool isCyclic() { return _cycle; }
   std::list<PComponent *> &dependents() { return _dependencies; }
   double getMeshSize() const { return _mesh_size; }
@@ -152,8 +145,8 @@ public:
   void setTrimHeadVector(double x2, double x3) { _trim_head_vector.assign({x2, x3}); }
   void setTrimTailVector(double x2, double x3) { _trim_tail_vector.assign({x2, x3}); }
 
-  void build(Message *);
-  void buildDetails(Message *);
+  void build(const BuilderConfig &, Message *);
+  void buildDetails(const BuilderConfig &, Message *);
 };
 
 bool compareOrder(PComponent *, PComponent *);

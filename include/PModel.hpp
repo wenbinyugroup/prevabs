@@ -1,23 +1,37 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Baseline;
+class CrossSection;
+class Lamina;
+class LayerType;
+class Layup;
+class Material;
+class Message;
+class PDCEL;
+class PDCELFace;
+class PDCELHalfEdge;
+class PDCELVertex;
+class PElementNodeData;
+class PMesh;
+
 #include "declarations.hpp"
+#include "globalVariables.hpp"
 #include "Material.hpp"
 #include "PDCEL.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
+#include "GeometryRepository.hpp"
+#include "MaterialRepository.hpp"
+#include "MeshData.hpp"
 
 // #include "gmsh/GModel.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
-// #include <map>
 #include <utility>
-
-// class PDCEL;
-// class Basepoint;
-// class Baseline;
-// class CrossSection;
-// class PDCELVertex;
 
 struct LoadCase {
   int measure{0};  // 0: generalized stress, 1: generalized strain
@@ -115,12 +129,18 @@ public:
 };
 
 
+/// Groups post-processing results: load cases and per-load-case local states.
+struct PostProcessingData {
+  std::vector<LoadCase>    load_cases;
+  std::vector<LocalState*> local_states;
+};
+
 
 
 /** @ingroup cs
  * A cross-sectional model class.
  */
-class PModel {
+class PModel : public IMaterialLookup {
 private:
   std::string _name;
   // GModel *_gmodel, *_gmodel_debug;
@@ -154,28 +174,22 @@ private:
   // 8: thermoviscoelastic
   unsigned int _physics{0};
 
-  // Repositories
-  // std::vector<Material *> _materials;
-  // std::vector<Lamina *> _laminas;
-  // std::vector<Basepoint> basepoints;
-  std::vector<PDCELVertex *> _vertices;
-  std::vector<Baseline *> _baselines;
-  std::vector<Material *> _materials;
-  std::vector<Lamina *> _laminas;
-  std::vector<LayerType *> _layertypes;
-  std::vector<Layup *> _layups;
-  // std::vector<CrossSection *> crosssections;
-
-  std::vector<LoadCase> _load_cases;
+  // Sub-repositories (Step 6 split)
+  MaterialRepository  _mat_repo;
+  GeometryRepository  _geo_repo;
+  MeshData            _mesh_data;
+  PostProcessingData  _pp_data;
 
   CrossSection *_cross_section;
 
-  PMesh *_pmesh;
-  std::vector<std::vector<int>> _node_elements;
-  size_t _num_nodes = 0;
-  size_t _num_elements = 0;
-
-  std::vector<LocalState *> _local_states;
+  // Gmsh entity maps — Gmsh integer tags for DCEL objects, owned by the Gmsh bridge.
+  // Keyed by pointer; cleared between debug geometry plots.
+  std::unordered_map<PDCELVertex*, int> _gmsh_vertex_tags;
+  std::unordered_map<PDCELHalfEdge*, int> _gmsh_edge_tags;
+  std::unordered_map<PDCELFace*, int> _gmsh_face_tags;
+  std::unordered_map<PDCELFace*, std::vector<int>> _gmsh_face_embedded_vertex_tags;
+  std::unordered_map<PDCELFace*, std::vector<int>> _gmsh_face_embedded_edge_tags;
+  std::unordered_map<PDCELFace*, int> _gmsh_face_physical_group_tags;
 
   int debug_plot_count = 0;
 
@@ -191,8 +205,6 @@ private:
   std::vector<std::pair<double, double>> _itf_theta3_pairs;
   std::vector<std::vector<PDCELVertex *>> _itf_vertices;
   std::vector<std::vector<PDCELHalfEdge *>> _itf_halfedges;
-  // std::vector<int> _joint_node_ids;
-  // std::vector<int> _joint_element_ids;
 
 public:
   std::vector<std::vector<int>> node_elements;
@@ -203,6 +215,14 @@ public:
 
   void initialize();
   void finalize();
+
+  // =================================================================
+  // Sub-repository accessors
+
+  MaterialRepository& materialRepository() { return _mat_repo; }
+  GeometryRepository& geometryRepository() { return _geo_repo; }
+  MeshData&           meshData()           { return _mesh_data; }
+  PostProcessingData& ppData()             { return _pp_data; }
 
   // =================================================================
   // Getters
@@ -228,10 +248,10 @@ public:
   std::vector<double> &curvatures() { return _analysis_curvatures; }
   std::vector<double> &obliques() { return _analysis_obliques; }
 
-  std::size_t getNumOfMaterials() { return _materials.size(); }
-  std::size_t getNumOfLayerTypes() { return _layertypes.size(); }
-  std::size_t getNumOfNodes() { return _num_nodes; }
-  std::size_t getNumOfElements() { return _num_elements; }
+  std::size_t getNumOfMaterials()  { return _mat_repo.numMaterials(); }
+  std::size_t getNumOfLayerTypes() { return _mat_repo.numLayerTypes(); }
+  std::size_t getNumOfNodes()      { return _mesh_data.num_nodes; }
+  std::size_t getNumOfElements()   { return _mesh_data.num_elements; }
 
   void getNodes(std::vector<size_t> &, std::vector<double> &, Message *);
   void getElements(
@@ -241,30 +261,43 @@ public:
     int, int, Message *
     );
 
-  std::vector<PDCELVertex *> &vertices() { return _vertices; }
-  std::vector<Baseline *> &baselines() { return _baselines; }
-  std::vector<Material *> &materials() { return _materials; }
-  std::vector<LayerType *> &layertypes() { return _layertypes; }
-  std::vector<Layup *> &layups() { return _layups; }
+  // Delegating to sub-repositories
+  std::vector<PDCELVertex *> &vertices()  { return _geo_repo.vertices(); }
+  std::vector<Baseline *>    &baselines() { return _geo_repo.baselines(); }
+  std::vector<Material *>    &materials() { return _mat_repo.materials(); }
+  std::vector<LayerType *>   &layertypes(){ return _mat_repo.layertypes(); }
+  std::vector<Layup *>       &layups()    { return _mat_repo.layups(); }
 
-  // std::vector<PDCELVertex *> &getJointVertices() { return _joint_vertices; }
-  // std::vector<PDCELHalfEdge *> &getJointHalfEdges() { return _joint_halfedges; }
-
-  std::vector<LoadCase> getLoadCases() const { return _load_cases; }
+  std::vector<LoadCase> getLoadCases() const { return _pp_data.load_cases; }
 
   CrossSection *cs() { return _cross_section; }
-  PMesh *getMesh() { return _pmesh; }
-  std::vector<std::vector<int>> getNodeElements() { return _node_elements; }
+  PMesh *getMesh()   { return _mesh_data.mesh; }
+  std::vector<std::vector<int>> getNodeElements() { return _mesh_data.node_elements; }
 
-  PDCELVertex *getPointByName(std::string);
-  Baseline *getBaselineByName(std::string);
+  PDCELVertex *getPointByName(std::string name)
+    { return _geo_repo.getPointByName(name); }
+  Baseline *getBaselineByName(std::string name)
+    { return _geo_repo.getBaselineByName(name); }
   /// Get a copy of the baseline with the given name
-  Baseline *getBaselineByNameCopy(std::string);
-  Material *getMaterialByName(std::string);
-  Lamina *getLaminaByName(std::string);
-  LayerType *getLayerTypeByMaterialAngle(Material *, double);
-  LayerType *getLayerTypeByMaterialNameAngle(std::string, double);
-  Layup *getLayupByName(std::string);
+  Baseline *getBaselineByNameCopy(std::string name)
+    { return _geo_repo.getBaselineByNameCopy(name); }
+
+  Material  *getMaterialByName(std::string name)
+    { return _mat_repo.getMaterialByName(name); }
+  Lamina    *getLaminaByName(std::string name)
+    { return _mat_repo.getLaminaByName(name); }
+  LayerType *getLayerTypeByMaterialAngle(Material *m, double angle) override
+    { return _mat_repo.getLayerTypeByMaterialAngle(m, angle); }
+  LayerType *getLayerTypeByMaterialNameAngle(std::string name, double angle)
+    { return _mat_repo.getLayerTypeByMaterialNameAngle(name, angle); }
+  Layup     *getLayupByName(std::string name)
+    { return _mat_repo.getLayupByName(name); }
+
+  /// Look up the Gmsh edge tag for a half-edge (returns 0 if not found).
+  int getGmshEdgeTag(PDCELHalfEdge* he) const {
+    auto it = _gmsh_edge_tags.find(he);
+    return (it != _gmsh_edge_tags.end()) ? it->second : 0;
+  }
 
   std::vector<std::pair<int, int>> getInterfaceMaterialPairs() { return _itf_material_pairs; }
   std::vector<std::pair<double, double>> getInterfaceTheta1Pairs() { return _itf_theta1_pairs; }
@@ -276,7 +309,7 @@ public:
   /*!
     \return A list of integer type parameters.
       (trans_flag is   1)
-    
+
     index    description
         0    vabs (1) or swiftcomp (2)
         1    element type (linear (1) or quadratic (2))
@@ -335,9 +368,9 @@ public:
 
   void setCrossSection(CrossSection *cs) { _cross_section = cs; }
 
-  void setMesh(PMesh *mesh) { _pmesh = mesh; }
-  void setNumNodes(size_t n) { _num_nodes = n; }
-  void setNumElements(size_t n) { _num_elements = n; }
+  void setMesh(PMesh *mesh)       { _mesh_data.mesh = mesh; }
+  void setNumNodes(size_t n)      { _mesh_data.num_nodes = n; }
+  void setNumElements(size_t n)   { _mesh_data.num_elements = n; }
 
   void setOmega(double o) { _omega = o; }
 
@@ -348,22 +381,19 @@ public:
   // =================================================================
   // Adders
 
-  void addVertex(PDCELVertex *v) { _vertices.push_back(v); }
-  void addBaseline(Baseline *l) { _baselines.push_back(l); }
-  void addMaterial(Material *m) { _materials.push_back(m); }
-  void addLamina(Lamina *l) { _laminas.push_back(l); }
-  void addLayerType(LayerType *lt) { _layertypes.push_back(lt); }
-  void addLayerType(Material *m, double a);
-  void addLayerType(std::string name, double a);
-  void addLayup(Layup *l) { _layups.push_back(l); }
+  void addVertex(PDCELVertex *v)  { _geo_repo.addVertex(v); }
+  void addBaseline(Baseline *l)   { _geo_repo.addBaseline(l); }
+  void addMaterial(Material *m)   { _mat_repo.addMaterial(m); }
+  void addLamina(Lamina *l)       { _mat_repo.addLamina(l); }
+  void addLayerType(LayerType *lt){ _mat_repo.addLayerType(lt); }
+  void addLayerType(Material *m, double a)      { _mat_repo.addLayerType(m, a); }
+  void addLayerType(std::string name, double a) { _mat_repo.addLayerType(name, a); }
+  void addLayup(Layup *l)         { _mat_repo.addLayup(l); }
 
-  // void addJointVertex(PDCELVertex *v) { _joint_vertices.push_back(v); }
-  // void addJointHalfEdge(PDCELHalfEdge *e) { _joint_halfedges.push_back(e); }
+  void addLoadCase(LoadCase lc)   { _pp_data.load_cases.push_back(lc); }
+  void addLocalState(LocalState *ls) { _pp_data.local_states.push_back(ls); }
 
-  void addLoadCase(LoadCase lc) { _load_cases.push_back(lc); }
-  void addLocalState(LocalState *ls) { _local_states.push_back(ls); }
-
-  void addNodeElement(int nid, int eid) { _node_elements[nid-1].push_back(eid); }
+  void addNodeElement(int nid, int eid) { _mesh_data.node_elements[nid-1].push_back(eid); }
 
   // =================================================================
   // IO
@@ -383,9 +413,9 @@ public:
   /// Write the SG model data into a file.
   /*!
     \param fn File name without the extension
-    \param fmt Format (1: VABS, 2: SwiftComp)
+    \param wcfg Writer configuration (analysis tool, dehomo flag, etc.)
    */
-  int writeSG(std::string fn, int fmt, Message *);
+  int writeSG(std::string fn, const WriterConfig &, Message *);
 
   void writeNodes(FILE *, const std::vector<size_t> &, const std::vector<double> &, Message *);
 
@@ -456,7 +486,7 @@ public:
   void plotGeoDebug(Message *, bool create_gmsh_geo=true);
   void plot(Message *);
   void plotDehomo(Message *);
-  
+
   int postVABS(Message *);
   int postSCDehomo();
   int postSCFailure();

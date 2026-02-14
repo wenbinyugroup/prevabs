@@ -80,7 +80,7 @@ void PComponent::addDependent(PComponent *component) {
 
 
 
-void PComponent::build(Message *pmessage) {
+void PComponent::build(const BuilderConfig &bcfg, Message *pmessage) {
 
   // i_indent++;
   pmessage->increaseIndent();
@@ -90,7 +90,7 @@ void PComponent::build(Message *pmessage) {
   // Laminate type component
   if (_type == 1) {
 
-    buildLaminate(pmessage);
+    buildLaminate(bcfg, pmessage);
 
   }
 
@@ -98,7 +98,7 @@ void PComponent::build(Message *pmessage) {
   // Fill type component
   else if (_type == 2) {
 
-    buildFilling(pmessage);
+    buildFilling(bcfg, pmessage);
 
   }
 
@@ -115,7 +115,7 @@ void PComponent::build(Message *pmessage) {
 
 
 
-void PComponent::buildDetails(Message *pmessage) {
+void PComponent::buildDetails(const BuilderConfig &bcfg, Message *pmessage) {
 
   // i_indent++;
   pmessage->increaseIndent();
@@ -126,9 +126,9 @@ void PComponent::buildDetails(Message *pmessage) {
 
     for (auto sgm : _segments) {
 
-      sgm->buildAreas(pmessage);
+      sgm->buildAreas(bcfg, pmessage);
 
-      if (config.debug) _pmodel->plotGeoDebug(pmessage);
+      if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(pmessage);
 
     }
 

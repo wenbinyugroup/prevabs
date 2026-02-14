@@ -56,20 +56,6 @@ CrossSection::CrossSection(std::string name) {
 
 
 
-CrossSection::CrossSection(std::string name, PModel *pmodel) {
-  _pmodel = pmodel;
-  csname = name;
-  // cstype = "general";
-  csorigin = SPoint3{0.0, 0.0, 0.0};
-  // csscale = 1.0;
-  // csrotate = 0.0;
-  // csrotatem = STensor3{1.0};
-  // csmeshsize = 1.0;
-  // cselementtype = "linear";
-  cssegments = {};
-  // csconnections = {};
-  // csfillings = {};
-}
 
 
 
@@ -292,7 +278,7 @@ void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
 
 
-void CrossSection::build(Message *pmessage) {
+void CrossSection::build(const BuilderConfig &bcfg, Message *pmessage) {
   // i_indent++;
   pmessage->increaseIndent();
 
@@ -303,7 +289,7 @@ void CrossSection::build(Message *pmessage) {
 
   for (auto cmp : _components) {
 
-    cmp->build(pmessage);
+    cmp->build(bcfg, pmessage);
 
     // _pmodel->dcel()->print_dcel();
     // for (auto sgm : cmp->segments()) {
@@ -311,23 +297,23 @@ void CrossSection::build(Message *pmessage) {
     // }
 
     // Remove all half edge loops, excluding segments face boundaries
-    _pmodel->dcel()->removeTempLoops();
+    bcfg.dcel->removeTempLoops();
 
     // Create new half edge loops, excluding segments face boundaries
-    _pmodel->dcel()->createTempLoops();
+    bcfg.dcel->createTempLoops();
 
     // For each inner loop, find and connect to the nearest loop
     // _pmodel->dcel()->linkHalfEdgeLoops();
   }
 
-  if (config.debug) {
+  if (bcfg.debug) {
     // Print DCEL
     // _pmodel->dcel()->print_dcel();
 
 
     // Create Gmsh model and write Gmsh files for debugging
 
-    _pmodel->plotGeoDebug(pmessage);
+    if (bcfg.plotDebug) bcfg.plotDebug(pmessage);
   }
 
   // for (auto cmp : _components) {
@@ -346,7 +332,7 @@ void CrossSection::build(Message *pmessage) {
 
 
   for (auto cmp : _components) {
-    cmp->buildDetails(pmessage);
+    cmp->buildDetails(bcfg, pmessage);
   }
 
 

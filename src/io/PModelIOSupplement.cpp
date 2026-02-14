@@ -54,9 +54,10 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
             // Nodes on the edge
             std::vector<std::size_t> edge_node_tags;
             std::vector<double> edge_node_coords, edge_node_param_coords;
+            int _edge_tag = pmodel->getGmshEdgeTag(he);
             gmsh::model::mesh::getNodes(
                 edge_node_tags, edge_node_coords, edge_node_param_coords,
-                1, he->gedgeTag(), false, false
+                1, _edge_tag, false, false
             );
 
             // for (std::size_t _ntag : edge_node_tags) {

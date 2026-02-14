@@ -1,24 +1,26 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
-#include "PModel.hpp"
-#include "PSegment.hpp"
-#include "utilities.hpp"
-#include "gmsh_mod/SVector3.h"
-
-#include <list>
-#include <vector>
-
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Message;
 class PDCELVertex;
 class PDCELHalfEdge;
 class PDCELFace;
 class PGeoLineSegment;
 class Segment;
-class PModel;
+
+#include "declarations.hpp"
+#include "PDCELFace.hpp"
+#include "PDCELHalfEdge.hpp"
+#include "PDCELVertex.hpp"
+#include "PGeoClasses.hpp"
+#include "PSegment.hpp"
+#include "utilities.hpp"
+#include "globalVariables.hpp"
+#include "gmsh_mod/SVector3.h"
+
+#include <list>
+#include <vector>
 
 
 /** @ingroup cs
@@ -26,7 +28,6 @@ class PModel;
  */
 class PArea {
 private:
-  PModel *_pmodel;
   Segment *_segment;
   PDCELHalfEdge *_base, *_opposite;
   std::list<PDCELFace *> _faces;
@@ -40,11 +41,10 @@ private:
 
 public:
   PArea();
-  PArea(PModel *, Segment *);
+  PArea(Segment *);
 
   void print();
 
-  PModel *pmodel() { return _pmodel; }
   Segment *segment() { return _segment; }
   std::list<PDCELFace *> &faces() { return _faces; }
   SVector3 &prevBound() { return _prev_bound; }
@@ -76,5 +76,5 @@ public:
   void setFace(PDCELFace *f) { _face = f; }
   void setLineSegmentBase(PGeoLineSegment *ls) { _line_segment_base = ls; }
 
-  void buildLayers(Message *);
+  void buildLayers(const BuilderConfig &, Message *);
 };

@@ -18,7 +18,7 @@ const std::string vabs_version = "4.0";
 const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
-const double PI{3.14159265};
+const double PI{3.141592653589793};
 const double TOLERANCE{1e-15};
 const double ABS_TOL{1e-15};
 const double REL_TOL{1e-15};

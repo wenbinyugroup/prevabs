@@ -1,5 +1,13 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Baseline;
+class Material;
+class PDCELVertex;
+class PGeoArc;
+class PModel;
+
 #include "declarations.hpp"
 #include "PComponent.hpp"
 #include "PDCELVertex.hpp"
@@ -18,8 +26,6 @@
 #include <vector>
 
 using namespace rapidxml;
-
-class PGeoArc;
 
 class Message {
 private:

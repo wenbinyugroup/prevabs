@@ -1,6 +1,7 @@
 #include "PModelIO.hpp"
 
 #include "CrossSection.hpp"
+#include "ISGWriter.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"
 #include "PDCEL.hpp"
@@ -48,14 +49,53 @@
 #include <windows.h>
 #endif
 
-int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
+// =============================================================
+// Concrete ISGWriter implementations
+// =============================================================
+
+class VABSWriter : public ISGWriter {
+public:
+  void writeSettings(FILE* file, PModel* model, const WriterConfig& wcfg) override {
+    writeSettingsVABS(file, model, wcfg);
+  }
+  void writeMaterials(FILE* file, PModel* model) override {
+    writeMaterialsVABS(file, model);
+  }
+  void writeExtra(FILE* file, PModel* model) override {
+    // VABS has no format-specific trailer.
+    (void)file; (void)model;
+  }
+};
+
+class SwiftCompWriter : public ISGWriter {
+public:
+  void writeSettings(FILE* file, PModel* model, const WriterConfig& wcfg) override {
+    writeSettingsSC(file, model, wcfg);
+  }
+  void writeMaterials(FILE* file, PModel* model) override {
+    writeMaterialsSC(file, model);
+  }
+  void writeExtra(FILE* file, PModel* model) override {
+    // SwiftComp requires omega (periodic dimension length/area/volume).
+    fprintf(file, "%16e\n", model->getOmega());
+  }
+};
+
+std::unique_ptr<ISGWriter> makeSGWriter(int analysis_tool) {
+  if (analysis_tool == 2) {
+    return std::unique_ptr<ISGWriter>(new SwiftCompWriter());
+  }
+  return std::unique_ptr<ISGWriter>(new VABSWriter());
+}
+
+
+// =============================================================
+
+int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage) {
 
   pmessage->increaseIndent();
 
   PLOG(info) << pmessage->message("writing sg file: " + fn);
-
-  std::vector<int> inums;
-  std::vector<double> dnums;
 
   size_t nnode = 0;
   size_t nelem = 0;
@@ -73,12 +113,13 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   std::vector<double> face_local_orients;
 
   for (auto f : _dcel->faces()) {
-    if (f->gfaceTag() != 0) {
+    auto it_ft = _gmsh_face_tags.find(f);
+    if (it_ft != _gmsh_face_tags.end()) {
       std::vector<int> elem_types;
       std::vector<std::vector<size_t>> elem_type_tags, elem_type_node_tags;
 
       getElements(
-        elem_types, elem_type_tags, elem_type_node_tags, 2, f->gfaceTag(),
+        elem_types, elem_type_tags, elem_type_node_tags, 2, it_ft->second,
         pmessage
       );
 
@@ -105,48 +146,24 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   FILE *fsg;
   fsg = fopen(fn.c_str(), "w");
 
+  auto writer = makeSGWriter(wcfg.analysis_tool);
+
   // Write the analysis settings
-  // ------------------------------
-  if (config.analysis_tool == 1) {
-    // VABS
-    writeSettingsVABS(fsg, this);
-  } else if (config.analysis_tool == 2) {
-    // SwiftComp
-    writeSettingsSC(fsg, this);
-  }
+  writer->writeSettings(fsg, this, wcfg);
 
   // Write nodes and elements
-  // ------------------------------
-  // writeNodes(fsg, this);
   writeNodes(fsg, node_tags, node_coords, pmessage);
-
   writeElements(
     fsg,
     face_elem_types, face_elem_tags, face_elem_node_tags,
     face_prop_tags, face_local_orients,
     pmessage);
 
-  // if (config.analysis_tool == 1) {
-  //   // writeElementsVABS(fsg, this);
-  //   writeElementsVABS(fsg, pmessage);
-  // } else if (config.analysis_tool == 2) {
-  //   // writeElementsSC(fsg, this);
-  //   writeElementsSC(fsg, pmessage);
-  // }
-
   // Write layer types and materials
-  // ------------------------------
-  if (config.analysis_tool == 1) {
-    writeMaterialsVABS(fsg, this);
-  } else if (config.analysis_tool == 2) {
-    writeMaterialsSC(fsg, this);
-  }
+  writer->writeMaterials(fsg, this);
 
-  // Omega for SwiftComp only
-  // ------------------------------
-  if (config.analysis_tool == 2) {
-    fprintf(fsg, "%16e\n", _omega);
-  }
+  // Write any format-specific trailing data (e.g. omega for SwiftComp)
+  writer->writeExtra(fsg, this);
 
   fclose(fsg);
 
@@ -181,29 +198,29 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
 
 
-int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
+int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Message *pmessage) {
   pmessage->increaseIndent();
 
 
   PMesh *mesh = new PMesh();
 
   std::ifstream ifs;
-  ifs.open(config.file_name_vsc);
+  ifs.open(wcfg.file_name_vsc);
   if (ifs.fail())
-    throw std::runtime_error("Unable to find the file: " + config.file_name_vsc);
-  // printInfo(i_indent, "reading VABS input data: " + config.file_name_vsc);
-  
-  if (config.analysis_tool == 1)
-    PLOG(info) << pmessage->message("reading VABS input data: " + config.file_name_vsc);
-  else if (config.analysis_tool == 2)
-    PLOG(info) << pmessage->message("reading SwiftComp input data: " + config.file_name_vsc);
+    throw std::runtime_error("Unable to find the file: " + wcfg.file_name_vsc);
+  // printInfo(i_indent, "reading VABS input data: " + wcfg.file_name_vsc);
+
+  if (wcfg.analysis_tool == 1)
+    PLOG(info) << pmessage->message("reading VABS input data: " + wcfg.file_name_vsc);
+  else if (wcfg.analysis_tool == 2)
+    PLOG(info) << pmessage->message("reading SwiftComp input data: " + wcfg.file_name_vsc);
 
 
   int nnode{0}, nelem{0}, nsg;
   int ln(1); // line counter
   int num_head_lines;
-  if (config.analysis_tool == 1) num_head_lines = 4;
-  else if (config.analysis_tool == 2) num_head_lines = 5;
+  if (wcfg.analysis_tool == 1) num_head_lines = 4;
+  else if (wcfg.analysis_tool == 2) num_head_lines = 5;
 
   while (ifs) {
     std::string line;
@@ -219,8 +236,8 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
       // read out number of nodes and number of elements
       std::stringstream ss;
       ss << line;
-      if (config.analysis_tool == 1) ss >> nnode >> nelem;
-      else if (config.analysis_tool == 2) ss >> nsg >> nnode >> nelem;
+      if (wcfg.analysis_tool == 1) ss >> nnode >> nelem;
+      else if (wcfg.analysis_tool == 2) ss >> nsg >> nnode >> nelem;
     }
 
     // read the node block
@@ -250,7 +267,7 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
       PElement *element = new PElement(ei);
       // element->setTypeId(2);
 
-      if (config.analysis_tool == 2) {
+      if (wcfg.analysis_tool == 2) {
         // For swiftcomp, read the layer type id after the element id
         int prop_id;
         ss >> prop_id;
@@ -303,7 +320,7 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
 // Write in VABS format
 // ===================================================================
 
-void writeSettingsVABS(FILE *file, PModel *model) {
+void writeSettingsVABS(FILE *file, PModel *model, const WriterConfig &wcfg) {
   std::vector<std::size_t> inums;
 
   // inums = {1, model->cs()->getNumOfUsedLayerTypes()};
@@ -313,7 +330,7 @@ void writeSettingsVABS(FILE *file, PModel *model) {
   fprintf(file, "\n");
 
   inums.clear();
-  unsigned int recover = config.dehomo ? 1 : 0;
+  unsigned int recover = wcfg.dehomo ? 1 : 0;
   // inums = {model->analysisModel(), recover, model->analysisThermal()};
   inums.push_back(model->analysisModel());
   // inums.push_back(recover);
@@ -590,7 +607,7 @@ void writeMaterialsVABS(FILE *file, PModel *model) {
 // Write in SwiftComp format
 // ===================================================================
 
-void writeSettingsSC(FILE *file, PModel *model) {
+void writeSettingsSC(FILE *file, PModel *model, const WriterConfig &wcfg) {
   std::vector<std::size_t> inums;
 
   if (model->analysisModelDim() == 1) {
@@ -630,7 +647,7 @@ void writeSettingsSC(FILE *file, PModel *model) {
   unsigned int iforce_flag = 0;
   unsigned int isteer_flag = 0;
   inums = {ianalysis, ielem_flag, itrans_flag, itemp_flag};
-  if (config.tool_ver == "2.2") {
+  if (wcfg.tool_ver == "2.2") {
     inums.push_back(iforce_flag);
     inums.push_back(isteer_flag);
   }

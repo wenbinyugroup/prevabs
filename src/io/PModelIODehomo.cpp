@@ -423,9 +423,9 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
   fprintf(file, "\n");
 
   // Write load case(s)
-  for (auto i = 0; i < _load_cases.size(); i++) {
+  for (auto i = 0; i < _pp_data.load_cases.size(); i++) {
 
-    LoadCase loadcase = _load_cases[i];
+    LoadCase loadcase = _pp_data.load_cases[i];
     if (config.analysis_tool == 1) { // VABS
       if (i == 0) {
         writeVectorToFile(file, loadcase.displacement);
