@@ -47,6 +47,11 @@ void PModel::initialize() {
   // GmshInitialize(0, 0);
   // printInfo(1, "Gmsh initialized");
 
+  // Control Gmsh's own console output (meshing progress, info lines, etc.).
+  // Level: 0=silent, 1=errors, 2=warnings, 3=info (default), 5=debug.
+  // Controlled via --gmsh-verbosity; defaults to 2 (warnings).
+  gmsh::option::setNumber("General.Verbosity", config.gmsh_verbosity);
+
   // gmsh::logger::stop();
 
 }
@@ -901,7 +906,12 @@ void PModel::plot(Message *pmessage) {
   pmessage->printBlank();
   PLOG(info) << pmessage->message("running Gmsh for visualization");
 
-  runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
+  // Load the opt file (view options) and open the FLTK GUI via the Gmsh API.
+  // This avoids requiring a separate `gmsh` executable on PATH.
+  if (!config.file_name_opt.empty()) {
+    gmsh::merge(config.file_name_opt);
+  }
+  gmsh::fltk::run();
 
   return;
 }

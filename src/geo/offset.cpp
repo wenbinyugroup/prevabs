@@ -21,6 +21,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <list>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -339,10 +340,6 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     else {
       // Calculate intersection
 
-      std::cout << "        find intersection:" << std::endl;
-      std::cout << "        v1_prev = " << v1_prev << ", v2_prev = " << v2_prev << std::endl;
-      std::cout << "        v1_tmp = " << v1_tmp << ", v2_tmp = " << v2_tmp << std::endl;
-
       // Old intersection method
       // double u1, u2;
       // bool not_parallel;
@@ -366,17 +363,28 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       h2d::Point2d _p2_prev(v2_prev->point2()[0], v2_prev->point2()[1]);
       h2d::Point2d _p1_tmp(v1_tmp->point2()[0], v1_tmp->point2()[1]);
       h2d::Point2d _p2_tmp(v2_tmp->point2()[0], v2_tmp->point2()[1]);
-      std::cout << "Points: " << _p1_prev << " and " << _p2_prev << std::endl;
-      std::cout << "Points: " << _p1_tmp << " and " << _p2_tmp << std::endl;
+
+      if (config.debug) {
+        std::ostringstream oss;
+        oss << "find intersection:\n"
+            << "        v1_prev = " << v1_prev << ", v2_prev = " << v2_prev << "\n"
+            << "        v1_tmp = " << v1_tmp << ", v2_tmp = " << v2_tmp << "\n"
+            << "        prev segment: " << _p1_prev << " - " << _p2_prev << "\n"
+            << "        tmp  segment: " << _p1_tmp  << " - " << _p2_tmp;
+        PLOG(debug) << pmessage->message(oss.str());
+      }
 
       h2d::Segment seg1(_p1_prev, _p2_prev);
       h2d::Segment seg2(_p1_tmp, _p2_tmp);
-      std::cout << "Segments: " << seg1 << " and " << seg2 << std::endl;
       auto res = seg1.intersects(seg2);
-      std::cout << "res = " << res() << std::endl;
       if ( res() ) {
         auto pts = res.get();
-        std::cout << "  intersection points: " << pts << std::endl;
+
+        if (config.debug) {
+          std::ostringstream oss;
+          oss << "intersection found: " << pts;
+          PLOG(debug) << pmessage->message(oss.str());
+        }
 
         // Check the distance between the intersection point and the segment ends
         if (isClose(pts.getX(), pts.getY(), _p1_prev.getX(), _p1_prev.getY(), ABS_TOL, REL_TOL)) {
@@ -396,7 +404,11 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       }
       // New intersection method (h2d) (end)
 
-      std::cout << "        added vertex: " << vertices_tmp.back() << std::endl;
+      if (config.debug) {
+        std::ostringstream oss;
+        oss << "added vertex: " << vertices_tmp.back();
+        PLOG(debug) << pmessage->message(oss.str());
+      }
     }
 
     if (i == size - 2) {
