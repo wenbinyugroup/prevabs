@@ -1,6 +1,13 @@
-[info] - prevabs start (2026-02-16 17:09:00)
-[info] - reading input files
-[info]     - reading main input file: .\share\examples\ex_tube\tube.xml
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+
   
   
     
@@ -17,7 +24,10 @@
   
   ========================================
   
-info]   - building the shape
+
+[error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]   - reading input files -- done
+[info]   - building the shape
 [info]     - building the cross section, step 1
 [info]       - building component: cmp_1
 [info]     - building the cross section, step 2
@@ -43,5 +53,5 @@ info]   - building the shape
 [info]     - writing material id-name file: .\share\examples\ex_tube\tube.sg.mat
 [info]   - writing outputs -- done
 [info]   - running Gmsh for visualization
-[info]   - prevabs finished (2026-02-16 17:09:05)
-[info] total running time: 4.126 sec
+[info]   - prevabs finished (2026-02-16 17:35:43)
+[info] total running time: 3.008 sec

@@ -190,6 +190,7 @@ int main(int argc, char **argv) {
   try {
     app.parse(argc, argv);
     processConfigVariables();
+    initLog();
   }
   catch (const CLI::ParseError &e) {
     return app.exit(e);

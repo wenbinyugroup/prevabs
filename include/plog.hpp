@@ -1,21 +1,39 @@
 #pragma once
 
-#include <boost/log/trivial.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
+#include <sstream>
+#include <spdlog/spdlog.h>
 
-namespace logging = boost::log;
-namespace sinks = boost::log::sinks;
-namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace attrs = boost::log::attributes;
-namespace keywords = boost::log::keywords;
+// Stream-wrapper that collects << output and logs on destruction.
+// Usage: PLOG(info) << "msg " << var;
+// Severity names match boost::log::trivial: trace, debug, info, warning, error, fatal
+struct PLogStream {
+  spdlog::level::level_enum level_;
+  std::ostringstream oss_;
 
-#define PLOG(severity) BOOST_LOG_SEV(plogger::get(), logging::trivial::severity)
+  explicit PLogStream(spdlog::level::level_enum lvl) : level_(lvl) {}
 
-// #define LOGFILE "test.log"
+  ~PLogStream() {
+    auto logger = spdlog::get("prevabs");
+    if (logger) logger->log(level_, "{}", oss_.str());
+  }
 
-typedef src::severity_logger_mt< logging::trivial::severity_level > plogger_mt;
+  template <typename T>
+  PLogStream& operator<<(const T& val) {
+    oss_ << val;
+    return *this;
+  }
+};
 
-BOOST_LOG_GLOBAL_LOGGER(plogger, plogger_mt)
+// Map boost::log::trivial severity names to spdlog levels.
+// "warning" -> warn, "fatal" -> critical
+#define _PLOG_LEVEL_trace    spdlog::level::trace
+#define _PLOG_LEVEL_debug    spdlog::level::debug
+#define _PLOG_LEVEL_info     spdlog::level::info
+#define _PLOG_LEVEL_warning  spdlog::level::warn
+#define _PLOG_LEVEL_error    spdlog::level::err
+#define _PLOG_LEVEL_fatal    spdlog::level::critical
+
+#define PLOG(severity) PLogStream(_PLOG_LEVEL_##severity)
+
+// Call once after config is populated (sets up file + console sinks).
+void initLog();

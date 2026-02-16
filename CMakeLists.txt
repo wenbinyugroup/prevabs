@@ -46,6 +46,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
+  add_compile_options(/utf-8)
 endif()
 
 add_executable( ${PROJECTNAME} ${SOURCES} )
@@ -54,22 +55,8 @@ add_executable( ${PROJECTNAME} ${SOURCES} )
 target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated )
 
 
-# Link Boost libraries
-# --------------------
-if(WIN32 OR CYGWIN)
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-# set(Boost_USE_MULTITHREADED ON)
-# set(Boost_USE_STATIC_RUNTIME OFF)
-# add_definitions( -DBOOST_ALL_DYN_LINK )
-
-find_package( Boost 1.66 COMPONENTS log log_setup system thread REQUIRED )
-message( STATUS "(st) " ${Boost_INCLUDE_DIRS} )
-message( STATUS "(st) " ${Boost_LIBRARY_DIRS} )
-message( STATUS "(st) " ${Boost_LIBRARIES} )
-include_directories( ${Boost_INCLUDE_DIRS} )
-
-target_link_libraries( ${PROJECTNAME} ${Boost_LIBRARIES} )
+# spdlog (header-only, vendored in include/spdlog/)
+# No find_package or link step needed.
 
 
 # Link Gmsh library
