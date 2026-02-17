@@ -55,7 +55,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
 
       PDCELHalfEdge *he_tool, *he;
       int ls_i, ls_i_prev, ls_i_tmp;
-      double u1, u2, u1_tmp, u2_tmp;
+      double u1, u2, u1_tmp{0.0}, u2_tmp;
       PDCELVertex *v_new;
 
       if (e == 0) {
@@ -163,7 +163,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         std::cout << "\nhels:\n";
         PLOG(debug) << pmessage->message("found half edge loops");
         for (auto hel : hels) {
-          tmp_hel_out->log();
+          hel->log();
         }
         // std::cout << "\n";
         // hel->print();
@@ -196,8 +196,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
             if (e == 0) {
               if (
                 (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1)  // before the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i > ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp > u1) // same line segment but inner u
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp > ls_i_prev)  // inner line segment
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp == ls_i_prev && u1_tmp > u1) // same line segment but inner u
                 ) {
                 u1 = u1_tmp;
                 u2 = u2_tmp;
@@ -210,8 +210,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
               if (
                 ((ls_i_tmp == s->curveBase()->vertices().size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
                 // ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i < ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp < u1) // same line segment but inner u
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp < ls_i_prev)  // inner line segment
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp == ls_i_prev && u1_tmp < u1) // same line segment but inner u
                 ) {
                 u1 = u1_tmp;
                 u2 = u2_tmp;
@@ -224,7 +224,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         }
       }
       ls_i = ls_i_prev;
-      if ((fabs(1 - u1_tmp) <= TOLERANCE) || e == 1) ls_i += 1;
+      if ((fabs(1 - u1) <= TOLERANCE) || e == 1) ls_i += 1;
 
       // std::cout << "final intersection" << std::endl;
       // pmessage->print(9, "u1 = " + std::to_string(u1));
@@ -325,8 +325,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
             if (e == 0) {
               if (
                 (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1)  // before the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i > ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp > u1) // same line segment but inner u
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp > ls_i_prev)  // inner line segment
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp == ls_i_prev && u1_tmp > u1) // same line segment but inner u
                 ) {
                 u1 = u1_tmp;
                 u2 = u2_tmp;
@@ -339,8 +339,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
               if (
                 ((ls_i_tmp == s->curveOffset()->vertices().size() - 2) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
                 // ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1)  // after the first vertex
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i < ls_i_prev)  // inner line segment
-                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i == ls_i_prev && u1_tmp < u1) // same line segment but inner u
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp < ls_i_prev)  // inner line segment
+                || ((fabs(u1_tmp) <= TOLERANCE || (u1_tmp > 0 && u1_tmp < 1) || fabs(1 - u1_tmp) <= TOLERANCE) && ls_i_tmp == ls_i_prev && u1_tmp < u1) // same line segment but inner u
                 ) {
                 u1 = u1_tmp;
                 u2 = u2_tmp;
@@ -353,7 +353,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         }
       }
       ls_i = ls_i_prev;
-      if ((fabs(1 - u1_tmp) <= TOLERANCE) || e == 1) ls_i += 1;
+      if ((fabs(1 - u1) <= TOLERANCE) || e == 1) ls_i += 1;
 
       // std::cout << "final intersection" << std::endl;
       // pmessage->print(9, "u1 = " + std::to_string(u1));
@@ -361,6 +361,13 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       // std::cout << "he_tool: " << he_tool << std::endl;
       PLOG(debug) << pmessage->message("  u1 = " + std::to_string(u1));
       PLOG(debug) << pmessage->message("  u2 = " + std::to_string(u2));
+
+      if (fabs(u1) == INF) {
+        PLOG(debug) << pmessage->message("offset curve: no intersection found, using free end.");
+        createSegmentFreeEnd(s, e, bcfg, pmessage);
+        pmessage->decreaseIndent();
+        return;
+      }
 
       // This end is trimmed by some other components
       if (fabs(u2) <= TOLERANCE) {
@@ -635,7 +642,6 @@ void PComponent::joinSegments(
     b = calcAngleBisectVector(t1, t2, s1->getLayupside(), s2->getLayupside());
     // std::cout << "        vector b: " << b << std::endl;
 
-    PGeoLineSegment *ls_b = new PGeoLineSegment(v, b);
     PDCELVertex *tmp_v = new PDCELVertex((v->point()+b).point());
     std::vector<PDCELVertex *> tmp_bound_1, tmp_bound_2;
     tmp_bound_1.push_back(v);
@@ -1218,6 +1224,9 @@ void PComponent::joinSegments(
         i2 += 1;
       }
 
+      for (auto p : lss1) delete p;
+      for (auto p : lss2) delete p;
+
       bl1_off_new = new Baseline();
       if (e1 == 0) {
         bl1_off_new->addPVertex(v_intersect);
@@ -1250,6 +1259,13 @@ void PComponent::joinSegments(
       v2_new = v_intersect;
 
       bound_vertices.push_back(v_intersect);
+    }
+    else {
+      for (auto p : lss1) delete p;
+      for (auto p : lss2) delete p;
+      PLOG(debug) << pmessage->message("style 2: no intersection found between offset curves, skipping join.");
+      pmessage->decreaseIndent();
+      return;
     }
 
     s1->setCurveOffset(bl1_off_new);

@@ -1,0 +1,37 @@
+2023-08-04 15:47:59 [info] prevabs start
+2023-08-04 15:47:59 [info] - reading input files
+2023-08-04 15:47:59 [info]     - reading main input file: .\uh60a_section.xml
+2023-08-04 15:47:59 [error]       - unable to open file: C:\Users\tian50\program\MaterialDB.xml
+2023-08-04 15:47:59 [info]         - reading materials file: .\uh60a_material.xml
+2023-08-04 15:47:59 [info]   - reading input files -- done
+2023-08-04 15:47:59 [info]   - building the shape
+2023-08-04 15:47:59 [info]     - building the cross section, step 1
+2023-08-04 15:47:59 [info]       - building component: main_spar
+2023-08-04 15:47:59 [info]       - building component: le
+2023-08-04 15:47:59 [info]       - building component: te
+2023-08-04 15:47:59 [info]       - building component: ns_mass
+2023-08-04 15:47:59 [info]       - building component: fill_te
+2023-08-04 15:47:59 [info]       - building component: fill_fwd
+2023-08-04 15:47:59 [info]       - building component: fill_aft
+2023-08-04 15:47:59 [info]     - building the cross section, step 2
+2023-08-04 15:47:59 [info]       - building component details: main_spar
+2023-08-04 15:47:59 [info]       - building component details: le
+2023-08-04 15:47:59 [info]       - building component details: te
+2023-08-04 15:47:59 [info]     - fixing geometry
+2023-08-04 15:47:59 [info]   - building the shape -- done
+2023-08-04 15:47:59 [info]   - modeling in Gmsh
+2023-08-04 15:47:59 [info]     - creating gmsh vertices
+2023-08-04 15:47:59 [info]     - creating gmsh edges
+2023-08-04 15:47:59 [info]     - creating gmsh face
+2023-08-04 15:47:59 [info]     - meshing
+2023-08-04 15:48:00 [info]   - modeling in Gmsh -- done
+2023-08-04 15:48:00 [info]   - writing outputs
+2023-08-04 15:48:00 [info]     - writing gmsh .opt file: .\uh60a_section.opt
+2023-08-04 15:48:00 [info]     - writing gmsh .geo file: .\uh60a_section.geo
+2023-08-04 15:48:00 [info]     - writing gmsh .msh file: .\uh60a_section.msh
+2023-08-04 15:48:00 [info]     - writing sg file: .\uh60a_section.sg
+2023-08-04 15:48:00 [info]   - writing outputs -- done
+2023-08-04 15:48:00 [info]   - running Gmsh for visualization
+2023-08-04 15:48:00 [info]   - running: gmsh .\uh60a_section.geo .\uh60a_section.msh .\uh60a_section.opt
+2023-08-04 15:48:01 [info] prevabs finished
+2023-08-04 15:48:01 [info] total running time: 1.539 sec

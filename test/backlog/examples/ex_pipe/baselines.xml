@@ -1,0 +1,41 @@
+<baselines>
+
+
+  <basepoints>
+    <point name="upper_left">-1.0   0.5</point>
+    <point name="upper_right">1.0   0.5</point>
+    <point name="lower_left">-1.0  -0.5</point>
+    <point name="lower_right">1.0  -0.5</point>
+    <point name="center_left">-1.0   0.0</point>
+    <point name="center_right">1.0   0.0</point>
+  </basepoints>
+
+
+  <baseline name="bl_upper" type="straight">
+    <points>upper_left,upper_right</points>
+  </baseline>
+
+  <baseline name="bl_right" type="arc">
+    <center>center_right</center>
+    <start>upper_right</start>
+    <end>lower_right</end>
+    <angle>180</angle>
+    <direction>cw</direction>
+    <discrete by="angle">2</discrete>
+  </baseline>
+ 
+  <baseline name="bl_lower" type="straight">
+    <points>lower_right,lower_left</points>
+  </baseline>
+
+  <baseline name="bl_left" type="arc">
+    <center>center_left</center>
+    <start>lower_left</start>
+    <end>upper_left</end>
+    <angle>180</angle>
+    <direction>cw</direction>
+    <discrete by="number">90</discrete>
+  </baseline>
+
+
+</baselines>

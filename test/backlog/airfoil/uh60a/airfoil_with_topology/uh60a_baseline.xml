@@ -1,0 +1,47 @@
+<baselines>
+  <basepoints>
+    <include>basepoints</include>
+    <point name="pballast"> 0.06 0.0 </point>
+    <point name="web_aux"> 0.129098072 0.0 </point>
+    <point name="web_main"> 0.393342223 0.0 </point>
+    <point name="tail_fill">0.92067993 0</point>
+    <point name="p_nsm_c">0.02  0</point>
+  </basepoints>
+  <baseline name="bsl_nsm" type="circle">
+    <center>p_nsm_c</center>
+    <radius>0.006</radius>
+    <discrete by="angle">9</discrete>
+  </baseline>
+  <baseline name="bl_cap" type="straight">
+    <points>psb8:165,ptle:pst8</points>
+  </baseline>
+  <baseline name="bl_box_top" type="straight">
+    <points>pw2t:pw1t</points>
+  </baseline> 
+  <baseline name="bl_box_bot" type="straight">
+    <points>pw1b:pw2b</points>
+  </baseline> 
+  <baseline name="bl_tail_top" type="straight">
+    <points>pw1t:pttet</points>
+  </baseline> 
+  <baseline name="bl_tail_bot" type="straight">
+    <points>ptteb:pw1b</points>
+  </baseline>
+  <baseline name="bl_end" type="straight">
+    <points>pttet:ptteb</points>
+  </baseline> 
+  <baseline name="bl_web_l" type="straight">
+<!--     <points>pw2t,pw2b</points> -->
+    <point>web_aux</point>
+    <angle>89.116</angle>
+  </baseline>
+  <baseline name="bl_web_t" type="straight">
+<!--     <points>pw1t,pw1b</points> -->
+    <point>web_main</point>
+    <angle>89.23744652</angle>  
+  </baseline>
+  <baseline name="bl_te_fill" type="straight">
+    <point>tail_fill</point>
+    <angle>89.15849582</angle> 
+  </baseline>
+</baselines>

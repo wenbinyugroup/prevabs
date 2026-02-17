@@ -1,0 +1,24 @@
+2022-01-12 14:17:51 [info] prevabs start
+2022-01-12 14:17:51 [info]   - dehomogenizing...
+2022-01-12 14:17:51 [info]       - reading main input file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a.xml
+2022-01-12 14:17:51 [info]         - reading materials file: C:\Users\tian50\sall\s02-study\s3-develop\release\prevabs-1.4.3-binary-win\bin\MaterialDB.xml
+2022-01-12 14:17:51 [info]         - reading materials file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\material_database.xml
+2022-01-12 14:17:51 [info]       - reading main input data: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a.xml
+2022-01-12 14:17:51 [info]     - writing glb file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a.sg.glb
+2022-01-12 14:17:51 [info]   - running VABS for failure index
+2022-01-12 14:17:51 [info] running VABS...
+2022-01-12 14:17:52 [info]   - running VABS for failure index -- done
+2022-01-12 14:17:52 [info] - post-processing recover results
+2022-01-12 14:17:52 [info]   - reading VABS input data: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a.sg
+2022-01-12 14:17:52 [info]   - reading failure analysis outputs...
+2022-01-12 14:17:52 [info]     - reading failure analysis result: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a.sg.fi
+2022-01-12 14:17:52 [info]   - writing gmsh .opt file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a_local.opt
+2022-01-12 14:17:52 [info]   - writing gmsh .geo file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a_local.geo
+2022-01-12 14:17:52 [info]   - writing gmsh .msh file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a_local_case_1.msh
+2022-01-12 14:17:52 [info]       - writing element data: Strength ratio
+2022-01-12 14:17:52 [info]       - writing element data: Failure index
+2022-01-12 14:17:53 [info] - post-processing recover results -- done
+2022-01-12 14:17:53 [info] - running Gmsh for visualization
+2022-01-12 14:17:53 [info] - running: gmsh C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a_local.geo C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a_local_case_1.msh C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\share\test\examples\ex_uh60a_f\uh60a_local.opt
+2022-01-12 14:17:53 [info] prevabs finished
+2022-01-12 14:17:53 [info] total running time: 1.291 sec

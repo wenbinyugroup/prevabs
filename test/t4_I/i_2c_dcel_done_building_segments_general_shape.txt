@@ -1,0 +1,221 @@
+DCEL Summary
+
+24 vertices:
+( 0 , inf , inf ) - degree 2
+( 0 , -inf , inf ) - degree 2
+( 0 , -inf , -inf ) - degree 2
+( 0 , inf , -inf ) - degree 2
+( 0 , -1 , 0 ) - degree 3
+( 0 , -1 , 0.11 ) - degree 2
+( 0 , 1 , 0 ) - degree 3
+( 0 , 1 , 0.11 ) - degree 2
+( 0 , 0 , 0 ) - degree 3
+( 0 , 0 , 0.11 ) - degree 2
+( 0 , -1.5 , -3 ) - degree 3
+( 0 , -1.5 , -3.065 ) - degree 2
+( 0 , 1.5 , -3 ) - degree 3
+( 0 , 1.5 , -3.065 ) - degree 2
+( 0 , 0 , -3 ) - degree 3
+( 0 , 0 , -3.065 ) - degree 2
+( 0 , -1 , -0.08 ) - degree 2
+( 0 , -1.5 , -2.92 ) - degree 2
+( 0 , -0.08 , -0.08 ) - degree 2
+( 0 , -0.08 , -2.92 ) - degree 2
+( 0 , 1 , -0.08 ) - degree 2
+( 0 , 1.5 , -2.92 ) - degree 2
+( 0 , 0.08 , -0.08 ) - degree 2
+( 0 , 0.08 , -2.92 ) - degree 2
+
+50 half edges:
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 1.5 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 1.5 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , -0.08 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -0.08 , -0.08 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -0.08 , -2.92 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -1.5 , -2.92 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , -0.08 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.92 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 1.5 , -3 ) | loop: nullptr | face: nullptr | sign: -1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 0.08 , -0.08 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 1 , -0.08 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0.08 , -2.92 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0.08 , -0.08 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 1.5 , -2.92 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 0.08 , -2.92 ) | loop: keep | face: sgm_4_face | sign: -1
+
+6 half edge loops:
+direction: outer
+keep: yes
+face: background
+half edges:
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: yes
+face: sgm_1_face
+half edges:
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_1_face | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: yes
+face: sgm_2_face
+half edges:
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 1.5 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 1.5 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: yes
+face: sgm_3_face
+half edges:
+  ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , -0.08 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -0.08 , -0.08 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -0.08 , -2.92 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -1.5 , -2.92 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgm_3_face | sign: -1
+adjacent loop: nullptr
+
+direction: inner
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , -0.08 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 0.08 , -0.08 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0.08 , -2.92 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 1.5 , -2.92 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 1.5 , -3 ) | loop: nullptr | face: nullptr | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , -3.065 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: yes
+face: sgm_4_face
+half edges:
+  ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.92 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 0.08 , -2.92 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0.08 , -0.08 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 1 , -0.08 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_4_face | sign: 1
+adjacent loop: nullptr
+
+
+5 faces:
+name: background
+outer boundary: 
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+0 inner boundaries:
+
+name: sgm_1_face
+outer boundary: 
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: keep | face: sgm_1_face | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: keep | face: sgm_1_face | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_1_face | sign: -1
+0 inner boundaries:
+
+name: sgm_2_face
+outer boundary: 
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 1.5 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 1.5 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgm_2_face | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -3.065 ) | loop: keep | face: sgm_2_face | sign: 1
+0 inner boundaries:
+
+name: sgm_3_face
+outer boundary: 
+  ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_3_face | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , -0.08 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -0.08 , -0.08 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -0.08 , -2.92 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -1.5 , -2.92 ) | loop: keep | face: sgm_3_face | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgm_3_face | sign: -1
+0 inner boundaries:
+
+name: sgm_4_face
+outer boundary: 
+  ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.92 ) | loop: keep | face: sgm_4_face | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 0.08 , -2.92 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0.08 , -0.08 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 1 , -0.08 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_4_face | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -3 ) | loop: keep | face: sgm_4_face | sign: 1
+0 inner boundaries:
+

@@ -1,0 +1,44 @@
+<cross_section name="box">
+    <include>
+        <baseline>baselines</baseline>
+        <material>materials</material>
+        <layup>layups</layup>
+    </include>
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.01</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+    <component name="wall_top">
+        <segment>
+            <baseline>bsl_top</baseline>
+            <layup direction="left">layup1</layup>
+        </segment>
+    </component>
+    <component name="wall_bottom">
+        <segment>
+            <baseline>bsl_bottom</baseline>
+            <layup direction="left">layup2</layup>
+        </segment>
+    </component>
+    <component name="wall_left" depend="wall_top,wall_bottom">
+        <segment>
+            <baseline>bsl_left</baseline>
+            <layup direction="right">layup3</layup>
+        </segment>
+    </component>
+    <component name="wall_right" depend="wall_top,wall_bottom">
+        <segment>
+            <baseline>bsl_right</baseline>
+            <layup direction="left">layup3</layup>
+        </segment>
+    </component>
+    <!-- <component name="web" depend="wall">
+        <segment>
+            <baseline>blweb</baseline>
+            <layup direction="left">layupweb</layup>
+        </segment>
+    </component> -->
+</cross_section>

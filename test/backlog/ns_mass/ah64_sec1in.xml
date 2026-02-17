@@ -1,0 +1,255 @@
+<cross_section name="ah64_sec1in" format="1">
+  <include>
+    <!-- <baseline>ah64_sec1in_baselines</baseline> -->
+    <material>ah64_materials_imperial</material>
+    <!-- <layup>ah64_sec1in_layups</layup> -->
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>0.4725</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <!--
+    
+    
+    Basic geometry
+  
+  
+  -->
+  <baselines>
+    <basepoints>
+      <include>hh02_prevabs</include>
+      <point name="pweb_main">0.475  0.0</point>
+      <point name="pweb_aux">0.065  0.0</point>
+      <point name="pballast">0.05  0.0</point>
+      <!-- <point name="pballast">0.1  0.0</point> -->
+      <point name="pte_fill">0.90  -0.00736</point>
+      <point name="pte_tab">0.94  0.0</point>
+      <point name="p_nsm_c">0.01  0.0</point>
+      <point name="p_nsm_a">0.035  0.0</point>
+    </basepoints>
+    <!-- Leading cap -->
+    <baseline name="bl_cap" type="straight">
+      <points>pb1:79,ptle:pt1</points>
+    </baseline>
+    <!-- Box spar -->
+    <baseline name="bl_top_spar_cap" type="straight">
+      <points>pt1:pt2</points>
+    </baseline>
+    <baseline name="bl_top_spar_main" type="straight">
+      <points>pt2:pt3</points>
+    </baseline>
+    <baseline name="bl_web_main" type="straight">
+      <!-- <point>pweb_main</point> -->
+      <!-- <angle>90</angle> -->
+      <points>pt3,pb3</points>
+    </baseline>
+    <baseline name="bl_bottom_spar_main" type="straight">
+      <points>pb3:pb2</points>
+    </baseline>
+    <baseline name="bl_bottom_spar_cap" type="straight">
+      <points>pb2:pb1</points>
+    </baseline>
+    <baseline name="bl_web_aux" type="straight">
+      <!-- <point>pweb_aux</point>
+      <angle>90</angle> -->
+      <points>pb1,pt1</points>
+    </baseline>
+    <!-- Overwrap -->
+    <baseline name="bl_overwrap" type="straight">
+      <points>pt3:ptte,pbte:pb3</points>
+      <!-- <points>pt3:pt4,pte</points> -->
+    </baseline>
+    <baseline name="bl_top_overwrap" type="straight">
+      <points>pt3:ptte</points>
+      <!-- <points>pt3:pt4,pte</points> -->
+    </baseline>
+    <baseline name="bl_bottom_overwrap" type="straight">
+      <points>pbte:pb3</points>
+      <!-- <points>pte,pb4:pb3</points> -->
+    </baseline>
+    <!-- Fills -->
+    <baseline name="bl_ballast" type="straight">
+      <point>pballast</point>
+      <angle>90</angle>
+    </baseline>
+    <baseline name="bl_te_fill" type="straight">
+      <point>pte_fill</point>
+      <angle>90</angle>
+    </baseline>
+    <baseline name="bl_te_tab" type="straight">
+      <point>pte_tab</point>
+      <angle>90</angle>
+    </baseline>
+    <!-- Leading mass -->
+    <baseline name="bsl_ns_mass" type="circle">
+      <center>p_nsm_c</center>
+      <radius>0.005</radius>
+      <discrete>9</discrete>
+      <!-- <point>p_nsm_a</point> -->
+    </baseline>
+    <baseline name="bsl_ns_mass_2" type="straight">
+      <point>p_nsm_c</point>
+      <angle>90</angle>
+      <!-- <point>p_nsm_a</point> -->
+    </baseline>
+  </baselines>
+  <!--
+    
+    
+    Layups
+  
+  
+  -->
+  <layups>
+    <!-- Top surface -->
+    <layup name="layup_top_cap">
+      <layer lamina="la_steel_0.0005588">0</layer>
+      <layer lamina="la_im7 tape_0.000762">0</layer>
+    </layup>
+    <layup name="layup_top_spar_cap">
+      <layer lamina="la_steel_0.0005588">0</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_im7 tape_0.000762">0</layer>
+      <layer lamina="la_graphite fab_0.000882">-45</layer>
+    </layup>
+    <layup name="layup_top_spar_main">
+      <layer lamina="la_graphite fab_0.000882">45</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">-45</layer>
+    </layup>
+    <layup name="layup_top_overwrap">
+      <layer lamina="la_kevlar49 120_0.000882">0</layer>
+    </layup>
+    <!-- Bottom surface -->
+    <layup name="layup_bottom_cap">
+      <layer lamina="la_steel_0.0005588">0</layer>
+      <layer lamina="la_im7 tape_0.000762">0</layer>
+    </layup>
+    <layup name="layup_bottom_spar_cap">
+      <layer lamina="la_steel_0.0005588">0</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_im7 tape_0.000762">0</layer>
+      <layer lamina="la_graphite fab_0.000882">-45</layer>
+    </layup>
+    <layup name="layup_bottom_spar_main">
+      <layer lamina="la_graphite fab_0.000882">45</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">-45</layer>
+    </layup>
+    <layup name="layup_bottom_overwrap">
+      <layer lamina="la_kevlar49 120_0.000882">0</layer>
+    </layup>
+    <!-- Webs -->
+    <layup name="layup_web_main">
+      <layer lamina="la_graphite fab_0.000882">45</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">-45</layer>
+    </layup>
+    <layup name="layup_web_aux">
+      <layer lamina="la_ballast tungsten_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">45</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">0</layer>
+      <layer lamina="la_graphite fab_0.000882">-45</layer>
+    </layup>
+    <!-- <layup name="layup_te_fill">
+      <layer lamina="la_plascore_pn2-3/16ox3.0_fill">0</layer>
+    </layup> -->
+    <!-- <layup name="layup_hc_2">
+      <layer lamina="la_hc_2"></layer>
+    </layup> -->
+  </layups>
+  <!--
+    
+    
+    Components
+  
+  
+  -->
+  <!-- Box spar -->
+  <component name="box_spar">
+    <segment name="sgm_top_spar_cap">
+      <baseline>bl_top_spar_cap</baseline>
+      <layup direction="right">layup_top_spar_cap</layup>
+    </segment>
+    <segment name="sgm_top_spar_main">
+      <baseline>bl_top_spar_main</baseline>
+      <layup direction="right">layup_top_spar_main</layup>
+    </segment>
+    <segment name="sgm_web_main">
+      <baseline>bl_web_main</baseline>
+      <layup direction="right">layup_web_main</layup>
+    </segment>
+    <segment name="sgm_bottom_spar_main">
+      <baseline>bl_bottom_spar_main</baseline>
+      <layup direction="right">layup_bottom_spar_main</layup>
+    </segment>
+    <segment name="sgm_bottom_spar_cap">
+      <baseline>bl_bottom_spar_cap</baseline>
+      <layup direction="right">layup_bottom_spar_cap</layup>
+    </segment>
+    <segment name="sgm_web_aux">
+      <baseline>bl_web_aux</baseline>
+      <layup direction="right">layup_web_aux</layup>
+    </segment>
+    <joint style="2">sgm_top_spar_main,sgm_web_main</joint>
+    <joint style="2">sgm_bottom_spar_main,sgm_web_main</joint>
+    <joint style="2">sgm_top_spar_cap,sgm_web_aux</joint>
+    <joint style="2">sgm_bottom_spar_cap,sgm_web_aux</joint>
+  </component>
+  <component name="cap" depend="box_spar">
+    <segment name="sgm_cap">
+      <baseline>bl_cap</baseline>
+      <layup direction="right">layup_top_cap</layup>
+    </segment>
+  </component>
+  <component name="overwrap" depend="box_spar">
+    <segment name="sgm_overwrap">
+      <baseline>bl_overwrap</baseline>
+      <layup direction="right">layup_top_overwrap</layup>
+    </segment>
+  </component>
+  <!-- <component name="overwrap_top" depend="box_spar">
+    <segment name="sgm_top_overwrap">
+      <baseline>bl_top_overwrap</baseline>
+      <layup direction="right">layup_top_overwrap</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="overwrap_bot" depend="box_spar">
+    <segment name="sgm_bottom_overwrap">
+      <baseline>bl_bottom_overwrap</baseline>
+      <layup direction="right">layup_bottom_overwrap</layup>
+    </segment>
+  </component> -->
+  <!-- Non-structural mass -->
+  <component name="ns_mass" type="fill" depend="box_spar,cap">
+    <baseline>bsl_ns_mass</baseline>
+    <location>p_nsm_c</location>
+    <material>metal</material>
+  </component>
+  <!-- Fillings -->
+  <component name="fill_ballast" type="fill" depend="box_spar,cap,ns_mass">
+    <location>pballast</location>
+    <material>Rohacell 70</material>
+  </component>
+  <!-- <component name="fill_te" type="fill" depend="box_spar,overwrap">
+    <baseline fillside="left">bl_te_fill</baseline>
+    <material>Plascore PN2-3/16OX3.0</material>
+  </component> -->
+  <!-- <component name="fill_tab" type="fill" depend="overwrap,fill_te">
+    <baseline fillside="right">bl_te_fill</baseline>
+    <location>pte_fill</location>
+    <material>graphite fab</material>
+  </component> -->
+  </component>
+</cross_section>

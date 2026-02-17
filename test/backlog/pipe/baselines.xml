@@ -1,0 +1,14 @@
+<baselines basepoints="basepoints">
+    <baseline name="bltop" type="straight">
+        <points>tl,tr</points></baseline>
+    <baseline name="blright" type="arc">
+        <center>ctr</center><start>tr</start><end>br</end>
+        <angle>180</angle><direction>cw</direction>
+        <discrete>5</discrete></baseline>    
+    <baseline name="blbottom" type="straight">
+        <points>br,bl</points></baseline>
+    <baseline name="blleft" type="arc">
+        <center>ctl</center><start>bl</start><end>tl</end>
+        <angle>180</angle><direction>cw</direction>
+        <discrete by="number">120</discrete></baseline>
+</baselines>

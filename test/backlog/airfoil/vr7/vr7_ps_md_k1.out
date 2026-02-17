@@ -1,0 +1,928 @@
+Dakota version 6.8 released May  8 2018.
+Repository revision 8a628378 (2018-05-07) built May  8 2018 01:34:14.
+Running serial Dakota executable in serial mode.
+Start time: Wed Jan 30 09:44:21 2019
+
+-----------------------
+Begin DAKOTA input file
+vr7_ps_md_k1.in
+-----------------------
+
+# ====================================================================
+
+environment
+  output_file = 'vr7_ps_md_k1.out'
+  tabular_data
+    tabular_data_file = 'vr7_ps_md_k1_tabular.dat'
+
+# ====================================================================
+
+method
+  multidim_parameter_study
+    partitions = 20
+
+# ====================================================================
+
+model
+  single
+
+# ====================================================================
+
+variables
+  active design
+  continuous_design = 1
+    descriptors     =   'k1'
+    upper_bounds    =  0.001
+    lower_bounds    = -0.001
+
+# ====================================================================
+
+interface
+  analysis_driver = 'python interface_v.py vr7_vabs_pretwist'
+    fork
+      parameters_file = 'params.in'
+      results_file = 'results.out'
+      work_directory
+        named = 'evals/eval'
+        directory_tag
+        directory_save
+        file_save
+        # link_file = '*.py' '*.template' 'license'
+        copy_file = '*.py' '*.template'
+  asynchronous
+    evaluation_concurrency = 4
+
+# ====================================================================
+
+responses
+  response_functions = 21
+  descriptors = 's11' 's12' 's13' 's14' 's15' 's16'
+                      's22' 's23' 's24' 's25' 's26'
+                            's33' 's34' 's35' 's36'
+                                  's44' 's45' 's46'
+                                        's55' 's56'
+                                              's66'
+  no_gradients
+  no_hessians
+---------------------
+End DAKOTA input file
+---------------------
+
+Using Dakota input file 'vr7_ps_md_k1.in'
+Warning: output_file specified in input file and passed options; option
+         specifying 'vr7_ps_md_k1.out' takes precedence over input file value.
+Writing new restart file 'dakota.rst'.
+
+>>>>> Executing environment.
+
+>>>>> Running multidim_parameter_study iterator.
+
+Multidimensional parameter study variable partitions of
+                                    20
+
+---------------------
+Begin Evaluation    1
+---------------------
+Parameters for evaluation 1:
+                     -1.0000000000e-03 k1
+
+(Asynchronous job 1 added to queue)
+
+---------------------
+Begin Evaluation    2
+---------------------
+Parameters for evaluation 2:
+                     -9.0000000000e-04 k1
+
+(Asynchronous job 2 added to queue)
+
+---------------------
+Begin Evaluation    3
+---------------------
+Parameters for evaluation 3:
+                     -8.0000000000e-04 k1
+
+(Asynchronous job 3 added to queue)
+
+---------------------
+Begin Evaluation    4
+---------------------
+Parameters for evaluation 4:
+                     -7.0000000000e-04 k1
+
+(Asynchronous job 4 added to queue)
+
+---------------------
+Begin Evaluation    5
+---------------------
+Parameters for evaluation 5:
+                     -6.0000000000e-04 k1
+
+(Asynchronous job 5 added to queue)
+
+---------------------
+Begin Evaluation    6
+---------------------
+Parameters for evaluation 6:
+                     -5.0000000000e-04 k1
+
+(Asynchronous job 6 added to queue)
+
+---------------------
+Begin Evaluation    7
+---------------------
+Parameters for evaluation 7:
+                     -4.0000000000e-04 k1
+
+(Asynchronous job 7 added to queue)
+
+---------------------
+Begin Evaluation    8
+---------------------
+Parameters for evaluation 8:
+                     -3.0000000000e-04 k1
+
+(Asynchronous job 8 added to queue)
+
+---------------------
+Begin Evaluation    9
+---------------------
+Parameters for evaluation 9:
+                     -2.0000000000e-04 k1
+
+(Asynchronous job 9 added to queue)
+
+---------------------
+Begin Evaluation   10
+---------------------
+Parameters for evaluation 10:
+                     -1.0000000000e-04 k1
+
+(Asynchronous job 10 added to queue)
+
+---------------------
+Begin Evaluation   11
+---------------------
+Parameters for evaluation 11:
+                      0.0000000000e+00 k1
+
+(Asynchronous job 11 added to queue)
+
+---------------------
+Begin Evaluation   12
+---------------------
+Parameters for evaluation 12:
+                      1.0000000000e-04 k1
+
+(Asynchronous job 12 added to queue)
+
+---------------------
+Begin Evaluation   13
+---------------------
+Parameters for evaluation 13:
+                      2.0000000000e-04 k1
+
+(Asynchronous job 13 added to queue)
+
+---------------------
+Begin Evaluation   14
+---------------------
+Parameters for evaluation 14:
+                      3.0000000000e-04 k1
+
+(Asynchronous job 14 added to queue)
+
+---------------------
+Begin Evaluation   15
+---------------------
+Parameters for evaluation 15:
+                      4.0000000000e-04 k1
+
+(Asynchronous job 15 added to queue)
+
+---------------------
+Begin Evaluation   16
+---------------------
+Parameters for evaluation 16:
+                      5.0000000000e-04 k1
+
+(Asynchronous job 16 added to queue)
+
+---------------------
+Begin Evaluation   17
+---------------------
+Parameters for evaluation 17:
+                      6.0000000000e-04 k1
+
+(Asynchronous job 17 added to queue)
+
+---------------------
+Begin Evaluation   18
+---------------------
+Parameters for evaluation 18:
+                      7.0000000000e-04 k1
+
+(Asynchronous job 18 added to queue)
+
+---------------------
+Begin Evaluation   19
+---------------------
+Parameters for evaluation 19:
+                      8.0000000000e-04 k1
+
+(Asynchronous job 19 added to queue)
+
+---------------------
+Begin Evaluation   20
+---------------------
+Parameters for evaluation 20:
+                      9.0000000000e-04 k1
+
+(Asynchronous job 20 added to queue)
+
+---------------------
+Begin Evaluation   21
+---------------------
+Parameters for evaluation 21:
+                      1.0000000000e-03 k1
+
+(Asynchronous job 21 added to queue)
+
+Blocking synchronize of 21 asynchronous evaluations
+First pass: initiating 4 local asynchronous jobs
+Initiating evaluation 1
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Initiating evaluation 2
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Initiating evaluation 3
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Initiating evaluation 4
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Second pass: scheduling 17 remaining local asynchronous jobs
+Waiting on completed jobs
+Evaluation 1 has completed
+Initiating evaluation 5
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 2 has completed
+Initiating evaluation 6
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 4 has completed
+Initiating evaluation 7
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 3 has completed
+Initiating evaluation 8
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 7 has completed
+Initiating evaluation 9
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 6 has completed
+Initiating evaluation 10
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 5 has completed
+Initiating evaluation 11
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 8 has completed
+Initiating evaluation 12
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 9 has completed
+Initiating evaluation 13
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 10 has completed
+Initiating evaluation 14
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 11 has completed
+Initiating evaluation 15
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 12 has completed
+Initiating evaluation 16
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 13 has completed
+Initiating evaluation 17
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 14 has completed
+Initiating evaluation 18
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 15 has completed
+Initiating evaluation 19
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 16 has completed
+Initiating evaluation 20
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 17 has completed
+Initiating evaluation 21
+nonblocking fork: python interface_v.py vr7_vabs_pretwist params.in results.out
+Waiting on completed jobs
+Evaluation 18 has completed
+Waiting on completed jobs
+Evaluation 19 has completed
+Waiting on completed jobs
+Evaluation 20 has completed
+Waiting on completed jobs
+Evaluation 21 has completed
+
+Active response data for evaluation 1:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.4094539613e+08 s11
+                      6.2947260165e+05 s12
+                     -8.3966532619e+05 s13
+                     -1.1978848275e+07 s14
+                      7.1527133476e+07 s15
+                     -8.2477813080e+08 s16
+                      2.4287829041e+07 s22
+                      3.0134972758e+05 s23
+                     -1.5232365653e+07 s24
+                      3.8584535890e+06 s25
+                     -2.6418899710e+06 s26
+                      1.9339024136e+06 s33
+                      1.0596775838e+07 s34
+                     -4.5186203877e+05 s35
+                      8.9774274753e+06 s36
+                      1.4457454734e+08 s44
+                     -7.4768788423e+06 s45
+                      1.4775978313e+08 s46
+                      1.2270759484e+08 s55
+                     -4.1124954764e+08 s56
+                      7.1813684102e+09 s66
+
+
+Active response data for evaluation 2:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.4072004161e+08 s11
+                      5.6819393083e+05 s12
+                     -7.7151218431e+05 s13
+                     -1.1368784668e+07 s14
+                      7.1403364870e+07 s15
+                     -8.2326180077e+08 s16
+                      2.4378838996e+07 s22
+                      2.9965954208e+05 s23
+                     -1.5341336355e+07 s24
+                      3.8400406135e+06 s25
+                     -2.3509685812e+06 s26
+                      1.9343406944e+06 s33
+                      1.0568668338e+07 s34
+                     -4.1812922137e+05 s35
+                      8.3920145223e+06 s36
+                      1.4451136074e+08 s44
+                     -7.2353806713e+06 s45
+                      1.4110167941e+08 s46
+                      1.2265335768e+08 s55
+                     -4.1041283619e+08 s56
+                      7.1724841536e+09 s66
+
+
+Active response data for evaluation 3:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.4049268903e+08 s11
+                      5.0570398376e+05 s12
+                     -7.0331698247e+05 s13
+                     -1.0750981006e+07 s14
+                      7.1278705656e+07 s15
+                     -8.2171598336e+08 s16
+                      2.4460766212e+07 s22
+                      2.9810648518e+05 s23
+                     -1.5447227752e+07 s24
+                      3.8204480812e+06 s25
+                     -2.0515935338e+06 s26
+                      1.9347352761e+06 s33
+                      1.0541622992e+07 s34
+                     -3.8436132426e+05 s35
+                      7.8059161025e+06 s36
+                      1.4443440325e+08 s44
+                     -6.9913235213e+06 s45
+                      1.3433451455e+08 s46
+                      1.2259768982e+08 s55
+                     -4.0956445682e+08 s56
+                      7.1631854475e+09 s66
+
+
+Active response data for evaluation 4:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.4026343395e+08 s11
+                      4.4209902433e+05 s12
+                     -6.3508130681e+05 s13
+                     -1.0125495376e+07 s14
+                      7.1153207758e+07 s15
+                     -8.2014152767e+08 s16
+                      2.4533282571e+07 s22
+                      2.9669762139e+05 s23
+                     -1.5549885675e+07 s24
+                      3.7996867930e+06 s25
+                     -1.7443581949e+06 s26
+                      1.9350859103e+06 s33
+                      1.0515662483e+07 s34
+                     -3.5055733430e+05 s35
+                      7.2191865061e+06 s36
+                      1.4434359137e+08 s44
+                     -6.7447266960e+06 s45
+                      1.2745864982e+08 s46
+                      1.2254061514e+08 s55
+                     -4.0870486158e+08 s56
+                      7.1534795923e+09 s66
+
+
+Active response data for evaluation 5:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.4003237031e+08 s11
+                      3.7748057325e+05 s12
+                     -5.6680675989e+05 s13
+                     -9.4923875404e+06 s14
+                      7.1026923000e+07 s15
+                     -8.1853926837e+08 s16
+                      2.4596043670e+07 s22
+                      2.9544023807e+05 s23
+                     -1.5649140597e+07 s24
+                      3.7777672316e+06 s25
+                     -1.4298884048e+06 s26
+                      1.9353923506e+06 s33
+                      1.0490809746e+07 s34
+                     -3.1671619506e+05 s35
+                      6.6318801175e+06 s36
+                      1.4423883742e+08 s44
+                     -6.4956084793e+06 s45
+                      1.2047445614e+08 s46
+                      1.2248215749e+08 s55
+                     -4.0783449935e+08 s56
+                      7.1433737601e+09 s66
+
+
+Active response data for evaluation 6:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3979959058e+08 s11
+                      3.1195569084e+05 s12
+                     -4.9849492196e+05 s13
+                     -8.8517188835e+06 s14
+                      7.0899903253e+07 s15
+                     -8.1691002719e+08 s16
+                      2.4648688108e+07 s22
+                      2.9434185978e+05 s23
+                     -1.5744806599e+07 s24
+                      3.7546995250e+06 s25
+                     -1.1088440862e+06 s26
+                      1.9356543526e+06 s33
+                      1.0467087957e+07 s34
+                     -2.8283678374e+05 s35
+                      6.0440511170e+06 s36
+                      1.4412004886e+08 s44
+                     -6.2439859522e+06 s45
+                      1.1338231309e+08 s46
+                      1.2242234075e+08 s55
+                     -4.0695381699e+08 s56
+                      7.1328750073e+09 s66
+
+
+Active response data for evaluation 7:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3956518599e+08 s11
+                      2.4563727680e+05 s12
+                     -4.3014730959e+05 s13
+                     -8.2035523540e+06 s14
+                      7.0772200602e+07 s15
+                     -8.1525461459e+08 s16
+                      2.4690836736e+07 s22
+                      2.9341026288e+05 s23
+                     -1.5836680231e+07 s24
+                      3.7304933997e+06 s25
+                     -7.8192094957e+05 s26
+                      1.9358716726e+06 s33
+                      1.0444520519e+07 s34
+                     -2.4891788641e+05 s35
+                      5.4557531612e+06 s36
+                      1.4398712734e+08 s44
+                     -5.9898747876e+06 s45
+                      1.0618260786e+08 s46
+                      1.2236118892e+08 s55
+                     -4.0606326060e+08 s56
+                      7.1219902869e+09 s66
+
+
+Active response data for evaluation 8:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3932924668e+08 s11
+                      1.7864438793e+05 s12
+                     -3.6176533106e+05 s13
+                     -7.5479524123e+06 s14
+                      7.0643867517e+07 s15
+                     -8.1357383140e+08 s16
+                      2.4722091874e+07 s22
+                      2.9265349028e+05 s23
+                     -1.5924539257e+07 s24
+                      3.7051581248e+06 s25
+                     -4.4985229735e+05 s26
+                      1.9360440682e+06 s33
+                      1.0423131056e+07 s34
+                     -2.1495817154e+05 s35
+                      4.8670390384e+06 s36
+                      1.4383996778e+08 s44
+                     -5.7332890192e+06 s45
+                      9.8875734218e+07 s46
+                      1.2229872617e+08 s55
+                     -4.0516327680e+08 s56
+                      7.1107264622e+09 s66
+
+
+Active response data for evaluation 9:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3909186193e+08 s11
+                      1.1110257398e+05 s12
+                     -2.9335023767e+05 s13
+                     -6.8849849721e+06 s14
+                      7.0514957042e+07 s15
+                     -8.1186847066e+08 s16
+                      2.4742036506e+07 s22
+                      2.9207986632e+05 s23
+                     -1.6008141280e+07 s24
+                      3.6787024429e+06 s25
+                     -1.1341093069e+05 s26
+                      1.9361712971e+06 s33
+                      1.0402943413e+07 s34
+                     -1.8095616119e+05 s35
+                      4.2779602924e+06 s36
+                      1.4367845736e+08 s44
+                     -5.4742407799e+06 s45
+                      9.1462091317e+07 s46
+                      1.2223497698e+08 s55
+                     -4.0425431412e+08 s56
+                      7.0990903212e+09 s66
+
+
+Active response data for evaluation 10:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3885312043e+08 s11
+                      4.3144232422e+04 s12
+                     -2.2490307011e+05 s13
+                     -6.2147173348e+06 s14
+                      7.0385522998e+07 s15
+                     -8.1013931958e+08 s16
+                      2.4750233446e+07 s22
+                      2.9169801186e+05 s23
+                     -1.6087222220e+07 s24
+                      3.6511344882e+06 s25
+                      2.2658884006e+05 s26
+                      1.9362531170e+06 s33
+                      1.0383981647e+07 s34
+                     -1.4691019952e+05 s35
+                      3.6885668087e+06 s36
+                      1.4350247438e+08 s44
+                     -5.2127400055e+06 s45
+                      8.3942082483e+07 s46
+                      1.2216996616e+08 s55
+                     -4.0333682450e+08 s56
+                      7.0870885916e+09 s66
+
+
+Active response data for evaluation 11:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3861311048e+08 s11
+                     -2.5091017689e+04 s12
+                     -1.5642459915e+05 s13
+                     -5.5372181139e+06 s14
+                      7.0255620209e+07 s15
+                     -8.0838716173e+08 s16
+                      2.4746224481e+07 s22
+                      2.9151685926e+05 s23
+                     -1.6161494660e+07 s24
+                      3.6224616898e+06 s25
+                      5.6928907898e+05 s26
+                      1.9362892852e+06 s33
+                      1.0366270036e+07 s34
+                     -1.1281841820e+05 s35
+                      3.0989063547e+06 s36
+                      1.4331188698e+08 s44
+                     -4.9487940966e+06 s45
+                      7.6316113799e+07 s46
+                      1.2210371901e+08 s55
+                     -4.0241126496e+08 s56
+                      7.0747279582e+09 s66
+
+
+Active response data for evaluation 12:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3837192035e+08 s11
+                     -9.3455942391e+04 s12
+                     -8.7915259221e+04 s13
+                     -4.8525571414e+06 s14
+                      7.0125304749e+07 s15
+                     -8.0661277943e+08 s16
+                      2.4729529506e+07 s22
+                      2.9154566736e+05 s23
+                     -1.6230646021e+07 s24
+                      3.5926906579e+06 s25
+                      9.1378600183e+05 s26
+                      1.9362795581e+06 s33
+                      1.0349833080e+07 s34
+                     -7.8678697985e+04 s35
+                      2.5090240668e+06 s36
+                      1.4310655178e+08 s44
+                     -4.6824075314e+06 s45
+                      6.8584592524e+07 s46
+                      1.2203626139e+08 s55
+                     -4.0147809941e+08 s56
+                      7.0620150814e+09 s66
+
+
+Active response data for evaluation 13:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3812963854e+08 s11
+                     -1.6179528002e+05 s12
+                     -1.9375073795e+04 s13
+                     -4.1608053520e+06 s14
+                      6.9994634221e+07 s15
+                     -8.0481695648e+08 s16
+                      2.4699645637e+07 s22
+                      2.9179403625e+05 s23
+                     -1.6294336562e+07 s24
+                      3.5618270501e+06 s25
+                      1.2591276473e+06 s26
+                      1.9362236912e+06 s33
+                      1.0334695516e+07 s34
+                     -4.4488625949e+04 s35
+                      1.9189618724e+06 s36
+                      1.4288631233e+08 s44
+                     -4.4135814228e+06 s45
+                      6.0747925243e+07 s46
+                      1.2196761986e+08 s55
+                     -4.0053780065e+08 s56
+                      7.0489566186e+09 s66
+
+
+Active response data for evaluation 14:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3788635424e+08 s11
+                     -2.2994530911e+05 s12
+                      4.9196429152e+04 s13
+                     -3.4620346363e+06 s14
+                      6.9863668068e+07 s15
+                     -8.0300048126e+08 s16
+                      2.4656046338e+07 s22
+                      2.9227192166e+05 s23
+                     -1.6352197196e+07 s24
+                      3.5298754175e+06 s25
+                      1.6043114440e+06 s26
+                      1.9361214384e+06 s33
+                      1.0320882330e+07 s34
+                     -1.0245447453e+04 s35
+                      1.3287578358e+06 s36
+                      1.4265099743e+08 s44
+                     -4.1423130077e+06 s45
+                      5.2806515708e+07 s46
+                      1.2189782181e+08 s55
+                     -3.9959085269e+08 s56
+                      7.0355592480e+09 s66
+
+
+Active response data for evaluation 15:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3764215770e+08 s11
+                     -2.9773339750e+05 s12
+                      1.1780031335e+05 s13
+                     -2.7563176541e+06 s14
+                      6.9732467930e+07 s15
+                     -8.0116415031e+08 s16
+                      2.4598180546e+07 s22
+                      2.9298964877e+05 s23
+                     -1.6403827094e+07 s24
+                      3.4968390252e+06 s25
+                      1.9482816769e+06 s26
+                      1.9359725517e+06 s33
+                      1.0308418786e+07 s34
+                      2.4053987951e+04 s35
+                      7.3844541236e+05 s36
+                      1.4240041917e+08 s44
+                     -3.8685950588e+06 s45
+                      4.4760762261e+07 s46
+                      1.2182689556e+08 s55
+                     -3.9863775327e+08 s56
+                      7.0218296960e+09 s66
+
+
+Active response data for evaluation 16:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3739714076e+08 s11
+                     -3.6497753345e+05 s12
+                      1.8643834440e+05 s13
+                     -2.0437275939e+06 s14
+                      6.9601098043e+07 s15
+                     -7.9930877239e+08 s16
+                      2.4525471822e+07 s22
+                      2.9395792514e+05 s23
+                     -1.6448791070e+07 s24
+                      3.4627196454e+06 s25
+                      2.2899268593e+06 s26
+                      1.9357767813e+06 s33
+                      1.0297330453e+07 s34
+                      5.8413287837e+04 s35
+                      1.4805259548e+05 s36
+                      1.4213437089e+08 s44
+                     -3.5924152039e+06 s45
+                      3.6611054757e+07 s46
+                      1.2175487060e+08 s55
+                     -3.9767901677e+08 s56
+                      7.0077747688e+09 s66
+
+
+Active response data for evaluation 17:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3715139749e+08 s11
+                     -4.3148584019e+05 s12
+                      2.5511311645e+05 s13
+                     -1.3243378661e+06 s14
+                      6.9469625703e+07 s15
+                     -7.9743517330e+08 s16
+                      2.4437317546e+07 s22
+                      2.9518785259e+05 s23
+                     -1.6486616708e+07 s24
+                      3.4275173206e+06 s25
+                      2.6280770180e+06 s26
+                      1.9355338751e+06 s33
+                      1.0287643246e+07 s34
+                      9.2836586720e+04 s35
+                     -4.4239906627e+05 s36
+                      1.4185262476e+08 s44
+                     -3.3137551376e+06 s45
+                      2.8357770834e+07 s46
+                      1.2168177774e+08 s55
+                     -3.9671517759e+08 s56
+                      6.9934013891e+09 s66
+
+
+Active response data for evaluation 18:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3690502484e+08 s11
+                     -4.9705607593e+05 s12
+                      3.2382819872e+05 s13
+                     -5.9822170877e+05 s14
+                      6.9338121792e+07 s15
+                     -7.9554420146e+08 s16
+                      2.4333088162e+07 s22
+                      2.9669093743e+05 s23
+                     -1.6516791245e+07 s24
+                      3.3912300901e+06 s25
+                      2.9615009053e+06 s26
+                      1.9352435783e+06 s33
+                      1.0279383481e+07 s34
+                      1.2732862589e+05 s35
+                     -1.0328956054e+06 s36
+                      1.4155492916e+08 s44
+                     -3.0325897042e+06 s45
+                      2.0001271389e+07 s46
+                      1.2160764929e+08 s55
+                     -3.9574679394e+08 s56
+                      6.9787166392e+09 s66
+
+
+Active response data for evaluation 19:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3665812350e+08 s11
+                     -5.6147512189e+05 s12
+                      3.9258830559e+05 s13
+                      1.3454831605e+05 s14
+                      6.9206661397e+07 s15
+                     -7.9363673455e+08 s16
+                      2.4212126522e+07 s22
+                      2.9847909871e+05 s23
+                     -1.6538758146e+07 s24
+                      3.3538536791e+06 s25
+                      3.2889031532e+06 s26
+                      1.9349056337e+06 s33
+                      1.0272577943e+07 s34
+                      1.6189484516e+05 s35
+                     -1.6234319557e+06 s36
+                      1.4124100574e+08 s44
+                     -2.7488858308e+06 s45
+                      1.1541895059e+07 s46
+                      1.2153251937e+08 s55
+                     -3.9477445227e+08 s56
+                      6.9637278107e+09 s66
+
+
+Active response data for evaluation 20:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3641079890e+08 s11
+                     -6.2451846213e+05 s12
+                      4.6139949494e+05 s13
+                      8.7390096628e+05 s14
+                      6.9075324513e+07 s15
+                     -7.9171368723e+08 s16
+                      2.4073747327e+07 s22
+                      3.0056467390e+05 s23
+                     -1.6551913387e+07 s24
+                      3.3153811432e+06 s25
+                      3.6089213908e+06 s26
+                      1.9345197813e+06 s33
+                      1.0267253965e+07 s34
+                      1.9654148867e+05 s35
+                     -2.2140134931e+06 s36
+                      1.4091054615e+08 s44
+                     -2.4626012818e+06 s45
+                      2.9799514443e+06 s46
+                      1.2145642416e+08 s55
+                     -3.9379877245e+08 s56
+                      6.9484424646e+09 s66
+
+
+Active response data for evaluation 21:
+Active set vector = { 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 }
+                      1.3616316238e+08 s11
+                     -6.8594965988e+05 s12
+                      5.3026940053e+05 s13
+                      1.6197671406e+06 s14
+                      6.8944196877e+07 s15
+                     -7.8977602047e+08 s16
+                      2.3917236734e+07 s22
+                      3.0296042122e+05 s23
+                     -1.6555601403e+07 s24
+                      3.2758024641e+06 s25
+                      3.9201233542e+06 s26
+                      1.9340857585e+06 s33
+                      1.0263439540e+07 s34
+                      2.3127572754e+05 s35
+                     -2.8046578416e+06 s36
+                      1.4056320839e+08 s44
+                     -2.1736832011e+06 s45
+                     -5.6842872104e+06 s46
+                      1.2137940224e+08 s55
+                     -3.9282041373e+08 s56
+                      6.9328685015e+09 s66
+
+<<<<< Function evaluation summary: 21 total (21 new, 0 duplicate)
+
+Simple Correlation Matrix among all inputs and outputs:
+                       k1          s11          s12          s13          s14          s15          s16          s22          s23          s24          s25          s26          s33          s34          s35          s36          s44          s45          s46          s55          s56          s66 
+          k1  1.00000e+00 
+         s11 -9.99911e-01  1.00000e+00 
+         s12 -9.99936e-01  9.99903e-01  1.00000e+00 
+         s13  9.99999e-01 -9.99928e-01 -9.99939e-01  1.00000e+00 
+         s14  9.99597e-01 -9.99885e-01 -9.99616e-01  9.99635e-01  1.00000e+00 
+         s15 -9.99963e-01  9.99988e-01  9.99945e-01 -9.99973e-01 -9.99798e-01  1.00000e+00 
+         s16  9.99415e-01 -9.99782e-01 -9.99468e-01  9.99460e-01  9.99982e-01 -9.99667e-01  1.00000e+00 
+         s22 -4.11213e-01  4.23120e-01  4.12989e-01 -4.12442e-01 -4.36816e-01  4.18648e-01 -4.41879e-01  1.00000e+00 
+         s23  4.55428e-02 -5.85982e-02 -4.73965e-02  4.68890e-02  7.37374e-02 -5.36768e-02  7.93372e-02 -9.29269e-01  1.00000e+00 
+         s24 -9.78113e-01  9.75326e-01  9.77741e-01 -9.77833e-01 -9.71865e-01  9.76403e-01 -9.70534e-01  2.12730e-01  1.63194e-01  1.00000e+00 
+         s25 -9.94801e-01  9.96064e-01  9.95025e-01 -9.94938e-01 -9.97290e-01  9.95616e-01 -9.97697e-01  5.01632e-01 -1.46650e-01  9.51992e-01  1.00000e+00 
+         s26  9.99844e-01 -9.99931e-01 -9.99958e-01  9.99858e-01  9.99774e-01 -9.99931e-01  9.99681e-01 -4.20790e-01  5.59498e-02 -9.75891e-01 -9.95830e-01  1.00000e+00 
+         s33  8.50206e-02 -7.18241e-02 -8.24017e-02  8.36750e-02  5.67273e-02 -7.67298e-02  5.09855e-02  8.71728e-01 -9.89097e-01 -2.89396e-01  1.68695e-02  7.36628e-02  1.00000e+00 
+         s34 -9.79609e-01  9.76872e-01  9.79073e-01 -9.79336e-01 -9.73521e-01  9.77913e-01 -9.72197e-01  2.19790e-01  1.55894e-01  9.99847e-01  9.54075e-01 -9.77235e-01 -2.83415e-01  1.00000e+00 
+         s35  9.99992e-01 -9.99955e-01 -9.99935e-01  9.99996e-01  9.99702e-01 -9.99987e-01  9.99542e-01 -4.14849e-01  4.95318e-02 -9.77275e-01 -9.95198e-01  9.99877e-01  8.10532e-02 -9.78800e-01  1.00000e+00 
+         s36 -9.99999e-01  9.99926e-01  9.99942e-01 -1.00000e+00 -9.99629e-01  9.99972e-01 -9.99454e-01  4.12228e-01 -4.66506e-02  9.77885e-01  9.94917e-01 -9.99860e-01 -8.38903e-02  9.79382e-01 -9.99996e-01  1.00000e+00 
+         s44 -9.80428e-01  9.82943e-01  9.80861e-01 -9.80693e-01 -9.85616e-01  9.82025e-01 -9.86565e-01  5.82412e-01 -2.40975e-01  9.18181e-01  9.95373e-01 -9.82491e-01  1.12798e-01  9.20885e-01 -9.81205e-01  9.80650e-01  1.00000e+00 
+         s45  9.99685e-01 -9.99928e-01 -9.99689e-01  9.99718e-01  9.99995e-01 -9.99857e-01  9.99957e-01 -4.33923e-01  7.05387e-02 -9.72612e-01 -9.97045e-01  9.99817e-01  5.99726e-02 -9.74257e-01  9.99777e-01 -9.99712e-01 -9.85062e-01  1.00000e+00 
+         s46 -9.99312e-01  9.99714e-01  9.99352e-01 -9.99361e-01 -9.99962e-01  9.99584e-01 -9.99994e-01  4.44653e-01 -8.24370e-02  9.69775e-01  9.97894e-01 -9.99586e-01 -4.80030e-02  9.71487e-01 -9.99451e-01  9.99353e-01  9.87055e-01 -9.99928e-01  1.00000e+00 
+         s55 -9.98807e-01  9.99368e-01  9.98898e-01 -9.98872e-01 -9.99790e-01  9.99181e-01 -9.99892e-01  4.54976e-01 -9.39278e-02  9.66902e-01  9.98585e-01 -9.99239e-01 -3.63255e-02  9.68656e-01 -9.98993e-01  9.98863e-01  9.88856e-01 -9.99717e-01  9.99930e-01  1.00000e+00 
+         s56  9.99755e-01 -9.99962e-01 -9.99778e-01  9.99784e-01  9.99978e-01 -9.99907e-01  9.99926e-01 -4.30956e-01  6.72350e-02 -9.73384e-01 -9.96799e-01  9.99885e-01  6.31163e-02 -9.74971e-01  9.99834e-01 -9.99780e-01 -9.84507e-01  9.99992e-01 -9.99883e-01 -9.99640e-01  1.00000e+00 
+         s66 -9.97101e-01  9.98025e-01  9.97273e-01 -9.97203e-01 -9.98858e-01  9.97704e-01 -9.99119e-01  4.79016e-01 -1.20936e-01  9.59614e-01  9.99663e-01 -9.97856e-01 -9.03709e-03  9.61518e-01 -9.97395e-01  9.97188e-01  9.92545e-01 -9.98697e-01  9.99237e-01  9.99627e-01 -9.98536e-01  1.00000e+00 
+
+Partial Correlation Matrix between input and output:
+                      s11          s12          s13          s14          s15          s16          s22          s23          s24          s25          s26          s33          s34          s35          s36          s44          s45          s46          s55          s56          s66 
+          k1 -9.99911e-01 -9.99936e-01  9.99999e-01  9.99597e-01 -9.99963e-01  9.99415e-01 -4.11213e-01  4.55428e-02 -9.78113e-01 -9.94801e-01  9.99844e-01  8.50206e-02 -9.79609e-01  9.99992e-01 -9.99999e-01 -9.80428e-01  9.99685e-01 -9.99312e-01 -9.98807e-01  9.99755e-01 -9.97101e-01 
+
+Simple Rank Correlation Matrix among all inputs and outputs:
+                       k1          s11          s12          s13          s14          s15          s16          s22          s23          s24          s25          s26          s33          s34          s35          s36          s44          s45          s46          s55          s56          s66 
+          k1  1.00000e+00 
+         s11 -1.00000e+00  1.00000e+00 
+         s12 -1.00000e+00  1.00000e+00  1.00000e+00 
+         s13  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 
+         s14  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 
+         s15 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 
+         s16  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 
+         s22 -2.79221e-01  2.79221e-01  2.79221e-01 -2.79221e-01 -2.79221e-01  2.79221e-01 -2.79221e-01  1.00000e+00 
+         s23 -1.29870e-03  1.29870e-03  1.29870e-03 -1.29870e-03 -1.29870e-03  1.29870e-03 -1.29870e-03 -9.38961e-01  1.00000e+00 
+         s24 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00 
+         s25 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 
+         s26  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 -2.79221e-01 -1.29870e-03 -1.00000e+00 -1.00000e+00  1.00000e+00 
+         s33  7.14286e-02 -7.14286e-02 -7.14286e-02  7.14286e-02  7.14286e-02 -7.14286e-02  7.14286e-02  9.23377e-01 -9.96104e-01 -7.14286e-02 -7.14286e-02  7.14286e-02  1.00000e+00 
+         s34 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 -1.00000e+00 -7.14286e-02  1.00000e+00 
+         s35  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 -2.79221e-01 -1.29870e-03 -1.00000e+00 -1.00000e+00  1.00000e+00  7.14286e-02 -1.00000e+00  1.00000e+00 
+         s36 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 -1.00000e+00 -7.14286e-02  1.00000e+00 -1.00000e+00  1.00000e+00 
+         s44 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 -1.00000e+00 -7.14286e-02  1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 
+         s45  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 -2.79221e-01 -1.29870e-03 -1.00000e+00 -1.00000e+00  1.00000e+00  7.14286e-02 -1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 
+         s46 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 -1.00000e+00 -7.14286e-02  1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 
+         s55 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 -1.00000e+00 -7.14286e-02  1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 
+         s56  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 -2.79221e-01 -1.29870e-03 -1.00000e+00 -1.00000e+00  1.00000e+00  7.14286e-02 -1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 
+         s66 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00  2.79221e-01  1.29870e-03  1.00000e+00  1.00000e+00 -1.00000e+00 -7.14286e-02  1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 
+
+Partial Rank Correlation Matrix between input and output:
+                      s11          s12          s13          s14          s15          s16          s22          s23          s24          s25          s26          s33          s34          s35          s36          s44          s45          s46          s55          s56          s66 
+          k1 -1.00000e+00 -1.00000e+00  1.00000e+00  1.00000e+00 -1.00000e+00  1.00000e+00 -2.79221e-01 -1.29870e-03 -1.00000e+00 -1.00000e+00  1.00000e+00  7.14286e-02 -1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00 -1.00000e+00  1.00000e+00 -1.00000e+00 
+
+
+<<<<< Iterator multidim_parameter_study completed.
+<<<<< Environment execution completed.
+DAKOTA execution time in seconds:
+  Total CPU        =    328.708 [parent =    328.708, child = 5.68434e-14]
+  Total wall clock =    328.708

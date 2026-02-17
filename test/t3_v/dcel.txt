@@ -1,0 +1,408 @@
+DCEL Summary
+
+28 vertices:
+( 0 , inf , inf ) - degree 2
+( 0 , -inf , inf ) - degree 2
+( 0 , -inf , -inf ) - degree 2
+( 0 , inf , -inf ) - degree 2
+( 0 , -1 , 2 ) - degree 2
+( 0 , -1.07155 , 1.96422 ) - degree 2
+( 0 , 1 , 2 ) - degree 2
+( 0 , 1.07155 , 1.96422 ) - degree 2
+( 0 , 0 , 0 ) - degree 3
+( 0 , -0 , -0.178885 ) - degree 3
+( 0 , -1.00894 , 1.99553 ) - degree 3
+( 0 , -1.01789 , 1.99106 ) - degree 3
+( 0 , -1.02683 , 1.98658 ) - degree 3
+( 0 , -1.04472 , 1.97764 ) - degree 3
+( 0 , -1.05367 , 1.97317 ) - degree 3
+( 0 , -1.06261 , 1.9687 ) - degree 3
+( 0 , 0 , -0.0223607 ) - degree 4
+( 0 , 0 , -0.0447214 ) - degree 4
+( 0 , 0 , -0.067082 ) - degree 4
+( 0 , 0 , -0.111803 ) - degree 4
+( 0 , 0 , -0.134164 ) - degree 4
+( 0 , 0 , -0.156525 ) - degree 4
+( 0 , 1.00894 , 1.99553 ) - degree 3
+( 0 , 1.01789 , 1.99106 ) - degree 3
+( 0 , 1.02683 , 1.98658 ) - degree 3
+( 0 , 1.04472 , 1.97764 ) - degree 3
+( 0 , 1.05367 , 1.97317 ) - degree 3
+( 0 , 1.06261 , 1.9687 ) - degree 3
+
+78 half edges:
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -1 , 2 ) -> ( 0 , 0 , 0 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 2 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 2 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , 2 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: -1
+  ( 0 , -1.07155 , 1.96422 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: 1
+  ( 0 , -0 , -0.178885 ) -> ( 0 , -1.07155 , 1.96422 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0 , -0.178885 ) -> ( 0 , 1.07155 , 1.96422 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: 1
+  ( 0 , 1.07155 , 1.96422 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 2 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: 1
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , -1 , 2 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: 1
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: 1
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: 1
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: 1
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: 1
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , -1.07155 , 1.96422 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: 1
+  ( 0 , -1.07155 , 1.96422 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: 1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: -1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: 1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: 1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: -1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: 1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: -1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: 1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: -1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: 1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: 1
+  ( 0 , -0 , -0.178885 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: -1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: -1
+  ( 0 , 1 , 2 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 1 , 2 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: -1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: -1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: -1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: -1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: -1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 1.07155 , 1.96422 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.07155 , 1.96422 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: -1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: -1
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: 1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: -1
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: 1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: -1
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: 1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: -1
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: 1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: -1
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: 1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: -1
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: 1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: -1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: 1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: -1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: 1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: -1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: 1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: -1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: 1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: -1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: 1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: -1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: 1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: -1
+
+16 half edge loops:
+direction: outer
+keep: yes
+face: background
+half edges:
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+adjacent loop: nullptr
+
+direction: inner
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.07155 , 1.96422 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , -1 , 2 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 2 ) -> ( 0 , 0 , 0 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 2 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , 2 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 1.07155 , 1.96422 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.07155 , 1.96422 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0 , -0.178885 ) -> ( 0 , -1.07155 , 1.96422 ) | loop: temp | face: nullptr | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: 1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 2 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 2 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: 1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: -1
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: 1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: -1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: -1
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: 1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: -1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: -1
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: 1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: -1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: -1
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: 1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: -1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: -1
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.07155 , 1.96422 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: 1
+  ( 0 , -0 , -0.178885 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: -1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: -1
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , -1.07155 , 1.96422 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: 1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 1 , 2 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: -1
+  ( 0 , 1 , 2 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: 1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: -1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: -1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: 1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: -1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: -1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: 1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: -1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: -1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: 1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: -1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: -1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -0.156525 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: 1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: -1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: -1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -0 , -0.178885 ) -> ( 0 , 1.07155 , 1.96422 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: 1
+  ( 0 , 1.07155 , 1.96422 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: -1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: -1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: 1
+adjacent loop: nullptr
+
+
+15 faces:
+name: background
+outer boundary: 
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr | sign: 1
+
+name: sg_v_area_0_layer_1
+outer boundary: 
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: 1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 2 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 2 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_0_layer_1 | sign: 1
+layer type:                1               1              45          iso5_1
+
+name: sg_v_area_0_layer_2
+outer boundary: 
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: 1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , -1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: -1
+  ( 0 , -1.00894 , 1.99553 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_0_layer_2 | sign: 1
+layer type:                2               1             -45          iso5_1
+
+name: sg_v_area_0_layer_3
+outer boundary: 
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: 1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: -1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , -1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: -1
+  ( 0 , -1.01789 , 1.99106 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_0_layer_3 | sign: 1
+layer type:                3               1               0          iso5_1
+
+name: sg_v_area_0_layer_4
+outer boundary: 
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: 1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: -1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , -1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: -1
+  ( 0 , -1.02683 , 1.98658 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_0_layer_4 | sign: 1
+layer type:                4               1              90          iso5_1
+
+name: sg_v_area_0_layer_5
+outer boundary: 
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: 1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: -1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , -1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: -1
+  ( 0 , -1.04472 , 1.97764 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_0_layer_5 | sign: 1
+layer type:                3               1               0          iso5_1
+
+name: sg_v_area_0_layer_6
+outer boundary: 
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: 1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: -1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , -1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: -1
+  ( 0 , -1.05367 , 1.97317 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_0_layer_6 | sign: 1
+layer type:                2               1             -45          iso5_1
+
+name: sg_v_area_0_layer_7
+outer boundary: 
+  ( 0 , -1.07155 , 1.96422 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: 1
+  ( 0 , -0 , -0.178885 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: -1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , -1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: -1
+  ( 0 , -1.06261 , 1.9687 ) -> ( 0 , -1.07155 , 1.96422 ) | loop: temp | face: sg_v_area_0_layer_7 | sign: 1
+layer type:                1               1              45          iso5_1
+
+name: sg_v_area_1_layer_1
+outer boundary: 
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: 1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 1 , 2 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: -1
+  ( 0 , 1 , 2 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_1_layer_1 | sign: 1
+layer type:                1               1              45          iso5_1
+
+name: sg_v_area_1_layer_2
+outer boundary: 
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: 1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 1.00894 , 1.99553 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: -1
+  ( 0 , 1.00894 , 1.99553 ) -> ( 0 , 0 , -0.0223607 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: -1
+  ( 0 , 0 , -0.0223607 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_1_layer_2 | sign: 1
+layer type:                2               1             -45          iso5_1
+
+name: sg_v_area_1_layer_3
+outer boundary: 
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: 1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 1.01789 , 1.99106 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: -1
+  ( 0 , 1.01789 , 1.99106 ) -> ( 0 , 0 , -0.0447214 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: -1
+  ( 0 , 0 , -0.0447214 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_1_layer_3 | sign: 1
+layer type:                3               1               0          iso5_1
+
+name: sg_v_area_1_layer_4
+outer boundary: 
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: 1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 1.02683 , 1.98658 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: -1
+  ( 0 , 1.02683 , 1.98658 ) -> ( 0 , 0 , -0.067082 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: -1
+  ( 0 , 0 , -0.067082 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_1_layer_4 | sign: 1
+layer type:                4               1              90          iso5_1
+
+name: sg_v_area_1_layer_5
+outer boundary: 
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: 1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 1.04472 , 1.97764 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: -1
+  ( 0 , 1.04472 , 1.97764 ) -> ( 0 , 0 , -0.111803 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: -1
+  ( 0 , 0 , -0.111803 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_1_layer_5 | sign: 1
+layer type:                3               1               0          iso5_1
+
+name: sg_v_area_1_layer_6
+outer boundary: 
+  ( 0 , 0 , -0.156525 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: 1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 1.05367 , 1.97317 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: -1
+  ( 0 , 1.05367 , 1.97317 ) -> ( 0 , 0 , -0.134164 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: -1
+  ( 0 , 0 , -0.134164 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_1_layer_6 | sign: 1
+layer type:                2               1             -45          iso5_1
+
+name: sg_v_area_1_layer_7
+outer boundary: 
+  ( 0 , -0 , -0.178885 ) -> ( 0 , 1.07155 , 1.96422 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: 1
+  ( 0 , 1.07155 , 1.96422 ) -> ( 0 , 1.06261 , 1.9687 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: -1
+  ( 0 , 1.06261 , 1.9687 ) -> ( 0 , 0 , -0.156525 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: -1
+  ( 0 , 0 , -0.156525 ) -> ( 0 , -0 , -0.178885 ) | loop: temp | face: sg_v_area_1_layer_7 | sign: 1
+layer type:                1               1              45          iso5_1
+

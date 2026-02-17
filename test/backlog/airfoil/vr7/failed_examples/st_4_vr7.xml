@@ -1,0 +1,72 @@
+<cross_section name="st_4_vr7" type="airfoil">
+  <include>
+    <baseline>vr7_baselines</baseline>
+    <!-- <material>vr7_nofill_004_pre_materialsDB</material> -->
+    <layup>vr7_layups</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+    <oblique_y1>0.99973</oblique_y1>
+    <oblique_y2>0.023214</oblique_y2>
+  </analysis>
+  <general>
+    <translate>-0.25  0.0</translate>
+    <scale>20.2</scale>
+    <!-- <rotate>-2.940633</rotate> -->
+    <rotate>-2.940632</rotate>
+    <mesh_size>0.04</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <segments>
+    <segment name="lps_sgm_1">
+      <baseline>lps_bl_1</baseline>
+      <layup>layup_cap_dspar</layup>
+    </segment>
+    <segment name="lps_sgm_2">
+      <baseline>lps_bl_2</baseline>
+      <layup>layup_skin</layup>
+    </segment>
+    <segment name="lps_sgm_3">
+      <baseline>lps_bl_3</baseline>
+      <layup>layup_skin</layup>
+    </segment>
+    <!-- <segment name="sgm_tl">
+      <baseline>bl_tl</baseline>
+      <layup>layup_skin</layup>
+    </segment> -->
+    <segment name="hps_sgm_3">
+      <baseline>hps_bl_3</baseline>
+      <layup>layup_skin</layup>
+    </segment>
+    <segment name="hps_sgm_2">
+      <baseline>hps_bl_2</baseline>
+      <layup>layup_skin</layup>
+    </segment>
+    <segment name="hps_sgm_1">
+      <baseline>hps_bl_1</baseline>
+      <layup>layup_cap_dspar</layup>
+    </segment>
+    <segment name="web_sgm" level="10">
+      <baseline>web_bl</baseline>
+      <layup direction="left">layup_web_dspar</layup>
+    </segment>
+    <!-- <segment name="web_sgm_2" level="10">
+      <baseline>bl_web_tr</baseline>
+      <layup direction="left">layup_web_dspar</layup>
+    </segment> -->
+    <segment name="filling_sgm" level="10">
+      <baseline>filling_bl</baseline>
+      <layup direction="left">filling_hc</layup>
+    </segment>
+  </segments>
+  <connections>
+    <connection name="leading_edge">
+      <segment>lps_sgm_1</segment>
+      <segment>hps_sgm_1</segment>
+    </connection>
+    <!-- <connection name="trailing_edge">
+      <segment>lps_sgm_2</segment>
+      <segment>hps_sgm_2</segment>
+    </connection> -->
+  </connections>
+</cross_section>

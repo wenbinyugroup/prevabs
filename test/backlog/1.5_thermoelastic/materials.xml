@@ -1,0 +1,53 @@
+<materials>
+  <material name="matrix" type="isotropic">
+    <density>1</density>
+    <elastic>
+        <e>1e9</e>
+        <nu>0.3</nu>
+    </elastic>
+    <strength>
+      <xt>1e7</xt>
+    </strength>
+    <failure_criterion>4</failure_criterion>
+    <cte>
+      <a>1e-6</a>
+    </cte>
+    <specific_heat>1</specific_heat>
+  </material>
+
+
+  <material name="fiber" type="orthotropic">
+    <density>1.86E+03</density>
+    <elastic>
+      <e1>1E+10</e1>
+      <e2>2E+09</e2>
+      <e3>3E+09</e3>
+      <g12>4E+09</g12>
+      <g13>5E+09</g13>
+      <g23>6E+09</g23>
+      <nu12>0.28</nu12>
+      <nu13>0.28</nu13>
+      <nu23>0.28</nu23>
+    </elastic>
+    <strength>
+      <xt>1e8</xt>
+      <yt>2e7</yt>
+      <zt>3e7</zt>
+      <xc>1e8</xc>
+      <yc>2e7</yc>
+      <zc>3e7</zc>
+      <r>4e7</r>
+      <t>5e7</t>
+      <s>6e7</s>
+    </strength>
+    <cte>
+      <a11>11e-6</a11>
+      <a22>22e-6</a22>
+      <a33>33e-6</a33>
+    </cte>
+    <specific_heat>1</specific_heat>
+    <failure_criterion>4</failure_criterion>
+  </material>
+
+
+</materials>

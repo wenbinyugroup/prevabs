@@ -1,0 +1,62 @@
+<cross_section name="ctm">
+  <include>
+    <baseline>ctm_baselines</baseline>
+    <!-- <material>t300_5208_pre_materials</material> -->
+    <layup>ctm_layups</layup>
+  </include>
+  <analysis>
+    <!-- 0: classical, 1: Timoshenko -->
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="outer">
+    <segment name="web_outer_left">
+      <baseline>bl_web_l</baseline>
+      <layup>layup_fernandez2017</layup>
+    </segment>
+    <segment name="arc_outer_left">
+      <baseline>bl_uh_arc_l</baseline>
+      <layup>layup_fernandez2017</layup>
+    </segment>
+    <segment name="arc_outer_mid">
+      <baseline>bl_uh_arc_m</baseline>
+      <layup>layup_fernandez2017</layup>
+    </segment>
+    <segment name="arc_outer_right">
+      <baseline>bl_uh_arc_r</baseline>
+      <layup>layup_fernandez2017</layup>
+    </segment>
+    <segment name="web_outer_right">
+      <baseline>bl_web_r</baseline>
+      <layup>layup_fernandez2017</layup>
+    </segment>
+  </component>
+  <component name="inner">
+    <segment name="web_inner_left">
+      <baseline>bl_web_l</baseline>
+      <layup direction="right">layup_fernandez2017</layup>
+    </segment>
+    <segment name="arc_inner_left">
+      <baseline>bl_lh_arc_l</baseline>
+      <layup direction="right">layup_fernandez2017</layup>
+    </segment>
+    <segment name="arc_inner_mid">
+      <baseline>bl_lh_arc_m</baseline>
+      <layup direction="right">layup_fernandez2017</layup>
+    </segment>
+    <segment name="arc_inner_right">
+      <baseline>bl_lh_arc_r</baseline>
+      <layup direction="right">layup_fernandez2017</layup>
+    </segment>
+    <segment name="web_inner_right">
+      <baseline>bl_web_r</baseline>
+      <layup direction="right">layup_fernandez2017</layup>
+    </segment>
+  </component>
+</cross_section>

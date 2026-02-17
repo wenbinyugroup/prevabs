@@ -1,0 +1,430 @@
+2022-11-18 12:25:22 [info] prevabs start
+2022-11-18 12:25:22 [info] - reading input files
+2022-11-18 12:25:22 [info]     - reading main input file: .\test\end_trim\r.xml
+2022-11-18 12:25:22 [debug]     - find cross-section: r
+2022-11-18 12:25:22 [debug]     - reading analysis...
+2022-11-18 12:25:22 [debug]     - finished reading analysis.
+2022-11-18 12:25:22 [debug]     - reading general...
+2022-11-18 12:25:22 [debug]     - tolerance = 1e-12
+2022-11-18 12:25:22 [debug]     - finished reading general.
+2022-11-18 12:25:22 [debug]     - finding includings...
+2022-11-18 12:25:22 [debug]     - reading geometry...
+2022-11-18 12:25:22 [debug]       - reading line: bl
+2022-11-18 12:25:22 [debug]       - name: bl
+2022-11-18 12:25:22 [debug]       - type: straight
+2022-11-18 12:25:22 [debug]       - point: (x, y, z)
+2022-11-18 12:25:22 [debug]       - 1 [lc]: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]       - 2 [rc]: ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]     - summary of base lines (before transformation)
+2022-11-18 12:25:22 [debug]       - name: bl
+2022-11-18 12:25:22 [debug]       - type: straight
+2022-11-18 12:25:22 [debug]       - point: (x, y, z)
+2022-11-18 12:25:22 [debug]       - 1 [lc]: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]       - 2 [rc]: ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]     - transforming base geometry
+2022-11-18 12:25:22 [debug]     - summary of base lines (after transformation)
+2022-11-18 12:25:22 [debug]       - name: bl
+2022-11-18 12:25:22 [debug]       - type: straight
+2022-11-18 12:25:22 [debug]       - point: (x, y, z)
+2022-11-18 12:25:22 [debug]       - 1 [lc]: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]       - 2 [rc]: ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]     - finished reading geometry.
+2022-11-18 12:25:22 [debug]     - reading materials...
+2022-11-18 12:25:22 [info]       - reading materials file: C:\Users\tian50\sall\s02-study\s3-develop\group_git\prevabs\bin\MaterialDB.xml
+2022-11-18 12:25:22 [debug]           - reading material: foam
+2022-11-18 12:25:22 [debug]           - reading material: ge
+2022-11-18 12:25:22 [debug]           - reading material: iso5_1
+2022-11-18 12:25:22 [debug]           - reading material: iso5_2
+2022-11-18 12:25:22 [debug]           - reading material: iso5_3
+2022-11-18 12:25:22 [debug]           - reading material: iso5_4
+2022-11-18 12:25:22 [debug]           - reading material: iso5_5
+2022-11-18 12:25:22 [debug]           - reading material: mtr_1_iso
+2022-11-18 12:25:22 [debug]           - reading material: mtr_2_aniso
+2022-11-18 12:25:22 [debug]           - reading material: titanium
+2022-11-18 12:25:22 [debug]           - reading material: t300_5208
+2022-11-18 12:25:22 [debug]           - reading material: honeycomb
+2022-11-18 12:25:22 [debug]           - reading material: m0
+2022-11-18 12:25:22 [debug]           - reading material: m1
+2022-11-18 12:25:22 [debug]           - reading material: m2
+2022-11-18 12:25:22 [debug]           - reading material: polyurethane light foam
+2022-11-18 12:25:22 [debug]           - reading material: 7781/NB321 Fabric
+2022-11-18 12:25:22 [debug]           - reading material: 7781/SP381 Fabric
+2022-11-18 12:25:22 [debug]           - reading material: T650 3K-135-8H/7740 Fabric
+2022-11-18 12:25:22 [debug]           - reading material: 7781/E765
+2022-11-18 12:25:22 [debug]           - reading material: 3K Plain Weave Carbon Cloth/MGS 418
+2022-11-18 12:25:22 [debug]           - reading material: AS4 6K GP/PR520
+2022-11-18 12:25:22 [debug]           - reading material: T700SC-12K-50C Fabric
+2022-11-18 12:25:22 [debug]           - reading material: 7781 Finish 558/#2510 Fabric
+2022-11-18 12:25:22 [debug]           - reading material: Aluminum 354
+2022-11-18 12:25:22 [debug]           - reading material: Aluminum 8009
+2022-11-18 12:25:22 [debug]           - reading material: Magnesium EA65B-T6
+2022-11-18 12:25:22 [debug]           - reading material: Silicon Carbide Foam
+2022-11-18 12:25:22 [debug]           - reading material: FR-6710 Polyurethane Foam
+2022-11-18 12:25:22 [debug]           - reading material: 3K70P/NB321 fabric
+2022-11-18 12:25:22 [debug]           - reading material: 3G150 NASS/NCT321
+2022-11-18 12:25:22 [debug]           - reading material: S2/SP381
+2022-11-18 12:25:22 [debug]           - reading material: T650 3K-70-PW/7740 Fabric
+2022-11-18 12:25:22 [debug]           - reading material: G30-500 12K/7740
+2022-11-18 12:25:22 [debug]           - reading material: T300 3KPW/E765
+2022-11-18 12:25:22 [debug]           - reading material: T700 24KP/E765
+2022-11-18 12:25:22 [debug]           - reading material: T300 3KPW/E765
+2022-11-18 12:25:22 [debug]           - reading material: T300 6K 5HS/E765
+2022-11-18 12:25:22 [debug]           - reading material: T700GC-12K-31E
+2022-11-18 12:25:22 [debug]           - reading material: HITEX 33 6k/E7K8
+2022-11-18 12:25:22 [debug]           - reading material: AS4 12k/E7K8
+2022-11-18 12:25:22 [debug]           - reading material: Celion 3000/E7K8 fabric
+2022-11-18 12:25:22 [debug]           - reading material: HITEX 33 6k/E7K8 fabric
+2022-11-18 12:25:22 [debug]           - reading material: GY-70/934
+2022-11-18 12:25:22 [debug]           - reading material: E-Glass 7781/EA 9396
+2022-11-18 12:25:22 [debug]           - reading material: T650-35 12k/976
+2022-11-18 12:25:22 [debug]           - reading material: S2-449 43k/SP381
+2022-11-18 12:25:22 [debug]           - reading material: 7781/EA9396 fabric
+2022-11-18 12:25:22 [debug]           - reading material: Celion 12k/938
+2022-11-18 12:25:22 [debug]           - reading material: AS4 12k/3502
+2022-11-18 12:25:22 [debug]           - reading material: T300 15k/976
+2022-11-18 12:25:22 [debug]           - reading material: AS4 6k/PR 500_fabric
+2022-11-18 12:25:22 [debug]           - reading material: T300 3k/EA 9396_fabric
+2022-11-18 12:25:22 [debug]           - reading material: T650-35 3k 976_fabric
+2022-11-18 12:25:22 [debug]           - reading material: AS4/5250-3
+2022-11-18 12:25:22 [debug]           - reading material: Celion 3000/F670_fabric
+2022-11-18 12:25:22 [debug]           - reading material: IM6 12k/APC-2
+2022-11-18 12:25:22 [debug]           - reading material: S2-449 17k/SP 381
+2022-11-18 12:25:22 [debug]           - reading lamina: la_foam
+2022-11-18 12:25:22 [debug]           - reading lamina: la_ge_025
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_1_000053
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_1_002
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_1_0005
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_2_003
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_3_0000381
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_3_0025
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_4_000051
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_4_005
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_5_0003125
+2022-11-18 12:25:22 [debug]           - reading lamina: la_iso5_5_001
+2022-11-18 12:25:22 [debug]           - reading lamina: la_mtr_1_iso_0001524
+2022-11-18 12:25:22 [debug]           - reading lamina: la_mtr_2_aniso_01
+2022-11-18 12:25:22 [debug]           - reading lamina: la_titanium_004
+2022-11-18 12:25:22 [debug]           - reading lamina: la_t300_5208_002
+2022-11-18 12:25:22 [debug]           - reading lamina: la_t300_5208_004
+2022-11-18 12:25:22 [debug]           - reading lamina: la_t300_5208_007
+2022-11-18 12:25:22 [debug]           - reading lamina: la_hc_1
+2022-11-18 12:25:22 [debug]           - reading lamina: la_hc_2
+2022-11-18 12:25:22 [debug]           - reading lamina: la_m1_002
+2022-11-18 12:25:22 [debug]           - reading lamina: la_m2_005
+2022-11-18 12:25:22 [debug]           - reading lamina: 7781/NB321 Fabric_0.01
+2022-11-18 12:25:22 [debug]           - reading lamina: 7781/SP381 Fabric_0.01
+2022-11-18 12:25:22 [debug]           - reading lamina: T650 3K-135-8H/7740 Fabric_0.0092
+2022-11-18 12:25:22 [debug]           - reading lamina: 7781/E765_0.0092
+2022-11-18 12:25:22 [debug]           - reading lamina: 3K Plain Weave Carbon Cloth/MGS 418_0.0095
+2022-11-18 12:25:22 [debug]           - reading lamina: AS4 6K GP/PR520_0.017
+2022-11-18 12:25:22 [debug]           - reading lamina: T700SC-12K-50C Fabric_0.0084
+2022-11-18 12:25:22 [debug]           - reading lamina: 7781 Finish 558/#2510 Fabric_0.01
+2022-11-18 12:25:22 [debug]           - reading lamina: Aluminum 354_0.01
+2022-11-18 12:25:22 [debug]           - reading lamina: Aluminum 8009_0.01
+2022-11-18 12:25:22 [debug]           - reading lamina: Magnesium EA65B-T6_0.01
+2022-11-18 12:25:22 [debug]           - reading lamina: 3K70P/NB321 fabric_0.0084
+2022-11-18 12:25:22 [debug]           - reading lamina: 3G150 NASS/NCT321_0.0062
+2022-11-18 12:25:22 [debug]           - reading lamina: S2/SP381_0.0092
+2022-11-18 12:25:22 [debug]           - reading lamina: T650 3K-70-PW/7740 Fabric_0.0073
+2022-11-18 12:25:22 [debug]           - reading lamina: G30-500 12K/7740_0.0058
+2022-11-18 12:25:22 [debug]           - reading lamina: T300 3KPW/E765_0.0088
+2022-11-18 12:25:22 [debug]           - reading lamina: T700 24KP/E765_0.0060
+2022-11-18 12:25:22 [debug]           - reading lamina: T300 3KPW/E765_0.0060
+2022-11-18 12:25:22 [debug]           - reading lamina: T300 6K 5HS/E765_0.015
+2022-11-18 12:25:22 [debug]           - reading lamina: T700GC-12K-31E_0.0065
+2022-11-18 12:25:22 [debug]           - reading lamina: HITEX 33 6k/E7K8_0.0057
+2022-11-18 12:25:22 [debug]           - reading lamina: AS4 12k/E7K8_0.0054
+2022-11-18 12:25:22 [debug]           - reading lamina: Celion 3000/E7K8 fabric_0.0080
+2022-11-18 12:25:22 [debug]           - reading lamina: HITEX 33 6k/E7K8 fabric_0.0080
+2022-11-18 12:25:22 [debug]           - reading lamina: GY-70/934_0.075
+2022-11-18 12:25:22 [debug]           - reading lamina: E-Glass 7781/EA 9396_0.0083
+2022-11-18 12:25:22 [debug]           - reading lamina: T650-35 12k/976_0.0052
+2022-11-18 12:25:22 [debug]           - reading lamina: S2-449 43k/SP381_0.0034
+2022-11-18 12:25:22 [debug]           - reading lamina: 7781/EA9396 fabric_0.0084
+2022-11-18 12:25:22 [debug]           - reading lamina: Celion 12k/938_0.004
+2022-11-18 12:25:22 [debug]           - reading lamina: AS4 12k/3502_0.004
+2022-11-18 12:25:22 [debug]           - reading lamina: T300 15k/976_0.0053
+2022-11-18 12:25:22 [debug]           - reading lamina: AS4 6k/PR 500_fabric_0.0137
+2022-11-18 12:25:22 [debug]           - reading lamina: T300 3k/EA 9396_fabric_0.015
+2022-11-18 12:25:22 [debug]           - reading lamina: T650-35 3k 976_fabric_0.0062
+2022-11-18 12:25:22 [debug]           - reading lamina: AS4/5250-3_0.0055
+2022-11-18 12:25:22 [debug]           - reading lamina: Celion 3000/F670_fabric_0.0132
+2022-11-18 12:25:22 [debug]           - reading lamina: IM6 12k/APC-2_0.0052
+2022-11-18 12:25:22 [debug]           - reading lamina: S2-449 17k/SP 381_0.0032
+2022-11-18 12:25:22 [debug]         - reading material: iso5_1
+2022-11-18 12:25:22 [debug]         - reading lamina: la_iso5_1_02
+2022-11-18 12:25:22 [debug]     - finished reading materials.
+2022-11-18 12:25:22 [debug]     - reading layups...
+2022-11-18 12:25:22 [debug]       - reading layup: layup1
+2022-11-18 12:25:22 [debug]     - finished reading layups.
+2022-11-18 12:25:22 [debug]     - reading components...
+2022-11-18 12:25:22 [debug]     - reading component: top
+2022-11-18 12:25:22 [debug]     - finished reading components.
+2022-11-18 12:25:22 [info] - reading input files -- done
+2022-11-18 12:25:22 [info] - building the shape
+2022-11-18 12:25:22 [info]   - building the cross section, step 1
+2022-11-18 12:25:22 [info]     - building component: top
+2022-11-18 12:25:22 [debug]       - offsetting the base curve of segment: sgm_1
+2022-11-18 12:25:22 [debug]       - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]       - offset line: ( 0 , -1 , 0.08 ) -> ( 0 , 1 , 0.08 )
+2022-11-18 12:25:22 [debug]       - making segment end: sgm_1 0
+2022-11-18 12:25:22 [debug]       - making segment end because of no dependency.
+2022-11-18 12:25:22 [debug]         - in function: getIntersectionLocation
+2022-11-18 12:25:22 [debug]         - ls_i = 0, u = 0.040000, v1 = ( 0 , -1 , 0.08 ), v2 = ( 0 , 1 , 0.08 )
+2022-11-18 12:25:22 [debug]         - in function: getIntersectionLocation
+2022-11-18 12:25:22 [debug]         - ls_i = 0, u = 0.080000, v1 = ( 0 , -1 , 0 ), v2 = ( 0 , 0 , 1 )
+2022-11-18 12:25:22 [debug]       -   nv_diff = 0
+2022-11-18 12:25:22 [debug]       - curve base:
+2022-11-18 12:25:22 [debug]         - name: bl
+2022-11-18 12:25:22 [debug]         - type: straight
+2022-11-18 12:25:22 [debug]         - point: (x, y, z)
+2022-11-18 12:25:22 [debug]         - 1 [lc]: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]         - 2 [rc]: ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]       - curve offset:
+2022-11-18 12:25:22 [debug]         - name: 
+2022-11-18 12:25:22 [debug]         - type: 
+2022-11-18 12:25:22 [debug]         - point: (x, y, z)
+2022-11-18 12:25:22 [debug]         - 1 []: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]         - 2 []: ( 0 , 1 , 0.08 )
+2022-11-18 12:25:22 [debug]       - base vertices -- base_link_to_offset_indices
+2022-11-18 12:25:22 [debug]       - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]       - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1 , 0.08 )
+2022-11-18 12:25:22 [debug]         - making segment end: sgm_1 1
+2022-11-18 12:25:22 [debug]         - making segment end because of no dependency.
+2022-11-18 12:25:22 [debug]           - in function: getIntersectionLocation
+2022-11-18 12:25:22 [debug]           - ls_i = 0, u = 1.041667, v1 = ( 0 , -0.92 , 0.08 ), v2 = ( 0 , 1 , 0.08 )
+2022-11-18 12:25:22 [debug]           - in function: getIntersectionLocation
+2022-11-18 12:25:22 [debug]           - ls_i = 0, u = 0.080000, v1 = ( 0 , 1 , 0 ), v2 = ( 0 , 2 , 1 )
+2022-11-18 12:25:22 [debug]         - curve base:
+2022-11-18 12:25:22 [debug]           - name: bl
+2022-11-18 12:25:22 [debug]           - type: straight
+2022-11-18 12:25:22 [debug]           - point: (x, y, z)
+2022-11-18 12:25:22 [debug]           - 1 [lc]: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]           - 2 [rc]: ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]         - curve offset:
+2022-11-18 12:25:22 [debug]           - name: 
+2022-11-18 12:25:22 [debug]           - type: 
+2022-11-18 12:25:22 [debug]           - point: (x, y, z)
+2022-11-18 12:25:22 [debug]           - 1 []: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]           - 2 []: ( 0 , 1.08 , 0.08 )
+2022-11-18 12:25:22 [debug]         - step 1
+2022-11-18 12:25:22 [debug]         - base vertices -- base_link_to_offset_indices
+2022-11-18 12:25:22 [debug]         - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]         - step 2
+2022-11-18 12:25:22 [debug]         - step 3
+2022-11-18 12:25:22 [debug]         -   ls_i_base = 2
+2022-11-18 12:25:22 [debug]         -   ls_i_offset = 1
+2022-11-18 12:25:22 [debug]         -   _tmp_nv_base = 2
+2022-11-18 12:25:22 [debug]         -   _tmp_nv_offset = 2
+2022-11-18 12:25:22 [debug]         -   nv_diff = 1
+2022-11-18 12:25:22 [debug]         -   id_base_last_tmp = 0
+2022-11-18 12:25:22 [debug]         -   id_offset_last_tmp = 0
+2022-11-18 12:25:22 [debug]         - base vertices -- base_link_to_offset_indices
+2022-11-18 12:25:22 [debug]         - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]         - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1.08 , 0.08 )
+2022-11-18 12:25:22 [debug]         - curve base:
+2022-11-18 12:25:22 [debug]           - name: bl
+2022-11-18 12:25:22 [debug]           - type: straight
+2022-11-18 12:25:22 [debug]           - point: (x, y, z)
+2022-11-18 12:25:22 [debug]           - 1 [lc]: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]           - 2 [rc]: ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]         - curve offset:
+2022-11-18 12:25:22 [debug]           - name: 
+2022-11-18 12:25:22 [debug]           - type: 
+2022-11-18 12:25:22 [debug]           - point: (x, y, z)
+2022-11-18 12:25:22 [debug]           - 1 []: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]           - 2 []: ( 0 , 1.08 , 0.08 )
+2022-11-18 12:25:22 [debug]         - base vertices -- base_link_to_offset_indices
+2022-11-18 12:25:22 [debug]         - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]         - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1.08 , 0.08 )
+2022-11-18 12:25:22 [debug]           - building the overall shape of segment: sgm_1
+2022-11-18 12:25:22 [debug]           - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+2022-11-18 12:25:22 [debug]           - creating half edges for the base curve
+2022-11-18 12:25:22 [debug]           - creating half edges for the offset curve
+2022-11-18 12:25:22 [debug]           - creating the half edge loop and face
+2022-11-18 12:25:22 [info]         - creating gmsh vertices
+2022-11-18 12:25:22 [info]         - creating gmsh edges
+2022-11-18 12:25:22 [info]           - writing gmsh .geo file: .\test\end_trim\r_debug_1.geo
+2022-11-18 12:25:22 [info]           - writing gmsh .opt file: .\test\end_trim\r_debug.opt
+2022-11-18 12:25:22 [info]       - creating gmsh vertices
+2022-11-18 12:25:22 [info]       - creating gmsh edges
+2022-11-18 12:25:22 [info]         - writing gmsh .geo file: .\test\end_trim\r_debug_2.geo
+2022-11-18 12:25:22 [info]       - building the cross section, step 2
+2022-11-18 12:25:22 [info]         - building component details: top
+2022-11-18 12:25:22 [debug]           - building areas of segment: sgm_1
+2022-11-18 12:25:22 [debug]           - 1. creating the beginning bound of the first area
+2022-11-18 12:25:22 [debug]             - open segment
+2022-11-18 12:25:22 [debug]             - first vertex of the base: ( 0 , -1 , 0 )
+2022-11-18 12:25:22 [debug]             - first vertex of the offset: ( 0 , -0.92 , 0.08 )
+2022-11-18 12:25:22 [debug]               - layer 1
+2022-11-18 12:25:22 [debug]               - cumu_thk = 0.01
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.01 ) -> ( 0 , 1 , 0.01 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , -0.92 , 0.08 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_1_face
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.875
+2022-11-18 12:25:22 [debug]                 -   case 3: intersect current edge
+2022-11-18 12:25:22 [debug]                 -   v_layer: ( 0 , -0.99 , 0.01 )
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , -0.99 , 0.01 )
+2022-11-18 12:25:22 [debug]               - layer 2
+2022-11-18 12:25:22 [debug]               - cumu_thk = 0.02
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.02 ) -> ( 0 , 1 , 0.02 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , -0.92 , 0.08 ) -> ( 0 , -0.99 , 0.01 ) | loop: keep | face: sgm_1_face
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.857143
+2022-11-18 12:25:22 [debug]                 -   case 3: intersect current edge
+2022-11-18 12:25:22 [debug]                 -   v_layer: ( 0 , -0.98 , 0.02 )
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , -0.98 , 0.02 )
+2022-11-18 12:25:22 [debug]               - layer 3
+2022-11-18 12:25:22 [debug]               - cumu_thk = 0.03
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.03 ) -> ( 0 , 1 , 0.03 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , -0.92 , 0.08 ) -> ( 0 , -0.98 , 0.02 ) | loop: keep | face: sgm_1_face
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.833333
+2022-11-18 12:25:22 [debug]                 -   case 3: intersect current edge
+2022-11-18 12:25:22 [debug]                 -   v_layer: ( 0 , -0.97 , 0.03 )
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , -0.97 , 0.03 )
+2022-11-18 12:25:22 [debug]               - layer 4
+2022-11-18 12:25:22 [debug]               - cumu_thk = 0.05
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.05 ) -> ( 0 , 1 , 0.05 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , -0.92 , 0.08 ) -> ( 0 , -0.97 , 0.03 ) | loop: keep | face: sgm_1_face
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.6
+2022-11-18 12:25:22 [debug]                 -   case 3: intersect current edge
+2022-11-18 12:25:22 [debug]                 -   v_layer: ( 0 , -0.95 , 0.05 )
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , -0.95 , 0.05 )
+2022-11-18 12:25:22 [debug]               - layer 5
+2022-11-18 12:25:22 [debug]               - cumu_thk = 0.06
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.06 ) -> ( 0 , 1 , 0.06 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , -0.92 , 0.08 ) -> ( 0 , -0.95 , 0.05 ) | loop: keep | face: sgm_1_face
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.666667
+2022-11-18 12:25:22 [debug]                 -   case 3: intersect current edge
+2022-11-18 12:25:22 [debug]                 -   v_layer: ( 0 , -0.94 , 0.06 )
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , -0.94 , 0.06 )
+2022-11-18 12:25:22 [debug]               - layer 6
+2022-11-18 12:25:22 [debug]               - cumu_thk = 0.07
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.07 ) -> ( 0 , 1 , 0.07 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , -0.92 , 0.08 ) -> ( 0 , -0.94 , 0.06 ) | loop: keep | face: sgm_1_face
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.5
+2022-11-18 12:25:22 [debug]                 -   case 3: intersect current edge
+2022-11-18 12:25:22 [debug]                 -   v_layer: ( 0 , -0.93 , 0.07 )
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , -0.93 , 0.07 )
+2022-11-18 12:25:22 [debug]           - 2. creating areas
+2022-11-18 12:25:22 [debug]           - 3. creating the last area
+2022-11-18 12:25:22 [debug]               - layer 1
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.01 ) -> ( 0 , 1 , 0.01 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , 1 , 0 ) -> ( 0 , 1.08 , 0.08 ) | loop: keep | face: sgm_1_area_1
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.125
+2022-11-18 12:25:22 [debug]                 -   case 5: intersect current edge
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , 1.01 , 0.01 )
+2022-11-18 12:25:22 [debug]               - layer 2
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.02 ) -> ( 0 , 1 , 0.02 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , 1.01 , 0.01 ) -> ( 0 , 1.08 , 0.08 ) | loop: keep | face: sgm_1_area_1
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.142857
+2022-11-18 12:25:22 [debug]                 -   case 5: intersect current edge
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , 1.02 , 0.02 )
+2022-11-18 12:25:22 [debug]               - layer 3
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.03 ) -> ( 0 , 1 , 0.03 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , 1.02 , 0.02 ) -> ( 0 , 1.08 , 0.08 ) | loop: keep | face: sgm_1_area_1
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.166667
+2022-11-18 12:25:22 [debug]                 -   case 5: intersect current edge
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , 1.03 , 0.03 )
+2022-11-18 12:25:22 [debug]               - layer 4
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.05 ) -> ( 0 , 1 , 0.05 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , 1.03 , 0.03 ) -> ( 0 , 1.08 , 0.08 ) | loop: keep | face: sgm_1_area_1
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.4
+2022-11-18 12:25:22 [debug]                 -   case 5: intersect current edge
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , 1.05 , 0.05 )
+2022-11-18 12:25:22 [debug]               - layer 5
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.06 ) -> ( 0 , 1 , 0.06 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , 1.05 , 0.05 ) -> ( 0 , 1.08 , 0.08 ) | loop: keep | face: sgm_1_area_1
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.333333
+2022-11-18 12:25:22 [debug]                 -   case 5: intersect current edge
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , 1.06 , 0.06 )
+2022-11-18 12:25:22 [debug]               - layer 6
+2022-11-18 12:25:22 [debug]               - ls_offset: ( 0 , -1 , 0.07 ) -> ( 0 , 1 , 0.07 )
+2022-11-18 12:25:22 [debug]                 - 
+2022-11-18 12:25:22 [debug]                 - he_tmp: ( 0 , 1.06 , 0.06 ) -> ( 0 , 1.08 , 0.08 ) | loop: keep | face: sgm_1_area_1
+2022-11-18 12:25:22 [debug]                 - u1_tmp = 0.5
+2022-11-18 12:25:22 [debug]                 -   case 5: intersect current edge
+2022-11-18 12:25:22 [debug]               - v_layer: ( 0 , 1.07 , 0.07 )
+2022-11-18 12:25:22 [debug]             - building layers for area: sgm_1_area_1
+2022-11-18 12:25:22 [info]         - creating gmsh vertices
+2022-11-18 12:25:22 [info]         - creating gmsh edges
+2022-11-18 12:25:22 [info]           - writing gmsh .geo file: .\test\end_trim\r_debug_3.geo
+2022-11-18 12:25:22 [info]       - fixing geometry
+2022-11-18 12:25:22 [info]     - building the shape -- done
+2022-11-18 12:25:22 [info]     - modeling in Gmsh
+2022-11-18 12:25:22 [info]       - creating gmsh vertices
+2022-11-18 12:25:22 [info]       - creating gmsh edges
+2022-11-18 12:25:22 [info]       - creating gmsh face
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: background
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_1
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 1, material: iso5_1, theta_3 = 45.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_2
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 2, material: iso5_1, theta_3 = -45.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_3
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 3, material: iso5_1, theta_3 = 0.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_4
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 4, material: iso5_1, theta_3 = 90.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_5
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 3, material: iso5_1, theta_3 = 0.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_7
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 1, material: iso5_1, theta_3 = 45.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [debug]       - 
+2022-11-18 12:25:22 [debug]       -   face: sgm_1_area_1_layer_6
+2022-11-18 12:25:22 [debug]       -   adding outer loop
+2022-11-18 12:25:22 [debug]       -   adding inner loops
+2022-11-18 12:25:22 [debug]       -   adding physical entity
+2022-11-18 12:25:22 [debug]       -   id: 2, material: iso5_1, theta_3 = -45.000000
+2022-11-18 12:25:22 [debug]       -   adding local mesh size
+2022-11-18 12:25:22 [info]         - writing gmsh .geo file: .\test\end_trim\r_debug_4.geo
+2022-11-18 12:25:22 [info]       - meshing
+2022-11-18 12:25:23 [info]     - modeling in Gmsh -- done
+2022-11-18 12:25:23 [info]     - writing outputs
+2022-11-18 12:25:23 [info]       - writing gmsh .opt file: .\test\end_trim\r.opt
+2022-11-18 12:25:23 [info]       - writing gmsh .geo file: .\test\end_trim\r.geo
+2022-11-18 12:25:23 [info]       - writing gmsh .msh file: .\test\end_trim\r.msh
+2022-11-18 12:25:23 [info]       - writing sg file: .\test\end_trim\r.sg
+2022-11-18 12:25:23 [info]     - writing outputs -- done
+2022-11-18 12:25:23 [info]     - running Gmsh for visualization
+2022-11-18 12:25:23 [info]     - running: gmsh .\test\end_trim\r.geo .\test\end_trim\r.msh .\test\end_trim\r.opt
+2022-11-18 12:25:23 [info] prevabs finished
+2022-11-18 12:25:23 [info] total running time: 1.21 sec

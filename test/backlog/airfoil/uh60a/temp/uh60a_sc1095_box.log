@@ -1,0 +1,33 @@
+2021-07-16 23:43:00 [info] prevabs start
+2021-07-16 23:43:00 [info] - reading input files
+2021-07-16 23:43:00 [info]     - reading main input file: uh60a_sc1095_box.xml
+2021-07-16 23:43:00 [info]       - reading materials file: /home/msg/a/msmshare/MaterialDB.xml
+2021-07-16 23:43:00 [info]       - reading materials file: material_database.xml
+2021-07-16 23:43:00 [info] - reading input files -- done
+2021-07-16 23:43:00 [info] - building the shape
+2021-07-16 23:43:00 [info]   - building the cross section, step 1
+2021-07-16 23:43:00 [info]     - building component: spar
+2021-07-16 23:43:00 [info]     - building component: le
+2021-07-16 23:43:00 [info]     - building component: te
+2021-07-16 23:43:00 [info]     - building component: nsm
+2021-07-16 23:43:00 [info]     - building component: fill_te
+2021-07-16 23:43:00 [info]     - building component: fill_le
+2021-07-16 23:43:00 [info]   - building the cross section, step 2
+2021-07-16 23:43:00 [info]     - building component details: spar
+2021-07-16 23:43:00 [info]     - building component details: le
+2021-07-16 23:43:00 [info]     - building component details: te
+2021-07-16 23:43:00 [info] - building the shape -- done
+2021-07-16 23:43:00 [info] - modeling in Gmsh
+2021-07-16 23:43:00 [info]   - creating gmsh vertices
+2021-07-16 23:43:00 [info]   - creating gmsh edges
+2021-07-16 23:43:00 [info]   - creating gmsh face
+2021-07-16 23:43:01 [info]   - meshing
+2021-07-16 23:43:01 [info] - modeling in Gmsh -- done
+2021-07-16 23:43:01 [info] - writing outputs
+2021-07-16 23:43:01 [info]   - writing sg file: uh60a_sc1095_box.sg
+2021-07-16 23:43:01 [info] - writing outputs -- done
+2021-07-16 23:43:01 [info] - running VABS for homogenization
+2021-07-16 23:43:01 [info] running VABS...
+2021-07-16 23:43:02 [info] - running VABS for homogenization -- done
+2021-07-16 23:43:02 [info] prevabs finished
+2021-07-16 23:43:02 [info] total running time: 0.65 sec

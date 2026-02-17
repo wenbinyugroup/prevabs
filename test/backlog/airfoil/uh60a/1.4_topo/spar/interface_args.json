@@ -1,0 +1,43 @@
+{
+  "template_output": {
+    "uh60a_section.xml.tmp": "uh60a_section.xml"
+  },
+  "prevabs_cmd_win": "prevabs1.3.0.exe",
+  "prevabs_cmd_linux": "/home/msg/a/du135/projects/vabs/prevabs_src/prevabs/build/prevabs",
+  "solver": "integrated",
+  "analysis": "h",
+  "timeout": 10,
+  "scrnout": false,
+  "fn_main": "uh60a_section.xml",
+
+  "data_process_functions_file": "data_proc_funcs",
+
+  "pre_process": [
+    "materialId2Name",
+    "calcEmbeddedPoint"
+  ],
+
+  "xo2_le": -5.19,
+
+  "beam_properties": ["mu", "ea", "gj", "ei22", "ei33", "sc2", "mc2"],
+  "post_process": [
+    ["calcAbsRelDiff", "gj_err", "gj", 24.31e6],
+    ["calcAbsRelDiff", "eiflap_err", "ei22", 22.2e6],
+    ["calcAbsRelDiff", "eilag_err", "ei33", 835e6],
+    ["calcAbsRelDiff", "sc2_le_err", "sc2", -5.19],
+    ["calcAbsRelDiff", "mc2_le_err", "mc2", -0.822, -5.19],
+    ["calcMaxDiff", "max_err"],
+    ["self", "mpl", "mu"],
+    ["self", "ea", "ea"]
+  ],
+  "_fail_replace": {
+    "max_err": "inf",
+    "mpl": -1.0,
+    "gj_err": -1.0,
+    "ei2_err": -1.0,
+    "ei3_err": -1.0,
+    "sc2_le_err": -1.0,
+    "mc2_le_err": -1.0,
+    "ea": -1.0
+  }
+}

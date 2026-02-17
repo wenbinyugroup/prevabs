@@ -1,0 +1,6 @@
+2021-06-28 16:03:12 [info] prevabs start
+2021-06-28 16:03:12 [info] - reading input files
+2021-06-28 16:03:12 [error]     - unable to open file: share/test/box/1.4_dehomo/box.xml
+2021-06-28 16:03:12 [info]   - reading input files -- done
+2021-06-28 16:03:12 [info]   - building the shape
+2021-06-28 16:03:12 [info]     - building the cross section, step 1

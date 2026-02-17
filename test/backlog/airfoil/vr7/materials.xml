@@ -1,0 +1,58 @@
+<materials>
+  <material name="titanium" type="isotropic">
+    <density>0.422015e-3</density>
+    <elastic>
+      <e>14.95e6</e>
+      <nu>0.34</nu>
+    </elastic>
+    <failure_criterion>mises</failure_criterion>
+    <characteristic_length>0</characteristic_length>
+    <strength>
+      <x></x>
+    </strength>
+  </material>
+  <lamina name="la_titanium_004">
+    <material>titanium</material>
+    <thickness>0.04</thickness>
+  </lamina>
+
+  <material name="t300_5208" type="orthotropic">
+    <density>0.149717e-3</density>
+    <elastic>
+      <e1>26.25e6</e1>
+      <e2>1.494e6</e2>
+      <e3>1.494e6</e3>
+      <g12>1.040E+06</g12>
+      <g13>1.040E+06</g13>
+      <g23>5.616E+05</g23>
+      <nu12>0.28</nu12>
+      <nu13>0.28</nu13>
+      <nu23>0.33</nu23>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <characteristic_length>0</characteristic_length>
+    <strength>
+      <xt>220e3</xt>
+      <yt>6.35e3</yt>
+      <zt>6.35e3</zt>
+      <xc>246e3</xc>
+      <yc>6.35e3</yc>
+      <zc>6.35e3</zc>
+      <r>9.81e3</r>
+      <t>12.6e3</t>
+      <s>12.6e3</s>
+    </strength>
+  </material>
+  <lamina name="la_t300_5208_002">
+    <material>t300_5208</material>
+    <thickness>0.02</thickness>
+  </lamina>
+  <lamina name="la_t300_5208_004">
+    <material>t300_5208</material>
+    <thickness>0.04</thickness>
+  </lamina>
+  <lamina name="la_t300_5208_007">
+    <material>t300_5208</material>
+    <thickness>0.07</thickness>
+  </lamina>
+</materials>

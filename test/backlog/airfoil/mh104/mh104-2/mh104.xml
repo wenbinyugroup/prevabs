@@ -1,0 +1,81 @@
+<cross_section name="mh104" type="general">
+  <include>
+    <baseline>baselines</baseline>
+    <material>materials</material>
+    <layup>layups</layup>
+  </include>
+  <general>
+    <translate>-0.25 0.0</translate>
+    <scale>1.9</scale>
+    <rotate></rotate>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <segments>
+    <segment name="sg_lps_1">
+      <baseline>bl_lps_1</baseline>
+      <layup direction="left">layup1</layup>
+    </segment>
+    <segment name="sg_lps_2">
+      <baseline>bl_lps_2</baseline>
+      <layup>layup2</layup>
+    </segment>
+    <segment name="sg_lps_3">
+      <baseline>bl_lps_3</baseline>
+      <layup>layup3</layup>
+    </segment>
+    <segment name="sg_lps_4">
+      <baseline>bl_lps_4</baseline>
+      <layup>layup4</layup>
+    </segment>
+    <segment name="sg_hps_4">
+      <baseline>bl_hps_4</baseline>
+      <layup>layup4</layup>
+    </segment>
+    <segment name="sg_hps_3">
+      <baseline>bl_hps_3</baseline>
+      <layup>layup3</layup>
+    </segment>
+    <segment name="sg_hps_2">
+      <baseline>bl_hps_2</baseline>
+      <layup>layup2</layup>
+    </segment>
+    <segment name="sg_hps_1">
+      <baseline>bl_hps_1</baseline>
+      <layup>layup1</layup>
+    </segment>
+    <!-- <segment name="sg_web_0" level="10">
+      <baseline>bl_web_0</baseline>
+      <layup direction="right">layupWeb</layup>
+    </segment> -->
+    <segment name="sg_web_1" level="10">
+      <baseline>bl_web_1</baseline>
+      <layup direction="left">layupWeb</layup>
+    </segment>
+    <segment name="sg_web_2" level="10">
+      <baseline>bl_web_2</baseline>
+      <layup direction="left">layupWeb</layup>
+    </segment>
+    <segment name="sg_web_te" level="10">
+      <baseline>bl_web_te</baseline>
+      <layup direction="left">layup_web_te</layup>
+    </segment>
+  </segments>
+  <connections>
+    <connection name="leading_edge">
+      <segment>sg_lps_1</segment>
+      <segment>sg_hps_1</segment>
+    </connection>
+    <!-- <connection name="trailing_edge"><segment>sg_lps_4</segment><segment>sg_hps_4</segment></connection> -->
+  </connections>
+  <fillings>
+    <filling name="nose_mass">
+      <baseline>bl_mass_rb</baseline>
+      <material fillside="right">metal</material>
+    </filling>
+    <!-- <filling name="tip_mass">
+      <baseline>bl_web_0</baseline>
+      <material fillside="left">metal</material>
+    </filling> -->
+  </fillings>
+</cross_section>

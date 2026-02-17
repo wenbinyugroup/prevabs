@@ -1,0 +1,119 @@
+<!-- <cross_section name="box"> -->
+<cross_section name="box" format="1">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>db_material</material> -->
+    <material>materials</material>
+    <!-- <layup>layups</layup> -->
+  </include>
+  <analysis>
+    <model>1</model>
+    <!-- <thermal>0</thermal> -->
+    <!-- <trapeze>0</trapeze> -->
+    <!-- <vlasov>0</vlasov> -->
+    <!-- <initial_twist>0.001</initial_twist> -->
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.02</mesh_size>
+    <element_type>2</element_type>
+  </general>
+  <baselines>
+    <basepoints>
+    </basepoints>
+    <point name="o">0  0</point>
+
+    <point name="lb">-0.5 -0.5</point>
+    <point name="lt">-0.5  0.5</point>
+    <point name="rt">0.5  0.5</point>
+    <point name="rb">0.5 -0.5</point>
+
+    <point name="pf1">0.2  0.0</point>
+    <point name="peb1">0.2  -0.3</point>
+
+    <baseline name="bsl_all" type="straight">
+      <!-- <points>rt,p1,lt,lb,rb,p8,rt</points> -->
+      <!-- <points>rt,p2,lt,p3,p4,lb,p5,p6,rb,p7,rt</points> -->
+      <points>rt,lt,lb,rb,rt</points>
+    </baseline>
+    <baseline name="bsl_top_left_bottom" type="straight">
+      <points>rt,lt,lb,rb</points>
+    </baseline>
+    <baseline name="bsl_top" type="straight">
+      <points>rt,lt</points>
+    </baseline>
+    <baseline name="bsl_left" type="straight">
+      <points>lt,lb</points>
+    </baseline>
+    <baseline name="bsl_bottom" type="straight">
+      <points>lb,rb</points>
+    </baseline>
+    <baseline name="bsl_right" type="straight">
+      <points>rb,rt</points>
+    </baseline>
+    <baseline name="bsl_web" type="straight">
+      <point>o</point>
+      <angle>90</angle>
+    </baseline>
+
+  </baselines>
+
+
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_iso5_1_002">0:2</layer>
+      <layer lamina="la_iso5_1_002">90:2</layer>
+      <!-- <layer lamina="la_iso5_2_003">0</layer> -->
+    </layup>
+    <layup name="layup2">
+      <layer lamina="la_iso5_3_0025">0:2</layer>
+      <layer lamina="la_iso5_4_005">90</layer>
+    </layup>
+  </layups>
+
+
+
+  <component name="main">
+    <!-- <segment>
+      <baseline>bsl_all</baseline>
+      <layup>layup1</layup>
+    </segment> -->
+    <segment>
+      <baseline>bsl_top</baseline>
+      <layup>layup1</layup>
+    </segment>
+    <!-- <segment>
+      <baseline>bsl_right</baseline>
+      <layup>layup2</layup>
+    </segment> -->
+  </component>
+
+  <!-- <component name="bottom">
+    <segment>
+      <baseline>bsl_bottom</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component> -->
+
+  <component name="web" depend="main">
+    <segment>
+      <!-- <split by="name">o</split> -->
+      <!-- <split by="id">2</split> -->
+      <baseline>bsl_web</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <!-- <component name="fill" type="fill" depend="main,web">
+    <location>pf1</location>
+    <material>mtr_lamina</material>
+    <mesh_size at="peb1,pf1">0.2</mesh_size>
+  </component> -->
+</cross_section>

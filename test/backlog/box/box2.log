@@ -1,0 +1,30 @@
+2022-03-08 22:58:39 [info] prevabs start
+2022-03-08 22:58:39 [info] - reading input files
+2022-03-08 22:58:39 [info]     - reading main input file: box2.xml
+2022-03-08 22:58:39 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2022-03-08 22:58:39 [info]       - reading materials file: materials.xml
+2022-03-08 22:58:39 [info] - reading input files -- done
+2022-03-08 22:58:39 [info] - building the shape
+2022-03-08 22:58:39 [info]   - building the cross section, step 1
+2022-03-08 22:58:39 [info]     - building component: main
+2022-03-08 22:58:39 [info]         - building component: web
+2022-03-08 22:58:39 [info]         - building the cross section, step 2
+2022-03-08 22:58:39 [info]           - building component details: main
+2022-03-08 22:58:39 [info]           - building component details: web
+2022-03-08 22:58:39 [info]       - building the shape -- done
+2022-03-08 22:58:39 [info]       - modeling in Gmsh
+2022-03-08 22:58:39 [info]         - creating gmsh vertices
+2022-03-08 22:58:39 [info]         - creating gmsh edges
+2022-03-08 22:58:39 [info]         - creating gmsh face
+2022-03-08 22:58:39 [info]         - meshing
+2022-03-08 22:58:39 [info]       - modeling in Gmsh -- done
+2022-03-08 22:58:39 [info]       - writing outputs
+2022-03-08 22:58:39 [info]         - writing gmsh .opt file: box2.opt
+2022-03-08 22:58:39 [info]         - writing gmsh .geo file: box2.geo
+2022-03-08 22:58:39 [info]         - writing gmsh .msh file: box2.msh
+2022-03-08 22:58:39 [info]         - writing sg file: box2.sg
+2022-03-08 22:58:39 [info]       - writing outputs -- done
+2022-03-08 22:58:39 [info]       - running Gmsh for visualization
+2022-03-08 22:58:39 [info]       - running: gmsh box2.geo box2.msh box2.opt
+2022-03-08 22:58:40 [info] prevabs finished
+2022-03-08 22:58:40 [info] total running time: 0.298 sec

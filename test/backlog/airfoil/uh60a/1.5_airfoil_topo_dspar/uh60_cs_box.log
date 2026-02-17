@@ -1,0 +1,35 @@
+2022-04-12 13:46:16 [info] prevabs start
+2022-04-12 13:46:16 [info] - reading input files
+2022-04-12 13:46:16 [info]     - reading main input file: .\uh60_cs_box.xml
+2022-04-12 13:46:16 [info]       - reading airfoil data file: .\SC1095.dat
+2022-04-12 13:46:16 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2022-04-12 13:46:16 [info]       - reading materials file: .\material_database_us_ft.xml
+2022-04-12 13:46:16 [info] - reading input files -- done
+2022-04-12 13:46:16 [info] - building the shape
+2022-04-12 13:46:16 [info]   - building the cross section, step 1
+2022-04-12 13:46:16 [info]     - building component: spar
+2022-04-12 13:46:16 [info]     - building component: le
+2022-04-12 13:46:16 [info]     - building component: te
+2022-04-12 13:46:16 [info]     - building component: ns_mass
+2022-04-12 13:46:16 [info]     - building component: fill_aft
+2022-04-12 13:46:16 [info]     - building component: fill_fwd
+2022-04-12 13:46:16 [info]   - building the cross section, step 2
+2022-04-12 13:46:16 [info]     - building component details: spar
+2022-04-12 13:46:16 [info]     - building component details: le
+2022-04-12 13:46:16 [info]     - building component details: te
+2022-04-12 13:46:16 [info]   - fixing geometry
+2022-04-12 13:46:16 [info] - building the shape -- done
+2022-04-12 13:46:16 [info] - modeling in Gmsh
+2022-04-12 13:46:16 [info]   - creating gmsh vertices
+2022-04-12 13:46:16 [info]   - creating gmsh edges
+2022-04-12 13:46:16 [info]   - creating gmsh face
+2022-04-12 13:46:16 [info]   - meshing
+2022-04-12 13:46:17 [info] - modeling in Gmsh -- done
+2022-04-12 13:46:17 [info] - writing outputs
+2022-04-12 13:46:17 [info]   - writing sg file: .\uh60_cs_box.sg
+2022-04-12 13:46:17 [info] - writing outputs -- done
+2022-04-12 13:46:17 [info]   - running VABS for homogenization
+2022-04-12 13:46:17 [info]   - running: VABS "uh60_cs_box.sg" 
+2022-04-12 13:46:19 [info]   - running VABS for homogenization -- done
+2022-04-12 13:46:19 [info] prevabs finished
+2022-04-12 13:46:19 [info] total running time: 3.23 sec

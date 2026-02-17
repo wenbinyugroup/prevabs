@@ -1,0 +1,96 @@
+<cross_section name="uh60a_section">
+  <include>
+    <baseline>uh60a_baseline</baseline>
+    <material>uh60a_material</material>
+    <layup>uh60a_layup</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>0.4725</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="d_spar">
+    <segment name="sgm_top_box">
+      <baseline>bl_box_top</baseline>
+      <layup direction="right">layup_box</layup>
+    </segment>
+    <segment name="sgm_web_t">
+      <baseline>bl_web_t</baseline>
+      <layup direction="right">layup_web_t</layup>
+    </segment>
+    <segment name="sgm_bot_box">
+      <baseline>bl_box_bot</baseline>
+      <layup direction="right">layup_box</layup>
+    </segment>
+    <segment name="sgm_web_aux">
+      <baseline>bl_web_l</baseline>
+      <layup direction="right">web_aux</layup>
+    </segment>
+  </component>
+  <!-- <component name="cap" depend="d_spar">
+    <segment name="sgm_cap">
+      <baseline>bl_cap</baseline>
+      <layup direction="right">layup_cap</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap">
+      <baseline>bl_cap_top</baseline>
+      <layup direction="right">layup_cap_spar</layup>
+    </segment>
+    <segment name="sgm_top_spar_cap_end">
+      <baseline>bl_cap_end_top</baseline>
+      <layup direction="right">layup_cap_end</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap_end">
+      <baseline>bl_cap_end_bot</baseline>
+      <layup direction="right">layup_cap_end</layup>
+    </segment>
+    <segment name="sgm_bot_spar_cap">
+      <baseline>bl_cap_bot</baseline>
+      <layup direction="right">layup_cap_spar</layup>
+    </segment>
+  </component> -->
+  <component name="tail" depend="d_spar">
+    <segment name="sgm_tail_top">
+      <baseline>bl_tail_top</baseline>
+      <layup direction="right">tail</layup>
+    </segment>
+    <!-- <segment name="sgm_tail_end">
+      <baseline>bl_end</baseline>
+      <layup direction="right">tail</layup>
+    </segment> -->
+    <!-- <segment name="sgm_tail_bot">
+      <baseline>bl_tail_bot</baseline>
+      <layup direction="right">tail</layup>
+    </segment> -->
+  </component>
+  <!-- <component name="web_aux" depend="d_spar">
+    <segment name="sgm_web_aux">
+      <baseline>bl_web_l</baseline>
+      <layup direction="right">web_aux</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="web_main" depend="d_spar">
+    <segment name="sgm_web_t">
+      <baseline>bl_web_t</baseline>
+      <layup direction="right">layup_web_t</layup>
+    </segment>
+  </component> -->
+  <!-- <component name="fill_ballast" type="fill" depend="d_spar,web_aux">
+    <location>pballast</location>
+    <material>Rohacell 70</material>
+  </component> -->
+  <!-- <component name="fill_te" type="fill" depend="d_spar,web_main">
+    <baseline fillside="left">bl_te_fill</baseline>
+    <material>Plascore PN2-3/16OX3.0</material>
+  </component> -->
+  <!-- <component name="fill_te" type="fill" depend="d_spar">
+    <baseline fillside="right">bl_te_fill</baseline>
+    <material>e_glass</material>
+  </component> -->
+</cross_section>

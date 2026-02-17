@@ -1,0 +1,33 @@
+<materials>
+  <material name="ge" type="orthotropic">
+    <density>1.86E+03</density>
+    <elastic>
+      <e1>142E+09</e1>
+      <e2>10.8E+09</e2>
+      <e3>10.8E+09</e3>
+      <g12>5.49E+09</g12>
+      <g13>5.49E+09</g13>
+      <g23>5.49E+09</g23>
+      <nu12>0.3</nu12>
+      <nu13>0.3</nu13>
+      <nu23>0.3</nu23>
+    </elastic>
+    <failure_criterion>tsai-wu</failure_criterion>
+    <characteristic_length>0</characteristic_length>
+    <strength>
+      <xt>1.568E+09</xt>
+      <yt>0.057E+09</yt>
+      <zt>0.057E+09</zt>
+      <xc>1.341E+09</xc>
+      <yc>0.212E+09</yc>
+      <zc>0.212E+09</zc>
+      <r>0.04E+09</r>
+      <t>0.08E+09</t>
+      <s>0.08E+09</s>
+    </strength>
+  </material>
+  <lamina name="la_ge_025">
+    <material>ge</material>
+    <thickness>0.025</thickness>
+  </lamina>
+</materials>

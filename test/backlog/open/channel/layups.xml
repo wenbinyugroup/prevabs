@@ -1,0 +1,5 @@
+<layups>
+  <layup name="layup1">
+    <layer lamina="la_mtr1"></layer>
+  </layup>
+</layups>

@@ -1,0 +1,185 @@
+<cross_section name="uh60a_section" format="1">
+  <include>
+    <!-- <baseline>uh60a_baseline</baseline> -->
+    <material>uh60a_material</material>
+    <!-- <layup>uh60a_layup</layup> -->
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.25 0</translate>
+    <scale>0.4725</scale>
+    <!-- <rotate>-4.184375</rotate> -->
+    <rotate>0</rotate>
+    <mesh_size>0.002</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+
+  <baselines>
+    <basepoints>
+      <include>sc1095</include>
+    </basepoints>
+    <point name="pt_fill_le">-0.1  0.0</point>
+    <baseline name="bsl_lps" type="straight">
+      <points>1:71</points>
+    </baseline>
+    <baseline name="bsl_hps" type="straight">
+      <points>72:141,1</points>
+    </baseline>
+    <point name="pt_spar_tle" on="bsl_lps" by="x2">-0.1</point>
+    <point name="pt_spar_tte" on="bsl_lps" by="x2">-0.4</point>
+    <!-- <point name="pt_spar_tmid" on="bsl_lps" by="x2">-0.25</point> -->
+    <point name="pt_spar_ble" on="bsl_hps" by="x2">-0.1</point>
+    <point name="pt_spar_bte" on="bsl_hps" by="x2">-0.4</point>
+    <point name="pt_spar_lwmid">-0.1  0</point>
+    <point name="pt_te_fill_bound">-0.95577 0</point>
+    <point name="pt_te_fill_1">-0.9 0</point>
+    <point name="pt_te_fill_2">-0.96 0</point>
+    <point name="pt_nsm_c">-0.02  0</point>
+
+    <baseline name="bsl_box" type="straight">
+      <!-- <points>22:35,108:121,22</points> -->
+      <points>pt_spar_tle:pt_spar_tte,pt_spar_bte:pt_spar_ble,pt_spar_tle</points>
+      <!-- <points>pt_spar_lwmid,pt_spar_tle:pt_spar_tte,pt_spar_bte:pt_spar_ble,pt_spar_lwmid</points> -->
+      <!-- <points>pt_spar_tmid:pt_spar_tte,pt_spar_bte:pt_spar_ble,pt_spar_tle:pt_spar_tmid</points> -->
+      <!-- <points>pt_spar_tle:pt_spar_tte</points> -->
+    </baseline>
+    <baseline name="bsl_tle" type="straight">
+      <!-- <points>1:22</points> -->
+      <points>1:pt_spar_tle</points>
+    </baseline>  
+    <baseline name="bsl_ble" type="straight">
+      <!-- <points>121:141,1</points> -->
+      <points>pt_spar_ble:141,1</points>
+    </baseline>  
+    <baseline name="bsl_tte" type="straight">
+      <!-- <points>35:66</points> -->
+      <points>pt_spar_tte:66</points>
+    </baseline>
+    <baseline name="bsl_bte" type="straight">
+      <!-- <points>77:108</points> -->
+      <points>77:pt_spar_bte</points>
+    </baseline>
+    <baseline name="bsl_te" type="straight">
+      <points>66:77</points>
+    </baseline>
+    <baseline name="bsl_nsm" type="circle">
+      <center>pt_nsm_c</center>
+      <radius>0.006</radius>
+      <discrete by="angle">9</discrete>
+    </baseline>
+    <baseline name="bsl_te_fill_bound" type="straight">
+      <point>pt_te_fill_bound</point>
+      <angle>90</angle> 
+    </baseline>
+  </baselines>
+
+
+
+  <layups>
+    <layup name="layup_spar_1">
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+    </layup>
+    <layup name="layup_spar_2">
+      <layer lamina="la_e_glass_0.00025">0:2</layer>
+    </layup>
+    <layup name="layup_spar_3">
+      <layer lamina="la_im7 tape_0.00135">45</layer>
+      <layer lamina="la_im7 tape_0.00145">-45</layer>
+    </layup>
+    <layup name="layup_spar_4">
+      <layer lamina="la_im7 tape_0.00135">0:2</layer>
+    </layup>
+    <layup name="layup_box">
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.00135">0</layer>
+      <layer lamina="la_im7 tape_0.00135">45</layer>
+      <layer lamina="la_im7 tape_0.00145">-45</layer>
+      <layer lamina="la_im7 tape_0.0005">90</layer>
+    </layup>
+    <layup name="layup_cap">
+      <layer lamina="la_steel_0.00082">0</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_im7 tape_0.0008">45</layer>
+      <layer lamina="la_im7 tape_0.0008">-45</layer>
+    </layup>
+    <layup name="layup_tail">
+      <layer lamina="la_e_glass_0.00025">0</layer>
+      <layer lamina="la_e_glass_0.00025">45</layer>
+      <!-- <layer lamina="la_e_glass_0.00025">-45</layer>
+      <layer lamina="la_e_glass_0.00025">0</layer> -->
+    </layup>
+  </layups>
+
+
+
+  <component name="main_spar">
+    <segment name="main_spar">
+      <baseline>bsl_box</baseline>
+      <layup>layup_box</layup>
+    </segment>
+    <!-- <segments>
+      <baseline>bsl_box</baseline>
+      <layup>layup_spar_1</layup>
+      <layup begin="0.2" end="0.6">layup_spar_2</layup>
+      <layup begin="0.1" end="0.3">layup_spar_3</layup>
+      <layup begin="0.4" end="1">layup_spar_4</layup>
+    </segments> -->
+  </component>
+  <component name="le" depend="main_spar">
+    <segment name="le_top">
+      <baseline>bsl_tle</baseline>
+      <layup>layup_cap</layup>
+    </segment>
+    <segment name="le_bottom">
+      <baseline>bsl_ble</baseline>
+      <layup>layup_cap</layup>
+    </segment>
+  </component>
+  <component name="te" depend="main_spar">
+    <segment name="te_top">
+      <baseline>bsl_tte</baseline>
+      <layup>layup_tail</layup>
+    </segment>
+    <segment name="te_te">
+      <baseline>bsl_te</baseline>
+      <layup>layup_tail</layup>
+    </segment>
+    <segment name="te_bottom">
+      <baseline>bsl_bte</baseline>
+      <layup>layup_tail</layup>
+    </segment>
+  </component>
+  <component name="ns_mass" type="fill" depend="d_spar">
+    <baseline>bsl_nsm</baseline>
+    <location>pt_nsm_c</location>
+    <material>mtr_ns_mass</material>
+  </component>
+  <component name="fill_ballast" type="fill" depend="main_spar,le">
+    <location>pt_fill_le</location>
+    <material>Rohacell 70</material>
+  </component>
+  <component name="fill_te" type="fill" depend="main_spar,te">
+    <baseline fillside="right">bsl_te_fill_bound</baseline>
+    <!-- <baseline>bsl_te_fill_bound</baseline>
+    <location>pt_te_fill_1</location> -->
+    <material>Plascore PN2-3/16OX3.0</material>
+  </component>
+  <!-- <component name="fill_te_tab" type="fill" depend="main_spar,te,fill_te">
+    <baseline fillside="left">bsl_te_fill_bound</baseline>
+    <baseline>bsl_te_fill_bound</baseline>
+    <location>pt_te_fill_2</location>
+    <material>e_glass</material>
+  </component> -->
+
+</cross_section>

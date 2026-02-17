@@ -1,0 +1,49 @@
+<baselines basepoints="basepoints_sta24">
+
+  <!-- low pressure surface -->
+  <baseline name="bl_lps_1" type="straight">
+    <points>le:l12</points>
+  </baseline>
+  <baseline name="bl_lps_2" type="straight">
+    <points>l12:l23</points>
+  </baseline>
+  <baseline name="bl_lps_3" type="straight">
+    <points>l23:l34</points>
+  </baseline>
+  <baseline name="bl_lps_4" type="straight">
+    <points>l34:l45</points>
+  </baseline>
+  <baseline name="bl_lps_5" type="straight">
+    <points>l45:l56</points>
+  </baseline>
+  <baseline name="bl_lps_6" type="straight">
+    <points>l56:l67</points>
+  </baseline>
+  <baseline name="bl_lps_7" type="straight">
+    <points>l67:110,te</points>
+  </baseline>
+
+  <!-- high pressure surface -->
+  <baseline name="bl_hps_7" type="straight">
+    <points>te:h67</points>
+  </baseline>
+  <baseline name="bl_hps_6" type="straight">
+    <points>h67:h56</points>
+  </baseline>
+  <baseline name="bl_hps_5" type="straight">
+    <points>h56:h45</points>
+  </baseline>
+  <baseline name="bl_hps_4" type="straight">
+    <points>h45:h34</points>
+  </baseline>
+  <baseline name="bl_hps_3" type="straight">
+    <points>h34:h23</points>
+  </baseline>
+  <baseline name="bl_hps_2" type="straight">
+    <points>h23:h12</points>
+  </baseline>
+  <baseline name="bl_hps_1" type="straight">
+    <points>h12:le</points>
+  </baseline>
+
+</baselines>

@@ -1,0 +1,85 @@
+<cross_section name="sta24" type="airfoil">
+  <include>
+    <baseline>baselines_sta24</baseline>
+    <material>materials</material>
+    <layup>layups</layup>
+  </include>
+  <general>
+    <translate>-0.32  0.0058</translate>
+    <scale>1035.0</scale>
+    <rotate>-14.7</rotate>
+    <mesh_size>10.0</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <segments>
+    <!-- low pressure surface -->
+    <segment name="sgm_lps_1">
+      <baseline>bl_lps_1</baseline>
+      <layup>tx_lower</layup>
+    </segment>
+    <segment name="sgm_lps_2">
+      <baseline>bl_lps_2</baseline>
+      <layup>tx_balsa_lower</layup>
+    </segment>
+    <segment name="sgm_lps_3">
+      <baseline>bl_lps_3</baseline>
+      <layup>tx_spar_lower</layup>
+    </segment>
+    <segment name="sgm_lps_4">
+      <baseline>bl_lps_4</baseline>
+      <layup>tx_balsa_lower</layup>
+    </segment>
+    <segment name="sgm_lps_5">
+      <baseline>bl_lps_5</baseline>
+      <layup>tx_balsa_lower_trans</layup>
+    </segment>
+    <segment name="sgm_lps_6">
+      <baseline>bl_lps_6</baseline>
+      <layup>tx_balsa_upper</layup>
+    </segment>
+    <segment name="sgm_lps_7">
+      <baseline>bl_lps_7</baseline>
+      <layup>tx_upper</layup>
+    </segment>
+
+    <!-- high pressure surface -->
+    <segment name="sgm_hps_7">
+      <baseline>bl_hps_7</baseline>
+      <layup>tx_upper</layup>
+    </segment>
+    <segment name="sgm_hps_6">
+      <baseline>bl_hps_6</baseline>
+      <layup>tx_balsa_upper</layup>
+    </segment>
+    <segment name="sgm_hps_5">
+      <baseline>bl_hps_5</baseline>
+      <layup>tx_balsa_lower_trans</layup>
+    </segment>
+    <segment name="sgm_hps_4">
+      <baseline>bl_hps_4</baseline>
+      <layup>tx_balsa_lower</layup>
+    </segment>
+    <segment name="sgm_hps_3">
+      <baseline>bl_hps_3</baseline>
+      <layup>tx_spar_lower</layup>
+    </segment>
+    <segment name="sgm_hps_2">
+      <baseline>bl_hps_2</baseline>
+      <layup>tx_balsa_lower</layup>
+    </segment>
+    <segment name="sgm_hps_1">
+      <baseline>bl_hps_1</baseline>
+      <layup>tx_lower</layup>
+    </segment>
+  </segments>
+  <connections>
+    <connection name="leading_edge">
+      <segment>sgm_lps_1</segment>
+      <segment>sgm_hps_1</segment>
+    </connection>
+    <connection name="trailing_edge">
+      <segment>sgm_lps_7</segment>
+      <segment>sgm_hps_7</segment>
+    </connection>
+  </connections>
+</cross_section>

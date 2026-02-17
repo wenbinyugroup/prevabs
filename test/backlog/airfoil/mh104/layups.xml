@@ -1,0 +1,66 @@
+<layups>
+  <!-- station 1 -->
+  <layup name="layup1">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:18</layer>
+  </layup>
+  <layup name="layup2">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:33</layer>
+  </layup>
+  <layup name="layup3">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:17</layer>
+    <layer lamina="la_iso5_1_000053">30:38</layer>
+    <layer lamina="la_iso5_5_0003125">0</layer>
+    <layer lamina="la_iso5_1_000053">30:37</layer>
+    <layer lamina="la_iso5_2_000053">20:16</layer>
+  </layup>
+  <layup name="layup4">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:17</layer>
+    <layer lamina="la_iso5_5_0003125">0</layer>
+    <layer lamina="la_iso5_2_000053">0:16</layer>
+  </layup>
+  <layup name="layupWeb">
+    <layer lamina="la_iso5_1_000053">0:38</layer>
+    <layer lamina="la_iso5_5_0003125">0</layer>
+    <layer lamina="la_iso5_1_000053">0:38</layer>
+  </layup>
+  <!-- station 2 -->
+  <layup name="layup1_s2">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:3</layer>
+  </layup>
+  <layup name="layup2_s2">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:8</layer>
+  </layup>
+  <layup name="layup3_s2">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:4</layer>
+    <layer lamina="la_iso5_1_000053">30:9</layer>
+    <layer lamina="la_iso5_5_0003125">0</layer>
+    <layer lamina="la_iso5_1_000053">30:9</layer>
+    <layer lamina="la_iso5_2_000053">20:4</layer>
+  </layup>
+  <layup name="layup4_s2">
+    <layer lamina="la_iso5_3_0000381">0</layer>
+    <layer lamina="la_iso5_4_000051">0</layer>
+    <layer lamina="la_iso5_2_000053">20:4</layer>
+    <layer lamina="la_iso5_5_0003125">0</layer>
+    <layer lamina="la_iso5_2_000053">20:4</layer>
+  </layup>
+  <layup name="layupWeb_s2">
+    <layer lamina="la_iso5_1_000053">0:16</layer>
+    <layer lamina="la_iso5_5_0003125">0</layer>
+    <layer lamina="la_iso5_1_000053">0:16</layer>
+  </layup>
+</layups>

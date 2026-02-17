@@ -1,0 +1,72 @@
+<cross_section name="ctm_2" type="general">
+  <include>
+    <baseline>ctm_2_baselines</baseline>
+    <!-- <material>t300_5208_pre_materials</material> -->
+    <layup>ctm_layups</layup>
+  </include>
+  <analysis>
+    <!-- 0: classical, 1: Timoshenko -->
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1.0</scale>
+    <rotate>0.0</rotate>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <segments>
+    <!-- outer half shell -->
+    <segment name="sg_u1">
+      <baseline>bl_uh_web_r</baseline>
+      <layup>layup_outer</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_u2">
+      <baseline>bl_uh_arc_r</baseline>
+      <layup>layup_outer</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_u3">
+      <baseline>bl_uh_arc_m</baseline>
+      <layup>layup_outer</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_u4">
+      <baseline>bl_uh_arc_l</baseline>
+      <layup>layup_outer</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_u5">
+      <baseline>bl_uh_web_l</baseline>
+      <layup>layup_outer</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <!-- inner half shell -->
+    <segment name="sg_l1">
+      <baseline>bl_lh_web_l</baseline>
+      <layup>layup_inner</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_l2">
+      <baseline>bl_lh_arc_l</baseline>
+      <layup>layup_inner</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_l3">
+      <baseline>bl_lh_arc_m</baseline>
+      <layup>layup_inner</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_l4">
+      <baseline>bl_lh_arc_r</baseline>
+      <layup>layup_inner</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+    <segment name="sg_l5">
+      <baseline>bl_lh_web_r</baseline>
+      <layup>layup_inner</layup>
+      <!-- <layup>layup_iso_01644</layup> -->
+    </segment>
+  </segments>
+</cross_section>

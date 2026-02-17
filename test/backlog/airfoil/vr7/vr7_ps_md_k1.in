@@ -1,0 +1,57 @@
+
+# ====================================================================
+
+environment
+  output_file = 'vr7_ps_md_k1.out'
+  tabular_data
+    tabular_data_file = 'vr7_ps_md_k1_tabular.dat'
+
+# ====================================================================
+
+method
+  multidim_parameter_study
+    partitions = 20
+
+# ====================================================================
+
+model
+  single
+
+# ====================================================================
+
+variables
+  active design
+  continuous_design = 1
+    descriptors     =   'k1'
+    upper_bounds    =   0.01
+    lower_bounds    =  -0.01
+
+# ====================================================================
+
+interface
+  analysis_driver = 'python interface_v.py vr7_vabs_pretwist'
+    fork
+      parameters_file = 'params.in'
+      results_file = 'results.out'
+      work_directory
+        named = 'evals/eval'
+        directory_tag
+        directory_save
+        file_save
+        # link_file = '*.py' '*.template' 'license'
+        copy_file = '*.py' '*.template'
+  # asynchronous
+  #   evaluation_concurrency = 2
+
+# ====================================================================
+
+responses
+  response_functions = 21
+  descriptors = 's11' 's12' 's13' 's14' 's15' 's16'
+                      's22' 's23' 's24' 's25' 's26'
+                            's33' 's34' 's35' 's36'
+                                  's44' 's45' 's46'
+                                        's55' 's56'
+                                              's66'
+  no_gradients
+  no_hessians

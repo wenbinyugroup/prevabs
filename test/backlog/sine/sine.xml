@@ -1,0 +1,22 @@
+<cross_section name="sine">
+  <include>
+    <baseline>baselines</baseline>
+    <layup>layups</layup>
+  </include>
+  <general>
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <component name="top">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+  <component name="bottom">
+    <segment>
+      <baseline>bl</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component>
+</cross_section>

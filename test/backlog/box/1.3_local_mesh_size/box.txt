@@ -1,0 +1,55 @@
+
+========================================
+
+  PreVABS version 1.3.0
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: main
+    - building component: web
+    - building component: fill_left
+    - building component: fill
+  
+  - building the cross section, step 2
+    - building component: main
+    - building component: web
+- building the shape -- done
+
+
+- modeling in Gmsh
+  - creating gmsh vertices
+  - creating gmsh edges
+  - creating gmsh face
+  - meshing
+- modeling in Gmsh -- done
+
+
+- writing outputs
+  - writing sg file: .\share\test\box\1.3_local_mesh_size\box.sg
+- writing outputs -- done
+
+
+- running SwiftComp for homogenization
+
+-  [SwiftComp Messages] 
+
+
+-  [SwiftComp Messages End] 
+
+- running SwiftComp for homogenization -- done
+
+
+========================================
+
+  FINISHED
+  Total running time: 4.217 sec
+
+========================================
+

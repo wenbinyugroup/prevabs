@@ -1,0 +1,61 @@
+<cross_section name="uh60a_section" type="airfoil">
+  <include>
+    <baseline type="airfoil">sc1095</baseline>
+    <material>uh60a_material</material>
+    <layup>uh60a_layup</layup>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0 0</translate>
+    <scale>1.73</scale>
+    <!-- <scale>20</scale> -->
+    <rotate>0</rotate>
+    <mesh_size>0.003</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <topology type="box">0.2 90. 0.5 90.</topology>
+  <component name="d_spar">
+    <segment name="sgm_cap">
+      <baseline>head</baseline>
+      <layup direction="left">layup_cap</layup>
+    </segment>
+    <segment name="sgm_top_box">
+      <baseline>top_1_2</baseline>
+      <layup direction="left">layup_box</layup>
+    </segment>
+    <segment name="sgm_tail">
+      <baseline>tail</baseline>
+      <layup direction="left">tail</layup>
+    </segment>
+    <segment name="sgm_bot_box">
+      <baseline>bot_1_2</baseline>
+      <layup direction="left">layup_box</layup>
+    </segment>
+  </component>
+  <component name="web_aux" depend="d_spar">
+    <segment name="sgm_web_aux">
+      <comment element="split">
+        To properly trim the two ends for this type of segment,
+        now internally the segment is splitted into two segments.
+
+        The location to split is indicated by the new element "split".
+
+        A "key" attribute indicate what the value is.
+        - If "key" is "name" (default), then the value indicate the name of the vertex.
+        - If "key" is "id", then the value indicate the n-th vertex of the base line.
+      </comment>
+      <split key="id">2</split>
+      <baseline>web_1</baseline>
+      <layup direction="right">web_aux</layup>
+    </segment>
+  </component>
+  <component name="web_main" depend="d_spar">
+    <segment name="sgm_web_main">
+      <split key="id">2</split>
+      <baseline>web_2</baseline>
+      <layup direction="left">layup_web_t</layup>
+    </segment>
+  </component>
+</cross_section>

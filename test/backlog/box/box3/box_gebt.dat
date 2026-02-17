@@ -1,0 +1,38 @@
+0 1 1 #dynamic_flag, niter, nstep
+
+2    1  2 1 0  0 0 1 0  # npoint,nmemb,ncond_pt,nmate, nframe, ncond_mb,ndistrfun, ntimefun, ncurv,nvel
+
+1     0.0  0.0 0.0 # coordinates for each point
+2     0.3  0.0 0.0
+
+    
+1     1     2  1 1 0 30  0  # kp_1 kp_2 mate_no1 mate_no2 frame# #divisions, curvature# velocity#  
+
+1    #point conditions
+1 2 3 4 5 6 
+0 0 0 0 0 0 # corresponding value
+0 0 0 0 0 0 # corresponding time functions
+0 0 0 0 0 0 # indicate whether it is a follower condition
+
+2 
+   7  8  9 10 11 12   
+1000  0  0  1  1  1  
+   1  0  0  1  1  1  
+   0  0  0  0  0  0  
+
+1 # section No. 1
+   7.4319524E-08 -4.8665911E-22 -1.6871004E-22  2.3342431E-06  9.3683828E-21  1.3142300E-20
+  -4.8665911E-22  7.9711662E-07  4.2628424E-20  5.6296853E-20 -4.3523123E-06  9.1947712E-13
+  -1.6871004E-22  4.2628424E-20  7.9711662E-07  1.3108876E-19 -9.1947760E-13 -4.3523123E-06
+   2.3342431E-06  5.6296853E-20  1.3108876E-19  8.9631919E-04  1.4119000E-18 -8.0114609E-19
+   9.3683828E-21 -4.3523123E-06 -9.1947760E-13  1.4119000E-18  3.0037775E-04  1.4601379E-18
+   1.3142300E-20  9.1947712E-13 -4.3523123E-06 -8.0114609E-19  1.4601379E-18  3.0037775E-04
+
+0 1 # simulation range
+
+1   # time function no
+0
+0 1
+2   # number of entries
+0 0 
+1 1

@@ -1,0 +1,115 @@
+<cross_section name="uh60a_section" type="airfoil" format="1">
+  <include>
+    <baseline type="airfoil">sc1095</baseline>
+    <material>material_database</material>
+  </include>
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <translate>0.25 0</translate>
+    <scale>20.76</scale>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <spar typew="box">-0.1053144288 -90 -0.3901401307 -90</spar>
+  <baselines>
+    <point name="pnsmc">-0.03976160213 0</point>
+    <baseline name="bsl_nsm" type="circle">
+      <center>pnsmc</center>
+      <radius>0.007213833072</radius>
+      <discrete by="angle">9</discrete>
+    </baseline>
+
+    <point name="pfle1">-0.0519754352 0</point>
+    <point name="pfle2">-0.1003144288 0</point>
+    <point name="pfte1">-0.4001401307 0</point>
+    <point name="pfte2">-0.9 0</point>
+  </baselines>
+
+  <layups>
+    <layup name="lyp_steel">
+      <layer lamina="Aluminum 8009_0.01">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_graphite">
+      <layer lamina="T300 15k/976_0.0053">0:2</layer>
+    </layup>
+    <layup name="lyp_skin_kevlar">
+      <layer lamina="AS4 6k/PR 500_fabric_0.0137">0:2</layer>
+    </layup>
+    <layup name="lyp_spar">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">45:11</layer>
+      <layer lamina="T650-35 3k 976_fabric_0.0062">9:11</layer>
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-50:11</layer>
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-83:11</layer>
+    </layup>
+    <layup name="lyp_le">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">19:8</layer>
+    </layup>
+    <layup name="lyp_te">
+      <layer lamina="T650-35 3k 976_fabric_0.0062">-22:6</layer>
+    </layup>
+    <layup name="lyp_spar_whole">
+      <layer layup="lyp_skin_graphite"></layer>
+      <layer layup="lyp_spar"></layer>
+    </layup>
+  </layups>
+  <component name="spar">
+    <segments>
+      <baseline>top_1_2</baseline>
+      <layup_side>right</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>bot_1_2</baseline>
+      <layup_side>right</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_spar</layup>
+    </segments>
+    <segments>
+      <baseline>tail</baseline>
+      <layup_side>right</layup_side>
+      <layup>lyp_skin_graphite</layup>
+      <layup begin="0.0" end_x2="-11.418">lyp_te</layup>
+      <layup begin_x2="-11.418:2" end="1.0">lyp_te</layup>
+    </segments>
+    <segments>
+      <baseline>head</baseline>
+      <layup_side>right</layup_side>
+      <layup>lyp_steel</layup>
+      <layup>lyp_skin_graphite</layup>
+      <layup>lyp_le</layup>
+    </segments>
+  </component>
+  <component name="le_web" depend="spar">
+    <segment name="sgm_web_le">
+      <split key="id">2</split>
+      <baseline>web_le</baseline>
+      <layup>lyp_spar_whole</layup>
+    </segment>
+  </component>
+  <component name="te_web" depend="spar">
+    <segment name="sgm_web_te">
+      <split key="id">2</split>
+      <baseline>web_te</baseline>
+      <layup direction="right">lyp_spar_whole</layup>
+    </segment>
+  </component>
+  <component name="nsm" type="fill" depend="spar,le_web">
+    <baseline>bsl_nsm</baseline>
+    <location>pnsmc</location>
+    <material>lead</material>
+    <mesh_size at="pnsmc">0.3</mesh_size>
+  </component>
+  <component name="fill_le" type="fill" depend="spar,le_web,nsm">
+    <location>pfle1</location>
+    <material>Rohacell 70</material>
+    <mesh_size at="pfle1,pfle2">0.3</mesh_size>
+  </component>
+  <component name="fill_te" type="fill" depend="spar,te_web">
+    <location>pfte1</location>
+    <material>Plascore PN2-3/16OX3.0</material>
+    <mesh_size at="pfte1,pfte2">0.3</mesh_size>
+  </component>
+</cross_section>

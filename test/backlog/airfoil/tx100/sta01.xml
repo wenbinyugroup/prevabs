@@ -1,0 +1,37 @@
+<cross_section name="sta01" type="general">
+  <include>
+    <baseline>baselines_sta01</baseline>
+    <material>materials</material>
+    <layup>layups</layup>
+  </include>
+  <general>
+    <translate>-0.5  0.0</translate>
+    <scale>387.0</scale>
+    <rotate>-22.8</rotate>
+    <mesh_size>500.0</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <segments>
+    <!-- low pressure surface -->
+    <segment name="sgm_lps_1">
+      <baseline>bl_lps_1</baseline>
+      <layup>tx_root_238</layup>
+    </segment>
+
+    <!-- high pressure surface -->
+    <segment name="sgm_hps_1">
+      <baseline>bl_hps_1</baseline>
+      <layup>tx_root_238</layup>
+    </segment>
+  </segments>
+  <!-- <connections>
+    <connection name="leading_edge">
+      <segment>sgm_lps_1</segment>
+      <segment>sgm_hps_1</segment>
+    </connection>
+    <connection name="trailing_edge">
+      <segment>sgm_lps_7</segment>
+      <segment>sgm_hps_7</segment>
+    </connection>
+  </connections> -->
+</cross_section>

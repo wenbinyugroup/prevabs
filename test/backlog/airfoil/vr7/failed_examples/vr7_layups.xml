@@ -1,0 +1,20 @@
+<layups>
+  <layup name="layup_cap_dspar">
+    <layer lamina="la_titanium_004"></layer>
+    <layer lamina="la_t300_5208_007">45</layer>
+    <layer lamina="la_t300_5208_007">-45</layer>
+    <layer lamina="la_t300_5208_007">0:3</layer>
+  </layup>
+  <layup name="layup_web_dspar">
+    <layer lamina="la_t300_5208_004"></layer>
+    <layer lamina="la_t300_5208_007">45</layer>
+    <layer lamina="la_t300_5208_007">-45</layer>
+    <layer lamina="la_t300_5208_007">0:3</layer>
+  </layup>
+  <layup name="layup_skin">
+    <layer lamina="la_t300_5208_004">45</layer>
+  </layup>
+  <layup name="filling_hc">
+    <layer lamina="la_hc_1"></layer>
+  </layup>
+</layups>

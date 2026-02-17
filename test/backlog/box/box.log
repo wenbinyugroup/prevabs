@@ -1,0 +1,30 @@
+2022-03-08 22:52:28 [info] prevabs start
+2022-03-08 22:52:28 [info] - reading input files
+2022-03-08 22:52:28 [info]     - reading main input file: box.xml
+2022-03-08 22:52:28 [info]       - reading materials file: C:\Users\unita\sall\s06-exe\MaterialDB.xml
+2022-03-08 22:52:28 [info]       - reading materials file: materials.xml
+2022-03-08 22:52:28 [info] - reading input files -- done
+2022-03-08 22:52:28 [info] - building the shape
+2022-03-08 22:52:28 [info]   - building the cross section, step 1
+2022-03-08 22:52:28 [info]     - building component: wall_tlb
+2022-03-08 22:52:28 [info]         - building component: wall_mid
+2022-03-08 22:52:28 [info]           - building the cross section, step 2
+2022-03-08 22:52:28 [info]             - building component details: wall_tlb
+2022-03-08 22:52:28 [info]             - building component details: wall_mid
+2022-03-08 22:52:28 [info]         - building the shape -- done
+2022-03-08 22:52:28 [info]         - modeling in Gmsh
+2022-03-08 22:52:28 [info]           - creating gmsh vertices
+2022-03-08 22:52:28 [info]           - creating gmsh edges
+2022-03-08 22:52:28 [info]           - creating gmsh face
+2022-03-08 22:52:28 [info]           - meshing
+2022-03-08 22:52:28 [info]         - modeling in Gmsh -- done
+2022-03-08 22:52:28 [info]         - writing outputs
+2022-03-08 22:52:28 [info]           - writing gmsh .opt file: box.opt
+2022-03-08 22:52:28 [info]           - writing gmsh .geo file: box.geo
+2022-03-08 22:52:28 [info]           - writing gmsh .msh file: box.msh
+2022-03-08 22:52:28 [info]           - writing sg file: box.sg
+2022-03-08 22:52:28 [info]         - writing outputs -- done
+2022-03-08 22:52:28 [info]         - running Gmsh for visualization
+2022-03-08 22:52:28 [info]         - running: gmsh box.geo box.msh box.opt
+2022-03-08 22:52:28 [info] prevabs finished
+2022-03-08 22:52:28 [info] total running time: 0.507 sec

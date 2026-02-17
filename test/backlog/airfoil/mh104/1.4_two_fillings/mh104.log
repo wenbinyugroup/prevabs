@@ -1,0 +1,35 @@
+2021-07-02 11:01:36 [info] prevabs start
+2021-07-02 11:01:36 [info] - reading input files
+2021-07-02 11:01:36 [info]     - reading main input file: .\share\test\airfoil\mh104\1.4_two_fillings\mh104.xml
+2021-07-02 11:01:36 [info]       - reading materials file: C:\Users\unita\sall\s02-study\s3-develop\d8-group_git\prevabs\bin\MaterialDB.xml
+2021-07-02 11:01:36 [info]       - reading materials file: .\share\test\airfoil\mh104\1.4_two_fillings\materials.xml
+2021-07-02 11:01:36 [info] - reading input files -- done
+2021-07-02 11:01:36 [info] - building the shape
+2021-07-02 11:01:36 [info]   - building the cross section, step 1
+2021-07-02 11:01:36 [info]     - building component: surface
+2021-07-02 11:01:36 [info]     - building component: web1
+2021-07-02 11:01:36 [info]     - building component: web2
+2021-07-02 11:01:36 [info]     - building component: fill_ud_top
+2021-07-02 11:01:36 [info]     - building component: fill_le
+2021-07-02 11:01:36 [info]     - building component: fill_te
+2021-07-02 11:01:36 [info]     - building component: fill_ud_bottom
+2021-07-02 11:01:36 [info]   - building the cross section, step 2
+2021-07-02 11:01:36 [info]     - building component details: surface
+2021-07-02 11:01:36 [info]     - building component details: web1
+2021-07-02 11:01:36 [info]     - building component details: web2
+2021-07-02 11:01:36 [info] - building the shape -- done
+2021-07-02 11:01:36 [info] - modeling in Gmsh
+2021-07-02 11:01:36 [info]   - creating gmsh vertices
+2021-07-02 11:01:36 [info]   - creating gmsh edges
+2021-07-02 11:01:37 [info]   - creating gmsh face
+2021-07-02 11:01:37 [info]   - meshing
+2021-07-02 11:01:38 [info] - modeling in Gmsh -- done
+2021-07-02 11:01:38 [info] - writing outputs
+2021-07-02 11:01:38 [info]   - writing Gmsh .geo file: .\share\test\airfoil\mh104\1.4_two_fillings\mh104.geo
+2021-07-02 11:01:38 [info]   - writing Gmsh .geo file: .\share\test\airfoil\mh104\1.4_two_fillings\mh104.msh
+2021-07-02 11:01:38 [info]   - writing Gmsh .opt file: .\share\test\airfoil\mh104\1.4_two_fillings\mh104.opt
+2021-07-02 11:01:38 [info]   - writing sg file: .\share\test\airfoil\mh104\1.4_two_fillings\mh104.sg
+2021-07-02 11:01:39 [info] - writing outputs -- done
+2021-07-02 11:01:39 [info] - running Gmsh for visualization
+2021-07-02 11:01:39 [info] prevabs finished
+2021-07-02 11:01:39 [info] total running time: 2.453 sec

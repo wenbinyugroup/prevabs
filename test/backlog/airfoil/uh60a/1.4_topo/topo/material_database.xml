@@ -1,0 +1,912 @@
+<materials>
+  <!--
+  The lamina material assumptions:
+  E3 = E2
+  nu13 = nu12
+  nu23 = 0.3
+  g13 = g12
+  g23 = E2/ (2*(1 + nu23))
+
+  The lamina ply thickness used either lower bound or averaged values
+  of the ply thickness range reported in the databases.
+  
+  -->
+
+
+
+
+  <!-- ========== ISOTROPIC ========== -->
+
+  <material name="steel" type="isotropic">
+	  <!--density unit: lbf.sec^2/in^4 -->
+    <density>0.728202e-3</density>
+    <elastic>
+      <e>1e-3</e>
+      <nu>0</nu>
+    </elastic>
+  </material>
+
+  <material name="lead" type="isotropic">
+	  <!--density unit: lbf.sec^2/in^4 -->
+    <density>1.060957e-3</density>
+    <elastic>
+      <e>1e-3</e>
+      <nu>0</nu>
+    </elastic>
+  </material>
+
+  <!--Material polyurethane (PU) light foams   -->
+  <!--Unit:Imperial unit -->
+  <material name="polyurethane light foam" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.00223989</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>1.783E+03</e>
+      <nu>7.20E-01</nu>
+    </elastic>
+  </material>
+
+
+  <!--Material: Newport E-Glass Fabric 7781/NB321  
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="7781/NB321 Fabric" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0650291</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>4.06E+06</e>
+      <nu>1.55E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="7781/NB321 Fabric_0.01">
+    <material>7781/NB321 Fabric</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <!--Material Cytec (formally 3M) E-Glass Fabric 7781/SP381
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="7781/SP381 Fabric" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0650291</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>3.52E+06</e>
+      <nu>1.67E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="7781/SP381 Fabric_0.01">
+    <material>7781/SP381 Fabric</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <!--Material: Cytec (formally Fiberite) 8-Harness Graphite Fabric T650 3K-135-8H/7740
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T650 3K-135-8H/7740 Fabric" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.002167638</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>3.52E+06</e>
+      <nu>1.67E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="T650 3K-135-8H/7740 Fabric_0.0092">
+    <material>T650 3K-135-8H/7740 Fabric</material>
+    <thickness>0.0092</thickness>
+  </lamina>
+
+
+  <!--Material:  Nelcote (formerly FiberCote) E-Glass Fabric 7781/E765
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="7781/E765" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0653904</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>3.95E+06</e>
+      <nu>1.68E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="7781/E765_0.0092">
+    <material>7781/E765</material>
+    <thickness>0.0092</thickness>
+  </lamina>
+
+
+  <!--Material:  Wet Layup/Field Repair Fiber Reinforced Composite Material Systems: 3K Plain Weave Carbon Cloth/MGS 418   
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="3K Plain Weave Carbon Cloth/MGS 418" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0653904</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>7.24E+06</e>
+      <nu>6.9E-02</nu>
+    </elastic>
+  </material>  
+  <lamina name="3K Plain Weave Carbon Cloth/MGS 418_0.0095">
+    <material>3K Plain Weave Carbon Cloth/MGS 418</material>
+    <thickness>0.0095</thickness>
+  </lamina>
+
+
+  <!--Material:  2x2 Biaxially Braided RTM Composite Material Systems: Carbon Braid AS4 6K GP/PR520
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="AS4 6K GP/PR520" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0653904</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>8.54E+06</e>
+      <nu>1.2E-00</nu>
+    </elastic>
+  </material>  
+  <lamina name="AS4 6K GP/PR520_0.017">
+    <material>AS4 6K GP/PR520</material>
+    <thickness>0.017</thickness>
+  </lamina>
+
+
+  <!--Material TORAY T700SC-12K-50C/#2510 Plain Weave Fabric [US Units]
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T700SC-12K-50C Fabric" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0653904</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>8.283E+06</e>
+      <nu>8.5E-02</nu>
+    </elastic>
+  </material>  
+  <lamina name="T700SC-12K-50C Fabric_0.0084">
+    <material>T700SC-12K-50C Fabric</material>
+    <thickness>0.0084</thickness>
+  </lamina>
+
+
+  <!--Material:  TORAY 7781 Finish 558/#2510 Fiberglass Fabric [US Units]
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="7781 Finish 558/#2510 Fabric" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0653904</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>3.51E+06</e>
+      <nu>1.63E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="7781 Finish 558/#2510 Fabric_0.01">
+    <material>7781 Finish 558/#2510 Fabric</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <!--Material:  354.0-T61 Cast Aluminum
+    Source: Manufacture report
+	Unit:Imperial unit -->
+  <material name="Aluminum 354" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.100</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>10.3E+06</e>
+      <nu>3.30E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="Aluminum 354_0.01">
+    <material>Aluminum 354</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <!--Material Aluminum 8009
+    Source: Manufacture report
+	Unit:Imperial unit -->
+  <material name="Aluminum 8009" type="isotropic">
+	<!-- unit: lbf.sec^2/in^4 -->
+    <density>0.271959e-3</density>
+    <elastic>
+	    <!--unit:psi -->
+      <e>13.1E+06</e>
+      <nu>3.30E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="Aluminum 8009_0.01">
+    <material>Aluminum 8009</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <!--Material Magnesium EA65B-T6, Cast
+    Source: Manufacture report
+	Unit:Imperial unit -->
+  <material name="Magnesium EA65B-T6" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0694</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>6.53E+06</e>
+      <nu>3.20E-01</nu>
+    </elastic>
+  </material>  
+  <lamina name="Magnesium EA65B-T6_0.01">
+    <material>Magnesium EA65B-T6</material>
+    <thickness>0.01</thickness>
+  </lamina>
+
+
+  <!--Material ERG Aerospace Duocel® Silicon Carbide Foam
+    Source: Manufacture report
+	Unit:Imperial unit -->
+  <material name="Silicon Carbide Foam" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0058</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>1.00E+06</e>
+      <nu>2.20E-01</nu>
+    </elastic>
+  </material>
+
+
+  <!--Material General Plastics LAST-A-FOAM® FR-6710 Polyurethane Foam 
+    Source: Manufacture report
+	Unit:Imperial unit -->
+  <material name="FR-6710 Polyurethane Foam" type="isotropic">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0058</density>
+    <elastic>
+	<!--unit:psi -->
+      <e>11.81E+03</e>
+      <nu>3.00E-01</nu>
+    </elastic>
+  </material>
+
+
+
+
+
+
+
+
+
+
+  <!-- ========== LAMINA ========== -->
+
+  <material name="Rohacell 70" type="orthotropic">
+    <!-- unit: lbf.sec^2/in^4 -->
+    <density>7.040895e-6</density>
+    <!-- unit: psi -->
+    <elastic>
+      <e1>13.125e3</e1>
+      <e2>13.125e3</e2>
+      <e3>13.125e3</e3>
+      <g12>4.118e3</g12>
+      <g13>4.118e3</g13>
+      <g23>4.118e3</g23>
+      <nu12>3.15E-01</nu12>
+      <nu13>3.15E-01</nu13>
+      <nu23>3.00E-01</nu23>
+    </elastic>
+  </material>
+
+  <material name="Plascore PN2-3/16OX3.0" type="orthotropic">
+    <!-- unit: lbf.sec^2/in^4 -->
+    <density>4.509066e-6</density>
+    <!-- unit: psi -->
+    <elastic>
+      <e1>1e3</e1>
+      <e2>20e3</e2>
+      <e3>1e3</e3>
+      <g12>3.5e3</g12>
+      <g13>1e3</g13>
+      <g23>5.799e3</g23>
+      <nu12>1.00E-02</nu12>
+      <nu13>3.00E-01</nu13>
+      <nu23>1.00E-02</nu23>
+    </elastic>
+  </material>
+
+  <!--Material: Newport Carbon Plain Weave Fabric 3K70P/NB321   
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="3K70P/NB321 fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0541909</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>8.15E+06</e1>
+      <e2>8.15E+06</e2>
+      <g12>0.72E+06</g12>
+      <nu12>5.80E-02</nu12>
+    </elastic>
+  </material>
+  <lamina name="3K70P/NB321 fabric_0.0084">
+    <material>3K70P/NB321 fabric</material>
+    <thickness>0.0084</thickness>
+  </lamina>
+
+
+  <!--Material: Newport Graphite Unitape G150 NASS/NCT321  
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="3G150 NASS/NCT321" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05346839</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>18.33E+06</e1>
+      <e2>1.34E+06</e2>
+      <g12>0.65E+06</g12>
+      <nu12>3.21E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="3G150 NASS/NCT321_0.0062">
+    <material>3G150 NASS/NCT321</material>
+    <thickness>0.0062</thickness>
+  </lamina>
+
+
+  <!--Material Cytec (formally 3M) S-Glass Unitape S2/SP381 
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="S2/SP381" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.06719676</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>7.23E+06</e1>
+      <e2>1.97E+06</e2>
+      <g12>0.62E+06</g12>
+      <nu12>2.78E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="S2/SP381_0.0092">
+    <material>S2/SP381</material>
+    <thickness>0.0092</thickness>
+  </lamina>
+
+
+  <!--Material: Cytec (formally Fiberite) Plain Weave Graphite Fabric T650 3K-70-PW/7740
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T650 3K-70-PW/7740 Fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05491348</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>9.49E+06</e1>
+      <e2>10.31E+06</e2>
+      <g12>0.71E+06</g12>
+      <nu12>3.40E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T650 3K-70-PW/7740 Fabric_0.0073">
+    <material>T650 3K-70-PW/7740 Fabric</material>
+    <thickness>0.0073</thickness>
+  </lamina>
+
+
+  <!--Material Cytec (formally Fiberite) Graphite Unitape G30-500 12K/7740
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="G30-500 12K/7740" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05491348</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>21.12E+06</e1>
+      <e2>1.47E+06</e2>
+      <g12>0.74E+06</g12>
+      <nu12>4.56E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="G30-500 12K/7740_0.0058">
+    <material>G30-500 12K/7740</material>
+    <thickness>0.0058</thickness>
+  </lamina>
+
+
+  <!--Material: Nelcote (formerly FiberCote) Graphite Fabric T300 3KPW/E765 
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T300 3KPW/E765" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.06719676</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>8.55E+06</e1>
+      <e2>8.29E+06</e2>
+      <g12>0.90E+06</g12>
+      <nu12>6.5E-02</nu12>
+    </elastic>
+  </material>
+  <lamina name="T300 3KPW/E765_0.0088">
+    <material>T300 3KPW/E765</material>
+    <thickness>0.0088</thickness>
+  </lamina>
+
+
+  <!--Material: Nelcote (formerly FiberCote) Graphite Unitape T700 24KP/E765
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T700 24KP/E765" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05527476</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>18.75E+06</e1>
+      <e2>1.48E+06</e2>
+      <g12>0.64E+06</g12>
+      <nu12>3.58E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T700 24KP/E765_0.0060">
+    <material>T700 24KP/E765</material>
+    <thickness>0.0060</thickness>
+  </lamina>
+
+
+  <!--Material: Nelcote (formerly FiberCote) Graphite Fabric T300 3KPW/E765
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T300 3KPW/E765" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05527476</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>18.75E+06</e1>
+      <e2>1.48E+06</e2>
+      <g12>0.64E+06</g12>
+      <nu12>3.58E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T300 3KPW/E765_0.0060">
+    <material>T300 3KPW/E765</material>
+    <thickness>0.0060</thickness>
+  </lamina>
+
+
+  <!--Material: Nelcote (formerly FiberCote) Graphite Fabric T300 6K 5HS/E765
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T300 6K 5HS/E765" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05527476</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>9.85E+06</e1>
+      <e2>9.63E+06</e2>
+      <g12>0.63E+06</g12>
+      <nu12>6.50E-02</nu12>
+    </elastic>
+  </material>
+  <lamina name="T300 6K 5HS/E765_0.015">
+    <material>T300 6K 5HS/E765</material>
+    <thickness>0.015</thickness>
+  </lamina>
+
+
+  <!--Material: TORAY T700GC-12K-31E/#2510 Unidirectional Tape [US Units]
+    Source: AGATE Database. Wichita State University. 2003
+	Unit:Imperial unit -->
+  <material name="T700GC-12K-31E" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05527476</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>18.42E+06</e1>
+      <e2>1.31E+06</e2>
+      <g12>0.757E+06</g12>
+      <nu12>3.50E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T700GC-12K-31E_0.0065">
+    <material>T700GC-12K-31E</material>
+    <thickness>0.0065</thickness>
+  </lamina>
+
+
+  <!-- Material: HITEX 33 6k/E7K8
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="HITEX 33 6k/E7K8" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05744239</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>18.2E+06</e1>
+      <e2>1.25E+06</e2>
+      <g12>6.95E+06</g12>
+      <nu12>3.10E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="HITEX 33 6k/E7K8_0.0057">
+    <material>HITEX 33 6k/E7K8</material>
+    <thickness>0.0057</thickness>
+  </lamina>
+
+
+  <!-- Material: AS4 12k/E7K8 unidirectional tape  
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="AS4 12k/E7K8" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.145973e-3</density>
+    <elastic>
+	    <!-- unit: psi (lbf/in^2) -->
+      <e1>19.3E+06</e1>
+      <e2>1.23E+06</e2>
+      <g12>7.31E+06</g12>
+      <nu12>3.20E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="AS4 12k/E7K8_0.0054">
+    <material>AS4 12k/E7K8</material>
+    <thickness>0.0054</thickness>
+  </lamina>
+
+
+  <!--Material: Celion 3000/E7K8 plain weave fabric   
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="Celion 3000/E7K8 fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0559973</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>9.64E+06</e1>
+      <e2>9.64E+06</e2>
+      <g12>4.56E+06</g12>
+      <nu12>5.80E-02</nu12>
+    </elastic>
+  </material>
+  <lamina name="Celion 3000/E7K8 fabric_0.0080">
+    <material>Celion 3000/E7K8 fabric</material>
+    <thickness>0.0080</thickness>
+  </lamina>
+
+
+  <!--Material: HITEX 33 6k/E7K8 plain weave fabric
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="HITEX 33 6k/E7K8 fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05563603</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>8.65E+06</e1>
+      <e2>8.65E+06</e2>
+      <g12>4.09E+06</g12>
+      <nu12>5.80E-02</nu12>
+    </elastic>
+  </material>
+  <lamina name="HITEX 33 6k/E7K8 fabric_0.0080">
+    <material>HITEX 33 6k/E7K8 fabric</material>
+    <thickness>0.0080</thickness>
+  </lamina>
+
+
+  <!--Material: GY-70/934    
+  Source: ULTRA-HIGH-MODÜLUS GRAPHITBEPOXY CONICAL SHELL DEVELOPMENT, 
+  ARMY MATERIALS AND MECHANICS RESEARCH CENTER. Watertown, Massachusetts 02172
+  Unit:Imperial unit -->
+  <material name="GY-70/934" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05744239</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>45.1E+06</e1>
+      <e2>1.01E+06</e2>
+      <g12>0.71E+06</g12>
+      <nu12>2.30E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="GY-70/934_0.075">
+    <material>GY-70/934</material>
+    <thickness>0.075</thickness>
+  </lamina>
+
+
+  <!--Material: E-Glass 7781/EA 9396 8-harness satin weave fabric    
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="E-Glass 7781/EA 9396" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.179660e-3</density>
+    <elastic>
+	    <!-- unit: lbf/in^2 -->
+      <e1>3.39E+06</e1>
+      <e2>3.41E+06</e2>
+      <g12>0.758E+06</g12>
+      <nu12>1.150E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="E-Glass 7781/EA 9396_0.0083">
+    <material>E-Glass 7781/EA 9396</material>
+    <thickness>0.0083</thickness>
+  </lamina>
+
+
+  <!--Material: T650-35 12k/976 unidirectional tape   
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="T650-35 12k/976" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.148781e-3</density>
+    <elastic>
+	    <!-- unit: lbf/in^2 -->
+      <e1>22.0E+06</e1>
+      <e2>1.30E+06</e2>
+      <g12>0.745E+06</g12>
+      <nu12>1.150E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T650-35 12k/976_0.0052">
+    <material>T650-35 12k/976</material>
+    <thickness>0.0052</thickness>
+  </lamina>
+
+
+  <!--Material: S2-449 43k/SP381 unidirectional tape   
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="S2-449 43k/SP381" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0686419</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>6.91E+06</e1>
+      <e2>2.10E+06</e2>
+      <g12>0.689E+06</g12>
+      <nu12>1.270E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="S2-449 43k/SP381_0.0034">
+    <material>S2-449 43k/SP381</material>
+    <thickness>0.0034</thickness>
+  </lamina>
+
+
+  <!--Material: E-Glass 7781/EA9396 8-harness satin weave fabric  
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="7781/EA9396 fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0686419</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>3.62E+06</e1>
+      <e2>3.62E+06</e2>
+      <g12>1.03E+06</g12>
+      <nu12>1.150E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="7781/EA9396 fabric_0.0084">
+    <material>7781/EA9396 fabric</material>
+    <thickness>0.0084</thickness>
+  </lamina>
+
+
+  <!--Material: Celion 12k/938 unidirectional tape 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="Celion 12k/938" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0686419</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>19.7E+06</e1>
+      <e2>1.35E+06</e2>
+	  <!-- g12 is approximate --> 
+      <g12>4.56E+06</g12>
+      <nu12>3.170E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="Celion 12k/938_0.004">
+    <material>7781/EA9396 fabric</material>
+    <thickness>0.004</thickness>
+  </lamina>
+
+
+  <!--Material: AS4 12k/3502 unidirectional tape  
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="AS4 12k/3502" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05635858</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>18.7E+06</e1>
+      <e2>1.41E+06</e2>
+      <g12>0.543E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>3.170E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="AS4 12k/3502_0.004">
+    <material>AS4 12k/3502</material>
+    <thickness>0.004</thickness>
+  </lamina>
+
+
+  <!--Material: T300 15k/976 unidirectional tape 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="T300 15k/976" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.149716e-3</density>
+    <elastic>
+	    <!-- unit: psi -->
+      <e1>19.6E+06</e1>
+      <e2>1.34E+06</e2>
+      <g12>0.91E+06</g12>
+      <nu12>3.48E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="T300 15k/976_0.0053">
+    <material>T300 15k/976</material>
+    <thickness>0.0053</thickness>
+  </lamina>
+
+
+  <!--Material: AS4 6k/PR 500 harness satin weave fabric 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="AS4 6k/PR 500_fabric" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.145973e-3</density>
+    <elastic>
+	    <!-- unit: psi -->
+      <e1>9.54E+06</e1>
+      <e2>9.54E+06</e2>
+      <g12>0.639E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>3.0E-01</nu12>
+    </elastic>
+  </material>
+  <lamina name="AS4 6k/PR 500_fabric_0.0137">
+    <material>AS4 6k/PR 500_fabric</material>
+    <thickness>0.0137</thickness>
+  </lamina>
+
+
+  <!--Material: T300 3k/EA 9396 8-harness satin weave fabric 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="T300 3k/EA 9396_fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.05635858</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>9.17E+06</e1>
+      <e2>9.14E+06</e2>
+      <g12>0.634E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>0.0587</nu12>
+    </elastic>
+  </material>
+  <lamina name="T300 3k/EA 9396_fabric_0.015">
+    <material>T300 3k/EA 9396_fabric</material>
+    <thickness>0.015</thickness>
+  </lamina>
+
+
+  <!--Material: T650-35 3k 976 plain weave fabric 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="T650-35 3k 976_fabric" type="lamina">
+	  <!-- unit: lbf.sec^2/in^4 -->
+    <density>0.145973e-3</density>
+    <elastic>
+	    <!-- unit: lbf/in^3 -->
+      <e1>10.4E+06</e1>
+      <e2>10.0E+06</e2>
+      <g12>0.8E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>0.06</nu12>
+    </elastic>
+  </material>
+  <lamina name="T650-35 3k 976_fabric_0.0062">
+    <material>T650-35 3k 976_fabric</material>
+    <thickness>0.0062</thickness>
+  </lamina>
+
+
+  <!--Material: AS4/5250-3 unidirectional tape
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="AS4/5250-3" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0578037</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>15.9E+06</e1>
+      <e2>1.24E+06</e2>
+      <g12>0.77E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>0.3</nu12>
+    </elastic>
+  </material>
+  <lamina name="AS4/5250-3_0.0055">
+    <material>AS4/5250-3</material>
+    <thickness>0.0055</thickness>
+  </lamina>
+
+
+  <!--Material: Celion 3000/F670 8-harness satin weave fabric 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="Celion 3000/F670_fabric" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0578037</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>9.03E+06</e1>
+      <e2>8.43E+06</e2>
+	  <!-- g12 is approximate --> 
+      <g12>0.7E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>0.06</nu12>
+    </elastic>
+  </material>
+  <lamina name="Celion 3000/F670_fabric_0.0132">
+    <material>Celion 3000/F670_fabric</material>
+    <thickness>0.0132</thickness>
+  </lamina>
+
+
+   <!--Material: IM6 12k/APC-2 unidirectional tape 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="IM6 12k/APC-2" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.0559973</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>21.6E+06</e1>
+      <e2>1.28E+06</e2>
+	  <!-- g12 is approximate --> 
+      <g12>0.78E+06</g12>
+      <nu12>0.332</nu12>
+    </elastic>
+  </material>
+  <lamina name="IM6 12k/APC-2_0.0052">
+    <material>IM6 12k/APC-2</material>
+    <thickness>0.0052</thickness>
+  </lamina>
+
+
+<!-- glass fiber --> 
+  <!--Material: S2-449 17k/SP 381 unidirectional tape 
+  Source: Military Composite Materials Handbook. Volume 2. 2002
+  Unit: Imperial unit -->
+  <material name="S2-449 17k/SP 381" type="lamina">
+	<!--density unit:lb/cubic inch -->
+    <density>0.06683549</density>
+    <elastic>
+	<!--unit:psi -->
+      <e1>6.93E+06</e1>
+      <e2>1.84E+06</e2>
+      <g12>0.681E+06</g12>
+	  <!-- nu12 is approximate --> 
+      <nu12>0.332</nu12>
+    </elastic>
+  </material>
+  <lamina name="S2-449 17k/SP 381_0.0032">
+    <material>S2-449 17k/SP 381</material>
+    <thickness>0.0032</thickness>
+  </lamina>
+
+</materials>

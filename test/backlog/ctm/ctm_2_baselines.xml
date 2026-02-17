@@ -1,0 +1,74 @@
+<baselines>
+  <basepoints>
+    <point name="bp_web_ll">-38.249  0</point>
+    <point name="bp_web_lr">-34.249  0</point>
+    <point name="bp_web_rl">34.249  0</point>
+    <point name="bp_web_rr">38.249  0</point>
+    <point name="bp_ctr_ul">-34.249  6.250</point>
+    <point name="bp_ctr_um">0  3.254</point>
+    <point name="bp_ctr_ur">34.249  6.250</point>
+    <point name="bp_ctr_ll">-34.249  -6.250</point>
+    <point name="bp_ctr_lm">0  -3.254</point>
+    <point name="bp_ctr_lr">34.249  -6.250</point>
+    <point name="bp_tgt_ul">-28.023  5.705</point>
+    <point name="bp_tgt_ur">28.023  5.705</point>
+    <point name="bp_tgt_ll">-28.023  -5.705</point>
+    <point name="bp_tgt_lr">28.023  -5.705</point>
+  </basepoints>
+  <!-- upper half -->
+  <baseline name="bl_uh_web_r" type="straight" method="pp">
+    <points>bp_web_rr,bp_web_rl</points>
+  </baseline>
+  <baseline name="bl_uh_arc_r" type="arc">
+    <center>bp_ctr_ur</center>
+    <start>bp_web_rl</start>
+    <end>bp_tgt_ur</end>
+    <direction>cw</direction>
+    <discrete by="angle">1</discrete>
+  </baseline>
+  <baseline name="bl_uh_arc_m" type="arc">
+    <center>bp_ctr_um</center>
+    <start>bp_tgt_ur</start>
+    <end>bp_tgt_ul</end>
+    <direction>ccw</direction>
+    <discrete by="angle">1</discrete>
+  </baseline>
+  <baseline name="bl_uh_arc_l" type="arc">
+    <center>bp_ctr_ul</center>
+    <start>bp_tgt_ul</start>
+    <end>bp_web_lr</end>
+    <direction>cw</direction>
+    <discrete by="angle">1</discrete>
+  </baseline>
+  <baseline name="bl_uh_web_l" type="straight" method='pp'>
+    <points>bp_web_lr,bp_web_ll</points>
+  </baseline>
+  <!-- lower half -->
+  <baseline name="bl_lh_web_l" type="straight" method="pp">
+    <points>bp_web_ll,bp_web_lr</points>
+  </baseline>
+  <baseline name="bl_lh_arc_l" type="arc">
+    <center>bp_ctr_ll</center>
+    <start>bp_web_lr</start>
+    <end>bp_tgt_ll</end>
+    <direction>cw</direction>
+    <discrete by="angle">1</discrete>
+  </baseline>
+  <baseline name="bl_lh_arc_m" type="arc">
+    <center>bp_ctr_lm</center>
+    <start>bp_tgt_ll</start>
+    <end>bp_tgt_lr</end>
+    <direction>ccw</direction>
+    <discrete by="angle">1</discrete>
+  </baseline>
+  <baseline name="bl_lh_arc_r" type="arc">
+    <center>bp_ctr_lr</center>
+    <start>bp_tgt_lr</start>
+    <end>bp_web_rl</end>
+    <direction>cw</direction>
+    <discrete by="angle">1</discrete>
+  </baseline>
+  <baseline name="bl_lh_web_r" type="straight" method='pp'>
+    <points>bp_web_rl,bp_web_rr</points>
+  </baseline>
+</baselines>

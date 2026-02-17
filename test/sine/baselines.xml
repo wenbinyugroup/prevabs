@@ -1,8 +1,0 @@
-<baselines>
-  <basepoints>
-    <include scale="1">points</include>
-  </basepoints>
-  <baseline name="bl" type="straight">
-    <points>1:11</points>
-  </baseline>
-</baselines>

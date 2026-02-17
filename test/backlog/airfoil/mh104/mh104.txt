@@ -1,0 +1,47 @@
+
+========================================
+
+  PreVABS version 1.1
+
+========================================
+
+
+- reading input files
+- reading input files -- done
+
+
+- building the shape
+  - building the cross section, step 1
+    - building component: surface
+    - building component: web1
+    - building component: web2
+    - building component: fill_1
+    - building component: fill_2
+  
+  - building the cross section, step 2
+    - building component: surface
+    - building component: web1
+    - building component: web2
+- building the shape -- done
+
+
+- modeling in Gmsh
+  - creating gmsh vertices
+  - creating gmsh edges
+  - creating gmsh face
+  - meshing
+- modeling in Gmsh -- done
+
+
+- writing outputs
+  - writing sg file: .\share\test\mh104\mh104.sg
+- writing outputs -- done
+
+
+========================================
+
+  FINISHED
+  Total running time: 1.124 sec
+
+========================================
+

@@ -1,0 +1,433 @@
+DCEL Summary
+
+30 vertices:
+( 0 , inf , inf ) - degree 2
+( 0 , -inf , inf ) - degree 2
+( 0 , -inf , -inf ) - degree 2
+( 0 , inf , -inf ) - degree 2
+( 0 , -1 , 0 ) - degree 3
+( 0 , -1 , 0.11 ) - degree 2
+( 0 , 1 , 0 ) - degree 3
+( 0 , 1 , 0.11 ) - degree 2
+( 0 , 0 , 0 ) - degree 6
+( 0 , 0 , 0.11 ) - degree 3
+( 0 , -1.5 , -3 ) - degree 3
+( 0 , -1.5 , -3.065 ) - degree 2
+( 0 , 1.5 , -3 ) - degree 3
+( 0 , 1.5 , -3.065 ) - degree 2
+( 0 , 0 , -3 ) - degree 6
+( 0 , 0 , -3.065 ) - degree 3
+( 0 , -1 , -0.08 ) - degree 2
+( 0 , -1.5 , -2.92 ) - degree 2
+( 0 , -0.08 , -0.08 ) - degree 3
+( 0 , -0.08 , -2.92 ) - degree 3
+( 0 , 1 , -0.08 ) - degree 2
+( 0 , 1.5 , -2.92 ) - degree 2
+( 0 , 0.08 , -0.08 ) - degree 3
+( 0 , 0.08 , -2.92 ) - degree 3
+( 0 , -1 , 0.06 ) - degree 3
+( 0 , 0 , 0.06 ) - degree 4
+( 0 , 1 , 0.06 ) - degree 3
+( 0 , -1.5 , -3.045 ) - degree 3
+( 0 , 0 , -3.045 ) - degree 4
+( 0 , 1.5 , -3.045 ) - degree 3
+
+82 half edges:
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: 1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: -1
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: 1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: -1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , -0.08 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.92 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 1 , -0.08 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: -1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 1.5 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
+  ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: 1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: 1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: 1
+  ( 0 , 0 , 0.06 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: 1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: 1
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: 1
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: 1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: -1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: -1
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: 1
+  ( 0 , 0 , -3.045 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: 1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: -1
+
+16 half edge loops:
+direction: outer
+keep: yes
+face: background
+half edges:
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background | sign: 1
+adjacent loop: nullptr
+
+direction: inner
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , -0.08 ) -> ( 0 , -1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , -0.08 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 1.5 , -2.92 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: nullptr | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+  ( 0 , 0 , -3.065 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: nullptr | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: 1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: 1
+  ( 0 , 0 , 0.06 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: 1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: 1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: 1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -3.045 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: -1
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -3.045 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: 1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -3.065 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: -1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: -1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1 , -0.08 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , 0 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 1 , -0.08 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -3 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: -1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: no
+face: nullptr
+half edges:
+  ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: 1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.92 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: -1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: -1
+adjacent loop: nullptr
+
+
+15 faces:
+name: background
+outer boundary: 
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background | sign: 1
+0 inner boundaries:
+
+name: sgm_1_area_0_layer_2
+outer boundary: 
+  ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: 1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_2 | sign: -1
+0 inner boundaries:
+layer type:                2               2               0          iso5_2
+
+name: sgm_1_area_0_layer_1
+outer boundary: 
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: 1
+  ( 0 , 0 , 0.06 ) -> ( 0 , -1 , 0.06 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_area_0_layer_1 | sign: -1
+0 inner boundaries:
+layer type:                1               1              90          iso5_1
+
+name: sgm_1_area_1_layer_2
+outer boundary: 
+  ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: 1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_2 | sign: -1
+0 inner boundaries:
+layer type:                2               2               0          iso5_2
+
+name: sgm_1_area_1_layer_1
+outer boundary: 
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: 1
+  ( 0 , 1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | sign: -1
+0 inner boundaries:
+layer type:                1               1              90          iso5_1
+
+name: sgm_2_area_0_layer_1
+outer boundary: 
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: 1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: -1
+  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_1 | sign: 1
+0 inner boundaries:
+layer type:                3               3               0          iso5_3
+
+name: sgm_2_area_0_layer_2
+outer boundary: 
+  ( 0 , -1.5 , -3.065 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: 1
+  ( 0 , 0 , -3.065 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: -1
+  ( 0 , 0 , -3.045 ) -> ( 0 , -1.5 , -3.045 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: -1
+  ( 0 , -1.5 , -3.045 ) -> ( 0 , -1.5 , -3.065 ) | loop: temp | face: sgm_2_area_0_layer_2 | sign: 1
+0 inner boundaries:
+layer type:                4               4              90          iso5_4
+
+name: sgm_2_area_1_layer_1
+outer boundary: 
+  ( 0 , 0 , -3.045 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: 1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: -1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_1 | sign: 1
+0 inner boundaries:
+layer type:                3               3               0          iso5_3
+
+name: sgm_2_area_1_layer_2
+outer boundary: 
+  ( 0 , 0 , -3.065 ) -> ( 0 , 1.5 , -3.065 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: 1
+  ( 0 , 1.5 , -3.065 ) -> ( 0 , 1.5 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: -1
+  ( 0 , 1.5 , -3.045 ) -> ( 0 , 0 , -3.045 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: -1
+  ( 0 , 0 , -3.045 ) -> ( 0 , 0 , -3.065 ) | loop: temp | face: sgm_2_area_1_layer_2 | sign: 1
+0 inner boundaries:
+layer type:                4               4              90          iso5_4
+
+name: sgm_3_area_0_layer_1
+outer boundary: 
+  ( 0 , -1 , -0.08 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , -0.08 ) | loop: temp | face: sgm_3_area_0_layer_1 | sign: 1
+0 inner boundaries:
+layer type:                5               5               0          iso5_5
+
+name: sgm_3_area_2_layer_1
+outer boundary: 
+  ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , 0 , -3 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , -1.5 , -2.92 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: 1
+  ( 0 , -1.5 , -2.92 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: sgm_3_area_2_layer_1 | sign: -1
+0 inner boundaries:
+layer type:                5               5               0          iso5_5
+
+name: sgm_3_area_1_layer_1
+outer boundary: 
+  ( 0 , -0.08 , -2.92 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: -1
+  ( 0 , 0 , -3 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , -0.08 , -0.08 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: 1
+  ( 0 , -0.08 , -0.08 ) -> ( 0 , -0.08 , -2.92 ) | loop: temp | face: sgm_3_area_1_layer_1 | sign: 1
+0 inner boundaries:
+layer type:                5               5               0          iso5_5
+
+name: sgm_4_area_0_layer_1
+outer boundary: 
+  ( 0 , 0 , 0 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: 1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 1 , -0.08 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , 1 , -0.08 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_4_area_0_layer_1 | sign: -1
+0 inner boundaries:
+layer type:                5               5               0          iso5_5
+
+name: sgm_4_area_1_layer_1
+outer boundary: 
+  ( 0 , 0 , -3 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: 1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0.08 , -0.08 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: -1
+  ( 0 , 0.08 , -0.08 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_area_1_layer_1 | sign: 1
+0 inner boundaries:
+layer type:                5               5               0          iso5_5
+
+name: sgm_4_area_2_layer_1
+outer boundary: 
+  ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: 1
+  ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.92 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: 1
+  ( 0 , 1.5 , -2.92 ) -> ( 0 , 0.08 , -2.92 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: -1
+  ( 0 , 0.08 , -2.92 ) -> ( 0 , 0 , -3 ) | loop: temp | face: sgm_4_area_2_layer_1 | sign: -1
+0 inner boundaries:
+layer type:                5               5               0          iso5_5
+

@@ -1,0 +1,48 @@
+<cross_section name="channel" format="1">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <mesh_size>0.0005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+  <baselines>
+    <basepoints>
+      <point name="bl">0.0e-3  -12.7e-3</point>
+      <point name="tl">0.0e-3   12.7e-3</point>
+      <point name="tr">12.7e-3   12.7e-3</point>
+      <point name="br">25.4e-3  -12.7e-3</point>
+    </basepoints>
+    <baseline name="bl1" type="straight">
+      <points>br,bl,tl,tr</points>
+    </baseline>
+  </baselines>
+
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_mtr1"></layer>
+    </layup>
+  </layups>
+
+
+  <component>
+    <segment>
+      <baseline>bl1</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component>
+
+
+</cross_section>

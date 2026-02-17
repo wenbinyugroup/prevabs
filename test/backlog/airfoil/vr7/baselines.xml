@@ -1,0 +1,60 @@
+<baselines>
+  <basepoints>
+    <include>basepoints</include>
+  </basepoints>
+  <baseline name="bsl_spar" type="straight">
+    <points>hps_seg_1_2:41,lps_leading:lps_seg_1_2</points>
+  </baseline>
+  <baseline name="bsl_web" type="straight">
+    <points>lps_seg_1_2,hps_seg_1_2</points>
+  </baseline>
+  <baseline name="bsl_overwrap" type="straight">
+    <points>lps_seg_1_2:hps_seg_1_2</points>
+  </baseline>
+  <baseline name="bsl_overwrap_top" type="straight">
+    <points>lps_seg_1_2:lps_seg_2_3</points>
+  </baseline>
+  <baseline name="bsl_overwrap_te" type="straight">
+    <points>lps_seg_2_3:hps_seg_2_3</points>
+  </baseline>
+  <baseline name="bsl_overwrap_bottom" type="straight">
+    <points>hps_seg_2_3:hps_seg_1_2</points>
+  </baseline>
+
+  <baseline name="lps_bl_1" type="straight">
+    <points>lps_leading,4:20,lps_seg_1_2</points>
+  </baseline>
+  <baseline name="lps_bl_2" type="straight">
+    <points>lps_seg_1_2:lps_seg_2_3</points>
+  </baseline>
+  <!-- <baseline name="lps_bl_3" type="straight">
+    <points>lps_seg_2_3:37,trailing</points>
+  </baseline> -->
+  <baseline name="lps_bl_3" type="straight">
+    <points>lps_seg_2_3:trailing</points>
+  </baseline>
+  <!-- <baseline name="hps_bl_3" type="straight">
+    <points>trailing,76:hps_seg_2_3</points>
+  </baseline> -->
+  <baseline name="hps_bl_3" type="straight">
+    <points>trailing:hps_seg_2_3</points>
+  </baseline>
+  <baseline name="hps_bl_2" type="straight">
+    <points>hps_seg_2_3:hps_seg_1_2</points>
+  </baseline>
+  <baseline name="hps_bl_1" type="straight">
+    <points>hps_seg_1_2,59:43,hps_leading</points>
+  </baseline>
+  <baseline name="web_bl" type="straight">
+    <point>web_center</point>
+    <angle>95</angle>
+  </baseline>
+  <baseline name="web_bl_tr" type="straight">
+    <point>web_tr</point>
+    <angle>90</angle>
+  </baseline>
+  <baseline name="filling_bl" type="straight">
+    <point>filling_rs</point>
+    <angle>90</angle>
+  </baseline>
+</baselines>

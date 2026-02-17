@@ -1,0 +1,49 @@
+<cross_section name="tube" format="1">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <mesh_size>0.5</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+  <component>
+    <segment>
+      <baseline>blcircle</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component>
+
+
+  <baselines>
+    <basepoints>
+      <point name="ct">0  0</point>
+    </basepoints>
+    <baseline name="blcircle" type="circle">
+      <center>ct</center>
+      <radius>10</radius>
+      <discrete by="angle">3</discrete>
+      <direction>cw</direction>
+    </baseline>
+  </baselines>
+
+
+  <layups>
+    <layup name="layup1" method="stack sequence">
+      <lamina>la_iso5_4_01</lamina>
+      <code>[(45/-45):2/0:2/90]s</code>
+    </layup>
+  </layups>
+
+
+</cross_section>

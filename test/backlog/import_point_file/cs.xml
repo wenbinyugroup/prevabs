@@ -1,0 +1,80 @@
+<cross_section name="cross_section" format="1">
+    <!-- <include>
+        <material>material_database_si</material>
+    </include> -->
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <scale>1</scale>
+        <translate>0  0</translate>
+        <mesh_size>0.01</mesh_size>
+        <element_type>linear</element_type>
+        <track_interface>0</track_interface>
+    </general>
+
+
+
+    <baselines>
+
+        <line name="ln_import">
+            <points data="file" header="0">points.dat</points>
+            <flip>1</flip>
+            <!-- <reverse>1</reverse> -->
+        </line>
+
+        <!-- <point name="pt_fill">0.5  0.5</point> -->
+
+
+    </baselines>
+
+
+    <materials>
+        <material name="al_alloy" type="isotropic">
+            <density>2.906e3</density>
+            <elastic>
+              <e>90.321e9</e>
+              <nu>3.30e-1</nu>
+            </elastic>
+            <failure_criterion>max principal stress</failure_criterion>
+            <strength>
+              <xt>384.727e6</xt>
+              <xc>384.727e6</xc>
+            </strength>
+          </material>  
+          <lamina name="al_alloy_0.01">
+            <material>al_alloy</material>
+            <thickness>2.54e-4</thickness>
+          </lamina>
+    </materials>
+
+
+    <layups>
+<!-- 
+        <layup name="lyp_le_cap">
+            <layer lamina="{lam_cap}">{ang_cap=0}:{ply_cap=1}</layer>
+        </layup>
+ -->
+        <layup name="lyp_skin">
+            <layer lamina="al_alloy_0.01">0:1</layer>
+        </layup>
+
+    </layups>
+
+
+
+    <component name="skin">
+        <segments>
+            <baseline>ln_import</baseline>
+            <layup>lyp_skin</layup>
+        </segments>
+    </component>
+
+    <!-- <component name="fill" type="fill">
+        <location>pt_fill</location>
+        <material>al_alloy</material>
+        <mesh_size at="pfle1,pfle2">{fms=10*gms}</mesh_size>
+    </component> -->
+
+
+</cross_section>

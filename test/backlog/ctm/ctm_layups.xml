@@ -1,0 +1,34 @@
+<layups>
+  <layup name="layup_fernandez2017">
+    <layer lamina="la_mr60h_ud_fernandez2017_0040">0</layer>
+    <layer lamina="la_hta40_pw_fernandez2017_0075">45</layer>
+  </layup>
+  <layup name="layup_fernandez2017_2">
+    <layer lamina="la_mr60h_ud_fernandez2017_0040">0:4</layer>
+    <layer lamina="la_hta40_pw_fernandez2017_0075">45:4</layer>
+  </layup>
+  <layup name="layup_outer_lee2018">
+    <layer lamina="la_hta40_pw_lee2018_00635">45</layer>
+    <layer lamina="la_mr60h_ud_lee2018_00374">0</layer>
+    <layer lamina="la_hta40_pw_lee2018_00635">45</layer>
+  </layup>
+  <layup name="layup_inner_lee2018">
+    <layer lamina="la_hta40_pw_lee2018_00635">0</layer>
+  </layup>
+  <!-- <layup name="layup_iso_00635">
+    <layer lamina="la_fake_00635"></layer>
+  </layup> -->
+  <!-- <layup name="layup_iso_01009">
+    <layer lamina="la_fake_01009"></layer>
+  </layup> -->
+  <!-- <layup name="layup_iso_0115">
+    <layer lamina="la_fake_0115"></layer>
+  </layup> -->
+  <!-- <layup name="layup_iso_01644">
+    <layer lamina="la_fake_01644"></layer>
+  </layup> -->
+  <!-- <layup name="layup1" method="ss">
+    <lamina>la_t300_5208_01</lamina>
+    <code>[(45/-45):1]s</code>
+  </layup> -->
+</layups>
