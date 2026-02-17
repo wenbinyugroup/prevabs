@@ -17,24 +17,15 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 
 ### Windows (MSVC)
 
-Environment: Use "Developer PowerShell for VS 2022" (or "x64 Native Tools Command Prompt for VS 2022")
-Command line profile:
-
 ```bash
-powershell.exe -NoExit -Command "&{Import-Module """C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"""; Enter-VsDevShell 36b298b6 -SkipAutomaticLocation -DevCmdArguments """-arch=x64 -host_arch=x64"""}"
-```
+# Full rebuild with powershell (cleans and rebuilds)
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 full
 
-Always use this environment to build the project.
-
-```bash
-# Full rebuild (cleans and rebuilds)
-tools\build_msvc.bat full
-
-# Fast rebuild (incremental)
-tools\build_msvc.bat fast
+# Fast rebuild with pwsh (incremental)
+pwsh -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 fast
 
 # Clean build directory
-tools\build_msvc.bat clean
+pwsh -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 clean
 ```
 
 The executable will be in `build_msvc\Release\prevabs.exe`.
