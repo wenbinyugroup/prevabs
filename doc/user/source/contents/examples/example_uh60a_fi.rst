@@ -8,7 +8,7 @@ Run the example
 
 ::
 
-  prevabs -i uh60a.xml -fi -e -v
+  prevabs -i uh60a.xml --fi -e -v
 
 
 Problem description

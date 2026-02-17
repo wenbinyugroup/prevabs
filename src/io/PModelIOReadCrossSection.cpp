@@ -139,7 +139,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_tolerance) {
       std::string ss{p_xn_tolerance->value()};
       if (ss[0] != '\0') {
-        config.geo_tol = atof(ss.c_str());
+        config.app.geo_tol = atof(ss.c_str());
       }
     }
   }
@@ -411,10 +411,10 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
     if (stol[0] != '\0')
-      config.tol = atof(stol.c_str());
+      config.app.tol = atof(stol.c_str());
   }
   std::stringstream ss_tol;
-  ss_tol << config.tol;
+  ss_tol << config.app.tol;
   PLOG(debug) << pmessage->message("tolerance = " + ss_tol.str());
 
 

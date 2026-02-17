@@ -299,38 +299,38 @@ void Material::writeStrengthProperties(FILE *file, Message *pmessage) {
   if (type == "isotropic") {
     if ((mfcriterion == 1) || (mfcriterion == 2)) {
       fprintf(file, "%8d\n", 2);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file, "%16e%16e\n", _strength.t1, _strength.c1);
     }
     else if ((mfcriterion == 3) || (mfcriterion == 4)) {
       fprintf(file, "%8d\n", 1);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file, "%16e\n", _strength.s12);
     }
     else if (mfcriterion == 5) {
       fprintf(file, "%8d\n", 1);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file, "%16e\n", _strength.t1);
     }
   }
   else if ((type == "orthotropic") || (type == "anisotropic")) {
     if ((mfcriterion == 1) || (mfcriterion == 2) || (mfcriterion == 4)) {
       fprintf(file, "%8d\n", 9);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file,
         "%16e%16e%16e%16e%16e%16e%16e%16e%16e\n",
         _strength.t1, _strength.t2, _strength.t3, _strength.c1, _strength.c2, _strength.c3, _strength.s23, _strength.s13, _strength.s12);
     }
     else if (mfcriterion == 3) {
       fprintf(file, "%8d\n", 6);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file,
         "%16e%16e%16e%16e%16e%16e\n",
         _strength.t1, _strength.t2, _strength.t3, _strength.s23, _strength.s13, _strength.s12);
     }
     else if (mfcriterion == 5) {
       fprintf(file, "%8d\n", 6);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file,
         "%16e%16e%16e%16e%16e%16e\n",
         _strength.t1, _strength.t2, _strength.c1, _strength.c2, _strength.s23, _strength.s12);

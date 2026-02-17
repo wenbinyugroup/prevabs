@@ -6,8 +6,8 @@
 #include <vector>
 #include <memory>
 
-// Map config.log_severity_level (int, 0-5) to spdlog level.
-// Matches boost::log::trivial ordering: trace=0, debug=1, info=2, warning=3, error=4, fatal=5
+// Map AppConfig.log_level (int, 0-5) to spdlog level.
+// Matches LOG_LEVEL_* constants in globalConstants.hpp: trace=0, debug=1, info=2, warning=3, error=4, fatal=5
 static spdlog::level::level_enum toSpdlogLevel(int level) {
   switch (level) {
     case 0:  return spdlog::level::trace;
@@ -39,7 +39,7 @@ void initLog() {
   // Format: [severity] message  — matches previous boost::log format
   logger->set_pattern("[%l] %v");
 
-  logger->set_level(toSpdlogLevel(config.log_severity_level));
+  logger->set_level(toSpdlogLevel(config.app.log_level));
   logger->flush_on(spdlog::level::trace);
 
   spdlog::register_logger(logger);

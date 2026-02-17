@@ -53,5 +53,5 @@
 [info]     - writing material id-name file: .\share\examples\ex_tube\tube.sg.mat
 [info]   - writing outputs -- done
 [info]   - running Gmsh for visualization
-[info]   - prevabs finished (2026-02-16 17:35:43)
-[info] total running time: 3.008 sec
+[info]   - prevabs finished (2026-02-16 20:19:40)
+[info] total running time: 5.14014 sec

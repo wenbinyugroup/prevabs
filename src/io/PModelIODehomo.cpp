@@ -148,7 +148,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
   std::string fn;
 
-  if (config.dehomo) {
+  if (config.isDehomo()) {
     PLOG(info) << pmessage->message("reading dehomogenization outputs...");
 
     // Read node data (displacement)
@@ -156,11 +156,11 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
     readVABSU(fn, state, pmessage);
 
     // Read element data (stress and strain)
-    if (config.analysis_tool == 1) {
+    if (config.isVABS()) {
       fn = fn_sg + ".ELE";
       readVABSEle(fn, state, pmessage);
     }
-    else if (config.analysis_tool == 2) {
+    else if (config.isSC()) {
       fn = fn_sg + ".SN";
       readSCSn(fn, state, pmessage);
     }
@@ -168,7 +168,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
     // Read element nodal data (stress and strain)
   }
 
-  if (config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isFailure()) {
     PLOG(info) << pmessage->message("reading failure analysis outputs...");
 
     // Read element data (failure index and strength ratio)
@@ -295,7 +295,7 @@ LoadCase readXMLElementLoadCase(
     }
   }
 
-  if (config.fail_envelope) {
+  if (config.isFailEnvelope()) {
     loadcase.envelope_axis1 = p_xn_loadcase->first_node("axis1")->value();
     loadcase.envelope_axis2 = p_xn_loadcase->first_node("axis2")->value();
     loadcase.envelope_div = 10;
@@ -414,7 +414,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
   file = fopen(fn.c_str(), "w");
 
   // Write material strength properties for strength analysis
-  if (config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isFailure()) {
     for (auto m : _cross_section->getUsedMaterials()) {
       // m->printMaterial();
       m->writeStrengthProperties(file, pmessage);
@@ -426,7 +426,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
   for (auto i = 0; i < _pp_data.load_cases.size(); i++) {
 
     LoadCase loadcase = _pp_data.load_cases[i];
-    if (config.analysis_tool == 1) { // VABS
+    if (config.isVABS()) {
       if (i == 0) {
         writeVectorToFile(file, loadcase.displacement);
         fprintf(file, "\n");
@@ -457,8 +457,8 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
     }
 
 
-    else if (config.analysis_tool == 2) { // SwiftComp
-      if (config.dehomo) {
+    else if (config.isSC()) {
+      if (config.isDehomo()) {
         writeVectorToFile(file, loadcase.displacement);
         fprintf(file, "\n");
         writeVectorToFile(file, loadcase.rotation[0]);
@@ -470,7 +470,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
       fprintf(file, "%8d\n", loadcase.measure);
       fprintf(file, "\n");
 
-      if (config.fail_envelope) {
+      if (config.isFailEnvelope()) {
         std::vector<std::string> v_s_order;
         if (_analysis_model == 0) {
           if (loadcase.measure == 0) v_s_order = {"f1", "m1", "m2", "m3"};
@@ -496,7 +496,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
         fprintf(file, "\n");
       }
 
-      else if (config.dehomo || config.fail_index) {
+      else if (config.isDehomo() || config.isFailIndex()) {
         writeVectorToFile(file, loadcase.load);
       }
 

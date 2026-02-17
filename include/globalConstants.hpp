@@ -23,6 +23,42 @@ const double TOLERANCE{1e-15};
 const double ABS_TOL{1e-15};
 const double REL_TOL{1e-15};
 
+// Log severity levels (match spdlog mapping in plog.cpp)
+constexpr int LOG_LEVEL_TRACE   = 0;
+constexpr int LOG_LEVEL_DEBUG   = 1;
+constexpr int LOG_LEVEL_INFO    = 2;
+constexpr int LOG_LEVEL_WARNING = 3;
+constexpr int LOG_LEVEL_ERROR   = 4;
+constexpr int LOG_LEVEL_FATAL   = 5;
+
+// Analysis tool selection
+enum class AnalysisTool {
+  VABS      = 1,
+  SwiftComp = 2
+};
+
+// Analysis mode — mutually exclusive, maps to the CLI mode flags
+enum class AnalysisMode {
+  Homogenization,
+  Dehomogenization,
+  DehomogenizationNL,   // reserved, not yet exposed in CLI
+  FailureStrength,      // SwiftComp only
+  FailureEnvelope,      // SwiftComp only
+  FailureIndex
+};
+
+// Helper: true when the mode is a dehomogenization or failure-type analysis
+inline bool isRecoveryMode(AnalysisMode m) {
+  return m != AnalysisMode::Homogenization;
+}
+
+// Helper: true when the mode involves failure analysis
+inline bool isFailureMode(AnalysisMode m) {
+  return m == AnalysisMode::FailureStrength ||
+         m == AnalysisMode::FailureEnvelope  ||
+         m == AnalysisMode::FailureIndex;
+}
+
 enum GeoConst {
   DEGREE,
   RADIAN,

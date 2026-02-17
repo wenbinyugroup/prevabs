@@ -185,7 +185,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg, Message *pmessage) {
     _faces.back()->setLocaly1(_y1);
     _faces.back()->setLocaly2(_y2);
 
-    if (bcfg.analysis_tool == 1) {
+    if (bcfg.tool == AnalysisTool::VABS) {
       _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
     }
 
@@ -212,7 +212,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg, Message *pmessage) {
   _faces.back()->setLayerType(layer.getLayerType());
   _faces.back()->setLocaly1(_y1);
   _faces.back()->setLocaly2(_y2);
-  if (bcfg.analysis_tool == 1) {
+  if (bcfg.tool == AnalysisTool::VABS) {
     _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
   }
   // if (_segment->getName() == "sgm_18") {

@@ -58,7 +58,7 @@ int readInputMain(const std::string &filenameCrossSection,
   // if (config.homo) {
   readCrossSection(filenameCrossSection, filePath, pmodel, pmessage);
   // }
-  if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isRecovery()) {
     readInputDehomo(filenameCrossSection, filePath, pmodel, pmessage);
   }
 

@@ -10,7 +10,9 @@
       "Bash(cmd /c \"cmake --build . --config Release 2>&1\")",
       "Bash(PowerShell.exe -NoProfile -Command \"& ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\Common7\\\\Tools\\\\VsDevCmd.bat''; cmake --build ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\build_msvc'' --config Release\")",
       "Bash(cmd /c:*)",
-      "Bash(cmake --build:*)"
+      "Bash(cmake --build:*)",
+      "Bash(xargs:*)",
+      "Bash('c:/Users/tian50/work/dev/prevabs/include/AppConfigIO.hpp':*)"
     ]
   }
 }

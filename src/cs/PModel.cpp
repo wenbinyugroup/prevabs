@@ -40,19 +40,15 @@ PModel::PModel(std::string name) {
 void PModel::initialize() {
 
   if (config.debug) {
-    config.fdeb = fopen((config.file_directory + config.file_base_name + ".debug").c_str(), "w");
+    runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
   }
 
   gmsh::initialize();
-  // GmshInitialize(0, 0);
-  // printInfo(1, "Gmsh initialized");
 
   // Control Gmsh's own console output (meshing progress, info lines, etc.).
   // Level: 0=silent, 1=errors, 2=warnings, 3=info (default), 5=debug.
   // Controlled via --gmsh-verbosity; defaults to 2 (warnings).
-  gmsh::option::setNumber("General.Verbosity", config.gmsh_verbosity);
-
-  // gmsh::logger::stop();
+  gmsh::option::setNumber("General.Verbosity", config.app.gmsh_verbosity);
 
 }
 
@@ -65,8 +61,9 @@ void PModel::finalize() {
   gmsh::finalize();
   // GmshFinalize();
 
-  if (config.debug) {
-    fclose(config.fdeb);
+  if (config.debug && runtime.fdeb) {
+    fclose(runtime.fdeb);
+    runtime.fdeb = nullptr;
   }
 
 }
@@ -295,7 +292,7 @@ void PModel::build(Message *pmessage) {
   _dcel->initialize();
 
   BuilderConfig bcfg{
-    config.debug, config.analysis_tool, config.tol, config.geo_tol,
+    config.debug, config.tool, config.app.tol, config.app.geo_tol,
     _dcel, this,
     [this](Message *m) { this->plotGeoDebug(m); }
   };
@@ -753,7 +750,7 @@ void PModel::homogenize(Message *pmessage) {
       if (config.plot) {
         writeGmsh(config.file_directory + config.file_base_name, pmessage);
       }
-      WriterConfig wcfg{config.analysis_tool, config.dehomo, config.tool_ver, config.file_name_vsc};
+      WriterConfig wcfg{config.tool, config.isDehomo(), config.tool_ver, config.file_name_vsc};
       writeSG(config.file_name_vsc, wcfg, pmessage);
 
       if (_itf_output) {
@@ -826,15 +823,11 @@ void PModel::run(Message *pmessage) {
 
   std::vector<std::string> cmd_args;
 
-  if (config.analysis_tool == 1) {
+  if (config.isVABS()) {
     cmd_args.push_back(config.file_name_vsc);
-    // VABS
     {
-      if (config.dehomo) {
-        config.vabs_option = "2";
-        if (config.dehomo_nl) {
-          config.vabs_option = "1";
-        }
+      if (config.isDehomo()) {
+        config.vabs_option = (config.mode == AnalysisMode::DehomogenizationNL) ? "1" : "2";
       }
       cmd_args.push_back(config.vabs_option);
       if (_pp_data.load_cases.size() > 1) {
@@ -842,11 +835,10 @@ void PModel::run(Message *pmessage) {
       }
 
       runVABS(config.vabs_name, cmd_args, pmessage);
-
     }
   }
 
-  else if (config.analysis_tool == 2) {
+  else if (config.isSC()) {
     cmd_args.push_back(config.file_name_vsc);
     // SwiftComp
     if (_analysis_model_dim == 1) {
@@ -884,7 +876,7 @@ void PModel::run(Message *pmessage) {
 
 
 void PModel::plot(Message *pmessage) {
-  if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isRecovery()) {
     plotDehomo(pmessage);
     // pmessage->printBlank();
     // PLOG(info) << pmessage->message("post-processing recover results");
