@@ -1,6 +1,5 @@
 #include "PDCEL.hpp"
 
-#include "PBST.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
@@ -64,8 +63,6 @@ void PDCEL::initialize() {
 
   PDCELFace *f = new PDCELFace(he_top, false); // The unbounded face
   f->setName("background");
-
-  _vertex_tree = new PAVLTreeVertex();
 
   hel->setDirection(1);
   hel->setFace(f);
@@ -207,13 +204,37 @@ void PDCEL::fixGeometry(const BuilderConfig &bcfg, Message *pmessage) {
 //
 // ===================================================================
 
-void PDCEL::addVertex(PDCELVertex *v) {
-  if (v->dcel() == nullptr) {
-    // std::cout << "adding new vertex " << v << std::endl;
-    _vertices.push_back(v);
-    _vertex_tree->insert(v);
-    v->setDCEL(this);
+bool CompareVertexByPoint::operator()(PDCELVertex *a, PDCELVertex *b) const {
+  return a->point() < b->point();
+}
+
+PDCELVertex *PDCEL::findCoincidentVertex(PDCELVertex *v) const {
+  const SPoint3 p = v->point();
+  // Lower-bound probe: first set entry with x >= p.x() - GEO_TOL.
+  // Using -INF for y and z ensures we start at the very first vertex in that
+  // x-band regardless of y/z ordering.
+  PDCELVertex lo(p.x() - GEO_TOL, -INF, -INF);
+  for (auto it = _vertex_tree.lower_bound(&lo);
+       it != _vertex_tree.end() && (*it)->x() <= p.x() + GEO_TOL;
+       ++it) {
+    if ((*it)->point().distance(p) <= GEO_TOL)
+      return *it;
   }
+  return nullptr;
+}
+
+PDCELVertex *PDCEL::addVertex(PDCELVertex *v) {
+  if (v->dcel() != nullptr)
+    return v;  // already in this DCEL
+
+  // Merge with any geometrically coincident vertex that is already present.
+  if (PDCELVertex *existing = findCoincidentVertex(v))
+    return existing;
+
+  _vertices.push_back(v);
+  _vertex_tree.insert(v);
+  v->setDCEL(this);
+  return v;
 }
 
 
@@ -227,7 +248,7 @@ void PDCEL::addVertex(PDCELVertex *v) {
 void PDCEL::removeVertex(PDCELVertex *v) {
   if (v->dcel() != nullptr) {
     _vertices.remove(v);
-    _vertex_tree->remove(v);
+    _vertex_tree.erase(v);
     v->setDCEL(nullptr);
   }
 }
@@ -417,8 +438,11 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   // std::cout << "[debug] addEdge: " << v1 << ", " << v2 << std::endl;
 
-  addVertex(v1);
-  addVertex(v2);
+  // addVertex returns the vertex actually used: either v1/v2 themselves (if
+  // new) or an existing coincident vertex from the set.  Rebind so that the
+  // edge connects the canonical vertices.
+  v1 = addVertex(v1);
+  v2 = addVertex(v2);
 
   PGeoLineSegment *ls = new PGeoLineSegment(v1, v2);
 
@@ -1439,34 +1463,21 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
 
   std::list<PGeoLineSegment *> ls_list;
 
-  std::list<PBSTNodeVertex *> node_list;
-  node_list = _vertex_tree->toListInOrder();
-
-  PBSTNodeVertex *node;
-  PDCELVertex *vi;
   PDCELHalfEdge *he;
-
   PGeoLineSegment *ls_tmp;
 
-  // Vertical sweep line passing through each vertex from left to right
-  while (!node_list.empty()) {
-    node = node_list.front();
-    // std::cout << "node: " << node << std::endl;
-
-    vi = node->vertex();
-    // std::cout << "all leaving half edges:\n";
-    // vi->printAllLeavingHalfEdges(-1);
+  // Vertical sweep line passing through each vertex from left to right.
+  // _vertex_tree is a std::set ordered by position, so iteration is in-order.
+  for (PDCELVertex *vi : _vertex_tree) {
     if (vi == v) {
       break;
     }
 
     // For each line segment having this vertex,
     // if this vertex is on the left (or bottom), add this line segment to the
-    // list otherwise (on the right or top), remove this line segment from the
-    // list
+    // list; otherwise (on the right or top), remove it from the list.
     he = vi->edge();
     do {
-      // std::cout << "he: " << he << std::endl;
       if (vi->point() < he->target()->point()) {
         if (he->lineSegment() == nullptr) {
           ls_tmp = he->toLineSegment();
@@ -1474,18 +1485,13 @@ PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v) {
           he->twin()->setLineSegment(ls_tmp);
         }
         ls_list.push_back(he->lineSegment());
-      }
-      else {
+      } else {
         ls_list.remove(he->lineSegment());
         he->clearLineSegment();
         he->twin()->clearLineSegment();
       }
-      // std::cout << "he->twin(): " << he->twin() << std::endl;
-      // std::cout << "he->twin()->next(): " << he->twin()->next() << std::endl;
       he = he->twin()->next();
     } while (he != nullptr && he != vi->edge());
-
-    node_list.pop_front();
   }
 
   // std::cout << "[debug] function findLineSegmentsAtSweepLine done" << std::endl;

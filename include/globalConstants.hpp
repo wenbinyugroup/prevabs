@@ -19,9 +19,15 @@ const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.141592653589793};
-const double TOLERANCE{1e-15};
-const double ABS_TOL{1e-15};
-const double REL_TOL{1e-15};
+// GEO_TOL is the single source of truth for geometric comparisons.
+// Its default (1e-9) matches AppConfig::geo_tol so the compile-time fallback
+// stays in sync with the user-tunable runtime value.
+// TOLERANCE, ABS_TOL, REL_TOL are kept as aliases for existing call sites;
+// prefer GEO_TOL in new code.
+const double GEO_TOL{1e-9};
+const double TOLERANCE{GEO_TOL};
+const double ABS_TOL{GEO_TOL};
+const double REL_TOL{GEO_TOL};
 
 // Log severity levels (match spdlog mapping in plog.cpp)
 constexpr int LOG_LEVEL_TRACE   = 0;

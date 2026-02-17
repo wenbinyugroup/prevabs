@@ -2,8 +2,13 @@
 #include "geo.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include <sstream>
 #include <string>
-// #include "homog2d.hpp"
+// Route homog2d warnings to the prevabs debug logger instead of stderr.
+// Must be defined before homog2d.hpp is processed.
+#define HOMOG2D_LOG_WARNING(a) \
+  do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
+#include "homog2d.hpp"
 
 
 /**
@@ -30,27 +35,45 @@ bool calcLineIntersection2D(
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
   double &u1, double &u2, const double &tol
   ) {
+  // tol is kept for API compatibility; parallelism is now detected via
+  // h2d::Line2d::isParallelTo(), which uses an angle-based threshold
+  // (h2d default: 0.001 rad) instead of the former |denominator| <= tol
+  // comparison that was unreliable at tol = 1e-15.
 
-  double dnm;
-  dnm = (l1p1x - l1p2x) * (l2p1y - l2p2y) -
-        (l1p1y - l1p2y) * (l2p1x - l2p2x);
-  // std::cout << "dnm = " << dnm << std::endl;
-  if (fabs(dnm) <= tol) {
+  const double dx1 = l1p2x - l1p1x, dy1 = l1p2y - l1p1y;
+  const double dx2 = l2p2x - l2p1x, dy2 = l2p2y - l2p1y;
+
+  // Guard against degenerate (zero-length) segments, which would cause
+  // h2d::Line2d to throw on coincident-point construction.
+  if (dx1 == 0.0 && dy1 == 0.0) return false;
+  if (dx2 == 0.0 && dy2 == 0.0) return false;
+
+  h2d::Line2d l1(h2d::Point2d(l1p1x, l1p1y), h2d::Point2d(l1p2x, l1p2y));
+  h2d::Line2d l2(h2d::Point2d(l2p1x, l2p1y), h2d::Point2d(l2p2x, l2p2y));
+
+  if (l1.isParallelTo(l2))
     return false;
-  }
 
-  u1 = (l1p1x - l2p1x) * (l2p1y - l2p2y) -
-       (l1p1y - l2p1y) * (l2p1x - l2p2x);
-  u1 = u1 / dnm;
-  // std::cout << "u1 = " << u1 << std::endl;
+  // Intersection point of the two infinite lines.
+  // l1 * l2 (cross-product form) is not reliably found by MSVC via ADL, so
+  // we use the member function which is guaranteed visible.
+  const auto ptInter = l1.intersects(l2).get();
+  const double ix = ptInter.getX();
+  const double iy = ptInter.getY();
 
-  u2 = -(l1p1x - l1p2x) * (l1p1y - l2p1y) +
-       (l1p1y - l1p2y) * (l1p1x - l2p1x);
-  u2 = u2 / dnm;
-  // std::cout << "u2 = " << u2 << std::endl;
+  // Recover the parametric parameter along each line segment.
+  // Choose the coordinate axis with the larger span for numerical stability.
+  if (std::fabs(dx1) >= std::fabs(dy1))
+    u1 = (ix - l1p1x) / dx1;
+  else
+    u1 = (iy - l1p1y) / dy1;
+
+  if (std::fabs(dx2) >= std::fabs(dy2))
+    u2 = (ix - l2p1x) / dx2;
+  else
+    u2 = (iy - l2p1y) / dy2;
 
   return true;
-
 }
 
 
