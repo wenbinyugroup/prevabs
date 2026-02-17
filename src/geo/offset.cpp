@@ -23,6 +23,7 @@
 #include "gmsh_mod/STensor3.h"
 #include "gmsh_mod/SVector3.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <list>
@@ -47,9 +48,10 @@
  */
 void offsetLineSegment(SPoint3 &p1, SPoint3 &p2, SVector3 &dr, double &ds,
                        SPoint3 &q1, SPoint3 &q2) {
-  dr.normalize();
-  q1 = (SVector3(p1) + dr * ds).point();
-  q2 = (SVector3(p2) + dr * ds).point();
+  SVector3 dr_norm = dr;  // work on a local copy — do not mutate the caller's vector
+  dr_norm.normalize();
+  q1 = (SVector3(p1) + dr_norm * ds).point();
+  q2 = (SVector3(p2) + dr_norm * ds).point();
 }
 
 
@@ -149,16 +151,18 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
 
   PGeoLineSegment *ls;
   if (curve->vertices().size() == 2) {
-    ls = new PGeoLineSegment(curve->vertices()[0], curve->vertices()[1]);
-    ls = offsetLineSegment(ls, side, distance);
+    PGeoLineSegment *ls_raw = new PGeoLineSegment(curve->vertices()[0], curve->vertices()[1]);
+    ls = offsetLineSegment(ls_raw, side, distance);
+    delete ls_raw;
 
     curve_off->addPVertex(ls->v1());
     curve_off->addPVertex(ls->v2());
   } else {
-    PGeoLineSegment *ls_prev, *ls_first_off;
+    PGeoLineSegment *ls_prev = nullptr, *ls_first_off;
     for (int i = 0; i < curve->vertices().size() - 1; ++i) {
-      ls = new PGeoLineSegment(curve->vertices()[i], curve->vertices()[i + 1]);
-      ls = offsetLineSegment(ls, side, distance);
+      PGeoLineSegment *ls_raw = new PGeoLineSegment(curve->vertices()[i], curve->vertices()[i + 1]);
+      ls = offsetLineSegment(ls_raw, side, distance);
+      delete ls_raw;
 
       if (i == 0) {
         ls_first_off = ls;
@@ -229,6 +233,10 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
  */
 int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
            PDCELVertex *v1_off, PDCELVertex *v2_off) {
+  if (!v1_off || !v2_off) {
+    PLOG(error) << "offset: null output vertex pointer";
+    return 0;
+  }
   // std::cout << "[debug] offset a line segment:" << std::endl;
   // std::cout << "        " << v1_base << std::endl;
   // std::cout << "        " << v2_base << std::endl;
@@ -323,11 +331,16 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // calculate intersections between every two neighbors
   // std::cout << "\n[debug] offset: step 1" << std::endl;
 
+  // Track every v1_tmp/v2_tmp allocation so non-owned ones can be freed after the loop.
+  std::vector<PDCELVertex *> allocated_tmp;
+
   // PGeoLineSegment *ls_prev, *ls_first;
   for (int i = 0; i < size - 1; ++i) {
     // std::cout << "        line seg: " << i+1 << std::endl;
     v1_tmp = new PDCELVertex();
     v2_tmp = new PDCELVertex();
+    allocated_tmp.push_back(v1_tmp);
+    allocated_tmp.push_back(v2_tmp);
 
     offset(base[i], base[i + 1], side, dist, v1_tmp, v2_tmp);
 
@@ -423,6 +436,15 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     // ls_prev = ls;
     v1_prev = v1_tmp;
     v2_prev = v2_tmp;
+  }
+
+  // Free intermediate offset vertices that were not retained in vertices_tmp.
+  // These were allocated per segment for intersection testing but replaced by
+  // intersection-point vertices or the previous segment's endpoints.
+  for (auto vv : allocated_tmp) {
+    if (std::find(vertices_tmp.begin(), vertices_tmp.end(), vv) == vertices_tmp.end()) {
+      delete vv;
+    }
   }
 
   // std::cout << "        link to indices:" << std::endl;
@@ -578,30 +600,38 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 
       findAllIntersections(lines_group[line_i], lines_group[line_i + 1], i1s, i2s, u1s, u2s);
 
-      ls_u1 = getIntersectionLocation(
-        lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
-      // std::cout << "j1 = " << j1 << std::endl;
-      // ls_u2 = getIntersectionLocation(
-      //   lines_group[line_i + 1], i2s, u2s, 0, 0, ls_i2);
-      ls_i2 = i2s[j1];
-      ls_u2 = u2s[j1];
+      if (i1s.empty()) {
+        PLOG(warning) << pmessage->message(
+          "no intersection found between consecutive offset sub-lines; joining at endpoints");
+      } else {
+        ls_u1 = getIntersectionLocation(
+          lines_group[line_i], i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+        // std::cout << "j1 = " << j1 << std::endl;
+        if (j1 < 0 || j1 >= static_cast<int>(i2s.size())) {
+          PLOG(warning) << pmessage->message(
+            "intersection index j1 out of range; skipping trim for this sub-line pair");
+        } else {
+          ls_i2 = i2s[j1];
+          ls_u2 = u2s[j1];
 
-      v0 = getIntersectionVertex(
-        lines_group[line_i], lines_group[line_i + 1],
-        ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
-      );
+          v0 = getIntersectionVertex(
+            lines_group[line_i], lines_group[line_i + 1],
+            ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
+          );
 
-      trim(lines_group[line_i], v0, 1);
-      trim(lines_group[line_i + 1], v0, 0);
+          trim(lines_group[line_i], v0, 1);
+          trim(lines_group[line_i + 1], v0, 0);
 
-      // Adjust linking indices
-      std::size_t n = link_tos_group[line_i].size();
-      for (auto kk = ls_i1 + 1; kk < n; kk++) {
-        link_tos_group[line_i].pop_back();
-      }
-      n = link_tos_group[line_i + 1].size();
-      for (auto kk = 0; kk < ls_i2 - 1; kk++) {
-        link_tos_group[line_i + 1].erase(link_tos_group[line_i + 1].begin());
+          // Adjust linking indices
+          std::size_t n = link_tos_group[line_i].size();
+          for (auto kk = ls_i1 + 1; kk < n; kk++) {
+            link_tos_group[line_i].pop_back();
+          }
+          n = link_tos_group[line_i + 1].size();
+          for (auto kk = 0; kk < ls_i2 - 1; kk++) {
+            link_tos_group[line_i + 1].erase(link_tos_group[line_i + 1].begin());
+          }
+        }
       }
 
       trimmed_sublines.push_back(lines_group[line_i]);
@@ -672,61 +702,61 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     //   << " -- " << i2s[k] << " -- " << u2s[k] << std::endl;
     // }
 
-    ls_u1 = getIntersectionLocation(
-      lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
-    // ls_u2 = getIntersectionLocation(lines_group.front(), i2s, u2s, 0, 0, ls_i2);
-    // std::cout << "\nj1 = " << j1 << std::endl;
-    ls_i2 = i2s[j1];
-    ls_u2 = u2s[j1];
-    // std::cout << "\nls_i1 = " << ls_i1 << ", " << "ls_i2 = " << ls_i2 << std::endl;
+    if (i1s.empty()) {
+      PLOG(warning) << pmessage->message(
+        "no intersection found between head and tail offset sub-lines; skipping head-tail trim");
+    } else {
+      ls_u1 = getIntersectionLocation(
+        lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+      // ls_u2 = getIntersectionLocation(lines_group.front(), i2s, u2s, 0, 0, ls_i2);
+      // std::cout << "\nj1 = " << j1 << std::endl;
+      if (j1 < 0 || j1 >= static_cast<int>(i2s.size())) {
+        PLOG(warning) << pmessage->message(
+          "head-tail intersection index j1 out of range; skipping head-tail trim");
+      } else {
+        ls_i2 = i2s[j1];
+        ls_u2 = u2s[j1];
+        // std::cout << "\nls_i1 = " << ls_i1 << ", " << "ls_i2 = " << ls_i2 << std::endl;
 
-    v0 = getIntersectionVertex(
-      lines_group.back(), lines_group.front(),
-      ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
-    );
-    // std::cout << "\nv0 = " << v0 << std::endl;
+        v0 = getIntersectionVertex(
+          lines_group.back(), lines_group.front(),
+          ls_i1, ls_i2, ls_u1, ls_u2, 1, 0, 0, 0, is_new_1, is_new_2, TOLERANCE
+        );
+        // std::cout << "\nv0 = " << v0 << std::endl;
 
-    // std::cout << "\n        lines_group: " << lines_group.size() << std::endl;
-    // for (int i = 0; i < lines_group.size(); ++i) {
-    //   std::cout << "        line " << i << std::endl;
-    //   for (int j = 0; j < lines_group[i].size(); ++j) {
-    //     std::cout << "        " << j << ": " << lines_group[i][j] << " links to " <<
-    //     link_tos_group[i][j] << std::endl;
-    //   }
-    // }
-
-    if (lines_group.size() > 1) {
-      trim(lines_group.back(), v0, 1);
-      trim(lines_group.front(), v0, 0);
-    }
-    else {
-      std::vector<PDCELVertex *> _tmp;
-      bool keep = false, check;
-      for (auto v : lines_group[0]) {
-        check = true;
-        if (check && !keep && v == v0) {
-          keep = true;
-          check = false;
+        if (lines_group.size() > 1) {
+          trim(lines_group.back(), v0, 1);
+          trim(lines_group.front(), v0, 0);
         }
-        if (keep) {
-          _tmp.push_back(v);
+        else {
+          // Extract the sub-sequence that runs from the first occurrence of v0
+          // to the second occurrence of v0 (inclusive on both ends).
+          std::vector<PDCELVertex *> &lg0 = lines_group[0];
+          auto it_begin = std::find(lg0.begin(), lg0.end(), v0);
+          if (it_begin != lg0.end()) {
+            auto it_end = std::find(std::next(it_begin), lg0.end(), v0);
+            if (it_end != lg0.end()) {
+              lg0 = std::vector<PDCELVertex *>(it_begin, std::next(it_end));
+            } else {
+              // v0 appears only once: keep from v0 to the end
+              lg0 = std::vector<PDCELVertex *>(it_begin, lg0.end());
+            }
+          } else {
+            PLOG(warning) << pmessage->message(
+              "closed curve: intersection vertex not found in single sub-line");
+          }
         }
-        if (check && keep && v == v0) {
-          keep = false;
-          check = false;
+
+        // Adjust linking indices
+        std::size_t n = link_tos_group.back().size();
+        for (auto kk = ls_i1 + 1; kk < n; kk++) {
+          link_tos_group.back().pop_back();
+        }
+        n = link_tos_group.front().size();
+        for (auto kk = 0; kk < ls_i2 - 1; kk++) {
+          link_tos_group.front().erase(link_tos_group.front().begin());
         }
       }
-      lines_group[0] = _tmp;
-    }
-
-    // Adjust linking indices
-    std::size_t n = link_tos_group.back().size();
-    for (auto kk = ls_i1 + 1; kk < n; kk++) {
-      link_tos_group.back().pop_back();
-    }
-    n = link_tos_group.front().size();
-    for (auto kk = 0; kk < ls_i2 - 1; kk++) {
-      link_tos_group.front().erase(link_tos_group.front().begin());
     }
 
     // std::cout << "        lines_group: " << lines_group.size() << std::endl;
@@ -761,7 +791,9 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // std::vector<PDCELVertex *> tmp_offset_vertices;
   // std::vector<int> tmp_offset_link_to_base_indices;
   std::vector<int> tmp_base_link_to_offset_indices(base.size(), 0);
-  link_to_2 = std::vector<int>(base.size(), 0);
+  // Use -1 as the "unmapped" sentinel. 0 is a valid offset vertex index and
+  // must not be used as a sentinel (it would collide with the first vertex).
+  link_to_2 = std::vector<int>(base.size(), -1);
 
   for (auto i = 0; i < trimmed_sublines.size(); i++) {
     for (auto j = 0; j < trimmed_sublines[i].size() - 1; j++) {
@@ -783,9 +815,11 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   //   << " -- " << link_to_2[i] << std::endl;
   // }
 
+  // Forward-fill unmapped entries: a base vertex that was trimmed away inherits
+  // the nearest offset index from its predecessor (or 0 for the very first).
   for (auto i = 0; i < link_to_2.size(); i++) {
-    if (i > 0 && link_to_2[i] == 0) {
-      link_to_2[i] = link_to_2[i-1];
+    if (link_to_2[i] == -1) {
+      link_to_2[i] = (i > 0 && link_to_2[i - 1] >= 0) ? link_to_2[i - 1] : 0;
     }
 
     std::vector<int> id_pair_tmp{i, link_to_2[i]};

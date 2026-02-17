@@ -143,6 +143,9 @@ bool calcLineIntersection2D(
   } else if (plane == 2) {
     d1 = 0;
     d2 = 1;
+  } else {
+    PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
+    return false;
   }
   return calcLineIntersection2D(
     l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
@@ -192,7 +195,7 @@ bool calcLineIntersection2D(
  */
 bool calcLineIntersection2D(
   SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
-  double &u1, double &u2, int &plane, const double &tol
+  double &u1, double &u2, const int &plane, const double &tol
   ) {
 
   int d1, d2;
@@ -205,6 +208,9 @@ bool calcLineIntersection2D(
   } else if (plane == 2) {
     d1 = 0;
     d2 = 1;
+  } else {
+    PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
+    return false;
   }
 
   SPoint2 l1p, l1q, l2p, l2q;
@@ -289,7 +295,7 @@ bool calcLineIntersection2D(
  *         - 0 if the segments are parallel and do not intersect.
  */
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect) {
+              PDCELVertex *&intersect) {
   int result;
   double us, ut;
   bool not_parallel;
@@ -620,14 +626,17 @@ Baseline *findCurvesIntersection(
 
     if (not_parallel) {
       if (u1 > 1) {
+        delete lsi;
         continue;
       } else {
         if (fabs(u1) < TOLERANCE) {
           vlist.push_front(v1);
           link_to_list_copy.push_front(link_i1);
           iold--;
+          delete lsi;
           break;
         } else if (fabs(u1 - 1) < TOLERANCE) {
+          delete lsi;
           break;
         } else if (u1 < 0) {
           // In this case, the new curve is extended
@@ -638,6 +647,7 @@ Baseline *findCurvesIntersection(
           // vlist.push_front(v1);
           // iold--;
           v_new = lsi->getParametricVertex(u1);
+          delete lsi;
           vlist.push_front(v_new);
 
           link_to_list_copy.push_front(0);
@@ -645,6 +655,7 @@ Baseline *findCurvesIntersection(
           break;
         } else {
           v_new = lsi->getParametricVertex(u1);
+          delete lsi;
           vlist.push_front(v_new);
           link_to_list_copy.push_front(0);
           inew++;
@@ -652,11 +663,13 @@ Baseline *findCurvesIntersection(
         }
       }
     } else {
+      delete lsi;
       continue;
     }
   }
 
   if (vlist.size() < 2) {
+    delete bl_new;
     return nullptr;
   }
 
@@ -673,9 +686,14 @@ Baseline *findCurvesIntersection(
 
       link_to_list_new.push_back(link_to_list_copy.back());
       link_to_list_copy.pop_back();
-      iold = n - 1 - iold;
-      inew = bl_new->vertices().size() - 1 - inew;
     }
+  }
+
+  // For end==1 the list was traversed in reverse, so convert the accumulated
+  // forward-traversal indices back to the original (non-reversed) frame.
+  if (end == 1) {
+    iold = static_cast<int>(n) - 1 - iold;
+    inew = static_cast<int>(bl_new->vertices().size()) - 1 - inew;
   }
 
   link_to_list.swap(link_to_list_new);
@@ -829,14 +847,21 @@ double getIntersectionLocation(
 
   // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
 
-  ls_i = ii[0];
-  double u = uu[0];
-  j = 0;
+  // Initialise with sentinel values; the loop below applies inner_only uniformly
+  // from k=0 so the seed element is also filtered correctly.
+  ls_i = -1;
+  double u = 0.0;
+  j = -1;
 
-  for (auto k = 1; k < ii.size(); k++) {
+  for (auto k = 0; k < (int)ii.size(); k++) {
 
     if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
-      if (which_end == 0) {
+      if (j == -1) {
+        // First valid candidate — accept unconditionally.
+        ls_i = ii[k];
+        u = uu[k];
+        j = k;
+      } else if (which_end == 0) {
         // Closer to the beginning side
         if (ii[k] < ls_i) {
           ls_i = ii[k];
