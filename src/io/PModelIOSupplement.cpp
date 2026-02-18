@@ -17,15 +17,13 @@
 
 
 int PModel::writeSupp(Message *pmessage) {
-    pmessage->increaseIndent();
+    MESSAGE_SCOPE(pmessage);
 
     PLOG(info) << pmessage->message("writing supplement files...");
 
     writeInterfacePairs(this, pmessage);
     writeInterfaceNodes(this, pmessage);
     writeNodeElements(this, pmessage);
-
-    pmessage->decreaseIndent();
 
     return 1;
 }
@@ -34,7 +32,7 @@ int PModel::writeSupp(Message *pmessage) {
 
 
 void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
-    pmessage->increaseIndent();
+    MESSAGE_SCOPE(pmessage);
 
     std::string fn = config.file_directory + config.file_base_name + "_interface_nodes.dat";
     PLOG(info) << pmessage->message("writing interface nodes id to file: " + fn);
@@ -119,8 +117,6 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
 
     fclose(p_file);
 
-    pmessage->decreaseIndent();
-
     return;
 }
 
@@ -128,7 +124,7 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
 
 
 void writeInterfacePairs(PModel *pmodel, Message *pmessage) {
-    pmessage->increaseIndent();
+    MESSAGE_SCOPE(pmessage);
 
     std::string fn = config.file_directory + config.file_base_name + "_interface_pairs.dat";
     PLOG(info) << pmessage->message("writing interface pairs to file: " + fn);
@@ -151,15 +147,13 @@ void writeInterfacePairs(PModel *pmodel, Message *pmessage) {
 
     fclose(p_file);
 
-    pmessage->decreaseIndent();
-
     return;
 }
 
 
 
 void writeNodeElements(PModel *pmodel, Message *pmessage) {
-    pmessage->increaseIndent();
+    MESSAGE_SCOPE(pmessage);
 
     std::string fn = config.file_directory + config.file_base_name + "_node_elements.dat";
     PLOG(info) << pmessage->message("writing node elements to file: " + fn);
@@ -179,8 +173,6 @@ void writeNodeElements(PModel *pmodel, Message *pmessage) {
     }
 
     fclose(p_file);
-
-    pmessage->decreaseIndent();
 
     return;
 }

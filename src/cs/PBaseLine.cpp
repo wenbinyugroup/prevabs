@@ -29,7 +29,7 @@ Baseline::Baseline(Baseline *bl) {
 
 
 void Baseline::print(Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   std::string msg;
   // pmessage->print(i_type, "name: " + blname);
@@ -43,8 +43,6 @@ void Baseline::print(Message *pmessage) {
     // pmessage->print(i_type, msg);
     PLOG(debug) << pmessage->message(msg);
   }
-
-  pmessage->decreaseIndent();
 
   return;
 }

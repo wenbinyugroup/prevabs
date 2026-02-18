@@ -61,7 +61,7 @@ void PModel::writeNodes(
   Message *pmessage
   ) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing nodes");
 
   // std::vector<size_t> node_tags;
@@ -84,8 +84,6 @@ void PModel::writeNodes(
   }
 
   fprintf(file, "\n");
-
-  pmessage->decreaseIndent();
 
   return;
 
@@ -139,7 +137,7 @@ void PModel::writeElements(
   Message *pmessage
   ) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing elements");
 
   if (config.isVABS()) {
@@ -154,8 +152,6 @@ void PModel::writeElements(
   else if (config.isSC()) {
     writeElementsSC(file, pmessage);
   }
-
-  pmessage->decreaseIndent();
 
 }
 
@@ -172,7 +168,7 @@ void PModel::writeElementsVABS(
   Message *pmessage
   ) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // Write connectivity for each element
   PLOG(info) << pmessage->message("  writing connectivity");
@@ -259,8 +255,6 @@ void PModel::writeElementsVABS(
 
   }
   fprintf(file, "\n");
-
-  pmessage->decreaseIndent();
 
   return;
 
@@ -360,7 +354,7 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
 
 
 int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
 
   // std::string fn;
@@ -379,8 +373,6 @@ int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
 
   // config.file_name_geo = fn;
 
-  pmessage->decreaseIndent();
-
   return 0;
 }
 
@@ -388,7 +380,7 @@ int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
 
 
 int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
 
   // open the .opt file for extra options
@@ -459,8 +451,6 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
   // fclose(file_opt);
 
 
-  pmessage->decreaseIndent();
-
   return 0;
 }
 
@@ -468,7 +458,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
 
 int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   std::string fn;
 
@@ -514,8 +504,6 @@ int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
 
   fclose(file);
   config.file_name_opt = fn;
-
-  pmessage->decreaseIndent();
 
 
   return 0;
@@ -585,7 +573,7 @@ void PMesh::writeGmshMsh(FILE *file, Message *pmessage) {
 
 
 void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   int view_id = -1;
 
@@ -642,8 +630,6 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
   }
 
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -695,7 +681,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
 //                           const std::vector<std::string> &labels, Message *pmessage) {
 void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // std::cout << "_label = " << _label << std::endl;
 
@@ -871,8 +857,6 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
     fprintf(f_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
     fprintf(f_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
   }
-
-  pmessage->decreaseIndent();
 
   return;
 

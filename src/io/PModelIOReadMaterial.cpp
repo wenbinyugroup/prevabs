@@ -50,13 +50,13 @@
 int readMaterialsFile(
   const std::string &fn_material_global, PModel *pmodel, Message *pmessage
   ) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   xml_document<> xmlDocMaterials;
   std::ifstream fileMaterials{fn_material_global};
   if (!fileMaterials.is_open()) {
     // std::cout << "Unable to open file: " << fn_material_global << std::endl;
-    PLOG(error) << pmessage->message("unable to open file: " + fn_material_global);
+    PLOG(warning) << pmessage->message("unable to open file: " + fn_material_global);
     return 1;
   } else {
     // printInfo(i_indent, "reading materials file: " + fn_material_global);
@@ -82,8 +82,6 @@ int readMaterialsFile(
 
   readMaterials(nodeMaterials, pmodel, pmessage);
 
-  pmessage->decreaseIndent();
-
   return 0;
 }
 
@@ -96,7 +94,7 @@ int readMaterialsFile(
 
 
 int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   
   // -----------------------------------------------------------------
   // Read material data
@@ -119,8 +117,6 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel, Message *pmes
     l = readXMLElementLamina(nodeLamina, nodeMaterials, pmodel, pmessage);
 
   }
-
-  pmessage->decreaseIndent();
 
   return 0;
 }
@@ -182,7 +178,7 @@ Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message *pmessa
 
 
 Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> *p_xn_mdb, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   
   Material *m;
   LayerType *p_layertype;
@@ -560,8 +556,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
   // m->printMaterial();
 
-  pmessage->decreaseIndent();
-
   return m;
 }
 
@@ -574,7 +568,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
 
 Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> *p_xn_mdb, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   
   Lamina *l;
 
@@ -610,8 +604,6 @@ Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> *p_
     l->setMaterial(p_laminaMaterial);
     l->setThickness(laminaThickness);
   }
-
-  pmessage->decreaseIndent();
 
   return l;
 }

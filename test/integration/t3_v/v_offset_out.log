@@ -11,10 +11,10 @@
   
   
     
- start (2026-02-18 12:33:19)
+ start (2026-02-18 17:40:38)
 [info] - reading input files
-[info]     - reading main input file: t3_v\v_offset_out.xml
-[error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]     - reading main input file: .\test\integration\t3_v\v_offset_out.xml
+[warning]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]   - reading input files -- done
 [info]   - building the shape
 [info]     - building the cross section, step 1

@@ -176,7 +176,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
 
 
 Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   
   std::string baselineName{p_xn_line->first_attribute("name")->value()};
 
@@ -231,8 +231,6 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
   }
 
   // pmodel->addBaseline(baseline);
-
-  pmessage->decreaseIndent();
 
   return line;
 }

@@ -89,8 +89,8 @@ PDCELVertex *readXMLElementPoint(
   const xml_node<> *p_xn_point, const xml_node<> *p_xn_geo,
   PModel *pmodel, Message *pmessage
   ) {
-  
-  pmessage->increaseIndent();
+
+  MESSAGE_SCOPE(pmessage);
 
   // double tol = 1e-6;
   
@@ -271,8 +271,6 @@ PDCELVertex *readXMLElementPoint(
     pv = new PDCELVertex{label, 0, x2, x3};
 
   }
-
-  pmessage->decreaseIndent();
 
   return pv;
 }

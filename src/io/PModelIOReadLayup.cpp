@@ -48,7 +48,7 @@
 #endif
 
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(debug) << pmessage->message("in function: readLayups");
 
@@ -169,8 +169,6 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
     }
     pmodel->addLayup(layup);
   }
-
-  pmessage->decreaseIndent();
 
   return 0;
 }

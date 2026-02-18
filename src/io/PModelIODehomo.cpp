@@ -17,7 +17,7 @@
 int readInputDehomo(const std::string &filenameCrossSection,
                     const std::string &filePath, PModel *pmodel,
                     Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // -----------------------------------------------------------------
   // Open xml file
@@ -123,8 +123,6 @@ int readInputDehomo(const std::string &filenameCrossSection,
     pmodel->addLoadCase(lc);
   }
 
-  pmessage->decreaseIndent();
-
   return 1;
 }
 
@@ -137,7 +135,7 @@ int readInputDehomo(const std::string &filenameCrossSection,
 
 
 int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
 
   // TODO: for each load case
@@ -178,8 +176,6 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
   pmodel->addLocalState(state);
 
-
-  pmessage->decreaseIndent();
 
   return 0;
 }
@@ -407,7 +403,7 @@ int readLoadCasesFromCSV(
 
 
 int PModel::writeGLB(std::string fn, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing glb file: " + fn);
 
   FILE *file;
@@ -507,8 +503,6 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
 
   fclose(file);
 
-  pmessage->decreaseIndent();
-
   return 1;
 }
 
@@ -521,7 +515,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
 
 
 int readVABSU(const std::string &filename, LocalState *state, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -569,8 +563,6 @@ int readVABSU(const std::string &filename, LocalState *state, Message *pmessage)
 
   state->setU(p_nd);
 
-  pmessage->decreaseIndent();
-
   // return data;
   return 0;
 }
@@ -586,7 +578,7 @@ int readVABSU(const std::string &filename, LocalState *state, Message *pmessage)
 // std::vector<PElementNodeData>
 // readOutputDehomoElementVABS(const std::string &filename, Message *pmessage) {
 int readVABSEle(const std::string &filename, LocalState *state, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -679,7 +671,6 @@ int readVABSEle(const std::string &filename, LocalState *state, Message *pmessag
   state->setEM(p_elm_em);
   state->setSM(p_elm_sm);
 
-  pmessage->decreaseIndent();
 
   // return data;
   return 0;
@@ -694,7 +685,7 @@ int readVABSEle(const std::string &filename, LocalState *state, Message *pmessag
 
 
 int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -770,7 +761,6 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
   ifen.close();
 
 
-  pmessage->decreaseIndent();
 
   return 0;
 }
@@ -784,7 +774,7 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
 
 
 int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -886,8 +876,6 @@ int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem,
 
   // std::cout << "sr data label: " << p_data_sr->getLabel() << std::endl;
   // std::cout << "fi data label: " << p_data_fi->getLabel() << std::endl;
-
-  pmessage->decreaseIndent();
 
   // return data;
   return 0;

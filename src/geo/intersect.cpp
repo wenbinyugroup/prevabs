@@ -347,7 +347,7 @@ PDCELHalfEdge *findCurvesIntersection(
   int end, int &ls_i, double &u1, double &u2, const double &tol,
   Message *pmessage
   ) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(debug) << pmessage->message("in function: findCurvesIntersection");
 
@@ -529,8 +529,6 @@ PDCELHalfEdge *findCurvesIntersection(
     hei = hei->next();
 
   } while (hei != hel->incidentEdge());
-
-  pmessage->decreaseIndent();
 
   return he;
 }
@@ -843,7 +841,7 @@ double getIntersectionLocation(
   int &ls_i, int &j, Message *pmessage
 ) {
   // Find the intersection location that is the closest to the expected end
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
 
@@ -904,8 +902,6 @@ double getIntersectionLocation(
   //   + ", v1 = " + c[ls_i]->printString()
   //   + ", v2 = " + c[ls_i+1]->printString()
   // );
-
-  pmessage->decreaseIndent();
 
   return u;
 }

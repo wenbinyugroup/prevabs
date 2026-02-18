@@ -151,7 +151,7 @@ void PDCEL::print_dcel() {
 
 
 void PDCEL::fixGeometry(const BuilderConfig &bcfg, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("fixing geometry");
   // Remove very small edges (very close points)
   // double tol{1e-6};
@@ -187,7 +187,6 @@ void PDCEL::fixGeometry(const BuilderConfig &bcfg, Message *pmessage) {
   //     std::cout << he << std::endl;
   //   }
   // }
-  pmessage->decreaseIndent();
 }
 
 

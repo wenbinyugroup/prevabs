@@ -15,6 +15,10 @@ extern bool debug;
 extern int i_indent;
 extern bool scientific_format;
 
+// Global logger — set once in main() after Message is constructed.
+// Use instead of passing Message* through every function signature.
+extern Message* g_msg;
+
 // ---------------------------------------------------------------------------
 // AppConfig — persistent, user-tunable settings.
 // These are the only fields that belong in a prevabs.json config file.

@@ -17,14 +17,21 @@
   
   
   
-  
+    
+    
+    -  [VABS Messages] 
+    
+    
+    -  [VABS Messages End] 
+    
+    
   
   ========================================
   
   
   ========================================
   
- to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+MaterialDB.xml
 [info]   - reading input files -- done
 [info]   - building the shape
 [info]     - building the cross section, step 1
@@ -41,16 +48,16 @@
 [info]     - meshing
 [info]   - modeling in Gmsh -- done
 [info]   - writing outputs
-[info]     - writing gmsh .opt file: t3_v\v.opt
-[info]     - writing gmsh .geo file: t3_v\v.geo_unrolled
-[info]     - writing gmsh .msh file: t3_v\v.msh
-[info]     - writing sg file: t3_v\v.sg
+[info]     - writing sg file: .\test\integration\t3_v\v.sg
 [info]       - writing nodes
 [info]       - writing elements
 [info]         -   writing connectivity
 [info]         -   writing local orientation
-[info]     - writing material id-name file: t3_v\v.sg.mat
+[info]     - writing material id-name file: .\test\integration\t3_v\v.sg.mat
 [info]   - writing outputs -- done
-[info]   - running Gmsh for visualization
-[info]   - prevabs finished (2026-02-18 12:33:18)
-[info] total running time: 0.937638 sec
+[info]     - running VABS for homogenization
+[info]     - running: VABS ".\test\integration\t3_v\v.sg"
+[info]     - command completed successfully.
+[info]     - running VABS for homogenization -- done
+[info]   - prevabs finished (2026-02-18 17:37:35)
+[info] total running time: 0.278932 sec

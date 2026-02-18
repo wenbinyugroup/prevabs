@@ -56,7 +56,7 @@ int Segment::count_tmp = 0;
 
 int readCrossSection(const std::string &filenameCrossSection,
                      const std::string &filePath, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   // i_indent++;
 
   int material_id = 1;  // Material ID
@@ -927,7 +927,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   // }
 
   // i_indent--;
-  pmessage->decreaseIndent();
 
   return 0;
 }

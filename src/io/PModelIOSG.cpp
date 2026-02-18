@@ -93,7 +93,7 @@ std::unique_ptr<ISGWriter> makeSGWriter(AnalysisTool tool) {
 
 int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(info) << pmessage->message("writing sg file: " + fn);
 
@@ -185,8 +185,6 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   fclose(fsg_mat);
 
 
-  pmessage->decreaseIndent();
-
   return 1;
 }
 
@@ -199,7 +197,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
 
 
 int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
 
   PMesh *mesh = new PMesh();
@@ -303,8 +301,6 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Mess
 
   pmodel->setMesh(mesh);
 
-
-  pmessage->decreaseIndent();
 
   return 0;
 }

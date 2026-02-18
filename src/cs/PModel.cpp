@@ -304,7 +304,7 @@ void PModel::build(Message *pmessage) {
   // for (auto cs : crosssections) {
   //   cs->build();
   // }
-  _cross_section->build(bcfg, pmessage);
+  _cross_section->build(bcfg);
 
   // _dcel->print_dcel();
 
@@ -784,7 +784,7 @@ void PModel::homogenize(Message *pmessage) {
 
 
 void PModel::dehomogenize(Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("dehomogenizing...");
 
   // Read cs xml file
@@ -802,8 +802,6 @@ void PModel::dehomogenize(Message *pmessage) {
   //   run(pmessage);
   // }
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -816,7 +814,7 @@ void PModel::dehomogenize(Message *pmessage) {
 
 
 void PModel::run(Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   pmessage->printBlank();
   PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis);
@@ -833,7 +831,9 @@ void PModel::run(Message *pmessage) {
       if (config.isDehomo()) {
         config.vabs_option = (config.mode == AnalysisMode::DehomogenizationNL) ? "1" : "2";
       }
-      cmd_args.push_back(config.vabs_option);
+      if (!config.vabs_option.empty()) {
+        cmd_args.push_back(config.vabs_option);
+      }
       if (_pp_data.load_cases.size() > 1) {
         cmd_args.push_back(std::to_string(_pp_data.load_cases.size()));
       }
@@ -865,8 +865,6 @@ void PModel::run(Message *pmessage) {
   pmessage->printBlank();
   PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
   pmessage->printBlank();
-
-  pmessage->decreaseIndent();
 
   return;
 }

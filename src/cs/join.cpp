@@ -146,7 +146,7 @@ static void adjustPairsAfterTrimTail(
 
 void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &bcfg, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(debug) << pmessage->message("making segment end: " + s->getName() + " " + std::to_string(e));
 
@@ -155,7 +155,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
   if (_dependencies.empty()) {
     PLOG(debug) << pmessage->message("making segment end because of no dependency.");
     createSegmentFreeEnd(s, e, bcfg, pmessage);
-    pmessage->decreaseIndent();
     return;
   }
 
@@ -167,7 +166,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
     if (e == s->free()) {
       PLOG(debug) << pmessage->message("making segment end because of free end set although with dependency.");
       createSegmentFreeEnd(s, e, bcfg, pmessage);
-      pmessage->decreaseIndent();
       return;
     }
 
@@ -283,7 +281,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       if (fabs(u1) == INF) {
         PLOG(debug) << pmessage->message("making segment end because of not touching any other components although with dependency.");
         createSegmentFreeEnd(s, e, bcfg, pmessage);
-        pmessage->decreaseIndent();
         return;
       }
       else {
@@ -340,7 +337,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       if (fabs(u1) == INF) {
         PLOG(debug) << pmessage->message("offset curve: no intersection found, using free end.");
         createSegmentFreeEnd(s, e, bcfg, pmessage);
-        pmessage->decreaseIndent();
         return;
       }
 
@@ -426,8 +422,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
 
   s->printBaseOffsetPairs(pmessage);
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -438,7 +432,7 @@ void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
   PDCELVertex *v, int style, const BuilderConfig &bcfg, Message *pmessage
   ) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(debug) << pmessage->message(
     "joining segments ends: "
@@ -961,7 +955,6 @@ void PComponent::joinSegments(
       for (auto p : lss1) delete p;
       for (auto p : lss2) delete p;
       PLOG(debug) << pmessage->message("style 2: no intersection found between offset curves, skipping join.");
-      pmessage->decreaseIndent();
       return;
     }
 
@@ -1009,7 +1002,6 @@ void PComponent::joinSegments(
     );
   }
 
-  pmessage->decreaseIndent();
 }
 
 

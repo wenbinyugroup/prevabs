@@ -27,7 +27,7 @@
 
 
 void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   // std::cout << std::endl;
   // if (config.debug) {
   //   // std::cout << "[debug] building segment areas: " << _name << std::endl;
@@ -330,6 +330,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
     }
     pmessage->decreaseIndent();
   }
+  pmessage->decreaseIndent();
 
   // std::cout << "        prev bound vertices:" << std::endl;
   // for (auto v : prev_bound_vertices_tmp) {
@@ -344,8 +345,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   // for (auto i : _offset_vertices_link_to) {
   //   std::cout << "        " << i << std::endl;
   // }
-
-  pmessage->decreaseIndent();
 
 
 
@@ -751,15 +750,14 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   //   std::cout << "        " << v << std::endl;
   // }
 
-  _areas.push_back(area);
-
   pmessage->decreaseIndent();
+
+  _areas.push_back(area);
 
   // Slice layers
   for (auto area : _areas) {
     area->buildLayers(bcfg, pmessage);
   }
 
-  pmessage->decreaseIndent();
 }
 

@@ -8,6 +8,7 @@
 // #include "gmsh/MTriangle.h"
 
 #include <array>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -63,9 +64,82 @@ static void runCmd(
     return out;
   };
 
-  std::string cmdline = quoteArg(cmd_name);
-  for (const auto &a : args) {
-    cmdline += " " + quoteArg(a);
+  // Helper: convert a Windows error code to a human-readable string.
+  auto winErrorStr = [](DWORD err) -> std::string {
+    char buf[512] = {};
+    FormatMessageA(
+      FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, err, 0, buf, sizeof(buf), nullptr);
+    // Strip trailing newline/whitespace that FormatMessage appends.
+    std::string s(buf);
+    while (!s.empty() && (s.back() == '\n' || s.back() == '\r' || s.back() == ' '))
+      s.pop_back();
+    return s;
+  };
+
+  // Git Bash and MSYS2 update the CRT's environment (what getenv/environ see)
+  // but may not sync it to the Windows environment block that CreateProcess
+  // and SearchPath use. Reading PATH with _dupenv_s and writing it back with
+  // _putenv_s (which calls SetEnvironmentVariable internally) forces that
+  // synchronisation so that SearchPath can find executables like VABS that
+  // are on the user's PATH but were added through a shell profile.
+  {
+    char* crt_path = nullptr;
+    size_t crt_path_len = 0;
+    if (_dupenv_s(&crt_path, &crt_path_len, "PATH") == 0 && crt_path != nullptr) {
+      _putenv_s("PATH", crt_path);
+      free(crt_path);
+    }
+  }
+
+  // Resolve the full executable path via SearchPath.
+  // Try .exe first; fall back to .bat and .cmd (batch wrappers).
+  char exeFullPath[MAX_PATH] = {};
+  const char* foundExt = nullptr;
+  for (const char* ext : {".exe", ".bat", ".cmd"}) {
+    if (SearchPathA(nullptr, cmd_name.c_str(), ext, MAX_PATH, exeFullPath, nullptr) > 0) {
+      foundExt = ext;
+      break;
+    }
+  }
+
+  if (!foundExt) {
+    DWORD err = GetLastError();
+    std::cerr << "ERROR: Cannot find executable '" << cmd_name
+              << "' in PATH (tried .exe, .bat, .cmd).\n"
+              << "  Make sure it is installed and its directory is on PATH.\n"
+              << "  System error " << err << ": " << winErrorStr(err) << "\n"
+              << "  Command: " << display << std::endl;
+    return;
+  }
+
+  // For batch scripts we must invoke through cmd.exe.
+  // For .exe files we pass the full path directly as lpApplicationName.
+  std::string cmdline;
+  const char* lpApplicationName = nullptr;
+
+  bool isBatch = (std::string(foundExt) == ".bat" || std::string(foundExt) == ".cmd");
+  if (isBatch) {
+    std::string cmdExe = "cmd.exe";
+    char comspec[MAX_PATH] = {};
+    if (GetEnvironmentVariableA("COMSPEC", comspec, MAX_PATH) > 0) {
+      cmdExe = comspec;
+    }
+    // cmd.exe /c "\"script.bat\" \"arg1\" \"arg2\""
+    // The outer quotes wrap the entire command for cmd.exe's /c handling.
+    std::string innerCmd = quoteArg(std::string(exeFullPath));
+    for (const auto &a : args) {
+      innerCmd += " " + quoteArg(a);
+    }
+    cmdline = cmdExe + " /c \"" + innerCmd + "\"";
+    lpApplicationName = nullptr;  // let CreateProcess find cmd.exe
+  } else {
+    // .exe: use the resolved full path as both lpApplicationName and argv[0].
+    cmdline = quoteArg(std::string(exeFullPath));
+    for (const auto &a : args) {
+      cmdline += " " + quoteArg(a);
+    }
+    lpApplicationName = exeFullPath;
   }
 
   // CreateProcess requires a mutable buffer for lpCommandLine.
@@ -79,22 +153,23 @@ static void runCmd(
   ZeroMemory(&pi, sizeof(pi));
 
   BOOL ok = CreateProcessA(
-    nullptr,        // use cmdline to locate executable
-    cmdBuf.data(),  // mutable command line
-    nullptr,        // process security attributes
-    nullptr,        // thread security attributes
-    FALSE,          // do not inherit handles
-    0,              // creation flags
-    nullptr,        // inherit environment
-    nullptr,        // inherit working directory
+    lpApplicationName,  // full path to exe (nullptr for cmd.exe batch case)
+    cmdBuf.data(),      // mutable command line
+    nullptr,            // process security attributes
+    nullptr,            // thread security attributes
+    FALSE,              // do not inherit handles
+    0,                  // creation flags
+    nullptr,            // inherit environment
+    nullptr,            // inherit working directory
     &si,
     &pi
   );
 
   if (!ok) {
     DWORD err = GetLastError();
-    std::cerr << "ERROR: Failed to launch process: " << display
-              << " (error code " << err << ")" << std::endl;
+    std::cerr << "ERROR: Failed to launch '" << std::string(exeFullPath) << "'.\n"
+              << "  Command: " << display << "\n"
+              << "  System error " << err << ": " << winErrorStr(err) << std::endl;
     return;
   }
 

@@ -35,6 +35,7 @@ bool debug = false;
 bool scientific_format = false;
 PConfig config;
 RuntimeState runtime;
+Message* g_msg = nullptr;
 
 
 // ---------------------------------------------------------------------------
@@ -228,6 +229,7 @@ int main(int argc, char **argv) {
 
   auto pmessage = std::make_unique<Message>(config.file_name_log);
   pmessage->openFile();
+  g_msg = pmessage.get();
 
   auto start_s = std::chrono::steady_clock::now();
 

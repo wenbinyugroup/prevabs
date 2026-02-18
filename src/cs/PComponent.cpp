@@ -83,7 +83,7 @@ void PComponent::addDependent(PComponent *component) {
 void PComponent::build(const BuilderConfig &bcfg, Message *pmessage) {
 
   // i_indent++;
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(info) << pmessage->message("building component: " + _name);
 
@@ -103,7 +103,6 @@ void PComponent::build(const BuilderConfig &bcfg, Message *pmessage) {
   }
 
   // i_indent--;
-  pmessage->decreaseIndent();
 
 }
 
@@ -118,7 +117,7 @@ void PComponent::build(const BuilderConfig &bcfg, Message *pmessage) {
 void PComponent::buildDetails(const BuilderConfig &bcfg, Message *pmessage) {
 
   // i_indent++;
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   if (_type == 1) {
 
@@ -135,7 +134,6 @@ void PComponent::buildDetails(const BuilderConfig &bcfg, Message *pmessage) {
   }
 
   // i_indent--;
-  pmessage->decreaseIndent();
 
 }
 
