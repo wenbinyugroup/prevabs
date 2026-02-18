@@ -41,6 +41,10 @@ void PModel::initialize() {
 
   if (config.debug) {
     runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
+    if (!runtime.fdeb) {
+      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb << std::endl;
+      config.debug = false;
+    }
   }
 
   gmsh::initialize();

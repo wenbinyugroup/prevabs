@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 cmake_policy(SET CMP0074 NEW)
 
@@ -40,7 +40,54 @@ include_directories( ${CMAKE_SOURCE_DIR}/include )
 # include_directories( ${CMAKE_BINARY_DIR}/generated )
 # include_directories( ${CMAKE_SOURCE_DIR}/include/gmsh )
 
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+set(SOURCES
+  ${CMAKE_SOURCE_DIR}/src/cs/CrossSection.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/join.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/Material.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PArea.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBaseLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBuildComponentFilling.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBuildComponentLaminate.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBuildSegmentAreas.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PComponent.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PModel.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PSegment.cpp
+  ${CMAKE_SOURCE_DIR}/src/execu.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geo.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PBST.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCEL.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELFace.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELHalfEdge.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELHalfEdgeLoop.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELVertex.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PGeoClasses.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PGeoLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
+  ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
+  ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp
+  ${CMAKE_SOURCE_DIR}/src/gmsh/STensor3.cpp
+  ${CMAKE_SOURCE_DIR}/src/gmsh/StringUtils.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIO.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIODehomo.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOPlot.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadBaseLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadBasePoint.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponent.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponentFilling.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponentLaminate.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadCrossSection.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadLayup.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadMaterial.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOSG.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOSupplement.cpp
+  ${CMAKE_SOURCE_DIR}/src/main.cpp
+  ${CMAKE_SOURCE_DIR}/src/MaterialRepository.cpp
+  ${CMAKE_SOURCE_DIR}/src/overloadOperator.cpp
+  ${CMAKE_SOURCE_DIR}/src/plog.cpp
+  ${CMAKE_SOURCE_DIR}/src/utilities.cpp
+)
 
 
 
@@ -50,6 +97,12 @@ if(MSVC)
 endif()
 
 add_executable( ${PROJECTNAME} ${SOURCES} )
+
+if(MSVC)
+  target_compile_options(${PROJECTNAME} PRIVATE /W4)
+else()
+  target_compile_options(${PROJECTNAME} PRIVATE -Wall -Wextra)
+endif()
 
 # target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_SOURCE_DIR}/include )
 target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated )

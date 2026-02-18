@@ -93,9 +93,14 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (!p_xn_sg) {
     p_xn_sg = xmlDocCrossSection.first_node("sg");
   }
-
-
-  std::string csName{p_xn_sg->first_attribute("name")->value()};
+  if (!p_xn_sg) {
+    throw std::runtime_error("Missing root XML element <cross_section> or <sg>");
+  }
+  xml_attribute<> *p_xa_name{p_xn_sg->first_attribute("name")};
+  if (!p_xa_name) {
+    throw std::runtime_error("Missing required attribute 'name' on root element");
+  }
+  std::string csName{p_xa_name->value()};
   std::string cs_type{"general"};
   if (p_xn_sg->first_attribute("type")) {
     cs_type = p_xn_sg->first_attribute("type")->value();
@@ -319,6 +324,9 @@ int readCrossSection(const std::string &filenameCrossSection,
   //             << markInfo << " Read Cross Section General"
   //             << "\n\n";
   xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
+  if (!nodeGeneral) {
+    throw std::runtime_error("Missing required XML element <general>");
+  }
 
   // Point2 origin{0, 0};
   // SVector3 translate{0, 0, 0};
@@ -438,7 +446,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
     if (ss[0] != '\0') {
-      itf_t1d_th = atoi(ss.c_str());
+      itf_t1d_th = std::stod(ss);
       pmodel->setInterfaceTheta1DiffThreshold(itf_t1d_th);
     }
   }
@@ -449,7 +457,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
     if (ss[0] != '\0') {
-      itf_t3d_th = atoi(ss.c_str());
+      itf_t3d_th = std::stod(ss);
       pmodel->setInterfaceTheta3DiffThreshold(itf_t3d_th);
     }
   }
@@ -554,13 +562,18 @@ int readCrossSection(const std::string &filenameCrossSection,
             bool fillTE = p_xa_fillTE ? (strcmp(p_xa_fillTE->value(), "true") == 0) : true;
             bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
 
+            auto requireNode = [](xml_node<> *parent, const char *tag) -> xml_node<> * {
+              xml_node<> *n = parent->first_node(tag);
+              if (!n) {
+                throw std::runtime_error(std::string("Missing required XML element <") + tag + ">");
+              }
+              return n;
+            };
             double xtLE, xbLE, xtTE, xbTE;
-            xtLE = atof(nodeLEWeb->first_node("pos_top")->value());
-            xbLE = atof(nodeLEWeb->first_node("pos_bot")->value());
-            xtTE = atof(nodeTEWeb->first_node("pos_top")->value());
-            xbTE = atof(nodeTEWeb->first_node("pos_bot")->value());
-
-            const double PI = atan(1) * 4;
+            xtLE = atof(requireNode(nodeLEWeb,  "pos_top")->value());
+            xbLE = atof(requireNode(nodeLEWeb,  "pos_bot")->value());
+            xtTE = atof(requireNode(nodeTEWeb,  "pos_top")->value());
+            xbTE = atof(requireNode(nodeTEWeb,  "pos_bot")->value());
             double ytLE,ybLE,xmLE,angLE;
             ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
             ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
@@ -581,8 +594,8 @@ int readCrossSection(const std::string &filenameCrossSection,
 
             if (nodeMidWeb) {
               double xtM, xbM;
-              xtM = atof(nodeMidWeb->first_node("pos_top")->value());
-              xbM = atof(nodeMidWeb->first_node("pos_bot")->value());
+              xtM = atof(requireNode(nodeMidWeb, "pos_top")->value());
+              xbM = atof(requireNode(nodeMidWeb, "pos_bot")->value());
 
               double ytM,ybM,xmM,angM;
               ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);

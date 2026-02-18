@@ -8,8 +8,8 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 
 - **Language**: C++11
 - **Build System**: CMake (minimum 3.14)
-- **Dependencies**: Boost (log, log_setup, system, thread), Gmsh SDK
-- **Test Framework**: Custom simple unit tests (no external framework)
+- **Dependencies**: Gmsh SDK
+- **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (single-header, v3.x)
 
 ---
 
@@ -44,24 +44,34 @@ make
 
 ### Running Tests
 
-**Unit tests:**
+**Unit tests (Catch2):**
 
 ```bash
-cd test/unittest
+# Build and run
+cd test/unit
 mkdir build && cd build
 cmake ..
 make
-./test
+./test_geo
+```
+
+**Common Catch2 commands:**
+```bash
+./test_geo                      # Run all tests
+./test_geo "[geo]"              # Run tests with tag [geo]
+./test_geo "test name"          # Run test matching "test name"
+./test_geo -s                   # Show successful assertions
+./test_geo -l                   # List all test cases
 ```
 
 **Integration tests:**
 
 ```bash
-# Run all examples
-test\test_all_examples.bat   # Windows
+# Run all integration tests
+test\run_integration_tests.bat
 
 # Run a specific test manually
-prevabs.exe -i test\box\input.xml -h
+prevabs.exe -i test\integration\box\input.xml --hm
 ```
 
 ---
@@ -97,6 +107,9 @@ src/              # Source files (.cpp)
   geo/            # Geometry related
   io/             # Input/output related
   gmsh/           # Gmsh interface
+test/
+  unit/           # Unit tests (Catch2)
+  integration/    # Integration tests (full pipeline runs)
 ```
 
 ### Header Files
@@ -262,14 +275,46 @@ PModel* pmodel = new PModel(config.file_base_name);  // easy to leak
 
 ```bash
 # From build directory
-./prevabs.exe -i ../test/box/input.xml -h -v
+./prevabs.exe -i ../test/box/input.xml --hm -v
 ```
+
+### Writing Unit Tests
+
+Each test file should include Catch2 and define tests:
+
+```cpp
+#define CATCH_CONFIG_MAIN  // Only ONE file should have this
+#include "catch_amalgam.hpp"
+
+TEST_CASE("description of what is being tested") {
+  // Arrange
+  int expected = 42;
+
+  // Act
+  int actual = calculate();
+
+  // Assert
+  CHECK(actual == expected);      // Continues on failure
+  REQUIRE(actual == expected);    // Stops on failure
+}
+
+TEST_CASE("grouped tests", "[geometry]") {
+  // Tagged tests can be run with: ./test "[geometry]"
+}
+```
+
+**Common assertions:**
+- `CHECK(expr)` - Continues even if failed
+- `REQUIRE(expr)` - Stops on failure
+- `CHECKED_IF(expr)` / `CHECKED_ELSE(expr)` - Branch coverage
+- `REQUIRE_THROWS(expr)` - Expect exception
+- `REQUIRE_THAT(val, Catch::Matchers::Equals(expected))` - Container comparison
 
 ### Debugging
 
 Enable debug mode with `-debug` flag:
 ```bash
-prevabs.exe -i input.xml -h -debug
+prevabs.exe -i input.xml --hm -debug
 ```
 
 This creates a `.debug` file with detailed output.
@@ -282,35 +327,10 @@ This creates a `.debug` file with detailed output.
 
 ---
 
-## Known Technical Debt (2026-02-13)
-
-The following issues are documented for tracking. See `local/review-20260213.md` for full details.
-
-| Priority | Issue | Location |
-|---|---|---|
-| Critical | ~~`PModel*` back-pointers in every domain object~~ — **Fixed 2026-02-14** (`PModel*` removed from `CrossSection`, `PComponent`, `Segment`, `PArea`; `IMaterialLookup` interface + `PDCEL*` + `plotDebug` callback added to `BuilderConfig`; see `local/issue-20260214-remove-pmodel-backpointers.md`) | `include/CrossSection.hpp`, `PComponent.hpp`, `PSegment.hpp`, `PArea.hpp` |
-| Critical | `Message*`/`PModel*` never deleted — use `unique_ptr` | `main.cpp:282,289` |
-| Critical | Null deref on missing XML attributes/nodes | `PModelIOReadCrossSection.cpp:98,321,558` |
-| Critical | `argv[i+1]` out-of-bounds in legacy CLI parser | `main.cpp:103` |
-| Critical | ~~Shell injection via `std::system()`~~ — **Fixed 2026-02-14** | `execu.cpp` — replaced with `CreateProcess`/`execvp`; see `local/issue-20260214-execu-critical-fixes.md` |
-| High | ~~`declarations.hpp` missing `#pragma once`~~ — **Not applicable** (pragma was present; root issue was missing forward decls causing circular-include cascade — **Fixed 2026-02-14**) | `include/PSegment.hpp`, `PArea.hpp`, `PDCEL.hpp`, `PModel.hpp`, `Material.hpp`, `utilities.hpp` |
-| High | ~~`log_severity_level` declared but never defined~~ — **Fixed 2026-02-14** (removed stale `extern std::string log_severity_level` from `globalVariables.hpp:66`) | `include/globalVariables.hpp` |
-| High | `atoi()` used to parse `double` values | `PModelIOReadCrossSection.cpp:441,452` |
-| High | `fopen()` return value not checked | `PModel.cpp:43` |
-| High | `PDCELHalfEdgeLoop` objects not deleted in destructor | `PDCEL.cpp` |
-| Medium | ~~PI constant has insufficient precision~~ — **Fixed 2026-02-14** (updated to `3.141592653589793`) | `include/globalConstants.hpp:21` |
-| Medium | ~~`PConfig.hpp` is an empty dead file~~ — **Fixed 2026-02-14** (replaced empty class body with comment; empty `class PConfig {}` shadowed the real struct in `globalVariables.hpp`) | `include/PConfig.hpp` |
-| Medium | ~~Large volumes of commented-out dead code~~ — **Fixed 2026-02-14** (`execu.cpp` reduced from 544 to 178 lines; `runIntegratedVABS()` stub removed; `exec()`, `NE_1D`, unused includes removed) | `src/execu.cpp` — see `local/issue-20260214-execu-medium-fixes.md` |
-| Medium | `GLOB_RECURSE` for source files in CMake | `CMakeLists.txt` |
-| Medium | No compiler warning flags (`-Wall`, `/W4`) | `CMakeLists.txt` |
-| Medium | CMake minimum version too old (3.0 → 3.14) | `CMakeLists.txt` |
-
----
-
 ## External Dependencies
 
-- **Boost**: Must be installed and `Boost_ROOT` environment variable set
 - **Gmsh**: Must have Gmsh SDK with `Gmsh_ROOT` environment variable set
 - On Windows: Use MSVC developer command prompt for builds
 - **CLI11**: Vendored in `include/CLI11.hpp` — migration from legacy `parseArguments()` is in progress
 - **RapidXML**: Vendored in `include/rapidxml/` — header-only, no version tracking
+- **Catch2**: Download single-header from releases; placed in `test/unit/`
