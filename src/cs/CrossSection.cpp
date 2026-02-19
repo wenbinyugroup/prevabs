@@ -291,7 +291,7 @@ void CrossSection::build(const BuilderConfig &bcfg) {
 
   for (auto cmp : _components) {
 
-    cmp->build(bcfg, g_msg);
+    cmp->build(bcfg);
 
     // _pmodel->dcel()->print_dcel();
     // for (auto sgm : cmp->segments()) {

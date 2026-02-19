@@ -82,17 +82,17 @@ void PComponent::addDependent(PComponent *component) {
 
 
 
-void PComponent::build(const BuilderConfig &bcfg, Message *pmessage) {
+void PComponent::build(const BuilderConfig &bcfg) {
 
   // i_indent++;
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << pmessage->message("building component: " + _name);
+  PLOG(info) << g_msg->message("building component: " + _name);
 
   // Laminate type component
   if (_type == 1) {
 
-    buildLaminate(bcfg, pmessage);
+    buildLaminate(bcfg, g_msg);
 
   }
 
@@ -100,7 +100,7 @@ void PComponent::build(const BuilderConfig &bcfg, Message *pmessage) {
   // Fill type component
   else if (_type == 2) {
 
-    buildFilling(bcfg, pmessage);
+    buildFilling(bcfg, g_msg);
 
   }
 

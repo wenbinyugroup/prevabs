@@ -68,7 +68,7 @@ public:
 
   std::list<PDCELHalfEdgeLoop *> &halfedgeloops() { return _halfedge_loops; }
 
-  void fixGeometry(const BuilderConfig &, Message *);
+  void fixGeometry(const BuilderConfig &);
 
   // =================================================================
   // VERTEX

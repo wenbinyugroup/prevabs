@@ -492,7 +492,7 @@ void PComponent::joinSegments(
       s1->curveOffset()->vertices(), tmp_bound_1, i1s, ibs1, u1s, ubs1
     );
     ls_u1 = getIntersectionLocation(
-      s1->curveOffset()->vertices(), i1s, u1s, e1, 0, ls_i1, j1, pmessage
+      s1->curveOffset()->vertices(), i1s, u1s, e1, 0, ls_i1, j1
     );
     ls_bi1 = ibs1[j1];
     ls_bu1 = ubs1[j1];
@@ -623,7 +623,7 @@ void PComponent::joinSegments(
       s2->curveOffset()->vertices(), tmp_bound_2, i2s, ibs2, u2s, ubs2
     );
     ls_u2 = getIntersectionLocation(
-      s2->curveOffset()->vertices(), i2s, u2s, e2, 0, ls_i2, j1, pmessage
+      s2->curveOffset()->vertices(), i2s, u2s, e2, 0, ls_i2, j1
     );
     ls_bi2 = ibs2[j1];
     ls_bu2 = ubs2[j1];
@@ -1029,10 +1029,10 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     double u1, u2;
     int ls_i1, ls_i2, j1, j2;
     u1 = getIntersectionLocation(
-      s->curveOffset()->vertices(), i1s, u1s, 0, false, ls_i1, j1, pmessage
+      s->curveOffset()->vertices(), i1s, u1s, 0, false, ls_i1, j1
     );
     u2 = getIntersectionLocation(
-      b, i2s, u2s, 0, false, ls_i2, j2, pmessage
+      b, i2s, u2s, 0, false, ls_i2, j2
     );
 
     PDCELVertex *ip;
@@ -1074,10 +1074,10 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     double u1, u2;
     int ls_i1, ls_i2, j1, j2;
     u1 = getIntersectionLocation(
-      s->curveOffset()->vertices(), i1s, u1s, 1, false, ls_i1, j1, pmessage
+      s->curveOffset()->vertices(), i1s, u1s, 1, false, ls_i1, j1
     );
     u2 = getIntersectionLocation(
-      b, i2s, u2s, 1, false, ls_i2, j2, pmessage
+      b, i2s, u2s, 1, false, ls_i2, j2
     );
 
     PDCELVertex *ip;
@@ -1094,9 +1094,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     int nv_offset_after = s->curveOffset()->vertices().size();
 
     PLOG(debug) << pmessage->message("curve base:");
-    s->getBaseline()->print(pmessage);
+    s->getBaseline()->print();
     PLOG(debug) << pmessage->message("curve offset:");
-    s->curveOffset()->print(pmessage);
+    s->curveOffset()->print();
 
     // Adjust linking indices
     int ls_i_base = s->getBaseline()->vertices().size();
@@ -1112,9 +1112,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   }
 
   PLOG(debug) << pmessage->message("curve base:");
-  s->getBaseline()->print(pmessage);
+  s->getBaseline()->print();
   PLOG(debug) << pmessage->message("curve offset:");
-  s->curveOffset()->print(pmessage);
+  s->curveOffset()->print();
   s->printBaseOffsetPairs(pmessage);
 
 

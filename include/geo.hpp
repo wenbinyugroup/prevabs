@@ -303,7 +303,7 @@ double getIntersectionLocation(
   std::vector<PDCELVertex *> &c,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
-  int &ls_i, int &j, Message *
+  int &ls_i, int &j
 );
 
 PDCELVertex *getIntersectionVertex(

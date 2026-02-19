@@ -231,7 +231,7 @@ void PModel::summary(Message *pmessage) {
   pmessage->printBlank();
   pmessage->print(9, "summary of base lines");
   for (auto bsl : _geo_repo.baselines()) {
-    bsl->print(pmessage);
+    bsl->print();
     pmessage->printBlank();
   }
 
@@ -311,7 +311,7 @@ void PModel::build(Message *pmessage) {
   // _dcel->vertextree()->printInOrder();
 
   pmessage->printBlank();
-  _dcel->fixGeometry(bcfg, pmessage);
+  _dcel->fixGeometry(bcfg);
 }
 
 
@@ -497,10 +497,10 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
   debug_plot_count++;
   std::string fn_base = config.file_directory + config.file_base_name + "_debug";
 
-  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count)+".geo_unrolled", pmessage);
+  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count)+".geo_unrolled");
 
   if (debug_plot_count == 1) {
-    writeGmshOpt(fn_base, pmessage);
+    writeGmshOpt(fn_base);
   }
 
   _gmsh_vertex_tags.clear();
@@ -737,7 +737,7 @@ void PModel::homogenize(Message *pmessage) {
     pmessage->printBlank();
     PLOG(info) << pmessage->message("modeling in Gmsh");
 
-    buildGmsh(pmessage);
+    buildGmsh();
 
     PLOG(info) << pmessage->message("modeling in Gmsh -- done");
     pmessage->printBlank();
@@ -794,7 +794,7 @@ void PModel::dehomogenize(Message *pmessage) {
   // Write glb file
   std::string s_file_name_glb;
   s_file_name_glb = config.file_name_vsc + ".glb";
-  writeGLB(s_file_name_glb, pmessage);
+  writeGLB(s_file_name_glb);
 
 
   // Do dehomogenization/failure analysis

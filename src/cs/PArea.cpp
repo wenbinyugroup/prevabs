@@ -103,14 +103,14 @@ void PArea::addNextBoundVertex(PDCELVertex *v) {
 //
 //
 
-void PArea::buildLayers(const BuilderConfig &bcfg, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+void PArea::buildLayers(const BuilderConfig &bcfg) {
+  MESSAGE_SCOPE(g_msg);
   // std::cout << std::endl;
   // std::cout << "- building layers for area: " << _face->name() << std::endl;
   // if (bcfg.debug) {
   //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
   // }
-  PLOG(debug) << pmessage->message("building layers for area: " + _face->name());
+  PLOG(debug) << g_msg->message("building layers for area: " + _face->name());
 
   // std::cout << "        area face:" << std::endl;
   // _face->print();

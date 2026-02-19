@@ -451,9 +451,9 @@ void PModel::createGmshGeo(Message *pmessage) {
 
 
 
-void PModel::buildGmsh(Message *pmessage) {
+void PModel::buildGmsh() {
 
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
   // _gmodel = new GModel();
   // _gmodel->setFactory("Gmsh");
@@ -500,7 +500,7 @@ void PModel::buildGmsh(Message *pmessage) {
   // ------------------------------
   // Meshing
 
-  PLOG(info) << pmessage->message("meshing");
+  PLOG(info) << g_msg->message("meshing");
 
   // gmsh::logger::stop();
 

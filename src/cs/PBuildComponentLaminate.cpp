@@ -27,7 +27,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
 
     // seg->curveBase()->print(pmessage, 9);
     if (seg->curveOffset() == nullptr) {
-      seg->offsetCurveBase(pmessage);
+      seg->offsetCurveBase();
     }
 
     // std::cout << "base line: " <<  seg->curveBase()->vertices().front();
@@ -57,7 +57,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
       // Check if the segment connects to any other segment or is a free end
       for (auto seg_p : _segments) {
         if (seg_p->curveOffset() == nullptr) {
-          seg_p->offsetCurveBase(pmessage);
+          seg_p->offsetCurveBase();
         }
 
         if (seg_p != seg) {
@@ -141,7 +141,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
   // Create half edge loops for each segment (outer boundary)
   for (auto seg : _segments) {
 
-    seg->build(bcfg, pmessage);
+    seg->build(bcfg);
 
     if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(pmessage);
 

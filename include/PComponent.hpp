@@ -145,7 +145,7 @@ public:
   void setTrimHeadVector(double x2, double x3) { _trim_head_vector.assign({x2, x3}); }
   void setTrimTailVector(double x2, double x3) { _trim_tail_vector.assign({x2, x3}); }
 
-  void build(const BuilderConfig &, Message *);
+  void build(const BuilderConfig &);
   void buildDetails(const BuilderConfig &, Message *);
 };
 

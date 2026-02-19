@@ -2,6 +2,7 @@
 #include "plog.hpp"
 #include "PModel.hpp"
 #include "utilities.hpp"
+#include "globalVariables.hpp"
 
 // #include <gmsh/StringUtils.h>
 #include <gmsh_mod/StringUtils.h>
@@ -40,15 +41,14 @@
 // ---------------------------------------------------------------------------
 static void runCmd(
   const std::string &cmd_name,
-  const std::vector<std::string> &args,
-  Message *pmessage
+  const std::vector<std::string> &args
 ) {
   // Build a display string for logging only.
   std::string display = cmd_name;
   for (const auto &a : args) {
     display += " \"" + a + "\"";
   }
-  PLOG(info) << pmessage->message("running: " + display);
+  PLOG(info) << g_msg->message("running: " + display);
 
 #ifdef _WIN32
   // Build the command line string that CreateProcess expects.
@@ -184,7 +184,7 @@ static void runCmd(
     std::cerr << "ERROR: Process exited with code " << exitCode
               << ": " << display << std::endl;
   } else {
-    PLOG(info) << pmessage->message("command completed successfully.");
+    PLOG(info) << g_msg->message("command completed successfully.");
   }
 
 #else
@@ -219,7 +219,7 @@ static void runCmd(
     std::cerr << "ERROR: Process exited with code " << exitCode
               << ": " << display << std::endl;
   } else {
-    PLOG(info) << pmessage->message("command completed successfully.");
+    PLOG(info) << g_msg->message("command completed successfully.");
   }
 #endif
 }
@@ -229,7 +229,7 @@ void runVABS(
   const std::string &cmd_name, const std::vector<std::string> &args,
   Message *pmessage
   ) {
-  runCmd(cmd_name, args, pmessage);
+  runCmd(cmd_name, args);
 }
 
 
@@ -237,7 +237,7 @@ void runSC(
   const std::string &cmd_name, const std::vector<std::string> &args,
   Message *pmessage
   ) {
-  runCmd(cmd_name, args, pmessage);
+  runCmd(cmd_name, args);
 }
 
 
@@ -248,5 +248,5 @@ void runGmsh(const std::string &fn_geo, const std::string &fn_msh,
   if (!fn_msh.empty()) { args.push_back(fn_msh); }
   if (!fn_opt.empty()) { args.push_back(fn_opt); }
 
-  runCmd("gmsh", args, pmessage);
+  runCmd("gmsh", args);
 }

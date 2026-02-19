@@ -400,9 +400,9 @@ public:
 
   int indexGmshElements();
 
-  int writeGmshGeo(const std::string &, Message *);
+  int writeGmshGeo(const std::string &);
   int writeGmshMsh(const std::string &, Message *);
-  int writeGmshOpt(const std::string &, Message *);
+  int writeGmshOpt(const std::string &);
 
   /// Write the Gmsh file (.geo, .msh, and .opt)
   /*!
@@ -417,7 +417,7 @@ public:
    */
   int writeSG(std::string fn, const WriterConfig &, Message *);
 
-  void writeNodes(FILE *, const std::vector<size_t> &, const std::vector<double> &, Message *);
+  void writeNodes(FILE *, const std::vector<size_t> &, const std::vector<double> &);
 
   void writeElements(
     FILE *,
@@ -435,14 +435,13 @@ public:
     const std::vector<std::vector<std::vector<size_t>>> &,
     const std::vector<std::vector<std::vector<size_t>>> &,
     const std::vector<size_t> &,
-    const std::vector<double> &,
-    Message *
+    const std::vector<double> &
     );
 
   void writeElementsSC(FILE *, Message *);
   // void writeMaterialsVABS(FILE *, Message *);
   // void writeSettingsVABS(FILE *, Message *);
-  int writeGLB(std::string fn, Message *);
+  int writeGLB(std::string fn);
 
   // Write supplement files
   int writeSupp(Message *);
@@ -466,7 +465,7 @@ public:
   void createGmshGeo(Message *);
   void recordInterface(PDCELHalfEdge *, Message *);
 
-  void buildGmsh(Message *);
+  void buildGmsh();
 
 
   // Dehomogenization

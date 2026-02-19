@@ -1,4 +1,5 @@
 #include "globalConstants.hpp"
+#include "globalVariables.hpp"
 #include "geo.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -838,10 +839,10 @@ double getIntersectionLocation(
   std::vector<PDCELVertex *> &c,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
-  int &ls_i, int &j, Message *pmessage
+  int &ls_i, int &j
 ) {
   // Find the intersection location that is the closest to the expected end
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
   // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
 

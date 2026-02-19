@@ -103,7 +103,7 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel, Message *pmes
 
     Material *m;
 
-    m = readXMLElementMaterial(nodeMaterial, nodeMaterials, pmodel, pmessage);
+    m = readXMLElementMaterial(nodeMaterial, nodeMaterials, pmodel);
 
   }
 
@@ -114,7 +114,7 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel, Message *pmes
 
     Lamina *l;
 
-    l = readXMLElementLamina(nodeLamina, nodeMaterials, pmodel, pmessage);
+    l = readXMLElementLamina(nodeLamina, nodeMaterials, pmodel);
 
   }
 
@@ -177,16 +177,16 @@ Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message *pmessa
 
 
 
-Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> *p_xn_mdb, PModel *pmodel, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
-  
+Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> *p_xn_mdb, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
+
   Material *m;
   LayerType *p_layertype;
 
   std::string materialName{};
   materialName = p_xn_material->first_attribute("name")->value();
 
-  PLOG(debug) << pmessage->message("reading material: " + materialName);
+  PLOG(debug) << g_msg->message("reading material: " + materialName);
 
 
   // Check if the material with the name exists
@@ -405,7 +405,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
     // New input
     Strength struct_strength;
-    struct_strength = readXMLElementStrength(p_xn_strength, pmessage);
+    struct_strength = readXMLElementStrength(p_xn_strength, g_msg);
     struct_strength._type = materialType;
     m->setStrength(struct_strength);
 
@@ -567,15 +567,15 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
 
 
-Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> *p_xn_mdb, PModel *pmodel, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
-  
+Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> *p_xn_mdb, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
+
   Lamina *l;
 
   std::string laminaName{};
   laminaName = p_xn_lamina->first_attribute("name")->value();
 
-  PLOG(debug) << pmessage->message("reading lamina: " + laminaName);
+  PLOG(debug) << g_msg->message("reading lamina: " + laminaName);
 
   std::string lm{};
   lm = p_xn_lamina->first_node("material")->value();

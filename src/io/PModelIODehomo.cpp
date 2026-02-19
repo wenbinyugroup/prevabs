@@ -15,9 +15,8 @@
 
 
 int readInputDehomo(const std::string &filenameCrossSection,
-                    const std::string &filePath, PModel *pmodel,
-                    Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+                    const std::string &filePath, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
 
   // -----------------------------------------------------------------
   // Open xml file
@@ -26,11 +25,11 @@ int readInputDehomo(const std::string &filenameCrossSection,
   if (!ifs_cs.is_open()) {
     // std::cout << markError << " Unable to open file: " << config.main_input
     //           << std::endl;
-    PLOG(error) << pmessage->message("unable to open file: " + config.main_input);
+    PLOG(error) << g_msg->message("unable to open file: " + config.main_input);
     return 1;
   } else {
     // printInfo(i_indent, "reading main input data: " + config.main_input);
-    PLOG(info) << pmessage->message("reading main input data: " + config.main_input);
+    PLOG(info) << g_msg->message("reading main input data: " + config.main_input);
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(ifs_cs)),
@@ -42,7 +41,7 @@ int readInputDehomo(const std::string &filenameCrossSection,
   } catch (parse_error &e) {
     // std::cout << markError << " Unable to parse the file: " << config.main_input
     //           << std::endl;
-    PLOG(error) << pmessage->message("unable to parse file: " + config.main_input);
+    PLOG(error) << g_msg->message("unable to parse file: " + config.main_input);
     std::cerr << e.what() << std::endl;
   }
 
@@ -97,7 +96,7 @@ int readInputDehomo(const std::string &filenameCrossSection,
   // Will be deprecated
   xml_node<> *p_xn_loads{p_xn_global->first_node("loads")};
   if (p_xn_loads) {
-    LoadCase lc = readXMLElementLoadCase(p_xn_global, measure, model, pmodel, pmessage);
+    LoadCase lc = readXMLElementLoadCase(p_xn_global, measure, model, pmodel, g_msg);
     pmodel->addLoadCase(lc);
   }
 
@@ -108,11 +107,11 @@ int readInputDehomo(const std::string &filenameCrossSection,
     std::string _name{p_xn_case->name()};
 
     if (_name == "case") {
-      LoadCase lc = readXMLElementLoadCase(p_xn_case, measure, model, pmodel, pmessage);
+      LoadCase lc = readXMLElementLoadCase(p_xn_case, measure, model, pmodel, g_msg);
       pmodel->addLoadCase(lc);
     }
     else if (_name == "include") {
-      readXMLElementLoadCaseInclude(p_xn_case, measure, model, pmodel, pmessage);
+      readXMLElementLoadCaseInclude(p_xn_case, measure, model, pmodel, g_msg);
     }
 
   }
@@ -151,16 +150,16 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
     // Read node data (displacement)
     fn = fn_sg + ".U";
-    readVABSU(fn, state, pmessage);
+    readVABSU(fn, state);
 
     // Read element data (stress and strain)
     if (config.isVABS()) {
       fn = fn_sg + ".ELE";
-      readVABSEle(fn, state, pmessage);
+      readVABSEle(fn, state);
     }
     else if (config.isSC()) {
       fn = fn_sg + ".SN";
-      readSCSn(fn, state, pmessage);
+      readSCSn(fn, state);
     }
 
     // Read element nodal data (stress and strain)
@@ -171,7 +170,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
     // Read element data (failure index and strength ratio)
     fn = fn_sg + ".fi";
-    readMsgFi(fn, state, pmodel->getMesh()->getElements().size(), pmessage);
+    readMsgFi(fn, state, pmodel->getMesh()->getElements().size());
   }
 
   pmodel->addLocalState(state);
@@ -402,9 +401,9 @@ int readLoadCasesFromCSV(
 
 
 
-int PModel::writeGLB(std::string fn, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
-  PLOG(info) << pmessage->message("writing glb file: " + fn);
+int PModel::writeGLB(std::string fn) {
+  MESSAGE_SCOPE(g_msg);
+  PLOG(info) << g_msg->message("writing glb file: " + fn);
 
   FILE *file;
   file = fopen(fn.c_str(), "w");
@@ -413,7 +412,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
   if (config.isFailure()) {
     for (auto m : _cross_section->getUsedMaterials()) {
       // m->printMaterial();
-      m->writeStrengthProperties(file, pmessage);
+      m->writeStrengthProperties(file, g_msg);
     }
   }
   fprintf(file, "\n");
@@ -514,8 +513,8 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
 
 
 
-int readVABSU(const std::string &filename, LocalState *state, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readVABSU(const std::string &filename, LocalState *state) {
+  MESSAGE_SCOPE(g_msg);
 
   // TODO: multiple load cases
 
@@ -528,9 +527,9 @@ int readVABSU(const std::string &filename, LocalState *state, Message *pmessage)
   std::ifstream ifen;
   ifen.open(filename);
   if (ifen.fail()) {
-    PLOG(error) << pmessage->message("unable to find the file: " + filename);
+    PLOG(error) << g_msg->message("unable to find the file: " + filename);
   } else {
-    PLOG(info) << pmessage->message("reading VABS recovered data: " + filename);
+    PLOG(info) << g_msg->message("reading VABS recovered data: " + filename);
 
     while (ifen) {
 
@@ -577,8 +576,8 @@ int readVABSU(const std::string &filename, LocalState *state, Message *pmessage)
 
 // std::vector<PElementNodeData>
 // readOutputDehomoElementVABS(const std::string &filename, Message *pmessage) {
-int readVABSEle(const std::string &filename, LocalState *state, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readVABSEle(const std::string &filename, LocalState *state) {
+  MESSAGE_SCOPE(g_msg);
 
   // TODO: multiple load cases
 
@@ -611,9 +610,9 @@ int readVABSEle(const std::string &filename, LocalState *state, Message *pmessag
   std::ifstream ifen;
   ifen.open(filename);
   if (ifen.fail()) {
-    PLOG(error) << pmessage->message("unable to find the file: " + filename);
+    PLOG(error) << g_msg->message("unable to find the file: " + filename);
   } else {
-    PLOG(info) << pmessage->message("reading VABS recovered data: " + filename);
+    PLOG(info) << g_msg->message("reading VABS recovered data: " + filename);
 
     while (ifen) {
 
@@ -684,8 +683,8 @@ int readVABSEle(const std::string &filename, LocalState *state, Message *pmessag
 
 
 
-int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readSCSn(const std::string &filename, LocalState *state) {
+  MESSAGE_SCOPE(g_msg);
 
   // TODO: multiple load cases
 
@@ -700,13 +699,13 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
   std::ifstream ifen;
   ifen.open(filename);
   if (ifen.fail()) {
-    PLOG(error) << pmessage->message("unable to find the file: " + filename);
+    PLOG(error) << g_msg->message("unable to find the file: " + filename);
   } else {
-    PLOG(info) << pmessage->message("reading SwiftComp dehomogenization data: " + filename);
+    PLOG(info) << g_msg->message("reading SwiftComp dehomogenization data: " + filename);
 
     int comp_id{0};
     PElementNodeData *p_elnd = new PElementNodeData(2, 0, comp_names[comp_id]);
-    PLOG(info) << pmessage->message("  reading component " + comp_names[comp_id]);
+    PLOG(info) << g_msg->message("  reading component " + comp_names[comp_id]);
 
     std::string line;
     // while (ifen) {
@@ -727,7 +726,7 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
         // create new empty data
         comp_id++;
         p_elnd = new PElementNodeData(2, 0, comp_names[comp_id]);
-        PLOG(info) << pmessage->message("  reading component " + comp_names[comp_id]);
+        PLOG(info) << g_msg->message("  reading component " + comp_names[comp_id]);
         continue;
       }
 
@@ -773,8 +772,8 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
 
 
 
-int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem) {
+  MESSAGE_SCOPE(g_msg);
 
   // TODO: multiple load cases
 
@@ -794,10 +793,10 @@ int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem,
   int eid_sr_min = 0;
 
   if (ifen.fail()) {
-    PLOG(error) << pmessage->message("unable to find the file: " + filename);
+    PLOG(error) << g_msg->message("unable to find the file: " + filename);
   }
   else {
-    PLOG(info) << pmessage->message("reading failure analysis result: " + filename);
+    PLOG(info) << g_msg->message("reading failure analysis result: " + filename);
 
     int ecount = 0;
 

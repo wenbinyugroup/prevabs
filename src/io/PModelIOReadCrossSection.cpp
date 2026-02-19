@@ -665,7 +665,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     PLOG(debug) << pmessage->message(" ");
     PLOG(debug) << pmessage->message("summary of base lines (before transformation)");
     for (auto bsl : pmodel->baselines()) {
-      bsl->print(pmessage);
+      bsl->print();
       // pmessage->printBlank();
       PLOG(debug) << pmessage->message(" ");
     }
@@ -687,7 +687,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     PLOG(debug) << pmessage->message(" ");
     PLOG(debug) << pmessage->message("summary of base lines (after transformation)");
     for (auto bsl : pmodel->baselines()) {
-      bsl->print(pmessage);
+      bsl->print();
       // pmessage->printBlank();
       PLOG(debug) << pmessage->message(" ");
     }
@@ -805,7 +805,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         std::cerr << e.what() << std::endl;
       }
       nodeLayups = xmlDocLayups.first_node("layups");
-      readLayups(nodeLayups, pmodel, pmessage);
+      readLayups(nodeLayups, pmodel);
       PLOG(debug) << pmessage->message("finished reading layups.");
     }
   }
@@ -813,7 +813,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   else if (d_fmt == 1) {
     nodeLayups = p_xn_sg->first_node("layups");
     if (nodeLayups) {
-      readLayups(nodeLayups, pmodel, pmessage);
+      readLayups(nodeLayups, pmodel);
       PLOG(debug) << pmessage->message("finished reading layups.");
     }
   }

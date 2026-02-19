@@ -68,7 +68,7 @@ public:
   void addNode(PNode *n) { _nodes.push_back(n); }
   void addElement(PElement *e) { _elements.push_back(e); }
 
-  void writeGmshMsh(FILE *, Message *);
+  void writeGmshMsh(FILE *);
 };
 
 inline PMesh::~PMesh() {

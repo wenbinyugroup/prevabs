@@ -152,7 +152,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   writer->writeSettings(fsg, this, wcfg);
 
   // Write nodes and elements
-  writeNodes(fsg, node_tags, node_coords, pmessage);
+  writeNodes(fsg, node_tags, node_coords);
   writeElements(
     fsg,
     face_elem_types, face_elem_tags, face_elem_node_tags,
@@ -196,8 +196,8 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
 
 
 
-int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg) {
+  MESSAGE_SCOPE(g_msg);
 
 
   PMesh *mesh = new PMesh();
@@ -209,9 +209,9 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Mess
   // printInfo(i_indent, "reading VABS input data: " + wcfg.file_name_vsc);
 
   if (wcfg.tool == AnalysisTool::VABS)
-    PLOG(info) << pmessage->message("reading VABS input data: " + wcfg.file_name_vsc);
+    PLOG(info) << g_msg->message("reading VABS input data: " + wcfg.file_name_vsc);
   else if (wcfg.tool == AnalysisTool::SwiftComp)
-    PLOG(info) << pmessage->message("reading SwiftComp input data: " + wcfg.file_name_vsc);
+    PLOG(info) << g_msg->message("reading SwiftComp input data: " + wcfg.file_name_vsc);
 
 
   int nnode{0}, nelem{0}, nsg;

@@ -57,12 +57,11 @@ void PModel::getElements(
 void PModel::writeNodes(
   FILE *file,
   const std::vector<size_t> &node_tags,
-  const std::vector<double> &node_coords,
-  Message *pmessage
+  const std::vector<double> &node_coords
   ) {
 
-  MESSAGE_SCOPE(pmessage);
-  PLOG(info) << pmessage->message("writing nodes");
+  MESSAGE_SCOPE(g_msg);
+  PLOG(info) << g_msg->message("writing nodes");
 
   // std::vector<size_t> node_tags;
   // std::vector<double> node_coords, node_params;
@@ -144,8 +143,7 @@ void PModel::writeElements(
     writeElementsVABS(
       file,
       face_elem_types, face_elem_tags, face_elem_node_tags,
-      face_prop_tags, face_local_orients,
-      pmessage
+      face_prop_tags, face_local_orients
       );
   }
 
@@ -159,26 +157,25 @@ void PModel::writeElements(
 
 
 void PModel::writeElementsVABS(
-  FILE *file, 
+  FILE *file,
   const std::vector<std::vector<int>> &face_elem_types,
   const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
   const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
   const std::vector<size_t> &face_prop_tags,
-  const std::vector<double> &face_local_orients,
-  Message *pmessage
+  const std::vector<double> &face_local_orients
   ) {
 
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
   // Write connectivity for each element
-  PLOG(info) << pmessage->message("  writing connectivity");
+  PLOG(info) << g_msg->message("  writing connectivity");
   // std::vector<int> elem_types;
   // std::vector<std::vector<size_t>> elem_tags, elem_node_tags;
   // gmsh::model::mesh::getElements(
   //   elem_types, elem_tags, elem_node_tags, -1, -1);
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
-    PLOG(debug) << pmessage->message("  face " + std::to_string(_face_i));
+    PLOG(debug) << g_msg->message("  face " + std::to_string(_face_i));
 
     // For each element type of the face
     for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
@@ -211,7 +208,7 @@ void PModel::writeElementsVABS(
         // std::cout << std::endl;
 
         writeElementVABS(
-          file, elem_tags[_j], node_tags, elem_type, pmessage);
+          file, elem_tags[_j], node_tags, elem_type, g_msg);
 
       }
     }
@@ -219,11 +216,11 @@ void PModel::writeElementsVABS(
   fprintf(file, "\n");
 
   // Wirte local coordinate for each element
-  PLOG(info) << pmessage->message("  writing local orientation");
+  PLOG(info) << g_msg->message("  writing local orientation");
   std::vector<double> dnums;
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
-    PLOG(debug) << pmessage->message("  face " + std::to_string(_face_i));
+    PLOG(debug) << g_msg->message("  face " + std::to_string(_face_i));
 
     auto face_prop_tag = face_prop_tags[_face_i];
     auto face_local_orient = face_local_orients[_face_i];
@@ -335,9 +332,9 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
   // i_indent++;
   // pmessage->increaseIndent();
 
-  writeGmshOpt(fn_base, pmessage);
-  // writeGmshGeo(fn_base, pmessage);
-  writeGmshGeo(config.file_name_geo, pmessage);
+  writeGmshOpt(fn_base);
+  // writeGmshGeo(fn_base);
+  writeGmshGeo(config.file_name_geo);
   writeGmshMsh(fn_base, pmessage);
 
   // pmessage->decreaseIndent();
@@ -353,9 +350,9 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
 
 
 
-int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
-  PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
+int PModel::writeGmshGeo(const std::string &fn) {
+  MESSAGE_SCOPE(g_msg);
+  PLOG(info) << g_msg->message("writing gmsh .geo file: " + fn);
 
   // std::string fn;
   if (config.isHomo()) {
@@ -429,7 +426,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
       fprintf(f_msh, "$EndMeshFormat\n");
 
       // Write nodes and elements
-      _mesh_data.mesh->writeGmshMsh(f_msh, pmessage);
+      _mesh_data.mesh->writeGmshMsh(f_msh);
       // fclose(f_msh);
 
 
@@ -457,8 +454,8 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
 
 
-int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int PModel::writeGmshOpt(const std::string &fn_base) {
+  MESSAGE_SCOPE(g_msg);
 
   std::string fn;
 
@@ -469,7 +466,7 @@ int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
     fn = fn_base + "_local.opt";
   }
 
-  PLOG(info) << pmessage->message("writing gmsh .opt file: " + fn);
+  PLOG(info) << g_msg->message("writing gmsh .opt file: " + fn);
 
   FILE *file;
   file = fopen(fn.c_str(), "w");
@@ -517,7 +514,7 @@ int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
 
 
 
-void PMesh::writeGmshMsh(FILE *file, Message *pmessage) {
+void PMesh::writeGmshMsh(FILE *file) {
   fprintf(file, "$Nodes\n");
   // number of nodes
   fprintf(file, "%zd\n", _nodes.size());
@@ -578,21 +575,21 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
   int view_id = -1;
 
   if (config.isDehomo()) {
-    if (_u) {_u->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
-    if (_s) {_s->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
-    if (_e) {_e->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
-    if (_sm) {_sm->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
-    if (_em) {_em->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
+    if (_u) {_u->writeGmshMsh(f_msh, f_opt, view_id);}
+    if (_s) {_s->writeGmshMsh(f_msh, f_opt, view_id);}
+    if (_e) {_e->writeGmshMsh(f_msh, f_opt, view_id);}
+    if (_sm) {_sm->writeGmshMsh(f_msh, f_opt, view_id);}
+    if (_em) {_em->writeGmshMsh(f_msh, f_opt, view_id);}
 
     if (_sn.size() > 0) {
       for (auto sn : _sn) {
-        sn->writeGmshMsh(f_msh, f_opt, view_id, pmessage);
+        sn->writeGmshMsh(f_msh, f_opt, view_id);
         fprintf(f_opt, "View[%d].Group = \"%s\";\n", view_id, "Stress (global, element node)");
       }
     }
     if (_en.size() > 0) {
       for (auto en : _en) {
-        en->writeGmshMsh(f_msh, f_opt, view_id, pmessage);
+        en->writeGmshMsh(f_msh, f_opt, view_id);
         fprintf(f_opt, "View[%d].Group = \"%s\";\n", view_id, "Strain (global, element node)");
       }
     }
@@ -602,7 +599,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
     // if (_sr) {_sr->writeGmshMsh(file, file_opt, pmessage);}
     // if (_fi) {_fi->writeGmshMsh(file, file_opt, pmessage);}
     if (_sr) {
-      _sr->writeGmshMsh(f_msh, f_opt, view_id, pmessage);
+      _sr->writeGmshMsh(f_msh, f_opt, view_id);
       fprintf(f_opt, "View[%d].RangeType = %d;\n", view_id, 2);
       fprintf(f_opt, "View[%d].IntervalsType = %d;\n", view_id, 3);
       fprintf(f_opt, "View[%d].NbIso = %d;\n", view_id, 20);
@@ -624,7 +621,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
     // }
 
     if (_fi) {
-      _fi->writeGmshMsh(f_msh, f_opt, view_id, pmessage);
+      _fi->writeGmshMsh(f_msh, f_opt, view_id);
       fprintf(f_opt, "View[%d].ScaleType = %d;\n", view_id, 1);
     }
   }
@@ -679,9 +676,9 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
 // void writeGmshElementData(FILE *file,
 //                           const std::vector<PElementNodeData> &data,
 //                           const std::vector<std::string> &labels, Message *pmessage) {
-void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Message *pmessage) {
+void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id) {
 
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
   // std::cout << "_label = " << _label << std::endl;
 
@@ -689,15 +686,15 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
   // Write scaler/vector/tensor as a single quantity
   view_id++;
   if (_type == 0) {
-    PLOG(info) << pmessage->message("writing node data: " + _label);
+    PLOG(info) << g_msg->message("writing node data: " + _label);
     fprintf(f_msh, "$NodeData\n");
   }
   else if (_type == 1) {
-    PLOG(info) << pmessage->message("writing element data: " + _label);
+    PLOG(info) << g_msg->message("writing element data: " + _label);
     fprintf(f_msh, "$ElementData\n");
   }
   else if (_type == 2) {
-    PLOG(info) << pmessage->message("writing element node data: " + _label);
+    PLOG(info) << g_msg->message("writing element node data: " + _label);
     fprintf(f_msh, "$ElementNodeData\n");
   }
   runtime.gmsh_views += 1;
@@ -804,7 +801,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 
   // Write each component individually for vector/tensor
   for (int comp{0}; comp < _component_labels.size(); ++comp) {
-    PLOG(info) << pmessage->message("writing component: " + _component_labels[comp]);
+    PLOG(info) << g_msg->message("writing component: " + _component_labels[comp]);
 
     // For each strain/stress component
     view_id++;

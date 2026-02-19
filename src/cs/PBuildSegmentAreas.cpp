@@ -756,7 +756,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
 
   // Slice layers
   for (auto area : _areas) {
-    area->buildLayers(bcfg, pmessage);
+    area->buildLayers(bcfg);
   }
 
 }

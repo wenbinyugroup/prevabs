@@ -62,7 +62,7 @@ Baseline *findLineByName(const std::string &, const xml_node<> *, PModel *,
  */
 int readPointsFromFile(const std::string &, PModel *, double, Message *);
 PDCELVertex *readXMLElementPoint(const xml_node<> *, const xml_node<> *,
-                                 PModel *, Message *);
+                                 PModel *);
 PDCELVertex *findPointByName(const std::string &, const xml_node<> *, PModel *,
                              Message *);
 
@@ -72,14 +72,13 @@ PDCELVertex *findPointByName(const std::string &, const xml_node<> *, PModel *,
 int readMaterialsFile(const std::string &, PModel *, Message *);
 int readMaterials(const xml_node<> *, PModel *, Message *);
 Material *readXMLElementMaterial(const xml_node<> *, const xml_node<> *,
-                                 PModel *, Message *);
-Lamina *readXMLElementLamina(const xml_node<> *, const xml_node<> *, PModel *,
-                             Message *);
+                                 PModel *);
+Lamina *readXMLElementLamina(const xml_node<> *, const xml_node<> *, PModel *);
 
 /** @ingroup io
  * Read the layup definitions.
  */
-int readLayups(const xml_node<> *, PModel *, Message *);
+int readLayups(const xml_node<> *, PModel *);
 
 PComponent *readXMLElementComponent(const xml_node<> *,
                                     std::vector<std::vector<std::string>> &,
@@ -105,12 +104,11 @@ double getWebEnd(const xml_node<> *, const std::string &, double,
 /** @ingroup io
  * Read inputs for dehomogenization from the main xml file.
  */
-int readInputDehomo(const std::string &, const std::string &, PModel *,
-                    Message *);
+int readInputDehomo(const std::string &, const std::string &, PModel *);
 /** @ingroup io
  * Read data in the SG input file.
  */
-int readSG(const std::string &, PModel *, const WriterConfig &, Message *);
+int readSG(const std::string &, PModel *, const WriterConfig &);
 // int readSGVABS(const std::string &, PModel *, Message *);
 // int readSGSC(const std::string &, PModel *, Message *);
 /** @ingroup io
@@ -122,10 +120,10 @@ int readOutputDehomo(const std::string &, PModel *, Message *);
 LoadCase readXMLElementLoadCase(const xml_node<> *, const int &, const int &, PModel *, Message *);
 int readXMLElementLoadCaseInclude(const xml_node<> *, const int &, const int &, PModel *, Message *);
 int readLoadCasesFromCSV(const std::string &, const int &, const int &, const int &, PModel *, Message *);
-int readVABSU(const std::string &, LocalState *, Message *);
-int readVABSEle(const std::string &, LocalState *, Message *);
-int readSCSn(const std::string &, LocalState *, Message *);
-int readMsgFi(const std::string &, LocalState *, std::size_t, Message *);
+int readVABSU(const std::string &, LocalState *);
+int readVABSEle(const std::string &, LocalState *);
+int readSCSn(const std::string &, LocalState *);
+int readMsgFi(const std::string &, LocalState *, std::size_t);
 // std::vector<std::vector<double>> readOutputDehomoElementSC(
 //   const std::string &, const int &);
 // std::vector<std::vector<double>> readOutputDehomoElementNodeVABS(
@@ -185,6 +183,6 @@ void writeGmshElementData(std::ofstream &,
 
 
 // Supplement files
-void writeInterfaceNodes(PModel *, Message *);
-void writeInterfacePairs(PModel *, Message *);
-void writeNodeElements(PModel *, Message *);
+void writeInterfaceNodes(PModel *);
+void writeInterfacePairs(PModel *);
+void writeNodeElements(PModel *);

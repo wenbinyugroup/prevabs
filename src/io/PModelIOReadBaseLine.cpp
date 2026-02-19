@@ -80,7 +80,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
       PDCELVertex *p_vertex;
       p_vertex = pmodel->getPointByName(p_xn_bpp->first_attribute("name")->value());
       if (!p_vertex) {
-        p_vertex = readXMLElementPoint(p_xn_bpp, nodeBaselines, pmodel, pmessage);
+        p_vertex = readXMLElementPoint(p_xn_bpp, nodeBaselines, pmodel);
         pmodel->addVertex(p_vertex);
       }
     }
@@ -95,7 +95,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
 
     if (_name == "point") {
       PDCELVertex *p_vertex;
-      p_vertex = readXMLElementPoint(p_xn_prim, nodeBaselines, pmodel, pmessage);
+      p_vertex = readXMLElementPoint(p_xn_prim, nodeBaselines, pmodel);
       pmodel->addVertex(p_vertex);
       // p_vertex = pmodel->getPointByName(p_xn_prim->first_attribute("name")->value());
       // if (!p_vertex) {
@@ -113,7 +113,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
       //   p_line = readXMLElementLine(p_xn_prim, nodeBaselines, pmodel, pmessage);
       //   pmodel->addBaseline(p_line);
       // }
-      p_line->print(pmessage);
+      p_line->print();
     }
 
   }
@@ -933,7 +933,7 @@ int readLineByJoin(
 
     std::string subline_name = p_xn_subline->value();
     Baseline *subline = findLineByName(subline_name, p_xn_geo, pmodel, pmessage);
-    subline->print(pmessage);
+    subline->print();
     sublines.push_back(subline);
 
   }

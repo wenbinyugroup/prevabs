@@ -53,7 +53,7 @@ public:
   /**
    * Print out a summary.
    */
-  void print(Message *);
+  void print();
   // void printBaseline(); // Print details
 
 

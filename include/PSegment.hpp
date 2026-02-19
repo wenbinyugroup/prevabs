@@ -181,9 +181,9 @@ public:
 
   void setPDCELFace(PDCELFace *face) { _face = face; }
 
-  void offsetCurveBase(Message *);
+  void offsetCurveBase();
 
-  void build(const BuilderConfig &, Message *);
+  void build(const BuilderConfig &);
   void buildAreas(const BuilderConfig &, Message *);
 };
 

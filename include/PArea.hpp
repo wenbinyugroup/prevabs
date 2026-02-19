@@ -76,5 +76,5 @@ public:
   void setFace(PDCELFace *f) { _face = f; }
   void setLineSegmentBase(PGeoLineSegment *ls) { _line_segment_base = ls; }
 
-  void buildLayers(const BuilderConfig &, Message *);
+  void buildLayers(const BuilderConfig &);
 };

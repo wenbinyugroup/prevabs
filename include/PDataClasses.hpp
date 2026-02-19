@@ -53,7 +53,7 @@ public:
 
   bool isEmpty() { return (_data.size() == 0); }
 
-  void writeGmshMsh(FILE *, FILE *, int &, Message *);
+  void writeGmshMsh(FILE *, FILE *, int &);
   // void writeGmshMsh(std::string &, std::string &, Message *);
 };
 
