@@ -94,9 +94,14 @@ PDCELVertex *findPointOnPolylineByCoordinate(
       left_x3 = ps[i]->y(); left_x2 = ps[i]->z();
       right_x3 = ps[i+1]->y(); right_x2 = ps[i+1]->z();
     } else {
+      // Bug fix: previously fell through with uninitialized left_x2/left_x3/
+      // right_x2/right_x3, causing UB in the comparison below. Return nullptr
+      // immediately so callers can detect the invalid-axis error.
       std::cout << markError << " Point should be specified by x2 or x3 coordinate"
           << std::endl;
-    }; 
+      delete pv;
+      return nullptr;
+    };
     if (
     (left_x2 <= loc && loc <= right_x2) ||
     (left_x2 >= loc && loc >= right_x2)
@@ -208,6 +213,15 @@ PDCELVertex *findParamPointOnPolyline(
   const std::vector<PDCELVertex *> ps,
   const double &u, bool &is_new, int &seg, const double &tol
   ) {
+  // Bug fix: li is used after the loop; if ps has fewer than 2 vertices the
+  // loop body never executes and li would be uninitialized. Return nullptr so
+  // the caller can detect the degenerate input.
+  if (ps.size() < 2) {
+    is_new = false;
+    seg = 0;
+    return nullptr;
+  }
+
   // Calculate the total length
   double length = calcPolylineLength(ps);
   double ulength = u * length;
@@ -327,6 +341,14 @@ Baseline *joinCurves(std::list<Baseline *> curves) {
         break;
       }
     }
+    // Bug fix: if no curve in the remaining list shares an endpoint with bl,
+    // blit reaches end() and dereferencing it is UB; the outer while loop
+    // would also spin forever. Break out and report the disconnected input.
+    if (blit == curves.end()) {
+      std::cout << markError << " joinCurves: disconnected curve set,"
+                << " could not join all segments" << std::endl;
+      break;
+    }
     curves.remove(*blit);
   }
 
@@ -390,6 +412,13 @@ int joinCurves(Baseline *line, std::list<Baseline *> curves) {
         break;
       }
     }
+    // Bug fix: same as the Baseline* overload above — guard against a
+    // disconnected curve set that would leave blit at end() and loop forever.
+    if (blit == curves.end()) {
+      std::cout << markError << " joinCurves: disconnected curve set,"
+                << " could not join all segments" << std::endl;
+      break;
+    }
     curves.remove(*blit);
   }
 
@@ -416,6 +445,9 @@ int joinCurves(Baseline *line, std::list<Baseline *> curves) {
  * @param end Integer indicating which end of the baseline curve segment to adjust (0 for the beginning, 1 for the end).
  */
 void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
+  // Bug fix: previously ls_end was left uninitialized when end is neither 0
+  // nor 1, and was never deleted (memory leak). Use a local pointer with an
+  // explicit delete before every return path.
   PGeoLineSegment *ls_end;
   if (end == 0) {
     ls_end = new PGeoLineSegment(bl->vertices().front(),
@@ -423,11 +455,16 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
   } else if (end == 1) {
     ls_end =
         new PGeoLineSegment(bl->vertices().back(), bl->getTangentVectorEnd());
+  } else {
+    std::cout << markError << " adjustCurveEnd: end must be 0 (begin) or 1 (end)"
+              << std::endl;
+    return;
   }
 
   double u1, u2;
   calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
   PDCELVertex *vnew = ls_end->getParametricVertex(u1);
+  delete ls_end;
 
   if (end == 0) {
     bl->vertices()[0] = vnew;
@@ -593,9 +630,11 @@ SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
   // Given three points, p0, p1, p2, calculate the line bisecting the
   // angle of <p1p0p2, and return the vector parallel this line.
   SVector3 v1{p0, p1}, v2{p0, p2}, vb;
-  // Make the two vectors the same length
-  v1 *= 1 / v1.normSq();
-  v2 *= 1 / v2.normSq();
+  // Make the two vectors unit length so the bisector is unweighted.
+  // Bug fix: was `v1 *= 1 / v1.normSq()` which divides by |v|^2 instead of
+  // |v|, biasing the bisector toward shorter edges.
+  v1.normalize();
+  v2.normalize();
   vb = v1 + v2;
 
   return vb;
@@ -654,7 +693,17 @@ void calcBoundVertices(std::vector<PDCELVertex *> &vertices,
   for (int i = 0; i < layup->getLayers().size(); ++i) {
     thk = layup->getLayers()[i].getLamina()->getThickness() *
           layup->getLayers()[i].getStack();
-    thkp = thk / dot(sv_bound, p);
+    // Bug fix: dot(sv_bound, p) can be zero when the bound direction is
+    // perpendicular to the local normal, producing thkp = ±inf. Skip the
+    // layer and warn rather than inserting a vertex at infinity.
+    double dp = dot(sv_bound, p);
+    if (std::abs(dp) < TOLERANCE) {
+      std::cout << markError << " calcBoundVertices: bound direction is"
+                << " perpendicular to the layer normal; layer skipped"
+                << std::endl;
+      continue;
+    }
+    thkp = thk / dp;
     pv_prev = vertices.back();
     // SPoint3 p_new = pv_prev->point() + (thkp * sv_bound).point();
     // std::cout << "thkp * sv_bound = " << (thkp * sv_bound).point() <<
@@ -684,9 +733,12 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
   n = vl_2.size();
 
   // Decide which dimension (y or z) is used to sort
+  // Bug fix: bare abs() resolves to C integer abs() when <cstdlib> is
+  // included, truncating doubles to int before the absolute value.
+  // Use std::abs() (from <cmath>) throughout.
   int d;
-  if (abs(vl_1.front()->y() - vl_1.back()->y()) >=
-      abs(vl_1.front()->z() - vl_1.back()->z()))
+  if (std::abs(vl_1.front()->y() - vl_1.back()->y()) >=
+      std::abs(vl_1.front()->z() - vl_1.back()->z()))
     d = 1; // d is x2 (i.e. y)
   else
     d = 2; // d is x3 (i.e. z)
@@ -729,7 +781,7 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
       vl_c.push_back(vl_2[j]);
       vi_2.push_back(k);
       j++;
-    } else if (abs(diff) <= TOLERANCE) {
+    } else if (std::abs(diff) <= TOLERANCE) {
       // vl_c[k] = vl_1[i];
       vl_c.push_back(vl_1[i]);
       vi_1.push_back(k);

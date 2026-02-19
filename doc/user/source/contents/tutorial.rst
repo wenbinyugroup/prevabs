@@ -450,7 +450,7 @@ homogenized using the following command:
 
 ::
 
-  prevabs -i box.xml -h -v -e
+  prevabs -i box.xml --hm -v -e
 
 If everything works successfully, Gmsh will be called and the cross section
 will be plotted as shown in :numref:`Fig. %s <fig_tutorial_box_plot>`

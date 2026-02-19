@@ -1,6 +1,14 @@
 
-========================================2024-11-16 17:51:50 [info] - reading input files
-2024-11-16 17:51:50 [info]     - reading main input file:  
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+
+  
   
     
   
@@ -16,35 +24,34 @@
   
   ========================================
   
-terialDB.xml
-2024-11-16 17:51:50 [info]   - reading input files -- done
-2024-11-16 17:51:50 [info]   - building the shape
-2024-11-16 17:51:50 [info]     - building the cross section, step 1
-2024-11-16 17:51:50 [info]       - building component: cmp_1
-2024-11-16 17:51:50 [info]     - building the cross section, step 2
-2024-11-16 17:51:50 [info]       - building component details: cmp_1
-2024-11-16 17:51:51 [info]     - fixing geometry
-2024-11-16 17:51:51 [info]   - building the shape -- done
-2024-11-16 17:51:51 [info]   - modeling in Gmsh
-2024-11-16 17:51:51 [info]     - creating gmsh vertices
-2024-11-16 17:51:51 [info]     - creating gmsh edges
-2024-11-16 17:51:51 [info]     - creating gmsh faces
-2024-11-16 17:51:51 [info]     - creating physical groups
-2024-11-16 17:51:51 [info]     - meshing
-2024-11-16 17:51:54 [info]   - modeling in Gmsh -- done
-2024-11-16 17:51:54 [info]   - writing outputs
-2024-11-16 17:51:54 [info]     - writing gmsh .opt file: .\share\examples\ex_tube\tube.opt
-2024-11-16 17:51:54 [info]     - writing gmsh .geo file: .\share\examples\ex_tube\tube.geo_unrolled
-2024-11-16 17:51:54 [info]     - writing gmsh .msh file: .\share\examples\ex_tube\tube.msh
-2024-11-16 17:51:54 [info]     - writing sg file: .\share\examples\ex_tube\tube.sg
-2024-11-16 17:51:54 [info]       - writing nodes
-2024-11-16 17:51:54 [info]       - writing elements
-2024-11-16 17:51:54 [info]         -   writing connectivity
-2024-11-16 17:51:54 [info]         -   writing local orientation
-2024-11-16 17:51:54 [info]     - writing material id-name file: .\share\examples\ex_tube\tube.sg.mat
-2024-11-16 17:51:54 [info]   - writing outputs -- done
-2024-11-16 17:51:54 [info]   - running Gmsh for visualization
-2024-11-16 17:51:54 [info]   - running: gmsh .\share\examples\ex_tube\tube.geo_unrolled .\share\examples\ex_tube\tube.msh .\share\examples\ex_tube\tube.opt
-2024-11-16 17:51:59 [info]   - gmsh launched successfully.
-2024-11-16 17:51:59 [info] prevabs finished
-2024-11-16 17:51:59 [info] total running time: 8.042 sec
+
+[error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: cmp_1
+[info]     - building the cross section, step 2
+[info]       - building component details: cmp_1
+[info]     - fixing geometry
+[info]   - building the shape -- done
+[info]   - modeling in Gmsh
+[info]     - creating gmsh vertices
+[info]     - creating gmsh edges
+[info]     - creating gmsh faces
+[info]     - creating physical groups
+[info]     - meshing
+[info]   - modeling in Gmsh -- done
+[info]   - writing outputs
+[info]     - writing gmsh .opt file: .\share\examples\ex_tube\tube.opt
+[info]     - writing gmsh .geo file: .\share\examples\ex_tube\tube.geo_unrolled
+[info]     - writing gmsh .msh file: .\share\examples\ex_tube\tube.msh
+[info]     - writing sg file: .\share\examples\ex_tube\tube.sg
+[info]       - writing nodes
+[info]       - writing elements
+[info]         -   writing connectivity
+[info]         -   writing local orientation
+[info]     - writing material id-name file: .\share\examples\ex_tube\tube.sg.mat
+[info]   - writing outputs -- done
+[info]   - running Gmsh for visualization
+[info]   - prevabs finished (2026-02-16 23:20:12)
+[info] total running time: 3.3438 sec

@@ -53,16 +53,14 @@ using namespace rapidxml;
 int readInputMain(const std::string &filenameCrossSection,
                   const std::string &filePath, PModel *pmodel, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // if (config.homo) {
   readCrossSection(filenameCrossSection, filePath, pmodel, pmessage);
   // }
-  if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isRecovery()) {
     readInputDehomo(filenameCrossSection, filePath, pmodel, pmessage);
   }
-
-  pmessage->decreaseIndent();
 
   return 0;
 }

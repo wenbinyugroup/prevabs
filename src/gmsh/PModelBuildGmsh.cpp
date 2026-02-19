@@ -453,7 +453,7 @@ void PModel::createGmshGeo(Message *pmessage) {
 
 void PModel::buildGmsh(Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // _gmodel = new GModel();
   // _gmodel->setFactory("Gmsh");
@@ -518,8 +518,6 @@ void PModel::buildGmsh(Message *pmessage) {
 
 
 
-
-  pmessage->decreaseIndent();
 
 }
 

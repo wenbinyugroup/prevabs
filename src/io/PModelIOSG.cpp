@@ -81,8 +81,8 @@ public:
   }
 };
 
-std::unique_ptr<ISGWriter> makeSGWriter(int analysis_tool) {
-  if (analysis_tool == 2) {
+std::unique_ptr<ISGWriter> makeSGWriter(AnalysisTool tool) {
+  if (tool == AnalysisTool::SwiftComp) {
     return std::unique_ptr<ISGWriter>(new SwiftCompWriter());
   }
   return std::unique_ptr<ISGWriter>(new VABSWriter());
@@ -93,7 +93,7 @@ std::unique_ptr<ISGWriter> makeSGWriter(int analysis_tool) {
 
 int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(info) << pmessage->message("writing sg file: " + fn);
 
@@ -146,7 +146,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   FILE *fsg;
   fsg = fopen(fn.c_str(), "w");
 
-  auto writer = makeSGWriter(wcfg.analysis_tool);
+  auto writer = makeSGWriter(wcfg.tool);
 
   // Write the analysis settings
   writer->writeSettings(fsg, this, wcfg);
@@ -185,8 +185,6 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   fclose(fsg_mat);
 
 
-  pmessage->decreaseIndent();
-
   return 1;
 }
 
@@ -199,7 +197,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
 
 
 int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
 
   PMesh *mesh = new PMesh();
@@ -210,17 +208,17 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Mess
     throw std::runtime_error("Unable to find the file: " + wcfg.file_name_vsc);
   // printInfo(i_indent, "reading VABS input data: " + wcfg.file_name_vsc);
 
-  if (wcfg.analysis_tool == 1)
+  if (wcfg.tool == AnalysisTool::VABS)
     PLOG(info) << pmessage->message("reading VABS input data: " + wcfg.file_name_vsc);
-  else if (wcfg.analysis_tool == 2)
+  else if (wcfg.tool == AnalysisTool::SwiftComp)
     PLOG(info) << pmessage->message("reading SwiftComp input data: " + wcfg.file_name_vsc);
 
 
   int nnode{0}, nelem{0}, nsg;
   int ln(1); // line counter
   int num_head_lines;
-  if (wcfg.analysis_tool == 1) num_head_lines = 4;
-  else if (wcfg.analysis_tool == 2) num_head_lines = 5;
+  if (wcfg.tool == AnalysisTool::VABS) num_head_lines = 4;
+  else if (wcfg.tool == AnalysisTool::SwiftComp) num_head_lines = 5;
 
   while (ifs) {
     std::string line;
@@ -236,8 +234,8 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Mess
       // read out number of nodes and number of elements
       std::stringstream ss;
       ss << line;
-      if (wcfg.analysis_tool == 1) ss >> nnode >> nelem;
-      else if (wcfg.analysis_tool == 2) ss >> nsg >> nnode >> nelem;
+      if (wcfg.tool == AnalysisTool::VABS) ss >> nnode >> nelem;
+      else if (wcfg.tool == AnalysisTool::SwiftComp) ss >> nsg >> nnode >> nelem;
     }
 
     // read the node block
@@ -267,7 +265,7 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Mess
       PElement *element = new PElement(ei);
       // element->setTypeId(2);
 
-      if (wcfg.analysis_tool == 2) {
+      if (wcfg.tool == AnalysisTool::SwiftComp) {
         // For swiftcomp, read the layer type id after the element id
         int prop_id;
         ss >> prop_id;
@@ -303,8 +301,6 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg, Mess
 
   pmodel->setMesh(mesh);
 
-
-  pmessage->decreaseIndent();
 
   return 0;
 }

@@ -1,0 +1,89 @@
+<!-- <cross_section name="box"> -->
+<cross_section name="box" format="1">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>db_material</material> -->
+    <material>materials</material>
+    <!-- <layup>layups</layup> -->
+  </include>
+  <analysis>
+    <model>1</model>
+    <!-- <thermal>0</thermal> -->
+    <!-- <trapeze>0</trapeze> -->
+    <!-- <vlasov>0</vlasov> -->
+    <!-- <initial_twist>0.001</initial_twist> -->
+    <!-- <initial_curvature_2></initial_curvature_2>
+    <initial_curvature_3></initial_curvature_3>
+    <oblique_y1></oblique_y1>
+    <oblique_y2></oblique_y2> -->
+  </analysis>
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.01</mesh_size>
+    <element_type>2</element_type>
+  </general>
+
+  <materials>
+    <material name="mtr_lamina" type="lamina">
+      <density>10</density>
+      <elastic>
+        <e1>4</e1>
+        <e2>5</e2>
+        <g12>6</g12>
+        <nu12>0.4</nu12>
+      </elastic>
+    </material>
+    <lamina name="la_mtr_lamina_0.01">
+      <material>mtr_lamina</material>
+      <thickness>0.02</thickness>
+    </lamina>
+  </materials>
+
+  <baselines>
+
+    <point name="o">0  0</point>
+    <point name="lb">-0.5 -0.5</point>
+    <point name="lt">-0.5  0.5</point>
+    <point name="rt">0.5  0.5</point>
+    <point name="rb">0.5 -0.5</point>
+
+    <baseline name="bsl_all" type="straight">
+      <!-- <points>rt,p1,lt,lb,rb,p8,rt</points> -->
+      <!-- <points>rt,p2,lt,p3,p4,lb,p5,p6,rb,p7,rt</points> -->
+      <points>rt,lt,lb,rb,rt</points>
+    </baseline>
+
+  </baselines>
+
+
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_mtr_lamina_0.01">0:2</layer>
+      <layer lamina="la_mtr_lamina_0.01">90:2</layer>
+
+    </layup>
+
+  </layups>
+
+
+
+  <component name="main">
+    <segment>
+      <baseline>bsl_all</baseline>
+      <layup>layup1</layup>
+    </segment>
+
+  </component>
+
+
+  <global measure="stress">
+    <displacements>0 0 0</displacements>
+    <rotations>1 0 0 0 1 0 0 0 1</rotations>
+    <loads>1 2 3 4 5 6</loads>
+  </global>
+
+
+</cross_section>

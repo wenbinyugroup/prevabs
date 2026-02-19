@@ -1,0 +1,64 @@
+<cross_section name="v" format="1">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>materials</material> -->
+    <!-- <layup>layups</layup> -->
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1</scale>
+    <rotate></rotate>
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <point name="p1">-1 2</point>
+    <point name="p2">0 0</point>
+    <point name="p3">1 2</point>
+    <baseline name="bl" type="straight">
+      <points>p1,p2,p3</points>
+    </baseline>
+  </baselines>
+
+  <materials>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_iso5_1_0005">
+      <material>iso5_1</material>
+      <thickness>0.005</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1" method="ss">
+      <lamina>la_iso5_1_0005</lamina>
+      <code>[45:2/-45:2/0:2/90:2]s</code>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_v">
+      <baseline>bl</baseline>
+      <layup direction="right">layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>

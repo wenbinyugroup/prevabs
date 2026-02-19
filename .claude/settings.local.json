@@ -1,16 +1,31 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)",
-      "Bash(find:*)",
-      "Bash(PowerShell.exe -Command \"\n$bytes = [System.IO.File]::ReadAllBytes\\(''c:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\src\\\\cs\\\\PModel.cpp''\\)\n$crCount = \\($bytes | Where-Object { $_ -eq 0x0D }\\).Count\n$lfCount = \\($bytes | Where-Object { $_ -eq 0x0A }\\).Count\n\"\"CR count: $crCount, LF count: $lfCount\"\"\n\")",
-      "Bash(PowerShell.exe -NoProfile -Command \"[System.IO.File]::ReadAllBytes\\(''c:/Users/tian50/work/dev/prevabs/src/cs/PModel.cpp''\\) | Where-Object { $_ -eq 0x0D } | Measure-Object | Select -ExpandProperty Count\")",
-      "Bash(cmd /c \"tools\\\\build_msvc.bat fast\")",
-      "Bash(cmd /c \"tools\\\\build_msvc.bat fast 2>&1\")",
-      "Bash(cmd /c \"cmake --build . --config Release 2>&1\")",
-      "Bash(PowerShell.exe -NoProfile -Command \"& ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\Common7\\\\Tools\\\\VsDevCmd.bat''; cmake --build ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\build_msvc'' --config Release\")",
+      "Bash(dir:*)",
+      "Bash(pwsh -NoProfile -ExecutionPolicy Bypass -File tools/build-msvc.ps1 fast)",
+      "Bash(make test_offset:*)",
+      "Bash(g++:*)",
+      "Bash(cmd //c \"where cl.exe\")",
+      "Bash(powershell.exe -Command \"Get-Command cl.exe -ErrorAction SilentlyContinue; Get-Command cmake.exe -ErrorAction SilentlyContinue\")",
+      "Bash(powershell.exe -NoProfile -Command \"& { ls ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022'' }\")",
+      "Bash(pwsh -NoProfile -Command \"ls ''C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022''\")",
+      "Bash(pwsh -NoProfile -Command \"ls ''C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio''\")",
+      "Bash(cmd //c \"test\\\\test_all_examples.bat run\")",
+      "Bash(./build_msvc/Release/prevabs.exe:*)",
+      "Bash(pwsh -NoProfile -Command \"& { Set-Location test; ..\\\\build_msvc\\\\Release\\\\prevabs.exe -i t1_strip\\\\strip.xml --hm }\")",
+      "Bash(pwsh -NoProfile -Command \"Set-Location ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test''; ..\\\\build_msvc\\\\Release\\\\prevabs.exe -i t1_strip\\\\strip.xml --hm 2>&1 | Select-Object -Last 20\")",
+      "Bash(pwsh -NoProfile -Command \"Set-Location ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test''; ..\\\\build_msvc\\\\Release\\\\prevabs.exe -i t2_z\\\\z.xml --hm 2>&1 | Select-Object -Last 10\")",
+      "Bash(pwsh -NoProfile -Command \"Set-Location ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test''; foreach \\($t in @\\(''t1_strip\\\\strip_two_lines'', ''t1_strip\\\\strip_two_segs''\\)\\) { ..\\\\build_msvc\\\\Release\\\\prevabs.exe -i \"\"$t.xml\"\" --hm 2>&1 | Select-Object -Last 3 }\")",
+      "Bash(pwsh -NoProfile -Command \"Set-Location ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test''; ..\\\\build_msvc\\\\Release\\\\prevabs.exe -i t1_strip\\\\strip_two_segs.xml --hm 2>&1 | Select-Object -Last 5\")",
+      "Bash(pwsh -NoProfile -Command \"Set-Location ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test''; ..\\\\build_msvc\\\\Release\\\\prevabs.exe -i t1_strip\\\\strip_two_lines.xml --hm 2>&1 | Select-Object -Last 5\")",
+      "Bash(pwsh -NoProfile -Command \"New-Item -ItemType Directory -Force ''C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\local'' | Out-Null; Write-Host ''done''\")",
+      "Bash(cmd /c \"test\\\\run_integration_tests.bat\")",
+      "Bash(cmd /c \"dir C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test\\\\integration\")",
+      "Bash(cmd /c \"C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\build_msvc\\\\Release\\\\prevabs.exe -i C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\test\\\\integration\\\\backlog\\\\1.5_joint_node_mark\\\\box.xml -h\")",
+      "Bash(cmd /c \"C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\build_msvc\\\\Release\\\\prevabs.exe\" --version)",
+      "Bash(echo:*)",
       "Bash(cmd /c:*)",
-      "Bash(cmake --build:*)"
+      "Bash(test:*)"
     ]
   }
 }

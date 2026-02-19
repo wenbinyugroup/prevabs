@@ -17,7 +17,7 @@
 int readInputDehomo(const std::string &filenameCrossSection,
                     const std::string &filePath, PModel *pmodel,
                     Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // -----------------------------------------------------------------
   // Open xml file
@@ -123,8 +123,6 @@ int readInputDehomo(const std::string &filenameCrossSection,
     pmodel->addLoadCase(lc);
   }
 
-  pmessage->decreaseIndent();
-
   return 1;
 }
 
@@ -137,7 +135,7 @@ int readInputDehomo(const std::string &filenameCrossSection,
 
 
 int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
 
   // TODO: for each load case
@@ -148,7 +146,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
   std::string fn;
 
-  if (config.dehomo) {
+  if (config.isDehomo()) {
     PLOG(info) << pmessage->message("reading dehomogenization outputs...");
 
     // Read node data (displacement)
@@ -156,11 +154,11 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
     readVABSU(fn, state, pmessage);
 
     // Read element data (stress and strain)
-    if (config.analysis_tool == 1) {
+    if (config.isVABS()) {
       fn = fn_sg + ".ELE";
       readVABSEle(fn, state, pmessage);
     }
-    else if (config.analysis_tool == 2) {
+    else if (config.isSC()) {
       fn = fn_sg + ".SN";
       readSCSn(fn, state, pmessage);
     }
@@ -168,7 +166,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
     // Read element nodal data (stress and strain)
   }
 
-  if (config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isFailure()) {
     PLOG(info) << pmessage->message("reading failure analysis outputs...");
 
     // Read element data (failure index and strength ratio)
@@ -178,8 +176,6 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
 
   pmodel->addLocalState(state);
 
-
-  pmessage->decreaseIndent();
 
   return 0;
 }
@@ -295,7 +291,7 @@ LoadCase readXMLElementLoadCase(
     }
   }
 
-  if (config.fail_envelope) {
+  if (config.isFailEnvelope()) {
     loadcase.envelope_axis1 = p_xn_loadcase->first_node("axis1")->value();
     loadcase.envelope_axis2 = p_xn_loadcase->first_node("axis2")->value();
     loadcase.envelope_div = 10;
@@ -407,14 +403,14 @@ int readLoadCasesFromCSV(
 
 
 int PModel::writeGLB(std::string fn, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing glb file: " + fn);
 
   FILE *file;
   file = fopen(fn.c_str(), "w");
 
   // Write material strength properties for strength analysis
-  if (config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isFailure()) {
     for (auto m : _cross_section->getUsedMaterials()) {
       // m->printMaterial();
       m->writeStrengthProperties(file, pmessage);
@@ -426,7 +422,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
   for (auto i = 0; i < _pp_data.load_cases.size(); i++) {
 
     LoadCase loadcase = _pp_data.load_cases[i];
-    if (config.analysis_tool == 1) { // VABS
+    if (config.isVABS()) {
       if (i == 0) {
         writeVectorToFile(file, loadcase.displacement);
         fprintf(file, "\n");
@@ -457,8 +453,8 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
     }
 
 
-    else if (config.analysis_tool == 2) { // SwiftComp
-      if (config.dehomo) {
+    else if (config.isSC()) {
+      if (config.isDehomo()) {
         writeVectorToFile(file, loadcase.displacement);
         fprintf(file, "\n");
         writeVectorToFile(file, loadcase.rotation[0]);
@@ -470,7 +466,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
       fprintf(file, "%8d\n", loadcase.measure);
       fprintf(file, "\n");
 
-      if (config.fail_envelope) {
+      if (config.isFailEnvelope()) {
         std::vector<std::string> v_s_order;
         if (_analysis_model == 0) {
           if (loadcase.measure == 0) v_s_order = {"f1", "m1", "m2", "m3"};
@@ -496,7 +492,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
         fprintf(file, "\n");
       }
 
-      else if (config.dehomo || config.fail_index) {
+      else if (config.isDehomo() || config.isFailIndex()) {
         writeVectorToFile(file, loadcase.load);
       }
 
@@ -506,8 +502,6 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
   fprintf(file, "\n");
 
   fclose(file);
-
-  pmessage->decreaseIndent();
 
   return 1;
 }
@@ -521,7 +515,7 @@ int PModel::writeGLB(std::string fn, Message *pmessage) {
 
 
 int readVABSU(const std::string &filename, LocalState *state, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -569,8 +563,6 @@ int readVABSU(const std::string &filename, LocalState *state, Message *pmessage)
 
   state->setU(p_nd);
 
-  pmessage->decreaseIndent();
-
   // return data;
   return 0;
 }
@@ -586,7 +578,7 @@ int readVABSU(const std::string &filename, LocalState *state, Message *pmessage)
 // std::vector<PElementNodeData>
 // readOutputDehomoElementVABS(const std::string &filename, Message *pmessage) {
 int readVABSEle(const std::string &filename, LocalState *state, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -679,7 +671,6 @@ int readVABSEle(const std::string &filename, LocalState *state, Message *pmessag
   state->setEM(p_elm_em);
   state->setSM(p_elm_sm);
 
-  pmessage->decreaseIndent();
 
   // return data;
   return 0;
@@ -694,7 +685,7 @@ int readVABSEle(const std::string &filename, LocalState *state, Message *pmessag
 
 
 int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -770,7 +761,6 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
   ifen.close();
 
 
-  pmessage->decreaseIndent();
 
   return 0;
 }
@@ -784,7 +774,7 @@ int readSCSn(const std::string &filename, LocalState *state, Message *pmessage) 
 
 
 int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // TODO: multiple load cases
 
@@ -886,8 +876,6 @@ int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem,
 
   // std::cout << "sr data label: " << p_data_sr->getLabel() << std::endl;
   // std::cout << "fi data label: " << p_data_fi->getLabel() << std::endl;
-
-  pmessage->decreaseIndent();
 
   // return data;
   return 0;

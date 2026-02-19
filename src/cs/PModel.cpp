@@ -40,14 +40,19 @@ PModel::PModel(std::string name) {
 void PModel::initialize() {
 
   if (config.debug) {
-    config.fdeb = fopen((config.file_directory + config.file_base_name + ".debug").c_str(), "w");
+    runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
+    if (!runtime.fdeb) {
+      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb << std::endl;
+      config.debug = false;
+    }
   }
 
   gmsh::initialize();
-  // GmshInitialize(0, 0);
-  // printInfo(1, "Gmsh initialized");
 
-  // gmsh::logger::stop();
+  // Control Gmsh's own console output (meshing progress, info lines, etc.).
+  // Level: 0=silent, 1=errors, 2=warnings, 3=info (default), 5=debug.
+  // Controlled via --gmsh-verbosity; defaults to 2 (warnings).
+  gmsh::option::setNumber("General.Verbosity", config.app.gmsh_verbosity);
 
 }
 
@@ -60,8 +65,9 @@ void PModel::finalize() {
   gmsh::finalize();
   // GmshFinalize();
 
-  if (config.debug) {
-    fclose(config.fdeb);
+  if (config.debug && runtime.fdeb) {
+    fclose(runtime.fdeb);
+    runtime.fdeb = nullptr;
   }
 
 }
@@ -290,7 +296,7 @@ void PModel::build(Message *pmessage) {
   _dcel->initialize();
 
   BuilderConfig bcfg{
-    config.debug, config.analysis_tool, config.tol, config.geo_tol,
+    config.debug, config.tool, config.app.tol, config.app.geo_tol,
     _dcel, this,
     [this](Message *m) { this->plotGeoDebug(m); }
   };
@@ -298,7 +304,7 @@ void PModel::build(Message *pmessage) {
   // for (auto cs : crosssections) {
   //   cs->build();
   // }
-  _cross_section->build(bcfg, pmessage);
+  _cross_section->build(bcfg);
 
   // _dcel->print_dcel();
 
@@ -748,7 +754,7 @@ void PModel::homogenize(Message *pmessage) {
       if (config.plot) {
         writeGmsh(config.file_directory + config.file_base_name, pmessage);
       }
-      WriterConfig wcfg{config.analysis_tool, config.dehomo, config.tool_ver, config.file_name_vsc};
+      WriterConfig wcfg{config.tool, config.isDehomo(), config.tool_ver, config.file_name_vsc};
       writeSG(config.file_name_vsc, wcfg, pmessage);
 
       if (_itf_output) {
@@ -778,7 +784,7 @@ void PModel::homogenize(Message *pmessage) {
 
 
 void PModel::dehomogenize(Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("dehomogenizing...");
 
   // Read cs xml file
@@ -796,8 +802,6 @@ void PModel::dehomogenize(Message *pmessage) {
   //   run(pmessage);
   // }
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -810,7 +814,7 @@ void PModel::dehomogenize(Message *pmessage) {
 
 
 void PModel::run(Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   pmessage->printBlank();
   PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis);
@@ -821,27 +825,24 @@ void PModel::run(Message *pmessage) {
 
   std::vector<std::string> cmd_args;
 
-  if (config.analysis_tool == 1) {
+  if (config.isVABS()) {
     cmd_args.push_back(config.file_name_vsc);
-    // VABS
     {
-      if (config.dehomo) {
-        config.vabs_option = "2";
-        if (config.dehomo_nl) {
-          config.vabs_option = "1";
-        }
+      if (config.isDehomo()) {
+        config.vabs_option = (config.mode == AnalysisMode::DehomogenizationNL) ? "1" : "2";
       }
-      cmd_args.push_back(config.vabs_option);
+      if (!config.vabs_option.empty()) {
+        cmd_args.push_back(config.vabs_option);
+      }
       if (_pp_data.load_cases.size() > 1) {
         cmd_args.push_back(std::to_string(_pp_data.load_cases.size()));
       }
 
       runVABS(config.vabs_name, cmd_args, pmessage);
-
     }
   }
 
-  else if (config.analysis_tool == 2) {
+  else if (config.isSC()) {
     cmd_args.push_back(config.file_name_vsc);
     // SwiftComp
     if (_analysis_model_dim == 1) {
@@ -865,8 +866,6 @@ void PModel::run(Message *pmessage) {
   PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
   pmessage->printBlank();
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -879,7 +878,7 @@ void PModel::run(Message *pmessage) {
 
 
 void PModel::plot(Message *pmessage) {
-  if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isRecovery()) {
     plotDehomo(pmessage);
     // pmessage->printBlank();
     // PLOG(info) << pmessage->message("post-processing recover results");
@@ -901,7 +900,12 @@ void PModel::plot(Message *pmessage) {
   pmessage->printBlank();
   PLOG(info) << pmessage->message("running Gmsh for visualization");
 
-  runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
+  // Load the opt file (view options) and open the FLTK GUI via the Gmsh API.
+  // This avoids requiring a separate `gmsh` executable on PATH.
+  if (!config.file_name_opt.empty()) {
+    gmsh::merge(config.file_name_opt);
+  }
+  gmsh::fltk::run();
 
   return;
 }

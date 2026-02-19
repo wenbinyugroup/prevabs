@@ -67,6 +67,26 @@ public:
   // int printDebug(std::string);
 };
 
+// RAII guard that increases indent on construction and decreases on
+// destruction — safe against early returns and exceptions.
+//
+// Usage:
+//   void foo(Message *pmessage) {
+//     MESSAGE_SCOPE(pmessage);
+//     ...
+//   }  // decreaseIndent called automatically
+struct MessageScope {
+  Message* _msg;
+  explicit MessageScope(Message* msg) : _msg(msg) { _msg->increaseIndent(); }
+  ~MessageScope() { _msg->decreaseIndent(); }
+  // Non-copyable
+  MessageScope(const MessageScope&) = delete;
+  MessageScope& operator=(const MessageScope&) = delete;
+};
+
+// Convenience macro — __LINE__ suffix prevents name collisions when nested.
+#define MESSAGE_SCOPE(msg) MessageScope _msg_scope_##__LINE__(msg)
+
 
 int convertSizeTToInt(size_t value);
 

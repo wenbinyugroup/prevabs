@@ -1,4 +1,4 @@
-[info] - prevabs start (2024-11-17 18:52:50)
+[info] - prevabs start (2026-02-16 16:43:47)
 [info] - reading input files
 [info]     - reading main input file: .\share\examples\ex_airfoil_dspar\c  
   
@@ -16,7 +16,7 @@
   
   ========================================
   
-foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]         - reading materials file: .\share\examples\ex_airfoil_dspar\material_database_us_ft.xml
 [info]   - reading input files -- done
 [info]   - building the shape
@@ -48,7 +48,6 @@ foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]     - writing material id-name file: .\share\examples\ex_airfoil_dspar\cs_main.sg.mat
 [info]   - writing outputs -- done
 [info]   - running Gmsh for visualization
-[info]   - running: gmsh .\share\examples\ex_airfoil_dspar\cs_main.geo_unrolled .\share\examples\ex_airfoil_dspar\cs_main.msh .\share\examples\ex_airfoil_dspar\cs_main.opt
-[info]   - gmsh launched successfully.
-[info]   - prevabs finished (2024-11-17 18:52:53)
-[info] total running time: 2.729 sec
+[info]   - running: gmsh ".\share\examples\ex_airfoil_dspar\cs_main.geo_unrolled" ".\share\examples\ex_airfoil_dspar\cs_main.msh" ".\share\examples\ex_airfoil_dspar\cs_main.opt"
+[info]   - prevabs finished (2026-02-16 16:43:49)
+[info] total running time: 2.402 sec

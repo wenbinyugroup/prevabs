@@ -61,7 +61,7 @@ void PModel::writeNodes(
   Message *pmessage
   ) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing nodes");
 
   // std::vector<size_t> node_tags;
@@ -84,8 +84,6 @@ void PModel::writeNodes(
   }
 
   fprintf(file, "\n");
-
-  pmessage->decreaseIndent();
 
   return;
 
@@ -139,10 +137,10 @@ void PModel::writeElements(
   Message *pmessage
   ) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing elements");
 
-  if (config.analysis_tool == 1) {
+  if (config.isVABS()) {
     writeElementsVABS(
       file,
       face_elem_types, face_elem_tags, face_elem_node_tags,
@@ -151,11 +149,9 @@ void PModel::writeElements(
       );
   }
 
-  else if (config.analysis_tool == 2) {
+  else if (config.isSC()) {
     writeElementsSC(file, pmessage);
   }
-
-  pmessage->decreaseIndent();
 
 }
 
@@ -172,7 +168,7 @@ void PModel::writeElementsVABS(
   Message *pmessage
   ) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // Write connectivity for each element
   PLOG(info) << pmessage->message("  writing connectivity");
@@ -259,8 +255,6 @@ void PModel::writeElementsVABS(
 
   }
   fprintf(file, "\n");
-
-  pmessage->decreaseIndent();
 
   return;
 
@@ -360,17 +354,17 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
 
 
 int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
 
   // std::string fn;
-  if (config.homo) {
+  if (config.isHomo()) {
     // fn = fn_base + ".geo";
     // _gmodel->writeGEO(fn);
     gmsh::write(fn);
   }
 
-  else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  else if (config.isRecovery()) {
     // fn = fn_base + "_local.geo";
     // PLOG(info) << pmessage->message("writing gmsh .geo file: " + fn);
     std::ofstream ofs_geo(fn);
@@ -379,8 +373,6 @@ int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
 
   // config.file_name_geo = fn;
 
-  pmessage->decreaseIndent();
-
   return 0;
 }
 
@@ -388,15 +380,15 @@ int PModel::writeGmshGeo(const std::string &fn, Message *pmessage) {
 
 
 int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
 
   // open the .opt file for extra options
   std::string fn_opt;
-  if (config.homo) {
+  if (config.isHomo()) {
     fn_opt = fn_base + ".opt";
   }
-  else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  else if (config.isRecovery()) {
     fn_opt = fn_base + "_local.opt";
   }
   // FILE *file_opt;
@@ -405,7 +397,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
   // write .msh file
   std::string fn_msh;
-  if (config.homo) {
+  if (config.isHomo()) {
 
     fn_msh = fn_base + ".msh";
     PLOG(info) << pmessage->message("writing gmsh .msh file: " + fn_msh);
@@ -414,7 +406,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
   }
 
-  else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  else if (config.isRecovery()) {
 
     for (auto state : _pp_data.local_states) {  // For each load case
 
@@ -459,8 +451,6 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
   // fclose(file_opt);
 
 
-  pmessage->decreaseIndent();
-
   return 0;
 }
 
@@ -468,14 +458,14 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
 
 int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   std::string fn;
 
-  if (config.homo) {
+  if (config.isHomo()) {
     fn = fn_base + ".opt";
   }
-  else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  else if (config.isRecovery()) {
     fn = fn_base + "_local.opt";
   }
 
@@ -501,10 +491,10 @@ int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
   fprintf(file, "Mesh.ColorCarousel = %d;\n", 2);
   // fprintf(file, "Mesh.RemeshParametrization = %d;\n", 0);
 
-  if (config.homo) {
+  if (config.isHomo()) {
     fprintf(file, "Mesh.SurfaceFaces = %d;\n", 1);
   }
-  else if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
+  else if (config.isRecovery()) {
     fprintf(file, "Mesh.Points = %d;\n", 0);
     fprintf(file, "Mesh.SurfaceEdges = %d;\n", 0);
     fprintf(file, "Mesh.SurfaceFaces = %d;\n", 0);
@@ -514,8 +504,6 @@ int PModel::writeGmshOpt(const std::string &fn_base, Message *pmessage) {
 
   fclose(file);
   config.file_name_opt = fn;
-
-  pmessage->decreaseIndent();
 
 
   return 0;
@@ -585,11 +573,11 @@ void PMesh::writeGmshMsh(FILE *file, Message *pmessage) {
 
 
 void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   int view_id = -1;
 
-  if (config.dehomo) {
+  if (config.isDehomo()) {
     if (_u) {_u->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
     if (_s) {_s->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
     if (_e) {_e->writeGmshMsh(f_msh, f_opt, view_id, pmessage);}
@@ -610,7 +598,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
     }
   }
 
-  if (config.fail_strength || config.fail_index || config.fail_envelope) {
+  if (config.isFailure()) {
     // if (_sr) {_sr->writeGmshMsh(file, file_opt, pmessage);}
     // if (_fi) {_fi->writeGmshMsh(file, file_opt, pmessage);}
     if (_sr) {
@@ -642,8 +630,6 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
   }
 
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -654,7 +640,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
 //   pmessage->increaseIndent();
 
 
-//   if (config.dehomo) {
+//   if (config.isDehomo()) {
 //     FILE *f_msh, *f_opt;
 //     f_msh = fopen(fn_msh.c_str(), "a");
 //     f_opt = fopen(fn_opt.c_str(), "a");
@@ -669,7 +655,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
 //     fclose(f_opt);
 //   }
 
-//   if (config.fail_strength || config.fail_index || config.fail_envelope) {
+//   if (config.isFailure()) {
 //     // if (_sr) {_sr->writeGmshMsh(file, file_opt, pmessage);}
 //     // if (_fi) {_em->writeGmshMsh(file, file_opt, pmessage);}
 //     if (_sr) {_sr->writeGmshMsh(fn_msh, fn_opt, pmessage);}
@@ -695,7 +681,7 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
 //                           const std::vector<std::string> &labels, Message *pmessage) {
 void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Message *pmessage) {
 
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // std::cout << "_label = " << _label << std::endl;
 
@@ -714,7 +700,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
     PLOG(info) << pmessage->message("writing element node data: " + _label);
     fprintf(f_msh, "$ElementNodeData\n");
   }
-  config.gmsh_views += 1;
+  runtime.gmsh_views += 1;
 
 
   // string tags
@@ -784,31 +770,31 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 
   // options
   if (_order > 0) {
-    fprintf(f_opt, "View[%d].Group = \"%s\";\n", config.gmsh_views-1, _label.c_str());
+    fprintf(f_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
   }
 
-  if (config.fail_index) {
+  if (config.isFailIndex()) {
     if (_label == "Strength ratio") {
-      fprintf(f_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 1);
-      // fprintf(f_opt, "View[%d].ColormapSwap = %d;\n", config.gmsh_views-1, 1);
-      // fprintf(f_opt, "View[%d].RangeType = %d;\n", config.gmsh_views-1, 2);
+      fprintf(f_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 1);
+      // fprintf(f_opt, "View[%d].ColormapSwap = %d;\n", runtime.gmsh_views-1, 1);
+      // fprintf(f_opt, "View[%d].RangeType = %d;\n", runtime.gmsh_views-1, 2);
     }
     else {
-      fprintf(f_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
+      fprintf(f_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
     }
-    // fprintf(f_opt, "View[%d].ColormapNumber = %d;\n", config.gmsh_views-1, 2);
-    // fprintf(f_opt, "View[%d].CustomMax = %e;\n", config.gmsh_views-1, 1e10);
-    // fprintf(f_opt, "View[%d].CustomMin = %e;\n", config.gmsh_views-1, 1e-10);
-    // fprintf(f_opt, "View[%d].IntervalsType = %d;\n", config.gmsh_views-1, 2);
-    fprintf(f_opt, "View[%d].SaturateValues = %d;\n", config.gmsh_views-1, 1);
-    // fprintf(f_opt, "View[%d].ScaleType = %d;\n", config.gmsh_views-1, 2);
+    // fprintf(f_opt, "View[%d].ColormapNumber = %d;\n", runtime.gmsh_views-1, 2);
+    // fprintf(f_opt, "View[%d].CustomMax = %e;\n", runtime.gmsh_views-1, 1e10);
+    // fprintf(f_opt, "View[%d].CustomMin = %e;\n", runtime.gmsh_views-1, 1e-10);
+    // fprintf(f_opt, "View[%d].IntervalsType = %d;\n", runtime.gmsh_views-1, 2);
+    fprintf(f_opt, "View[%d].SaturateValues = %d;\n", runtime.gmsh_views-1, 1);
+    // fprintf(f_opt, "View[%d].ScaleType = %d;\n", runtime.gmsh_views-1, 2);
   }
   else {
     if (_label == "Stress (global)" || _label == "SN11") {
-      fprintf(f_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 1);
+      fprintf(f_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 1);
     }
     else {
-      fprintf(f_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
+      fprintf(f_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
     }
   }
 
@@ -825,7 +811,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
     if (_type == 0) {fprintf(f_msh, "$NodeData\n");}
     else if (_type == 1) {fprintf(f_msh, "$ElementData\n");}
     else if (_type == 2) {fprintf(f_msh, "$ElementNodeData\n");}
-    config.gmsh_views += 1;
+    runtime.gmsh_views += 1;
 
 
     // string tags
@@ -868,11 +854,9 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 
 
     // options
-    fprintf(f_opt, "View[%d].Group = \"%s\";\n", config.gmsh_views-1, _label.c_str());
-    fprintf(f_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
+    fprintf(f_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
+    fprintf(f_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
   }
-
-  pmessage->decreaseIndent();
 
   return;
 
@@ -910,7 +894,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 //     // fprintf(file, "$ElementNodeData\n");
 //     fs_msh << "$ElementNodeData" << std::endl;
 //   }
-//   config.gmsh_views += 1;
+//   runtime.gmsh_views += 1;
 
 
 //   // string tags
@@ -1009,23 +993,23 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 
 //   // options
 //   if (_order > 0) {
-//     // fprintf(file_opt, "View[%d].Group = \"%s\";\n", config.gmsh_views-1, _label.c_str());
+//     // fprintf(file_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
 //   }
 
-//   if (config.fail_index) {
+//   if (config.isFailIndex()) {
 //     if (_label == "Strength ratio") {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 1);
+//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 1);
 //     }
 //     else {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
+//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
 //     }
 //   }
 //   else {
 //     if (_label == "Stress (global)") {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 1);
+//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 1);
 //     }
 //     else {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
+//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
 //     }
 //   }
 
@@ -1041,7 +1025,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 //   //   if (_type == 0) {fprintf(file, "$NodeData\n");}
 //   //   else if (_type == 1) {fprintf(file, "$ElementData\n");}
 //   //   else if (_type == 2) {fprintf(file, "$ElementNodeData\n");}
-//   //   config.gmsh_views += 1;
+//   //   runtime.gmsh_views += 1;
 
 
 //   //   // string tags
@@ -1084,8 +1068,8 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id, Mess
 
 
 //   //   // options
-//   //   fprintf(file_opt, "View[%d].Group = \"%s\";\n", config.gmsh_views-1, _label.c_str());
-//   //   fprintf(file_opt, "View[%d].Visible = %d;\n", config.gmsh_views-1, 0);
+//   //   fprintf(file_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
+//   //   fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
 //   // }
 
 //   fs_msh.close();

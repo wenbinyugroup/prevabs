@@ -1,4 +1,4 @@
-[info] - prevabs start (2026-02-14 20:09:01)
+[info] - prevabs start (2026-02-16 16:41:03)
 [info] - reading input files
 [info]     - reading main input file: .\share\examples\ex_airfoil\mh104.x  
   
@@ -14,7 +14,7 @@
     
     ========================================
     
-re\examples\ex_airfoil\materials.xml
+are\examples\ex_airfoil\materials.xml
 [info]   - reading input files -- done
 [info]   - building the shape
 [info]     - building the cross section, step 1
@@ -35,5 +35,5 @@ re\examples\ex_airfoil\materials.xml
 [info]     - meshing
 [info]     - running Gmsh for visualization
 [info]     - running: gmsh ".\share\examples\ex_airfoil\mh104.geo_unrolled" ".\share\examples\ex_airfoil\mh104.msh" ".\share\examples\ex_airfoil\mh104.opt"
-[info]     - prevabs finished (2026-02-14 20:09:03)
-[info] total running time: 2.054 sec
+[info]     - prevabs finished (2026-02-16 16:41:05)
+[info] total running time: 2.267 sec

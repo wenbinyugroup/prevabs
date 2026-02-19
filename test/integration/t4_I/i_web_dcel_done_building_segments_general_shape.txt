@@ -1,0 +1,75 @@
+DCEL Summary
+
+10 vertices:
+( 0 , inf , inf ) - degree 2
+( 0 , -inf , inf ) - degree 2
+( 0 , -inf , -inf ) - degree 2
+( 0 , inf , -inf ) - degree 2
+( 0 , -1 , 0 ) - degree 2
+( 0 , -1 , 0.11 ) - degree 2
+( 0 , 1 , 0 ) - degree 2
+( 0 , 1 , 0.11 ) - degree 2
+( 0 , 0 , 0 ) - degree 2
+( 0 , 0 , 0.11 ) - degree 2
+
+16 half edges:
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgtop_face | sign: -1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 1 , 0 ) | loop: nullptr | face: nullptr | sign: -1
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , -1 , 0 ) | loop: nullptr | face: nullptr | sign: -1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 0 , 0 ) | loop: nullptr | face: nullptr | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: keep | face: sgtop_face | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: nullptr | face: nullptr | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: keep | face: sgtop_face | sign: -1
+
+2 half edge loops:
+direction: outer
+keep: yes
+face: background
+half edges:
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background | sign: 1
+adjacent loop: nullptr
+
+direction: outer
+keep: yes
+face: sgtop_face
+half edges:
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: keep | face: sgtop_face | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: keep | face: sgtop_face | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgtop_face | sign: -1
+adjacent loop: nullptr
+
+
+2 faces:
+name: background
+outer boundary: 
+  ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background | sign: 1
+  ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background | sign: 1
+0 inner boundaries:
+
+name: sgtop_face
+outer boundary: 
+  ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: keep | face: sgtop_face | sign: 1
+  ( 0 , 1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: keep | face: sgtop_face | sign: -1
+  ( 0 , 0 , 0.11 ) -> ( 0 , -1 , 0.11 ) | loop: keep | face: sgtop_face | sign: -1
+  ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgtop_face | sign: -1
+0 inner boundaries:
+

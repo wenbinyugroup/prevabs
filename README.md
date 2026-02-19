@@ -21,98 +21,105 @@ prevabs -i <main_input.xml> [options]
 Options
 
 ````
-Analysis options
-----------------
+Required arguments
+------------------
 
--h      Build cross section and generate VABS/SwiftComp input file for homogenization.
--d      Read 1D beam analysis results and update VABS/SwiftComp input file for dehomogenization.
--fi     Initial failure indices and strength ratios.
--f      Initial failure strength analysis (SwiftComp only).
--fe     Initial failure envelope (SwiftComp only).
+-i, --input <file>       Input XML file (required)
 
-Format and execution options
-----------------------------
+Analysis mode (exactly one required)
+------------------------------------
 
--vabs   Use VABS format (Default).
--sc     Use SwiftComp format.
--int    Use integrated solver.
--e      Execute VABS/SwiftComp.
--v      Visualize meshed cross section for homogenization or contour plots of stresses and strains after recovery.
--debug  Debug mode.
+--hm, --homogenization   Homogenization (build cross section and generate input)
+--dh, --dehomogenization Dehomogenization (recovery - read 1D beam analysis results)
+--fs, --failure-strength Initial failure strength analysis (SwiftComp only)
+--fe, --failure-envelope Initial failure envelope (SwiftComp only)
+--fi, --failure-index    Initial failure indices and strength ratios
+
+Analysis tool (optional)
+-------------------------
+
+--vabs                  Use VABS format (default)
+--sc                    Use SwiftComp format
+
+Additional options
+------------------
+
+--ver <version>         Tool version (e.g. 3.0)
+--integrated            Use integrated solver (implies --execute)
+-e, --execute           Execute VABS/SwiftComp after generating input
+-v, --visualize         Visualize meshed cross section or contour plots
+--gmsh-verbosity <n>    Gmsh log verbosity (0=silent, 1=errors, 2=warnings, 3=info, 5=debug)
+-d, --debug             Debug mode
 ````
 
 ## Build from source
 
 ### Requirements
 
-* Compiler
-  * C
-  * C++ (11)
-  * Fortran (required to link to VABS shared library)
-* CMake 3.0 or higher
+* Compiler: C and C++ (C++11)
+* CMake 3.14 or higher
 * Libraries
-  * [boost](https://www.boost.org/users/download/)
-  * blas/lapack
-  * [gmsh sdk](https://gmsh.info/)
+  * [Gmsh SDK](https://gmsh.info/)
 
+### Windows (MSVC)
 
+1. **Setup Gmsh**
+   - Download the Gmsh SDK from https://gmsh.info/
+   - Unzip to a directory
+   - In the `include` folder, rename `gmsh.h` → `gmsh.h_cpp` and `gmsh.h_cwrap` → `gmsh.h`
+   - Set environment variable `Gmsh_ROOT` to the Gmsh SDK root directory
+
+2. **Build PreVABS**
+
+   ```powershell
+   # Full clean build
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 full
+
+   # Incremental rebuild
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 fast
+   ```
+
+The executable will be at `build_msvc\Release\prevabs.exe`.
 
 ### Linux
 
-1. Unpack the PreVABS package and change the directory to the package root.
-In the following steps, `<PREVABS_DIR>` stands for the absolute directory of the package (`/.../prevabs-<version>-source`).
+1. Unpack the source and change to the package root.
 
-    ````
-    tar -xzvf prevabs-<version>-source.tar.gz
-    cd prevabs-<version>-source
-    ````
+2. The default compiler is GCC. To use a different compiler, edit the
+   `-DCMAKE_C_COMPILER` / `-DCMAKE_CXX_COMPILER` options in
+   `tools/build_all_linux_64.sh`.
 
-2. The default compiler is GCC.
-To use a different compiler, open the file `build_all_linux_64.sh` and edit the compiler options `-DCMAKE_C_COMPILER`, `-DCMAKE_CXX_COMPILER` and `-DCMAKE_Fortran_COMPILER` (there are two places for this setting, one for Gmsh and the other for PreVABS).
+3. Run the build script:
 
-3. Run `build_all_linux_64.sh`.
+   ```bash
+   ./tools/build_all_linux_64.sh
+   ```
 
-    ````
-    ./build_all_linux_64.sh
-    ````
+4. Add the output directories to your environment:
 
-4. Add `<PREVABS_DIR>/bin` to the environment variables `PATH` and `<PREVABS_DIR>/lib` to `LD_LIBRARY_PATH`.
-You can also move files in these locations to proper directories in your system.
+   ```bash
+   export PATH=<PREVABS_DIR>/bin:$PATH
+   export LD_LIBRARY_PATH=<PREVABS_DIR>/lib:$LD_LIBRARY_PATH
+   ```
 
-    ````
-    export PATH=<PREVABS_DIR>/bin:$PATH
-    export LD_LIBRARY_PATH=<PREVABS_DIR>/lib:$LD_LIBRARY_PATH
-    ````
+## Testing
 
-### Windows
+### Unit tests (Catch2)
 
-#### Environment: Visual Studio
+```bash
+cd test/unit
+mkdir build && cd build
+cmake ..
+make
+./test_geo          # run all tests
+./test_geo "[geo]"  # run tagged subset
+```
 
-* Step 1: Setup Boost
-  * 1.1 Download from https://www.boost.org/users/download/
-  * 1.2 Unzip the package to a directory
-  * 1.3 Build Boost libraries
-    * 1.3.1 Open "Developer Command Prompt for VS 2022"
-    * 1.3.2 Change directory to the root of Boost
-    * 1.3.3 Run `bootstrap`
-    * 1.3.4 Run `b2 link=shared`
-  * 1.4 Add a new environment variable `Boost_ROOT` and set it to the root directory of boost
-* Step 2: Setup Gmsh
-  * 2.1 Download Gmsh SDK from https://gmsh.info/
-  * 2.2 Unzip the package to a directory
-  * 2.3 Modify the header file
-    * 2.3.1 Go to `include`
-    * 2.3.2 Rename `gmsh.h` to `gmsh.h_cpp`
-    * 2.3.3 Rename `gmsh.h_cwrap` to `gmsh.h`
-  * 2.4 Add a new environment variable `Gmsh_ROOT` and set it to the root directory of gmsh
-* Step 3: Build PreVABS
-  * 3.1 Open "Developer Command Prompt for VS 2022"
-  * 3.2 Change the directory to the root of PreVABS
-  * 3.3 Run `tools\build_msvc.bat full`
+### Integration tests (Windows)
 
-Once done, the executable `prevabs.exe` can be found in `build_msvc\Release\`.
-
-
+```bat
+test\run_integration_tests.bat
+```
 
 ## Contact
 

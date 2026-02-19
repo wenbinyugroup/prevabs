@@ -56,7 +56,7 @@ int Segment::count_tmp = 0;
 
 int readCrossSection(const std::string &filenameCrossSection,
                      const std::string &filePath, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   // i_indent++;
 
   int material_id = 1;  // Material ID
@@ -93,11 +93,12 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (!p_xn_sg) {
     p_xn_sg = xmlDocCrossSection.first_node("sg");
   }
-
-
+  if (!p_xn_sg) {
+    throw std::runtime_error("Missing root XML element <cross_section> or <sg>");
+  }
   xml_attribute<> *p_xa_name{p_xn_sg->first_attribute("name")};
   if (!p_xa_name) {
-    throw std::runtime_error("Missing required XML attribute 'name' on cross_section element");
+    throw std::runtime_error("Missing required attribute 'name' on root element");
   }
   std::string csName{p_xa_name->value()};
   std::string cs_type{"general"};
@@ -143,7 +144,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_tolerance) {
       std::string ss{p_xn_tolerance->value()};
       if (ss[0] != '\0') {
-        config.geo_tol = std::stod(ss.c_str());
+        config.app.geo_tol = atof(ss.c_str());
       }
     }
   }
@@ -323,6 +324,9 @@ int readCrossSection(const std::string &filenameCrossSection,
   //             << markInfo << " Read Cross Section General"
   //             << "\n\n";
   xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
+  if (!nodeGeneral) {
+    throw std::runtime_error("Missing required XML element <general>");
+  }
 
   // Point2 origin{0, 0};
   // SVector3 translate{0, 0, 0};
@@ -415,10 +419,10 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
     if (stol[0] != '\0')
-      config.tol = std::stod(stol.c_str());
+      config.app.tol = atof(stol.c_str());
   }
   std::stringstream ss_tol;
-  ss_tol << config.tol;
+  ss_tol << config.app.tol;
   PLOG(debug) << pmessage->message("tolerance = " + ss_tol.str());
 
 
@@ -558,12 +562,18 @@ int readCrossSection(const std::string &filenameCrossSection,
             bool fillTE = p_xa_fillTE ? (strcmp(p_xa_fillTE->value(), "true") == 0) : true;
             bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
 
+            auto requireNode = [](xml_node<> *parent, const char *tag) -> xml_node<> * {
+              xml_node<> *n = parent->first_node(tag);
+              if (!n) {
+                throw std::runtime_error(std::string("Missing required XML element <") + tag + ">");
+              }
+              return n;
+            };
             double xtLE, xbLE, xtTE, xbTE;
-            xtLE = std::stod(nodeLEWeb->first_node("pos_top")->value());
-            xbLE = std::stod(nodeLEWeb->first_node("pos_bot")->value());
-            xtTE = std::stod(nodeTEWeb->first_node("pos_top")->value());
-            xbTE = std::stod(nodeTEWeb->first_node("pos_bot")->value());
-
+            xtLE = atof(requireNode(nodeLEWeb,  "pos_top")->value());
+            xbLE = atof(requireNode(nodeLEWeb,  "pos_bot")->value());
+            xtTE = atof(requireNode(nodeTEWeb,  "pos_top")->value());
+            xbTE = atof(requireNode(nodeTEWeb,  "pos_bot")->value());
             double ytLE,ybLE,xmLE,angLE;
             ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
             ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
@@ -584,8 +594,8 @@ int readCrossSection(const std::string &filenameCrossSection,
 
             if (nodeMidWeb) {
               double xtM, xbM;
-              xtM = std::stod(nodeMidWeb->first_node("pos_top")->value());
-              xbM = std::stod(nodeMidWeb->first_node("pos_bot")->value());
+              xtM = atof(requireNode(nodeMidWeb, "pos_top")->value());
+              xbM = atof(requireNode(nodeMidWeb, "pos_bot")->value());
 
               double ytM,ybM,xmM,angM;
               ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);
@@ -917,7 +927,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   // }
 
   // i_indent--;
-  pmessage->decreaseIndent();
 
   return 0;
 }

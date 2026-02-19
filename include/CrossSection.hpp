@@ -121,5 +121,5 @@ public:
 
   void sortComponents();
 
-  void build(const BuilderConfig &, Message *);
+  void build(const BuilderConfig &);
 };

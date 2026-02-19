@@ -1,5 +1,7 @@
 #pragma once
 
+#include "globalConstants.hpp"
+
 #include <cstdio>
 #include <memory>
 
@@ -7,11 +9,10 @@ class PModel;
 struct WriterConfig;
 
 // Interface for writing SG (structural genome) input files in a specific solver format.
-// Concrete implementations (VABSWriter, SwiftCompWriter) handle format-specific output,
-// eliminating analysis_tool == N conditional branches from the write path.
+// Concrete implementations (VABSWriter, SwiftCompWriter) handle format-specific output.
 //
 // Usage:
-//   auto writer = makeSGWriter(wcfg.analysis_tool);
+//   auto writer = makeSGWriter(wcfg.tool);
 //   writer->writeSettings(file, model, wcfg);
 //   writer->writeMaterials(file, model);
 //   writer->writeExtra(file, model);   // omega or any format-specific trailer
@@ -26,6 +27,5 @@ public:
   virtual ~ISGWriter() = default;
 };
 
-// Factory: construct the correct ISGWriter for the given analysis_tool code.
-// analysis_tool == 1 → VABSWriter; analysis_tool == 2 → SwiftCompWriter.
-std::unique_ptr<ISGWriter> makeSGWriter(int analysis_tool);
+// Factory: construct the correct ISGWriter for the given tool.
+std::unique_ptr<ISGWriter> makeSGWriter(AnalysisTool tool);

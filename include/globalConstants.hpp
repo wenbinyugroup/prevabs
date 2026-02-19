@@ -19,9 +19,51 @@ const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.141592653589793};
-const double TOLERANCE{1e-15};
-const double ABS_TOL{1e-15};
-const double REL_TOL{1e-15};
+// GEO_TOL is the single source of truth for geometric comparisons.
+// Its default (1e-9) matches AppConfig::geo_tol so the compile-time fallback
+// stays in sync with the user-tunable runtime value.
+// TOLERANCE, ABS_TOL, REL_TOL are kept as aliases for existing call sites;
+// prefer GEO_TOL in new code.
+const double GEO_TOL{1e-9};
+const double TOLERANCE{GEO_TOL};
+const double ABS_TOL{GEO_TOL};
+const double REL_TOL{GEO_TOL};
+
+// Log severity levels (match spdlog mapping in plog.cpp)
+constexpr int LOG_LEVEL_TRACE   = 0;
+constexpr int LOG_LEVEL_DEBUG   = 1;
+constexpr int LOG_LEVEL_INFO    = 2;
+constexpr int LOG_LEVEL_WARNING = 3;
+constexpr int LOG_LEVEL_ERROR   = 4;
+constexpr int LOG_LEVEL_FATAL   = 5;
+
+// Analysis tool selection
+enum class AnalysisTool {
+  VABS      = 1,
+  SwiftComp = 2
+};
+
+// Analysis mode — mutually exclusive, maps to the CLI mode flags
+enum class AnalysisMode {
+  Homogenization,
+  Dehomogenization,
+  DehomogenizationNL,   // reserved, not yet exposed in CLI
+  FailureStrength,      // SwiftComp only
+  FailureEnvelope,      // SwiftComp only
+  FailureIndex
+};
+
+// Helper: true when the mode is a dehomogenization or failure-type analysis
+inline bool isRecoveryMode(AnalysisMode m) {
+  return m != AnalysisMode::Homogenization;
+}
+
+// Helper: true when the mode involves failure analysis
+inline bool isFailureMode(AnalysisMode m) {
+  return m == AnalysisMode::FailureStrength ||
+         m == AnalysisMode::FailureEnvelope  ||
+         m == AnalysisMode::FailureIndex;
+}
 
 enum GeoConst {
   DEGREE,

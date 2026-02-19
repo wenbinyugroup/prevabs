@@ -2,8 +2,13 @@
 #include "geo.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include <sstream>
 #include <string>
-// #include "homog2d.hpp"
+// Route homog2d warnings to the prevabs debug logger instead of stderr.
+// Must be defined before homog2d.hpp is processed.
+#define HOMOG2D_LOG_WARNING(a) \
+  do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
+#include "homog2d.hpp"
 
 
 /**
@@ -30,27 +35,45 @@ bool calcLineIntersection2D(
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
   double &u1, double &u2, const double &tol
   ) {
+  // tol is kept for API compatibility; parallelism is now detected via
+  // h2d::Line2d::isParallelTo(), which uses an angle-based threshold
+  // (h2d default: 0.001 rad) instead of the former |denominator| <= tol
+  // comparison that was unreliable at tol = 1e-15.
 
-  double dnm;
-  dnm = (l1p1x - l1p2x) * (l2p1y - l2p2y) -
-        (l1p1y - l1p2y) * (l2p1x - l2p2x);
-  // std::cout << "dnm = " << dnm << std::endl;
-  if (fabs(dnm) <= tol) {
+  const double dx1 = l1p2x - l1p1x, dy1 = l1p2y - l1p1y;
+  const double dx2 = l2p2x - l2p1x, dy2 = l2p2y - l2p1y;
+
+  // Guard against degenerate (zero-length) segments, which would cause
+  // h2d::Line2d to throw on coincident-point construction.
+  if (dx1 == 0.0 && dy1 == 0.0) return false;
+  if (dx2 == 0.0 && dy2 == 0.0) return false;
+
+  h2d::Line2d l1(h2d::Point2d(l1p1x, l1p1y), h2d::Point2d(l1p2x, l1p2y));
+  h2d::Line2d l2(h2d::Point2d(l2p1x, l2p1y), h2d::Point2d(l2p2x, l2p2y));
+
+  if (l1.isParallelTo(l2))
     return false;
-  }
 
-  u1 = (l1p1x - l2p1x) * (l2p1y - l2p2y) -
-       (l1p1y - l2p1y) * (l2p1x - l2p2x);
-  u1 = u1 / dnm;
-  // std::cout << "u1 = " << u1 << std::endl;
+  // Intersection point of the two infinite lines.
+  // l1 * l2 (cross-product form) is not reliably found by MSVC via ADL, so
+  // we use the member function which is guaranteed visible.
+  const auto ptInter = l1.intersects(l2).get();
+  const double ix = ptInter.getX();
+  const double iy = ptInter.getY();
 
-  u2 = -(l1p1x - l1p2x) * (l1p1y - l2p1y) +
-       (l1p1y - l1p2y) * (l1p1x - l2p1x);
-  u2 = u2 / dnm;
-  // std::cout << "u2 = " << u2 << std::endl;
+  // Recover the parametric parameter along each line segment.
+  // Choose the coordinate axis with the larger span for numerical stability.
+  if (std::fabs(dx1) >= std::fabs(dy1))
+    u1 = (ix - l1p1x) / dx1;
+  else
+    u1 = (iy - l1p1y) / dy1;
+
+  if (std::fabs(dx2) >= std::fabs(dy2))
+    u2 = (ix - l2p1x) / dx2;
+  else
+    u2 = (iy - l2p1y) / dy2;
 
   return true;
-
 }
 
 
@@ -120,6 +143,9 @@ bool calcLineIntersection2D(
   } else if (plane == 2) {
     d1 = 0;
     d2 = 1;
+  } else {
+    PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
+    return false;
   }
   return calcLineIntersection2D(
     l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
@@ -169,7 +195,7 @@ bool calcLineIntersection2D(
  */
 bool calcLineIntersection2D(
   SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
-  double &u1, double &u2, int &plane, const double &tol
+  double &u1, double &u2, const int &plane, const double &tol
   ) {
 
   int d1, d2;
@@ -182,6 +208,9 @@ bool calcLineIntersection2D(
   } else if (plane == 2) {
     d1 = 0;
     d2 = 1;
+  } else {
+    PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
+    return false;
   }
 
   SPoint2 l1p, l1q, l2p, l2q;
@@ -266,7 +295,7 @@ bool calcLineIntersection2D(
  *         - 0 if the segments are parallel and do not intersect.
  */
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect) {
+              PDCELVertex *&intersect) {
   int result;
   double us, ut;
   bool not_parallel;
@@ -318,7 +347,7 @@ PDCELHalfEdge *findCurvesIntersection(
   int end, int &ls_i, double &u1, double &u2, const double &tol,
   Message *pmessage
   ) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   PLOG(debug) << pmessage->message("in function: findCurvesIntersection");
 
@@ -501,8 +530,6 @@ PDCELHalfEdge *findCurvesIntersection(
 
   } while (hei != hel->incidentEdge());
 
-  pmessage->decreaseIndent();
-
   return he;
 }
 
@@ -597,14 +624,17 @@ Baseline *findCurvesIntersection(
 
     if (not_parallel) {
       if (u1 > 1) {
+        delete lsi;
         continue;
       } else {
         if (fabs(u1) < TOLERANCE) {
           vlist.push_front(v1);
           link_to_list_copy.push_front(link_i1);
           iold--;
+          delete lsi;
           break;
         } else if (fabs(u1 - 1) < TOLERANCE) {
+          delete lsi;
           break;
         } else if (u1 < 0) {
           // In this case, the new curve is extended
@@ -615,6 +645,7 @@ Baseline *findCurvesIntersection(
           // vlist.push_front(v1);
           // iold--;
           v_new = lsi->getParametricVertex(u1);
+          delete lsi;
           vlist.push_front(v_new);
 
           link_to_list_copy.push_front(0);
@@ -622,6 +653,7 @@ Baseline *findCurvesIntersection(
           break;
         } else {
           v_new = lsi->getParametricVertex(u1);
+          delete lsi;
           vlist.push_front(v_new);
           link_to_list_copy.push_front(0);
           inew++;
@@ -629,11 +661,13 @@ Baseline *findCurvesIntersection(
         }
       }
     } else {
+      delete lsi;
       continue;
     }
   }
 
   if (vlist.size() < 2) {
+    delete bl_new;
     return nullptr;
   }
 
@@ -650,9 +684,14 @@ Baseline *findCurvesIntersection(
 
       link_to_list_new.push_back(link_to_list_copy.back());
       link_to_list_copy.pop_back();
-      iold = n - 1 - iold;
-      inew = bl_new->vertices().size() - 1 - inew;
     }
+  }
+
+  // For end==1 the list was traversed in reverse, so convert the accumulated
+  // forward-traversal indices back to the original (non-reversed) frame.
+  if (end == 1) {
+    iold = static_cast<int>(n) - 1 - iold;
+    inew = static_cast<int>(bl_new->vertices().size()) - 1 - inew;
   }
 
   link_to_list.swap(link_to_list_new);
@@ -802,18 +841,25 @@ double getIntersectionLocation(
   int &ls_i, int &j, Message *pmessage
 ) {
   // Find the intersection location that is the closest to the expected end
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
 
   // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
 
-  ls_i = ii[0];
-  double u = uu[0];
-  j = 0;
+  // Initialise with sentinel values; the loop below applies inner_only uniformly
+  // from k=0 so the seed element is also filtered correctly.
+  ls_i = -1;
+  double u = 0.0;
+  j = -1;
 
-  for (auto k = 1; k < ii.size(); k++) {
+  for (auto k = 0; k < (int)ii.size(); k++) {
 
     if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
-      if (which_end == 0) {
+      if (j == -1) {
+        // First valid candidate — accept unconditionally.
+        ls_i = ii[k];
+        u = uu[k];
+        j = k;
+      } else if (which_end == 0) {
         // Closer to the beginning side
         if (ii[k] < ls_i) {
           ls_i = ii[k];
@@ -856,8 +902,6 @@ double getIntersectionLocation(
   //   + ", v1 = " + c[ls_i]->printString()
   //   + ", v2 = " + c[ls_i+1]->printString()
   // );
-
-  pmessage->decreaseIndent();
 
   return u;
 }

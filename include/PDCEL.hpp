@@ -4,7 +4,6 @@
 // dependencies in the include chain.
 class Baseline;
 class Message;
-class PAVLTreeVertex;
 class PDCELVertex;
 class PDCELHalfEdge;
 class PDCELHalfEdgeLoop;
@@ -13,7 +12,6 @@ class PGeoLineSegment;
 
 #include "declarations.hpp"
 #include "PBaseLine.hpp"
-#include "PBST.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
@@ -22,8 +20,16 @@ class PGeoLineSegment;
 #include "globalVariables.hpp"
 
 #include <list>
+#include <set>
 #include <vector>
 
+/// Comparator for PDCELVertex* — orders by geometric position (lexicographic
+/// x, y, z), matching the sort order required by the sweep-line algorithm.
+/// The body of operator() is defined in PDCEL.cpp to avoid requiring the full
+/// PDCELVertex definition in this header (circular include guard issue).
+struct CompareVertexByPoint {
+  bool operator()(PDCELVertex *a, PDCELVertex *b) const;
+};
 
 /** @ingroup geo
  * A doubly connect edge list class.
@@ -36,7 +42,7 @@ private:
 
   std::list<PDCELHalfEdgeLoop *> _halfedge_loops;
 
-  PAVLTreeVertex *_vertex_tree;
+  std::set<PDCELVertex *, CompareVertexByPoint> _vertex_tree;
 
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
@@ -44,6 +50,9 @@ private:
   /// Find line segments intersecting the verticle sweep line passing the given vertex
   std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(PDCELVertex *);
   PGeoLineSegment *findLineSegmentBelowVertex(PDCELVertex *);
+
+  /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.
+  PDCELVertex *findCoincidentVertex(PDCELVertex *v) const;
 
 public:
   PDCEL() = default;
@@ -59,14 +68,15 @@ public:
 
   std::list<PDCELHalfEdgeLoop *> &halfedgeloops() { return _halfedge_loops; }
 
-  PAVLTreeVertex *vertextree() { return _vertex_tree; }
-
   void fixGeometry(const BuilderConfig &, Message *);
 
   // =================================================================
   // VERTEX
 
-  void addVertex(PDCELVertex *v);
+  /// Add v to the DCEL.  If a geometrically coincident vertex (within GEO_TOL)
+  /// already exists, v is NOT inserted and the existing vertex is returned
+  /// instead.  Otherwise v is inserted and returned.
+  PDCELVertex *addVertex(PDCELVertex *v);
   void removeVertex(PDCELVertex *v);
 
   // =================================================================

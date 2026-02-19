@@ -281,22 +281,21 @@ void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
 
 
-void CrossSection::build(const BuilderConfig &bcfg, Message *pmessage) {
-  // i_indent++;
-  pmessage->increaseIndent();
+void CrossSection::build(const BuilderConfig &bcfg) {
+  MESSAGE_SCOPE(g_msg);
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
-  PLOG(info) << pmessage->message("building the cross section, step 1");
+  PLOG(info) << g_msg->message("building the cross section, step 1");
 
 
   for (auto cmp : _components) {
 
-    cmp->build(bcfg, pmessage);
+    cmp->build(bcfg, g_msg);
 
     // _pmodel->dcel()->print_dcel();
     // for (auto sgm : cmp->segments()) {
-    //   sgm->curveBase()->print(pmessage, 9);
+    //   sgm->curveBase()->print(g_msg, 9);
     // }
 
     // Remove all half edge loops, excluding segments face boundaries
@@ -316,31 +315,29 @@ void CrossSection::build(const BuilderConfig &bcfg, Message *pmessage) {
 
     // Create Gmsh model and write Gmsh files for debugging
 
-    if (bcfg.plotDebug) bcfg.plotDebug(pmessage);
+    if (bcfg.plotDebug) bcfg.plotDebug(g_msg);
   }
 
   // for (auto cmp : _components) {
   //   for (auto sgm : cmp->segments()) {
-  //     sgm->curveBase()->print(pmessage, 9);
+  //     sgm->curveBase()->print(g_msg, 9);
   //   }
   // }
 
-  // pmessage->printBlank();
-  // pmessage->print(9, "current dcel");
+  // g_msg->printBlank();
+  // g_msg->print(9, "current dcel");
   // _pmodel->dcel()->print_dcel();
 
   // Build details (mainly slice layers for each segment)
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("building the cross section, step 2");
+  g_msg->printBlank();
+  PLOG(info) << g_msg->message("building the cross section, step 2");
 
 
   for (auto cmp : _components) {
-    cmp->buildDetails(bcfg, pmessage);
+    cmp->buildDetails(bcfg, g_msg);
   }
 
 
   // _pmodel->dcel()->print_dcel();
-  // i_indent--;
-  pmessage->decreaseIndent();
 
 }

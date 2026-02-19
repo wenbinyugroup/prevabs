@@ -2,7 +2,6 @@
 
 #include "declarations.hpp"
 #include "PBaseLine.hpp"
-#include "PDCEL.hpp"
 #include "PDCELHalfEdge.hpp"
 
 // #include "gmsh/GVertex.h"

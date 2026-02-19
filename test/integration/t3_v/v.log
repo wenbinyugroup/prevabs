@@ -1,0 +1,63 @@
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+
+  
+  
+    
+  
+  
+  
+  
+  
+  
+    
+    
+    -  [VABS Messages] 
+    
+    
+    -  [VABS Messages End] 
+    
+    
+  
+  ========================================
+  
+  
+  ========================================
+  
+MaterialDB.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1
+[info]       - building component: surface
+[info]     - building the cross section, step 2
+[info]       - building component details: surface
+[info]     - fixing geometry
+[info]   - building the shape -- done
+[info]   - modeling in Gmsh
+[info]     - creating gmsh vertices
+[info]     - creating gmsh edges
+[info]     - creating gmsh faces
+[info]     - creating physical groups
+[info]     - meshing
+[info]   - modeling in Gmsh -- done
+[info]   - writing outputs
+[info]     - writing sg file: .\test\integration\t3_v\v.sg
+[info]       - writing nodes
+[info]       - writing elements
+[info]         -   writing connectivity
+[info]         -   writing local orientation
+[info]     - writing material id-name file: .\test\integration\t3_v\v.sg.mat
+[info]   - writing outputs -- done
+[info]     - running VABS for homogenization
+[info]     - running: VABS ".\test\integration\t3_v\v.sg"
+[info]     - command completed successfully.
+[info]     - running VABS for homogenization -- done
+[info]   - prevabs finished (2026-02-18 17:37:35)
+[info] total running time: 0.278932 sec

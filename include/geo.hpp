@@ -249,7 +249,7 @@ void combineVertexLists(std::vector<PDCELVertex *> &,
                         std::vector<int> &, std::vector<PDCELVertex *> &);
 
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect);
+              PDCELVertex *&intersect);
 
 /**
  * @brief Finds the intersection of curves within a given tolerance.

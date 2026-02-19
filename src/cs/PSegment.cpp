@@ -261,7 +261,7 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
 
 
 void Segment::offsetCurveBase(Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   // if (config.debug) {
   //   pmessage->print(9, "offsetting the base curve of segment: " + _name);
   // }
@@ -323,7 +323,6 @@ void Segment::offsetCurveBase(Message *pmessage) {
   // for (auto i = 0; i < _offset_indices_base_link_to.size(); i++) {
   //   std::cout << "        " << i << " -- " << _offset_indices_base_link_to[i] << std::endl;
   // }
-  pmessage->decreaseIndent();
 }
 
 
@@ -346,7 +345,7 @@ void Segment::offsetCurveBase(Message *pmessage) {
 
 
 void Segment::build(const BuilderConfig &bcfg, Message *pmessage) {
-  pmessage->increaseIndent();
+  MESSAGE_SCOPE(pmessage);
   if (bcfg.debug) {
     // std::cout << "[debug] building the overall shape of segment: " << _name
     //           << std::endl;
@@ -431,7 +430,6 @@ void Segment::build(const BuilderConfig &bcfg, Message *pmessage) {
   // for (auto f : _pmodel->dcel()->faces()) {
   //   f->outer()->print2();
   // }
-  pmessage->decreaseIndent();
 }
 
 
