@@ -95,7 +95,11 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
 
-  std::string csName{p_xn_sg->first_attribute("name")->value()};
+  xml_attribute<> *p_xa_name{p_xn_sg->first_attribute("name")};
+  if (!p_xa_name) {
+    throw std::runtime_error("Missing required XML attribute 'name' on cross_section element");
+  }
+  std::string csName{p_xa_name->value()};
   std::string cs_type{"general"};
   if (p_xn_sg->first_attribute("type")) {
     cs_type = p_xn_sg->first_attribute("type")->value();
@@ -116,7 +120,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xa_fmt) {
     std::string ss{p_xa_fmt->value()};
     if (ss[0] != '\0') {
-      d_fmt = atof(ss.c_str());
+      d_fmt = std::stod(ss);
     }
   }
   // std::cout << "format = " << d_fmt << std::endl;
@@ -139,7 +143,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_tolerance) {
       std::string ss{p_xn_tolerance->value()};
       if (ss[0] != '\0') {
-        config.geo_tol = atof(ss.c_str());
+        config.geo_tol = std::stod(ss.c_str());
       }
     }
   }
@@ -178,7 +182,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_model_dim) {
       std::string ss{p_xn_model_dim->value()};
       if (ss[0] != '\0') {
-        model_dim = atoi(ss.c_str());
+        model_dim = std::stoi(ss.c_str());
       }
     }
 
@@ -186,14 +190,14 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_model) {
       std::string ss{p_xn_model->value()};
       if (ss[0] != '\0') {
-        model = atoi(ss.c_str());
+        model = std::stoi(ss.c_str());
       }
     }
 
     xml_node<> *p_xn_physics{p_xn_analysis->first_node("physics")};
     if (p_xn_physics) {
       std::string ss{p_xn_physics->value()};
-      int _physics = atoi(ss.c_str());
+      int _physics = std::stoi(ss.c_str());
       pmodel->setAnalysisPhysics(_physics);
     }
 
@@ -201,7 +205,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_damping) {
       std::string ss{p_xn_damping->value()};
       if (ss[0] != '\0') {
-        flag_damping = atoi(ss.c_str());
+        flag_damping = std::stoi(ss.c_str());
       }
     }
 
@@ -209,7 +213,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_thermal) {
       std::string ss{p_xn_thermal->value()};
       if (ss[0] != '\0') {
-        flag_thermal = atoi(ss.c_str());
+        flag_thermal = std::stoi(ss.c_str());
       }
     }
 
@@ -217,7 +221,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_k1) {
       std::string ss{p_xn_k1->value()};
       if (ss[0] != '\0') {
-        k1 = atof(ss.c_str());
+        k1 = std::stod(ss.c_str());
       }
     }
 
@@ -225,7 +229,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_k2) {
       std::string ss{p_xn_k2->value()};
       if (ss[0] != '\0') {
-        k2 = atof(ss.c_str());
+        k2 = std::stod(ss.c_str());
       }
     }
 
@@ -233,7 +237,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_k3) {
       std::string ss{p_xn_k3->value()};
       if (ss[0] != '\0') {
-        k3 = atof(ss.c_str());
+        k3 = std::stod(ss.c_str());
       }
     }
 
@@ -241,7 +245,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_cos11) {
       std::string ss{p_xn_cos11->value()};
       if (ss[0] != '\0') {
-        cos11 = atof(ss.c_str());
+        cos11 = std::stod(ss.c_str());
       }
     }
 
@@ -249,7 +253,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_cos21) {
       std::string ss{p_xn_cos21->value()};
       if (ss[0] != '\0') {
-        cos21 = atof(ss.c_str());
+        cos21 = std::stod(ss.c_str());
       }
     }
 
@@ -257,7 +261,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_trapeze) {
       std::string ss{p_xn_trapeze->value()};
       if (ss[0] != '\0') {
-        flag_trapeze = atoi(ss.c_str());
+        flag_trapeze = std::stoi(ss.c_str());
       }
     }
 
@@ -265,7 +269,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (p_xn_vlasov) {
       std::string ss{p_xn_vlasov->value()};
       if (ss[0] != '\0') {
-        flag_vlasov = atoi(ss.c_str());
+        flag_vlasov = std::stoi(ss.c_str());
       }
     }
 
@@ -342,7 +346,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (nodeScale) {
     std::string sscale{nodeScale->value()};
     if (sscale[0] != '\0')
-      sfactor = atof(sscale.c_str());
+      sfactor = std::stod(sscale.c_str());
   }
   // cs->setScale(scale);
 
@@ -351,7 +355,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (nodeRotate) {
     std::string srotate{nodeRotate->value()};
     if (srotate[0] != '\0')
-      rangle = atof(srotate.c_str());
+      rangle = std::stod(srotate.c_str());
   }
   // Matrix2 rotatem{getRotationMatrix(rotate)};
   // cs->setRotate(rotate);
@@ -372,7 +376,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (nodeMeshsize) {
     std::string smeshsize{nodeMeshsize->value()};
     if (smeshsize[0] != '\0')
-      meshsize = atof(smeshsize.c_str());
+      meshsize = std::stod(smeshsize.c_str());
   }
   // else Use default mesh size, the smallest layer thickness
   // This is set after reading in all segments
@@ -401,7 +405,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_omega) {
     std::string stol{p_xn_omega->value()};
     if (stol[0] != '\0') {
-      omega = atof(stol.c_str());
+      omega = std::stod(stol.c_str());
     }
   }
   pmodel->setOmega(omega);
@@ -411,7 +415,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
     if (stol[0] != '\0')
-      config.tol = atof(stol.c_str());
+      config.tol = std::stod(stol.c_str());
   }
   std::stringstream ss_tol;
   ss_tol << config.tol;
@@ -425,7 +429,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
     if (ss[0] != '\0') {
-      track_interface = atoi(ss.c_str());
+      track_interface = std::stoi(ss.c_str());
       // std::cout << "track_interface = " << track_interface << std::endl;
       pmodel->setInterfaceOutput(track_interface);
       // std::cout << "_itf_output = " << pmodel->interfaceOutput() << std::endl;
@@ -438,7 +442,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
     if (ss[0] != '\0') {
-      itf_t1d_th = atoi(ss.c_str());
+      itf_t1d_th = std::stod(ss);
       pmodel->setInterfaceTheta1DiffThreshold(itf_t1d_th);
     }
   }
@@ -449,7 +453,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
     if (ss[0] != '\0') {
-      itf_t3d_th = atoi(ss.c_str());
+      itf_t3d_th = std::stod(ss);
       pmodel->setInterfaceTheta3DiffThreshold(itf_t3d_th);
     }
   }
@@ -555,12 +559,11 @@ int readCrossSection(const std::string &filenameCrossSection,
             bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
 
             double xtLE, xbLE, xtTE, xbTE;
-            xtLE = atof(nodeLEWeb->first_node("pos_top")->value());
-            xbLE = atof(nodeLEWeb->first_node("pos_bot")->value());
-            xtTE = atof(nodeTEWeb->first_node("pos_top")->value());
-            xbTE = atof(nodeTEWeb->first_node("pos_bot")->value());
+            xtLE = std::stod(nodeLEWeb->first_node("pos_top")->value());
+            xbLE = std::stod(nodeLEWeb->first_node("pos_bot")->value());
+            xtTE = std::stod(nodeTEWeb->first_node("pos_top")->value());
+            xbTE = std::stod(nodeTEWeb->first_node("pos_bot")->value());
 
-            const double PI = atan(1) * 4;
             double ytLE,ybLE,xmLE,angLE;
             ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
             ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
@@ -581,8 +584,8 @@ int readCrossSection(const std::string &filenameCrossSection,
 
             if (nodeMidWeb) {
               double xtM, xbM;
-              xtM = atof(nodeMidWeb->first_node("pos_top")->value());
-              xbM = atof(nodeMidWeb->first_node("pos_bot")->value());
+              xtM = std::stod(nodeMidWeb->first_node("pos_top")->value());
+              xbM = std::stod(nodeMidWeb->first_node("pos_bot")->value());
 
               double ytM,ybM,xmM,angM;
               ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);
@@ -773,7 +776,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
       std::string filenameLayups{p_xn_include_lyp->value()};
       filenameLayups = filePath + filenameLayups + ".xml";
-      if (debug) {
+      if (pmessage) {
         std::cout << markInfo << " Include Layups File: " << filenameLayups
                   << std::endl;
       }

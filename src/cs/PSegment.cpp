@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+int Segment::count_tmp = 0;
+
 // void calcBoundVertices(std::vector<PDCELVertex *> &, SVector3 &, SVector3 &,
 // Layup *);
 

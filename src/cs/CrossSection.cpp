@@ -23,6 +23,9 @@
 #include <string>
 #include <vector>
 
+int CrossSection::used_material_index = 0;
+int CrossSection::used_layertype_index = 0;
+
 CrossSection::CrossSection(std::string name) {
   csname = name;
   // cstype = "general";

@@ -20,6 +20,8 @@
 #include <sstream>
 #include <string>
 
+int PComponent::count_tmp = 0;
+
 void PComponent::print() {
   std::cout << "name: " << _name << " | "
             << "order: " << _order << " | "

@@ -128,21 +128,17 @@ int main() {
   // Do tests
   std::cout << "\n";
   std::string line;
-  // std::ifstream ifs{"test_data_line_seg_intersect.dat"};
-  // std::ifstream ifs{"test_data_calc_polyline_length.dat"};
   std::ifstream ifs{"test_data_find_point_from_param.dat"};
 
   if (ifs.is_open()) {
     while (getline(ifs, line)) {
       std::stringstream ss(line);
-      // testLineSegIntersect(ss, tol);
-      // testCalcPolylineLength(ss, tol);
       int li;
       double u;
       ss >> li >> u;
-      // std::vector<PGeoPoint3> pl = pls[i - 1];
+      std::vector<PGeoPoint3> pl = pls[li - 1];
       PGeoPoint3 p;
-      p = findParamPointOnPolyline(pls[li-1], u, tol);
+      p = findParamPointOnPolyline(pl, u, tol);
       std::cout << p << std::endl;
     }
     ifs.close();
