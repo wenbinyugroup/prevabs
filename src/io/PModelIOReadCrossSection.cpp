@@ -49,10 +49,10 @@
 
 using namespace rapidxml;
 
-int CrossSection::used_material_index = 0;
-int CrossSection::used_layertype_index = 0;
-int PComponent::count_tmp = 0;
-int Segment::count_tmp = 0;
+// int CrossSection::used_material_index = 0;
+// int CrossSection::used_layertype_index = 0;
+// int PComponent::count_tmp = 0;
+// int Segment::count_tmp = 0;
 
 int readCrossSection(const std::string &filenameCrossSection,
                      const std::string &filePath, PModel *pmodel, Message *pmessage) {
