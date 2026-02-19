@@ -1,0 +1,7 @@
+digraph dependencies {
+  "test.integration.geo_library" [shape=oval];
+  "test.integration.geo_library.clipper2" [shape=oval];
+  "test.unit" [shape=oval];
+  "test.integration.geo_library.gmsh" [shape=oval];
+  "test.integration.geo_library.homog2d" [shape=oval];
+}
