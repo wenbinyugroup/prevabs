@@ -45,7 +45,7 @@
 #endif
 
 int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
-                   double scale, Message *pmessage) {
+                   double scale, Message * /*pmessage*/) {
   std::string line;
   std::ifstream fileBasepoints{filenameBasepoints};
   if (!fileBasepoints.is_open()) {
@@ -137,13 +137,13 @@ PDCELVertex *readXMLElementPoint(
       }
 
       // PDCELVertex *_pv_tmp;
-      bool _is_new, _is_new_tmp, found{false};
+      bool _is_new = false, _is_new_tmp = false, found = false;
       int count{0};
-      double _z, _z_tmp;
-      int _id, _id_tmp;
+      double _z = 0.0, _z_tmp = 0.0;
+      int _id = 0, _id_tmp = 0;
 
       // Linear interpolation
-      for (auto i = 0; i < p_bsl_vertices.size() - 1; i++) {
+      for (int i = 0; i < static_cast<int>(p_bsl_vertices.size()) - 1; i++) {
 
         PLOG(debug) << g_msg->message("checking segment: " + std::to_string(i));
         PLOG(debug) << g_msg->message("segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y()));
@@ -238,7 +238,7 @@ PDCELVertex *readXMLElementPoint(
   else {
 
     std::stringstream ss{p_xn_point->value()};
-    double x2, x3;
+    double x2 = 0.0, x3 = 0.0;
     if (s_constraint == "none") {
       ss >> x2 >> x3;
     } else if (s_constraint == "middle") {
@@ -258,7 +258,7 @@ PDCELVertex *readXMLElementPoint(
 }
 
 PDCELVertex *findPointByName(
-  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage
+  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message * /*pmessage*/
   ) {
   PDCELVertex *pv = nullptr;
 

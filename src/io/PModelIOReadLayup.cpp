@@ -125,8 +125,8 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
         else if (attrName == "layup") {
           // handle sub-layup
           // must make sure the sub-layup appears before current layup
-          std::string layupName=nodeLayer->first_attribute("layup")->value();
-          Layup *subLayup = pmodel->getLayupByName(layupName);
+          std::string subLayupName=nodeLayer->first_attribute("layup")->value();
+          Layup *subLayup = pmodel->getLayupByName(subLayupName);
 
           std::vector<Layer> llayers{subLayup->getLayers()};
           std::vector<Ply> lplies{subLayup->getPlies()};

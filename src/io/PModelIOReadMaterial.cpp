@@ -109,7 +109,7 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
   return 0;
 }
 
-Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message *pmessage) {
+Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message * /*pmessage*/) {
   Strength strength;
 
   for (xml_node<> *p_xn_sp = p_xn_strength->first_node();
@@ -150,7 +150,7 @@ Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message *pmessa
   return strength;
 }
 
-Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> *p_xn_mdb, PModel *pmodel) {
+Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> * /*p_xn_mdb*/, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
 
   Material *m;
@@ -512,7 +512,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   return m;
 }
 
-Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> *p_xn_mdb, PModel *pmodel) {
+Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /*p_xn_mdb*/, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
 
   Lamina *l;

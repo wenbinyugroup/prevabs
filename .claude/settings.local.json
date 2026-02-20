@@ -27,7 +27,9 @@
       "Bash(cmd /c:*)",
       "Bash(test:*)",
       "WebFetch(domain:github.com)",
-      "Bash(build_msvc/Release/prevabs.exe:*)"
+      "Bash(build_msvc/Release/prevabs.exe:*)",
+      "Bash(pwsh -NoProfile -ExecutionPolicy Bypass -File toolsbuild-msvc.ps1 fast)",
+      "Bash(pwsh -NoProfile -ExecutionPolicy Bypass -File tools/build-msvc.ps1:*)"
     ]
   }
 }

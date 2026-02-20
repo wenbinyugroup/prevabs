@@ -117,7 +117,7 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
     curve_off->addPVertex(ls->v1());
     curve_off->addPVertex(ls->v2());
   } else {
-    PGeoLineSegment *ls_prev = nullptr, *ls_first_off;
+    PGeoLineSegment *ls_prev = nullptr, *ls_first_off = nullptr;
     for (int i = 0; i < static_cast<int>(curve->vertices().size()) - 1; ++i) {
       PGeoLineSegment *ls_raw = new PGeoLineSegment(curve->vertices()[i], curve->vertices()[i + 1]);
       ls = offsetLineSegment(ls_raw, side, distance);

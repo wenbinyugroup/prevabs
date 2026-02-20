@@ -406,7 +406,7 @@ void PModel::createGmshPhyscialGroups(Message *pmessage) {
       if (index == -1) {
         group_tags.push_back(f->layertype()->id());
         group_face_tags.push_back(std::vector<int>());
-        index = group_tags.size() - 1;
+        index = static_cast<int>(group_tags.size()) - 1;
       }
 
       // Add face tag to the group

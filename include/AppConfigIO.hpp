@@ -80,7 +80,7 @@ inline std::string userConfigPath() {
   char buf[MAX_PATH] = {};
   DWORD n = GetEnvironmentVariableA("APPDATA", buf, MAX_PATH);
   if (n == 0 || n >= MAX_PATH) return "";
-  return std::string(buf) + "\prevabs\prevabs.json";
+  return std::string(buf) + "\\prevabs\\prevabs.json";
 #else
   const char *home = getenv("HOME");
   if (!home) {

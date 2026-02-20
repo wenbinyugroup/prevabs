@@ -210,7 +210,7 @@ PDCELVertex *findParamPointOnPolyline(
   double ulength = u * length;
 
   std::size_t nlseg = ps.size() - 1;
-  double ui = 0, li;
+  double ui = 0, li = 0.0;
   // int i;
   for (seg = 0; seg < nlseg; ++seg) {
     // li = dist(ps[seg], ps[seg+1]);
@@ -720,10 +720,10 @@ int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
 
   c.clear();
   if (remove == 0) {
-    for (auto v : tmp_c2) c.push_back(v);
+    for (auto vtx : tmp_c2) c.push_back(vtx);
   }
   else if (remove == 1) {
-    for (auto v : tmp_c1) c.push_back(v);
+    for (auto vtx : tmp_c1) c.push_back(vtx);
   }
 
   // std::cout << "resulting curve\n";

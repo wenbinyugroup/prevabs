@@ -55,8 +55,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   MESSAGE_SCOPE(g_msg);
   // i_indent++;
 
-  int material_id = 1;  // Material ID
-  int layertype_id = 1; // Layer Type ID
+  (void)0;  // material_id and layertype_id removed (unused)
 
   xml_document<> xmlDocCrossSection;
   std::ifstream fileCrossSection{filenameCrossSection};
@@ -508,10 +507,10 @@ int readCrossSection(const std::string &filenameCrossSection,
             xml_attribute<> *p_xa_fillTE = nodeTEWeb->first_attribute("fill");
             xml_attribute<> *p_xa_curvedTE = nodeTEWeb->first_attribute("curved");
 
-            bool fillLE = p_xa_fillLE ? (strcmp(p_xa_fillLE->value(), "true") == 0) : true;
-            bool curvedLE = p_xa_curvedLE ? (strcmp(p_xa_curvedLE->value(), "true") == 0) : false;
-            bool fillTE = p_xa_fillTE ? (strcmp(p_xa_fillTE->value(), "true") == 0) : true;
-            bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
+            (void)p_xa_fillLE;
+            (void)p_xa_curvedLE;
+            (void)p_xa_fillTE;
+            (void)p_xa_curvedTE;
 
             auto requireNode = [](xml_node<> *parent, const char *tag) -> xml_node<> * {
               xml_node<> *n = parent->first_node(tag);

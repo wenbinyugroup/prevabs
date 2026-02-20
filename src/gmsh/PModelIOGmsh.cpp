@@ -22,7 +22,7 @@
 void PModel::getNodes(
   std::vector<size_t> &node_tags,
   std::vector<double> &node_coords,
-  Message *pmessage
+  Message * /*pmessage*/
   ) {
 
   std::vector<double> node_params;
@@ -41,7 +41,7 @@ void PModel::getElements(
   std::vector<std::vector<size_t>> &elem_tags,
   std::vector<std::vector<size_t>> &elem_node_tags,
   int dim, int tag,
-  Message *pmessage
+  Message * /*pmessage*/
   ) {
 
   gmsh::model::mesh::getElements(
@@ -264,9 +264,9 @@ void PModel::writeElementsVABS(
 
 
 void writeElementSC(
-  FILE *file, int elem_tag, int mid,
-  std::vector<std::size_t> node_tags, int elem_type,
-  Message *pmessage) {
+  FILE * /*file*/, int /*elem_tag*/, int /*mid*/,
+  std::vector<std::size_t> /*node_tags*/, int /*elem_type*/,
+  Message * /*pmessage*/) {
   // std::vector<int> inums(9, 0);
   // fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
   // for (int i = 0; i < elem->getNumVertices(); ++i) {
@@ -282,7 +282,7 @@ void writeElementSC(
 
 
 
-void PModel::writeElementsSC(FILE *file, Message *pmessage) {
+void PModel::writeElementsSC(FILE * /*file*/, Message * /*pmessage*/) {
 
   // // Write connectivity for each element
   // for (auto f : model->dcel()->faces()) {
@@ -326,7 +326,7 @@ void PModel::writeElementsSC(FILE *file, Message *pmessage) {
 // ===================================================================
 
 
-int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
+int PModel::writeGmsh(const std::string &fn_base, Message * /*pmessage*/) {
   // i_indent++;
   // pmessage->increaseIndent();
 

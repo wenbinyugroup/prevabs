@@ -44,8 +44,8 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
 
   PArea *area, *area_prev = nullptr;
   PGeoLineSegment *ls_base, *ls_offset, *ls_layup;
-  PDCELHalfEdge *he_tmp, *he_tmp_next;
-  PDCELVertex *v_layer, *v_layer_prev, *vb_tmp, *vo_tmp, *v1_tmp, *v2_tmp;
+  PDCELHalfEdge *he_tmp, *he_tmp_next = nullptr;
+  PDCELVertex *v_layer = nullptr, *v_layer_prev = nullptr, *vb_tmp, *vo_tmp, *v1_tmp, *v2_tmp;
   std::list<PDCELFace *> new_faces;
   std::vector<PDCELVertex *> prev_bound_vertices_tmp, first_bound_vertices;
   std::string name;
@@ -340,7 +340,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   // 3. Create new area
   // 4. Split bound according to the layup
 
-  int offset_v_index = 0;
   // int offset_v_linkto, offset_v_linkto_next;
   // int ii;
   int count = 0;
@@ -721,8 +720,8 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   _areas.push_back(area);
 
   // Slice layers
-  for (auto area : _areas) {
-    area->buildLayers(bcfg);
+  for (auto each_area : _areas) {
+    each_area->buildLayers(bcfg);
   }
 
 }

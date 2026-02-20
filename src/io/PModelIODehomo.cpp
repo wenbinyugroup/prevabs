@@ -14,8 +14,8 @@
 
 
 
-int readInputDehomo(const std::string &filenameCrossSection,
-                    const std::string &filePath, PModel *pmodel) {
+int readInputDehomo(const std::string & /*filenameCrossSection*/,
+                    const std::string & /*filePath*/, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
 
   // -----------------------------------------------------------------
@@ -189,7 +189,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel) {
 
 LoadCase readXMLElementLoadCase(
   const xml_node<> *p_xn_loadcase, const int &measure, const int &model,
-  PModel *pmodel, Message *pmessage
+  PModel *pmodel, Message * /*pmessage*/
   ) {
 
   LoadCase loadcase;
@@ -329,9 +329,9 @@ int readXMLElementLoadCaseInclude(
 
   if (fmt == "csv") {
     int headrow{1};
-    xml_attribute<> *p_xa_temp = p_xn_loadcase->first_attribute("header");
-    if (p_xa_temp) {
-      std::string s_temp = p_xa_temp->value();
+    xml_attribute<> *p_xa_header = p_xn_loadcase->first_attribute("header");
+    if (p_xa_header) {
+      std::string s_temp = p_xa_header->value();
       headrow = atoi(s_temp.c_str());
     }
     readLoadCasesFromCSV(fn, headrow, measure, model, pmodel, pmessage);
@@ -476,15 +476,15 @@ int PModel::writeGLB(std::string fn) {
           else if (loadcase.measure == 1) v_s_order = {"e11", "g12", "g13", "k11", "k12", "k13"};
         }
 
-        for (int i = 0; i < v_s_order.size(); i++) {
-          if (loadcase.envelope_axis1 == v_s_order[i]) {
-            fprintf(file, "%8d", i+1);
+        for (int j = 0; j < static_cast<int>(v_s_order.size()); j++) {
+          if (loadcase.envelope_axis1 == v_s_order[j]) {
+            fprintf(file, "%8d", j+1);
             break;
           }
         }
-        for (int i = 0; i < v_s_order.size(); i++) {
-          if (loadcase.envelope_axis2 == v_s_order[i]) {
-            fprintf(file, "%8d", i+1);
+        for (int j = 0; j < static_cast<int>(v_s_order.size()); j++) {
+          if (loadcase.envelope_axis2 == v_s_order[j]) {
+            fprintf(file, "%8d", j+1);
             break;
           }
         }

@@ -92,6 +92,7 @@ set(SOURCES
 if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
   add_compile_options(/utf-8)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
 add_executable( ${PROJECTNAME} ${SOURCES} )

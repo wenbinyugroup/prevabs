@@ -21,7 +21,7 @@
 #include <string>
 
 
-void PComponent::buildFilling(const BuilderConfig &bcfg, Message *pmessage) {
+void PComponent::buildFilling(const BuilderConfig &bcfg, Message * /*pmessage*/) {
 
   if (!_fill_baseline_groups.empty()) {
 
@@ -29,18 +29,18 @@ void PComponent::buildFilling(const BuilderConfig &bcfg, Message *pmessage) {
     std::list<Baseline *> bl_open;
 
     // Join baselines
-    Baseline *bl;
+    Baseline *bl_joined;
     for (auto blg : _fill_baseline_groups) {
-      bl = joinCurves(blg);
+      bl_joined = joinCurves(blg);
 
       if (_fill_ref_baseline == blg.front()) {
-        _fill_ref_baseline = bl;
+        _fill_ref_baseline = bl_joined;
       }
 
-      if (bl->vertices().front() == bl->vertices().back()) {
-        bl_closed.push_back(bl);
+      if (bl_joined->vertices().front() == bl_joined->vertices().back()) {
+        bl_closed.push_back(bl_joined);
       } else {
-        bl_open.push_back(bl);
+        bl_open.push_back(bl_joined);
       }
     }
 
@@ -51,14 +51,14 @@ void PComponent::buildFilling(const BuilderConfig &bcfg, Message *pmessage) {
 
     // Trim/Extend ends for each open baseline
     for (auto bl : bl_open) {
-      double u1_head, u2_head, u1_tail, u2_tail, u1_tmp, u2_tmp;
+      double u1_head, u2_head = 0.0, u1_tail, u2_tail = 0.0, u1_tmp, u2_tmp;
       int ls_i_head = -1, ls_i_tmp;
       std::size_t ls_i_tail = bl->vertices().size();
       u1_head = -INF;
       u1_tail = INF;
 
       std::vector<PDCELVertex *> tmp_vertices;
-      PDCELHalfEdge *he_tool_head, *he_tool_tail, *he;
+      PDCELHalfEdge *he_tool_head = nullptr, *he_tool_tail = nullptr, *he;
       PDCELHalfEdgeLoop *hel_tool_head, *hel_tool_tail;
 
       for (auto hel : bcfg.dcel->halfedgeloops()) {

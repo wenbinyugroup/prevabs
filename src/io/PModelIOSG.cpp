@@ -179,7 +179,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
   return 1;
 }
 
-int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg) {
+int readSG(const std::string & /*fn*/, PModel *pmodel, const WriterConfig &wcfg) {
   MESSAGE_SCOPE(g_msg);
 
   PMesh *mesh = new PMesh();
@@ -197,7 +197,7 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg) {
 
   int nnode{0}, nelem{0}, nsg;
   int ln(1); // line counter
-  int num_head_lines;
+  int num_head_lines = 0;
   if (wcfg.tool == AnalysisTool::VABS) num_head_lines = 4;
   else if (wcfg.tool == AnalysisTool::SwiftComp) num_head_lines = 5;
 
@@ -285,7 +285,7 @@ int readSG(const std::string &fn, PModel *pmodel, const WriterConfig &wcfg) {
 // Write in VABS format
 // ===================================================================
 
-void writeSettingsVABS(FILE *file, PModel *model, const WriterConfig &wcfg) {
+void writeSettingsVABS(FILE *file, PModel *model, const WriterConfig & /*wcfg*/) {
   std::vector<std::size_t> inums;
 
   // inums = {1, model->cs()->getNumOfUsedLayerTypes()};
@@ -295,7 +295,6 @@ void writeSettingsVABS(FILE *file, PModel *model, const WriterConfig &wcfg) {
   fprintf(file, "\n");
 
   inums.clear();
-  unsigned int recover = wcfg.dehomo ? 1 : 0;
   // inums = {model->analysisModel(), recover, model->analysisThermal()};
   inums.push_back(model->analysisModel());
   // inums.push_back(recover);

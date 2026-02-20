@@ -19,7 +19,7 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
   return out;
 }
 
-void Material::print(Message *pmessage, int i_type, int i_indent) {
+void Material::print(Message *pmessage, int i_type, int /*i_indent*/) {
   std::string msg;
   pmessage->print(i_type, "name: " + _name);
   pmessage->print(i_type, "density = " + std::to_string(_density));
@@ -283,7 +283,7 @@ void Material::completeStrengthProperties() {
 
 
 
-void Material::writeStrengthProperties(FILE *file, Message *pmessage) {
+void Material::writeStrengthProperties(FILE *file, Message * /*pmessage*/) {
   // Strength sp = m->getStrength();
   std::string type = _strength._type;
   // int fc = m->getFailureCriterion();
@@ -463,7 +463,7 @@ void Layer::setLayerType(LayerType *p_layertype) { p_llayertype = p_layertype; }
 
 
 // ===================================================================
-void Layup::print(Message *pmessage, int i_type, int i_indent) {
+void Layup::print(Message *pmessage, int i_type, int /*i_indent*/) {
   std::string msg;
   pmessage->print(i_type, "name: " + lname);
   pmessage->print(i_type, "layers:");
@@ -474,9 +474,9 @@ void Layup::print(Message *pmessage, int i_type, int i_indent) {
      << std::setw(8) << "plies";
   pmessage->print(i_type, ss.str());
   for (int i = 0; i < llayers.size(); i++) {
-    std::stringstream ss;
-    ss << std::setw(4) << (i+1) << llayers[i];
-    pmessage->print(i_type, ss.str());
+    std::stringstream ss_layer;
+    ss_layer << std::setw(4) << (i+1) << llayers[i];
+    pmessage->print(i_type, ss_layer.str());
   }
 
   return;

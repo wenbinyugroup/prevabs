@@ -72,12 +72,12 @@ std::string Message::message(const std::string &str) {
   return s_msg;
 }
 
-void Message::printPrompt(int i_type, int i_indent) {
+void Message::printPrompt(int i_type, int indent_override) {
   std::string s_prepend{""};
-  if (i_indent == 0) {
+  if (indent_override == 0) {
     s_prepend += std::string(m_i_indent, ' ');
   } else {
-    s_prepend += std::string(i_indent, ' ');
+    s_prepend += std::string(indent_override, ' ');
   }
 
   switch (i_type) {
@@ -193,20 +193,20 @@ void Message::printTitle() {
 //   return 1;
 // }
 
-void printInfo(int i_indent, std::string s_message) {
-  std::string s_indent(i_indent * 2, ' ');
+void printInfo(int indent, std::string s_message) {
+  std::string s_indent(indent * 2, ' ');
   std::cout << s_indent << "- " << s_message << std::endl;
   return;
 }
 
-void printWarning(int i_indent, std::string s_message) {
-  std::string s_indent(i_indent, ' ');
+void printWarning(int indent, std::string s_message) {
+  std::string s_indent(indent, ' ');
   std::cout << s_indent << markWarning << " " << s_message << std::endl;
   return;
 }
 
-void printError(int i_indent, std::string s_message) {
-  std::string s_indent(i_indent, ' ');
+void printError(int indent, std::string s_message) {
+  std::string s_indent(indent, ' ');
   std::cout << s_indent << markError << " " << s_message << std::endl;
   return;
 }
@@ -461,8 +461,9 @@ std::vector<int> parseIntegersFromString(const std::string &s) {
 // }
 std::string lowerString(const std::string& str) {
     std::string lower_str = str;
-    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
+    for (auto& ch : lower_str) {
+        ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    }
     return lower_str;
 }
 
@@ -474,8 +475,9 @@ std::string lowerString(const std::string& str) {
 // }
 std::string upperString(const std::string& str) {
     std::string upper_str = str;
-    std::transform(upper_str.begin(), upper_str.end(), upper_str.begin(),
-                   [](unsigned char c) { return std::toupper(c); });
+    for (auto& ch : upper_str) {
+        ch = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+    }
     return upper_str;
 }
 
@@ -500,10 +502,8 @@ std::vector<std::string> splitFilePath(const std::string& filepath) {
   std::vector<std::string> s;
   s.resize(3);
   if (filepath.size()) {
-    int idot   = (int)filepath.find_last_of('.');
-    int islash = (int)filepath.find_last_of("/\\");
-    if (idot   == (int)std::string::npos) idot   = -1;
-    if (islash == (int)std::string::npos) islash = -1;
+    int idot   = (filepath.find_last_of('.')   == std::string::npos) ? -1 : (int)filepath.find_last_of('.');
+    int islash = (filepath.find_last_of("/\\") == std::string::npos) ? -1 : (int)filepath.find_last_of("/\\");
     if (idot > 0)
       s[2] = filepath.substr(idot);
     if (islash > 0)
@@ -515,7 +515,7 @@ std::vector<std::string> splitFilePath(const std::string& filepath) {
 
 std::vector<double> getDxyFromAngle(double angle, char axis, double increment,
                                     bool reverse) {
-  double dx, dy;
+  double dx = 0.0, dy = 0.0;
   double slope{tan(deg2rad(angle))};
   if (axis == 'x') {
     dx = increment;
@@ -560,7 +560,7 @@ void discretizeArcN(const PGeoArc &arc, int number, Baseline *baseline, PModel *
 }
 
 void discretizeArcA(const PGeoArc &arc, double stepAngle, Baseline *baseline, PModel *pmodel) {
-  int number = round(arc.angle() / stepAngle);
+  int number = static_cast<int>(round(arc.angle() / stepAngle));
   discretizeArcN(arc, number, baseline, pmodel);
 }
 
@@ -676,13 +676,13 @@ void walk(const rapidxml::xml_node<>* node, int indent) {
     switch(t) {
     case rapidxml::node_element:
         {
-            printf("<%.*s", node->name_size(), node->name());
+            printf("<%.*s", (int)node->name_size(), node->name());
             for(const rapidxml::xml_attribute<>* a = node->first_attribute()
                 ; a
                 ; a = a->next_attribute()
             ) {
-                printf(" %.*s", a->name_size(), a->name());
-                printf("='%.*s'", a->value_size(), a->value());
+                printf(" %.*s", (int)a->name_size(), a->name());
+                printf("='%.*s'", (int)a->value_size(), a->value());
             }
             printf(">\n");
 
@@ -692,12 +692,12 @@ void walk(const rapidxml::xml_node<>* node, int indent) {
             ) {
                 walk(n, indent+1);
             }
-            printf("%s</%.*s>\n", ind.c_str(), node->name_size(), node->name());
+            printf("%s</%.*s>\n", ind.c_str(), (int)node->name_size(), node->name());
         }
         break;
 
     case rapidxml::node_data:
-        printf("DATA:[%.*s]\n", node->value_size(), node->value());
+        printf("DATA:[%.*s]\n", (int)node->value_size(), node->value());
         break;
 
     default:

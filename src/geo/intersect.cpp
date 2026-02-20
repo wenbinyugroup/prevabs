@@ -34,7 +34,7 @@
 bool calcLineIntersection2D(
   const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
-  double &u1, double &u2, const double &tol
+  double &u1, double &u2, const double & /*tol*/
   ) {
   // tol is kept for API compatibility; parallelism is now detected via
   // h2d::Line2d::isParallelTo(), which uses an angle-based threshold
@@ -297,7 +297,7 @@ bool calcLineIntersection2D(
  */
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
               PDCELVertex *&intersect) {
-  int result;
+  int result = 0;
   double us, ut;
   bool not_parallel;
 
@@ -354,12 +354,12 @@ PDCELHalfEdge *findCurvesIntersection(
   PDCELHalfEdge *he = nullptr;
 
   std::vector<PDCELVertex *> tmp_ls; // temporary line segment
-  int ls_i_prev;
+  int ls_i_prev = -1;
   PDCELHalfEdge *hei = hel->incidentEdge();
   std::vector<int> c_is, t_is;  // curve indices, tool indices
   std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
   int j0;
-  double tmp_c_u, tmp_t_u;  // temporary parametric locations
+  double tmp_c_u = 0.0, tmp_t_u;  // temporary parametric locations
 
   if (end == 0) {  // find the intersection at the beginning
     u1 = -INF;
@@ -564,7 +564,7 @@ PDCELHalfEdge *findCurvesIntersection(
 Baseline *findCurvesIntersection(
   Baseline *bl, PGeoLineSegment *ls, int end,
   double &u1, double &u2, int &iold, int &inew,
-  std::vector<int> &link_to_list, std::vector<int> &base_offset_indices_links
+  std::vector<int> &link_to_list, std::vector<int> & /*base_offset_indices_links*/
   ) {
   // After adjusting the curve
   // the first kept vertex will be at index iold in the old curve
@@ -835,7 +835,7 @@ int findAllIntersections(
  * @return The intersection parameter (u) of the closest intersection.
  */
 double getIntersectionLocation(
-  std::vector<PDCELVertex *> &c,
+  std::vector<PDCELVertex *> & /*c*/,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
   int &ls_i, int &j
@@ -936,8 +936,8 @@ double getIntersectionLocation(
 PDCELVertex *getIntersectionVertex(
   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
   int &i1, int &i2, const double &u1, const double &u2,
-  const int &which_end_1, const int &which_end_2,
-  const int &inner_only_1, const int &inner_only_2,
+  const int & /*which_end_1*/, const int & /*which_end_2*/,
+  const int & /*inner_only_1*/, const int & /*inner_only_2*/,
   int &is_new_1, int &is_new_2,
   const double &tol
 ) {

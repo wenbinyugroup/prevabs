@@ -28,7 +28,7 @@ void PComponent::print() {
             << "cyclic: " << (_cycle ? "true" : "false") << std::endl;
 }
 
-void PComponent::print(Message *pmessage, int i_type, int i_indent) {
+void PComponent::print(Message *pmessage, int i_type, int /*i_indent*/) {
   pmessage->print(i_type, "name: " + _name);
   pmessage->print(i_type, "order: " + std::to_string(_order));
   pmessage->print(i_type, "cyclic: " + std::to_string(_cycle));
@@ -41,9 +41,9 @@ void PComponent::print(Message *pmessage, int i_type, int i_indent) {
      << std::setw(8) << "level";
   pmessage->print(i_type, ss.str());
   for (int i = 0; i < _segments.size(); i++) {
-    std::stringstream ss;
-    ss << std::setw(4) << (i+1) << _segments[i];
-    pmessage->print(i_type, ss.str());
+    std::stringstream ss_seg;
+    ss_seg << std::setw(4) << (i+1) << _segments[i];
+    pmessage->print(i_type, ss_seg.str());
   }
   return;
 }

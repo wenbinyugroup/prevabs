@@ -138,7 +138,7 @@ static void adjustPairsAfterTrimTail(
   pairs.push_back({id_base + 1, id_offset + 1});
 }
 
-void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &bcfg) {
+void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const BuilderConfig &bcfg) {
 
   MESSAGE_SCOPE(g_msg);
 
@@ -179,7 +179,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       if (_ref_vertex == nullptr) {
         _ref_vertex = _segments[0]->curveBase()->refVertex();
         if (_ref_vertex == nullptr) {
-          int i = std::floor(_segments[0]->curveBase()->vertices().size() / 2);
+          int i = static_cast<int>(_segments[0]->curveBase()->vertices().size() / 2);
           _ref_vertex = _segments[0]->curveBase()->vertices()[i];
         }
       }
@@ -293,7 +293,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         s->curveBase()->vertices()[0] = v_new;
       }
       else if (e == 1) {
-        int n = s->curveBase()->vertices().size();
+        int n = static_cast<int>(s->curveBase()->vertices().size());
         for (auto k = ls_i; k < n - 1; k++) {
           s->curveBase()->vertices().pop_back();
           s->baseOffsetIndicesLink().pop_back();
@@ -345,7 +345,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         s->setHeadVertexOffset(v_new);
       }
       else if (e == 1) {
-        int n = s->curveOffset()->vertices().size();
+        int n = static_cast<int>(s->curveOffset()->vertices().size());
         for (auto k = ls_i; k < n - 1; k++) {
           s->curveOffset()->vertices().pop_back();
         }
@@ -359,8 +359,8 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       // 3. Add the pairs for the trimmed end
       PLOG(debug) << g_msg->message("adjust base-offset linking indices");
 
-      int nv_base = s->curveBase()->vertices().size();
-      int nv_offset = s->curveOffset()->vertices().size();
+      int nv_base = static_cast<int>(s->curveBase()->vertices().size());
+      int nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
       PLOG(debug) << g_msg->message("  nv_base = " + std::to_string(nv_base));
       PLOG(debug) << g_msg->message("  nv_offset = " + std::to_string(nv_offset));
 
@@ -386,7 +386,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         // Old method
         for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
           if (k >= ls_i) {
-            s->baseOffsetIndicesLink()[k] = s->curveOffset()->vertices().size() - 1;
+            s->baseOffsetIndicesLink()[k] = static_cast<int>(s->curveOffset()->vertices().size()) - 1;
           }
         }
 
@@ -412,7 +412,7 @@ void PComponent::joinSegments(
     + s2->getName() + " " + std::to_string(e2)
   );
 
-  PDCELVertex *v1_new, *v2_new, *v_intersect;
+  PDCELVertex *v1_new = nullptr, *v2_new = nullptr, *v_intersect = nullptr;
   Baseline *bl1_off_new, *bl2_off_new;
   std::vector<PDCELVertex *> bound_vertices;
   bound_vertices.push_back(v);
@@ -439,8 +439,6 @@ void PComponent::joinSegments(
     tmp_bound_2.push_back(tmp_v);
 
     // Intersect offset curve with the bound for each segment
-    int ib_tmp, i_tmp;
-    double u1, u2, ub1, ub2;
     std::vector<int> i1s, i2s, ibs1, ibs2;
     std::vector<double> u1s, u2s, ubs1, ubs2;
     int ls_i1, ls_i2, ls_bi1, ls_bi2;
@@ -726,11 +724,11 @@ void PComponent::joinSegments(
   else if (style == 2) {
 
     // Intersect the two offset curves
-    double u1_tmp, u2_tmp;
+    double u1_tmp = 0.0, u2_tmp = 0.0;
     PDCELVertex *v11, *v12, *v21, *v22;
     int i1 = 0, i2 = 0, n1, n2;
-    n1 = s1->curveOffset()->vertices().size();
-    n2 = s2->curveOffset()->vertices().size();
+    n1 = static_cast<int>(s1->curveOffset()->vertices().size());
+    n2 = static_cast<int>(s2->curveOffset()->vertices().size());
     PGeoLineSegment *ls1, *ls2;
     std::vector<PGeoLineSegment *> lss1, lss2;
     bool found = false;
@@ -999,7 +997,6 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   // Trim tail
   else if (e == 1 && s->nextBound().normSq() != 0) {
 
-    int nv_offset_before = s->getBaseline()->vertices().size();
 
     SPoint3 sp0{s->getBaseline()->vertices().back()->point()};
     SVector3 sv1{s->nextBound()};
@@ -1034,17 +1031,15 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
     trim(s->curveOffset()->vertices(), ip, 1);
 
-    int nv_offset_after = s->curveOffset()->vertices().size();
-
     PLOG(debug) << g_msg->message("curve base:");
     s->getBaseline()->print();
     PLOG(debug) << g_msg->message("curve offset:");
     s->curveOffset()->print();
 
     // Adjust linking indices
-    int ls_i_base = s->getBaseline()->vertices().size();
+    int ls_i_base = static_cast<int>(s->getBaseline()->vertices().size());
     int ls_i_offset = ls_i1;
-    int _tmp_nv_offset = s->curveOffset()->vertices().size();
+    int _tmp_nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
 
     s->printBaseOffsetPairs(g_msg);
     adjustPairsAfterTrimTail(

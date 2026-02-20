@@ -12,7 +12,7 @@
 #include <vector>
 
 PDCELFace::PDCELFace() {
-  std::string _name = "null";
+  _name = "null";
 
   _outer = nullptr;
   _area = nullptr;
@@ -25,7 +25,7 @@ PDCELFace::PDCELFace() {
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
-  std::string _name = "null";
+  _name = "null";
 
   _outer = outer;
   _area = nullptr;
@@ -38,7 +38,7 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
-  std::string _name = "null";
+  _name = "null";
 
   _outer = outer;
   _area = nullptr;

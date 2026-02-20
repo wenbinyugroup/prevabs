@@ -24,9 +24,9 @@
 
 int readXMLElementComponentLaminate(
   PComponent *p_component, const xml_node<> *xn_component,
-  std::vector<std::vector<std::string>> &dependents_all, std::vector<std::string> &depend_names,
+  std::vector<std::vector<std::string>> & /*dependents_all*/, std::vector<std::string> &depend_names,
   std::vector<Layup *> &p_layups, int &num_combined_layups,
-  CrossSection *cs, PModel *pmodel, Message *pmessage
+  CrossSection *cs, PModel *pmodel, Message * /*pmessage*/
   ) {
 
   if (xn_component->first_node("location")) {
@@ -318,7 +318,7 @@ int readXMLElementComponentLaminate(
       int pos{0};
       if (p_xa_begin_x2) {
         std::string begin_x2_value{p_xa_begin_x2->value()};
-        pos = begin_x2_value.find(":");
+        pos = static_cast<int>(begin_x2_value.find(":"));
         double begin_x2 = std::stod(begin_x2_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(begin_x2_value.substr(pos+1)) : 1;
         u_begin = findPointOnPolylineByCoordinate(p_bsl->vertices(), begin_x2, tol, intersection_count);
@@ -326,7 +326,7 @@ int readXMLElementComponentLaminate(
       xml_attribute<> *p_xa_begin_x3{p_xn_layup->first_attribute("begin_x3")};
       if (p_xa_begin_x3) {
         std::string begin_x3_value{p_xa_begin_x3->value()};
-        pos = begin_x3_value.find(":");
+        pos = static_cast<int>(begin_x3_value.find(":"));
         double begin_x3 = std::stod(begin_x3_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(begin_x3_value.substr(pos+1)) : 1;
         u_begin = findPointOnPolylineByCoordinate(p_bsl->vertices(), begin_x3, tol, intersection_count);
@@ -339,7 +339,7 @@ int readXMLElementComponentLaminate(
       xml_attribute<> *p_xa_end_x2{p_xn_layup->first_attribute("end_x2")};
       if (p_xa_end_x2) {
         std::string end_x2_value{p_xa_end_x2->value()};
-        pos = end_x2_value.find(":");
+        pos = static_cast<int>(end_x2_value.find(":"));
         double end_x2 = std::stod(end_x2_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(end_x2_value.substr(pos+1)) : 1;
         u_end = findPointOnPolylineByCoordinate(p_bsl->vertices(), end_x2, tol, intersection_count);
@@ -347,7 +347,7 @@ int readXMLElementComponentLaminate(
       xml_attribute<> *p_xa_end_x3{p_xn_layup->first_attribute("end_x3")};
       if (p_xa_end_x3) {
         std::string end_x3_value{p_xa_end_x3->value()};
-        pos = end_x3_value.find(":");
+        pos = static_cast<int>(end_x3_value.find(":"));
         double end_x3 = std::stod(end_x3_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(end_x3_value.substr(pos+1)) : 1;
         u_end = findPointOnPolylineByCoordinate(p_bsl->vertices(), end_x3, tol, intersection_count);
@@ -566,7 +566,7 @@ int readXMLElementComponentLaminate(
         index_shift.push_back(0);
       }
       else if (v_u_sorted[i] == 1.0) {
-        index_split.push_back(p_bsl->vertices().size() - 1);
+        index_split.push_back(static_cast<int>(p_bsl->vertices().size()) - 1);
         index_shift.push_back(i_shift);
       }
       else if (v_u_sorted[i] > 0.0 && v_u_sorted[i] < 1.0) {

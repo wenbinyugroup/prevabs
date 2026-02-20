@@ -39,7 +39,7 @@
 #endif
 
 int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
-                  const std::string &filePath, double dx, double dy, double dz, double s, double r, Message *pmessage) {
+                  const std::string &filePath, double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/, Message *pmessage) {
 
   xml_node<> *p_xn_basepoints{nodeBaselines->first_node("basepoints")};
   if (p_xn_basepoints){
@@ -403,8 +403,8 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
       discreteAngle = atof(v.c_str());
   }
 
-  PDCELVertex *pCenter;
-  PDCELVertex *pStart;
+  PDCELVertex *pCenter = nullptr;
+  PDCELVertex *pStart = nullptr;
 
   // CASE 1: Given center and radius
   if (nc && nr) {
@@ -512,7 +512,7 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
       // TODO: raise error 'cannot find point' and exit.
     }
 
-    double r, k;
+    double r = 0.0, k = 0.0;
 
     if (p_xn_radius) {
       std::string r_str{p_xn_radius->value()};
@@ -675,7 +675,7 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
 }
 
 int readLineTypeAirfoil(
-  Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo,
+  Baseline *line, const xml_node<> *p_xn_line, const xml_node<> * /*p_xn_geo*/,
   PModel *pmodel, Message *pmessage, const double tol) {
   // std::cout << "reading airfoil type line\n";
   //
@@ -810,7 +810,7 @@ int readLineTypeAirfoil(
   if (flip) {
     std::string axis{"2"};
     double loc{0.5};
-    double _x, _y, _z;
+    double _x = 0.0, _y = 0.0, _z = 0.0;
 
     // unsigned int _l{line->vertices().size()};
     std::size_t _l{line->vertices().size()};
@@ -895,7 +895,7 @@ PDCELVertex *getIntersectionWithWeb(double x, double angle, PDCELVertex *left, P
 }
 
 Baseline *findLineByName(
-  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage
+  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message * /*pmessage*/
   ) {
   Baseline *p_line = nullptr;
 
@@ -942,8 +942,8 @@ double getWebEnd(const xml_node<> *nodeIncludeBaseline, const std::string &fileP
   std::stringstream ss(line);
   ss >> r_x >> r_y;
   while(getline(fileAirfoils, line)) {
-    std::stringstream ss(line);
-    ss >> l_x >> l_y;
+    std::stringstream ss_inner(line);
+    ss_inner >> l_x >> l_y;
     if ((w_x - l_x) * (w_x - r_x) <= 0) {
       if (top) {
         w_y = l_y + (r_y - l_y) / (r_x - l_x) * (w_x - l_x);
@@ -961,7 +961,7 @@ double getWebEnd(const xml_node<> *nodeIncludeBaseline, const std::string &fileP
 
 int addBaselinesFromAirfoil(const xml_node<> *nodeIncludeBaseline, PModel *pmodel,
                   const std::string &filePath, std::vector<std::pair<double, double>> websArray,
-                  double dx, double dy, double dz, double s, double r, Message *pmessage) {
+                  double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/, Message * /*pmessage*/) {
   // Use airfoil points to define baselines
   // No baselines xml needed
 
@@ -1010,7 +1010,7 @@ int addBaselinesFromAirfoil(const xml_node<> *nodeIncludeBaseline, PModel *pmode
 
   // Build baselines
   std::vector<std::string> baselineNames{"head"};
-  for (int n = 1; n < websArray.size(); n++) {
+  for (int n = 1; n < static_cast<int>(websArray.size()); n++) {
     baselineNames.push_back("bot_" + std::to_string(n) + "_" + std::to_string(n+1));
     baselineNames.insert(baselineNames.begin(), "top_" + std::to_string(n) + "_" + std::to_string(n+1));
   }
