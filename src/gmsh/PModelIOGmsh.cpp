@@ -93,8 +93,7 @@ void PModel::writeNodes(
 
 void writeElementVABS(
   FILE *file, std::size_t elem_tag, std::vector<std::size_t> node_tags,
-  int elem_type,
-  Message *pmessage
+  int elem_type
   ) {
 
   fprintf(file, "%8zd", elem_tag);
@@ -132,12 +131,11 @@ void PModel::writeElements(
   const std::vector<std::vector<std::vector<size_t>>> &face_elem_tags,
   const std::vector<std::vector<std::vector<size_t>>> &face_elem_node_tags,
   const std::vector<size_t> &face_prop_tags,
-  const std::vector<double> &face_local_orients,
-  Message *pmessage
+  const std::vector<double> &face_local_orients
   ) {
 
-  MESSAGE_SCOPE(pmessage);
-  PLOG(info) << pmessage->message("writing elements");
+  MESSAGE_SCOPE(g_msg);
+  PLOG(info) << g_msg->message("writing elements");
 
   if (config.isVABS()) {
     writeElementsVABS(
@@ -148,7 +146,7 @@ void PModel::writeElements(
   }
 
   else if (config.isSC()) {
-    writeElementsSC(file, pmessage);
+    writeElementsSC(file, g_msg);
   }
 
 }
@@ -208,7 +206,7 @@ void PModel::writeElementsVABS(
         // std::cout << std::endl;
 
         writeElementVABS(
-          file, elem_tags[_j], node_tags, elem_type, g_msg);
+          file, elem_tags[_j], node_tags, elem_type);
 
       }
     }
@@ -335,7 +333,7 @@ int PModel::writeGmsh(const std::string &fn_base, Message *pmessage) {
   writeGmshOpt(fn_base);
   // writeGmshGeo(fn_base);
   writeGmshGeo(config.file_name_geo);
-  writeGmshMsh(fn_base, pmessage);
+  writeGmshMsh(fn_base);
 
   // pmessage->decreaseIndent();
 
@@ -376,8 +374,8 @@ int PModel::writeGmshGeo(const std::string &fn) {
 
 
 
-int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int PModel::writeGmshMsh(const std::string &fn_base) {
+  MESSAGE_SCOPE(g_msg);
 
 
   // open the .opt file for extra options
@@ -397,7 +395,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
   if (config.isHomo()) {
 
     fn_msh = fn_base + ".msh";
-    PLOG(info) << pmessage->message("writing gmsh .msh file: " + fn_msh);
+    PLOG(info) << g_msg->message("writing gmsh .msh file: " + fn_msh);
     // _gmodel->writeMSH(fn_msh, 2.2);
     gmsh::write(fn_msh);
 
@@ -414,7 +412,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
       else {
         fn_msh = fn_base + "_local_case_" + case_name + ".msh";
       }
-      PLOG(info) << pmessage->message("writing gmsh .msh file: " + fn_msh);
+      PLOG(info) << g_msg->message("writing gmsh .msh file: " + fn_msh);
 
       FILE *f_msh, *f_opt;
       f_msh = fopen(fn_msh.c_str(), "w");
@@ -432,7 +430,7 @@ int PModel::writeGmshMsh(const std::string &fn_base, Message *pmessage) {
 
       // Write data
       // file = fopen((fn_base + "_temp.msh").c_str(), "w");
-      state->writeGmshMsh(f_msh, f_opt, pmessage);
+      state->writeGmshMsh(f_msh, f_opt);
       // state->writeGmshMsh(fn_msh, fn_opt, pmessage);
 
 
@@ -569,8 +567,8 @@ void PMesh::writeGmshMsh(FILE *file) {
 
 
 
-void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt) {
+  MESSAGE_SCOPE(g_msg);
 
   int view_id = -1;
 

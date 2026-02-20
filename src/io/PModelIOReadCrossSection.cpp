@@ -55,8 +55,8 @@ using namespace rapidxml;
 // int Segment::count_tmp = 0;
 
 int readCrossSection(const std::string &filenameCrossSection,
-                     const std::string &filePath, PModel *pmodel, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+                     const std::string &filePath, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
   // i_indent++;
 
   int material_id = 1;  // Material ID
@@ -67,11 +67,11 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (!fileCrossSection.is_open()) {
     // std::cout << markError << " Unable to open file: " << filenameCrossSection
     //           << std::endl;
-    PLOG(error) << pmessage->message("unable to open file: " + filenameCrossSection);
+    PLOG(error) << g_msg->message("unable to open file: " + filenameCrossSection);
     return 1;
   } else {
     // printInfo(i_indent, "reading main input file: " + filenameCrossSection);
-    PLOG(info) << pmessage->message("reading main input file: " + filenameCrossSection);
+    PLOG(info) << g_msg->message("reading main input file: " + filenameCrossSection);
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(fileCrossSection)),
@@ -110,7 +110,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // if (debug) {
   //   std::cout << markInfo << " Find Cross Section: " << csName << std::endl;
   // }
-  PLOG(debug) << pmessage->message("find cross-section: " + csName);
+  PLOG(debug) << g_msg->message("find cross-section: " + csName);
 
   // CrossSection cs{csName};
   CrossSection *cs = new CrossSection(csName);
@@ -138,7 +138,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Read settings
   xml_node<> *p_xn_settings{p_xn_sg->first_node("settings")};
   if (p_xn_settings) {
-    PLOG(debug) << pmessage->message("reading settings...");
+    PLOG(debug) << g_msg->message("reading settings...");
 
     xml_node<> *p_xn_tolerance{p_xn_settings->first_node("tolerance")};
     if (p_xn_tolerance) {
@@ -160,7 +160,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read analysis
-  PLOG(debug) << pmessage->message("reading analysis...");
+  PLOG(debug) << g_msg->message("reading analysis...");
 
   int model_dim = 1; // default 1D beam model
   int model = 0; // default classical model
@@ -284,7 +284,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     flag_oblique = 1;
   }
 
-  PLOG(debug) << pmessage->message("finished reading analysis.");
+  PLOG(debug) << g_msg->message("finished reading analysis.");
 
   // cs->setModel(model);
   // cs->setFlagThermal(flag_thermal);
@@ -317,7 +317,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read general
-  PLOG(debug) << pmessage->message("reading general...");
+  PLOG(debug) << g_msg->message("reading general...");
 
   // if (debug)
   //   std::cout << "\n"
@@ -423,7 +423,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
   std::stringstream ss_tol;
   ss_tol << config.app.tol;
-  PLOG(debug) << pmessage->message("tolerance = " + ss_tol.str());
+  PLOG(debug) << g_msg->message("tolerance = " + ss_tol.str());
 
 
   xml_node<> *p_xn_itf;
@@ -463,7 +463,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
 
-  PLOG(debug) << pmessage->message("finished reading general.");
+  PLOG(debug) << g_msg->message("finished reading general.");
 
 
 
@@ -475,7 +475,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read include
-  PLOG(debug) << pmessage->message("finding includings...");
+  PLOG(debug) << g_msg->message("finding includings...");
   xml_node<> *nodeInclude{p_xn_sg->first_node("include")};
   xml_node<> *nodeBaselines;
 
@@ -485,7 +485,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read geometry (base points and base lines)
-  PLOG(debug) << pmessage->message("reading geometry...");
+  PLOG(debug) << g_msg->message("reading geometry...");
 
   // 1: Try to read geometry from a seperated file
   if (nodeInclude) {
@@ -500,7 +500,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         //   std::cout << markInfo << " Include Baselines File: " << filenameBaselines
         //             << std::endl;
         // }
-        PLOG(debug) << pmessage->message("reading base line file: " + filenameBaselines);
+        PLOG(debug) << g_msg->message("reading base line file: " + filenameBaselines);
 
         std::ifstream fileBaselines;
         openFile(fileBaselines, filenameBaselines);
@@ -515,7 +515,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         catch (parse_error &e) {
           // std::cout << markError << " Unable to parse the file: " << filenameBaselines
           //           << std::endl;
-          PLOG(error) << pmessage->message("unable to parse the file: " + filenameBaselines);
+          PLOG(error) << g_msg->message("unable to parse the file: " + filenameBaselines);
           std::cerr << e.what() << std::endl;
           // std::cout << e.where() << std::endl;
         }
@@ -523,7 +523,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         // xml_node<> *nodeBaselines{xmlDocBaselines.first_node("baselines")};
         nodeBaselines = xmlDocBaselines.first_node("baselines");
 
-        readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, pmessage);
+        readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, g_msg);
 
       }
 
@@ -638,7 +638,7 @@ int readCrossSection(const std::string &filenameCrossSection,
               return 1;
             }
           }
-          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle, pmessage);
+          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle, g_msg);
 
         }
 
@@ -655,25 +655,25 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   if (nodeBaselines) {
 
-    readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, pmessage);
+    readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, g_msg);
 
   }
 
   if (config.debug) {
     // pmessage->printBlank();
     // pmessage->print(9, "summary of base lines");
-    PLOG(debug) << pmessage->message(" ");
-    PLOG(debug) << pmessage->message("summary of base lines (before transformation)");
+    PLOG(debug) << g_msg->message(" ");
+    PLOG(debug) << g_msg->message("summary of base lines (before transformation)");
     for (auto bsl : pmodel->baselines()) {
       bsl->print();
       // pmessage->printBlank();
-      PLOG(debug) << pmessage->message(" ");
+      PLOG(debug) << g_msg->message(" ");
     }
   }
 
   // translate; scale; rotate
   // std::cout << "\ntransforming...\n";
-  PLOG(debug) << pmessage->message("transforming base geometry");
+  PLOG(debug) << g_msg->message("transforming base geometry");
 
   for (auto v : pmodel->vertices()) {
     v->translate(dx, dy, dz);
@@ -684,16 +684,16 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (config.debug) {
     // pmessage->printBlank();
     // pmessage->print(9, "summary of base lines");
-    PLOG(debug) << pmessage->message(" ");
-    PLOG(debug) << pmessage->message("summary of base lines (after transformation)");
+    PLOG(debug) << g_msg->message(" ");
+    PLOG(debug) << g_msg->message("summary of base lines (after transformation)");
     for (auto bsl : pmodel->baselines()) {
       bsl->print();
       // pmessage->printBlank();
-      PLOG(debug) << pmessage->message(" ");
+      PLOG(debug) << g_msg->message(" ");
     }
   }
 
-  PLOG(debug) << pmessage->message("finished reading geometry.");
+  PLOG(debug) << g_msg->message("finished reading geometry.");
 
 
 
@@ -705,7 +705,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read materials (global)
-  PLOG(debug) << pmessage->message("reading materials...");
+  PLOG(debug) << g_msg->message("reading materials...");
 
   std::string fn_material_global = "";
   // xml_node<> *nodeMaterials{nodeInclude->first_node("material")};
@@ -745,16 +745,16 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   if (fn_material_global != "") {
-    readMaterialsFile(fn_material_global, pmodel, pmessage);
+    readMaterialsFile(fn_material_global, pmodel);
   }
 
   if (fn_material_local != "") {
-    readMaterialsFile(fn_material_local, pmodel, pmessage);
+    readMaterialsFile(fn_material_local, pmodel);
   }
 
   xml_node<> *p_xn_materials{p_xn_sg->first_node("materials")};
   if (p_xn_materials) {
-    readMaterials(p_xn_materials, pmodel, pmessage);
+    readMaterials(p_xn_materials, pmodel);
   }
 
   // if (config.debug) {
@@ -766,7 +766,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   //   }
   // }
 
-  PLOG(debug) << pmessage->message("finished reading materials.");
+  PLOG(debug) << g_msg->message("finished reading materials.");
 
 
 
@@ -778,7 +778,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read layups
-  PLOG(debug) << pmessage->message("reading layups...");
+  PLOG(debug) << g_msg->message("reading layups...");
 
   xml_node<> *nodeLayups;
   if (d_fmt == 0) {
@@ -786,10 +786,8 @@ int readCrossSection(const std::string &filenameCrossSection,
       xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
       std::string filenameLayups{p_xn_include_lyp->value()};
       filenameLayups = filePath + filenameLayups + ".xml";
-      if (pmessage) {
-        std::cout << markInfo << " Include Layups File: " << filenameLayups
-                  << std::endl;
-      }
+      std::cout << markInfo << " Include Layups File: " << filenameLayups
+                << std::endl;
       std::ifstream fileLayups;
       openFile(fileLayups, filenameLayups);
       xml_document<> xmlDocLayups;
@@ -806,7 +804,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
       nodeLayups = xmlDocLayups.first_node("layups");
       readLayups(nodeLayups, pmodel);
-      PLOG(debug) << pmessage->message("finished reading layups.");
+      PLOG(debug) << g_msg->message("finished reading layups.");
     }
   }
 
@@ -814,7 +812,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     nodeLayups = p_xn_sg->first_node("layups");
     if (nodeLayups) {
       readLayups(nodeLayups, pmodel);
-      PLOG(debug) << pmessage->message("finished reading layups.");
+      PLOG(debug) << g_msg->message("finished reading layups.");
     }
   }
 
@@ -840,7 +838,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Read components
   // if (debug)
   // std::cout << "- reading components" << std::endl;
-  PLOG(debug) << pmessage->message("reading components...");
+  PLOG(debug) << g_msg->message("reading components...");
 
   std::vector<Layup *> p_layups{};  // All layups used in this cross section
   int num_combined_layups = 0;  // Number of combined layups
@@ -854,12 +852,12 @@ int readCrossSection(const std::string &filenameCrossSection,
     PComponent *p_component;
 
     p_component = readXMLElementComponent(
-      xn_component, tmp_dependents_all, p_layups, num_combined_layups, cs, pmodel, pmessage
+      xn_component, tmp_dependents_all, p_layups, num_combined_layups, cs, pmodel, g_msg
     );
 
     cs->addComponent(p_component);
   }
-  PLOG(debug) << pmessage->message("finished reading components.");
+  PLOG(debug) << g_msg->message("finished reading components.");
 
 
 

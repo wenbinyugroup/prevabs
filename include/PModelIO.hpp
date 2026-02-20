@@ -32,14 +32,12 @@ using namespace rapidxml;
 /** @ingroup io
  * Top level function for reading inputs.
  */
-int readInputMain(const std::string &, const std::string &, PModel *,
-                  Message *);
+int readInputMain(const std::string &, const std::string &, PModel *);
 
 /** @ingroup io
  * Read the cross-section input file.
  */
-int readCrossSection(const std::string &, const std::string &, PModel *,
-                     Message *);
+int readCrossSection(const std::string &, const std::string &, PModel *);
 
 
 /** @ingroup io
@@ -47,8 +45,7 @@ int readCrossSection(const std::string &, const std::string &, PModel *,
  */
 int readBaselines(const xml_node<> *, PModel *, const std::string &, double,
                   double, double, double, double, Message *);
-Baseline *readXMLElementLine(const xml_node<> *, const xml_node<> *, PModel *,
-                             Message *);
+Baseline *readXMLElementLine(const xml_node<> *, const xml_node<> *, PModel *);
 void readLineTypeStraight(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
 void readLineTypeCircle(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
 void readLineTypeArc(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
@@ -69,8 +66,8 @@ PDCELVertex *findPointByName(const std::string &, const xml_node<> *, PModel *,
 /** @ingroup io
  * Read the material definitions from a file.
  */
-int readMaterialsFile(const std::string &, PModel *, Message *);
-int readMaterials(const xml_node<> *, PModel *, Message *);
+int readMaterialsFile(const std::string &, PModel *);
+int readMaterials(const xml_node<> *, PModel *);
 Material *readXMLElementMaterial(const xml_node<> *, const xml_node<> *,
                                  PModel *);
 Lamina *readXMLElementLamina(const xml_node<> *, const xml_node<> *, PModel *);
@@ -114,7 +111,7 @@ int readSG(const std::string &, PModel *, const WriterConfig &);
 /** @ingroup io
  * Read data from the dehomogenization output files.
  */
-int readOutputDehomo(const std::string &, PModel *, Message *);
+int readOutputDehomo(const std::string &, PModel *);
 
 
 LoadCase readXMLElementLoadCase(const xml_node<> *, const int &, const int &, PModel *, Message *);

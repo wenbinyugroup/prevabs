@@ -133,8 +133,8 @@ int readInputDehomo(const std::string &filenameCrossSection,
 
 
 
-int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readOutputDehomo(const std::string &fn_sg, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
 
 
   // TODO: for each load case
@@ -146,7 +146,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
   std::string fn;
 
   if (config.isDehomo()) {
-    PLOG(info) << pmessage->message("reading dehomogenization outputs...");
+    PLOG(info) << g_msg->message("reading dehomogenization outputs...");
 
     // Read node data (displacement)
     fn = fn_sg + ".U";
@@ -166,7 +166,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel, Message *pmessage
   }
 
   if (config.isFailure()) {
-    PLOG(info) << pmessage->message("reading failure analysis outputs...");
+    PLOG(info) << g_msg->message("reading failure analysis outputs...");
 
     // Read element data (failure index and strength ratio)
     fn = fn_sg + ".fi";

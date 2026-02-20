@@ -65,9 +65,9 @@ private:
   // void calcBoundingVertices(Segment *s, PDCELVertex *v);
   // void calcBoundingVertices(Segment *s1, PDCELVertex *v, Segment *s2);
 
-  void createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &, Message *);
-  void joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &, Message *);
-  void joinSegments(Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v, int style, const BuilderConfig &, Message *);
+  void createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &);
+  void joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &);
+  void joinSegments(Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v, int style, const BuilderConfig &);
   void buildLaminate(const BuilderConfig &, Message *);
   void buildFilling(const BuilderConfig &, Message *);
 
@@ -146,7 +146,7 @@ public:
   void setTrimTailVector(double x2, double x3) { _trim_tail_vector.assign({x2, x3}); }
 
   void build(const BuilderConfig &);
-  void buildDetails(const BuilderConfig &, Message *);
+  void buildDetails(const BuilderConfig &);
 };
 
 bool compareOrder(PComponent *, PComponent *);

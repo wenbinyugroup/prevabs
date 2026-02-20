@@ -76,12 +76,12 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
             if (seg->getBeginVertex() == seg_p->getBeginVertex()) {
               // Head to head
               found_begin = true;
-              joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, bcfg, pmessage);
+              joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, bcfg);
               // break;
             } else if (seg->getBeginVertex() == seg_p->getEndVertex()) {
               // Head to tail
               found_begin = true;
-              joinSegments(seg, seg_p, 0, 1, seg->getBeginVertex(), js, bcfg, pmessage);
+              joinSegments(seg, seg_p, 0, 1, seg->getBeginVertex(), js, bcfg);
               // break;
             }
           }
@@ -99,12 +99,12 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
             if (seg->getEndVertex() == seg_p->getBeginVertex()) {
               // Tail to head
               found_end = true;
-              joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, bcfg, pmessage);
+              joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, bcfg);
               // break;
             } else if (seg->getEndVertex() == seg_p->getEndVertex()) {
               // Tail to tail
               found_end = true;
-              joinSegments(seg, seg_p, 1, 1, seg->getEndVertex(), js, bcfg, pmessage);
+              joinSegments(seg, seg_p, 1, 1, seg->getEndVertex(), js, bcfg);
               // break;
             }
           }
@@ -119,13 +119,13 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
       // seg->curveBase()->print(pmessage, 9);
 
       if (seg->headVertexOffset() == nullptr && !found_begin) {
-        joinSegments(seg, 0, seg->getBeginVertex(), bcfg, pmessage);
+        joinSegments(seg, 0, seg->getBeginVertex(), bcfg);
       }
 
       // seg->curveBase()->print(pmessage, 9);
 
       if (seg->tailVertexOffset() == nullptr && !found_end) {
-        joinSegments(seg, 1, seg->getEndVertex(), bcfg, pmessage);
+        joinSegments(seg, 1, seg->getEndVertex(), bcfg);
       }
 
       // seg->curveBase()->print(pmessage, 9);

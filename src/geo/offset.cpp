@@ -411,7 +411,7 @@ static void trimSubLinePair(
     return;
   }
 
-  ls_u1 = getIntersectionLocation(sline_a, i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+  ls_u1 = getIntersectionLocation(sline_a, i1s, u1s, 1, 0, ls_i1, j1);
   if (j1 < 0 || j1 >= static_cast<int>(i2s.size())) {
     PLOG(warning) << pmessage->message(
       "intersection index j1 out of range; skipping trim for this sub-line pair");
@@ -548,7 +548,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
           "no intersection found between head and tail offset sub-lines; skipping head-tail trim");
       } else {
         ls_u1 = getIntersectionLocation(
-          lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1, pmessage);
+          lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1);
         if (j1 < 0 || j1 >= static_cast<int>(i2s.size())) {
           PLOG(warning) << pmessage->message(
             "head-tail intersection index j1 out of range; skipping head-tail trim");

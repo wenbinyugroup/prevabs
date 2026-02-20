@@ -91,11 +91,11 @@ std::unique_ptr<ISGWriter> makeSGWriter(AnalysisTool tool) {
 
 // =============================================================
 
-int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage) {
+int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
 
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << pmessage->message("writing sg file: " + fn);
+  PLOG(info) << g_msg->message("writing sg file: " + fn);
 
   size_t nnode = 0;
   size_t nelem = 0;
@@ -104,7 +104,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   // ------------------------------
   std::vector<size_t> node_tags;
   std::vector<double> node_coords;
-  getNodes(node_tags, node_coords, pmessage);
+  getNodes(node_tags, node_coords, g_msg);
   nnode = node_tags.size();
 
   std::vector<std::vector<int>> face_elem_types;
@@ -120,7 +120,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
 
       getElements(
         elem_types, elem_type_tags, elem_type_node_tags, 2, it_ft->second,
-        pmessage
+        g_msg
       );
 
       // Count element numbers
@@ -156,8 +156,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   writeElements(
     fsg,
     face_elem_types, face_elem_tags, face_elem_node_tags,
-    face_prop_tags, face_local_orients,
-    pmessage);
+    face_prop_tags, face_local_orients);
 
   // Write layer types and materials
   writer->writeMaterials(fsg, this);
@@ -172,7 +171,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg, Message *pmessage)
   // Write a supplementary file
   // to store the mapping between the material id and name
   std::string fn_mid2name = fn + ".mat";
-  PLOG(info) << pmessage->message("writing material id-name file: " + fn_mid2name);
+  PLOG(info) << g_msg->message("writing material id-name file: " + fn_mid2name);
 
   FILE *fsg_mat;
   fsg_mat = fopen(fn_mid2name.c_str(), "w");

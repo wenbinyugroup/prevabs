@@ -106,7 +106,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
 
     else if (_name == "line" || _name == "baseline") {
       Baseline *p_line;
-      p_line = readXMLElementLine(p_xn_prim, nodeBaselines, pmodel, pmessage);
+      p_line = readXMLElementLine(p_xn_prim, nodeBaselines, pmodel);
       pmodel->addBaseline(p_line);
       // p_line = pmodel->getBaselineByName(p_xn_prim->first_attribute("name")->value());
       // if (!p_line) {
@@ -175,12 +175,12 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
 
 
 
-Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
-  
+Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
+
   std::string baselineName{p_xn_line->first_attribute("name")->value()};
 
-  PLOG(debug) << pmessage->message("reading line: " + baselineName);
+  PLOG(debug) << g_msg->message("reading line: " + baselineName);
 
   Baseline *line = new Baseline();
 
@@ -205,19 +205,19 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
 
     // TYPE 1: Straight line / polyline
     if (baselineType == "straight") {
-      readLineTypeStraight(line, p_xn_line, p_xn_geo, pmodel, pmessage);
+      readLineTypeStraight(line, p_xn_line, p_xn_geo, pmodel, g_msg);
     }
     // TYPE 2: A complete circle
     else if (baselineType == "circle") {
-      readLineTypeCircle(line, p_xn_line, p_xn_geo, pmodel, pmessage);
+      readLineTypeCircle(line, p_xn_line, p_xn_geo, pmodel, g_msg);
     }
     // TYPE 3: Arc (part of a circle)
     else if (baselineType == "arc") { // Discretize arc
-      readLineTypeArc(line, p_xn_line, p_xn_geo, pmodel, pmessage);
+      readLineTypeArc(line, p_xn_line, p_xn_geo, pmodel, g_msg);
     }
     // TYPE 4: Airfoil
     else if (baselineType == "airfoil") { // Discretize arc
-      readLineTypeAirfoil(line, p_xn_line, p_xn_geo, pmodel, pmessage, 1e-12);
+      readLineTypeAirfoil(line, p_xn_line, p_xn_geo, pmodel, g_msg, 1e-12);
     }
 
   }
@@ -225,7 +225,7 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
   else if (method == "join") {
 
     line->setName(baselineName);
-    readLineByJoin(line, p_xn_line, p_xn_geo, pmodel, pmessage);
+    readLineByJoin(line, p_xn_line, p_xn_geo, pmodel, g_msg);
     // line->print(pmessage, 1);
 
   }
@@ -994,7 +994,7 @@ Baseline *findLineByName(
     for (auto p_xn_bsl = p_xn_geo->first_node("line");
        p_xn_bsl; p_xn_bsl = p_xn_bsl->next_sibling("line")) {
       if (p_xn_bsl->first_attribute("name")->value() == name) {
-        p_line = readXMLElementLine(p_xn_bsl, p_xn_geo, pmodel, pmessage);
+        p_line = readXMLElementLine(p_xn_bsl, p_xn_geo, pmodel);
         pmodel->addBaseline(p_line);
         break;
       }
@@ -1005,7 +1005,7 @@ Baseline *findLineByName(
     for (auto p_xn_bsl = p_xn_geo->first_node("baseline");
        p_xn_bsl; p_xn_bsl = p_xn_bsl->next_sibling("baseline")) {
       if (p_xn_bsl->first_attribute("name")->value() == name) {
-        p_line = readXMLElementLine(p_xn_bsl, p_xn_geo, pmodel, pmessage);
+        p_line = readXMLElementLine(p_xn_bsl, p_xn_geo, pmodel);
         pmodel->addBaseline(p_line);
         break;
       }

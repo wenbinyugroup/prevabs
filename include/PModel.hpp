@@ -118,7 +118,7 @@ public:
   void addSNM(PElementNodeData *snm) { _snm.push_back(snm); }
   void addENM(PElementNodeData *enm) { _enm.push_back(enm); }
 
-  void writeGmshMsh(FILE *, FILE *, Message *);
+  void writeGmshMsh(FILE *, FILE *);
   // void writeGmshMsh(std::string &, std::string &, Message *);
 
   // PElementNodeData *u() { return _u; }
@@ -401,7 +401,7 @@ public:
   int indexGmshElements();
 
   int writeGmshGeo(const std::string &);
-  int writeGmshMsh(const std::string &, Message *);
+  int writeGmshMsh(const std::string &);
   int writeGmshOpt(const std::string &);
 
   /// Write the Gmsh file (.geo, .msh, and .opt)
@@ -415,7 +415,7 @@ public:
     \param fn File name without the extension
     \param wcfg Writer configuration (analysis tool, dehomo flag, etc.)
    */
-  int writeSG(std::string fn, const WriterConfig &, Message *);
+  int writeSG(std::string fn, const WriterConfig &);
 
   void writeNodes(FILE *, const std::vector<size_t> &, const std::vector<double> &);
 
@@ -425,8 +425,7 @@ public:
     const std::vector<std::vector<std::vector<size_t>>> &,
     const std::vector<std::vector<std::vector<size_t>>> &,
     const std::vector<size_t> &,
-    const std::vector<double> &,
-    Message *
+    const std::vector<double> &
     );
 
   void writeElementsVABS(
@@ -444,7 +443,7 @@ public:
   int writeGLB(std::string fn);
 
   // Write supplement files
-  int writeSupp(Message *);
+  int writeSupp();
 
 
   // =================================================================
@@ -453,7 +452,7 @@ public:
 
 
   // Homogenization
-  void homogenize(Message *);
+  void homogenize();
   void build(Message *);
 
   // void initGmshModel(Message *);
@@ -463,13 +462,13 @@ public:
   void createGmshEmbeddedEntities(Message *);
   void createGmshPhyscialGroups(Message *);
   void createGmshGeo(Message *);
-  void recordInterface(PDCELHalfEdge *, Message *);
+  void recordInterface(PDCELHalfEdge *);
 
   void buildGmsh();
 
 
   // Dehomogenization
-  void dehomogenize(Message *);
+  void dehomogenize();
 
   void recoverVABS();
   void failureVABS(Message *);
@@ -478,12 +477,12 @@ public:
 
 
   // Execution
-  void run(Message *);
+  void run();
 
 
   // Plot functions
   void plotGeoDebug(Message *, bool create_gmsh_geo=true);
-  void plot(Message *);
+  void plot();
   void plotDehomo(Message *);
 
   int postVABS(Message *);

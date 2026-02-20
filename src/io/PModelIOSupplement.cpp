@@ -16,10 +16,10 @@
 #include <utility>
 
 
-int PModel::writeSupp(Message *pmessage) {
-    MESSAGE_SCOPE(pmessage);
+int PModel::writeSupp() {
+    MESSAGE_SCOPE(g_msg);
 
-    PLOG(info) << pmessage->message("writing supplement files...");
+    PLOG(info) << g_msg->message("writing supplement files...");
 
     writeInterfacePairs(this);
     writeInterfaceNodes(this);

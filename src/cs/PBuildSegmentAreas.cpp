@@ -26,16 +26,16 @@
 #include <vector>
 
 
-void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+void Segment::buildAreas(const BuilderConfig &bcfg) {
+  MESSAGE_SCOPE(g_msg);
   // std::cout << std::endl;
   // if (config.debug) {
   //   // std::cout << "[debug] building segment areas: " << _name << std::endl;
   //   // fprintf(config.fdeb, "- building segment areas: %s\n", _name.c_str());
-  //   pmessage->print(1, "building segment areas: " + _name);
+  //   g_msg->print(1, "building segment areas: " + _name);
   // }
-  PLOG(debug) << pmessage->message("building areas of segment: " + _name);
-  // pmessage->print(9, "building segment areas: " + _name);
+  PLOG(debug) << g_msg->message("building areas of segment: " + _name);
+  // g_msg->print(9, "building segment areas: " + _name);
 
   // std::cout << "        segment original face:" << std::endl;
   // _face->print();
@@ -66,11 +66,11 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   // 1. Build the beginning bound of the first area
   // The goal is to calculate dividing points on the line that create layers
 
-  PLOG(debug) << pmessage->message("1. creating the beginning bound of the first area");
+  PLOG(debug) << g_msg->message("1. creating the beginning bound of the first area");
 
-  pmessage->increaseIndent();
+  g_msg->increaseIndent();
   if (_closed) {
-    PLOG(debug) << pmessage->message("closed segment");
+    PLOG(debug) << g_msg->message("closed segment");
 
     vb_tmp = _curve_base->vertices()[0];
     vo_tmp = _curve_offset->vertices()[0];
@@ -108,14 +108,14 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
 
 
   else {
-    PLOG(debug) << pmessage->message("open segment");
+    PLOG(debug) << g_msg->message("open segment");
 
     vb_tmp = _curve_base->vertices()[0];
     vo_tmp = _curve_offset->vertices()[0];
     // std::cout << "vb_tmp = " << vb_tmp << ", vo_tmp = " << vo_tmp << std::endl;
 
-    PLOG(debug) << pmessage->message("first vertex of the base: " + vb_tmp->printString());
-    PLOG(debug) << pmessage->message("first vertex of the offset: " + vo_tmp->printString());
+    PLOG(debug) << g_msg->message("first vertex of the base: " + vb_tmp->printString());
+    PLOG(debug) << g_msg->message("first vertex of the offset: " + vo_tmp->printString());
 
 
     bool use_offset_as_base = false;
@@ -128,7 +128,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
                                     _curve_base->vertices()[1]);
     }
     else {
-      PLOG(debug) << pmessage->message("degenerated case");
+      PLOG(debug) << g_msg->message("degenerated case");
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
         _curve_offset->vertices()[0], _curve_offset->vertices()[1]);
       if (slayupside == "left") {
@@ -136,8 +136,8 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
       } else {
         ls_base = offsetLineSegment(ls_tmp, 1, _layup->getTotalThickness());
       }
-      PLOG(debug) << pmessage->message(" ls_tmp: " + ls_tmp->printString());
-      PLOG(debug) << pmessage->message(" ls_base: " + ls_base->printString());
+      PLOG(debug) << g_msg->message(" ls_tmp: " + ls_tmp->printString());
+      PLOG(debug) << g_msg->message(" ls_base: " + ls_base->printString());
     }
 
     v_layer_prev = _curve_base->vertices()[0];
@@ -145,18 +145,18 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
 
 
 
-    pmessage->increaseIndent();
+    g_msg->increaseIndent();
     cumu_thk = 0;
     for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
 
-      PLOG(debug) << pmessage->message("layer " + std::to_string(i+1));
+      PLOG(debug) << g_msg->message("layer " + std::to_string(i+1));
 
       cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
                   _layup->getLayers()[i].getStack();
 
       std::stringstream ss_cumu_thk_tmp;
       ss_cumu_thk_tmp << cumu_thk;
-      PLOG(debug) << pmessage->message("cumu_thk = " + ss_cumu_thk_tmp.str());
+      PLOG(debug) << g_msg->message("cumu_thk = " + ss_cumu_thk_tmp.str());
 
       if (slayupside == "left") {
         ls_offset = offsetLineSegment(ls_base, 1, cumu_thk);
@@ -164,7 +164,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         ls_offset = offsetLineSegment(ls_base, -1, cumu_thk);
       }
 
-      PLOG(debug) << pmessage->message("ls_offset: " + ls_offset->printString());
+      PLOG(debug) << g_msg->message("ls_offset: " + ls_offset->printString());
 
       // Find the intersecting line segment
       // v_layer = nullptr;
@@ -177,13 +177,13 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
       }
 
 
-      pmessage->increaseIndent();
+      g_msg->increaseIndent();
       do {
 
         // double u_tmp;
         // u_tmp = he_tmp->toLineSegment()->getParametricLocation(v_layer);
-        PLOG(debug) << pmessage->message("");
-        PLOG(debug) << pmessage->message("he_tmp: " + he_tmp->printString());
+        PLOG(debug) << g_msg->message("");
+        PLOG(debug) << g_msg->message("he_tmp: " + he_tmp->printString());
 
         bool not_parallel;
         not_parallel = calcLineIntersection2D(
@@ -192,33 +192,33 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;
-        PLOG(debug) << pmessage->message("u1_tmp = " + ss_u1_tmp.str());
+        PLOG(debug) << g_msg->message("u1_tmp = " + ss_u1_tmp.str());
 
 
         if (not_parallel) {
           if (u1_tmp >= 0 && u1_tmp <= 1) {
             if (fabs(u1_tmp) < bcfg.tol) {
-              PLOG(debug) << pmessage->message("  case 1: intersect at source");
+              PLOG(debug) << g_msg->message("  case 1: intersect at source");
               v_layer = he_tmp->source();
             }
             else if (fabs(1 - u1_tmp) < bcfg.tol) {
-              PLOG(debug) << pmessage->message("  case 2: intersect at target");
+              PLOG(debug) << g_msg->message("  case 2: intersect at target");
               v_layer = he_tmp->target();
             }
             else {
-              PLOG(debug) << pmessage->message("  case 3: intersect current edge");
+              PLOG(debug) << g_msg->message("  case 3: intersect current edge");
               v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
-              PLOG(debug) << pmessage->message("  v_layer: " + v_layer->printString());
+              PLOG(debug) << g_msg->message("  v_layer: " + v_layer->printString());
               bcfg.dcel->splitEdge(he_tmp, v_layer);
             }
             break;
           }
           else if (u1_tmp < 0 && slayupside == "left") {
-            PLOG(debug) << pmessage->message("  case 4: intersect previous edge");
+            PLOG(debug) << g_msg->message("  case 4: intersect previous edge");
             he_tmp_next = he_tmp->prev();
           }
           else if (u1_tmp > 1 && slayupside == "right") {
-            PLOG(debug) << pmessage->message("  case 5: intersect next edge");
+            PLOG(debug) << g_msg->message("  case 5: intersect next edge");
             he_tmp_next = he_tmp->next();
           }
         }
@@ -233,7 +233,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
           (slayupside == "left" && he_tmp->source() == _curve_offset->vertices().front()) ||
           (slayupside == "right" && he_tmp->target() == _curve_offset->vertices().front())
         ) {
-          PLOG(debug) << pmessage->message("reach the last edge");
+          PLOG(debug) << g_msg->message("reach the last edge");
           break;
         }
 
@@ -244,13 +244,13 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         //     // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
         //     if (fabs(u1_tmp) < TOLERANCE) {
         //       // std::cout << "        case 1" << std::endl;
-        //       PLOG(debug) << pmessage->message("  case 1");
+        //       PLOG(debug) << g_msg->message("  case 1");
         //       v_layer = he_tmp->source();
         //       break;
         //     }
         //     if (u1_tmp < 0 || u1_tmp > 1) {
         //       // std::cout << "        case 2" << std::endl;
-        //       PLOG(debug) << pmessage->message("  case 2");
+        //       PLOG(debug) << g_msg->message("  case 2");
         //       he_tmp = he_tmp->prev();
         //       continue;
         //     }
@@ -260,7 +260,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         //       //   v_layer = he_tmp->target();
         //       // } else {
         //       // std::cout << "        case 3" << std::endl;
-        //       PLOG(debug) << pmessage->message("  case 3");
+        //       PLOG(debug) << g_msg->message("  case 3");
         //       v_layer = he_tmp->toLineSegment()->getParametricVertex(u1_tmp);
         //       bcfg.dcel->splitEdge(he_tmp, v_layer);
         //       // }
@@ -280,13 +280,13 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         //     // std::cout << "        u1_tmp = " << u1_tmp << std::endl;
         //     if (fabs(1 - u1_tmp) < TOLERANCE) {
         //       // std::cout << "        case 1" << std::endl;
-        //       PLOG(debug) << pmessage->message("  case 1");
+        //       PLOG(debug) << g_msg->message("  case 1");
         //       v_layer = he_tmp->target();
         //       break;
         //     }
         //     if (u1_tmp < 0 || u1_tmp > 1) {
         //       // std::cout << "        case 2" << std::endl;
-        //       PLOG(debug) << pmessage->message("  case 2");
+        //       PLOG(debug) << g_msg->message("  case 2");
         //       he_tmp = he_tmp->next();
         //       continue;
         //     }
@@ -296,7 +296,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         //       //   v_layer = he_tmp->target();
         //       // } else {
         //       // std::cout << "        case 3" << std::endl;
-        //       PLOG(debug) << pmessage->message("  case 3");
+        //       PLOG(debug) << g_msg->message("  case 3");
         //       v_layer = he_tmp->toLineSegment()->getParametricVertex(u1_tmp);
         //       bcfg.dcel->splitEdge(he_tmp, v_layer);
         //       // }
@@ -313,24 +313,24 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         // }
 
       } while (he_tmp != he_base);
-      pmessage->decreaseIndent();
+      g_msg->decreaseIndent();
 
 
 
       if (v_layer == nullptr) {
-        PLOG(error) << pmessage->message("cannot find intersection");
+        PLOG(error) << g_msg->message("cannot find intersection");
         break;
       }
       else {
-        PLOG(debug) << pmessage->message("v_layer: " + v_layer->printString());
+        PLOG(debug) << g_msg->message("v_layer: " + v_layer->printString());
         prev_bound_vertices_tmp.push_back(v_layer);
         v_layer_prev = v_layer;
       }
 
     }
-    pmessage->decreaseIndent();
+    g_msg->decreaseIndent();
   }
-  pmessage->decreaseIndent();
+  g_msg->decreaseIndent();
 
   // std::cout << "        prev bound vertices:" << std::endl;
   // for (auto v : prev_bound_vertices_tmp) {
@@ -354,9 +354,9 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   // if there are more than one area
 
   // std::cout << "\nfind layer vertices on inner bounds\n";
-  PLOG(debug) << pmessage->message("2. creating areas");
+  PLOG(debug) << g_msg->message("2. creating areas");
 
-  pmessage->increaseIndent();
+  g_msg->increaseIndent();
   // 1. Find linking base-offset vertices pairs
   //    From the second vertex to the second to the last vertex of the
   //    offset curve
@@ -372,7 +372,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   // while (offset_v_index < _curve_offset->vertices().size()) {
   // for (auto vi = 1; vi < _curve_base->vertices().size() - 1; vi++) {
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
-    PLOG(debug) << pmessage->message("area " + std::to_string(k));
+    PLOG(debug) << g_msg->message("area " + std::to_string(k));
 
     int vbi_tmp = _base_offset_indices_pairs[k][0];
     int voi_tmp = _base_offset_indices_pairs[k][1];
@@ -383,22 +383,22 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
     }
 
     // 1.
-    // PLOG(debug) << pmessage->message("  2.1");
+    // PLOG(debug) << g_msg->message("  2.1");
     // vb_tmp = _curve_base->vertices()[vi];
     // vo_tmp = _curve_offset->vertices()[_offset_indices_base_link_to[vi]];
     vb_tmp = _curve_base->vertices()[vbi_tmp];
     vo_tmp = _curve_offset->vertices()[voi_tmp];
-    PLOG(debug) << pmessage->message("  base vertex: " + vb_tmp->printString());
-    PLOG(debug) << pmessage->message("  offset vertex: " + vo_tmp->printString());
+    PLOG(debug) << g_msg->message("  base vertex: " + vb_tmp->printString());
+    PLOG(debug) << g_msg->message("  offset vertex: " + vo_tmp->printString());
 
     ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
 
     // 2.
-    // PLOG(debug) << pmessage->message("  2.2");
+    // PLOG(debug) << g_msg->message("  2.2");
     new_faces = bcfg.dcel->splitFace(_face, vb_tmp, vo_tmp);
 
     // 3.
-    // PLOG(debug) << pmessage->message("  2.3");
+    // PLOG(debug) << g_msg->message("  2.3");
     area = new PArea(this);
     count++;
     if (slayupside == "left") {
@@ -439,7 +439,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
     area->setPrevBoundVertices(prev_bound_vertices_tmp);
 
     // 4.
-    // PLOG(debug) << pmessage->message("  2.4");
+    // PLOG(debug) << g_msg->message("  2.4");
     cumu_thk = 0;
     for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
       cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
@@ -472,7 +472,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
 
   }
 
-  pmessage->decreaseIndent();
+  g_msg->decreaseIndent();
 
 
 
@@ -480,9 +480,9 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
 
   // 3. Build the last or the only one area
 
-  PLOG(debug) << pmessage->message("3. creating the last area");
+  PLOG(debug) << g_msg->message("3. creating the last area");
 
-  pmessage->increaseIndent();
+  g_msg->increaseIndent();
 
   area = new PArea(this);
   count++;
@@ -492,7 +492,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
                                 _curve_base->vertices()[count]);
   // std::stringstream ss;
   // ss << "ls_base: " << ls_base;
-  // pmessage->print(9, ss.str());
+  // g_msg->print(9, ss.str());
   area->setLineSegmentBase(ls_base);
 
   ls_layup = new PGeoLineSegment(_curve_base->vertices().back(),
@@ -554,7 +554,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         _curve_base->vertices()[_curve_base->vertices().size() - 1]);
     }
     else {
-      PLOG(debug) << pmessage->message("degenerated case");
+      PLOG(debug) << g_msg->message("degenerated case");
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
         _curve_offset->vertices()[_curve_base->vertices().size() - 2],
         _curve_offset->vertices()[_curve_base->vertices().size() - 1]);
@@ -563,18 +563,18 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
       } else {
         ls_base = offsetLineSegment(ls_tmp, 1, _layup->getTotalThickness());
       }
-      PLOG(debug) << pmessage->message(" ls_tmp: " + ls_tmp->printString());
-      PLOG(debug) << pmessage->message(" ls_base: " + ls_base->printString());
+      PLOG(debug) << g_msg->message(" ls_tmp: " + ls_tmp->printString());
+      PLOG(debug) << g_msg->message(" ls_base: " + ls_base->printString());
     }
 
     v_layer_prev = _curve_base->vertices().back();
 
 
     cumu_thk = 0;
-    pmessage->increaseIndent();
+    g_msg->increaseIndent();
     for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
 
-      PLOG(debug) << pmessage->message("layer " + std::to_string(i+1));
+      PLOG(debug) << g_msg->message("layer " + std::to_string(i+1));
 
       // Create offset of the base curve
       cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
@@ -586,7 +586,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         ls_offset = offsetLineSegment(ls_base, -1, cumu_thk);
       }
 
-      PLOG(debug) << pmessage->message("ls_offset: " + ls_offset->printString());
+      PLOG(debug) << g_msg->message("ls_offset: " + ls_offset->printString());
 
       // Find the intersecting line segment
       // v_layer = nullptr;
@@ -598,13 +598,13 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
       }
 
 
-      pmessage->increaseIndent();
+      g_msg->increaseIndent();
       do {
 
         // double u_tmp;
         // u_tmp = he_tmp->toLineSegment()->getParametricLocation(v_layer);
-        PLOG(debug) << pmessage->message("");
-        PLOG(debug) << pmessage->message("he_tmp: " + he_tmp->printString());
+        PLOG(debug) << g_msg->message("");
+        PLOG(debug) << g_msg->message("he_tmp: " + he_tmp->printString());
 
         bool not_parallel;
 
@@ -613,30 +613,30 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
 
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;
-        PLOG(debug) << pmessage->message("u1_tmp = " + ss_u1_tmp.str());
+        PLOG(debug) << g_msg->message("u1_tmp = " + ss_u1_tmp.str());
 
 
         if (not_parallel) {
           if (fabs(u1_tmp) < bcfg.tol) {
-            PLOG(debug) << pmessage->message("  case 1: intersect at source");
+            PLOG(debug) << g_msg->message("  case 1: intersect at source");
             v_layer = he_tmp->source();
             break;
           }
           else if (fabs(1 - u1_tmp) < bcfg.tol) {
-            PLOG(debug) << pmessage->message("  case 2: intersect at target");
+            PLOG(debug) << g_msg->message("  case 2: intersect at target");
             v_layer = he_tmp->target();
             break;
           }
           else if (u1_tmp < 0 && slayupside == "right") {
-            PLOG(debug) << pmessage->message("  case 3: intersect previous edge");
+            PLOG(debug) << g_msg->message("  case 3: intersect previous edge");
             he_tmp_next = he_tmp->prev();
           }
           else if (u1_tmp > 1 && slayupside == "left") {
-            PLOG(debug) << pmessage->message("  case 4: intersect next edge");
+            PLOG(debug) << g_msg->message("  case 4: intersect next edge");
             he_tmp_next = he_tmp->next();
           }
           else if (u1_tmp > 0 && u1_tmp < 1) {
-            PLOG(debug) << pmessage->message("  case 5: intersect current edge");
+            PLOG(debug) << g_msg->message("  case 5: intersect current edge");
             v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
             bcfg.dcel->splitEdge(he_tmp, v_layer);
             break;
@@ -653,7 +653,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
           (slayupside == "right" && he_tmp->source() == _curve_offset->vertices().front()) ||
           (slayupside == "left" && he_tmp->target() == _curve_offset->vertices().front())
         ) {
-          PLOG(debug) << pmessage->message("reach the last edge");
+          PLOG(debug) << g_msg->message("reach the last edge");
           break;
         }
 
@@ -727,21 +727,21 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
         //   }
         // }
       } while (he_tmp != he_base);
-      pmessage->decreaseIndent();
+      g_msg->decreaseIndent();
 
 
       if (v_layer == nullptr) {
-        PLOG(error) << pmessage->message("cannot find intersection");
+        PLOG(error) << g_msg->message("cannot find intersection");
         break;
       }
       else {
-        PLOG(debug) << pmessage->message("v_layer: " + v_layer->printString());
+        PLOG(debug) << g_msg->message("v_layer: " + v_layer->printString());
         area->addNextBoundVertex(v_layer);
         v_layer_prev = v_layer;
       }
 
     }
-    pmessage->decreaseIndent();
+    g_msg->decreaseIndent();
 
   }
 
@@ -750,7 +750,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg, Message *pmessage) {
   //   std::cout << "        " << v << std::endl;
   // }
 
-  pmessage->decreaseIndent();
+  g_msg->decreaseIndent();
 
   _areas.push_back(area);
 

@@ -184,7 +184,7 @@ public:
   void offsetCurveBase();
 
   void build(const BuilderConfig &);
-  void buildAreas(const BuilderConfig &, Message *);
+  void buildAreas(const BuilderConfig &);
 };
 
 // ===================================================================

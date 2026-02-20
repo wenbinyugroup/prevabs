@@ -19,7 +19,7 @@ void PModel::plotDehomo(Message *pmessage) {
   readSG(config.file_name_vsc, this, wcfg);
 
   // Read dehomogenization output
-  readOutputDehomo(config.file_name_vsc, this, pmessage);
+  readOutputDehomo(config.file_name_vsc, this);
 
   // Write Gmsh
   writeGmsh(fn_base, pmessage);

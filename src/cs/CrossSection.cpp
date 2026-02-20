@@ -334,7 +334,7 @@ void CrossSection::build(const BuilderConfig &bcfg) {
 
 
   for (auto cmp : _components) {
-    cmp->buildDetails(bcfg, g_msg);
+    cmp->buildDetails(bcfg);
   }
 
 

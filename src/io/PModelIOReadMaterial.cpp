@@ -48,19 +48,19 @@
 #endif
 
 int readMaterialsFile(
-  const std::string &fn_material_global, PModel *pmodel, Message *pmessage
+  const std::string &fn_material_global, PModel *pmodel
   ) {
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
   xml_document<> xmlDocMaterials;
   std::ifstream fileMaterials{fn_material_global};
   if (!fileMaterials.is_open()) {
     // std::cout << "Unable to open file: " << fn_material_global << std::endl;
-    PLOG(warning) << pmessage->message("unable to open file: " + fn_material_global);
+    PLOG(warning) << g_msg->message("unable to open file: " + fn_material_global);
     return 1;
   } else {
     // printInfo(i_indent, "reading materials file: " + fn_material_global);
-    PLOG(info) << pmessage->message("reading materials file: " + fn_material_global);
+    PLOG(info) << g_msg->message("reading materials file: " + fn_material_global);
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(fileMaterials)),
@@ -72,7 +72,7 @@ int readMaterialsFile(
   } catch (parse_error &e) {
     // std::cout << markError << " Unable to parse the file: " << fn_material_global
     //           << std::endl;
-    PLOG(error) << pmessage->message("unable to parse the file: " + fn_material_global);
+    PLOG(error) << g_msg->message("unable to parse the file: " + fn_material_global);
     std::cerr << e.what() << std::endl;
     // std::cout << e.where() << std::endl;
   }
@@ -80,7 +80,7 @@ int readMaterialsFile(
   xml_node<> *nodeMaterials{};
   nodeMaterials = xmlDocMaterials.first_node("materials");
 
-  readMaterials(nodeMaterials, pmodel, pmessage);
+  readMaterials(nodeMaterials, pmodel);
 
   return 0;
 }
@@ -93,8 +93,8 @@ int readMaterialsFile(
 
 
 
-int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel, Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
+  MESSAGE_SCOPE(g_msg);
   
   // -----------------------------------------------------------------
   // Read material data

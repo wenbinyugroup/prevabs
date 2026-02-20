@@ -244,12 +244,12 @@ int main(int argc, char **argv) {
 
   if (config.isHomo()) {
 
-    pmodel_uptr->homogenize(pmessage.get());
+    pmodel_uptr->homogenize();
 
   } else if (config.isRecovery()) {
     try {
       pmessage->printBlank();
-      pmodel_uptr->dehomogenize(pmessage.get());
+      pmodel_uptr->dehomogenize();
       pmessage->printBlank();
     }
     catch (std::exception &exception) {
@@ -264,11 +264,11 @@ int main(int argc, char **argv) {
   // =========
 
   if (config.execute) {
-    pmodel_uptr->run(pmessage.get());
+    pmodel_uptr->run();
   }
 
   if (config.plot) {
-    pmodel_uptr->plot(pmessage.get());
+    pmodel_uptr->plot();
   }
 
   pmodel_uptr->finalize();

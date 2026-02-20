@@ -703,44 +703,46 @@ void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
 
 
 
-void PModel::homogenize(Message *pmessage) {
+void PModel::homogenize() {
+
+  MESSAGE_SCOPE(g_msg);
 
   try {
     // ================
     // READ INPUT FILES
 
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("reading input files");
+    g_msg->printBlank();
+    PLOG(info) << g_msg->message("reading input files");
 
-    readInputMain(config.main_input, config.file_directory, this, pmessage);
-    // pmodel->summary(pmessage);
+    readInputMain(config.main_input, config.file_directory, this);
+    // pmodel->summary(g_msg);
 
-    PLOG(info) << pmessage->message("reading input files -- done");
-    pmessage->printBlank();
+    PLOG(info) << g_msg->message("reading input files -- done");
+    g_msg->printBlank();
 
 
     // ==============
     // BUILD GEOMETRY
 
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("building the shape");
+    g_msg->printBlank();
+    PLOG(info) << g_msg->message("building the shape");
 
-    build(pmessage);
+    build(g_msg);
 
-    PLOG(info) << pmessage->message("building the shape -- done");
-    pmessage->printBlank();
+    PLOG(info) << g_msg->message("building the shape -- done");
+    g_msg->printBlank();
 
 
     // ================
     // MODELING IN GMSH
 
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("modeling in Gmsh");
+    g_msg->printBlank();
+    PLOG(info) << g_msg->message("modeling in Gmsh");
 
     buildGmsh();
 
-    PLOG(info) << pmessage->message("modeling in Gmsh -- done");
-    pmessage->printBlank();
+    PLOG(info) << g_msg->message("modeling in Gmsh -- done");
+    g_msg->printBlank();
 
 
     // ===================
@@ -748,26 +750,26 @@ void PModel::homogenize(Message *pmessage) {
 
     // if (config.analysis_tool != 3) {
     if (!config.integrated_solver) {
-      pmessage->printBlank();
-      PLOG(info) << pmessage->message("writing outputs");
+      g_msg->printBlank();
+      PLOG(info) << g_msg->message("writing outputs");
 
       if (config.plot) {
-        writeGmsh(config.file_directory + config.file_base_name, pmessage);
+        writeGmsh(config.file_directory + config.file_base_name, g_msg);
       }
       WriterConfig wcfg{config.tool, config.isDehomo(), config.tool_ver, config.file_name_vsc};
-      writeSG(config.file_name_vsc, wcfg, pmessage);
+      writeSG(config.file_name_vsc, wcfg);
 
       if (_itf_output) {
         // Write supplement files
-        writeSupp(pmessage);
+        writeSupp();
       }
 
-      PLOG(info) << pmessage->message("writing outputs -- done");
-      pmessage->printBlank();
+      PLOG(info) << g_msg->message("writing outputs -- done");
+      g_msg->printBlank();
     }
   }
   catch (std::exception &exception) {
-    pmessage->print(2, exception.what());
+    g_msg->print(2, exception.what());
     return;
   }
 
@@ -783,12 +785,12 @@ void PModel::homogenize(Message *pmessage) {
 
 
 
-void PModel::dehomogenize(Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
-  PLOG(info) << pmessage->message("dehomogenizing...");
+void PModel::dehomogenize() {
+  MESSAGE_SCOPE(g_msg);
+  PLOG(info) << g_msg->message("dehomogenizing...");
 
   // Read cs xml file
-  readInputMain(config.main_input, config.file_directory, this, pmessage);
+  readInputMain(config.main_input, config.file_directory, this);
 
 
   // Write glb file
@@ -813,14 +815,14 @@ void PModel::dehomogenize(Message *pmessage) {
 
 
 
-void PModel::run(Message *pmessage) {
-  MESSAGE_SCOPE(pmessage);
+void PModel::run() {
+  MESSAGE_SCOPE(g_msg);
 
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis);
-  pmessage->printBlank();
-  pmessage->print(1, " [" + config.tool_name + " Messages] ");
-  pmessage->printBlank();
+  g_msg->printBlank();
+  PLOG(info) << g_msg->message("running " + config.tool_name + " for " + config.msg_analysis);
+  g_msg->printBlank();
+  g_msg->print(1, " [" + config.tool_name + " Messages] ");
+  g_msg->printBlank();
 
 
   std::vector<std::string> cmd_args;
@@ -838,7 +840,7 @@ void PModel::run(Message *pmessage) {
         cmd_args.push_back(std::to_string(_pp_data.load_cases.size()));
       }
 
-      runVABS(config.vabs_name, cmd_args, pmessage);
+      runVABS(config.vabs_name, cmd_args);
     }
   }
 
@@ -855,16 +857,16 @@ void PModel::run(Message *pmessage) {
       cmd_args.push_back("3D");
     }
     cmd_args.push_back(config.sc_option);
-    runSC(config.sc_name, cmd_args, pmessage);
+    runSC(config.sc_name, cmd_args);
 
   }
 
 
-  pmessage->printBlank();
-  pmessage->print(1, " [" + config.tool_name + " Messages End] ");
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-  pmessage->printBlank();
+  g_msg->printBlank();
+  g_msg->print(1, " [" + config.tool_name + " Messages End] ");
+  g_msg->printBlank();
+  PLOG(info) << g_msg->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
+  g_msg->printBlank();
 
   return;
 }
@@ -877,9 +879,10 @@ void PModel::run(Message *pmessage) {
 
 
 
-void PModel::plot(Message *pmessage) {
+void PModel::plot() {
+  MESSAGE_SCOPE(g_msg);
   if (config.isRecovery()) {
-    plotDehomo(pmessage);
+    plotDehomo(g_msg);
     // pmessage->printBlank();
     // PLOG(info) << pmessage->message("post-processing recover results");
 
@@ -897,8 +900,8 @@ void PModel::plot(Message *pmessage) {
   }
 
 
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running Gmsh for visualization");
+  g_msg->printBlank();
+  PLOG(info) << g_msg->message("running Gmsh for visualization");
 
   // Load the opt file (view options) and open the FLTK GUI via the Gmsh API.
   // This avoids requiring a separate `gmsh` executable on PATH.

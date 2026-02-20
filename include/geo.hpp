@@ -269,8 +269,7 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * @return          A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
  */
 PDCELHalfEdge *findCurvesIntersection(
-  std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &,
-  Message *);
+  std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &);
 
 Baseline *findCurvesIntersection(
   Baseline *, PGeoLineSegment *, int, double &,

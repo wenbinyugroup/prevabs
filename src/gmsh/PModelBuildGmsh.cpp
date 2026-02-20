@@ -84,7 +84,7 @@ void PModel::createGmshVertices(Message *pmessage) {
 
 
 
-void PModel::recordInterface(PDCELHalfEdge *he, Message *pmessage) {
+void PModel::recordInterface(PDCELHalfEdge *he) {
 
   if (!he->onJoint() && !he->twin()->onJoint()) {
 
@@ -222,7 +222,7 @@ void PModel::createGmshEdges(Message *pmessage) {
         // Interface
         if (_itf_output) {
 
-          recordInterface(he, pmessage);
+          recordInterface(he);
 
         }
 
@@ -462,37 +462,37 @@ void PModel::buildGmsh() {
 
   // ------------------------------
   // Create Gmsh vertices
-  createGmshVertices(pmessage);
+  createGmshVertices(g_msg);
 
 
   // ------------------------------
   // Create Gmsh edges
-  createGmshEdges(pmessage);
+  createGmshEdges(g_msg);
 
 
   // ------------------------------
   // Create Gmsh faces
-  createGmshFaces(pmessage);
+  createGmshFaces(g_msg);
 
 
   gmsh::model::geo::synchronize();
 
   // ------------------------------
   // Create embedded entities and set local mesh sizes
-  createGmshEmbeddedEntities(pmessage);
+  createGmshEmbeddedEntities(g_msg);
 
 
   gmsh::model::geo::synchronize();
 
   // ------------------------------
   // Create Gmsh physical groups
-  createGmshPhyscialGroups(pmessage);
+  createGmshPhyscialGroups(g_msg);
 
 
   if (config.debug) {
     // Create Gmsh model and write Gmsh files for debugging
 
-    plotGeoDebug(pmessage, false);
+    plotGeoDebug(g_msg, false);
 
   }
 

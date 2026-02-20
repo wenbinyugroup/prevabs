@@ -116,20 +116,20 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 
 
-void PComponent::buildDetails(const BuilderConfig &bcfg, Message *pmessage) {
+void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
   // i_indent++;
-  MESSAGE_SCOPE(pmessage);
+  MESSAGE_SCOPE(g_msg);
 
   if (_type == 1) {
 
-    PLOG(info) << pmessage->message("building component details: " + _name);
+    PLOG(info) << g_msg->message("building component details: " + _name);
 
     for (auto sgm : _segments) {
 
-      sgm->buildAreas(bcfg, pmessage);
+      sgm->buildAreas(bcfg);
 
-      if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(pmessage);
+      if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(g_msg);
 
     }
 

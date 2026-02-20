@@ -226,23 +226,21 @@ static void runCmd(
 
 
 void runVABS(
-  const std::string &cmd_name, const std::vector<std::string> &args,
-  Message *pmessage
+  const std::string &cmd_name, const std::vector<std::string> &args
   ) {
   runCmd(cmd_name, args);
 }
 
 
 void runSC(
-  const std::string &cmd_name, const std::vector<std::string> &args,
-  Message *pmessage
+  const std::string &cmd_name, const std::vector<std::string> &args
   ) {
   runCmd(cmd_name, args);
 }
 
 
 void runGmsh(const std::string &fn_geo, const std::string &fn_msh,
-             const std::string &fn_opt, Message *pmessage) {
+             const std::string &fn_opt) {
   std::vector<std::string> args;
   if (!fn_geo.empty()) { args.push_back(fn_geo); }
   if (!fn_msh.empty()) { args.push_back(fn_msh); }
