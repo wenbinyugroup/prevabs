@@ -6,7 +6,7 @@
 #include "PDCELVertex.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <fstream>
@@ -24,10 +24,6 @@ Baseline::Baseline(Baseline *bl) {
     _pvertices.push_back(v);
   }
 }
-
-
-
-
 
 void Baseline::print() {
   MESSAGE_SCOPE(g_msg);
@@ -48,10 +44,6 @@ void Baseline::print() {
   return;
 }
 
-
-
-
-
 // void Baseline::printBaseline() {
 //   std::cout << doubleLine80 << std::endl;
 //   std::cout << std::setw(16) << "BASELINE" << std::setw(16) << blname << std::endl;
@@ -60,17 +52,9 @@ void Baseline::print() {
 //   std::cout << singleLine80 << std::endl;
 // }
 
-
-
-
-
 SVector3 Baseline::getTangentVectorBegin() {
   return SVector3(_pvertices[0]->point(), _pvertices[1]->point());
 }
-
-
-
-
 
 SVector3 Baseline::getTangentVectorEnd() {
   return SVector3(
@@ -79,10 +63,6 @@ SVector3 Baseline::getTangentVectorEnd() {
     );
 }
 
-
-
-
-
 int Baseline::topology() {
   if (_pvertices.front() == _pvertices.back()) {
     return 0;
@@ -90,10 +70,6 @@ int Baseline::topology() {
     return 1;
   }
 }
-
-
-
-
 
 void Baseline::reverse() {
   std::vector<PDCELVertex *> temp;
@@ -104,25 +80,13 @@ void Baseline::reverse() {
   _pvertices.swap(temp);
 }
 
-
-
-
-
 void Baseline::addPVertex(PDCELVertex *vertex) {
   _pvertices.push_back(vertex);
 }
 
-
-
-
-
 void Baseline::insertPVertex(const int &loc, PDCELVertex *vertex) {
   _pvertices.insert(_pvertices.begin()+loc, vertex);
 }
-
-
-
-
 
 void Baseline::join(Baseline *curve, int end, bool reverse) {
   if (reverse) {

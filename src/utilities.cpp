@@ -10,12 +10,8 @@
 #include "PBaseLine.hpp"
 #include "overloadOperator.hpp"
 
-// #include "gmsh/SPoint3.h"
-// #include "gmsh/STensor3.h"
-// #include "gmsh/SVector3.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -66,9 +62,6 @@ void Message::decreaseIndent() {
   return;
 }
 
-
-
-
 std::string Message::message(const std::string &str) {
   std::string s_msg{""};
 
@@ -78,9 +71,6 @@ std::string Message::message(const std::string &str) {
 
   return s_msg;
 }
-
-
-
 
 void Message::printPrompt(int i_type, int i_indent) {
   std::string s_prepend{""};
@@ -221,14 +211,6 @@ void printError(int i_indent, std::string s_message) {
   return;
 }
 
-
-
-
-
-
-
-
-
 int convertSizeTToInt(size_t value) {
     // Check if the value is within the range of `int`
     if (value > static_cast<size_t>(std::numeric_limits<int>::max())) {
@@ -238,14 +220,6 @@ int convertSizeTToInt(size_t value) {
     // Safe conversion since the value is within range
     return static_cast<int>(value);
 }
-
-
-
-
-
-
-
-
 
 void writeVectorToFile(std::ofstream &ofs, std::vector<double> v) {
   for (auto n : v) {
@@ -276,14 +250,6 @@ void writeVectorToFile(FILE *file, std::vector<double> v, std::string fmt, bool 
   return;
 }
 
-
-
-
-
-
-
-
-
 void printVector(const std::vector<double> &v) {
   for (auto n : v) {
     std::cout << n << " ";
@@ -292,7 +258,6 @@ void printVector(const std::vector<double> &v) {
   return;
 }
 
-
 void printVector(const std::vector<int> &v) {
   for (auto n : v) {
     std::cout << n << " ";
@@ -300,14 +265,6 @@ void printVector(const std::vector<int> &v) {
   std::cout << std::endl;
   return;
 }
-
-
-
-
-
-
-
-
 
 int openFile(std::ifstream &ifs, const std::string &file_name) {
   ifs.open(file_name);
@@ -326,14 +283,6 @@ int closeFile(std::ifstream &ifs) {
   // printInfo(i_indent, "file opened");
   return 0;
 }
-
-
-
-
-
-
-
-
 
 int parseXMLDoc(xml_document<> &xd, std::ifstream &ifs, const std::string &fn) {
   // xml_document<> xd;
@@ -358,14 +307,6 @@ int parseXMLDoc(xml_document<> &xd, std::ifstream &ifs, const std::string &fn) {
   return 0;
 }
 
-
-
-
-
-
-
-
-
 int parseCSVString(const std::string &fn, std::vector<std::vector<std::string>> &s_data) {
   // std::cout << "readCSVString()...\n";
 
@@ -377,7 +318,6 @@ int parseCSVString(const std::string &fn, std::vector<std::vector<std::string>> 
   //   std::cout << "reading csv file " << fn << "...\n";
   // }
   openFile(ifs, fn);
-
 
   std::string line;
   while (getline(ifs, line)) {
@@ -473,14 +413,6 @@ STensor3 getRotationMatrix(double angle, int direction, GeoConst unit) {
   return rm;
 }
 
-
-
-
-
-
-
-
-
 std::vector<std::string> splitString(std::string str, char delimiter) {
   std::vector<std::string> vSplit{};
   std::stringstream ss{str};
@@ -492,14 +424,6 @@ std::vector<std::string> splitString(std::string str, char delimiter) {
 
   return vSplit;
 }
-
-
-
-
-
-
-
-
 
 std::vector<double> parseNumbersFromString(const std::string &s) {
   std::vector<std::string> vs{splitString(s, ' ')};
@@ -515,14 +439,6 @@ std::vector<double> parseNumbersFromString(const std::string &s) {
   return vd;
 }
 
-
-
-
-
-
-
-
-
 std::vector<int> parseIntegersFromString(const std::string &s) {
   std::vector<std::string> vs{splitString(s, ' ')};
   std::vector<int> vi;
@@ -537,14 +453,6 @@ std::vector<int> parseIntegersFromString(const std::string &s) {
   return vi;
 }
 
-
-
-
-
-
-
-
-
 // std::string lowerString(std::string str) {
 //   std::locale loc;
 //   for (std::string::size_type i = 0; i < str.length(); ++i)
@@ -557,9 +465,6 @@ std::string lowerString(const std::string& str) {
                    [](unsigned char c) { return std::tolower(c); });
     return lower_str;
 }
-
-
-
 
 // std::string upperString(std::string str) {
 //   std::locale loc;
@@ -574,16 +479,10 @@ std::string upperString(const std::string& str) {
     return upper_str;
 }
 
-
-
-
 std::string removeChar(std::string s, char c) {
   s.erase(std::remove(s.begin(), s.end(), c), s.end());
   return s;
 }
-
-
-
 
 // Function to trim leading and trailing spaces
 std::string trim(const std::string& str) {
@@ -595,13 +494,24 @@ std::string trim(const std::string& str) {
     return str.substr(start, end - start + 1);
 }
 
-
-
-
-
-
-
-
+// Split a file path into {directory, base_name, extension}.
+// Returns a vector of 3 strings: [path, baseName, extension].
+std::vector<std::string> splitFilePath(const std::string& filepath) {
+  std::vector<std::string> s;
+  s.resize(3);
+  if (filepath.size()) {
+    int idot   = (int)filepath.find_last_of('.');
+    int islash = (int)filepath.find_last_of("/\\");
+    if (idot   == (int)std::string::npos) idot   = -1;
+    if (islash == (int)std::string::npos) islash = -1;
+    if (idot > 0)
+      s[2] = filepath.substr(idot);
+    if (islash > 0)
+      s[0] = filepath.substr(0, islash + 1);
+    s[1] = filepath.substr(s[0].size(), filepath.size() - s[0].size() - s[2].size());
+  }
+  return s;
+}
 
 std::vector<double> getDxyFromAngle(double angle, char axis, double increment,
                                     bool reverse) {

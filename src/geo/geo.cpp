@@ -11,10 +11,7 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -22,7 +19,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-
 
 bool isClose(
   const double& p1x, const double& p1y,
@@ -36,9 +32,6 @@ bool isClose(
 
     return isCloseValue(p1x, p2x) && isCloseValue(p1y, p2y);
 }
-
-
-
 
 /**
  * @brief Calculates the total length of a polyline.
@@ -57,7 +50,6 @@ double calcPolylineLength(const std::vector<PDCELVertex *> ps) {
   }
   return len;
 }
-
 
 /**
  * @brief Finds a point on a polyline by a specified coordinate.
@@ -140,7 +132,6 @@ PDCELVertex *findPointOnPolylineByCoordinate(
   return pv;
 }
 
-
 /**
  * @brief Finds a point on a polyline by its coordinate.
  * 
@@ -162,7 +153,6 @@ PDCELVertex *findPointOnPolylineByCoordinate(
   double param{0};
   return findPointOnPolylineByCoordinate(ps, label, loc, tol, param, count, by); 
 }
-
 
 /**
  * @brief Finds a point on a polyline by a given coordinate.
@@ -188,13 +178,6 @@ double findPointOnPolylineByCoordinate(
   findPointOnPolylineByCoordinate(ps, label, loc, tol, param, count, by); 
   return param;
 }
-
-
-
-
-
-
-
 
 /**
  * @brief Finds a parameter point on a polyline.
@@ -254,14 +237,6 @@ PDCELVertex *findParamPointOnPolyline(
   return newv;
 }
 
-
-
-
-
-
-
-
-
 int getTurningSide(SVector3 vec1, SVector3 vec2) {
   SVector3 n;
   n = crossprod(vec1, vec2);
@@ -275,15 +250,6 @@ int getTurningSide(SVector3 vec1, SVector3 vec2) {
   }
 }
 
-
-
-
-
-
-
-
-
-
 double calcDistanceSquared(PDCELVertex *v1, PDCELVertex *v2) {
   double dx = v1->x() - v2->x();
   double dy = v1->y() - v2->y();
@@ -291,15 +257,6 @@ double calcDistanceSquared(PDCELVertex *v1, PDCELVertex *v2) {
 
   return dx * dx + dy * dy + dz * dz;
 }
-
-
-
-
-
-
-
-
-
 
 /**
  * @brief Joins a list of Baseline curves into a single Baseline.
@@ -360,14 +317,6 @@ Baseline *joinCurves(std::list<Baseline *> curves) {
   return bl;
 }
 
-
-
-
-
-
-
-
-
 /**
  * @brief Joins multiple Baseline curves into a single Baseline.
  *
@@ -425,14 +374,6 @@ int joinCurves(Baseline *line, std::list<Baseline *> curves) {
   return 0;
 }
 
-
-
-
-
-
-
-
-
 /**
  * @brief Adjusts the end of a curve segment to ensure it intersects with another line segment.
  *
@@ -472,15 +413,6 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
     bl->vertices()[bl->vertices().size() - 1] = vnew;
   }
 }
-
-
-
-
-
-
-
-
-
 
 SVector3 getVectorFromAngle(double &angle, const int &plane) {
   SVector3 v;
@@ -522,15 +454,6 @@ SVector3 getVectorFromAngle(double &angle, const int &plane) {
   return v * reverse;
 }
 
-
-
-
-
-
-
-
-
-
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u) {
   // std::cout << "\n[debug] function: getParametricPoint\n";
 
@@ -549,14 +472,6 @@ SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u) {
   }
 }
 
-
-
-
-
-
-
-
-
 bool isParallel(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   SVector3 vec1, vec2, vecn;
   vec1 = ls1->toVector();
@@ -569,15 +484,6 @@ bool isParallel(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
     return false;
   }
 }
-
-
-
-
-
-
-
-
-
 
 bool isCollinear(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   if (!isParallel(ls1, ls2)) {
@@ -595,16 +501,6 @@ bool isCollinear(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 bool isOverlapped(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   if (ls1->vout()->point() < ls2->vin()->point() ||
       ls2->vout()->point() < ls1->vin()->point()) {
@@ -617,14 +513,6 @@ bool isOverlapped(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
 
   return true;
 }
-
-
-
-
-
-
-
-
 
 SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
   // Given three points, p0, p1, p2, calculate the line bisecting the
@@ -639,15 +527,6 @@ SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
 
   return vb;
 }
-
-
-
-
-
-
-
-
-
 
 SVector3 calcAngleBisectVector(SVector3 &v1, SVector3 &v2, std::string s1,
                                std::string s2) {
@@ -665,15 +544,6 @@ SVector3 calcAngleBisectVector(SVector3 &v1, SVector3 &v2, std::string s1,
 
   return p1 + p2;
 }
-
-
-
-
-
-
-
-
-
 
 void calcBoundVertices(std::vector<PDCELVertex *> &vertices,
                        SVector3 &sv_baseline, SVector3 &sv_bound,
@@ -714,15 +584,6 @@ void calcBoundVertices(std::vector<PDCELVertex *> &vertices,
     vertices.push_back(pv_new);
   }
 }
-
-
-
-
-
-
-
-
-
 
 void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
                         std::vector<PDCELVertex *> &vl_2,
@@ -828,14 +689,6 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
   return;
 }
 
-
-
-
-
-
-
-
-
 int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
   // Trim the curve c at the vertex v
   // Remove the one that is closer to the end remove
@@ -878,7 +731,4 @@ int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
 
   return 0;
 }
-
-
-
 

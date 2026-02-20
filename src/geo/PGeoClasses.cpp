@@ -6,9 +6,7 @@
 #include "globalConstants.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -53,15 +51,6 @@ PGeoPoint2 operator-(const PGeoPoint2 &p1, const PGeoPoint2 &p2) {
   return PGeoPoint2(p1.c1()-p2.c1(), p1.c2()-p2.c2());
 }
 
-
-
-
-
-
-
-
-
-
 PGeoPoint3 &PGeoPoint3::operator=(const PGeoPoint3 &p) {
   _c1 = p.c1();
   _c2 = p.c2();
@@ -94,15 +83,6 @@ PGeoPoint3 operator+(const PGeoPoint3 &p, const PGeoVector3 &v) {
 //   return PGeoPoint3(p1.c1()-p2.c1(), p1.c2()-p2.c2(), p1.c3()-p2.c3());
 // }
 
-
-
-
-
-
-
-
-
-
 PGeoVector3 &PGeoVector3::operator=(const PGeoVector3 &v) {
   _p = v._p;
   return *this;
@@ -115,15 +95,6 @@ PGeoVector3 operator-(const PGeoPoint3 &p1, const PGeoPoint3 &p2) {
 PGeoVector3 operator*(const double &m, const PGeoVector3 &v) {
   return PGeoVector3(m*v.c1(), m*v.c2(), m*v.c3());
 }
-
-
-
-
-
-
-
-
-
 
 // ===================================================================
 //                                                       Class Matrix2
@@ -182,9 +153,6 @@ PGeoVector3 operator*(const double &m, const PGeoVector3 &v) {
 //   return SVector3(_v1->point(), _v2->point());
 // }
 
-
-
-
 // PDCELVertex *PGeoLineSegment::getParametricVertex1(double u) {
 
 //   double x, y, z;
@@ -196,9 +164,6 @@ PGeoVector3 operator*(const double &m, const PGeoVector3 &v) {
 //   return new PDCELVertex(x, y, z);
 
 // }
-
-
-
 
 // PDCELVertex *PGeoLineSegment::getParametricVertex(double u) {
 //   if (fabs(u) < TOLERANCE) {

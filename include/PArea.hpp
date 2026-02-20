@@ -17,11 +17,10 @@ class Segment;
 #include "PSegment.hpp"
 #include "utilities.hpp"
 #include "globalVariables.hpp"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <list>
 #include <vector>
-
 
 /** @ingroup cs
  * A cross-sectional area class.

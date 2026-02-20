@@ -4,8 +4,6 @@
 #include "utilities.hpp"
 #include "globalVariables.hpp"
 
-// #include <gmsh/StringUtils.h>
-#include <gmsh_mod/StringUtils.h>
 // #include "gmsh/MTriangle.h"
 
 #include <array>

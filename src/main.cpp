@@ -7,8 +7,6 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/StringUtils.h"
-
 #include "CLI11.hpp"
 
 #include <chrono>
@@ -155,7 +153,7 @@ void processConfigVariables() {
   }
 
   // Resolve derived file paths
-  std::vector<std::string> v_filename{gmshSplitFileName(config.main_input)};
+  std::vector<std::string> v_filename{splitFilePath(config.main_input)};
   config.file_directory = v_filename[0];  // ****/****/
   config.file_base_name = v_filename[1];  // ****
   config.file_extension = v_filename[2];  // .****

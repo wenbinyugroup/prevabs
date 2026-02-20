@@ -18,10 +18,7 @@
   do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
 #include "homog2d.hpp"
 
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -30,7 +27,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
 
 /**
  * @brief Offsets a line segment by a given direction and distance.
@@ -54,9 +50,6 @@ void offsetLineSegment(SPoint3 &p1, SPoint3 &p2, SVector3 &dr, double &ds,
   q2 = (SVector3(p2) + dr_norm * ds).point();
 }
 
-
-
-
 /**
  * @brief Offsets a line segment by a given distance on a specified side.
  *
@@ -78,9 +71,6 @@ PGeoLineSegment *offsetLineSegment(PGeoLineSegment *ls, int side, double d) {
   return offsetLineSegment(ls, p);
 }
 
-
-
-
 /**
  * @brief Offsets a given line segment by a specified vector.
  *
@@ -100,9 +90,6 @@ PGeoLineSegment *offsetLineSegment(PGeoLineSegment *ls, SVector3 &offset) {
 
   return new PGeoLineSegment(v1, v2);
 }
-
-
-
 
 /**
  * @brief Offsets a given baseline curve by a specified distance on a specified side.
@@ -175,9 +162,6 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
   return curve_off;
 }
 
-
-
-
 /**
  * @brief Offsets a line segment defined by two vertices by a specified distance.
  *
@@ -214,7 +198,6 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
 
   return 1;
 }
-
 
 // ---------------------------------------------------------------------------
 // Static helpers for the multi-vertex offset() function
@@ -330,7 +313,6 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
   return vertices_tmp;
 }
 
-
 /**
  * @brief Step 2: Group valid offset segments into sub-lines.
  *
@@ -373,7 +355,6 @@ static void groupValidSegments(
     check_prev = check_next;
   }
 }
-
 
 /**
  * @brief Trim a pair of adjacent offset sub-lines at their mutual intersection.
@@ -439,7 +420,6 @@ static void trimSubLinePair(
     link_b.erase(link_b.begin());
   }
 }
-
 
 // ---------------------------------------------------------------------------
 // Public multi-vertex offset() function

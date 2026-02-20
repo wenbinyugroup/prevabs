@@ -5,28 +5,15 @@
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
-#include "gmsh_mod/SVector3.h"
-// #include "gmsh/GEdge.h"
-
+#include "geo_types.hpp"
 #include <cmath>
 #include <cstdio>
 #include <iostream>
-
-
-
 
 std::ostream &operator<<(std::ostream &out, PDCELHalfEdge *he) {
   out << he->_source << " -> " << he->_twin->_source << " sign: " << he->_sign;
   return out;
 }
-
-
-
-
-
-
-
-
 
 std::string PDCELHalfEdge::printString() {
   std::stringstream ss;
@@ -57,14 +44,6 @@ std::string PDCELHalfEdge::printString() {
   return ss.str();
 }
 
-
-
-
-
-
-
-
-
 std::string PDCELHalfEdge::printBrief() {
   std::stringstream ss;
 
@@ -73,26 +52,10 @@ std::string PDCELHalfEdge::printBrief() {
   return ss.str();
 }
 
-
-
-
-
-
-
-
-
 void PDCELHalfEdge::print() {
   std::cout << _source << " -> " << _twin->_source
             << " sign: " << _sign << std::endl;
 }
-
-
-
-
-
-
-
-
 
 void PDCELHalfEdge::print2() {
   std::cout << _source->point2() << " -> " << _twin->_source->point2();
@@ -124,14 +87,6 @@ void PDCELHalfEdge::print2() {
 
   std::cout << std::endl;
 }
-
-
-
-
-
-
-
-
 
 bool PDCELHalfEdge::isFinite() {
   return (_source->isFinite() && _twin->source()->isFinite());

@@ -6,8 +6,7 @@
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 
-// #include "gmsh/GEdge.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 class PDCELFace;
 class PDCELHalfEdgeLoop;

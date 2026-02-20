@@ -7,10 +7,11 @@
 #include "PSegment.hpp"
 #include "geo.hpp"
 #include "globalVariables.hpp"
+#include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cstdio>
 #include <list>
@@ -150,12 +151,8 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
       // fprintf(config.fdeb, "        layer %d\n", i + 1);
     }
 
-
-
     layer = layup->getLayers()[i];
     // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
-
-
 
     // Split the face
     // fnew = _segment->pmodel()->dcel()->splitFace(_face, ls_offset);

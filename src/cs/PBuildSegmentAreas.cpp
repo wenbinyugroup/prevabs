@@ -13,8 +13,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <cstdio>
@@ -24,7 +23,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
@@ -44,10 +42,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   //   // writeFace(config.fdeb, _face);
   // }
 
-
-
-
-
   PArea *area, *area_prev = nullptr;
   PGeoLineSegment *ls_base, *ls_offset, *ls_layup;
   PDCELHalfEdge *he_tmp, *he_tmp_next;
@@ -58,10 +52,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   double cumu_thk = 0, norm_thk, u1_tmp, u2_tmp;
 
   // _curve_base->print(pmessage, 9);
-
-
-
-
 
   // 1. Build the beginning bound of the first area
   // The goal is to calculate dividing points on the line that create layers
@@ -105,8 +95,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
     first_bound_vertices = prev_bound_vertices_tmp;
   }
 
-
-
   else {
     PLOG(debug) << g_msg->message("open segment");
 
@@ -116,7 +104,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
 
     PLOG(debug) << g_msg->message("first vertex of the base: " + vb_tmp->printString());
     PLOG(debug) << g_msg->message("first vertex of the offset: " + vo_tmp->printString());
-
 
     bool use_offset_as_base = false;
     if (_base_offset_indices_pairs[0][0] == _base_offset_indices_pairs[1][0]) {
@@ -141,9 +128,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
     }
 
     v_layer_prev = _curve_base->vertices()[0];
-
-
-
 
     g_msg->increaseIndent();
     cumu_thk = 0;
@@ -176,7 +160,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         he_tmp = he_tmp->prev();
       }
 
-
       g_msg->increaseIndent();
       do {
 
@@ -193,7 +176,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;
         PLOG(debug) << g_msg->message("u1_tmp = " + ss_u1_tmp.str());
-
 
         if (not_parallel) {
           if (u1_tmp >= 0 && u1_tmp <= 1) {
@@ -315,8 +297,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
       } while (he_tmp != he_base);
       g_msg->decreaseIndent();
 
-
-
       if (v_layer == nullptr) {
         PLOG(error) << g_msg->message("cannot find intersection");
         break;
@@ -345,10 +325,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   // for (auto i : _offset_vertices_link_to) {
   //   std::cout << "        " << i << std::endl;
   // }
-
-
-
-
 
   // 2. Build the ending bound of all areas and create areas except the last one
   // if there are more than one area
@@ -408,7 +384,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
       area->setFace(new_faces.back());
       _face = new_faces.front();
     }
-
 
     if (!use_offset_as_base) {
       ls_base = new PGeoLineSegment(
@@ -473,10 +448,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   }
 
   g_msg->decreaseIndent();
-
-
-
-
 
   // 3. Build the last or the only one area
 
@@ -569,7 +540,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
 
     v_layer_prev = _curve_base->vertices().back();
 
-
     cumu_thk = 0;
     g_msg->increaseIndent();
     for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
@@ -597,7 +567,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         he_tmp = he_tmp->prev();
       }
 
-
       g_msg->increaseIndent();
       do {
 
@@ -614,7 +583,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         std::stringstream ss_u1_tmp;
         ss_u1_tmp << u1_tmp;
         PLOG(debug) << g_msg->message("u1_tmp = " + ss_u1_tmp.str());
-
 
         if (not_parallel) {
           if (fabs(u1_tmp) < bcfg.tol) {
@@ -658,7 +626,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         }
 
         he_tmp = he_tmp_next;
-
 
         // if (slayupside == "right") {
         //   if (not_parallel) {
@@ -728,7 +695,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         // }
       } while (he_tmp != he_base);
       g_msg->decreaseIndent();
-
 
       if (v_layer == nullptr) {
         PLOG(error) << g_msg->message("cannot find intersection");

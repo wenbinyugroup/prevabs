@@ -12,8 +12,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -22,7 +21,6 @@
 #include <list>
 #include <sstream>
 #include <string>
-
 
 // Returns true if (ls_i_tmp, u1_tmp) is a better intersection than the
 // current best (ls_i_prev, u1) when searching from end `e` of a polyline.
@@ -45,7 +43,6 @@ static bool isBetterIntersection(
         || (u_on_seg && ls_i_tmp == ls_i_prev && u1_tmp < u1);
   }
 }
-
 
 // Finds the best-intersecting half-edge from `hels` against `vertices`,
 // working from end `e`. Returns the winning half-edge (nullptr if none found).
@@ -79,7 +76,6 @@ static PDCELHalfEdge *findBestIntersection(
   return he_tool;
 }
 
-
 // Adjusts base-offset index pairs after trimming the head (e==0) of a segment.
 // Steps: (1) remove pairs in trim region, (2) renumber, (3) insert staircase.
 // If remove_base is false, only offset pairs are removed/renumbered in steps 1-2.
@@ -111,7 +107,6 @@ static void adjustPairsAfterTrimHead(
   pairs.insert(it, {0, 0});
 }
 
-
 // Adjusts base-offset index pairs after trimming the tail (e==1) of a segment.
 // Steps: (1) remove pairs in trim region, (3) append staircase (no renumber at tail).
 // If remove_base is false, only offset pairs are removed in step 1.
@@ -142,7 +137,6 @@ static void adjustPairsAfterTrimTail(
   }
   pairs.push_back({id_base + 1, id_offset + 1});
 }
-
 
 void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &bcfg) {
 
@@ -176,8 +170,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       double u1, u2;
       PDCELVertex *v_new;
 
-
-
       // 1. Use the reference point of the component to find the outer
       // half edge loop that enclosing this point
       // 2. Find all inner half edge loops inside the outer half edge loop
@@ -202,9 +194,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         to_be_removed = true;
       }
 
-
-
-
       // 1.
       PLOG(debug) << g_msg->message("step 1: find the outer half edge loop");
 
@@ -215,9 +204,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         // Not the first loop with INF size
         hels.push_back(tmp_hel_out);
       }
-
-
-
 
       // 2.
       PLOG(debug) << g_msg->message("step 2: find all inner half edge loops");
@@ -258,9 +244,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
           hel->log();
         }
       }
-
-
-
 
       // 3.
       PLOG(debug) << g_msg->message("step 3: calculate intersections");
@@ -318,9 +301,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         s->curveBase()->vertices().back() = v_new;
       }
 
-
-
-
       // 3.2. For the offset curve
       PLOG(debug) << g_msg->message("step 3.2: for the offset curve");
 
@@ -373,8 +353,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
         s->setTailVertexOffset(v_new);
       }
 
-
-
       // Adjust base-offset linking indicies
       // 1. Remove the index pairs is they are in the trim region
       // 2. Renumber the indices (if trim start end)
@@ -390,8 +368,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
 
         adjustPairsAfterTrimHead(s->baseOffsetIndicesPairs(), ls_i_base, ls_i_offset, true);
 
-
-
         // Old method
         for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
           if (k <= ls_i) {
@@ -406,7 +382,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
       else if (e == 1) {
 
         adjustPairsAfterTrimTail(s->baseOffsetIndicesPairs(), ls_i_base, ls_i_offset, true, -1, -1);
-
 
         // Old method
         for (auto k = 0; k < s->curveBase()->vertices().size(); k++) {
@@ -425,9 +400,6 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderCo
   return;
 }
 
-
-
-
 void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
   PDCELVertex *v, int style, const BuilderConfig &bcfg
@@ -445,9 +417,6 @@ void PComponent::joinSegments(
   std::vector<PDCELVertex *> bound_vertices;
   bound_vertices.push_back(v);
 
-
-
-
   // Step-like joint
   // This style uses the angle bisector line as the boundary
   // between the two segments
@@ -455,7 +424,6 @@ void PComponent::joinSegments(
   // or base curves are not symmetric about the bisector,
   // then there will be a step change at the joint
   if (style == 1) {
-
 
     // Calculate the bounding vector and line segment
     SVector3 b, t1, t2;
@@ -470,9 +438,6 @@ void PComponent::joinSegments(
     tmp_bound_2.push_back(v);
     tmp_bound_2.push_back(tmp_v);
 
-
-
-
     // Intersect offset curve with the bound for each segment
     int ib_tmp, i_tmp;
     double u1, u2, ub1, ub2;
@@ -482,9 +447,6 @@ void PComponent::joinSegments(
     double ls_u1, ls_u2, ls_bu1, ls_bu2;
     int is_new_1, is_new_2, is_new_b1, is_new_b2;
     int j1;
-
-
-
 
     // Intersect segment 1 offset curve and the bound
 
@@ -508,9 +470,6 @@ void PComponent::joinSegments(
       "  intersection vertex for " + s1->getName()
       + ": " + v1_new->printString()
     );
-
-
-
 
     // Adjust linking indices
 
@@ -614,9 +573,6 @@ void PComponent::joinSegments(
 
     }
 
-
-
-
     // Intersect segment 2 offset curve and the bound
 
     findAllIntersections(
@@ -639,9 +595,6 @@ void PComponent::joinSegments(
       "  intersection vertex for " + s2->getName()
       + ": " + v2_new->printString()
     );
-
-
-
 
     // Adjust linking indices
 
@@ -719,7 +672,6 @@ void PComponent::joinSegments(
 
       }
 
-
     }
     else {
       // If the intersection vertex is an existing one
@@ -746,9 +698,6 @@ void PComponent::joinSegments(
       }
     }
 
-
-
-
     if (fabs(ls_bu1 - ls_bu2) < TOLERANCE) {
       // Two new points are close, leave one
       v2_new = v1_new;
@@ -772,8 +721,6 @@ void PComponent::joinSegments(
       }
     }
   }
-
-
 
   // Non-step-like joint
   else if (style == 2) {
@@ -1004,9 +951,6 @@ void PComponent::joinSegments(
 
 }
 
-
-
-
 void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bcfg) {
   PLOG(debug) << g_msg->message("createSegmentFreeEnd: " + s->getName() + " " + std::to_string(e));
 
@@ -1051,7 +995,6 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     adjustPairsAfterTrimHead(s->baseOffsetIndicesPairs(), 0, ls_i_offset, false);
 
   }
-
 
   // Trim tail
   else if (e == 1 && s->nextBound().normSq() != 0) {
@@ -1116,8 +1059,6 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   PLOG(debug) << g_msg->message("curve offset:");
   s->curveOffset()->print();
   s->printBaseOffsetPairs(g_msg);
-
-
 
   if (e == 0) {
     bcfg.dcel->addEdge(s->getBaseline()->vertices().front(),

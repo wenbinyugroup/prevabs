@@ -15,12 +15,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-// #include "gmsh/GModel.h"
-// #include "gmsh/MTriangle.h"
-// #include "gmsh/MVertex.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -80,11 +76,6 @@ int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
   return 0;
 }
 
-
-
-
-
-
 PDCELVertex *readXMLElementPoint(
   const xml_node<> *p_xn_point, const xml_node<> *p_xn_geo,
   PModel *pmodel
@@ -105,9 +96,6 @@ PDCELVertex *readXMLElementPoint(
   if (p_xa_constraint) {
     s_constraint = p_xa_constraint->value();
   }
-
-
-
 
   // Point defined on a line
   if (p_xn_point->first_attribute("on")) {
@@ -134,12 +122,10 @@ PDCELVertex *readXMLElementPoint(
     pv = new PDCELVertex(label);
     pv->setOnLine(p_bsl);
 
-
     // The number is the non-dimensional curvlinear location
     if (by == "curve") {
       // TODO:
     }
-
 
     // The number is the x2 (y) location
     else if (by == "x2" || by == "y") {
@@ -238,7 +224,6 @@ PDCELVertex *readXMLElementPoint(
       }
     }
 
-
     // The number is the x3 (z) location
     else if (by == "x3" || by == "z") {
       // TODO:
@@ -248,9 +233,6 @@ PDCELVertex *readXMLElementPoint(
     // std::cout << pv << std::endl;
 
   }
-
-
-
 
   // Point defined using explicit coordinates
   else {
@@ -274,14 +256,6 @@ PDCELVertex *readXMLElementPoint(
 
   return pv;
 }
-
-
-
-
-
-
-
-
 
 PDCELVertex *findPointByName(
   const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage

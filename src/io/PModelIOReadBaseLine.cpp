@@ -10,9 +10,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -139,7 +138,6 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
   //   }
   // }
 
-
   // for (xml_node<> *nodeBaseline = nodeBaselines->first_node("line");
   //      nodeBaseline; nodeBaseline = nodeBaseline->next_sibling("line")) {
   //   Baseline *p_line;
@@ -149,9 +147,6 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
   //     pmodel->addBaseline(p_line);
   //   }
   // }
-
-
-
 
   // for (xml_node<> *nodeBaseline = nodeBaselines->first_node("baseline");
   //      nodeBaseline; nodeBaseline = nodeBaseline->next_sibling("baseline")) {
@@ -163,17 +158,8 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
   //   }
   // }
 
-
   return 0;
 }
-
-
-
-
-
-
-
-
 
 Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
@@ -235,23 +221,12 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
   return line;
 }
 
-
-
-
-
-
-
-
-
 void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
   //   if (debug)
   //     std::cout << "Straight Baseline" << std::endl;
   xml_node<> *nps{p_xn_line->first_node("points")};
   xml_node<> *np{p_xn_line->first_node("point")};
   xml_node<> *na{p_xn_line->first_node("angle")};
-
-
-
 
   // CASE 1: Given a series of points
   if (nps) {
@@ -261,12 +236,10 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
     std::vector<std::string> vLabels;
     vLabels = splitString(basepointLabels, ',');
 
-
     for (auto s : vLabels) {
       // Then for each substring, split it by colon ':'
       std::vector<std::string> vBeginEnd;
       vBeginEnd = splitString(s, ':');
-
 
       // A single point
       if (vBeginEnd.size() == 1) {
@@ -284,7 +257,6 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
 
         line->addPVertex(pv);
       }
-
 
       // A series of points with begin and end
       else if (vBeginEnd.size() == 2) {
@@ -364,11 +336,9 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
           }
         }
 
-
       }
     }
   }
-
 
   // CASE 2: Given a point and an angle
   else if (np && na) {
@@ -406,14 +376,6 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
   return;
 }
 
-
-
-
-
-
-
-
-
 void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
   // Need to discretize the circle,
   // create new basepoints and store
@@ -443,7 +405,6 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
 
   PDCELVertex *pCenter;
   PDCELVertex *pStart;
-
 
   // CASE 1: Given center and radius
   if (nc && nr) {
@@ -497,14 +458,6 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
   return;
 }
 
-
-
-
-
-
-
-
-
 void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
   xml_node<> *nc{p_xn_line->first_node("center")};
   xml_node<> *ns{p_xn_line->first_node("start")};
@@ -516,7 +469,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
   xml_node<> *p_xn_side{p_xn_line->first_node("side")};
 
   xml_node<> *nd{p_xn_line->first_node("direction")};
-
 
   std::string discreteBy{"angle"};
   int discreteNumber{120};
@@ -545,7 +497,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
   PGeoArc arc;
 
   PDCELVertex *pv_center, *pv_start, *pv_end;
-
 
   // Case with start, end, radius
   if (ns && ne && (p_xn_radius || p_xn_curv)) {
@@ -577,7 +528,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     }
 
     // std::cout << "k = " << k << std::endl;
-
 
     if (k == 0.0) {
       // 0 curvature, straight line
@@ -612,7 +562,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
 
       // std::cout << "k = " << k << std::endl;
 
-
       SVector3 sv_n{side, 0, 0};
 
       // Calculate the center
@@ -641,7 +590,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     }
   }
 
-
   // CASE 1: Given center, start, end and angle
   else if (nc && ns && ne && na) {
     // std::string centerName{nc->value()};
@@ -669,7 +617,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     arc = PGeoArc{pv_center, pv_start, pv_end, angle, direction};
   }
 
-
   // CASE 2: Given center, start and end
   else if (nc && ns && ne) {
     // std::string centerName{nc->value()};
@@ -696,7 +643,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
 
     arc = PGeoArc{pv_center, pv_start, pv_end, direction};
   }
-
 
   // CASE 3: Given center, start and angle
   else if (nc && ns && na) {
@@ -727,14 +673,6 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
 
   return;
 }
-
-
-
-
-
-
-
-
 
 int readLineTypeAirfoil(
   Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo,
@@ -772,7 +710,6 @@ int readLineTypeAirfoil(
     if (_ss[0] != '\0') {reverse = atoi(_ss.c_str());}
   }
 
-
   // Baseline *line_up = new Baseline(line->getName()+"_up", "straight");
   // Baseline *line_low = new Baseline(line->getName()+"_low", "straight");
   PDCELVertex *pv_le = new PDCELVertex("ple", 0, 0, 0);
@@ -793,7 +730,6 @@ int readLineTypeAirfoil(
     }
 
     PLOG(info) << pmessage->message("reading airfoil data file: " + s_fn);
-
 
     // Read data
     std::string data_line;
@@ -867,7 +803,6 @@ int readLineTypeAirfoil(
     else if (format == "2" || format[0] == 'l' || format[0] == 'L') {
     }
 
-
     _ifs.close();
   }
 
@@ -915,14 +850,6 @@ int readLineTypeAirfoil(
   return 0;
 }
 
-
-
-
-
-
-
-
-
 int readLineByJoin(
   Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo,
   PModel *pmodel, Message *pmessage) {
@@ -943,14 +870,6 @@ int readLineByJoin(
 
   return 0;
 }
-
-
-
-
-
-
-
-
 
 PDCELVertex *getIntersectionWithWeb(double x, double angle, PDCELVertex *left, PDCELVertex *right){
   // Find the intersection of small segment with a straight web
@@ -974,14 +893,6 @@ PDCELVertex *getIntersectionWithWeb(double x, double angle, PDCELVertex *left, P
     return nullptr;
   }
 }
-
-
-
-
-
-
-
-
 
 Baseline *findLineByName(
   const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage
@@ -1016,9 +927,6 @@ Baseline *findLineByName(
 
 }
 
-
-
-
 double getWebEnd(const xml_node<> *nodeIncludeBaseline, const std::string &filePath, double w_x, bool top) {
   std::string filenameAirfoil{nodeIncludeBaseline->value()};
   filenameAirfoil = filePath + filenameAirfoil + ".dat";
@@ -1050,8 +958,6 @@ double getWebEnd(const xml_node<> *nodeIncludeBaseline, const std::string &fileP
   std::cout << "Web ends cannot be located on the airfoil " << w_x << std::endl;
   exit(1);
 }
-
-
 
 int addBaselinesFromAirfoil(const xml_node<> *nodeIncludeBaseline, PModel *pmodel,
                   const std::string &filePath, std::vector<std::pair<double, double>> websArray,
@@ -1140,14 +1046,6 @@ int addBaselinesFromAirfoil(const xml_node<> *nodeIncludeBaseline, PModel *pmode
 
   return 0;
 }
-
-
-
-
-
-
-
-
 
 int addBaselineByPointAndAngle(PModel *pmodel, std::string name, PDCELVertex *pvMid, double angle) {
   // Given a point and an angle

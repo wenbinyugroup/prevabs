@@ -25,7 +25,9 @@
       "Bash(cmd /c \"C:\\\\Users\\\\tian50\\\\work\\\\dev\\\\prevabs\\\\build_msvc\\\\Release\\\\prevabs.exe\" --version)",
       "Bash(echo:*)",
       "Bash(cmd /c:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(build_msvc/Release/prevabs.exe:*)"
     ]
   }
 }

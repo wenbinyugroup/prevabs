@@ -16,7 +16,7 @@ class PModel;
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh_mod/STensor3.h"
+#include "geo_types.hpp"
 #include "rapidxml/rapidxml.hpp"
 
 #include <fstream>
@@ -87,9 +87,7 @@ struct MessageScope {
 // Convenience macro — __LINE__ suffix prevents name collisions when nested.
 #define MESSAGE_SCOPE(msg) MessageScope _msg_scope_##__LINE__(msg)
 
-
 int convertSizeTToInt(size_t value);
-
 
 void printInfo(int, std::string);
 void printWarning(int, std::string);
@@ -127,6 +125,7 @@ std::string lowerString(const std::string &);
 std::string upperString(const std::string &);
 std::string removeChar(std::string, char = ' ');
 std::string trim(const std::string &);
+std::vector<std::string> splitFilePath(const std::string &filepath);
 
 std::vector<double> getDxyFromAngle(double, char = 'x', double = 1.0,
                                     bool = false);

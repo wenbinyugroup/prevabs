@@ -7,9 +7,7 @@
 #include "plog.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SVector3.h"
-// #include "gmsh/GFace.h"
-
+#include "geo_types.hpp"
 #include <string>
 #include <vector>
 
@@ -52,17 +50,8 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
   _real_geometry = build;
 }
 
-
-
-
-
-
-
-
-
 void PDCELFace::print() {
   PLOG(debug) << "name: " << _name;
-
 
   PDCELHalfEdge *he;
   // Print the outer boundary
@@ -93,14 +82,6 @@ void PDCELFace::print() {
   std::cout << std::endl;
 }
 
-
-
-
-
-
-
-
-
 PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithSource(PDCELVertex *v) {
   PDCELHalfEdge *he = _outer;
   do {
@@ -113,14 +94,6 @@ PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithSource(PDCELVertex *v) {
   return nullptr;
 }
 
-
-
-
-
-
-
-
-
 PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithTarget(PDCELVertex *v) {
   PDCELHalfEdge *he = _outer;
   do {
@@ -132,14 +105,6 @@ PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithTarget(PDCELVertex *v) {
 
   return nullptr;
 }
-
-
-
-
-
-
-
-
 
 PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithSource(PDCELVertex *v) {
   for (auto inner : _inners) {
@@ -155,14 +120,6 @@ PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithSource(PDCELVertex *v) {
   return nullptr;
 }
 
-
-
-
-
-
-
-
-
 PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithTarget(PDCELVertex *v) {
   for (auto inner : _inners) {
     PDCELHalfEdge *he = inner;
@@ -177,9 +134,6 @@ PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithTarget(PDCELVertex *v) {
   return nullptr;
 }
 
-
-
-
 double PDCELFace::calcTheta1Fromy2(SVector3 v, bool deg) {
   double theta1 = atan2(v[2], v[1]);
   if (deg) {
@@ -187,9 +141,6 @@ double PDCELFace::calcTheta1Fromy2(SVector3 v, bool deg) {
   }
   return theta1;
 }
-
-
-
 
 SVector3 PDCELFace::calcy2FromTheta1(double theta1, bool deg) {
   if (deg) {

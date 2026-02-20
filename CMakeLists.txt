@@ -67,8 +67,6 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp
-  ${CMAKE_SOURCE_DIR}/src/gmsh/STensor3.cpp
-  ${CMAKE_SOURCE_DIR}/src/gmsh/StringUtils.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIO.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIODehomo.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIOPlot.cpp

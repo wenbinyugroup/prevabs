@@ -13,8 +13,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <cstdio>
@@ -39,15 +38,6 @@ std::ostream &operator<<(std::ostream &out, Segment *s) {
       << std::setw(8) << s->slevel;
   return out;
 }
-
-
-
-
-
-
-
-
-
 
 void Segment::print() {
   std::cout << "segment: " << _name << std::endl;
@@ -89,14 +79,6 @@ void Segment::print() {
   std::cout << std::endl;
 }
 
-
-
-
-
-
-
-
-
 void Segment::printBaseOffsetLink() {
   std::size_t n = _curve_base->vertices().size();
   std::cout << "\nsegment " << _name << std::endl;
@@ -112,14 +94,6 @@ void Segment::printBaseOffsetLink() {
     std::cout << std::endl;
   }
 }
-
-
-
-
-
-
-
-
 
 void Segment::printBaseOffsetPairs(Message *pmessage) {
 
@@ -142,15 +116,6 @@ void Segment::printBaseOffsetPairs(Message *pmessage) {
 
 }
 
-
-
-
-
-
-
-
-
-
 int Segment::layupSide() {
   if (slayupside == "left") {
     return 1;
@@ -160,52 +125,16 @@ int Segment::layupSide() {
   return 0;
 }
 
-
-
-
-
-
-
-
-
-
 PDCELVertex *Segment::getBeginVertex() {
   return _curve_base->vertices().front();
 }
 
-
-
-
-
-
-
-
-
-
 PDCELVertex *Segment::getEndVertex() { return _curve_base->vertices().back(); }
-
-
-
-
-
-
-
-
-
 
 SVector3 Segment::getBeginTangent() {
   return SVector3(_curve_base->vertices()[0]->point(),
                   _curve_base->vertices()[1]->point());
 }
-
-
-
-
-
-
-
-
-
 
 SVector3 Segment::getEndTangent() {
   std::size_t n = _curve_base->vertices().size();
@@ -214,13 +143,6 @@ SVector3 Segment::getEndTangent() {
 }
 
 // void Segment::setPModel(PModel *pmodel) { _pmodel = pmodel; }
-
-
-
-
-
-
-
 
 void Segment::addArea(PArea *area) { _areas.push_back(area); }
 
@@ -238,27 +160,9 @@ void Segment::setPrevBoundVertices(std::vector<PDCELVertex *> vertices) {
   _prev_bound_vertices = vertices;
 }
 
-
-
-
-
-
-
-
-
-
 void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
   _next_bound_vertices = vertices;
 }
-
-
-
-
-
-
-
-
-
 
 void Segment::offsetCurveBase() {
   MESSAGE_SCOPE(g_msg);
@@ -282,19 +186,16 @@ void Segment::offsetCurveBase() {
     side = -1;
   }
 
-
   // New offset function
   // _curve_offset = new Baseline();
   // offset2(_curve_base->vertices(), side, _layup->getTotalThickness(),
   //        _curve_offset->vertices(), _offset_indices_base_link_to);
-
 
   // Old offset function
   _curve_offset = new Baseline();
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
          _curve_offset->vertices(), _offset_indices_base_link_to,
          _base_offset_indices_pairs, g_msg);
-
 
   // if (config.debug) {
   //   std::cout << "base line: " <<  _curve_base->vertices().front();
@@ -325,25 +226,6 @@ void Segment::offsetCurveBase() {
   // }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Segment::build(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
   if (bcfg.debug) {
@@ -361,7 +243,6 @@ void Segment::build(const BuilderConfig &bcfg) {
   // pmessage->print(9, "building the overall shape of segment: " + _name);
 
   // printBaseOffsetLink();
-
 
   PDCELHalfEdge *he;
 
@@ -431,14 +312,6 @@ void Segment::build(const BuilderConfig &bcfg) {
   //   f->outer()->print2();
   // }
 }
-
-
-
-
-
-
-
-
 
 // ===================================================================
 //                                                       Class Filling

@@ -4,7 +4,7 @@
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -25,14 +25,6 @@
 //   void addVertex(PDCELVertex *);
 //   void closeLine();
 // };
-
-
-
-
-
-
-
-
 
 class PGeoLineSegment {
 private:
@@ -73,14 +65,6 @@ public:
 
   void setHalfEdge(PDCELHalfEdge *);
 };
-
-
-
-
-
-
-
-
 
 class PGeoArc {
 private:

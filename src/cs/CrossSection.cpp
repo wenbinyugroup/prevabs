@@ -13,8 +13,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <iomanip>
@@ -39,45 +38,6 @@ CrossSection::CrossSection(std::string name) {
   // csconnections = {};
   // csfillings = {};
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void CrossSection::printCrossSection() {
   std::cout << doubleLine80 << std::endl;
@@ -142,25 +102,6 @@ void CrossSection::printCrossSection() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 LayerType *CrossSection::getUsedLayerTypeByMaterialAngle(Material *m, double angle) {
   for (auto lt : csusedlayertypes) {
     if (lt->material() == m && lt->angle() == angle) {
@@ -171,24 +112,6 @@ LayerType *CrossSection::getUsedLayerTypeByMaterialAngle(Material *m, double ang
   return nullptr;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 LayerType *CrossSection::getUsedLayerTypeByMaterialNameAngle(std::string name, double angle) {
   for (auto lt : csusedlayertypes) {
     if (lt->material()->getName() == name && lt->angle() == angle) {
@@ -198,25 +121,6 @@ LayerType *CrossSection::getUsedLayerTypeByMaterialNameAngle(std::string name, d
 
   return nullptr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void CrossSection::setOrigin(SPoint3 origin) { csorigin = origin; }
 
@@ -262,32 +166,12 @@ void CrossSection::addComponent(PComponent *component) {
 
 void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void CrossSection::build(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
   PLOG(info) << g_msg->message("building the cross section, step 1");
-
 
   for (auto cmp : _components) {
 
@@ -312,7 +196,6 @@ void CrossSection::build(const BuilderConfig &bcfg) {
     // Print DCEL
     // _pmodel->dcel()->print_dcel();
 
-
     // Create Gmsh model and write Gmsh files for debugging
 
     if (bcfg.plotDebug) bcfg.plotDebug(g_msg);
@@ -332,11 +215,9 @@ void CrossSection::build(const BuilderConfig &bcfg) {
   g_msg->printBlank();
   PLOG(info) << g_msg->message("building the cross section, step 2");
 
-
   for (auto cmp : _components) {
     cmp->buildDetails(bcfg);
   }
-
 
   // _pmodel->dcel()->print_dcel();
 

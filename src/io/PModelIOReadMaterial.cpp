@@ -15,12 +15,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-// #include "gmsh/GModel.h"
-// #include "gmsh/MTriangle.h"
-// #include "gmsh/MVertex.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -85,14 +81,6 @@ int readMaterialsFile(
   return 0;
 }
 
-
-
-
-
-
-
-
-
 int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
   
@@ -120,14 +108,6 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
 
   return 0;
 }
-
-
-
-
-
-
-
-
 
 Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message *pmessage) {
   Strength strength;
@@ -170,13 +150,6 @@ Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message *pmessa
   return strength;
 }
 
-
-
-
-
-
-
-
 Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> *p_xn_mdb, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
 
@@ -188,7 +161,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
   PLOG(debug) << g_msg->message("reading material: " + materialName);
 
-
   // Check if the material with the name exists
   m = pmodel->getMaterialByName(materialName);
   if (!m) {
@@ -198,12 +170,10 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     pmodel->addLayerType(p_layertype);
   }
 
-
   // Type
   std::string materialType{};
   materialType = lowerString(p_xn_material->first_attribute("type")->value());
   m->setType(materialType);
-
 
   // Density
   double materialDensity{1.0};
@@ -216,15 +186,11 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   // materialDensity = atof(p_xn_material->first_node("density")->value());
   m->setDensity(materialDensity);
 
-
-
-
   // Read elastic properties
   // -----------------------
 
   std::vector<double> materialElastic{1.0e-6, 0.0};  // Default for isotropic
   xml_node<> *nodeElastic = p_xn_material->first_node("elastic");
-
 
   if (nodeElastic) {
 
@@ -315,9 +281,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   //   std::cout << p << std::endl;
   // }
 
-
-
-
   // Read thermal properties
   // -----------------------
   xml_node<> *p_xn_cte = p_xn_material->first_node("cte");
@@ -347,9 +310,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     double _sh = atof(p_xn_sh->value());
     m->setSpecificHeat(_sh);
   }
-
-
-
 
   // Read failure criterion
   // ----------------------
@@ -382,18 +342,12 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   }
   m->setFailureCriterion(fc);
 
-
-
-
   double cl = 0.0; // characteristic length
   xml_node<> *p_xn_cl = p_xn_material->first_node("characteristic_length");
   if (p_xn_cl) {
     cl = atof(p_xn_cl->value());
   }
   m->setCharacteristicLength(cl);
-
-
-
 
   // Read strength properties
   // ------------------------
@@ -408,7 +362,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     struct_strength = readXMLElementStrength(p_xn_strength, g_msg);
     struct_strength._type = materialType;
     m->setStrength(struct_strength);
-
 
     // Old input
     // if (materialType == "isotropic") {
@@ -558,14 +511,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
   return m;
 }
-
-
-
-
-
-
-
-
 
 Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> *p_xn_mdb, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);

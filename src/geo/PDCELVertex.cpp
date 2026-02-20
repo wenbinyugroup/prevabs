@@ -4,10 +4,7 @@
 #include "globalConstants.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
-#include "gmsh_mod/SVector3.h"
-// #include "gmsh/GVertex.h"
+#include "geo_types.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -19,23 +16,14 @@ std::string PDCELVertex::printString() {
   return ss.str();
 }
 
-
-
-
 std::ostream &operator<<(std::ostream &out, PDCELVertex *v) {
   out << v->printString();
   return out;
 }
 
-
-
-
 void PDCELVertex::print() {
   std::cout << printString();
 }
-
-
-
 
 void PDCELVertex::printWithAddress() {
   printf("( %f , %f , %f ) | address: %p\n", _point[0], _point[1], _point[2], (void *)this);

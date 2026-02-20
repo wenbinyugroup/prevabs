@@ -15,12 +15,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-// #include "gmsh/GModel.h"
-// #include "gmsh/MTriangle.h"
-// #include "gmsh/MVertex.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -88,7 +84,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     // std::cout << e.where() << std::endl;
   }
 
-
   xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
   if (!p_xn_sg) {
     p_xn_sg = xmlDocCrossSection.first_node("sg");
@@ -115,7 +110,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   // CrossSection cs{csName};
   CrossSection *cs = new CrossSection(csName);
 
-
   double d_fmt{1};
   xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
   if (p_xa_fmt) {
@@ -125,14 +119,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
   }
   // std::cout << "format = " << d_fmt << std::endl;
-
-
-
-
-
-
-
-
 
   // -----------------------------------------------------------------
   // Read settings
@@ -148,15 +134,6 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
   }
-
-
-
-
-
-
-
-
-
 
   // -----------------------------------------------------------------
   // Read analysis
@@ -307,14 +284,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   pmodel->setCurvatures(k1, k2, k3);
   pmodel->setObliques(cos11, cos21);
 
-
-
-
-
-
-
-
-
   // -----------------------------------------------------------------
   // Read general
   PLOG(debug) << g_msg->message("reading general...");
@@ -403,7 +372,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   // pmessage->print(9, "elementtype = " + std::to_string(elementtype));
   pmodel->setElementType(elementtype);
 
-
   double omega{1.0};
   xml_node<> *p_xn_omega{nodeGeneral->first_node("omega")};
   if (p_xn_omega) {
@@ -414,7 +382,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
   pmodel->setOmega(omega);
 
-
   xml_node<> *p_xn_tol{nodeGeneral->first_node("tolerance")};
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
@@ -424,7 +391,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   std::stringstream ss_tol;
   ss_tol << config.app.tol;
   PLOG(debug) << g_msg->message("tolerance = " + ss_tol.str());
-
 
   xml_node<> *p_xn_itf;
 
@@ -440,7 +406,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
   }
 
-
   double itf_t1d_th;
   p_xn_itf = nodeGeneral->first_node("interface_theta1_diff_threshold");
   if (p_xn_itf) {
@@ -450,7 +415,6 @@ int readCrossSection(const std::string &filenameCrossSection,
       pmodel->setInterfaceTheta1DiffThreshold(itf_t1d_th);
     }
   }
-
 
   double itf_t3d_th;
   p_xn_itf = nodeGeneral->first_node("interface_theta3_diff_threshold");
@@ -462,26 +426,13 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
   }
 
-
   PLOG(debug) << g_msg->message("finished reading general.");
-
-
-
-
-
-
-
-
 
   // -----------------------------------------------------------------
   // Read include
   PLOG(debug) << g_msg->message("finding includings...");
   xml_node<> *nodeInclude{p_xn_sg->first_node("include")};
   xml_node<> *nodeBaselines;
-
-
-
-
 
   // -----------------------------------------------------------------
   // Read geometry (base points and base lines)
@@ -642,13 +593,10 @@ int readCrossSection(const std::string &filenameCrossSection,
 
         }
 
-
       }
 
     }
   }
-
-
 
   // 2: Try to read geometry in the main input file
   nodeBaselines = p_xn_sg->first_node("baselines");
@@ -695,14 +643,6 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   PLOG(debug) << g_msg->message("finished reading geometry.");
 
-
-
-
-
-
-
-
-
   // -----------------------------------------------------------------
   // Read materials (global)
   PLOG(debug) << g_msg->message("reading materials...");
@@ -730,7 +670,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   // s_fullpath = buffer;
   // std::cout << s_fullpath << std::endl;
   std::vector<std::string> vs;
-  vs = gmshSplitFileName(s_fullpath);
+  vs = splitFilePath(s_fullpath);
   fn_material_global = vs[0];
 #endif
   fn_material_global = fn_material_global + "MaterialDB.xml";
@@ -767,14 +707,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   // }
 
   PLOG(debug) << g_msg->message("finished reading materials.");
-
-
-
-
-
-
-
-
 
   // -----------------------------------------------------------------
   // Read layups
@@ -826,14 +758,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   //   }
   // }
 
-
-
-
-
-
-
-
-
   // -----------------------------------------------------------------
   // Read components
   // if (debug)
@@ -858,10 +782,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     cs->addComponent(p_component);
   }
   PLOG(debug) << g_msg->message("finished reading components.");
-
-
-
-
 
   // Turn the dependency of component names into pointers
   for (auto cmp : cs->components()) {

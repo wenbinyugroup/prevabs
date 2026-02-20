@@ -1,0 +1,18 @@
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  
+  
+vabs start (2026-02-20 16:24:13)
+[info]   - reading input files
+[error]       - unable to open file: test/integration/box/input.xml
+[info]   - reading input files -- done
+[info]   - building the shape
+[info]     - building the cross section, step 1

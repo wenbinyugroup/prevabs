@@ -9,8 +9,7 @@
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
+#include "geo_types.hpp"
 
 #include <list>
 #include <string>

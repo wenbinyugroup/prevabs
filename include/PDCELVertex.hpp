@@ -4,9 +4,7 @@
 #include "PBaseLine.hpp"
 #include "PDCELHalfEdge.hpp"
 
-// #include "gmsh/GVertex.h"
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
+#include "geo_types.hpp"
 
 #include <iostream>
 #include <string>

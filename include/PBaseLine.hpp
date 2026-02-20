@@ -6,17 +6,15 @@
 #include "Material.hpp"
 #include "PDCELVertex.hpp"
 #include "utilities.hpp"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <list>
 #include <string>
 #include <vector>
 
-
 class PDCELVertex;
 class CrossSection;
 class Message;
-
 
 /** @ingroup cs
  * A cross-sectional line class.
@@ -47,22 +45,11 @@ public:
    */
   Baseline(Baseline *);
 
-
-
-
   /**
    * Print out a summary.
    */
   void print();
   // void printBaseline(); // Print details
-
-
-
-
-
-
-
-
 
   /**
    * Get the name of the line.
@@ -86,14 +73,6 @@ public:
    */
   PDCELVertex *refVertex() { return _ref_vertex; }
 
-
-
-
-
-
-
-
-
   /**
    * Is the line closed or open.
    */
@@ -101,14 +80,6 @@ public:
 
   SVector3 getTangentVectorBegin();
   SVector3 getTangentVectorEnd();
-
-
-
-
-
-
-
-
 
   /**
    * Set the name of the line.

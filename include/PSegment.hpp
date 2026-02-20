@@ -25,7 +25,7 @@ class PModel;
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <iostream>
 #include <list>

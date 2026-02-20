@@ -7,8 +7,7 @@
 #include "PDCELVertex.hpp"
 #include "globalConstants.hpp"
 
-// #include "gmsh/GFace.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <string>

@@ -8,9 +8,8 @@
 #include "PBaseLine.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
+
 // #include "gmsh/STensor3.h"
 
 #include <cmath>
@@ -23,10 +22,6 @@ double dist(const P &p1, const P &p2) {
   return sqrt((p2 - p1).normSq());
 }
 
-
-
-
-
 // template <typename P>
 // double calcPolylineLength(const std::vector<P> &ps) {
 //   double len = 0;
@@ -36,22 +31,12 @@ double dist(const P &p1, const P &p2) {
 //   return len;
 // }
 
-
-
 bool isClose(
   const double&, const double&,
   const double&, const double&,
   double, double);
 
-
-
-
-
 double calcPolylineLength(const std::vector<PDCELVertex *>);
-
-
-
-
 
 template <typename P>
 P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, const double &tol) {
@@ -69,10 +54,6 @@ P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, co
     return P(p1 + u * (p2 - p1));
   }
 }
-
-
-
-
 
 // template <typename P>
 // P findParamPointOnPolyline(const std::vector<P> &ps, const double &u, bool &is_new, const double &tol) {
@@ -94,10 +75,6 @@ P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, co
 //   P newp = calcPointFromParam(ps[i], ps[i+1], ui, is_new, tol);
 //   return newp;
 // }
-
-
-
-
 
 PDCELVertex *findParamPointOnPolyline(
   const std::vector<PDCELVertex *>,
@@ -121,8 +98,6 @@ double findPointOnPolylineByCoordinate(
   const double ,   double ,
   const int count = 1, const std::string by = "x2" 
 );
-
-
 
 bool calcLineIntersection2D(
   const double &, const double &, const double &, const double &,
@@ -154,15 +129,6 @@ bool calcLineIntersection2D(
 bool calcLineIntersection2D(
   PGeoLineSegment *, PGeoLineSegment *,
   double &, double &, const double &);
-
-
-
-
-
-
-
-
-
 
 int getTurningSide(SVector3, SVector3);
 
@@ -209,14 +175,8 @@ Baseline *offsetCurve(Baseline *, int, double);
 //               std::vector<PDCELVertex *> &curve2, PDCELVertex *intersect,
 //               const int &keep1, const int &keep2);
 
-
-
-
 int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
            PDCELVertex *v1_off, PDCELVertex *v2_off);
-
-
-
 
 /** @ingroup geo
  * Offset a list of vertices by a distance.
@@ -233,9 +193,6 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 
 // int offset2(const std::vector<PDCELVertex *> &base, int side, double dist,
 //            std::vector<PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
-
-
-
 
 SVector3 calcAngleBisectVector(SPoint3 &, SPoint3 &, SPoint3 &);
 SVector3 calcAngleBisectVector(SVector3 &, SVector3 &, std::string,
