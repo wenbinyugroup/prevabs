@@ -26,7 +26,7 @@ int readXMLElementComponentLaminate(
   PComponent *p_component, const xml_node<> *xn_component,
   std::vector<std::vector<std::string>> & /*dependents_all*/, std::vector<std::string> &depend_names,
   std::vector<Layup *> &p_layups, int &num_combined_layups,
-  CrossSection *cs, PModel *pmodel, Message * /*pmessage*/
+  CrossSection *cs, PModel *pmodel
   ) {
 
   if (xn_component->first_node("location")) {

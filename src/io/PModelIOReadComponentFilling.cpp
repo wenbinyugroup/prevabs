@@ -24,7 +24,7 @@
 
 int readXMLElementComponentFilling(
   PComponent *p_component, const xml_node<> *xn_component,
-  CrossSection *cs, PModel *pmodel, Message * /*pmessage*/
+  CrossSection *cs, PModel *pmodel
   ) {
 
   // Read material

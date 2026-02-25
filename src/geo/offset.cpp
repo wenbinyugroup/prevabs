@@ -178,8 +178,10 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
  */
 int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
            PDCELVertex *v1_off, PDCELVertex *v2_off) {
+  MESSAGE_SCOPE(g_msg);
+
   if (!v1_off || !v2_off) {
-    PLOG(error) << "offset: null output vertex pointer";
+    PLOG(error) << g_msg->message("offset: null output vertex pointer");
     return 0;
   }
 
@@ -221,8 +223,10 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
 static std::vector<PDCELVertex *> computeOffsetJunctions(
     const std::vector<PDCELVertex *> &base,
     int side, double dist,
-    std::vector<int> &link_to_tmp,
-    Message *pmessage) {
+    std::vector<int> &link_to_tmp
+  ) {
+
+  MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
   link_to_tmp.clear();
@@ -260,7 +264,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
             << "        v1_tmp = " << v1_tmp << ", v2_tmp = " << v2_tmp << "\n"
             << "        prev segment: " << _p1_prev << " - " << _p2_prev << "\n"
             << "        tmp  segment: " << _p1_tmp  << " - " << _p2_tmp;
-        PLOG(debug) << pmessage->message(oss.str());
+        PLOG(debug) << g_msg->message(oss.str());
       }
 
       h2d::Segment seg1(_p1_prev, _p2_prev);
@@ -272,7 +276,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
         if (config.debug) {
           std::ostringstream oss;
           oss << "intersection found: " << pts;
-          PLOG(debug) << pmessage->message(oss.str());
+          PLOG(debug) << g_msg->message(oss.str());
         }
 
         if (isClose(pts.getX(), pts.getY(), _p1_prev.getX(), _p1_prev.getY(), ABS_TOL, REL_TOL)) {
@@ -290,7 +294,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
       if (config.debug) {
         std::ostringstream oss;
         oss << "added vertex: " << vertices_tmp.back();
-        PLOG(debug) << pmessage->message(oss.str());
+        PLOG(debug) << g_msg->message(oss.str());
       }
     }
 
@@ -374,8 +378,10 @@ static void trimSubLinePair(
     std::vector<PDCELVertex *> &sline_a,
     std::vector<PDCELVertex *> &sline_b,
     std::vector<int> &link_a,
-    std::vector<int> &link_b,
-    Message *pmessage) {
+    std::vector<int> &link_b
+  ) {
+
+  MESSAGE_SCOPE(g_msg);
 
   std::vector<int> i1s, i2s;
   std::vector<double> u1s, u2s;
@@ -387,14 +393,14 @@ static void trimSubLinePair(
   findAllIntersections(sline_a, sline_b, i1s, i2s, u1s, u2s);
 
   if (i1s.empty()) {
-    PLOG(warning) << pmessage->message(
+    PLOG(warning) << g_msg->message(
       "no intersection found between consecutive offset sub-lines; joining at endpoints");
     return;
   }
 
   ls_u1 = getIntersectionLocation(sline_a, i1s, u1s, 1, 0, ls_i1, j1);
   if (j1 < 0 || j1 >= static_cast<int>(i2s.size())) {
-    PLOG(warning) << pmessage->message(
+    PLOG(warning) << g_msg->message(
       "intersection index j1 out of range; skipping trim for this sub-line pair");
     return;
   }
@@ -443,7 +449,9 @@ static void trimSubLinePair(
  */
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<PDCELVertex *> &offset_vertices, std::vector<int> &link_to_2,
-           std::vector<std::vector<int>> &id_pairs, Message *pmessage) {
+           std::vector<std::vector<int>> &id_pairs) {
+
+  MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
 
@@ -470,7 +478,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // Step 1: Compute offset junction vertices
   std::vector<int> link_to_tmp;
   std::vector<PDCELVertex *> vertices_tmp =
-      computeOffsetJunctions(base, side, dist, link_to_tmp, pmessage);
+      computeOffsetJunctions(base, side, dist, link_to_tmp);
 
   // Step 2: Group valid offset segments into sub-lines
   std::vector<std::vector<PDCELVertex *>> lines_group;
@@ -488,8 +496,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     for (int line_i = 0; line_i < static_cast<int>(lines_group.size()) - 1; ++line_i) {
       trimSubLinePair(
         lines_group[line_i], lines_group[line_i + 1],
-        link_tos_group[line_i], link_tos_group[line_i + 1],
-        pmessage
+        link_tos_group[line_i], link_tos_group[line_i + 1]
       );
       trimmed_sublines.push_back(lines_group[line_i]);
       trimmed_link_to_base_indices.push_back(link_tos_group[line_i]);
@@ -504,8 +511,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       // Trim the tail of the last sub-line against the head of the first sub-line.
       trimSubLinePair(
         lines_group.back(), lines_group.front(),
-        link_tos_group.back(), link_tos_group.front(),
-        pmessage
+        link_tos_group.back(), link_tos_group.front()
       );
       trimmed_sublines.back() = lines_group.back();
       trimmed_link_to_base_indices.back() = link_tos_group.back();
@@ -524,13 +530,13 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       findAllIntersections(lines_group.back(), lines_group.front(), i1s, i2s, u1s, u2s);
 
       if (i1s.empty()) {
-        PLOG(warning) << pmessage->message(
+        PLOG(warning) << g_msg->message(
           "no intersection found between head and tail offset sub-lines; skipping head-tail trim");
       } else {
         ls_u1 = getIntersectionLocation(
           lines_group.back(), i1s, u1s, 1, 0, ls_i1, j1);
         if (j1 < 0 || j1 >= static_cast<int>(i2s.size())) {
-          PLOG(warning) << pmessage->message(
+          PLOG(warning) << g_msg->message(
             "head-tail intersection index j1 out of range; skipping head-tail trim");
         } else {
           ls_i2 = i2s[j1];
@@ -553,7 +559,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
               lg0 = std::vector<PDCELVertex *>(it_begin, lg0.end());
             }
           } else {
-            PLOG(warning) << pmessage->message(
+            PLOG(warning) << g_msg->message(
               "closed curve: intersection vertex not found in single sub-line");
           }
 
@@ -600,9 +606,9 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     id_pairs.push_back(id_pair_tmp);
   }
 
-  PLOG(debug) << pmessage->message("base vertices -- base_link_to_offset_indices");
+  PLOG(debug) << g_msg->message("base vertices -- base_link_to_offset_indices");
   for (auto i = 0; i < static_cast<int>(id_pairs.size()); i++) {
-    PLOG(debug) << pmessage->message(
+    PLOG(debug) << g_msg->message(
       "  " + std::to_string(id_pairs[i][0]) + ": " + base[id_pairs[i][0]]->printString()
       + " -- " + std::to_string(id_pairs[i][1])
     );

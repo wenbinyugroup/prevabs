@@ -2,7 +2,7 @@
 
 // Forward declarations first — before any includes — to break circular
 // dependencies in the include chain.
-class Message;
+// class Message;
 
 #include "declarations.hpp"
 #include "utilities.hpp"
@@ -91,7 +91,7 @@ public:
         mfcriterion(fcriterion), mcharalength(charalength),
         mstrength(strength) {}
 
-  void print(Message *, int, int = 0);
+  void print(int, int = 0);
   void printMaterial(); // Print details
 
   int id() { return mid; }
@@ -120,7 +120,7 @@ public:
 
   void completeStrengthProperties();
 
-  void writeStrengthProperties(FILE *, Message *);
+  void writeStrengthProperties(FILE *);
 };
 
 
@@ -220,7 +220,7 @@ public:
       : p_llamina(p_lamina), langle(angle), lstack(stack),
         p_llayertype(p_layertype) {}
 
-  void print(int, Message *, int, int = 0);
+  void print(int, int, int = 0);
   void printLayer(int);
 
   Lamina *getLamina() { return p_llamina; }
@@ -291,7 +291,7 @@ public:
         double thickness = 0.0)
       : lname(name), llayers(layers), lplies(plies), lthickness(thickness) {}
 
-  void print(Message *, int, int = 0);
+  void print();
   void printLayup();
 
   std::string getName() const { return lname; }

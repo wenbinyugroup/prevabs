@@ -3,6 +3,7 @@
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
+#include "plog.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -19,28 +20,29 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
   return out;
 }
 
-void Material::print(Message *pmessage, int i_type, int /*i_indent*/) {
+void Material::print(int i_type, int /*i_indent*/) {
+  MESSAGE_SCOPE(g_msg);
   std::string msg;
-  pmessage->print(i_type, "name: " + _name);
-  pmessage->print(i_type, "density = " + std::to_string(_density));
-  pmessage->print(i_type, "type: " + _type);
+  PLOG(debug) << g_msg->message("name: " + _name);
+  PLOG(debug) << g_msg->message("density = " + std::to_string(_density));
+  PLOG(debug) << g_msg->message("type: " + _type);
 
   if (_type == "isotropic") {
-    pmessage->print(i_type, "E = " + std::to_string(_elastic[0]));
-    pmessage->print(i_type, "nu = " + std::to_string(_elastic[1]));
+    PLOG(debug) << g_msg->message("E = " + std::to_string(_elastic[0]));
+    PLOG(debug) << g_msg->message("nu = " + std::to_string(_elastic[1]));
   } else if (_type == "orthotropic") {
-    pmessage->print(i_type, "E1 = " + std::to_string(_elastic[0]));
-    pmessage->print(i_type, "E2 = " + std::to_string(_elastic[1]));
-    pmessage->print(i_type, "E3 = " + std::to_string(_elastic[2]));
-    pmessage->print(i_type, "G12 = " + std::to_string(_elastic[3]));
-    pmessage->print(i_type, "G13 = " + std::to_string(_elastic[4]));
-    pmessage->print(i_type, "G23 = " + std::to_string(_elastic[5]));
-    pmessage->print(i_type, "nu12 = " + std::to_string(_elastic[6]));
-    pmessage->print(i_type, "nu13 = " + std::to_string(_elastic[7]));
-    pmessage->print(i_type, "nu23 = " + std::to_string(_elastic[8]));
+    PLOG(debug) << g_msg->message("E1 = " + std::to_string(_elastic[0]));
+    PLOG(debug) << g_msg->message("E2 = " + std::to_string(_elastic[1]));
+    PLOG(debug) << g_msg->message("E3 = " + std::to_string(_elastic[2]));
+    PLOG(debug) << g_msg->message("G12 = " + std::to_string(_elastic[3]));
+    PLOG(debug) << g_msg->message("G13 = " + std::to_string(_elastic[4]));
+    PLOG(debug) << g_msg->message("G23 = " + std::to_string(_elastic[5]));
+    PLOG(debug) << g_msg->message("nu12 = " + std::to_string(_elastic[6]));
+    PLOG(debug) << g_msg->message("nu13 = " + std::to_string(_elastic[7]));
+    PLOG(debug) << g_msg->message("nu23 = " + std::to_string(_elastic[8]));
   } else if (_type == "anisotropic") {
     for (std::size_t i = 0; i < elasticLabelAniso.size(); ++i) {
-      pmessage->print(i_type, upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]));
+      PLOG(debug) << g_msg->message(upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]));
     }
   }
 
@@ -283,7 +285,9 @@ void Material::completeStrengthProperties() {
 
 
 
-void Material::writeStrengthProperties(FILE *file, Message * /*pmessage*/) {
+void Material::writeStrengthProperties(FILE *file) {
+  MESSAGE_SCOPE(g_msg);
+
   // Strength sp = m->getStrength();
   std::string type = _strength._type;
   // int fc = m->getFailureCriterion();
@@ -399,26 +403,6 @@ void LayerType::setAngle(double angle) { langle = angle; }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ===================================================================
-// void Layer::print(int i_number, Message *pmessage, int i_type, int i_indent) {
-//   std::stringstream ss;
-//   ss << std::setw(4) <<
-//   return;
-// }
-
 void Layer::printLayer(int number) {
   // std::string line(32, '=');
   std::cout << singleLine << std::endl;
@@ -463,20 +447,22 @@ void Layer::setLayerType(LayerType *p_layertype) { p_llayertype = p_layertype; }
 
 
 // ===================================================================
-void Layup::print(Message *pmessage, int i_type, int /*i_indent*/) {
+void Layup::print() {
+  MESSAGE_SCOPE(g_msg);
+
   std::string msg;
-  pmessage->print(i_type, "name: " + lname);
-  pmessage->print(i_type, "layers:");
+  PLOG(debug) << g_msg->message("name: " + lname);
+  PLOG(debug) << g_msg->message("layers:");
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(32) << "material"
      << std::setw(16) << "thickness"
      << std::setw(8) << "angle"
      << std::setw(8) << "plies";
-  pmessage->print(i_type, ss.str());
+  PLOG(debug) << g_msg->message(ss.str());
   for (int i = 0; i < llayers.size(); i++) {
     std::stringstream ss_layer;
     ss_layer << std::setw(4) << (i+1) << llayers[i];
-    pmessage->print(i_type, ss_layer.str());
+    PLOG(debug) << g_msg->message(ss_layer.str());
   }
 
   return;

@@ -44,24 +44,22 @@ int readCrossSection(const std::string &, const std::string &, PModel *);
  * Read the geometry definitions.
  */
 int readBaselines(const xml_node<> *, PModel *, const std::string &, double,
-                  double, double, double, double, Message *);
+                  double, double, double, double);
 Baseline *readXMLElementLine(const xml_node<> *, const xml_node<> *, PModel *);
-void readLineTypeStraight(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
-void readLineTypeCircle(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
-void readLineTypeArc(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
-int readLineTypeAirfoil(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *, const double);
-int readLineByJoin(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, Message *);
-Baseline *findLineByName(const std::string &, const xml_node<> *, PModel *,
-                         Message *);
+void readLineTypeStraight(Baseline *, const xml_node<> *, const xml_node<> *, PModel *);
+void readLineTypeCircle(Baseline *, const xml_node<> *, const xml_node<> *, PModel *);
+void readLineTypeArc(Baseline *, const xml_node<> *, const xml_node<> *, PModel *);
+int readLineTypeAirfoil(Baseline *, const xml_node<> *, const xml_node<> *, PModel *, const double);
+int readLineByJoin(Baseline *, const xml_node<> *, const xml_node<> *, PModel *);
+Baseline *findLineByName(const std::string &, const xml_node<> *, PModel *);
 
 /** @ingroup io
  * Read the point definitions from a file.
  */
-int readPointsFromFile(const std::string &, PModel *, double, Message *);
+int readPointsFromFile(const std::string &, PModel *, double);
 PDCELVertex *readXMLElementPoint(const xml_node<> *, const xml_node<> *,
                                  PModel *);
-PDCELVertex *findPointByName(const std::string &, const xml_node<> *, PModel *,
-                             Message *);
+PDCELVertex *findPointByName(const std::string &, const xml_node<> *, PModel *);
 
 /** @ingroup io
  * Read the material definitions from a file.
@@ -80,18 +78,18 @@ int readLayups(const xml_node<> *, PModel *);
 PComponent *readXMLElementComponent(const xml_node<> *,
                                     std::vector<std::vector<std::string>> &,
                                     std::vector<Layup *> &, int &,
-                                    CrossSection *, PModel *, Message *);
+                                    CrossSection *, PModel *);
 int readXMLElementComponentLaminate(PComponent *, const xml_node<> *,
                                     std::vector<std::vector<std::string>> &,
                                     std::vector<std::string> &,
                                     std::vector<Layup *> &, int &,
-                                    CrossSection *, PModel *, Message *);
+                                    CrossSection *, PModel *);
 int readXMLElementComponentFilling(PComponent *, const xml_node<> *,
-                                   CrossSection *, PModel *, Message *);
+                                   CrossSection *, PModel *);
 
 int addBaselinesFromAirfoil(const xml_node<> *, PModel *, const std::string &,
                             std::vector<std::pair<double, double>>, double,
-                            double, double, double, double, Message *);
+                            double, double, double, double);
 int addBaselineByPointAndAngle(PModel *, std::string, PDCELVertex *, double);
 double getWebEnd(const xml_node<> *, const std::string &, double,
                  bool top = true);
@@ -106,17 +104,16 @@ int readInputDehomo(const std::string &, const std::string &, PModel *);
  * Read data in the SG input file.
  */
 int readSG(const std::string &, PModel *, const WriterConfig &);
-// int readSGVABS(const std::string &, PModel *, Message *);
-// int readSGSC(const std::string &, PModel *, Message *);
+
 /** @ingroup io
  * Read data from the dehomogenization output files.
  */
 int readOutputDehomo(const std::string &, PModel *);
 
 
-LoadCase readXMLElementLoadCase(const xml_node<> *, const int &, const int &, PModel *, Message *);
-int readXMLElementLoadCaseInclude(const xml_node<> *, const int &, const int &, PModel *, Message *);
-int readLoadCasesFromCSV(const std::string &, const int &, const int &, const int &, PModel *, Message *);
+LoadCase readXMLElementLoadCase(const xml_node<> *, const int &, const int &, PModel *);
+int readXMLElementLoadCaseInclude(const xml_node<> *, const int &, const int &, PModel *);
+int readLoadCasesFromCSV(const std::string &, const int &, const int &, const int &, PModel *);
 int readVABSU(const std::string &, LocalState *);
 int readVABSEle(const std::string &, LocalState *);
 int readSCSn(const std::string &, LocalState *);
@@ -176,7 +173,7 @@ void writeMaterialsSC(FILE *, PModel *);
 
 void writeGmshElementData(std::ofstream &,
                           const std::vector<PElementNodeData> &,
-                          const std::vector<std::string> &, Message *);
+                          const std::vector<std::string> &);
 
 
 // Supplement files

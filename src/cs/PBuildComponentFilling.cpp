@@ -21,7 +21,7 @@
 #include <string>
 
 
-void PComponent::buildFilling(const BuilderConfig &bcfg, Message * /*pmessage*/) {
+void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
   if (!_fill_baseline_groups.empty()) {
 

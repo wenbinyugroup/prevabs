@@ -21,7 +21,8 @@
 #include <string>
 
 
-void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
+void PComponent::buildLaminate(const BuilderConfig &bcfg) {
+  MESSAGE_SCOPE(g_msg);
 
   for (auto seg : _segments) {
 
@@ -143,7 +144,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg, Message *pmessage) {
 
     seg->build(bcfg);
 
-    if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(pmessage);
+    if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(g_msg);
 
   }
 

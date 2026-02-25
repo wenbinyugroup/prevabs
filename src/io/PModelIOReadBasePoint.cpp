@@ -45,7 +45,7 @@
 #endif
 
 int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
-                   double scale, Message * /*pmessage*/) {
+                   double scale) {
   std::string line;
   std::ifstream fileBasepoints{filenameBasepoints};
   if (!fileBasepoints.is_open()) {
@@ -102,7 +102,7 @@ PDCELVertex *readXMLElementPoint(
 
     std::string bsl_name = p_xn_point->first_attribute("on")->value();
     Baseline *p_bsl;
-    p_bsl = findLineByName(bsl_name, p_xn_geo, pmodel, g_msg);
+    p_bsl = findLineByName(bsl_name, p_xn_geo, pmodel);
     if (!p_bsl) {
       // TODO: raise error 'cannot find line' and exit.
       std::cout << "cannot find base line: " << bsl_name << std::endl;
@@ -258,7 +258,7 @@ PDCELVertex *readXMLElementPoint(
 }
 
 PDCELVertex *findPointByName(
-  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message * /*pmessage*/
+  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel
   ) {
   PDCELVertex *pv = nullptr;
 

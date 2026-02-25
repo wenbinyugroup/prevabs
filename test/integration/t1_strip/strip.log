@@ -17,13 +17,14 @@
   
   
   
+  
 
 ========================================
 
 
 ========================================
 
-work/dev/prevabs/test/integration/t1_strip/strip.xml
+1_strip\strip.xml
 [warning]         - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]   - reading input files -- done
 [info]   - building the shape
@@ -41,12 +42,16 @@ work/dev/prevabs/test/integration/t1_strip/strip.xml
 [info]     - meshing
 [info]   - modeling in Gmsh -- done
 [info]   - writing outputs
-[info]     - writing sg file: C:/Users/tian50/work/dev/prevabs/test/integration/t1_strip/strip.sg
+[info]     - writing gmsh .opt file: .\test\integration\t1_strip\strip.opt
+[info]     - writing gmsh .geo file: .\test\integration\t1_strip\strip.geo_unrolled
+[info]     - writing gmsh .msh file: .\test\integration\t1_strip\strip.msh
+[info]     - writing sg file: .\test\integration\t1_strip\strip.sg
 [info]       - writing nodes
 [info]       - writing elements
 [info]         -   writing connectivity
 [info]         -   writing local orientation
-[info]     - writing material id-name file: C:/Users/tian50/work/dev/prevabs/test/integration/t1_strip/strip.sg.mat
+[info]     - writing material id-name file: .\test\integration\t1_strip\strip.sg.mat
 [info]   - writing outputs -- done
-[info] - prevabs finished (2026-02-20 16:24:37)
-[info] total running time: 0.084787 sec
+[info]   - running Gmsh for visualization
+[info] - prevabs finished (2026-02-24 16:22:05)
+[info] total running time: 2.33085 sec

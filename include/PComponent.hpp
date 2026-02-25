@@ -68,8 +68,8 @@ private:
   void createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &);
   void joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &);
   void joinSegments(Segment *s1, Segment *s2, int e1, int e2, PDCELVertex *v, int style, const BuilderConfig &);
-  void buildLaminate(const BuilderConfig &, Message *);
-  void buildFilling(const BuilderConfig &, Message *);
+  void buildLaminate(const BuilderConfig &);
+  void buildFilling(const BuilderConfig &);
 
 public:
   static int count_tmp;
@@ -79,7 +79,7 @@ public:
         _fill_ref_baseline(nullptr){};
 
   void print();
-  void print(Message *, int, int = 0);
+  void print(int, int = 0);
 
   std::string name() { return _name; }
   std::vector<Segment *> segments() { return _segments; }

@@ -395,7 +395,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
     }
   }
 
-  s->printBaseOffsetPairs(g_msg);
+  s->printBaseOffsetPairs();
 
   return;
 }
@@ -1041,11 +1041,11 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     int ls_i_offset = ls_i1;
     int _tmp_nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
 
-    s->printBaseOffsetPairs(g_msg);
+    s->printBaseOffsetPairs();
     adjustPairsAfterTrimTail(
       s->baseOffsetIndicesPairs(), ls_i_base, ls_i_offset,
       false, ls_i_base, _tmp_nv_offset);
-    s->printBaseOffsetPairs(g_msg);
+    s->printBaseOffsetPairs();
 
   }
 
@@ -1053,7 +1053,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   s->getBaseline()->print();
   PLOG(debug) << g_msg->message("curve offset:");
   s->curveOffset()->print();
-  s->printBaseOffsetPairs(g_msg);
+  s->printBaseOffsetPairs();
 
   if (e == 0) {
     bcfg.dcel->addEdge(s->getBaseline()->vertices().front(),

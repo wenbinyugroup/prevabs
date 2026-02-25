@@ -28,22 +28,23 @@ void PComponent::print() {
             << "cyclic: " << (_cycle ? "true" : "false") << std::endl;
 }
 
-void PComponent::print(Message *pmessage, int i_type, int /*i_indent*/) {
-  pmessage->print(i_type, "name: " + _name);
-  pmessage->print(i_type, "order: " + std::to_string(_order));
-  pmessage->print(i_type, "cyclic: " + std::to_string(_cycle));
-  pmessage->print(i_type, "segments:");
+void PComponent::print(int i_type, int /*i_indent*/) {
+  MESSAGE_SCOPE(g_msg);
+  PLOG(debug) << g_msg->message("name: " + _name);
+  PLOG(debug) << g_msg->message("order: " + std::to_string(_order));
+  PLOG(debug) << g_msg->message("cyclic: " + std::to_string(_cycle));
+  PLOG(debug) << g_msg->message("segments:");
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(16) << "name"
      << std::setw(16) << "base line"
      << std::setw(32) << "layup"
      << std::setw(16) << "side"
      << std::setw(8) << "level";
-  pmessage->print(i_type, ss.str());
+  PLOG(debug) << g_msg->message(ss.str());
   for (int i = 0; i < _segments.size(); i++) {
     std::stringstream ss_seg;
     ss_seg << std::setw(4) << (i+1) << _segments[i];
-    pmessage->print(i_type, ss_seg.str());
+    PLOG(debug) << g_msg->message(ss_seg.str());
   }
   return;
 }
@@ -92,7 +93,7 @@ void PComponent::build(const BuilderConfig &bcfg) {
   // Laminate type component
   if (_type == 1) {
 
-    buildLaminate(bcfg, g_msg);
+    buildLaminate(bcfg);
 
   }
 
@@ -100,7 +101,7 @@ void PComponent::build(const BuilderConfig &bcfg) {
   // Fill type component
   else if (_type == 2) {
 
-    buildFilling(bcfg, g_msg);
+    buildFilling(bcfg);
 
   }
 
@@ -118,7 +119,6 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
-  // i_indent++;
   MESSAGE_SCOPE(g_msg);
 
   if (_type == 1) {
@@ -134,8 +134,6 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
     }
 
   }
-
-  // i_indent--;
 
 }
 

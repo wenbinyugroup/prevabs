@@ -1,13 +1,29 @@
-[info] - prevabs start (2026-02-16 16:54:28)
-[info] - reading input files
-[info]     - reading main input file: .\share\examples\ex_uh60a\uh60a_sec  
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  
   
     
   
   
   
-eading airfoil data file: .\share\examples\ex_uh60a\sc1095.dat
-[error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+  X [error] Unable to recover the edge 55453 (29/51) on curve 76 (on surface 323)
+  
+
+========================================
+
+
+========================================
+
+share\examples\ex_uh60a\sc1095.dat
+[warning]         - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]         - reading materials file: .\share\examples\ex_uh60a\uh60a_material.xml
 [info]   - reading input files -- done
 [info]   - building the shape
@@ -30,3 +46,6 @@ eading airfoil data file: .\share\examples\ex_uh60a\sc1095.dat
 [info]     - creating gmsh faces
 [info]     - creating physical groups
 [info]     - meshing
+[info]   - running Gmsh for visualization
+[info] - prevabs finished (2026-02-24 16:19:19)
+[info] total running time: 14.0852 sec

@@ -7,7 +7,7 @@
 
 ========================================
 
-
+  
   
   
     
@@ -18,12 +18,20 @@
   
   
   
-  ========================================
+  
+  -  [VABS Messages] 
   
   
-  ========================================
+  -  [VABS Messages End] 
   
-error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+  
+
+========================================
+
+
+========================================
+
+:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]   - reading input files -- done
 [info]   - building the shape
 [info]     - building the cross section, step 1
@@ -40,12 +48,16 @@ error]       - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\
 [info]     - meshing
 [info]   - modeling in Gmsh -- done
 [info]   - writing outputs
-[info]     - writing sg file: t1_strip\strip_two_segs.sg
+[info]     - writing sg file: .\test\integration\t1_strip\strip_two_segs.sg
 [info]       - writing nodes
 [info]       - writing elements
 [info]         -   writing connectivity
 [info]         -   writing local orientation
-[info]     - writing material id-name file: t1_strip\strip_two_segs.sg.mat
+[info]     - writing material id-name file: .\test\integration\t1_strip\strip_two_segs.sg.mat
 [info]   - writing outputs -- done
-[info]   - prevabs finished (2026-02-18 12:37:54)
-[info] total running time: 0.0767542 sec
+[info]   - running VABS for homogenization
+[info]   - running: VABS ".\test\integration\t1_strip\strip_two_segs.sg"
+[info]   - command completed successfully.
+[info]   - running VABS for homogenization -- done
+[info] - prevabs finished (2026-02-24 16:22:28)
+[info] total running time: 0.164953 sec

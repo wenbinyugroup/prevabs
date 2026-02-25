@@ -119,7 +119,6 @@ public:
   void addENM(PElementNodeData *enm) { _enm.push_back(enm); }
 
   void writeGmshMsh(FILE *, FILE *);
-  // void writeGmshMsh(std::string &, std::string &, Message *);
 
   // PElementNodeData *u() { return _u; }
   // PElementNodeData *s() { return _s; }
@@ -253,12 +252,12 @@ public:
   std::size_t getNumOfNodes()      { return _mesh_data.num_nodes; }
   std::size_t getNumOfElements()   { return _mesh_data.num_elements; }
 
-  void getNodes(std::vector<size_t> &, std::vector<double> &, Message *);
+  void getNodes(std::vector<size_t> &, std::vector<double> &);
   void getElements(
     std::vector<int> &,
     std::vector<std::vector<size_t>> &,
     std::vector<std::vector<size_t>> &,
-    int, int, Message *
+    int, int
     );
 
   // Delegating to sub-repositories
@@ -408,7 +407,7 @@ public:
   /*!
     \param fn File name without the extension
    */
-  int writeGmsh(const std::string &, Message *);
+  int writeGmsh(const std::string &);
 
   /// Write the SG model data into a file.
   /*!
@@ -437,9 +436,7 @@ public:
     const std::vector<double> &
     );
 
-  void writeElementsSC(FILE *, Message *);
-  // void writeMaterialsVABS(FILE *, Message *);
-  // void writeSettingsVABS(FILE *, Message *);
+  void writeElementsSC(FILE *);
   int writeGLB(std::string fn);
 
   // Write supplement files
@@ -448,20 +445,19 @@ public:
 
   // =================================================================
 
-  void summary(Message *);
+  void summary();
 
 
   // Homogenization
   void homogenize();
-  void build(Message *);
+  void build();
 
-  // void initGmshModel(Message *);
-  void createGmshVertices(Message *);
-  void createGmshEdges(Message *);
-  void createGmshFaces(Message *);
-  void createGmshEmbeddedEntities(Message *);
-  void createGmshPhyscialGroups(Message *);
-  void createGmshGeo(Message *);
+  void createGmshVertices();
+  void createGmshEdges();
+  void createGmshFaces();
+  void createGmshEmbeddedEntities();
+  void createGmshPhyscialGroups();
+  void createGmshGeo();
   void recordInterface(PDCELHalfEdge *);
 
   void buildGmsh();
@@ -471,7 +467,7 @@ public:
   void dehomogenize();
 
   void recoverVABS();
-  void failureVABS(Message *);
+  void failureVABS();
   void dehomoSC();
   void failureSC();
 
@@ -481,11 +477,11 @@ public:
 
 
   // Plot functions
-  void plotGeoDebug(Message *, bool create_gmsh_geo=true);
+  void plotGeoDebug(bool create_gmsh_geo=true);
   void plot();
-  void plotDehomo(Message *);
+  void plotDehomo();
 
-  int postVABS(Message *);
+  int postVABS();
   int postSCDehomo();
   int postSCFailure();
 };

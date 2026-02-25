@@ -21,8 +21,7 @@
 
 void PModel::getNodes(
   std::vector<size_t> &node_tags,
-  std::vector<double> &node_coords,
-  Message * /*pmessage*/
+  std::vector<double> &node_coords
   ) {
 
   std::vector<double> node_params;
@@ -40,8 +39,7 @@ void PModel::getElements(
   std::vector<int> &elem_types,
   std::vector<std::vector<size_t>> &elem_tags,
   std::vector<std::vector<size_t>> &elem_node_tags,
-  int dim, int tag,
-  Message * /*pmessage*/
+  int dim, int tag
   ) {
 
   gmsh::model::mesh::getElements(
@@ -146,7 +144,7 @@ void PModel::writeElements(
   }
 
   else if (config.isSC()) {
-    writeElementsSC(file, g_msg);
+    writeElementsSC(file);
   }
 
 }
@@ -265,8 +263,8 @@ void PModel::writeElementsVABS(
 
 void writeElementSC(
   FILE * /*file*/, int /*elem_tag*/, int /*mid*/,
-  std::vector<std::size_t> /*node_tags*/, int /*elem_type*/,
-  Message * /*pmessage*/) {
+  std::vector<std::size_t> /*node_tags*/, int /*elem_type*/
+  ) {
   // std::vector<int> inums(9, 0);
   // fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
   // for (int i = 0; i < elem->getNumVertices(); ++i) {
@@ -282,7 +280,7 @@ void writeElementSC(
 
 
 
-void PModel::writeElementsSC(FILE * /*file*/, Message * /*pmessage*/) {
+void PModel::writeElementsSC(FILE * /*file*/) {
 
   // // Write connectivity for each element
   // for (auto f : model->dcel()->faces()) {
@@ -326,7 +324,7 @@ void PModel::writeElementsSC(FILE * /*file*/, Message * /*pmessage*/) {
 // ===================================================================
 
 
-int PModel::writeGmsh(const std::string &fn_base, Message * /*pmessage*/) {
+int PModel::writeGmsh(const std::string &fn_base) {
   // i_indent++;
   // pmessage->increaseIndent();
 
@@ -631,49 +629,8 @@ void LocalState::writeGmshMsh(FILE *f_msh, FILE *f_opt) {
 
 
 
-// void LocalState::writeGmshMsh(std::string &fn_msh, std::string &fn_opt, Message *pmessage) {
-//   pmessage->increaseIndent();
 
 
-//   if (config.isDehomo()) {
-//     FILE *f_msh, *f_opt;
-//     f_msh = fopen(fn_msh.c_str(), "a");
-//     f_opt = fopen(fn_opt.c_str(), "a");
-
-//     if (_u) {_u->writeGmshMsh(f_msh, f_opt, pmessage);}
-//     if (_s) {_s->writeGmshMsh(f_msh, f_opt, pmessage);}
-//     if (_e) {_e->writeGmshMsh(f_msh, f_opt, pmessage);}
-//     if (_sm) {_sm->writeGmshMsh(f_msh, f_opt, pmessage);}
-//     if (_em) {_em->writeGmshMsh(f_msh, f_opt, pmessage);}
-
-//     fclose(f_msh);
-//     fclose(f_opt);
-//   }
-
-//   if (config.isFailure()) {
-//     // if (_sr) {_sr->writeGmshMsh(file, file_opt, pmessage);}
-//     // if (_fi) {_em->writeGmshMsh(file, file_opt, pmessage);}
-//     if (_sr) {_sr->writeGmshMsh(fn_msh, fn_opt, pmessage);}
-//     // if (_fi) {_em->writeGmshMsh(fn_msh, fn_opt, pmessage);}
-//   }
-
-
-//   pmessage->decreaseIndent();
-
-//   return;
-// }
-
-
-
-
-
-
-
-
-
-// void writeGmshElementData(FILE *file,
-//                           const std::vector<PElementNodeData> &data,
-//                           const std::vector<std::string> &labels, Message *pmessage) {
 void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id) {
 
   MESSAGE_SCOPE(g_msg);
@@ -856,224 +813,4 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id) {
   return;
 
 }
-
-
-
-
-
-
-
-
-
-// void PElementNodeData::writeGmshMsh(std::string &fn_msh, std::string &fn_opt, Message *pmessage) {
-
-//   pmessage->increaseIndent();
-
-//   std::ofstream fs_msh, fs_opt;
-//   fs_msh.open(fn_msh, std::fstream::out | std::fstream::app);
-//   fs_opt.open(fn_opt, std::fstream::out | std::fstream::app);
-
-//   // Write scaler/vector/tensor as a single quantity
-//   if (_type == 0) {
-//     PLOG(info) << pmessage->message("writing node data: " + _label);
-//     // fprintf(file, "$NodeData\n");
-//     fs_msh << "$NodeData" << std::endl;
-//   }
-//   else if (_type == 1) {
-//     PLOG(info) << pmessage->message("writing element data: " + _label);
-//     // fprintf(file, "$ElementData\n");
-//     fs_msh << "$ElementData" << std::endl;
-//   }
-//   else if (_type == 2) {
-//     PLOG(info) << pmessage->message("writing element node data: " + _label);
-//     // fprintf(file, "$ElementNodeData\n");
-//     fs_msh << "$ElementNodeData" << std::endl;
-//   }
-//   runtime.gmsh_views += 1;
-
-
-//   // string tags
-//   // fprintf(file, "%d\n", 1);  // 1 string tag
-//   fs_msh << 1 << std::endl;
-//   if (_order == 0) {
-//     // fprintf(file, "\"%s\"\n", _label.c_str());
-//     fs_msh << "\"" << _label << "\"" << std::endl;
-//   }
-//   else {
-//     // fprintf(file, "\"%s - %s\"\n", _label.c_str(), "Full field");
-//     fs_msh << "\"" << _label << " - Full field" << "\"" << std::endl;
-//   }
-
-//   // real tags
-//   // fprintf(file, "%d\n", 1);  // 1 real tag
-//   fs_msh << 1 << std::endl;
-//   // fprintf(file, "%f\n", 0.0);  // time value
-//   fs_msh << 0.0 << std::endl;
-
-//   // integer tags
-//   // fprintf(file, "%d\n", 3);  // 3 integer tag
-//   fs_msh << 3 << std::endl;
-//   // fprintf(file, "%d\n", 0);  // time step
-//   fs_msh << 0 << std::endl;
-//   if (_order == 0) {  // scalar
-//     // fprintf(file, "%d\n", 1);
-//     fs_msh << 1 << std::endl;
-//   }
-//   else if (_order == 1) {  // vector
-//     // fprintf(file, "%d\n", 3);
-//     fs_msh << 3 << std::endl;
-//   }
-//   else if (_order == 2) {  // tensor
-//     // fprintf(file, "%d\n", 9);
-//     fs_msh << 9 << std::endl;
-//   }
-//   // fprintf(file, "%d\n", _data.size());
-//   fs_msh << _data.size() << std::endl;
-
-//   // data
-//   int nrows_buffer = 1000;
-//   int row_num = 1;
-//   for (auto row : _data) {
-//     // write id
-//     // fprintf(file, "%8d", row->getMainId());
-//     // fs_msh.width(8);
-//     fs_msh << row->getMainId();
-
-//     // write values
-//     std::vector<double> datum = row->getData();
-//     std::vector<std::string> str_datum = row->getStringData();
-//     if (_type == 0 || _type == 1) {  // node data or element data
-//       if (_order == 0) {
-//         // fs_msh.setf(std::fstream::scientific);
-//         // fs_msh.width(16);
-//         fs_msh << "    " << str_datum[0] << std::endl;
-//         // if (_label == "Strength ratio") {
-//         //   // PLOG(info) << pmessage->message("writing entry: " + std::to_string(row->getMainId()) + "  " + str_datum[0]);
-//         //   // int nch;
-//         //   // nch = fprintf(file, "    1\n");
-//         //   // printf("%8d    %s\n", row->getMainId(), str_datum[0].c_str());
-//         //   // nch = fprintf(file, "%8d    %s\n", row->getMainId(), str_datum[0].c_str());
-//         //   // std::cout << "elm " << row->getMainId() << "  nch = " << nch << std::endl;
-//         // }
-//         // else {
-//         //   fprintf(file, "%16e\n", datum[0]);
-//         // }
-//       }
-//       else if (_order == 1) {
-//         // fprintf(file, "%8d", row->getMainId());
-//         // writeVectorToFile(file, datum);
-//       }
-//       else if (_order == 2) {
-//         // fprintf(file, "%8d", row->getMainId());
-//         // fprintf(file, "%16e%16e%16e", datum[0], datum[1], datum[2]);
-//         // fprintf(file, "%16e%16e%16e", datum[1], datum[3], datum[4]);
-//         // fprintf(file, "%16e%16e%16e", datum[2], datum[4], datum[5]);
-//         // fprintf(file, "\n");
-//       }
-//     }
-
-//     // if (row_num == nrows_buffer) {
-//     //   int rv_flush = fflush(file);
-//     //   std::cout << "flushed: " << rv_flush << std::endl;
-//     //   row_num = 1;
-//     // } else {
-//     //   row_num++;
-//     // }
-//   }
-
-
-//   if (_type == 0) {fs_msh << "$EndNodeData" << std::endl;}
-//   else if (_type == 1) {fs_msh << "$EndElementData" << std::endl;}
-//   else if (_type == 2) {fs_msh << "$EndElementNodeData" << std::endl;}
-
-//   // options
-//   if (_order > 0) {
-//     // fprintf(file_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
-//   }
-
-//   if (config.isFailIndex()) {
-//     if (_label == "Strength ratio") {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 1);
-//     }
-//     else {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
-//     }
-//   }
-//   else {
-//     if (_label == "Stress (global)") {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 1);
-//     }
-//     else {
-//       // fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
-//     }
-//   }
-
-
-
-
-
-//   // Write each component individually for vector/tensor
-//   // for (int comp{0}; comp < _component_labels.size(); ++comp) {
-//   //   PLOG(info) << pmessage->message("writing component: " + _component_labels[comp]);
-
-//   //   // For each strain/stress component
-//   //   if (_type == 0) {fprintf(file, "$NodeData\n");}
-//   //   else if (_type == 1) {fprintf(file, "$ElementData\n");}
-//   //   else if (_type == 2) {fprintf(file, "$ElementNodeData\n");}
-//   //   runtime.gmsh_views += 1;
-
-
-//   //   // string tags
-//   //   fprintf(file, "%d\n", 1);  // 1 string tag
-//   //   fprintf(file, "\"%s\"\n", _component_labels[comp].c_str());
-
-//   //   // real tags
-//   //   fprintf(file, "%d\n", 1);  // 1 real tag
-//   //   fprintf(file, "%f\n", 0.0);
-
-//   //   // integer tags
-//   //   fprintf(file, "%d\n", 3);  // 3 integer tag
-//   //   fprintf(file, "%d\n", 0);  // time step
-//   //   fprintf(file, "%d\n", 1);
-//   //   fprintf(file, "%d\n", _data.size());
-
-//   //   // data
-//   //   for (auto row : _data) {
-//   //     // element id
-//   //     fprintf(file, "%8d", row->getMainId());
-
-//   //     // value
-//   //     if (_type == 0 || _type == 1) {
-//   //       fprintf(file, "%16e\n", row->getData()[comp]);
-//   //     }
-//   //     // ofs_msh.width(4);
-//   //     // ofs_msh << elements[i][1];
-//   //     // for (int j{comp}; j < data[i].size(); j += 6) {
-//   //     // ofs_msh.setf(std::fstream::scientific);
-//   //     // ofs_msh.width(16);
-//   //     // ofs_msh << elem.getData()[comp] << std::endl;
-//   //     // }
-//   //     // ofs_msh;
-//   //   }
-
-
-//   //   if (_type == 0) {fprintf(file, "$EndNodeData\n");}
-//   //   else if (_type == 1) {fprintf(file, "$EndElementData\n");}
-//   //   else if (_type == 2) {fprintf(file, "$EndElementNodeData\n");}
-
-
-//   //   // options
-//   //   fprintf(file_opt, "View[%d].Group = \"%s\";\n", runtime.gmsh_views-1, _label.c_str());
-//   //   fprintf(file_opt, "View[%d].Visible = %d;\n", runtime.gmsh_views-1, 0);
-//   // }
-
-//   fs_msh.close();
-
-//   pmessage->decreaseIndent();
-
-// }
-
-
-
-
 

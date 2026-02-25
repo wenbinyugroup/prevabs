@@ -24,41 +24,13 @@
 #include <utility>
 
 
-// void PModel::initGmshModel(Message *pmessage) {
-//   _gmodel = new GModel();
-//   _gmodel->setFactory("Gmsh");
-
-//   return;
-// }
 
 
 
+void PModel::createGmshVertices() {
+  MESSAGE_SCOPE(g_msg);
 
-// std::size_t PModel::getNumOfNodes() {
-//   std::size_t nnodes;
-//   gmsh::model::mesh::getMaxNodeTag(nnodes);
-//   return nnodes;
-// }
-
-
-
-
-// std::size_t PModel::getNumOfElements() {
-//   std::size_t nelems;
-//   gmsh::model::mesh::getMaxElementTag(nelems);
-//   return nelems;
-// }
-
-
-
-
-
-
-
-
-
-void PModel::createGmshVertices(Message *pmessage) {
-  PLOG(info) << pmessage->message("creating gmsh vertices");
+  PLOG(info) << g_msg->message("creating gmsh vertices");
 
   int _gv_tag;
 
@@ -191,9 +163,10 @@ void PModel::recordInterface(PDCELHalfEdge *he) {
 
 
 
-void PModel::createGmshEdges(Message *pmessage) {
+void PModel::createGmshEdges() {
+  MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << pmessage->message("creating gmsh edges");
+  PLOG(info) << g_msg->message("creating gmsh edges");
 
   int _ge_tag;
 
@@ -240,8 +213,10 @@ void PModel::createGmshEdges(Message *pmessage) {
 
 
 
-void PModel::createGmshFaces(Message *pmessage) {
-  PLOG(info) << pmessage->message("creating gmsh faces");
+void PModel::createGmshFaces() {
+  MESSAGE_SCOPE(g_msg);
+
+  PLOG(info) << g_msg->message("creating gmsh faces");
 
   int _ge_tag;  // gmsh edge tag
   int _gel_tag;  // gmsh edge loop tag
@@ -249,8 +224,8 @@ void PModel::createGmshFaces(Message *pmessage) {
 
   for (auto f : _dcel->faces()) {
 
-    PLOG(debug) << pmessage->message("");
-    PLOG(debug) << pmessage->message("  face: " + f->name());
+    PLOG(debug) << g_msg->message("");
+    PLOG(debug) << g_msg->message("  face: " + f->name());
 
     if (f->realGeometry() && f->outer() != nullptr) {
 
@@ -262,7 +237,7 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
       // Add outer loop
-      PLOG(debug) << pmessage->message("  adding outer loop");
+      PLOG(debug) << g_msg->message("  adding outer loop");
       PDCELHalfEdge *he = f->outer();
       do {
 
@@ -284,7 +259,7 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
       // Add inner loops
-      PLOG(debug) << pmessage->message("  adding inner loops");
+      PLOG(debug) << g_msg->message("  adding inner loops");
       for (auto hei : f->inners()) {
 
         _ge_tags.clear();
@@ -310,7 +285,7 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
       // Create embedded entities and set local mesh sizes
-      PLOG(debug) << pmessage->message("  adding local mesh size");
+      PLOG(debug) << g_msg->message("  adding local mesh size");
       if (f->getMeshSize() != -1) {
         int _gv_tag_prev = 0;
         int _gv_tag_curr = 0;
@@ -343,13 +318,14 @@ void PModel::createGmshFaces(Message *pmessage) {
 
 
 
-void PModel::createGmshEmbeddedEntities(Message *pmessage) {
+void PModel::createGmshEmbeddedEntities() {
+  MESSAGE_SCOPE(g_msg);
 
-  PLOG(debug) << pmessage->message("  adding embedded entities");
+  PLOG(debug) << g_msg->message("  adding embedded entities");
   for (auto f : _dcel->faces()) {
 
-    PLOG(debug) << pmessage->message("");
-    PLOG(debug) << pmessage->message("  face: " + f->name());
+    PLOG(debug) << g_msg->message("");
+    PLOG(debug) << g_msg->message("  face: " + f->name());
 
     auto it_ev = _gmsh_face_embedded_vertex_tags.find(f);
     if (it_ev != _gmsh_face_embedded_vertex_tags.end() && !it_ev->second.empty()) {
@@ -373,21 +349,22 @@ void PModel::createGmshEmbeddedEntities(Message *pmessage) {
 
 
 
-void PModel::createGmshPhyscialGroups(Message *pmessage) {
+void PModel::createGmshPhyscialGroups() {
+  MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << pmessage->message("creating physical groups");
+  PLOG(info) << g_msg->message("creating physical groups");
 
   std::vector<int> group_tags;
   std::vector<std::vector<int>> group_face_tags;
 
   for (auto f : _dcel->faces()) {
 
-    PLOG(debug) << pmessage->message("");
-    PLOG(debug) << pmessage->message("  face: " + f->name());
+    PLOG(debug) << g_msg->message("");
+    PLOG(debug) << g_msg->message("  face: " + f->name());
 
     if (f->realGeometry() && f->outer() != nullptr) {
 
-      PLOG(debug) << pmessage->message(
+      PLOG(debug) << g_msg->message(
         "  id: " + std::to_string(f->layertype()->id())
         + ", material: " + f->layertype()->material()->getName()
         + ", theta_3 = " + std::to_string(f->layertype()->angle())
@@ -435,10 +412,10 @@ void PModel::createGmshPhyscialGroups(Message *pmessage) {
 
 
 
-void PModel::createGmshGeo(Message *pmessage) {
+void PModel::createGmshGeo() {
 
-  createGmshVertices(pmessage);
-  createGmshEdges(pmessage);
+  createGmshVertices();
+  createGmshEdges();
   // createGmshFaces(pmessage);
 
 }
@@ -462,37 +439,37 @@ void PModel::buildGmsh() {
 
   // ------------------------------
   // Create Gmsh vertices
-  createGmshVertices(g_msg);
+  createGmshVertices();
 
 
   // ------------------------------
   // Create Gmsh edges
-  createGmshEdges(g_msg);
+  createGmshEdges();
 
 
   // ------------------------------
   // Create Gmsh faces
-  createGmshFaces(g_msg);
+  createGmshFaces();
 
 
   gmsh::model::geo::synchronize();
 
   // ------------------------------
   // Create embedded entities and set local mesh sizes
-  createGmshEmbeddedEntities(g_msg);
+  createGmshEmbeddedEntities();
 
 
   gmsh::model::geo::synchronize();
 
   // ------------------------------
   // Create Gmsh physical groups
-  createGmshPhyscialGroups(g_msg);
+  createGmshPhyscialGroups();
 
 
   if (config.debug) {
     // Create Gmsh model and write Gmsh files for debugging
 
-    plotGeoDebug(g_msg, false);
+    plotGeoDebug(false);
 
   }
 

@@ -1,39 +1,31 @@
-[info] - prevabs start (2026-02-16 16:41:03)
-[info] - reading input files
-[info]     - reading main input file: .\share\examples\ex_airfoil\mh104.x  
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  
   
     
-  
-  
-  
-    X [error] Unable to recover the edge 40428 (59/100) on curve 588 (on surface 195)
-    
-    
-    ========================================
-    
-    
-    ========================================
-    
-are\examples\ex_airfoil\materials.xml
-[info]   - reading input files -- done
-[info]   - building the shape
-[info]     - building the cross section, step 1
-[info]       - building component: surface
+        X [error] homog2d: line 3733, function:h2d::base::LPBase<struct h2d::typ::IsLine,double>::LPBase(): unable to build line from these two points, are the same: [-0.466967,0.0207517]
+ -full function name: __cdecl h2d::base::LPBase<struct h2d::typ::IsLine,double>::LPBase<double>(const class h2d::base::LPBase<struct h2d::typ::IsPoint,double> &,const class h2d::base::LPBase<struct h2d::typ::IsPoint,double> &)
+ -Error count=1
+        
+      
+      ========================================
+      
+      
+      ========================================
+      
+rface
 [info]       - building component: web1
 [info]       - building component: web2
 [info]     - building the cross section, step 2
 [info]       - building component details: surface
-[info]       - building component details: web1
-[info]       - building component details: web2
-[info]     - fixing geometry
-[info]   - building the shape -- done
-[info]   - modeling in Gmsh
-[info]     - creating gmsh vertices
-[info]     - creating gmsh edges
-[info]     - creating gmsh faces
-[info]     - creating physical groups
-[info]     - meshing
-[info]     - running Gmsh for visualization
-[info]     - running: gmsh ".\share\examples\ex_airfoil\mh104.geo_unrolled" ".\share\examples\ex_airfoil\mh104.msh" ".\share\examples\ex_airfoil\mh104.opt"
-[info]     - prevabs finished (2026-02-16 16:41:05)
-[info] total running time: 2.267 sec
+[info]         - running Gmsh for visualization
+[info]       - prevabs finished (2026-02-24 16:16:22)
+[info] total running time: 10.718 sec

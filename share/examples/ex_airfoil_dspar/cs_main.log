@@ -1,6 +1,14 @@
-[info] - prevabs start (2026-02-16 16:43:47)
-[info] - reading input files
-[info]     - reading main input file: .\share\examples\ex_airfoil_dspar\c  
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  
   
     
   
@@ -10,13 +18,15 @@
   
   
   
-  
-  ========================================
-  
-  
-  ========================================
-  
-tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+
+========================================
+
+
+========================================
+
+airfoil_dspar\cs_main.xml
+[info]         - reading airfoil data file: .\share\examples\ex_airfoil_dspar\sc1095.dat
+[warning]         - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]         - reading materials file: .\share\examples\ex_airfoil_dspar\material_database_us_ft.xml
 [info]   - reading input files -- done
 [info]   - building the shape
@@ -48,6 +58,5 @@ tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
 [info]     - writing material id-name file: .\share\examples\ex_airfoil_dspar\cs_main.sg.mat
 [info]   - writing outputs -- done
 [info]   - running Gmsh for visualization
-[info]   - running: gmsh ".\share\examples\ex_airfoil_dspar\cs_main.geo_unrolled" ".\share\examples\ex_airfoil_dspar\cs_main.msh" ".\share\examples\ex_airfoil_dspar\cs_main.opt"
-[info]   - prevabs finished (2026-02-16 16:43:49)
-[info] total running time: 2.402 sec
+[info] - prevabs finished (2026-02-24 16:18:18)
+[info] total running time: 2.61473 sec

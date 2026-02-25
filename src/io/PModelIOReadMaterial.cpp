@@ -109,7 +109,7 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
   return 0;
 }
 
-Strength readXMLElementStrength(const xml_node<> *p_xn_strength, Message * /*pmessage*/) {
+Strength readXMLElementStrength(const xml_node<> *p_xn_strength) {
   Strength strength;
 
   for (xml_node<> *p_xn_sp = p_xn_strength->first_node();
@@ -359,7 +359,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
     // New input
     Strength struct_strength;
-    struct_strength = readXMLElementStrength(p_xn_strength, g_msg);
+    struct_strength = readXMLElementStrength(p_xn_strength);
     struct_strength._type = materialType;
     m->setStrength(struct_strength);
 

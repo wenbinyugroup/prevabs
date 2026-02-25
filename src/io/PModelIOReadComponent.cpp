@@ -27,8 +27,10 @@ using namespace rapidxml;
 PComponent *readXMLElementComponent(
   const xml_node<> *xn_component, std::vector<std::vector<std::string>> &dependents_all,
   std::vector<Layup *> &p_layups, int &num_combined_layups,
-  CrossSection *cs, PModel *pmodel, Message *pmessage
+  CrossSection *cs, PModel *pmodel
   ) {
+
+  MESSAGE_SCOPE(g_msg);
 
   PComponent *p_component = new PComponent();
 
@@ -41,7 +43,7 @@ PComponent *readXMLElementComponent(
     cmp_name = "cmp_" + std::to_string(PComponent::count_tmp);
   }
   // std::cout << "[debug] reading component: " << cmp_name << std::endl;
-  PLOG(debug) << pmessage->message("reading component: " + cmp_name);
+  PLOG(debug) << g_msg->message("reading component: " + cmp_name);
   p_component->setName(cmp_name);
 
   std::string s_cmp_type;
@@ -109,7 +111,7 @@ PComponent *readXMLElementComponent(
     readXMLElementComponentLaminate(
       p_component, xn_component, dependents_all, depend_names,
       p_layups, num_combined_layups,
-      cs, pmodel, pmessage
+      cs, pmodel
     );
 
   }
@@ -118,7 +120,7 @@ PComponent *readXMLElementComponent(
   else if (cmp_type == 2) {
 
     readXMLElementComponentFilling(
-      p_component, xn_component, cs, pmodel, pmessage
+      p_component, xn_component, cs, pmodel
     );
 
   }

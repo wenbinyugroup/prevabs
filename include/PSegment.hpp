@@ -97,7 +97,7 @@ public:
   friend std::ostream &operator<<(std::ostream &, Segment *);
   void print();
   void printBaseOffsetLink();
-  void printBaseOffsetPairs(Message *);
+  void printBaseOffsetPairs();
 
   std::string getName() { return _name; }
   Baseline *getBaseline() { return _curve_base; }

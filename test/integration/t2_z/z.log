@@ -7,7 +7,7 @@
 
 ========================================
 
-
+  
   
   
     
@@ -18,35 +18,294 @@
   
   
   
-  ========================================
-  
-  
-  ========================================
-  
-able to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info]         - reading materials file: t2_z\materials.xml
+
+========================================
+
+
+========================================
+
+2_z\z.xml
+[debug]       - find cross-section: z
+[debug]       - reading analysis...
+[debug]       - finished reading analysis.
+[debug]       - reading general...
+[debug]       - tolerance = 1e-12
+[debug]       - finished reading general.
+[debug]       - finding includings...
+[debug]       - reading geometry...
+[debug]         - reading point: p1
+[debug]         - reading point: p2
+[debug]         - reading point: p3
+[debug]         - reading point: p4
+[debug]         - reading line: l_base
+[debug]         - name: l_base
+[debug]         - type: straight
+[debug]         - point: (x, y, z)
+[debug]         - 1 [p1]: ( 0 , -0.5 , 0.5 )
+[debug]         - 2 [p2]: ( 0 , 0 , 0.5 )
+[debug]         - 3 [p3]: ( 0 , 0 , -0.5 )
+[debug]         - 4 [p4]: ( 0 , 0.5 , -0.5 )
+[debug]       -  
+[debug]       - summary of base lines (before transformation)
+[debug]         - name: l_base
+[debug]         - type: straight
+[debug]         - point: (x, y, z)
+[debug]         - 1 [p1]: ( 0 , -0.5 , 0.5 )
+[debug]         - 2 [p2]: ( 0 , 0 , 0.5 )
+[debug]         - 3 [p3]: ( 0 , 0 , -0.5 )
+[debug]         - 4 [p4]: ( 0 , 0.5 , -0.5 )
+[debug]       -  
+[debug]       - transforming base geometry
+[debug]       -  
+[debug]       - summary of base lines (after transformation)
+[debug]         - name: l_base
+[debug]         - type: straight
+[debug]         - point: (x, y, z)
+[debug]         - 1 [p1]: ( 0 , -0.5 , 0.5 )
+[debug]         - 2 [p2]: ( 0 , 0 , 0.5 )
+[debug]         - 3 [p3]: ( 0 , 0 , -0.5 )
+[debug]         - 4 [p4]: ( 0 , 0.5 , -0.5 )
+[debug]       -  
+[debug]       - finished reading geometry.
+[debug]       - reading materials...
+[warning]         - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info]         - reading materials file: .\test\integration\t2_z\materials.xml
+[debug]             - reading material: iso5_1
+[debug]             - reading material: iso5_2
+[debug]             - reading material: iso5_3
+[debug]             - reading material: iso5_4
+[debug]             - reading material: iso5_5
+[debug]             - reading lamina: la_iso5_1_02
+[debug]             - reading lamina: la_iso5_2_03
+[debug]             - reading lamina: la_iso5_3_015
+[debug]             - reading lamina: la_iso5_4_02
+[debug]             - reading lamina: la_iso5_5_01
+[debug]       - finished reading materials.
+[debug]       - reading layups...
+[debug]         - in function: readLayups
+[debug]         - reading layup: layup1
+[debug]       - finished reading layups.
+[debug]       - reading components...
+[debug]       - reading component: cmp_1
+[debug]       - finished reading components.
 [info]   - reading input files -- done
 [info]   - building the shape
 [info]     - building the cross section, step 1
 [info]       - building component: cmp_1
+[debug]         - offsetting the base curve of segment: sg1
+[debug]         - find intersection:
+        v1_prev = ( 0 , -0.5 , 0.57 ), v2_prev = ( 0 , 0 , 0.57 )
+        v1_tmp = ( 0 , 0.07 , 0.5 ), v2_tmp = ( 0 , 0.07 , -0.5 )
+        prev segment: [-0.5,0.57] - [0,0.57]
+        tmp  segment: [0.07,0.5] - [0.07,-0.5]
+[debug]         - added vertex: ( 0 , 0 , 0.57 )
+[debug]         - find intersection:
+        v1_prev = ( 0 , 0.07 , 0.5 ), v2_prev = ( 0 , 0.07 , -0.5 )
+        v1_tmp = ( 0 , 0 , -0.43 ), v2_tmp = ( 0 , 0.5 , -0.43 )
+        prev segment: [0.07,0.5] - [0.07,-0.5]
+        tmp  segment: [0,-0.43] - [0.5,-0.43]
+[debug]         - intersection found: [0.07,-0.43]
+[debug]         - added vertex: ( 0 , 0.07 , -0.43 )
+[debug]         - base vertices -- base_link_to_offset_indices
+[debug]         -   0: ( 0 , -0.5 , 0.5 ) -- 0
+[debug]         -   1: ( 0 , 0 , 0.5 ) -- 1
+[debug]         -   2: ( 0 , 0 , -0.5 ) -- 2
+[debug]         -   3: ( 0 , 0.5 , -0.5 ) -- 3
+[debug]         - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
+[debug]         - offset line: ( 0 , -0.5 , 0.57 ) -> ( 0 , 0.5 , -0.43 )
+[debug]         - making segment end: sg1 0
+[debug]         - number of dependencies: 0
+[debug]         - making segment end because of no dependency.
+[debug]         - createSegmentFreeEnd: sg1 0
+[debug]         - curve base:
+[debug]           - name: l_base
+[debug]           - type: straight
+[debug]           - point: (x, y, z)
+[debug]           - 1 [p1]: ( 0 , -0.5 , 0.5 )
+[debug]           - 2 [p2]: ( 0 , 0 , 0.5 )
+[debug]           - 3 [p3]: ( 0 , 0 , -0.5 )
+[debug]           - 4 [p4]: ( 0 , 0.5 , -0.5 )
+[debug]         - curve offset:
+[debug]           - name: 
+[debug]           - type: 
+[debug]           - point: (x, y, z)
+[debug]           - 1 []: ( 0 , -0.5 , 0.57 )
+[debug]           - 2 []: ( 0 , 0 , 0.57 )
+[debug]           - 3 []: ( 0 , 0.07 , -0.43 )
+[debug]           - 4 []: ( 0 , 0.5 , -0.43 )
+[debug]         - base vertices -- base_link_to_offset_indices
+[debug]         - number of pairs: 4
+[debug]         - 0: ( 0 , -0.5 , 0.5 ) -- 0: ( 0 , -0.5 , 0.57 )
+[debug]         - 1: ( 0 , 0 , 0.5 ) -- 1: ( 0 , 0 , 0.57 )
+[debug]         - 2: ( 0 , 0 , -0.5 ) -- 2: ( 0 , 0.07 , -0.43 )
+[debug]         - 3: ( 0 , 0.5 , -0.5 ) -- 3: ( 0 , 0.5 , -0.43 )
+[debug]         - making segment end: sg1 1
+[debug]         - number of dependencies: 0
+[debug]         - making segment end because of no dependency.
+[debug]         - createSegmentFreeEnd: sg1 1
+[debug]         - curve base:
+[debug]           - name: l_base
+[debug]           - type: straight
+[debug]           - point: (x, y, z)
+[debug]           - 1 [p1]: ( 0 , -0.5 , 0.5 )
+[debug]           - 2 [p2]: ( 0 , 0 , 0.5 )
+[debug]           - 3 [p3]: ( 0 , 0 , -0.5 )
+[debug]           - 4 [p4]: ( 0 , 0.5 , -0.5 )
+[debug]         - curve offset:
+[debug]           - name: 
+[debug]           - type: 
+[debug]           - point: (x, y, z)
+[debug]           - 1 []: ( 0 , -0.5 , 0.57 )
+[debug]           - 2 []: ( 0 , 0 , 0.57 )
+[debug]           - 3 []: ( 0 , 0.07 , -0.43 )
+[debug]           - 4 []: ( 0 , 0.5 , -0.43 )
+[debug]         - base vertices -- base_link_to_offset_indices
+[debug]         - number of pairs: 4
+[debug]         - 0: ( 0 , -0.5 , 0.5 ) -- 0: ( 0 , -0.5 , 0.57 )
+[debug]         - 1: ( 0 , 0 , 0.5 ) -- 1: ( 0 , 0 , 0.57 )
+[debug]         - 2: ( 0 , 0 , -0.5 ) -- 2: ( 0 , 0.07 , -0.43 )
+[debug]         - 3: ( 0 , 0.5 , -0.5 ) -- 3: ( 0 , 0.5 , -0.43 )
+[debug]         - building the overall shape of segment: sg1
+[debug]         - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
+[debug]         - creating half edges for the base curve
+[debug]         - number of vertices of the base curve: 4
+[debug]         - vertices: 0 -- 1
+[debug]         - vertices: 1 -- 2
+[debug]         - vertices: 2 -- 3
+[debug]         - creating half edges for the offset curve
+[debug]         - creating the half edge loop and face
+[info]       - creating gmsh vertices
+[info]       - creating gmsh edges
+[info]         - writing gmsh .geo file: .\test\integration\t2_z\z_debug_1.geo_unrolled
+[info]         - writing gmsh .opt file: .\test\integration\t2_z\z_debug.opt
+[info]     - creating gmsh vertices
+[info]     - creating gmsh edges
+[info]       - writing gmsh .geo file: .\test\integration\t2_z\z_debug_2.geo_unrolled
 [info]     - building the cross section, step 2
 [info]       - building component details: cmp_1
+[debug]         - building areas of segment: sg1
+[debug]         - 1. creating the beginning bound of the first area
+[debug]           - open segment
+[debug]           - first vertex of the base: ( 0 , -0.5 , 0.5 )
+[debug]           - first vertex of the offset: ( 0 , -0.5 , 0.57 )
+[debug]             - layer 1
+[debug]             - cumu_thk = 0.04
+[debug]             - ls_offset: ( 0 , -0.5 , 0.54 ) -> ( 0 , 0 , 0.54 )
+[debug]               - 
+[debug]               - he_tmp: ( 0 , -0.5 , 0.57 ) -> ( 0 , -0.5 , 0.5 ) | loop: keep | face: sg1_face
+[debug]               - u1_tmp = 0.428571
+[debug]               -   case 3: intersect current edge
+[debug]               -   v_layer: ( 0 , -0.5 , 0.54 )
+[debug]             - v_layer: ( 0 , -0.5 , 0.54 )
+[debug]         - 2. creating areas
+[debug]           - area 1
+[debug]           -   base vertex: ( 0 , 0 , 0.5 )
+[debug]           -   offset vertex: ( 0 , 0 , 0.57 )
+[debug]           - area 2
+[debug]           -   base vertex: ( 0 , 0 , -0.5 )
+[debug]           -   offset vertex: ( 0 , 0.07 , -0.43 )
+[debug]         - 3. creating the last area
+[debug]             - layer 1
+[debug]             - ls_offset: ( 0 , 0 , -0.46 ) -> ( 0 , 0.5 , -0.46 )
+[debug]               - 
+[debug]               - he_tmp: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , -0.43 ) | loop: temp | face: sg1_area_3
+[debug]               - u1_tmp = 0.571429
+[debug]               -   case 5: intersect current edge
+[debug]             - v_layer: ( 0 , 0.5 , -0.46 )
+[debug]           - building layers for area: sg1_area_1
+[debug]           - building layers for area: sg1_area_2
+[debug]           - building layers for area: sg1_area_3
+[info]       - creating gmsh vertices
+[info]       - creating gmsh edges
+[info]         - writing gmsh .geo file: .\test\integration\t2_z\z_debug_3.geo_unrolled
 [info]     - fixing geometry
 [info]   - building the shape -- done
 [info]   - modeling in Gmsh
 [info]     - creating gmsh vertices
 [info]     - creating gmsh edges
 [info]     - creating gmsh faces
+[debug]     - 
+[debug]     -   face: background
+[debug]     - 
+[debug]     -   face: sg1_area_1_layer_2
+[debug]     -   adding outer loop
+[debug]     -   adding inner loops
+[debug]     -   adding local mesh size
+[debug]     - 
+[debug]     -   face: sg1_area_1_layer_1
+[debug]     -   adding outer loop
+[debug]     -   adding inner loops
+[debug]     -   adding local mesh size
+[debug]     - 
+[debug]     -   face: sg1_area_2_layer_2
+[debug]     -   adding outer loop
+[debug]     -   adding inner loops
+[debug]     -   adding local mesh size
+[debug]     - 
+[debug]     -   face: sg1_area_2_layer_1
+[debug]     -   adding outer loop
+[debug]     -   adding inner loops
+[debug]     -   adding local mesh size
+[debug]     - 
+[debug]     -   face: sg1_area_3_layer_2
+[debug]     -   adding outer loop
+[debug]     -   adding inner loops
+[debug]     -   adding local mesh size
+[debug]     - 
+[debug]     -   face: sg1_area_3_layer_1
+[debug]     -   adding outer loop
+[debug]     -   adding inner loops
+[debug]     -   adding local mesh size
+[debug]     -   adding embedded entities
+[debug]     - 
+[debug]     -   face: background
+[debug]     - 
+[debug]     -   face: sg1_area_1_layer_2
+[debug]     - 
+[debug]     -   face: sg1_area_1_layer_1
+[debug]     - 
+[debug]     -   face: sg1_area_2_layer_2
+[debug]     - 
+[debug]     -   face: sg1_area_2_layer_1
+[debug]     - 
+[debug]     -   face: sg1_area_3_layer_2
+[debug]     - 
+[debug]     -   face: sg1_area_3_layer_1
 [info]     - creating physical groups
+[debug]     - 
+[debug]     -   face: background
+[debug]     - 
+[debug]     -   face: sg1_area_1_layer_2
+[debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
+[debug]     - 
+[debug]     -   face: sg1_area_1_layer_1
+[debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
+[debug]     - 
+[debug]     -   face: sg1_area_2_layer_2
+[debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
+[debug]     - 
+[debug]     -   face: sg1_area_2_layer_1
+[debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
+[debug]     - 
+[debug]     -   face: sg1_area_3_layer_2
+[debug]     -   id: 2, material: iso5_2, theta_3 = 0.000000
+[debug]     - 
+[debug]     -   face: sg1_area_3_layer_1
+[debug]     -   id: 1, material: iso5_1, theta_3 = 90.000000
+[info]       - writing gmsh .geo file: .\test\integration\t2_z\z_debug_4.geo_unrolled
 [info]     - meshing
 [info]   - modeling in Gmsh -- done
 [info]   - writing outputs
-[info]     - writing sg file: t2_z\z.sg
+[info]     - writing gmsh .opt file: .\test\integration\t2_z\z.opt
+[info]     - writing gmsh .geo file: .\test\integration\t2_z\z.geo_unrolled
+[info]     - writing gmsh .msh file: .\test\integration\t2_z\z.msh
+[info]     - writing sg file: .\test\integration\t2_z\z.sg
 [info]       - writing nodes
 [info]       - writing elements
 [info]         -   writing connectivity
 [info]         -   writing local orientation
-[info]     - writing material id-name file: t2_z\z.sg.mat
+[info]     - writing material id-name file: .\test\integration\t2_z\z.sg.mat
 [info]   - writing outputs -- done
-[info]   - prevabs finished (2026-02-18 12:37:34)
-[info] total running time: 0.0414394 sec
+[info]   - running Gmsh for visualization
+[info] - prevabs finished (2026-02-24 17:08:14)
+[info] total running time: 2.53966 sec

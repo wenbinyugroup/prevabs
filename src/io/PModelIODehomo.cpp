@@ -96,7 +96,7 @@ int readInputDehomo(const std::string & /*filenameCrossSection*/,
   // Will be deprecated
   xml_node<> *p_xn_loads{p_xn_global->first_node("loads")};
   if (p_xn_loads) {
-    LoadCase lc = readXMLElementLoadCase(p_xn_global, measure, model, pmodel, g_msg);
+    LoadCase lc = readXMLElementLoadCase(p_xn_global, measure, model, pmodel);
     pmodel->addLoadCase(lc);
   }
 
@@ -107,11 +107,11 @@ int readInputDehomo(const std::string & /*filenameCrossSection*/,
     std::string _name{p_xn_case->name()};
 
     if (_name == "case") {
-      LoadCase lc = readXMLElementLoadCase(p_xn_case, measure, model, pmodel, g_msg);
+      LoadCase lc = readXMLElementLoadCase(p_xn_case, measure, model, pmodel);
       pmodel->addLoadCase(lc);
     }
     else if (_name == "include") {
-      readXMLElementLoadCaseInclude(p_xn_case, measure, model, pmodel, g_msg);
+      readXMLElementLoadCaseInclude(p_xn_case, measure, model, pmodel);
     }
 
   }
@@ -189,7 +189,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel) {
 
 LoadCase readXMLElementLoadCase(
   const xml_node<> *p_xn_loadcase, const int &measure, const int &model,
-  PModel *pmodel, Message * /*pmessage*/
+  PModel *pmodel
   ) {
 
   LoadCase loadcase;
@@ -314,7 +314,7 @@ LoadCase readXMLElementLoadCase(
 
 int readXMLElementLoadCaseInclude(
   const xml_node<> *p_xn_loadcase, const int &measure, const int &model,
-  PModel *pmodel, Message *pmessage
+  PModel *pmodel
   ) {
 
   std::string fmt{"csv"};
@@ -334,7 +334,7 @@ int readXMLElementLoadCaseInclude(
       std::string s_temp = p_xa_header->value();
       headrow = atoi(s_temp.c_str());
     }
-    readLoadCasesFromCSV(fn, headrow, measure, model, pmodel, pmessage);
+    readLoadCasesFromCSV(fn, headrow, measure, model, pmodel);
   }
 
   return 0;
@@ -350,10 +350,12 @@ int readXMLElementLoadCaseInclude(
 
 int readLoadCasesFromCSV(
   const std::string &fn, const int &head, const int &measure, const int &model,
-  PModel *pmodel, Message *pmessage
+  PModel *pmodel
   ) {
 
-  PLOG(info) << pmessage->message("reading load cases from file <" + fn + ">...");
+  MESSAGE_SCOPE(g_msg);
+
+  PLOG(info) << g_msg->message("reading load cases from file <" + fn + ">...");
 
   std::vector<std::vector<std::string>> s_load_cases;
 
@@ -412,7 +414,7 @@ int PModel::writeGLB(std::string fn) {
   if (config.isFailure()) {
     for (auto m : _cross_section->getUsedMaterials()) {
       // m->printMaterial();
-      m->writeStrengthProperties(file, g_msg);
+      m->writeStrengthProperties(file);
     }
   }
   fprintf(file, "\n");
@@ -574,8 +576,6 @@ int readVABSU(const std::string &filename, LocalState *state) {
 
 
 
-// std::vector<PElementNodeData>
-// readOutputDehomoElementVABS(const std::string &filename, Message *pmessage) {
 int readVABSEle(const std::string &filename, LocalState *state) {
   MESSAGE_SCOPE(g_msg);
 

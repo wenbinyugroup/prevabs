@@ -39,7 +39,9 @@
 #endif
 
 int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
-                  const std::string &filePath, double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/, Message *pmessage) {
+                  const std::string &filePath, double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/) {
+
+  MESSAGE_SCOPE(g_msg);
 
   xml_node<> *p_xn_basepoints{nodeBaselines->first_node("basepoints")};
   if (p_xn_basepoints){
@@ -60,7 +62,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
       filenameBasepoints = filePath + filenameBasepoints + ".dat";
       // if (debug)
       // std::cout << "- reading base points" << std::endl;
-      readPointsFromFile(filenameBasepoints, pmodel, pscale, pmessage);
+      readPointsFromFile(filenameBasepoints, pmodel, pscale);
       // if (config.debug) {
       //   // std::cout << "- reading base points -- done" << std::endl;
       //   pmessage->print(9, "base points");
@@ -191,19 +193,19 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
 
     // TYPE 1: Straight line / polyline
     if (baselineType == "straight") {
-      readLineTypeStraight(line, p_xn_line, p_xn_geo, pmodel, g_msg);
+      readLineTypeStraight(line, p_xn_line, p_xn_geo, pmodel);
     }
     // TYPE 2: A complete circle
     else if (baselineType == "circle") {
-      readLineTypeCircle(line, p_xn_line, p_xn_geo, pmodel, g_msg);
+      readLineTypeCircle(line, p_xn_line, p_xn_geo, pmodel);
     }
     // TYPE 3: Arc (part of a circle)
     else if (baselineType == "arc") { // Discretize arc
-      readLineTypeArc(line, p_xn_line, p_xn_geo, pmodel, g_msg);
+      readLineTypeArc(line, p_xn_line, p_xn_geo, pmodel);
     }
     // TYPE 4: Airfoil
     else if (baselineType == "airfoil") { // Discretize arc
-      readLineTypeAirfoil(line, p_xn_line, p_xn_geo, pmodel, g_msg, 1e-12);
+      readLineTypeAirfoil(line, p_xn_line, p_xn_geo, pmodel, 1e-12);
     }
 
   }
@@ -211,7 +213,7 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
   else if (method == "join") {
 
     line->setName(baselineName);
-    readLineByJoin(line, p_xn_line, p_xn_geo, pmodel, g_msg);
+    readLineByJoin(line, p_xn_line, p_xn_geo, pmodel);
     // line->print(pmessage, 1);
 
   }
@@ -221,7 +223,7 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
   return line;
 }
 
-void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
+void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
   //   if (debug)
   //     std::cout << "Straight Baseline" << std::endl;
   xml_node<> *nps{p_xn_line->first_node("points")};
@@ -246,7 +248,7 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
         std::string basepointLabel{vBeginEnd[0]};
 
         PDCELVertex *pv;
-        pv = findPointByName(basepointLabel, p_xn_geo, pmodel, pmessage);
+        pv = findPointByName(basepointLabel, p_xn_geo, pmodel);
         if (!pv) {
           // TODO: raise error 'cannot find point' and exit.
         }
@@ -264,12 +266,12 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
         std::string basepointLabelEnd{vBeginEnd[1]};
 
         PDCELVertex *pvbegin, *pvend;
-        pvbegin = findPointByName(basepointLabelBegin, p_xn_geo, pmodel, pmessage);
+        pvbegin = findPointByName(basepointLabelBegin, p_xn_geo, pmodel);
         if (!pvbegin) {
           // TODO: raise error 'cannot find point' and exit.
         }
         // std::cout << "pvbegin: " << pvbegin << std::endl;
-        pvend = findPointByName(basepointLabelEnd, p_xn_geo, pmodel, pmessage);
+        pvend = findPointByName(basepointLabelEnd, p_xn_geo, pmodel);
         if (!pvend) {
           // TODO: raise error 'cannot find point' and exit.
         }
@@ -352,7 +354,7 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
 
     PDCELVertex *pvMid, *pvStart, *pvEnd;
     // pvMid = pmodel->getPointByName(basepointLabel);
-    pvMid = findPointByName(basepointLabel, p_xn_geo, pmodel, pmessage);
+    pvMid = findPointByName(basepointLabel, p_xn_geo, pmodel);
     if (!pvMid) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -376,7 +378,7 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
   return;
 }
 
-void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
+void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
   // Need to discretize the circle,
   // create new basepoints and store
   // them into the baseline
@@ -412,7 +414,7 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
     double radius{atof(nr->value())};
 
     // pCenter = pmodel->getPointByName(centerLabel);
-    pCenter = findPointByName(centerLabel, p_xn_geo, pmodel, pmessage);
+    pCenter = findPointByName(centerLabel, p_xn_geo, pmodel);
     if (!pCenter) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -427,14 +429,14 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
   else if (nc && np) {
     std::string centerName{nc->value()};
     // pCenter = pmodel->getPointByName(centerName);
-    pCenter = findPointByName(centerName, p_xn_geo, pmodel, pmessage);
+    pCenter = findPointByName(centerName, p_xn_geo, pmodel);
     if (!pCenter) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
     std::string startName{np->value()};
     // pStart = pmodel->getPointByName(startName);
-    pStart = findPointByName(startName, p_xn_geo, pmodel, pmessage);
+    pStart = findPointByName(startName, p_xn_geo, pmodel);
     if (!pStart) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -458,7 +460,7 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
   return;
 }
 
-void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel, Message *pmessage) {
+void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
   xml_node<> *nc{p_xn_line->first_node("center")};
   xml_node<> *ns{p_xn_line->first_node("start")};
   xml_node<> *ne{p_xn_line->first_node("end")};
@@ -502,12 +504,12 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
   if (ns && ne && (p_xn_radius || p_xn_curv)) {
     // TODO: sub-case for half circle
 
-    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel, pmessage);
+    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel);
     if (!pv_start) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
-    pv_end = findPointByName(ne->value(), p_xn_geo, pmodel, pmessage);
+    pv_end = findPointByName(ne->value(), p_xn_geo, pmodel);
     if (!pv_end) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -594,21 +596,21 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
   else if (nc && ns && ne && na) {
     // std::string centerName{nc->value()};
     // pv_center = pmodel->getPointByName(centerName);
-    pv_center = findPointByName(nc->value(), p_xn_geo, pmodel, pmessage);
+    pv_center = findPointByName(nc->value(), p_xn_geo, pmodel);
     if (!pv_center) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
     // std::string startName{ns->value()};
     // pv_start = pmodel->getPointByName(startName);
-    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel, pmessage);
+    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel);
     if (!pv_start) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
     // std::string endName{ne->value()};
     // pv_end = pmodel->getPointByName(endName);
-    pv_end = findPointByName(ne->value(), p_xn_geo, pmodel, pmessage);
+    pv_end = findPointByName(ne->value(), p_xn_geo, pmodel);
     if (!pv_end) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -626,17 +628,17 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     // pv_start = pmodel->getPointByName(startName);
     // pv_end = pmodel->getPointByName(endName);
 
-    pv_center = findPointByName(nc->value(), p_xn_geo, pmodel, pmessage);
+    pv_center = findPointByName(nc->value(), p_xn_geo, pmodel);
     if (!pv_center) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
-    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel, pmessage);
+    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel);
     if (!pv_start) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
-    pv_end = findPointByName(ne->value(), p_xn_geo, pmodel, pmessage);
+    pv_end = findPointByName(ne->value(), p_xn_geo, pmodel);
     if (!pv_end) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -650,12 +652,12 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     // std::string startName{ns->value()};
     // pv_center = pmodel->getPointByName(centerName);
     // pv_start = pmodel->getPointByName(startName);
-    pv_center = findPointByName(nc->value(), p_xn_geo, pmodel, pmessage);
+    pv_center = findPointByName(nc->value(), p_xn_geo, pmodel);
     if (!pv_center) {
       // TODO: raise error 'cannot find point' and exit.
     }
 
-    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel, pmessage);
+    pv_start = findPointByName(ns->value(), p_xn_geo, pmodel);
     if (!pv_start) {
       // TODO: raise error 'cannot find point' and exit.
     }
@@ -676,7 +678,8 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
 
 int readLineTypeAirfoil(
   Baseline *line, const xml_node<> *p_xn_line, const xml_node<> * /*p_xn_geo*/,
-  PModel *pmodel, Message *pmessage, const double tol) {
+  PModel *pmodel, const double tol) {
+  MESSAGE_SCOPE(g_msg);
   // std::cout << "reading airfoil type line\n";
   //
   xml_node<> *p_xn_pts{p_xn_line->first_node("points")};
@@ -725,11 +728,11 @@ int readLineTypeAirfoil(
     std::ifstream _ifs{s_fn};
 
     if (!_ifs.is_open()) {
-      PLOG(error) << pmessage->message("unable to open file: " + s_fn);
+      PLOG(error) << g_msg->message("unable to open file: " + s_fn);
       return 0;
     }
 
-    PLOG(info) << pmessage->message("reading airfoil data file: " + s_fn);
+    PLOG(info) << g_msg->message("reading airfoil data file: " + s_fn);
 
     // Read data
     std::string data_line;
@@ -759,7 +762,7 @@ int readLineTypeAirfoil(
         if (trimmed_line.empty()) {continue;}
 
         counter++;
-        PLOG(debug) << pmessage->message(
+        PLOG(debug) << g_msg->message(
           "reading line " + std::to_string(counter) + ": " + trimmed_line);
 
         // Skip header rows
@@ -769,23 +772,23 @@ int readLineTypeAirfoil(
         std::stringstream _ss(trimmed_line);
         double x, y;
         _ss >> x >> y;
-        PLOG(debug) << pmessage->message(
+        PLOG(debug) << g_msg->message(
           "x: " + std::to_string(x) + ", y: " + std::to_string(y));
 
         // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {
-          PLOG(debug) << pmessage->message("skipping trailing edge");
+          PLOG(debug) << g_msg->message("skipping trailing edge");
           continue;
         }
 
         // Add the point (0, 0), i.e., leading edge
         if (fabs(x) <= tol && fabs(y) <= tol) {
-          PLOG(debug) << pmessage->message("skipping and adding leading edge");
+          PLOG(debug) << g_msg->message("skipping and adding leading edge");
           line->addPVertex(pv_le);
           continue;
         }
 
-        PLOG(debug) << pmessage->message("creating and adding point");
+        PLOG(debug) << g_msg->message("creating and adding point");
         _pv_tmp = new PDCELVertex(_pv_tmp_name, 0, x, y);
         pmodel->addVertex(_pv_tmp);
         line->addPVertex(_pv_tmp);
@@ -852,14 +855,14 @@ int readLineTypeAirfoil(
 
 int readLineByJoin(
   Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo,
-  PModel *pmodel, Message *pmessage) {
+  PModel *pmodel) {
 
   std::list<Baseline *> sublines;
   for (auto p_xn_subline = p_xn_line->first_node(); p_xn_subline;
        p_xn_subline = p_xn_subline->next_sibling()) {
 
     std::string subline_name = p_xn_subline->value();
-    Baseline *subline = findLineByName(subline_name, p_xn_geo, pmodel, pmessage);
+    Baseline *subline = findLineByName(subline_name, p_xn_geo, pmodel);
     subline->print();
     sublines.push_back(subline);
 
@@ -895,7 +898,7 @@ PDCELVertex *getIntersectionWithWeb(double x, double angle, PDCELVertex *left, P
 }
 
 Baseline *findLineByName(
-  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel, Message * /*pmessage*/
+  const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel
   ) {
   Baseline *p_line = nullptr;
 
@@ -961,7 +964,7 @@ double getWebEnd(const xml_node<> *nodeIncludeBaseline, const std::string &fileP
 
 int addBaselinesFromAirfoil(const xml_node<> *nodeIncludeBaseline, PModel *pmodel,
                   const std::string &filePath, std::vector<std::pair<double, double>> websArray,
-                  double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/, Message * /*pmessage*/) {
+                  double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/) {
   // Use airfoil points to define baselines
   // No baselines xml needed
 

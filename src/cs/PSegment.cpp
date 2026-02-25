@@ -95,12 +95,13 @@ void Segment::printBaseOffsetLink() {
   }
 }
 
-void Segment::printBaseOffsetPairs(Message *pmessage) {
+void Segment::printBaseOffsetPairs() {
+  MESSAGE_SCOPE(g_msg);
 
-  PLOG(debug) << pmessage->message("base vertices -- base_link_to_offset_indices");
+  PLOG(debug) << g_msg->message("base vertices -- base_link_to_offset_indices");
 
   // std::cout << _base_offset_indices_pairs.size() << std::endl;
-  PLOG(debug) << pmessage->message("number of pairs: " + std::to_string(_base_offset_indices_pairs.size()));
+  PLOG(debug) << g_msg->message("number of pairs: " + std::to_string(_base_offset_indices_pairs.size()));
 
   for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
     // std::cout << "        " << i << ": " << base[i]
@@ -111,7 +112,7 @@ void Segment::printBaseOffsetPairs(Message *pmessage) {
       + _curve_offset->vertices()[_base_offset_indices_pairs[i][1]]->printString();
 
     // std::cout << s << std::endl;
-    PLOG(debug) << pmessage->message(s);
+    PLOG(debug) << g_msg->message(s);
   }
 
 }
@@ -195,7 +196,7 @@ void Segment::offsetCurveBase() {
   _curve_offset = new Baseline();
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
          _curve_offset->vertices(), _offset_indices_base_link_to,
-         _base_offset_indices_pairs, g_msg);
+         _base_offset_indices_pairs);
 
   // if (config.debug) {
   //   std::cout << "base line: " <<  _curve_base->vertices().front();

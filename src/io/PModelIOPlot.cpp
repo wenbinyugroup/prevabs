@@ -5,9 +5,11 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-void PModel::plotDehomo(Message *pmessage) {
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("post-processing recover results");
+void PModel::plotDehomo() {
+  MESSAGE_SCOPE(g_msg);
+
+  g_msg->printBlank();
+  PLOG(info) << g_msg->message("post-processing recover results");
 
 
   std::string fn_base = config.file_directory + config.file_base_name;
@@ -22,7 +24,7 @@ void PModel::plotDehomo(Message *pmessage) {
   readOutputDehomo(config.file_name_vsc, this);
 
   // Write Gmsh
-  writeGmsh(fn_base, pmessage);
+  writeGmsh(fn_base);
   // }
   // else if (config.analysis_tool == 2) {
   //   postSCDehomo();
@@ -30,8 +32,8 @@ void PModel::plotDehomo(Message *pmessage) {
 
 
 
-  PLOG(info) << pmessage->message("post-processing recover results -- done");
-  pmessage->printBlank();
+  PLOG(info) << g_msg->message("post-processing recover results -- done");
+  g_msg->printBlank();
 
   return;
 }
