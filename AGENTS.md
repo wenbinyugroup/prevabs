@@ -312,9 +312,9 @@ TEST_CASE("grouped tests", "[geometry]") {
 
 ### Debugging
 
-Enable debug mode with `-debug` flag:
+Enable debug mode with `--debug` flag:
 ```bash
-prevabs.exe -i input.xml --hm -debug
+prevabs.exe -i input.xml --hm --debug
 ```
 
 This creates a `.debug` file with detailed output.

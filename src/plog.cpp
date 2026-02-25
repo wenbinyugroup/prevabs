@@ -37,7 +37,7 @@ void initLog() {
       "prevabs", sinks.begin(), sinks.end());
 
   // Format: [severity] message  — matches previous boost::log format
-  logger->set_pattern("[%l] %v");
+  logger->set_pattern("[%l] %s:%!:%#  %v");
 
   logger->set_level(toSpdlogLevel(config.app.log_level));
   logger->flush_on(spdlog::level::trace);

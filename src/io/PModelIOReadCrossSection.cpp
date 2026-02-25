@@ -473,7 +473,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         // xml_node<> *nodeBaselines{xmlDocBaselines.first_node("baselines")};
         nodeBaselines = xmlDocBaselines.first_node("baselines");
 
-        readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, g_msg);
+        readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle);
 
       }
 
@@ -588,7 +588,7 @@ int readCrossSection(const std::string &filenameCrossSection,
               return 1;
             }
           }
-          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle, g_msg);
+          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle);
 
         }
 
@@ -602,7 +602,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   if (nodeBaselines) {
 
-    readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, g_msg);
+    readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle);
 
   }
 
@@ -664,7 +664,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 #elif _WIN32
   char buffer2[MAX_PATH];
-  GetModuleFileName(NULL, buffer2, sizeof(buffer2));
+  GetModuleFileNameA(NULL, buffer2, sizeof(buffer2));
   std::string s_fullpath{buffer2};
   // s_fullpath = buffer;
   // std::cout << s_fullpath << std::endl;
@@ -775,7 +775,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     PComponent *p_component;
 
     p_component = readXMLElementComponent(
-      xn_component, tmp_dependents_all, p_layups, num_combined_layups, cs, pmodel, g_msg
+      xn_component, tmp_dependents_all, p_layups, num_combined_layups, cs, pmodel
     );
 
     cs->addComponent(p_component);

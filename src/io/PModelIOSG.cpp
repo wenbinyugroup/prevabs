@@ -99,7 +99,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
   // ------------------------------
   std::vector<size_t> node_tags;
   std::vector<double> node_coords;
-  getNodes(node_tags, node_coords, g_msg);
+  getNodes(node_tags, node_coords);
   nnode = node_tags.size();
 
   std::vector<std::vector<int>> face_elem_types;
@@ -114,8 +114,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
       std::vector<std::vector<size_t>> elem_type_tags, elem_type_node_tags;
 
       getElements(
-        elem_types, elem_type_tags, elem_type_node_tags, 2, it_ft->second,
-        g_msg
+        elem_types, elem_type_tags, elem_type_node_tags, 2, it_ft->second
       );
 
       // Count element numbers
