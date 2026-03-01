@@ -1,6 +1,8 @@
 {
   "respectGitignore": false,
   "permissions": {
-    "allow": []
+    "allow": [
+      "Bash(grep:*)"
+    ]
   }
 }

@@ -83,19 +83,19 @@ prevabs.exe -i test\integration\box\input.xml --hm
 - **C++ Standard**: C++11 (set in CMakeLists.txt)
 - **Indentation**: 2 spaces (no tabs)
 - **Line endings**: Unix-style LF (configure your editor)
-- **Max line length**: ~100 characters (soft guideline)
+- **Max line length**: ~80 characters (soft guideline)
 - **No commented-out dead code**: Remove dead code; git history preserves it
 
 ### Naming Conventions
 
 | Element | Convention | Example |
 |---------|------------|---------|
-| Classes | PascalCase with 'P' prefix | `PModel`, `PDCELVertex`, `Baseline` |
+| Classes | PascalCase with 'P' prefix | `PModel`, `PDCELVertex`, `PBaseline` |
 | Structs | PascalCase | `LoadCase`, `LocalState` |
 | Member variables | Underscore prefix (always) | `_name`, `_global_mesh_size` |
 | Global variables | Lowercase with underscores | `debug`, `i_indent`, `config` |
-| Functions/methods | PascalCase | `initialize()`, `buildGmsh()` |
-| Constants | Lowercase with underscores | `single_line` |
+| Functions/methods | camelCase | `initialize()`, `buildGmsh()` |
+| Constants | Uppercase with underscores | `SINGLE_LINE` |
 | Files | Match class name | `PModel.cpp`, `PModel.hpp` |
 
 ### File Organization
@@ -122,23 +122,6 @@ test/
   3. External/system headers (angle brackets)
 - Include only what the file directly uses — do not rely on transitive includes
 
-### Source File Template
-
-```cpp
-#pragma once  // (headers only)
-
-#include "PModel.hpp"
-
-#include "PModelIO.hpp"
-#include "CrossSection.hpp"
-
-#include <gmsh.h>
-
-#include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <string>
-```
 
 ### Code Formatting
 
@@ -175,19 +158,6 @@ try {
 }
 ```
 
-### XML Parsing (RapidXML)
-
-- **Always** null-check the result of `first_node()` and `first_attribute()` before dereferencing
-- Throw `std::runtime_error` with a descriptive message when a required element is missing
-
-```cpp
-xml_node<>* node = parent->first_node("required_tag");
-if (!node) {
-  throw std::runtime_error("Missing required XML element <required_tag>");
-}
-```
-
-- Use `std::stod()` / `std::stoi()` (not `atof()` / `atoi()`) to parse numeric text; catch exceptions and report the offending field
 
 ### Numeric Constants
 
@@ -200,21 +170,6 @@ if (!node) {
 - Use `PLOG` from `plog.hpp` for structured logging
 - Severity levels: `info`, `warning`, `error`
 - Log to both console and file
-
-### Memory Management
-
-- **Prefer `std::unique_ptr` and `std::shared_ptr`** over raw owning pointers
-- If a raw `new` is unavoidable, document ownership explicitly and ensure `delete` in the destructor
-- Initialize all pointer members to `nullptr` in constructors
-- Every `new` must have a corresponding `delete`; use RAII to guarantee this
-
-```cpp
-// Preferred
-auto pmodel = std::make_unique<PModel>(config.file_base_name);
-
-// Avoid
-PModel* pmodel = new PModel(config.file_base_name);  // easy to leak
-```
 
 ### External Process Execution
 
@@ -229,37 +184,6 @@ PModel* pmodel = new PModel(config.file_base_name);  // easy to leak
 - Use initializer lists for struct initialization
 - Prefer `std::vector` over C arrays
 - Use `std::string` instead of `char*`
-
-### Performance Considerations
-
-- Pass large objects by const reference: `const std::vector<double>&`
-- Reserve vector capacity when size is known
-- Avoid unnecessary copies in loops
-
----
-
-## Project Architecture
-
-### Key Classes
-
-| Class | Purpose |
-|-------|---------|
-| `PModel` | Main model containing all data |
-| `PDCEL` | Half-edge data structure for geometry |
-| `Baseline` | Baseline curves |
-| `PComponent` | Component definitions |
-| `Material` | Material properties |
-| `CrossSection` | Cross-section geometry |
-
-### Processing Pipeline
-
-1. **Initialize**: Setup Gmsh, open log file
-2. **Read Inputs**: Parse XML input files
-3. **Build**: Create geometry and mesh
-4. **Write Output**: Generate SG input file for VABS/SwiftComp
-5. **Execute**: Optionally run VABS/SwiftComp
-6. **Visualize**: Optionally open Gmsh viewer
-7. **Finalize**: Close files and cleanup
 
 ---
 
@@ -324,13 +248,3 @@ This creates a `.debug` file with detailed output.
 - When fixing an issue, document the issue and the fix in a markdown file in folder `local`.
 - Name the file `local/issue-YYYYMMDD-<issue-summary>.md`.
 - Use a short summary of the issue as the file name.
-
----
-
-## External Dependencies
-
-- **Gmsh**: Must have Gmsh SDK with `Gmsh_ROOT` environment variable set
-- On Windows: Use MSVC developer command prompt for builds
-- **CLI11**: Vendored in `include/CLI11.hpp` — migration from legacy `parseArguments()` is in progress
-- **RapidXML**: Vendored in `include/rapidxml/` — header-only, no version tracking
-- **Catch2**: Download single-header from releases; placed in `test/unit/`

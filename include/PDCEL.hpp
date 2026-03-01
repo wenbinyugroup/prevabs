@@ -44,12 +44,25 @@ private:
 
   std::set<PDCELVertex *, CompareVertexByPoint> _vertex_tree;
 
+  /// Segments created internally by addEdge(v1, v2) — owned and deleted by PDCEL.
+  std::list<PGeoLineSegment *> _owned_segments;
+
+  /// Half-edges removed from _halfedges but kept live so that ->twin() traversal
+  /// through bounding-box edges continues to work.  Deleted in ~PDCEL().
+  std::vector<PDCELHalfEdge *> _background_halfedges;
+
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
 
-  /// Find line segments intersecting the verticle sweep line passing the given vertex
-  std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(PDCELVertex *);
-  PGeoLineSegment *findLineSegmentBelowVertex(PDCELVertex *);
+  /// Find line segments intersecting the vertical sweep line passing the given vertex.
+  /// Temporary segments created for half-edges without a pre-existing line segment
+  /// are appended to temp_segs; the caller is responsible for deleting them.
+  std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
+      PDCELVertex *, std::vector<PGeoLineSegment *> &temp_segs);
+
+  /// Find the half-edge of the nearest segment below v, or nullptr if none.
+  /// All temporary segments allocated during the sweep are deleted before returning.
+  PDCELHalfEdge *findHalfEdgeBelowVertex(PDCELVertex *);
 
   /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.
   PDCELVertex *findCoincidentVertex(PDCELVertex *v) const;
@@ -58,15 +71,23 @@ public:
   PDCEL() = default;
   ~PDCEL();
 
+  PDCEL(const PDCEL &) = delete;
+  PDCEL &operator=(const PDCEL &) = delete;
+
   void initialize();
 
   void print_dcel();
 
-  std::list<PDCELVertex *> &vertices() { return _vertices; }
-  std::list<PDCELHalfEdge *> &halfedges() { return _halfedges; }
-  std::list<PDCELFace *> &faces() { return _faces; }
+  /// Check structural DCEL invariants and log a warning for each violation.
+  /// Returns true if all invariants hold, false if any violation is found.
+  /// Intended for use in debug builds; the cost is O(V + E + F).
+  bool validate();
 
-  std::list<PDCELHalfEdgeLoop *> &halfedgeloops() { return _halfedge_loops; }
+  const std::list<PDCELVertex *> &vertices() const { return _vertices; }
+  const std::list<PDCELHalfEdge *> &halfedges() const { return _halfedges; }
+  const std::list<PDCELFace *> &faces() const { return _faces; }
+
+  const std::list<PDCELHalfEdgeLoop *> &halfedgeloops() const { return _halfedge_loops; }
 
   void fixGeometry(const BuilderConfig &);
 
@@ -76,6 +97,10 @@ public:
   /// Add v to the DCEL.  If a geometrically coincident vertex (within GEO_TOL)
   /// already exists, v is NOT inserted and the existing vertex is returned
   /// instead.  Otherwise v is inserted and returned.
+  /// The caller MUST use the return value as the canonical vertex — it may
+  /// differ from v when a coincident vertex is found.  If v was heap-allocated
+  /// and the return value differs from v, the caller is responsible for
+  /// deleting v.
   PDCELVertex *addVertex(PDCELVertex *v);
   void removeVertex(PDCELVertex *v);
 
@@ -118,9 +143,7 @@ public:
   int isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2);
 
   PDCELHalfEdgeLoop *addHalfEdgeLoop(PDCELHalfEdge *he);
-  PDCELHalfEdgeLoop *addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop);
   void removeHalfEdgeLoop(PDCELHalfEdgeLoop *);
-  void clearHalfEdgeLoops();
 
   void removeTempLoops();
   void createTempLoops();
