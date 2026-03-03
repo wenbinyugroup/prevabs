@@ -46,19 +46,34 @@ make
 
 **Unit tests (Catch2):**
 
+```powershell
+# Windows: full clean build and run (from repo root)
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 full -Run
+
+# Incremental rebuild and run
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 fast -Run
+
+# Clean build directory
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 clean
+```
+
+The test executable is at `test\unit\build_msvc\Release\test_geo.exe`.
+
+**Manual cmake build (Linux / fallback):**
+
 ```bash
-# Build and run
 cd test/unit
 mkdir build && cd build
 cmake ..
-make
-./test_geo
+cmake --build . --config Release
+./Release/test_geo
 ```
 
 **Common Catch2 commands:**
 ```bash
 ./test_geo                      # Run all tests
 ./test_geo "[geo]"              # Run tests with tag [geo]
+./test_geo "[geo][offset]"      # Run offset-specific tests
 ./test_geo "test name"          # Run test matching "test name"
 ./test_geo -s                   # Show successful assertions
 ./test_geo -l                   # List all test cases

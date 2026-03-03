@@ -7,12 +7,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(TEST_SOURCES
   catch_amalgamated.cpp
   test_geo.cpp
+  test_geo_offset.cpp
 )
 
 add_executable(test_geo ${TEST_SOURCES})
 
-# catch_amalgamated.hpp lives alongside the test sources
-target_include_directories(test_geo PRIVATE ${CMAKE_SOURCE_DIR})
+# catch_amalgamated.hpp and test helpers live alongside the test sources;
+# nlohmann JSON headers are in <repo_root>/include/
+target_include_directories(test_geo PRIVATE
+  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/../../include)
+
+target_compile_definitions(test_geo PRIVATE
+  TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 enable_testing()
 add_test(NAME geo_tests COMMAND test_geo)

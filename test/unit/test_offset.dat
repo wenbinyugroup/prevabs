@@ -1,0 +1,20 @@
+# Case 1
+## Input
+### Base curve
+-0.5  0.5
+ 0.0  0.5
+ 0.0 -0.5
+ 0.5 -0.5
+
+### Offset distance
+0.07
+
+### Offset side
+1  // left
+
+## Expected output
+### Offset curve
+-0.5  0.57
+ 0.07  0.57
+ 0.07 -0.43
+ 0.5 -0.43

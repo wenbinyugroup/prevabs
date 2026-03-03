@@ -17,315 +17,42 @@
   
   
   
+  
 
 ========================================
 
 
 ========================================
 
-delIOReadCrossSection.cpp:readCrossSection:69        - reading main input file: .\z.xml
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:107        - find cross-section: z
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:139        - reading analysis...
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:263        - finished reading analysis.
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:288        - reading general...
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:392        - tolerance = 1e-12
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:428        - finished reading general.
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:432        - finding includings...
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:438        - reading geometry...
-[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: p1
-[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: p2
-[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: p3
-[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: p4
-[debug] PModelIOReadBaseLine.cpp:readXMLElementLine:171            - reading line: l_base
-[debug] PBaseLine.cpp:print:33            - name: l_base
-[debug] PBaseLine.cpp:print:35            - type: straight
-[debug] PBaseLine.cpp:print:37            - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41            - 1 [p1]: ( 0 , -0.5 , 0.5 )
-[debug] PBaseLine.cpp:print:41            - 2 [p2]: ( 0 , 0 , 0.5 )
-[debug] PBaseLine.cpp:print:41            - 3 [p3]: ( 0 , 0 , -0.5 )
-[debug] PBaseLine.cpp:print:41            - 4 [p4]: ( 0 , 0.5 , -0.5 )
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:612        -  
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:613        - summary of base lines (before transformation)
-[debug] PBaseLine.cpp:print:33          - name: l_base
-[debug] PBaseLine.cpp:print:35          - type: straight
-[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41          - 1 [p1]: ( 0 , -0.5 , 0.5 )
-[debug] PBaseLine.cpp:print:41          - 2 [p2]: ( 0 , 0 , 0.5 )
-[debug] PBaseLine.cpp:print:41          - 3 [p3]: ( 0 , 0 , -0.5 )
-[debug] PBaseLine.cpp:print:41          - 4 [p4]: ( 0 , 0.5 , -0.5 )
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:617        -  
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:623        - transforming base geometry
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:634        -  
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:635        - summary of base lines (after transformation)
-[debug] PBaseLine.cpp:print:33          - name: l_base
-[debug] PBaseLine.cpp:print:35          - type: straight
-[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41          - 1 [p1]: ( 0 , -0.5 , 0.5 )
-[debug] PBaseLine.cpp:print:41          - 2 [p2]: ( 0 , 0 , 0.5 )
-[debug] PBaseLine.cpp:print:41          - 3 [p3]: ( 0 , 0 , -0.5 )
-[debug] PBaseLine.cpp:print:41          - 4 [p4]: ( 0 , 0.5 , -0.5 )
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:639        -  
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:643        - finished reading geometry.
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:647        - reading materials...
-[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info] PModelIOReadMaterial.cpp:readMaterialsFile:59          - reading materials file: .\materials.xml
-[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_1
-[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_2
-[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_3
-[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_4
-[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_5
-[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_1_02
-[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_2_03
-[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_3_015
-[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_4_02
-[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_5_01
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:708        - finished reading materials.
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:712        - reading layups...
-[debug] PModelIOReadLayup.cpp:readLayups:49          - in function: readLayups
-[debug] PModelIOReadLayup.cpp:readLayups:58          - reading layup: layup1
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:746        - finished reading layups.
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:764        - reading components...
-[debug] PModelIOReadComponent.cpp:readXMLElementComponent:46          - reading component: cmp_1
-[debug] PModelIOReadCrossSection.cpp:readCrossSection:783        - finished reading components.
+OReadCrossSection.cpp:readCrossSection:69        - reading main input file: z.xml
+[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info] PModelIOReadMaterial.cpp:readMaterialsFile:59          - reading materials file: materials.xml
 [info] PModel.cpp:homogenize:274    - reading input files -- done
 [info] PModel.cpp:homogenize:282    - building the shape
 [info] CrossSection.cpp:build:174      - building the cross section, step 1
 [info] PComponent.cpp:build:91        - building component: cmp_1
-[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sg1
-[debug] offset.cpp:offset:748              - offset (multi-vertex): size=4 side=1 dist=0.070000
-[debug] offset.cpp:offset:778              - offset (multi-vertex): step 1 — compute junction vertices
-[debug] offset.cpp:computeOffsetJunctions:250                - computeOffsetJunctions: 4 base vertices, side=1, dist=0.07
-[debug] offset.cpp:computeOffsetJunctions:280                - segment [0]: base ( 0 , -0.5 , 0.5 ) -> ( 0 , 0 , 0.5 )
-[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , -0.5 , 0.57 ), cur_end=( 0 , 0 , 0.57 )
-[debug] offset.cpp:computeOffsetJunctions:307                -   first segment: junction = cur_start (no prev segment)
-[debug] offset.cpp:computeOffsetJunctions:280                - segment [1]: base ( 0 , 0 , 0.5 ) -> ( 0 , 0 , -0.5 )
-[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , 0.07 , 0.5 ), cur_end=( 0 , 0.07 , -0.5 )
-[debug] offset.cpp:computeOffsetJunctions:328                -   find intersection:
-        prev_start = ( 0 , -0.5 , 0.57 ), prev_end = ( 0 , 0 , 0.57 )
-        cur_start = ( 0 , 0.07 , 0.5 ), cur_end = ( 0 , 0.07 , -0.5 )
-        prev segment: [-0.5,0.57] - [0,0.57]
-        cur  segment: [0.07,0.5] - [0.07,-0.5]
-[debug] offset.cpp:computeOffsetJunctions:381                -   segments parallel/collinear: fell back to prev_end
-[debug] offset.cpp:computeOffsetJunctions:388                -   junction[1] = ( 0 , 0 , 0.57 )
-[debug] offset.cpp:computeOffsetJunctions:280                - segment [2]: base ( 0 , 0 , -0.5 ) -> ( 0 , 0.5 , -0.5 )
-[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , 0 , -0.43 ), cur_end=( 0 , 0.5 , -0.43 )
-[debug] offset.cpp:computeOffsetJunctions:328                -   find intersection:
-        prev_start = ( 0 , 0.07 , 0.5 ), prev_end = ( 0 , 0.07 , -0.5 )
-        cur_start = ( 0 , 0 , -0.43 ), cur_end = ( 0 , 0.5 , -0.43 )
-        prev segment: [0.07,0.5] - [0.07,-0.5]
-        cur  segment: [0,-0.43] - [0.5,-0.43]
-[debug] offset.cpp:computeOffsetJunctions:350                -   intersection found: [0.07,-0.43]
-[debug] offset.cpp:computeOffsetJunctions:371                -   new junction vertex allocated at intersection point
-[debug] offset.cpp:computeOffsetJunctions:388                -   junction[2] = ( 0 , 0.07 , -0.43 )
-[debug] offset.cpp:computeOffsetJunctions:401                -   last segment: appended tail junction[3] = ( 0 , 0.5 , -0.43 )
-[debug] offset.cpp:computeOffsetJunctions:426                - computeOffsetJunctions: returning 4 junction vertices
-[debug] offset.cpp:offset:790              - offset (multi-vertex): step 2 — group valid segments
-[debug] offset.cpp:groupValidSegments:477                - groupValidSegments: 4 base vertices, 3 segment(s) to check
-[debug] offset.cpp:groupValidSegments:507                -   segment [0]: valid
-[debug] offset.cpp:groupValidSegments:519                -     opened sub-line 0 at junction vertex 0
-[debug] offset.cpp:groupValidSegments:507                -   segment [1]: valid
-[debug] offset.cpp:groupValidSegments:507                -   segment [2]: valid
-[debug] offset.cpp:groupValidSegments:542                - groupValidSegments: produced 1 sub-line(s)
-[debug] offset.cpp:offset:824              - offset (multi-vertex): 1 sub-line(s) after grouping
-[debug] offset.cpp:offset:837              - offset (multi-vertex): step 3 — trim adjacent sub-line pairs
-[debug] offset.cpp:offset:859              - offset (multi-vertex): step 4 — closed-curve head-tail trim
-[debug] offset.cpp:offset:1029              - offset (multi-vertex): step 5 — build output mappings
-[debug] offset.cpp:offset:1063              - base vertices -- base_link_to_offset_indices
-[debug] offset.cpp:offset:1065              -   0: ( 0 , -0.5 , 0.5 ) -- 0
-[debug] offset.cpp:offset:1065              -   1: ( 0 , 0 , 0.5 ) -- 1
-[debug] offset.cpp:offset:1065              -   2: ( 0 , 0 , -0.5 ) -- 2
-[debug] offset.cpp:offset:1065              -   3: ( 0 , 0.5 , -0.5 ) -- 3
-[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
-[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , -0.5 , 0.57 ) -> ( 0 , 0.5 , -0.43 )
-[debug] join.cpp:joinSegments:145            - making segment end: sg1 0
-[debug] join.cpp:joinSegments:147            - number of dependencies: 0
-[debug] join.cpp:joinSegments:150            - making segment end because of no dependency.
-[debug] join.cpp:createSegmentFreeEnd:953            - createSegmentFreeEnd: sg1 0
-[debug] join.cpp:createSegmentFreeEnd:1052            - curve base:
-[debug] PBaseLine.cpp:print:33              - name: l_base
-[debug] PBaseLine.cpp:print:35              - type: straight
-[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41              - 1 [p1]: ( 0 , -0.5 , 0.5 )
-[debug] PBaseLine.cpp:print:41              - 2 [p2]: ( 0 , 0 , 0.5 )
-[debug] PBaseLine.cpp:print:41              - 3 [p3]: ( 0 , 0 , -0.5 )
-[debug] PBaseLine.cpp:print:41              - 4 [p4]: ( 0 , 0.5 , -0.5 )
-[debug] join.cpp:createSegmentFreeEnd:1054            - curve offset:
-[debug] PBaseLine.cpp:print:33              - name: 
-[debug] PBaseLine.cpp:print:35              - type: 
-[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -0.5 , 0.57 )
-[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , 0.57 )
-[debug] PBaseLine.cpp:print:41              - 3 []: ( 0 , 0.07 , -0.43 )
-[debug] PBaseLine.cpp:print:41              - 4 []: ( 0 , 0.5 , -0.43 )
-[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
-[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 4
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -0.5 , 0.5 ) -- 0: ( 0 , -0.5 , 0.57 )
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , 0.5 ) -- 1: ( 0 , 0 , 0.57 )
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 2: ( 0 , 0 , -0.5 ) -- 2: ( 0 , 0.07 , -0.43 )
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 3: ( 0 , 0.5 , -0.5 ) -- 3: ( 0 , 0.5 , -0.43 )
-[debug] join.cpp:joinSegments:145            - making segment end: sg1 1
-[debug] join.cpp:joinSegments:147            - number of dependencies: 0
-[debug] join.cpp:joinSegments:150            - making segment end because of no dependency.
-[debug] join.cpp:createSegmentFreeEnd:953            - createSegmentFreeEnd: sg1 1
-[debug] join.cpp:createSegmentFreeEnd:1052            - curve base:
-[debug] PBaseLine.cpp:print:33              - name: l_base
-[debug] PBaseLine.cpp:print:35              - type: straight
-[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41              - 1 [p1]: ( 0 , -0.5 , 0.5 )
-[debug] PBaseLine.cpp:print:41              - 2 [p2]: ( 0 , 0 , 0.5 )
-[debug] PBaseLine.cpp:print:41              - 3 [p3]: ( 0 , 0 , -0.5 )
-[debug] PBaseLine.cpp:print:41              - 4 [p4]: ( 0 , 0.5 , -0.5 )
-[debug] join.cpp:createSegmentFreeEnd:1054            - curve offset:
-[debug] PBaseLine.cpp:print:33              - name: 
-[debug] PBaseLine.cpp:print:35              - type: 
-[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
-[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -0.5 , 0.57 )
-[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , 0.57 )
-[debug] PBaseLine.cpp:print:41              - 3 []: ( 0 , 0.07 , -0.43 )
-[debug] PBaseLine.cpp:print:41              - 4 []: ( 0 , 0.5 , -0.43 )
-[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
-[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 4
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -0.5 , 0.5 ) -- 0: ( 0 , -0.5 , 0.57 )
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , 0.5 ) -- 1: ( 0 , 0 , 0.57 )
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 2: ( 0 , 0 , -0.5 ) -- 2: ( 0 , 0.07 , -0.43 )
-[debug] PSegment.cpp:printBaseOffsetPairs:115              - 3: ( 0 , 0.5 , -0.5 ) -- 3: ( 0 , 0.5 , -0.43 )
-[debug] PSegment.cpp:build:237            - building the overall shape of segment: sg1
-[debug] PSegment.cpp:build:240            - base line: ( 0 , -0.5 , 0.5 ) -> ( 0 , 0.5 , -0.5 )
-[debug] PSegment.cpp:build:250            - creating half edges for the base curve
-[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 4
-[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
-[debug] PSegment.cpp:build:258            - vertices: 1 -- 2
-[debug] PSegment.cpp:build:258            - vertices: 2 -- 3
-[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
-[debug] PSegment.cpp:build:287            - creating the half edge loop and face
-[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
-[info] PModelBuildGmsh.cpp:createGmshEdges:169            - creating gmsh edges
-[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: .\z_debug_1.geo_unrolled
-[info] PModelIOGmsh.cpp:writeGmshOpt:465            - writing gmsh .opt file: .\z_debug.opt
-[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
-[info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
-[info] PModelIOGmsh.cpp:writeGmshGeo:351        - writing gmsh .geo file: .\z_debug_2.geo_unrolled
 [info] CrossSection.cpp:build:216      - building the cross section, step 2
 [info] PComponent.cpp:buildDetails:126        - building component details: cmp_1
-[debug] PBuildSegmentAreas.cpp:buildAreas:35          - building areas of segment: sg1
-[debug] PBuildSegmentAreas.cpp:buildAreas:59          - 1. creating the beginning bound of the first area
-[debug] PBuildSegmentAreas.cpp:buildAreas:99            - open segment
-[debug] PBuildSegmentAreas.cpp:buildAreas:105            - first vertex of the base: ( 0 , -0.5 , 0.5 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:106            - first vertex of the offset: ( 0 , -0.5 , 0.57 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:136              - layer 1
-[debug] PBuildSegmentAreas.cpp:buildAreas:143              - cumu_thk = 0.04
-[debug] PBuildSegmentAreas.cpp:buildAreas:151              - ls_offset: ( 0 , -0.5 , 0.54 ) -> ( 0 , 0 , 0.54 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:168                - 
-[debug] PBuildSegmentAreas.cpp:buildAreas:169                - he_tmp: ( 0 , -0.5 , 0.57 ) -> ( 0 , -0.5 , 0.5 ) | loop: keep | face: sg1_face
-[debug] PBuildSegmentAreas.cpp:buildAreas:178                - u1_tmp = 0.428571
-[debug] PBuildSegmentAreas.cpp:buildAreas:191                -   case 3: intersect current edge
-[debug] PBuildSegmentAreas.cpp:buildAreas:193                -   v_layer: ( 0 , -0.5 , 0.54 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:305              - v_layer: ( 0 , -0.5 , 0.54 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:333          - 2. creating areas
-[debug] PBuildSegmentAreas.cpp:buildAreas:350            - area 1
-[debug] PBuildSegmentAreas.cpp:buildAreas:366            -   base vertex: ( 0 , 0 , 0.5 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:367            -   offset vertex: ( 0 , 0 , 0.57 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:350            - area 2
-[debug] PBuildSegmentAreas.cpp:buildAreas:366            -   base vertex: ( 0 , 0 , -0.5 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:367            -   offset vertex: ( 0 , 0.07 , -0.43 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:453          - 3. creating the last area
-[debug] PBuildSegmentAreas.cpp:buildAreas:546              - layer 1
-[debug] PBuildSegmentAreas.cpp:buildAreas:558              - ls_offset: ( 0 , 0 , -0.46 ) -> ( 0 , 0.5 , -0.46 )
-[debug] PBuildSegmentAreas.cpp:buildAreas:574                - 
-[debug] PBuildSegmentAreas.cpp:buildAreas:575                - he_tmp: ( 0 , 0.5 , -0.5 ) -> ( 0 , 0.5 , -0.43 ) | loop: temp | face: sg1_area_3
-[debug] PBuildSegmentAreas.cpp:buildAreas:584                - u1_tmp = 0.571429
-[debug] PBuildSegmentAreas.cpp:buildAreas:606                -   case 5: intersect current edge
-[debug] PBuildSegmentAreas.cpp:buildAreas:703              - v_layer: ( 0 , 0.5 , -0.46 )
-[debug] PArea.cpp:buildLayers:114            - building layers for area: sg1_area_1
-[debug] PArea.cpp:buildLayers:114            - building layers for area: sg1_area_2
-[debug] PArea.cpp:buildLayers:114            - building layers for area: sg1_area_3
-[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
-[info] PModelBuildGmsh.cpp:createGmshEdges:169          - creating gmsh edges
-[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: .\z_debug_3.geo_unrolled
-[info] PDCEL.cpp:fixGeometry:126      - fixing geometry
+[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
 [info] PModel.cpp:homogenize:286    - building the shape -- done
 [info] PModel.cpp:homogenize:294    - modeling in Gmsh
 [info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
 [info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
 [info] PModelBuildGmsh.cpp:createGmshFaces:219        - creating gmsh faces
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: background
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sg1_area_1_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
-[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
-[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sg1_area_1_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
-[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
-[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sg1_area_2_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
-[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
-[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sg1_area_2_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
-[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
-[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sg1_area_3_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
-[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
-[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
-[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
-[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sg1_area_3_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
-[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
-[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:324        -   adding embedded entities
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: background
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sg1_area_1_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sg1_area_1_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sg1_area_2_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sg1_area_2_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sg1_area_3_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
-[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sg1_area_3_layer_1
 [info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:355        - creating physical groups
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: background
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sg1_area_1_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 2, material: iso5_2, theta_3 = 0.000000
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sg1_area_1_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 1, material: iso5_1, theta_3 = 90.000000
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sg1_area_2_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 2, material: iso5_2, theta_3 = 0.000000
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sg1_area_2_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 1, material: iso5_1, theta_3 = 90.000000
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sg1_area_3_layer_2
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 2, material: iso5_2, theta_3 = 0.000000
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sg1_area_3_layer_1
-[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 1, material: iso5_1, theta_3 = 90.000000
-[info] PModelIOGmsh.cpp:writeGmshGeo:351        - writing gmsh .geo file: .\z_debug_4.geo_unrolled
 [info] PModelBuildGmsh.cpp:buildGmsh:480      - meshing
 [info] PModel.cpp:homogenize:298    - modeling in Gmsh -- done
 [info] PModel.cpp:homogenize:308    - writing outputs
-[info] PModelIOSG.cpp:writeSG:93      - writing sg file: .\z.sg
+[info] PModelIOGmsh.cpp:writeGmshOpt:465      - writing gmsh .opt file: z.opt
+[info] PModelIOGmsh.cpp:writeGmshGeo:351      - writing gmsh .geo file: z.geo_unrolled
+[info] PModelIOGmsh.cpp:writeGmshMsh:396      - writing gmsh .msh file: z.msh
+[info] PModelIOSG.cpp:writeSG:93      - writing sg file: z.sg
 [info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
 [info] PModelIOGmsh.cpp:writeElements:136        - writing elements
 [info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
 [info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
-[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: .\z.sg.mat
+[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: z.sg.mat
 [info] PModel.cpp:homogenize:321    - writing outputs -- done
-[info] main.cpp:main:285  - prevabs finished (2026-02-24 23:43:31)
-[info] main.cpp:main:286  total running time: 0.0559142 sec
+[info] PModel.cpp:plot:458    - running Gmsh for visualization
+[info] main.cpp:main:285  - prevabs finished (2026-03-02 12:01:27)
+[info] main.cpp:main:286  total running time: 4.22991 sec

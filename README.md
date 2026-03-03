@@ -106,13 +106,30 @@ The executable will be at `build_msvc\Release\prevabs.exe`.
 
 ### Unit tests (Catch2)
 
+**Windows (MSVC) — using the build script:**
+
+```powershell
+# Full clean build and run all tests
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 full -Run
+
+# Incremental rebuild and run
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 fast -Run
+
+# Build only (no run)
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 full
+```
+
+The test executable is at `test\unit\build_msvc\Release\test_geo.exe`.
+
+**Manual cmake (any platform):**
+
 ```bash
 cd test/unit
 mkdir build && cd build
 cmake ..
-make
-./test_geo          # run all tests
-./test_geo "[geo]"  # run tagged subset
+cmake --build . --config Release
+./Release/test_geo          # run all tests
+./Release/test_geo "[geo]"  # run tagged subset
 ```
 
 ### Integration tests (Windows)
