@@ -7,57 +7,51 @@
 
 ========================================
 
+  
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
 
-  
-  
-    
-  
-  
-  
-  
-  
-  
-    
-    
-    -  [VABS Messages] 
-    
-    
-    -  [VABS Messages End] 
-    
-    
-  
-  ========================================
-  
-  
-  ========================================
-  
-MaterialDB.xml
-[info]   - reading input files -- done
-[info]   - building the shape
-[info]     - building the cross section, step 1
-[info]       - building component: surface
-[info]     - building the cross section, step 2
-[info]       - building component details: surface
-[info]     - fixing geometry
-[info]   - building the shape -- done
-[info]   - modeling in Gmsh
-[info]     - creating gmsh vertices
-[info]     - creating gmsh edges
-[info]     - creating gmsh faces
-[info]     - creating physical groups
-[info]     - meshing
-[info]   - modeling in Gmsh -- done
-[info]   - writing outputs
-[info]     - writing sg file: .\test\integration\t3_v\v.sg
-[info]       - writing nodes
-[info]       - writing elements
-[info]         -   writing connectivity
-[info]         -   writing local orientation
-[info]     - writing material id-name file: .\test\integration\t3_v\v.sg.mat
-[info]   - writing outputs -- done
-[info]     - running VABS for homogenization
-[info]     - running: VABS ".\test\integration\t3_v\v.sg"
-[info]     - command completed successfully.
-[info]     - running VABS for homogenization -- done
-[info]   - prevabs finished (2026-02-18 17:37:35)
-[info] total running time: 0.278932 sec
+========================================
+
+
+========================================
+
+OReadCrossSection.cpp:readCrossSection:69        - reading main input file: .\test\integration\t3_v\v.xml
+[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info] PModel.cpp:homogenize:274    - reading input files -- done
+[info] PModel.cpp:homogenize:282    - building the shape
+[info] CrossSection.cpp:build:174      - building the cross section, step 1
+[info] PComponent.cpp:build:91        - building component: surface
+[info] CrossSection.cpp:build:216      - building the cross section, step 2
+[info] PComponent.cpp:buildDetails:126        - building component details: surface
+[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
+[info] PModel.cpp:homogenize:286    - building the shape -- done
+[info] PModel.cpp:homogenize:294    - modeling in Gmsh
+[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
+[info] PModelBuildGmsh.cpp:createGmshFaces:219        - creating gmsh faces
+[info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:355        - creating physical groups
+[info] PModelBuildGmsh.cpp:buildGmsh:480      - meshing
+[info] PModel.cpp:homogenize:298    - modeling in Gmsh -- done
+[info] PModel.cpp:homogenize:308    - writing outputs
+[info] PModelIOGmsh.cpp:writeGmshOpt:465      - writing gmsh .opt file: .\test\integration\t3_v\v.opt
+[info] PModelIOGmsh.cpp:writeGmshGeo:351      - writing gmsh .geo file: .\test\integration\t3_v\v.geo_unrolled
+[info] PModelIOGmsh.cpp:writeGmshMsh:396      - writing gmsh .msh file: .\test\integration\t3_v\v.msh
+[info] PModelIOSG.cpp:writeSG:93      - writing sg file: .\test\integration\t3_v\v.sg
+[info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
+[info] PModelIOGmsh.cpp:writeElements:136        - writing elements
+[info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
+[info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
+[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: .\test\integration\t3_v\v.sg.mat
+[info] PModel.cpp:homogenize:321    - writing outputs -- done
+[info] PModel.cpp:plot:458    - running Gmsh for visualization
+[info] main.cpp:main:285  - prevabs finished (2026-03-30 22:33:27)
+[info] main.cpp:main:286  total running time: 131.706 sec

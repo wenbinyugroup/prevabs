@@ -30,6 +30,24 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 clean
 
 The executable will be in `build_msvc\Release\prevabs.exe`.
 
+### WSL (Windows Subsystem for Linux)
+
+Build the Windows MSVC executable from WSL. Delegates to `build-msvc.ps1`
+via `powershell.exe` (available in WSL by default on Windows 10/11).
+
+```bash
+# Full clean build
+bash tools/build-wsl.sh full
+
+# Incremental rebuild (default)
+bash tools/build-wsl.sh fast
+
+# Remove build directory
+bash tools/build-wsl.sh clean
+```
+
+The executable will be at `build_msvc\Release\prevabs.exe` (Windows path).
+
 ### Linux/macOS
 
 ```bash

@@ -7,7 +7,7 @@
 
 ========================================
 
-
+  
   
   
     
@@ -17,45 +17,890 @@
   
   
   
-  
-  
-  ========================================
-  
-  
-  ========================================
-  
-able to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info]         - reading materials file: t4_I\materials.xml
-[info]   - reading input files -- done
-[info]   - building the shape
-[info]     - building the cross section, step 1
-[info]       - building component: top
-[info]       - building component: bottom
-[info]       - building component: web
-[info]     - building the cross section, step 2
-[info]       - building component details: top
-[info]       - building component details: bottom
-[info]       - building component details: web
-[info]     - fixing geometry
-[info]   - building the shape -- done
-[info]   - modeling in Gmsh
-[info]     - creating gmsh vertices
-[info]     - creating gmsh edges
-[info]     - creating gmsh faces
-[info]     - creating physical groups
-[info]     - meshing
-[info]   - modeling in Gmsh -- done
-[info]   - writing outputs
-[info]     - writing gmsh .opt file: t4_I\i_web.opt
-[info]     - writing gmsh .geo file: t4_I\i_web.geo_unrolled
-[info]     - writing gmsh .msh file: t4_I\i_web.msh
-[info]     - writing sg file: t4_I\i_web.sg
-[info]       - writing nodes
-[info]       - writing elements
-[info]         -   writing connectivity
-[info]         -   writing local orientation
-[info]     - writing material id-name file: t4_I\i_web.sg.mat
-[info]   - writing outputs -- done
-[info]   - running Gmsh for visualization
-[info]   - prevabs finished (2026-02-18 12:33:21)
-[info] total running time: 1.09582 sec
+
+========================================
+
+
+========================================
+
+delIOReadCrossSection.cpp:readCrossSection:69        - reading main input file: test/integration/t4_I/i_web.xml
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:107        - find cross-section: ibeam
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:139        - reading analysis...
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:263        - finished reading analysis.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:288        - reading general...
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:392        - tolerance = 1e-12
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:428        - finished reading general.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:432        - finding includings...
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:438        - reading geometry...
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: tl
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: tc
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: tr
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: br
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: bc
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: bl
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: web
+[debug] PModelIOReadBaseLine.cpp:readXMLElementLine:171            - reading line: bl_top
+[debug] PBaseLine.cpp:print:33            - name: bl_top
+[debug] PBaseLine.cpp:print:35            - type: straight
+[debug] PBaseLine.cpp:print:37            - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41            - 1 [tl]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41            - 2 [tc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41            - 3 [tr]: ( 0 , 1 , 0 )
+[debug] PModelIOReadBaseLine.cpp:readXMLElementLine:171            - reading line: bl_bottom
+[debug] PBaseLine.cpp:print:33            - name: bl_bottom
+[debug] PBaseLine.cpp:print:35            - type: straight
+[debug] PBaseLine.cpp:print:37            - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41            - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] PBaseLine.cpp:print:41            - 2 [bc]: ( 0 , 0 , -3 )
+[debug] PBaseLine.cpp:print:41            - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] PModelIOReadBaseLine.cpp:readXMLElementLine:171            - reading line: bl_web
+[debug] PBaseLine.cpp:print:33            - name: bl_web
+[debug] PBaseLine.cpp:print:35            - type: straight
+[debug] PBaseLine.cpp:print:37            - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41            - 1 []: ( 0 , 0.04 , -3 )
+[debug] PBaseLine.cpp:print:41            - 2 [web]: ( 0 , 0.04 , -2 )
+[debug] PBaseLine.cpp:print:41            - 3 []: ( 0 , 0.04 , -1 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:612        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:613        - summary of base lines (before transformation)
+[debug] PBaseLine.cpp:print:33          - name: bl_top
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [tl]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41          - 2 [tc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41          - 3 [tr]: ( 0 , 1 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:617        -  
+[debug] PBaseLine.cpp:print:33          - name: bl_bottom
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] PBaseLine.cpp:print:41          - 2 [bc]: ( 0 , 0 , -3 )
+[debug] PBaseLine.cpp:print:41          - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:617        -  
+[debug] PBaseLine.cpp:print:33          - name: bl_web
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 []: ( 0 , 0.04 , -3 )
+[debug] PBaseLine.cpp:print:41          - 2 [web]: ( 0 , 0.04 , -2 )
+[debug] PBaseLine.cpp:print:41          - 3 []: ( 0 , 0.04 , -1 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:617        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:623        - transforming base geometry
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:634        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:635        - summary of base lines (after transformation)
+[debug] PBaseLine.cpp:print:33          - name: bl_top
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [tl]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41          - 2 [tc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41          - 3 [tr]: ( 0 , 1 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:639        -  
+[debug] PBaseLine.cpp:print:33          - name: bl_bottom
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] PBaseLine.cpp:print:41          - 2 [bc]: ( 0 , 0 , -3 )
+[debug] PBaseLine.cpp:print:41          - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:639        -  
+[debug] PBaseLine.cpp:print:33          - name: bl_web
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 []: ( 0 , 0.04 , -3 )
+[debug] PBaseLine.cpp:print:41          - 2 [web]: ( 0 , 0.04 , -2 )
+[debug] PBaseLine.cpp:print:41          - 3 []: ( 0 , 0.04 , -1 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:639        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:643        - finished reading geometry.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:647        - reading materials...
+[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[info] PModelIOReadMaterial.cpp:readMaterialsFile:59          - reading materials file: test/integration/t4_I/materials.xml
+[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_1
+[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_2
+[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_3
+[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_4
+[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162              - reading material: iso5_5
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_1_003
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_2_005
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_3_0015
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_4_002
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523              - reading lamina: la_iso5_5_002
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:708        - finished reading materials.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:712        - reading layups...
+[debug] PModelIOReadLayup.cpp:readLayups:49          - in function: readLayups
+[debug] PModelIOReadLayup.cpp:readLayups:58          - reading layup: layup_1
+[debug] PModelIOReadLayup.cpp:readLayups:58          - reading layup: layup_2
+[debug] PModelIOReadLayup.cpp:readLayups:58          - reading layup: layup_web
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:746        - finished reading layups.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:764        - reading components...
+[debug] PModelIOReadComponent.cpp:readXMLElementComponent:46          - reading component: top
+[debug] PModelIOReadComponent.cpp:readXMLElementComponent:46          - reading component: bottom
+[debug] PModelIOReadComponent.cpp:readXMLElementComponent:46          - reading component: web
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:783        - finished reading components.
+[info] PModel.cpp:homogenize:274    - reading input files -- done
+[info] PModel.cpp:homogenize:282    - building the shape
+[info] CrossSection.cpp:build:174      - building the cross section, step 1
+[info] PComponent.cpp:build:91        - building component: top
+[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sgtop
+[debug] offset.cpp:offset:745              - offset (multi-vertex): size=3 side=1 dist=0.110000
+[debug] offset.cpp:offset:775              - offset (multi-vertex): step 1 — compute junction vertices
+[debug] offset.cpp:computeOffsetJunctions:250                - computeOffsetJunctions: 3 base vertices, side=1, dist=0.11
+[debug] offset.cpp:computeOffsetJunctions:280                - segment [0]: base ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )
+[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , -1 , 0.11 ), cur_end=( 0 , 0 , 0.11 )
+[debug] offset.cpp:computeOffsetJunctions:307                -   first segment: junction = cur_start (no prev segment)
+[debug] offset.cpp:computeOffsetJunctions:280                - segment [1]: base ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 )
+[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , 0 , 0.11 ), cur_end=( 0 , 1 , 0.11 )
+[debug] offset.cpp:computeOffsetJunctions:328                -   find intersection:
+        prev_start = ( 0 , -1 , 0.11 ), prev_end = ( 0 , 0 , 0.11 )
+        cur_start = ( 0 , 0 , 0.11 ), cur_end = ( 0 , 1 , 0.11 )
+        prev segment: [-1,0.11] - [0,0.11]
+        cur  segment: [0,0.11] - [1,0.11]
+[debug] offset.cpp:computeOffsetJunctions:378                -   segments parallel/collinear: fell back to prev_end
+[debug] offset.cpp:computeOffsetJunctions:385                -   junction[1] = ( 0 , 0 , 0.11 )
+[debug] offset.cpp:computeOffsetJunctions:398                -   last segment: appended tail junction[2] = ( 0 , 1 , 0.11 )
+[debug] offset.cpp:computeOffsetJunctions:423                - computeOffsetJunctions: returning 3 junction vertices
+[debug] offset.cpp:offset:787              - offset (multi-vertex): step 2 — group valid segments
+[debug] offset.cpp:groupValidSegments:474                - groupValidSegments: 3 base vertices, 2 segment(s) to check
+[debug] offset.cpp:groupValidSegments:504                -   segment [0]: valid
+[debug] offset.cpp:groupValidSegments:516                -     opened sub-line 0 at junction vertex 0
+[debug] offset.cpp:groupValidSegments:504                -   segment [1]: valid
+[debug] offset.cpp:groupValidSegments:539                - groupValidSegments: produced 1 sub-line(s)
+[debug] offset.cpp:offset:821              - offset (multi-vertex): 1 sub-line(s) after grouping
+[debug] offset.cpp:offset:834              - offset (multi-vertex): step 3 — trim adjacent sub-line pairs
+[debug] offset.cpp:offset:856              - offset (multi-vertex): step 4 — closed-curve head-tail trim
+[debug] offset.cpp:offset:1026              - offset (multi-vertex): step 5 — build output mappings
+[debug] offset.cpp:offset:1060              - base vertices -- base_link_to_offset_indices
+[debug] offset.cpp:offset:1062              -   0: ( 0 , -1 , 0 ) -- 0
+[debug] offset.cpp:offset:1062              -   1: ( 0 , 0 , 0 ) -- 1
+[debug] offset.cpp:offset:1062              -   2: ( 0 , 1 , 0 ) -- 2
+[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , -1 , 0.11 ) -> ( 0 , 1 , 0.11 )
+[debug] join.cpp:joinSegments:591            - making segment end: sgtop 0
+[debug] join.cpp:joinSegments:593            - number of dependencies: 0
+[debug] join.cpp:joinSegments:597            - making segment end because of no dependency.
+[debug] join.cpp:createSegmentFreeEnd:796            - createSegmentFreeEnd: sgtop 0
+[debug] join.cpp:createSegmentFreeEnd:894            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_top
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [tl]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41              - 2 [tc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41              - 3 [tr]: ( 0 , 1 , 0 )
+[debug] join.cpp:createSegmentFreeEnd:896            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -1 , 0.11 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , 0.11 )
+[debug] PBaseLine.cpp:print:41              - 3 []: ( 0 , 1 , 0.11 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 3
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.11 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , 0 ) -- 1: ( 0 , 0 , 0.11 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 2: ( 0 , 1 , 0 ) -- 2: ( 0 , 1 , 0.11 )
+[debug] join.cpp:joinSegments:591            - making segment end: sgtop 1
+[debug] join.cpp:joinSegments:593            - number of dependencies: 0
+[debug] join.cpp:joinSegments:597            - making segment end because of no dependency.
+[debug] join.cpp:createSegmentFreeEnd:796            - createSegmentFreeEnd: sgtop 1
+[debug] join.cpp:createSegmentFreeEnd:894            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_top
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [tl]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41              - 2 [tc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41              - 3 [tr]: ( 0 , 1 , 0 )
+[debug] join.cpp:createSegmentFreeEnd:896            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -1 , 0.11 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , 0.11 )
+[debug] PBaseLine.cpp:print:41              - 3 []: ( 0 , 1 , 0.11 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 3
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.11 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , 0 ) -- 1: ( 0 , 0 , 0.11 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 2: ( 0 , 1 , 0 ) -- 2: ( 0 , 1 , 0.11 )
+[debug] PSegment.cpp:build:237            - building the overall shape of segment: sgtop
+[debug] PSegment.cpp:build:240            - base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )
+[debug] PSegment.cpp:build:250            - creating half edges for the base curve
+[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 3
+[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
+[debug] PSegment.cpp:build:258            - vertices: 1 -- 2
+[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
+[debug] PSegment.cpp:build:287            - creating the half edge loop and face
+[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169            - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: test/integration/t4_I/i_web_debug_1.geo_unrolled
+[info] PModelIOGmsh.cpp:writeGmshOpt:465            - writing gmsh .opt file: test/integration/t4_I/i_web_debug.opt
+[info] PComponent.cpp:build:91        - building component: bottom
+[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sgbottom
+[debug] offset.cpp:offset:745              - offset (multi-vertex): size=3 side=1 dist=0.065000
+[debug] offset.cpp:offset:775              - offset (multi-vertex): step 1 — compute junction vertices
+[debug] offset.cpp:computeOffsetJunctions:250                - computeOffsetJunctions: 3 base vertices, side=1, dist=0.065
+[debug] offset.cpp:computeOffsetJunctions:280                - segment [0]: base ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 )
+[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , -1.5 , -2.935 ), cur_end=( 0 , 0 , -2.935 )
+[debug] offset.cpp:computeOffsetJunctions:307                -   first segment: junction = cur_start (no prev segment)
+[debug] offset.cpp:computeOffsetJunctions:280                - segment [1]: base ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 )
+[debug] offset.cpp:computeOffsetJunctions:295                -   offset result: cur_start=( 0 , 0 , -2.935 ), cur_end=( 0 , 1.5 , -2.935 )
+[debug] offset.cpp:computeOffsetJunctions:328                -   find intersection:
+        prev_start = ( 0 , -1.5 , -2.935 ), prev_end = ( 0 , 0 , -2.935 )
+        cur_start = ( 0 , 0 , -2.935 ), cur_end = ( 0 , 1.5 , -2.935 )
+        prev segment: [-1.5,-2.935] - [0,-2.935]
+        cur  segment: [0,-2.935] - [1.5,-2.935]
+[debug] offset.cpp:computeOffsetJunctions:378                -   segments parallel/collinear: fell back to prev_end
+[debug] offset.cpp:computeOffsetJunctions:385                -   junction[1] = ( 0 , 0 , -2.935 )
+[debug] offset.cpp:computeOffsetJunctions:398                -   last segment: appended tail junction[2] = ( 0 , 1.5 , -2.935 )
+[debug] offset.cpp:computeOffsetJunctions:423                - computeOffsetJunctions: returning 3 junction vertices
+[debug] offset.cpp:offset:787              - offset (multi-vertex): step 2 — group valid segments
+[debug] offset.cpp:groupValidSegments:474                - groupValidSegments: 3 base vertices, 2 segment(s) to check
+[debug] offset.cpp:groupValidSegments:504                -   segment [0]: valid
+[debug] offset.cpp:groupValidSegments:516                -     opened sub-line 0 at junction vertex 0
+[debug] offset.cpp:groupValidSegments:504                -   segment [1]: valid
+[debug] offset.cpp:groupValidSegments:539                - groupValidSegments: produced 1 sub-line(s)
+[debug] offset.cpp:offset:821              - offset (multi-vertex): 1 sub-line(s) after grouping
+[debug] offset.cpp:offset:834              - offset (multi-vertex): step 3 — trim adjacent sub-line pairs
+[debug] offset.cpp:offset:856              - offset (multi-vertex): step 4 — closed-curve head-tail trim
+[debug] offset.cpp:offset:1026              - offset (multi-vertex): step 5 — build output mappings
+[debug] offset.cpp:offset:1060              - base vertices -- base_link_to_offset_indices
+[debug] offset.cpp:offset:1062              -   0: ( 0 , -1.5 , -3 ) -- 0
+[debug] offset.cpp:offset:1062              -   1: ( 0 , 0 , -3 ) -- 1
+[debug] offset.cpp:offset:1062              -   2: ( 0 , 1.5 , -3 ) -- 2
+[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , -1.5 , -3 ) -> ( 0 , 1.5 , -3 )
+[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , -1.5 , -2.935 ) -> ( 0 , 1.5 , -2.935 )
+[debug] join.cpp:joinSegments:591            - making segment end: sgbottom 0
+[debug] join.cpp:joinSegments:593            - number of dependencies: 0
+[debug] join.cpp:joinSegments:597            - making segment end because of no dependency.
+[debug] join.cpp:createSegmentFreeEnd:796            - createSegmentFreeEnd: sgbottom 0
+[debug] join.cpp:createSegmentFreeEnd:894            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_bottom
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] PBaseLine.cpp:print:41              - 2 [bc]: ( 0 , 0 , -3 )
+[debug] PBaseLine.cpp:print:41              - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] join.cpp:createSegmentFreeEnd:896            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -1.5 , -2.935 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , -2.935 )
+[debug] PBaseLine.cpp:print:41              - 3 []: ( 0 , 1.5 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 3
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -1.5 , -3 ) -- 0: ( 0 , -1.5 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , -3 ) -- 1: ( 0 , 0 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 2: ( 0 , 1.5 , -3 ) -- 2: ( 0 , 1.5 , -2.935 )
+[debug] join.cpp:joinSegments:591            - making segment end: sgbottom 1
+[debug] join.cpp:joinSegments:593            - number of dependencies: 0
+[debug] join.cpp:joinSegments:597            - making segment end because of no dependency.
+[debug] join.cpp:createSegmentFreeEnd:796            - createSegmentFreeEnd: sgbottom 1
+[debug] join.cpp:createSegmentFreeEnd:894            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_bottom
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [bl]: ( 0 , -1.5 , -3 )
+[debug] PBaseLine.cpp:print:41              - 2 [bc]: ( 0 , 0 , -3 )
+[debug] PBaseLine.cpp:print:41              - 3 [br]: ( 0 , 1.5 , -3 )
+[debug] join.cpp:createSegmentFreeEnd:896            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -1.5 , -2.935 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , -2.935 )
+[debug] PBaseLine.cpp:print:41              - 3 []: ( 0 , 1.5 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 3
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -1.5 , -3 ) -- 0: ( 0 , -1.5 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , -3 ) -- 1: ( 0 , 0 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 2: ( 0 , 1.5 , -3 ) -- 2: ( 0 , 1.5 , -2.935 )
+[debug] PSegment.cpp:build:237            - building the overall shape of segment: sgbottom
+[debug] PSegment.cpp:build:240            - base line: ( 0 , -1.5 , -3 ) -> ( 0 , 1.5 , -3 )
+[debug] PSegment.cpp:build:250            - creating half edges for the base curve
+[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 3
+[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
+[debug] PSegment.cpp:build:258            - vertices: 1 -- 2
+[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
+[debug] PSegment.cpp:build:287            - creating the half edge loop and face
+[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169            - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: test/integration/t4_I/i_web_debug_2.geo_unrolled
+[info] PComponent.cpp:build:91        - building component: web
+[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sgm_1_1
+[debug] offset.cpp:offset:745              - offset (multi-vertex): size=2 side=1 dist=0.080000
+[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , 0.04 , -3 ) -> ( 0 , 0.04 , -2 )
+[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , -0.04 , -3 ) -> ( 0 , -0.04 , -2 )
+[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sgm_1_2
+[debug] offset.cpp:offset:745              - offset (multi-vertex): size=2 side=1 dist=0.080000
+[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 )
+[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 )
+[debug] join.cpp:joinSegments:748            - joining segments ends: sgm_1_1 1, sgm_1_2 0
+[debug] join.cpp:applyStyle1Join:365              -   ls_i1 = 1
+[debug] join.cpp:applyStyle1Join:366              -   intersection vertex for sgm_1_1: ( 0 , -0.04 , -2 )
+[debug] join.cpp:applyStyle1Join:387              -   ls_i2 = 0
+[debug] join.cpp:applyStyle1Join:388              -   intersection vertex for sgm_1_2: ( 0 , -0.04 , -2 )
+[debug] join.cpp:joinSegments:773            -   base -- offset index pairs of segment: sgm_1_1
+[debug] join.cpp:joinSegments:776            -   0 : ( 0 , 0.04 , -3 ) -- 0 : ( 0 , -0.04 , -3 )
+[debug] join.cpp:joinSegments:776            -   1 : ( 0 , 0.04 , -2 ) -- 1 : ( 0 , -0.04 , -2 )
+[debug] join.cpp:joinSegments:783            -   base -- offset index pairs of segment: sgm_1_2
+[debug] join.cpp:joinSegments:786            -   0 : ( 0 , 0.04 , -2 ) -- 0 : ( 0 , -0.04 , -2 )
+[debug] join.cpp:joinSegments:786            -   1 : ( 0 , 0.04 , -1 ) -- 1 : ( 0 , -0.04 , -1 )
+[debug] join.cpp:joinSegments:591            - making segment end: sgm_1_1 0
+[debug] join.cpp:joinSegments:593            - number of dependencies: 2
+[debug] join.cpp:joinSegments:603            - the end to be done (e): 0
+[debug] join.cpp:joinSegments:604            - free end of the segment (s->free()): -1
+[debug] join.cpp:joinSegments:622            - ref vertex: ( 0 , 0.04 , -2 )
+[debug] join.cpp:collectDependencyLoops:157              - step 1: find the outer half edge loop
+[debug] join.cpp:collectDependencyLoops:164              - step 2: find all inner half edge loops
+[debug] join.cpp:joinSegments:640            - found half edge loops
+[debug] PDCELHalfEdgeLoop.cpp:log:19  direction: inner
+[debug] PDCELHalfEdgeLoop.cpp:log:29  keep: no
+[debug] PDCELHalfEdgeLoop.cpp:log:39  face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:44  half edges:
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , -1.5 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 0 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 1.5 , -2.935 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:61  adjacent loop:nullptr
+[debug] join.cpp:joinSegments:645            - step 3: calculate intersections
+[debug] join.cpp:joinSegments:646            - step 3.1: for the base curve
+[debug] intersect.cpp:findCurvesIntersection:352                - in function: findCurvesIntersection
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -3 ) -- ( 0 , -1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -2.935 ) -- ( 0 , 0 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.065000 | 0 -- 1.026667
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = -1
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 1.026667
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , 0 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = -inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0 , -2.935 ) -- ( 0 , 1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.065000 | 0 -- 0.026667
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = -1
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 0.026667
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = -inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:511                - update intersection
+[debug] intersect.cpp:findCurvesIntersection:518                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:519                - u2 = 0.026667
+[debug] intersect.cpp:findCurvesIntersection:520                - end = 0
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -2.935 ) -- ( 0 , 1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -3 ) -- ( 0 , 0 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.000000 | 0 -- 0.973333
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 0
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 0.973333
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0 , -3 ) -- ( 0 , -1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.000000 | 0 -- -0.026667
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 0
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = -0.026667
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] join.cpp:resolveIntersectionVertex:217              -   u1 = 0.065000
+[debug] join.cpp:resolveIntersectionVertex:218              -   u2 = 0.026667
+[debug] join.cpp:resolveIntersectionVertex:233              -   v_new = ( 0 , 0.04 , -2.935 )
+[debug] join.cpp:resolveIntersectionVertex:234              -   ls_i = 0
+[debug] join.cpp:joinSegments:676            - step 3.2: for the offset curve
+[debug] intersect.cpp:findCurvesIntersection:352                - in function: findCurvesIntersection
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -3 ) -- ( 0 , -1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -2.935 ) -- ( 0 , 0 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.065000 | 0 -- 0.973333
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = -1
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 0.973333
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , 0 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = -inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:511                - update intersection
+[debug] intersect.cpp:findCurvesIntersection:518                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:519                - u2 = 0.973333
+[debug] intersect.cpp:findCurvesIntersection:520                - end = 0
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0 , -2.935 ) -- ( 0 , 0.04 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.065000 | 0 -- -1.000000
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 0
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = -1.000000
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 0.04 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0.04 , -2.935 ) -- ( 0 , 1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.065000 | 0 -- -0.054795
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 0
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = -0.054795
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0.04 , -2.935 ) -> v22 = ( 0 , 1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -2.935 ) -- ( 0 , 1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -3 ) -- ( 0 , 0 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.000000 | 0 -- 1.026667
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 0
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 1.026667
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0 , -3 ) -- ( 0 , -1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- 0.000000 | 0 -- 0.026667
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 0
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 0
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 0.026667
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04 , -2 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = 0.065000
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] join.cpp:resolveIntersectionVertex:217              -   u1 = 0.065000
+[debug] join.cpp:resolveIntersectionVertex:218              -   u2 = 0.973333
+[debug] join.cpp:resolveIntersectionVertex:233              -   v_new = ( 0 , -0.04 , -2.935 )
+[debug] join.cpp:resolveIntersectionVertex:234              -   ls_i = 0
+[debug] join.cpp:joinSegments:703            - adjust base-offset linking indices
+[debug] join.cpp:joinSegments:707            -   nv_base = 2
+[debug] join.cpp:joinSegments:708            -   nv_offset = 2
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 2
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , 0.04 , -2.935 ) -- 0: ( 0 , -0.04 , -2.935 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0.04 , -2 ) -- 1: ( 0 , -0.04 , -2 )
+[debug] join.cpp:joinSegments:591            - making segment end: sgm_1_2 1
+[debug] join.cpp:joinSegments:593            - number of dependencies: 2
+[debug] join.cpp:joinSegments:603            - the end to be done (e): 1
+[debug] join.cpp:joinSegments:604            - free end of the segment (s->free()): -1
+[debug] join.cpp:joinSegments:622            - ref vertex: ( 0 , 0.04 , -2 )
+[debug] join.cpp:collectDependencyLoops:157              - step 1: find the outer half edge loop
+[debug] join.cpp:collectDependencyLoops:164              - step 2: find all inner half edge loops
+[debug] join.cpp:joinSegments:640            - found half edge loops
+[debug] PDCELHalfEdgeLoop.cpp:log:19  direction: inner
+[debug] PDCELHalfEdgeLoop.cpp:log:29  keep: no
+[debug] PDCELHalfEdgeLoop.cpp:log:39  face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:44  half edges:
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 1.5 , -2.935 ) -> ( 0 , 1.5 , -3 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:47  ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: temp | face: nullptr
+[debug] PDCELHalfEdgeLoop.cpp:log:61  adjacent loop:nullptr
+[debug] join.cpp:joinSegments:645            - step 3: calculate intersections
+[debug] join.cpp:joinSegments:646            - step 3.1: for the base curve
+[debug] intersect.cpp:findCurvesIntersection:352                - in function: findCurvesIntersection
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -3 ) -- ( 0 , -1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -2.935 ) -- ( 0 , -0.04 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- -0.935000 | 0 -- 1.054795
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 1
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 2
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = -0.935000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 1.054795
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , -0.04 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , -0.04 , -2.935 ) -- ( 0 , 0 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- -0.935000 | 0 -- 2.000000
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 1
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 2
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = -0.935000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 2.000000
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , -0.04 , -2.935 ) -> v22 = ( 0 , 0 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0 , -2.935 ) -- ( 0 , 0.04 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- -0.935000 | 0 -- 1.000000
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 1
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 2
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = -0.935000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 1.000000
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 0.04 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0.04 , -2.935 ) -- ( 0 , 1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- -0.935000 | 0 -- 0.000000
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 1
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 2
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = -0.935000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0.04 , -2.935 ) -> v22 = ( 0 , 1.5 , -2.935 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -2.935 ) -- ( 0 , 1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -3 ) -- ( 0 , 0 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- -1.000000 | 0 -- 0.973333
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 1
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 2
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = -1.000000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = 0.973333
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] intersect.cpp:findCurvesIntersection:375                - ----------
+[debug] intersect.cpp:findCurvesIntersection:382                - line segment of the half edge loop (tmp_ls): ( 0 , 0 , -3 ) -- ( 0 , -1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:397                - all intersections
+[debug] intersect.cpp:findCurvesIntersection:398                - curve index (i) -- param loc (u) | tool index (i) -- param loc (u)
+[debug] intersect.cpp:findCurvesIntersection:401                - 0 -- -1.000000 | 0 -- -0.026667
+[debug] intersect.cpp:findCurvesIntersection:423                - closest intersection to end 1
+[debug] intersect.cpp:findCurvesIntersection:424                - curve segment index (ls_i) = 0
+[debug] intersect.cpp:findCurvesIntersection:425                - prev curve segment index (ls_i_prev) = 2
+[debug] intersect.cpp:findCurvesIntersection:426                - curve param loc (tmp_c_u) = -1.000000
+[debug] intersect.cpp:findCurvesIntersection:427                - tool param loc (tmp_t_u) = -0.026667
+[debug] intersect.cpp:findCurvesIntersection:428                - curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 , -1 )
+[debug] intersect.cpp:findCurvesIntersection:432                - tool segment: v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3 )
+[debug] intersect.cpp:findCurvesIntersection:442                - u1 = inf
+[debug] intersect.cpp:findCurvesIntersection:443                - tol = 0.000000
+[debug] join.cpp:resolveIntersectionVertex:217              -   u1 = inf
+[debug] join.cpp:resolveIntersectionVertex:218              -   u2 = 0.000000
+[debug] join.cpp:joinSegments:653            - making segment end because of not touching any other components although with dependency.
+[debug] join.cpp:createSegmentFreeEnd:796            - createSegmentFreeEnd: sgm_1_2 1
+[debug] join.cpp:createSegmentFreeEnd:894            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_web_2
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [web]: ( 0 , 0.04 , -2 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0.04 , -1 )
+[debug] join.cpp:createSegmentFreeEnd:896            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -0.04 , -2 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , -0.04 , -1 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 2
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , 0.04 , -2 ) -- 0: ( 0 , -0.04 , -2 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0.04 , -1 ) -- 1: ( 0 , -0.04 , -1 )
+[debug] PSegment.cpp:build:237            - building the overall shape of segment: sgm_1_1
+[debug] PSegment.cpp:build:240            - base line: ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 )
+[debug] PSegment.cpp:build:250            - creating half edges for the base curve
+[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 2
+[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
+[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
+[debug] PSegment.cpp:build:287            - creating the half edge loop and face
+[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169            - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: test/integration/t4_I/i_web_debug_3.geo_unrolled
+[debug] PSegment.cpp:build:237            - building the overall shape of segment: sgm_1_2
+[debug] PSegment.cpp:build:240            - base line: ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 )
+[debug] PSegment.cpp:build:250            - creating half edges for the base curve
+[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 2
+[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
+[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
+[debug] PSegment.cpp:build:287            - creating the half edge loop and face
+[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169            - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: test/integration/t4_I/i_web_debug_4.geo_unrolled
+[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351        - writing gmsh .geo file: test/integration/t4_I/i_web_debug_5.geo_unrolled
+[info] CrossSection.cpp:build:216      - building the cross section, step 2
+[info] PComponent.cpp:buildDetails:126        - building component details: top
+[debug] PBuildSegmentAreas.cpp:buildAreas:35          - building areas of segment: sgtop
+[debug] PBuildSegmentAreas.cpp:buildAreas:59          - 1. creating the beginning bound of the first area
+[debug] PBuildSegmentAreas.cpp:buildAreas:99            - open segment
+[debug] PBuildSegmentAreas.cpp:buildAreas:105            - first vertex of the base: ( 0 , -1 , 0 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:106            - first vertex of the offset: ( 0 , -1 , 0.11 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:136              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildAreas:143              - cumu_thk = 0.06
+[debug] PBuildSegmentAreas.cpp:buildAreas:151              - ls_offset: ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:168                - 
+[debug] PBuildSegmentAreas.cpp:buildAreas:169                - he_tmp: ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgtop_face
+[debug] PBuildSegmentAreas.cpp:buildAreas:178                - u1_tmp = 0.454545
+[debug] PBuildSegmentAreas.cpp:buildAreas:191                -   case 3: intersect current edge
+[debug] PBuildSegmentAreas.cpp:buildAreas:193                -   v_layer: ( 0 , -1 , 0.06 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:305              - v_layer: ( 0 , -1 , 0.06 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:333          - 2. creating areas
+[debug] PBuildSegmentAreas.cpp:buildAreas:350            - area 1
+[debug] PBuildSegmentAreas.cpp:buildAreas:366            -   base vertex: ( 0 , 0 , 0 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:367            -   offset vertex: ( 0 , 0 , 0.11 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:453          - 3. creating the last area
+[debug] PBuildSegmentAreas.cpp:buildAreas:546              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildAreas:558              - ls_offset: ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:574                - 
+[debug] PBuildSegmentAreas.cpp:buildAreas:575                - he_tmp: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: temp | face: sgtop_area_2
+[debug] PBuildSegmentAreas.cpp:buildAreas:584                - u1_tmp = 0.545455
+[debug] PBuildSegmentAreas.cpp:buildAreas:606                -   case 5: intersect current edge
+[debug] PBuildSegmentAreas.cpp:buildAreas:703              - v_layer: ( 0 , 1 , 0.06 )
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgtop_area_1
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgtop_area_2
+[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169          - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: test/integration/t4_I/i_web_debug_6.geo_unrolled
+[info] PComponent.cpp:buildDetails:126        - building component details: bottom
+[debug] PBuildSegmentAreas.cpp:buildAreas:35          - building areas of segment: sgbottom
+[debug] PBuildSegmentAreas.cpp:buildAreas:59          - 1. creating the beginning bound of the first area
+[debug] PBuildSegmentAreas.cpp:buildAreas:99            - open segment
+[debug] PBuildSegmentAreas.cpp:buildAreas:105            - first vertex of the base: ( 0 , -1.5 , -3 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:106            - first vertex of the offset: ( 0 , -1.5 , -2.935 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:136              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildAreas:143              - cumu_thk = 0.045
+[debug] PBuildSegmentAreas.cpp:buildAreas:151              - ls_offset: ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:168                - 
+[debug] PBuildSegmentAreas.cpp:buildAreas:169                - he_tmp: ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -3 ) | loop: keep | face: sgbottom_face
+[debug] PBuildSegmentAreas.cpp:buildAreas:178                - u1_tmp = 0.307692
+[debug] PBuildSegmentAreas.cpp:buildAreas:191                -   case 3: intersect current edge
+[debug] PBuildSegmentAreas.cpp:buildAreas:193                -   v_layer: ( 0 , -1.5 , -2.955 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:305              - v_layer: ( 0 , -1.5 , -2.955 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:333          - 2. creating areas
+[debug] PBuildSegmentAreas.cpp:buildAreas:350            - area 1
+[debug] PBuildSegmentAreas.cpp:buildAreas:366            -   base vertex: ( 0 , 0 , -3 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:367            -   offset vertex: ( 0 , 0 , -2.935 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:453          - 3. creating the last area
+[debug] PBuildSegmentAreas.cpp:buildAreas:546              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildAreas:558              - ls_offset: ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:574                - 
+[debug] PBuildSegmentAreas.cpp:buildAreas:575                - he_tmp: ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: temp | face: sgbottom_area_2
+[debug] PBuildSegmentAreas.cpp:buildAreas:584                - u1_tmp = 0.692308
+[debug] PBuildSegmentAreas.cpp:buildAreas:606                -   case 5: intersect current edge
+[debug] PBuildSegmentAreas.cpp:buildAreas:703              - v_layer: ( 0 , 1.5 , -2.955 )
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgbottom_area_1
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgbottom_area_2
+[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169          - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: test/integration/t4_I/i_web_debug_7.geo_unrolled
+[info] PComponent.cpp:buildDetails:126        - building component details: web
+[debug] PBuildSegmentAreas.cpp:buildAreas:35          - building areas of segment: sgm_1_1
+[debug] PBuildSegmentAreas.cpp:buildAreas:59          - 1. creating the beginning bound of the first area
+[debug] PBuildSegmentAreas.cpp:buildAreas:99            - open segment
+[debug] PBuildSegmentAreas.cpp:buildAreas:105            - first vertex of the base: ( 0 , 0.04 , -2.935 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:106            - first vertex of the offset: ( 0 , -0.04 , -2.935 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:333          - 2. creating areas
+[debug] PBuildSegmentAreas.cpp:buildAreas:453          - 3. creating the last area
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgm_1_1_area_1
+[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169          - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: test/integration/t4_I/i_web_debug_8.geo_unrolled
+[debug] PBuildSegmentAreas.cpp:buildAreas:35          - building areas of segment: sgm_1_2
+[debug] PBuildSegmentAreas.cpp:buildAreas:59          - 1. creating the beginning bound of the first area
+[debug] PBuildSegmentAreas.cpp:buildAreas:99            - open segment
+[debug] PBuildSegmentAreas.cpp:buildAreas:105            - first vertex of the base: ( 0 , 0.04 , -2 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:106            - first vertex of the offset: ( 0 , -0.04 , -2 )
+[debug] PBuildSegmentAreas.cpp:buildAreas:333          - 2. creating areas
+[debug] PBuildSegmentAreas.cpp:buildAreas:453          - 3. creating the last area
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgm_1_2_area_1
+[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169          - creating gmsh edges
+[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: test/integration/t4_I/i_web_debug_9.geo_unrolled
+[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
+[info] PModel.cpp:homogenize:286    - building the shape -- done
+[info] PModel.cpp:homogenize:294    - modeling in Gmsh
+[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
+[info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
+[info] PModelBuildGmsh.cpp:createGmshFaces:219        - creating gmsh faces
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: background
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgm_1_1_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgm_1_2_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgtop_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgtop_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgtop_area_2_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgtop_area_2_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgbottom_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgbottom_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgbottom_area_2_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:227        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:228        -   face: sgbottom_area_2_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:240        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:288        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:324        -   adding embedded entities
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: background
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgm_1_1_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgm_1_2_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgtop_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgtop_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgtop_area_2_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgtop_area_2_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgbottom_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgbottom_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgbottom_area_2_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:327        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:328        -   face: sgbottom_area_2_layer_1
+[info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:355        - creating physical groups
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: background
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgm_1_1_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 5, material: iso5_5, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgm_1_2_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 5, material: iso5_5, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgtop_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 2, material: iso5_2, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgtop_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 1, material: iso5_1, theta_3 = 90.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgtop_area_2_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 2, material: iso5_2, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgtop_area_2_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 1, material: iso5_1, theta_3 = 90.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgbottom_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 4, material: iso5_4, theta_3 = 90.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgbottom_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 3, material: iso5_3, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgbottom_area_2_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 4, material: iso5_4, theta_3 = 90.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:363        -   face: sgbottom_area_2_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:367        -   id: 3, material: iso5_3, theta_3 = 0.000000
+[info] PModelIOGmsh.cpp:writeGmshGeo:351        - writing gmsh .geo file: test/integration/t4_I/i_web_debug_10.geo_unrolled
+[info] PModelBuildGmsh.cpp:buildGmsh:480      - meshing
+[info] PModel.cpp:homogenize:298    - modeling in Gmsh -- done
+[info] PModel.cpp:homogenize:308    - writing outputs
+[info] PModelIOSG.cpp:writeSG:93      - writing sg file: test/integration/t4_I/i_web.sg
+[info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
+[info] PModelIOGmsh.cpp:writeElements:136        - writing elements
+[info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
+[info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
+[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: test/integration/t4_I/i_web.sg.mat
+[info] PModel.cpp:homogenize:321    - writing outputs -- done
+[info] main.cpp:main:285  - prevabs finished (2026-03-30 23:38:26)
+[info] main.cpp:main:286  total running time: 0.0611268 sec

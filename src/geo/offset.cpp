@@ -328,18 +328,15 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
         PLOG(debug) << g_msg->message(oss.str());
       }
 
-      // h2d::Segment::intersects() returns a single-point result or nothing:
-      //   - Non-parallel segments: returns the intersection point of the two
-      //     support lines, provided that point lies within both segments.
-      //   - Parallel segments (including collinear/overlapping): h2d treats
-      //     collinear as a special case of parallel and returns no intersection
-      //     (isect() == false).  Both cases fall through to the else-branch
-      //     below, which uses prev_end as the junction.  For collinear adjacent
-      //     offset segments this is geometrically correct: prev_end is the
-      //     shared endpoint of the two co-linear offset segments.
+      // Use infinite-line intersection so the miter point is found even when
+      // it lies outside the finite extent of either offset segment (outside
+      // corners).  h2d::Line2d::intersects(Line2d) returns no result only for
+      // parallel lines; for collinear lines h2d treats them as parallel and
+      // returns no intersection, so the else-branch below (which uses prev_end
+      // as the junction) remains correct for that degenerate case.
       h2d::Segment prev_seg(prev_p1, prev_p2);
       h2d::Segment cur_seg(cur_p1, cur_p2);
-      auto isect = prev_seg.intersects(cur_seg);
+      auto isect = prev_seg.getLine().intersects(cur_seg.getLine());
       if (isect()) {
         // Non-parallel segments: use the intersection point as the junction vertex.
         auto isect_pt = isect.get();

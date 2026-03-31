@@ -81,6 +81,29 @@ Additional options
 
 The executable will be at `build_msvc\Release\prevabs.exe`.
 
+### WSL (Windows Subsystem for Linux)
+
+Build the Windows MSVC executable from within WSL without switching to a
+Windows terminal. Requires `powershell.exe` to be accessible from WSL
+(standard on Windows 10/11).
+
+1. Follow the **Windows (MSVC)** Gmsh setup step above.
+
+2. Run the WSL build script from the repo root:
+
+   ```bash
+   # Full clean build
+   bash tools/build-wsl.sh full
+
+   # Incremental rebuild (default)
+   bash tools/build-wsl.sh fast
+
+   # Remove build directory
+   bash tools/build-wsl.sh clean
+   ```
+
+The executable will be at `build_msvc\Release\prevabs.exe` (Windows path).
+
 ### Linux
 
 1. Unpack the source and change to the package root.
