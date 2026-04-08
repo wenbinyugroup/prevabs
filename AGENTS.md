@@ -1,6 +1,4 @@
-# AGENTS.md - PreVABS Development Guide
-
-This file provides guidelines for agents working on the PreVABS codebase.
+# AGENTS.md
 
 ## Project Overview
 
@@ -10,6 +8,10 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 - **Build System**: CMake (minimum 3.14)
 - **Dependencies**: Gmsh SDK
 - **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (single-header, v3.x)
+
+## First Principles
+
+Use first-principles thinking. Do not assume that I always clearly understand what I want or how to achieve it. Stay cautious and start from the fundamental needs and problems. If the motivation or goal is unclear, stop and discuss it with me.
 
 ---
 
@@ -111,6 +113,21 @@ prevabs.exe -i test\integration\box\input.xml --hm
 
 ## Code Style Guidelines
 
+- Encourage **modularity** and **reusability** in code design.
+- Discourage **monolithic** code design.
+- Avoid one giant function/file.
+- When creating new functions, classes, modules, etc., start from simplest possible implementation, and gradually add features. **Do not overengineer**.
+- Always use numpy style docstrings.
+- Use comments to annotate key steps in the code.
+
+- When developing new functions, make use of existing functions as much as possible. Avoid reinventing the wheel.
+
+- When proposing modifications or refactoring plans, you must follow these rules:
+  - Do not provide compatibility or workaround-based solutions.
+  - Avoid over-engineering; follow the shortest path to implementation while still adhering to the first-principles requirement.
+  - Do not introduce solutions beyond the requirements I provided (e.g., fallback or downgrade strategies), as they may cause deviations in business logic.
+  - Ensure the logical correctness of the solution; it must be validated through end-to-end reasoning.
+
 ### General Rules
 
 - **C++ Standard**: C++11 (set in CMakeLists.txt)
@@ -145,53 +162,6 @@ test/
   integration/    # Integration tests (full pipeline runs)
 ```
 
-### Header Files
-
-- **Always** use `#pragma once` as the first line — no exceptions
-- Never use `using namespace` at file scope in a header
-- Order includes:
-  1. Corresponding header (for .cpp files)
-  2. Project headers (quotes)
-  3. External/system headers (angle brackets)
-- Include only what the file directly uses — do not rely on transitive includes
-
-
-### Code Formatting
-
-- **Braces**: Always use braces, even for single-line statements
-- **Spaces**: No space between function name and parenthesis
-- **References**: Use `&` attached to type: `std::string& name`
-- **Pointers**: Use `*` attached to type: `PElementNodeData* _u`
-
-Example:
-
-```cpp
-void PModel::initialize() {
-  if (config.debug) {
-    config.fdeb = fopen(...);
-  }
-  gmsh::initialize();
-}
-```
-
-### Error Handling
-
-- Use `std::exception` and derived classes
-- Wrap risky operations in try/catch blocks
-- Print errors to `std::cerr` with `"ERROR: "` prefix
-- Return early on failure conditions
-- **Always** check return values of `fopen()`, `fclose()`, and similar C APIs
-
-```cpp
-try {
-  pmodel->build();
-} catch (std::exception& e) {
-  std::cerr << "ERROR: " << e.what() << std::endl;
-  return 1;  // non-zero exit on error
-}
-```
-
-
 ### Numeric Constants
 
 - Use the project-level `PI` from `globalConstants.hpp` — never re-define locally
@@ -203,78 +173,6 @@ try {
 - Use `PLOG` from `plog.hpp` for structured logging
 - Severity levels: `info`, `warning`, `error`
 - Log to both console and file
-
-### External Process Execution
-
-- **Never** use `std::system()` with user-controlled input — this is a shell injection risk
-- On Windows use `CreateProcess`; on POSIX use `fork`/`execvp` with an argument array
-- Sanitize or validate all file paths before use in commands
-
-### Modern C++ Patterns
-
-- Use `auto` for iterator types and complex template types
-- Use range-based for loops: `for (auto& p : _vertices)`
-- Use initializer lists for struct initialization
-- Prefer `std::vector` over C arrays
-- Use `std::string` instead of `char*`
-
----
-
-## Common Tasks
-
-### Adding a New Class
-
-1. Create `include/MyClass.hpp` — add `#pragma once` as the first line
-2. Create `src/MyClass.cpp` with implementation
-3. Add the `.cpp` file **explicitly** to `CMakeLists.txt` (do not rely on GLOB)
-
-### Running a Test Case
-
-```bash
-# From build directory
-./prevabs.exe -i ../test/box/input.xml --hm -v
-```
-
-### Writing Unit Tests
-
-Each test file should include Catch2 and define tests:
-
-```cpp
-#define CATCH_CONFIG_MAIN  // Only ONE file should have this
-#include "catch_amalgam.hpp"
-
-TEST_CASE("description of what is being tested") {
-  // Arrange
-  int expected = 42;
-
-  // Act
-  int actual = calculate();
-
-  // Assert
-  CHECK(actual == expected);      // Continues on failure
-  REQUIRE(actual == expected);    // Stops on failure
-}
-
-TEST_CASE("grouped tests", "[geometry]") {
-  // Tagged tests can be run with: ./test "[geometry]"
-}
-```
-
-**Common assertions:**
-- `CHECK(expr)` - Continues even if failed
-- `REQUIRE(expr)` - Stops on failure
-- `CHECKED_IF(expr)` / `CHECKED_ELSE(expr)` - Branch coverage
-- `REQUIRE_THROWS(expr)` - Expect exception
-- `REQUIRE_THAT(val, Catch::Matchers::Equals(expected))` - Container comparison
-
-### Debugging
-
-Enable debug mode with `--debug` flag:
-```bash
-prevabs.exe -i input.xml --hm --debug
-```
-
-This creates a `.debug` file with detailed output.
 
 ### Issue Tracking
 

@@ -1,0 +1,469 @@
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+
+========================================
+
+
+========================================
+
+OReadCrossSection.cpp:readCrossSection:69        - reading main input file: .\test\integration\t1_strip\strip_two_layups.xml
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:107        - find cross-section: strip
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:139        - reading analysis...
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:263        - finished reading analysis.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:288        - reading general...
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:392        - tolerance = 1e-12
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:428        - finished reading general.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:432        - finding includings...
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:438        - reading geometry...
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: lc
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: mc
+[debug] PModelIOReadBasePoint.cpp:readXMLElementPoint:92            - reading point: rc
+[debug] PModelIOReadBaseLine.cpp:readXMLElementLine:171            - reading line: bl_1
+[debug] PBaseLine.cpp:print:33            - name: bl_1
+[debug] PBaseLine.cpp:print:35            - type: straight
+[debug] PBaseLine.cpp:print:37            - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41            - 1 [lc]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41            - 2 [mc]: ( 0 , 0 , 0 )
+[debug] PModelIOReadBaseLine.cpp:readXMLElementLine:171            - reading line: bl_2
+[debug] PBaseLine.cpp:print:33            - name: bl_2
+[debug] PBaseLine.cpp:print:35            - type: straight
+[debug] PBaseLine.cpp:print:37            - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41            - 1 [mc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41            - 2 [rc]: ( 0 , 1 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:612        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:613        - summary of base lines (before transformation)
+[debug] PBaseLine.cpp:print:33          - name: bl_1
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [lc]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41          - 2 [mc]: ( 0 , 0 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:617        -  
+[debug] PBaseLine.cpp:print:33          - name: bl_2
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [mc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41          - 2 [rc]: ( 0 , 1 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:617        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:623        - transforming base geometry
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:634        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:635        - summary of base lines (after transformation)
+[debug] PBaseLine.cpp:print:33          - name: bl_1
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [lc]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41          - 2 [mc]: ( 0 , 0 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:639        -  
+[debug] PBaseLine.cpp:print:33          - name: bl_2
+[debug] PBaseLine.cpp:print:35          - type: straight
+[debug] PBaseLine.cpp:print:37          - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41          - 1 [mc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41          - 2 [rc]: ( 0 , 1 , 0 )
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:639        -  
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:643        - finished reading geometry.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:647        - reading materials...
+[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[debug] PModelIOReadMaterial.cpp:readXMLElementMaterial:162            - reading material: iso5_1
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523            - reading lamina: la_iso5_1_001
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523            - reading lamina: la_iso5_1_002
+[debug] PModelIOReadMaterial.cpp:readXMLElementLamina:523            - reading lamina: la_iso5_1_003
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:708        - finished reading materials.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:712        - reading layups...
+[debug] PModelIOReadLayup.cpp:readLayups:49          - in function: readLayups
+[debug] PModelIOReadLayup.cpp:readLayups:58          - reading layup: layup1
+[debug] PModelIOReadLayup.cpp:readLayups:58          - reading layup: layup2
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:746        - finished reading layups.
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:764        - reading components...
+[debug] PModelIOReadComponent.cpp:readXMLElementComponent:46          - reading component: top
+[debug] PModelIOReadCrossSection.cpp:readCrossSection:783        - finished reading components.
+[info] PModel.cpp:homogenize:285    - reading input files -- done
+[info] PModel.cpp:homogenize:293    - building the shape
+[info] CrossSection.cpp:build:174      - building the cross section, step 1
+[info] PComponent.cpp:build:91        - building component: top
+[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sgm_1
+[debug] offset.cpp:offset:745              - offset (multi-vertex): size=2 side=1 dist=0.030000
+[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )
+[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 )
+[debug] PSegment.cpp:offsetCurveBase:173            - offsetting the base curve of segment: sgm_2
+[debug] offset.cpp:offset:745              - offset (multi-vertex): size=2 side=1 dist=0.040000
+[debug] PSegment.cpp:offsetCurveBase:207            - base line: ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 )
+[debug] PSegment.cpp:offsetCurveBase:210            - offset line: ( 0 , 0 , 0.04 ) -> ( 0 , 1 , 0.04 )
+[debug] join.cpp:joinSegments:409            - joining segments ends: sgm_1 1, sgm_2 0
+[debug] join.cpp:joinSegments:465            -   ls_i1 = 1
+[debug] join.cpp:joinSegments:467            -   intersection vertex for sgm_1: ( 0 , 0 , 0.03 )
+[debug] join.cpp:joinSegments:590            -   ls_i2 = 0
+[debug] join.cpp:joinSegments:592            -   intersection vertex for sgm_2: ( 0 , 0 , 0.04 )
+[debug] join.cpp:joinSegments:930            -   base -- offset index pairs of segment: sgm_1
+[debug] join.cpp:joinSegments:932            -   0 : ( 0 , -1 , 0 ) -- 0 : ( 0 , -1 , 0.03 )
+[debug] join.cpp:joinSegments:932            -   1 : ( 0 , 0 , 0 ) -- 1 : ( 0 , 0 , 0.03 )
+[debug] join.cpp:joinSegments:940            -   base -- offset index pairs of segment: sgm_2
+[debug] join.cpp:joinSegments:942            -   0 : ( 0 , 0 , 0 ) -- 0 : ( 0 , 0 , 0.04 )
+[debug] join.cpp:joinSegments:942            -   1 : ( 0 , 1 , 0 ) -- 1 : ( 0 , 1 , 0.04 )
+[debug] join.cpp:joinSegments:145            - making segment end: sgm_1 0
+[debug] join.cpp:joinSegments:147            - number of dependencies: 0
+[debug] join.cpp:joinSegments:150            - making segment end because of no dependency.
+[debug] join.cpp:createSegmentFreeEnd:953            - createSegmentFreeEnd: sgm_1 0
+[debug] join.cpp:createSegmentFreeEnd:1052            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_1
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [lc]: ( 0 , -1 , 0 )
+[debug] PBaseLine.cpp:print:41              - 2 [mc]: ( 0 , 0 , 0 )
+[debug] join.cpp:createSegmentFreeEnd:1054            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , -1 , 0.03 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 0 , 0.03 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 2
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.03 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 0 , 0 ) -- 1: ( 0 , 0 , 0.03 )
+[debug] join.cpp:joinSegments:145            - making segment end: sgm_2 1
+[debug] join.cpp:joinSegments:147            - number of dependencies: 0
+[debug] join.cpp:joinSegments:150            - making segment end because of no dependency.
+[debug] join.cpp:createSegmentFreeEnd:953            - createSegmentFreeEnd: sgm_2 1
+[debug] join.cpp:createSegmentFreeEnd:1052            - curve base:
+[debug] PBaseLine.cpp:print:33              - name: bl_2
+[debug] PBaseLine.cpp:print:35              - type: straight
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 [mc]: ( 0 , 0 , 0 )
+[debug] PBaseLine.cpp:print:41              - 2 [rc]: ( 0 , 1 , 0 )
+[debug] join.cpp:createSegmentFreeEnd:1054            - curve offset:
+[debug] PBaseLine.cpp:print:33              - name: 
+[debug] PBaseLine.cpp:print:35              - type: 
+[debug] PBaseLine.cpp:print:37              - point: (x, y, z)
+[debug] PBaseLine.cpp:print:41              - 1 []: ( 0 , 0 , 0.04 )
+[debug] PBaseLine.cpp:print:41              - 2 []: ( 0 , 1 , 0.04 )
+[debug] PSegment.cpp:printBaseOffsetPairs:101              - base vertices -- base_link_to_offset_indices
+[debug] PSegment.cpp:printBaseOffsetPairs:104              - number of pairs: 2
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 0: ( 0 , 0 , 0 ) -- 0: ( 0 , 0 , 0.04 )
+[debug] PSegment.cpp:printBaseOffsetPairs:115              - 1: ( 0 , 1 , 0 ) -- 1: ( 0 , 1 , 0.04 )
+[debug] PSegment.cpp:build:237            - building the overall shape of segment: sgm_1
+[debug] PSegment.cpp:build:240            - base line: ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )
+[debug] PSegment.cpp:build:250            - creating half edges for the base curve
+[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 2
+[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
+[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
+[debug] PSegment.cpp:build:287            - creating the half edge loop and face
+[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , -inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , -inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0 , 0 ) -> gmsh tag 1
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0 , 0.03 ) -> gmsh tag 2
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0 , 0.04 ) -> gmsh tag 3
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -1 , 0 ) -> gmsh tag 4
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -1 , 0.03 ) -> gmsh tag 5
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 1 , 0 ) -> gmsh tag 6
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 1 , 0.04 ) -> gmsh tag 7
+[info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.03 ) | loop: keep | face: sgm_1_face | src_tag=1 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 0 , 0.03 ) -> ( 0 , 0 , 0.04 ) | loop: nullptr | face: nullptr | src_tag=2 tgt_tag=3
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.03 ) | loop: nullptr | face: nullptr | src_tag=4 tgt_tag=5
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.04 ) | loop: nullptr | face: nullptr | src_tag=6 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_1_face | src_tag=4 tgt_tag=1
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 ) | loop: nullptr | face: nullptr | src_tag=5 tgt_tag=2
+[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups_debug_1.geo_unrolled
+[info] PModelIOGmsh.cpp:writeGmshOpt:465            - writing gmsh .opt file: .\test\integration\t1_strip\strip_two_layups_debug.opt
+[debug] PSegment.cpp:build:237            - building the overall shape of segment: sgm_2
+[debug] PSegment.cpp:build:240            - base line: ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 )
+[debug] PSegment.cpp:build:250            - creating half edges for the base curve
+[debug] PSegment.cpp:build:253            - number of vertices of the base curve: 2
+[debug] PSegment.cpp:build:258            - vertices: 0 -- 1
+[debug] PSegment.cpp:build:276            - creating half edges for the offset curve
+[debug] PSegment.cpp:build:287            - creating the half edge loop and face
+[info] PModelBuildGmsh.cpp:createGmshVertices:33            - creating gmsh vertices
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , -inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , -inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48            -   vertex ( 0 , inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0 , 0 ) -> gmsh tag 1
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0 , 0.03 ) -> gmsh tag 2
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0 , 0.04 ) -> gmsh tag 3
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -1 , 0 ) -> gmsh tag 4
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -1 , 0.03 ) -> gmsh tag 5
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 1 , 0 ) -> gmsh tag 6
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 1 , 0.04 ) -> gmsh tag 7
+[info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.03 ) | loop: keep | face: sgm_1_face | src_tag=1 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 0 , 0.03 ) -> ( 0 , 0 , 0.04 ) | loop: nullptr | face: nullptr | src_tag=2 tgt_tag=3
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.03 ) | loop: nullptr | face: nullptr | src_tag=4 tgt_tag=5
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.04 ) | loop: keep | face: sgm_2_face | src_tag=6 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_1_face | src_tag=4 tgt_tag=1
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 ) | loop: nullptr | face: nullptr | src_tag=5 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_2_face | src_tag=1 tgt_tag=6
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , 0 , 0.04 ) -> ( 0 , 1 , 0.04 ) | loop: nullptr | face: nullptr | src_tag=3 tgt_tag=7
+[info] PModelIOGmsh.cpp:writeGmshGeo:351            - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups_debug_2.geo_unrolled
+[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , -inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , -inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0 ) -> gmsh tag 1
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0.03 ) -> gmsh tag 2
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0.04 ) -> gmsh tag 3
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , -1 , 0 ) -> gmsh tag 4
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , -1 , 0.03 ) -> gmsh tag 5
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 1 , 0 ) -> gmsh tag 6
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 1 , 0.04 ) -> gmsh tag 7
+[info] PModelBuildGmsh.cpp:createGmshEdges:176        - creating gmsh edges
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.03 ) | loop: keep | face: sgm_1_face | src_tag=1 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0.03 ) -> ( 0 , 0 , 0.04 ) | loop: temp | face: nullptr | src_tag=2 tgt_tag=3
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.03 ) | loop: temp | face: nullptr | src_tag=4 tgt_tag=5
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.04 ) | loop: keep | face: sgm_2_face | src_tag=6 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_1_face | src_tag=4 tgt_tag=1
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_2_face | src_tag=1 tgt_tag=6
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0.04 ) -> ( 0 , 1 , 0.04 ) | loop: temp | face: nullptr | src_tag=3 tgt_tag=7
+[info] PModelIOGmsh.cpp:writeGmshGeo:351        - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups_debug_3.geo_unrolled
+[info] CrossSection.cpp:build:216      - building the cross section, step 2
+[info] PComponent.cpp:buildDetails:126        - building component details: top
+[debug] PBuildSegmentAreas.cpp:buildAreas:383          - building areas of segment: sgm_1
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:184          - 1. creating the beginning bound of the first area
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:197            - open segment
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:201            - first vertex of the base: ( 0 , -1 , 0 )
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:203            - first vertex of the offset: ( 0 , -1 , 0.03 )
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:149              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:156              - cumu_thk = 0.01
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:159              - ls_offset: ( 0 , -1 , 0.01 ) -> ( 0 , 0 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:75                - 
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:76                - he_tmp: ( 0 , -1 , 0.03 ) -> ( 0 , -1 , 0 ) | loop: keep | face: sgm_1_face
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:91                - u1_tmp = 0.666667
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:105                -   case 3: intersect current edge
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:107                -   v_layer: ( 0 , -1 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:169              - v_layer: ( 0 , -1 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:createIntermediateAreas:239          - 2. creating areas
+[debug] PBuildSegmentAreas.cpp:buildLastArea:316          - 3. creating the last area
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:149              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:156              - cumu_thk = 0.01
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:159              - ls_offset: ( 0 , -1 , 0.01 ) -> ( 0 , 0 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:75                - 
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:76                - he_tmp: ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.03 ) | loop: keep | face: sgm_1_area_1
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:91                - u1_tmp = 0.333333
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:105                -   case 3: intersect current edge
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:107                -   v_layer: ( 0 , 0 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:169              - v_layer: ( 0 , 0 , 0.01 )
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgm_1_area_1
+[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , -inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , -inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0 ) -> gmsh tag 1
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0.03 ) -> gmsh tag 2
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0.04 ) -> gmsh tag 3
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -1 , 0 ) -> gmsh tag 4
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -1 , 0.03 ) -> gmsh tag 5
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 1 , 0 ) -> gmsh tag 6
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 1 , 0.04 ) -> gmsh tag 7
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -1 , 0.01 ) -> gmsh tag 8
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0.01 ) -> gmsh tag 9
+[info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.03 ) -> ( 0 , 0 , 0.04 ) | loop: temp | face: nullptr | src_tag=2 tgt_tag=3
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.04 ) | loop: keep | face: sgm_2_face | src_tag=6 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=4 tgt_tag=1
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: keep | face: sgm_2_face | src_tag=1 tgt_tag=6
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.04 ) -> ( 0 , 1 , 0.04 ) | loop: temp | face: nullptr | src_tag=3 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.03 ) -> ( 0 , -1 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=5 tgt_tag=8
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.01 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=8 tgt_tag=4
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=1 tgt_tag=9
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.01 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=9 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.01 ) -> ( 0 , 0 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=8 tgt_tag=9
+[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups_debug_4.geo_unrolled
+[debug] PBuildSegmentAreas.cpp:buildAreas:383          - building areas of segment: sgm_2
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:184          - 1. creating the beginning bound of the first area
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:197            - open segment
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:201            - first vertex of the base: ( 0 , 0 , 0 )
+[debug] PBuildSegmentAreas.cpp:buildBeginningBound:203            - first vertex of the offset: ( 0 , 0 , 0.04 )
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:149              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:156              - cumu_thk = 0.01
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:159              - ls_offset: ( 0 , 0 , 0.01 ) -> ( 0 , 1 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:75                - 
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:76                - he_tmp: ( 0 , 0 , 0.01 ) -> ( 0 , 0 , 0 ) | loop: keep | face: sgm_2_face
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:91                - u1_tmp = -0
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:95                -   case 1: intersect at source
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:169              - v_layer: ( 0 , 0 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:createIntermediateAreas:239          - 2. creating areas
+[debug] PBuildSegmentAreas.cpp:buildLastArea:316          - 3. creating the last area
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:149              - layer 1
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:156              - cumu_thk = 0.01
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:159              - ls_offset: ( 0 , 0 , 0.01 ) -> ( 0 , 1 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:75                - 
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:76                - he_tmp: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.04 ) | loop: keep | face: sgm_2_area_1
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:91                - u1_tmp = 0.25
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:105                -   case 3: intersect current edge
+[debug] PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:107                -   v_layer: ( 0 , 1 , 0.01 )
+[debug] PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:169              - v_layer: ( 0 , 1 , 0.01 )
+[debug] PArea.cpp:buildLayers:114            - building layers for area: sgm_2_area_1
+[info] PModelBuildGmsh.cpp:createGmshVertices:33          - creating gmsh vertices
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , -inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , -inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48          -   vertex ( 0 , inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0 ) -> gmsh tag 1
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0.03 ) -> gmsh tag 2
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0.04 ) -> gmsh tag 3
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -1 , 0 ) -> gmsh tag 4
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -1 , 0.03 ) -> gmsh tag 5
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 1 , 0 ) -> gmsh tag 6
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 1 , 0.04 ) -> gmsh tag 7
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -1 , 0.01 ) -> gmsh tag 8
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0 , 0.01 ) -> gmsh tag 9
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 1 , 0.01 ) -> gmsh tag 10
+[info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.03 ) -> ( 0 , 0 , 0.04 ) | loop: temp | face: nullptr | src_tag=2 tgt_tag=3
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=4 tgt_tag=1
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_2_area_1_layer_1 | src_tag=1 tgt_tag=6
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.04 ) -> ( 0 , 1 , 0.04 ) | loop: temp | face: nullptr | src_tag=3 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.03 ) -> ( 0 , -1 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=5 tgt_tag=8
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.01 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=8 tgt_tag=4
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=1 tgt_tag=9
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.01 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=9 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -1 , 0.01 ) -> ( 0 , 0 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=8 tgt_tag=9
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.01 ) | loop: temp | face: sgm_2_area_1_layer_1 | src_tag=6 tgt_tag=10
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 1 , 0.01 ) -> ( 0 , 1 , 0.04 ) | loop: temp | face: sgm_2_area_1_layer_2 | src_tag=10 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0 , 0.01 ) -> ( 0 , 1 , 0.01 ) | loop: temp | face: sgm_2_area_1_layer_2 | src_tag=9 tgt_tag=10
+[info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups_debug_5.geo_unrolled
+[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
+[info] PModel.cpp:homogenize:297    - building the shape -- done
+[info] PModel.cpp:homogenize:305    - modeling in Gmsh
+[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , -inf , inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , -inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:48        -   vertex ( 0 , inf , -inf ) skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0 ) -> gmsh tag 1
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0.03 ) -> gmsh tag 2
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0.04 ) -> gmsh tag 3
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , -1 , 0 ) -> gmsh tag 4
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , -1 , 0.03 ) -> gmsh tag 5
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 1 , 0 ) -> gmsh tag 6
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 1 , 0.04 ) -> gmsh tag 7
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , -1 , 0.01 ) -> gmsh tag 8
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0 , 0.01 ) -> gmsh tag 9
+[debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 1 , 0.01 ) -> gmsh tag 10
+[info] PModelBuildGmsh.cpp:createGmshEdges:176        - creating gmsh edges
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0.03 ) -> ( 0 , 0 , 0.04 ) | loop: temp | face: nullptr | src_tag=2 tgt_tag=3
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=4 tgt_tag=1
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0.03 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: temp | face: sgm_2_area_1_layer_1 | src_tag=1 tgt_tag=6
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0.04 ) -> ( 0 , 1 , 0.04 ) | loop: temp | face: nullptr | src_tag=3 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0.03 ) -> ( 0 , -1 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=5 tgt_tag=8
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0.01 ) -> ( 0 , -1 , 0 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=8 tgt_tag=4
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_1 | src_tag=1 tgt_tag=9
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0.01 ) -> ( 0 , 0 , 0.03 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=9 tgt_tag=2
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -1 , 0.01 ) -> ( 0 , 0 , 0.01 ) | loop: temp | face: sgm_1_area_1_layer_2 | src_tag=8 tgt_tag=9
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.01 ) | loop: temp | face: sgm_2_area_1_layer_1 | src_tag=6 tgt_tag=10
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 1 , 0.01 ) -> ( 0 , 1 , 0.04 ) | loop: temp | face: sgm_2_area_1_layer_2 | src_tag=10 tgt_tag=7
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0 , 0.01 ) -> ( 0 , 1 , 0.01 ) | loop: temp | face: sgm_2_area_1_layer_2 | src_tag=9 tgt_tag=10
+[info] PModelBuildGmsh.cpp:createGmshFaces:254        - creating gmsh faces
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:263        -   face: background
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:263        -   face: sgm_1_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshFaces:275        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:297        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:323        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:263        -   face: sgm_1_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:275        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:297        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:323        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:263        -   face: sgm_2_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshFaces:275        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:297        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:323        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshFaces:262        - 
+[debug] PModelBuildGmsh.cpp:createGmshFaces:263        -   face: sgm_2_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshFaces:275        -   adding outer loop
+[debug] PModelBuildGmsh.cpp:createGmshFaces:297        -   adding inner loops
+[debug] PModelBuildGmsh.cpp:createGmshFaces:323        -   adding local mesh size
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:359        -   adding embedded entities
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363        -   face: background
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363        -   face: sgm_1_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363        -   face: sgm_1_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363        -   face: sgm_2_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362        - 
+[debug] PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363        -   face: sgm_2_area_1_layer_1
+[info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:390        - creating physical groups
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:397        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:398        -   face: background
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:397        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:398        -   face: sgm_1_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:402        -   id: 1, material: iso5_1, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:397        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:398        -   face: sgm_1_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:402        -   id: 1, material: iso5_1, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:397        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:398        -   face: sgm_2_area_1_layer_2
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:402        -   id: 1, material: iso5_1, theta_3 = 0.000000
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:397        - 
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:398        -   face: sgm_2_area_1_layer_1
+[debug] PModelBuildGmsh.cpp:createGmshPhyscialGroups:402        -   id: 1, material: iso5_1, theta_3 = 0.000000
+[info] PModelIOGmsh.cpp:writeGmshGeo:351        - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups_debug_6.geo_unrolled
+[info] PModelBuildGmsh.cpp:buildGmsh:515      - meshing
+[info] PModel.cpp:homogenize:309    - modeling in Gmsh -- done
+[info] PModel.cpp:homogenize:319    - writing outputs
+[info] PModelIOGmsh.cpp:writeGmshOpt:465      - writing gmsh .opt file: .\test\integration\t1_strip\strip_two_layups.opt
+[info] PModelIOGmsh.cpp:writeGmshGeo:351      - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_layups.geo_unrolled
+[info] PModelIOGmsh.cpp:writeGmshMsh:396      - writing gmsh .msh file: .\test\integration\t1_strip\strip_two_layups.msh
+[info] PModelIOSG.cpp:writeSG:93      - writing sg file: .\test\integration\t1_strip\strip_two_layups.sg
+[info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
+[info] PModelIOGmsh.cpp:writeElements:136        - writing elements
+[info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
+[info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
+[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: .\test\integration\t1_strip\strip_two_layups.sg.mat
+[info] PModel.cpp:homogenize:332    - writing outputs -- done
+[info] PModel.cpp:plot:469    - running Gmsh for visualization
+[info] main.cpp:main:285  - prevabs finished (2026-04-08 16:49:34)
+[info] main.cpp:main:286  total running time: 1.96738 sec

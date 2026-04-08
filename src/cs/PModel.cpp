@@ -231,18 +231,29 @@ void PModel::build() {
 
 void PModel::plotGeoDebug(bool create_gmsh_geo) {
 
-  if (create_gmsh_geo) {
-    // initGmshModel(pmessage);
-    createGmshGeo();
-  }
-
   debug_plot_count++;
-  std::string fn_base = config.file_directory + config.file_base_name + "_debug";
+  std::string fn_base =
+      config.file_directory + config.file_base_name + "_debug";
+  std::string fn_geo =
+      fn_base + "_" + std::to_string(debug_plot_count) + ".geo_unrolled";
 
-  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count)+".geo_unrolled");
-
-  if (debug_plot_count == 1) {
-    writeGmshOpt(fn_base);
+  if (create_gmsh_geo) {
+    createGmshGeo();
+    // Commit pending geo entities so gmsh::write can see them.
+    gmsh::model::geo::synchronize();
+    writeGmshGeo(fn_geo);
+    if (debug_plot_count == 1) {
+      writeGmshOpt(fn_base);
+    }
+    // Remove the current model (clears all accumulated geo entities and resets
+    // the tag counter) then create a fresh one for the next debug snapshot.
+    gmsh::model::remove();
+    gmsh::model::add("");
+  } else {
+    writeGmshGeo(fn_geo);
+    if (debug_plot_count == 1) {
+      writeGmshOpt(fn_base);
+    }
   }
 
   _gmsh_vertex_tags.clear();

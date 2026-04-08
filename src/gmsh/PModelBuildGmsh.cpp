@@ -40,6 +40,13 @@ void PModel::createGmshVertices() {
       _gv_tag = gmsh::model::geo::addPoint(
         v->x(), v->y(), v->z(), _global_mesh_size);
       _gmsh_vertex_tags[v] = _gv_tag;
+      PLOG(debug) << g_msg->message(
+        "  vertex " + v->printString()
+        + " -> gmsh tag " + std::to_string(_gv_tag));
+    }
+    else {
+      PLOG(debug) << g_msg->message(
+        "  vertex " + v->printString() + " skipped (not finite)");
     }
 
   }
@@ -182,14 +189,38 @@ void PModel::createGmshEdges() {
 
         // New Gmsh line for the pair of half edges
         if (he->sign() > 0) {
-          _ge_tag = gmsh::model::geo::addLine(
-            _gmsh_vertex_tags[he->source()],
-            _gmsh_vertex_tags[he->target()]);
+          int src_tag = _gmsh_vertex_tags[he->source()];
+          int tgt_tag = _gmsh_vertex_tags[he->target()];
+          PLOG(debug) << g_msg->message(
+            "  he " + he->printString()
+            + " | src_tag=" + std::to_string(src_tag)
+            + " tgt_tag=" + std::to_string(tgt_tag));
+          if (src_tag == 0 || tgt_tag == 0) {
+            PLOG(error) << g_msg->message(
+              "  vertex tag is 0 for he " + he->printString()
+              + " | src=" + he->source()->printString()
+              + " (tag=" + std::to_string(src_tag) + ")"
+              + " | tgt=" + he->target()->printString()
+              + " (tag=" + std::to_string(tgt_tag) + ")");
+          }
+          _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
         }
         else {
-          _ge_tag = gmsh::model::geo::addLine(
-            _gmsh_vertex_tags[he->twin()->source()],
-            _gmsh_vertex_tags[he->twin()->target()]);
+          int src_tag = _gmsh_vertex_tags[he->twin()->source()];
+          int tgt_tag = _gmsh_vertex_tags[he->twin()->target()];
+          PLOG(debug) << g_msg->message(
+            "  he(twin) " + he->twin()->printString()
+            + " | src_tag=" + std::to_string(src_tag)
+            + " tgt_tag=" + std::to_string(tgt_tag));
+          if (src_tag == 0 || tgt_tag == 0) {
+            PLOG(error) << g_msg->message(
+              "  vertex tag is 0 for he(twin) " + he->twin()->printString()
+              + " | src=" + he->twin()->source()->printString()
+              + " (tag=" + std::to_string(src_tag) + ")"
+              + " | tgt=" + he->twin()->target()->printString()
+              + " (tag=" + std::to_string(tgt_tag) + ")");
+          }
+          _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
         }
 
         // Interface
@@ -201,6 +232,10 @@ void PModel::createGmshEdges() {
 
       }
       _gmsh_edge_tags[he] = _ge_tag;
+    }
+    else {
+      PLOG(debug) << g_msg->message(
+        "  he " + he->printString() + " skipped (not finite)");
     }
   }
 }

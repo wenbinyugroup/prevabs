@@ -115,7 +115,7 @@ public:
     \param v a new vertex.
     \param e the existing edge.
   */
-  void splitEdge(PDCELHalfEdge *e, PDCELVertex *v);
+  void splitEdge(PDCELHalfEdge *e, PDCELVertex *&v);
 
   /*!
     \return The half edge from v1 to v2.

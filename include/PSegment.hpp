@@ -185,6 +185,45 @@ public:
 
   void build(const BuilderConfig &);
   void buildAreas(const BuilderConfig &);
+
+private:
+  // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
+  // Splits DCEL edges in place. Returns the new intermediate vertices.
+  std::vector<PDCELVertex *> splitBoundByLayup(
+      PDCELVertex *vb, PDCELVertex *vo, const BuilderConfig &bcfg);
+
+  // Search face boundary edges from v_prev for the intersection with ls_offset.
+  // go_prev controls traversal direction (true = prev(), false = next()).
+  // May split an edge. Returns the intersection vertex, or nullptr if not found.
+  PDCELVertex *findLayerIntersectionOnFace(
+      PDCELVertex *v_prev, PDCELFace *face,
+      PGeoLineSegment *ls_offset, bool go_prev,
+      const BuilderConfig &bcfg);
+
+  // Build layer vertices on an open bound by intersecting offset line segments
+  // with the face boundary. v_start is the seed vertex; go_prev controls
+  // traversal direction. Returns the new layer vertices.
+  std::vector<PDCELVertex *> buildOpenBoundLayerVertices(
+      PDCELVertex *v_start, PGeoLineSegment *ls_base,
+      bool go_prev, const BuilderConfig &bcfg);
+
+  // Section 1: compute beginning-bound layer vertices.
+  // For closed segments, also fills first_bound_vertices.
+  std::vector<PDCELVertex *> buildBeginningBound(
+      std::vector<PDCELVertex *> &first_bound_vertices,
+      const BuilderConfig &bcfg);
+
+  // Section 2: create all intermediate areas and update prev_bound_vertices
+  // and count.
+  void createIntermediateAreas(
+      std::vector<PDCELVertex *> &prev_bound_vertices,
+      int &count, const BuilderConfig &bcfg);
+
+  // Section 3: create and append the last (or only) area.
+  void buildLastArea(
+      const std::vector<PDCELVertex *> &prev_bound_vertices,
+      const std::vector<PDCELVertex *> &first_bound_vertices,
+      int count, const BuilderConfig &bcfg);
 };
 
 // ===================================================================

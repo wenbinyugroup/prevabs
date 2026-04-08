@@ -301,7 +301,7 @@ PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v, PDCELFace *f) {
   return nullptr;
 }
 
-void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
+void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *&v0) {
   //          e12
   //          -->
   //     e10      e02
@@ -316,6 +316,21 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
 
   PDCELVertex *v1 = e12->source();
   PDCELVertex *v2 = e21->source();
+
+  // Resolve v0 to the canonical DCEL vertex before allocating any structures.
+  // addVertex may return an existing coincident vertex instead of v0.
+  PDCELVertex *v0_canon = addVertex(v0);
+  if (v0_canon != v0) {
+    delete v0;
+    v0 = v0_canon;
+  }
+
+  // If v0 is already one of the edge's endpoints, splitting would produce a
+  // zero-length (degenerate) edge and corrupt the DCEL. Skip the split.
+  if (v0 == v1 || v0 == v2) {
+    return;
+  }
+
   PDCELHalfEdgeLoop *hel12 = e12->loop();
   PDCELHalfEdgeLoop *hel21 = e21->loop();
   PDCELFace *f12 = e12->face();
@@ -386,8 +401,6 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
   if (f21 != nullptr && f21->outer() == e21) {
     f21->setOuterComponent(e20);
   }
-
-  addVertex(v0);
 
   _halfedges.push_back(e10);
   _halfedges.push_back(e02);
