@@ -186,7 +186,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       PLOG(debug) << g_msg->message("ref vertex: " + _ref_vertex->printString());
 
       bool to_be_removed;
-      if (_ref_vertex->dcel() != nullptr) {
+      if (_ref_vertex->isRegistered()) {
         to_be_removed = false;
       }
       else {

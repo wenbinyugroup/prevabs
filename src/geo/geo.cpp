@@ -102,12 +102,12 @@ PDCELVertex *findPointOnPolylineByCoordinate(
       // Find the new point
       if (counter == count) {
         if (fabs(loc - left_x2) < tol) {
-          pv->setLinkToVertex(ps[i]);
+          pv->setPosition(ps[i]->x(), ps[i]->y(), ps[i]->z());
           break;
         }
         else if (fabs(loc - right_x2) < tol) {
           ulength += ps[i]->point().distance(ps[i+1]->point());
-          pv->setLinkToVertex(ps[i+1]);
+          pv->setPosition(ps[i+1]->x(), ps[i+1]->y(), ps[i+1]->z());
           break;
         }
         else {

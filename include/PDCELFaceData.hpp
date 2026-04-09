@@ -5,26 +5,28 @@
 // The classical DCEL face should carry only topology:
 //   PDCELHalfEdge *_outer;
 //   std::vector<PDCELHalfEdge *> _inners;
+//   bool _is_bounded;
 //
-// All domain-specific fields currently in PDCELFace belong here.
-// Migration path (incremental — one field at a time):
+// Domain-specific fields are migrated here incrementally (one at a time):
 //   1. Add field to PDCELFaceData.
-//   2. Add std::unordered_map<PDCELFace *, PDCELFaceData> face_data to PModel.
+//   2. Add std::unordered_map<PDCELFace *, PDCELFaceData> _face_data to PModel.
 //   3. Remove the field from PDCELFace, fixing compilation errors.
-//   4. Update all call sites to use pmodel->face_data[f].field.
+//   4. Update all call sites to use bcfg.model->faceData(f).field.
 //
-// Fields already migrated: (none yet — this is the foundation)
+// Keep this header self-contained: use forward declarations for all pointer
+// types to avoid circular include chains (PArea.hpp → utilities.hpp →
+// PModel.hpp → PDCELFaceData.hpp → PArea.hpp).
 
-#include "Material.hpp"
-#include "PArea.hpp"
-#include "geo_types.hpp"
-#include "globalConstants.hpp"
+// Forward declarations — all members below are raw pointers or value types.
+class LayerType;
+class Material;
+class PArea;
+class PDCELVertex;
+
+#include "geo_types.hpp"  // SVector3
 
 #include <string>
 #include <vector>
-
-class PDCELVertex;
-class LayerType;
 
 /// All domain-specific data associated with a DCEL face.
 /// Intended to live in an std::unordered_map<PDCELFace *, PDCELFaceData>

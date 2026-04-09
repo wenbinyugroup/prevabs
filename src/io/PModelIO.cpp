@@ -190,7 +190,8 @@ int readInputMain(const std::string &filenameCrossSection,
 
 
 int writeFace(FILE *file, PDCELFace *face) {
-  fprintf(file, "name: %s\n", face->name().c_str());
+  // name field migrated to PDCELFaceData; pass bcfg.model->faceData(f).name
+  // to callers when this function is re-activated.
 
   // if (face->layertype() != nullptr) {
   //   fprintf(file, "layertype: %");

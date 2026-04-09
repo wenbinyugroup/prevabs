@@ -1,7 +1,9 @@
 #pragma once
 
+// Domain fields (_link_to, _p_on_line) have been moved to PDCELVertexData,
+// owned by PModel.  PDCELVertex now holds only topology + identity.
+
 #include "declarations.hpp"
-#include "PBaseLine.hpp"
 #include "PDCELHalfEdge.hpp"
 
 #include "geo_types.hpp"
@@ -17,38 +19,26 @@ class PDCELHalfEdge;
  */
 class PDCELVertex {
 private:
-  std::string _s_name;
-  SPoint3 _point;
-  PDCEL *_dcel; // Indicating if the vertex has been added to the dcel
-  PDCELHalfEdge *_incident_edge;
-  int _degenerated;
-  PDCELVertex *_link_to = nullptr;
-  Baseline *_p_on_line = nullptr;
-  bool _on_joint = false;
+  std::string    _s_name;
+  SPoint3        _point;
+  bool           _registered = false; // true once added to a DCEL
+  PDCELHalfEdge *_incident_edge = nullptr;
 
 public:
-  PDCELVertex()
-      : _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
-  PDCELVertex(std::string name)
-      : _s_name(name), _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
+  PDCELVertex() = default;
+  explicit PDCELVertex(std::string name)
+      : _s_name(name) {}
   PDCELVertex(double x, double y, double z)
-      : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
+      : _point(x, y, z) {}
   // build parameter kept for call-site compatibility; use isFinite() instead
   PDCELVertex(double x, double y, double z, bool /*build*/)
-      : _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
-  PDCELVertex(SPoint3 point)
-      : _point(point), _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
+      : _point(x, y, z) {}
+  explicit PDCELVertex(SPoint3 point)
+      : _point(point) {}
   PDCELVertex(std::string name, double x, double y, double z)
-      : _s_name(name), _point(x, y, z), _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
+      : _s_name(name), _point(x, y, z) {}
   PDCELVertex(std::string name, SPoint3 point)
-      : _s_name(name), _point(point), _dcel(nullptr), _incident_edge(nullptr),
-        _degenerated(0) {}
+      : _s_name(name), _point(point) {}
 
   // void printBasepoint();
   friend std::ostream &operator<<(std::ostream &, PDCELVertex *);
@@ -71,37 +61,24 @@ public:
   inline double y() const { return _point.y(); }
   inline double z() const { return _point.z(); }
 
-  PDCELVertex *getLinkToVertex() { return _link_to; }
-  Baseline *getOnLine() { return _p_on_line; }
-
   void translate(double, double, double);
   void scale(double);
   void rotate(double);
 
   bool isFinite();
-  bool onJoint() { return _on_joint; }
 
-  PDCEL *dcel() { return _dcel; }
+  bool isRegistered() const { return _registered; }
   PDCELHalfEdge *edge() { return _incident_edge; }
   int degree();
   PDCELHalfEdge *getEdgeTo(PDCELVertex *);
-
-  int &degenerated() { return _degenerated; }
 
   void setName(const std::string &name) { _s_name = name; }
 
   void setPosition(double, double, double);
   void setPoint(SPoint3 &);
 
-  void setLinkToVertex(PDCELVertex *v) { _link_to = v; }
-  void setOnLine(Baseline *l) { _p_on_line = l; }
-
-  void setDCEL(PDCEL *dcel) { _dcel = dcel; }
+  void setRegistered(bool r) { _registered = r; }
   void setIncidentEdge(PDCELHalfEdge *);
-
-  void setOnJoint(bool on_joint) { _on_joint = on_joint; }
-
-  // void setName(std::string name) {_s_name = name; }
 };
 
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2);

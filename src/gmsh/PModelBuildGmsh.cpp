@@ -260,7 +260,7 @@ void PModel::createGmshFaces() {
   for (auto f : _dcel->faces()) {
 
     PLOG(debug) << g_msg->message("");
-    PLOG(debug) << g_msg->message("  face: " + f->name());
+    PLOG(debug) << g_msg->message("  face: " + _face_data[f].name);
 
     if (f->isBounded() && f->outer() != nullptr) {
 
@@ -321,14 +321,14 @@ void PModel::createGmshFaces() {
 
       // Create embedded entities and set local mesh sizes
       PLOG(debug) << g_msg->message("  adding local mesh size");
-      if (f->getMeshSize() != -1) {
+      if (_face_data[f].mesh_size != -1) {
         int _gv_tag_prev = 0;
         int _gv_tag_curr = 0;
 
-        for (auto v : f->getEmbeddedVertices()) {
+        for (auto v : _face_data[f].embedded_vertices) {
 
           _gv_tag_curr = gmsh::model::geo::addPoint(
-            v->x(), v->y(), v->z(), f->getMeshSize());
+            v->x(), v->y(), v->z(), _face_data[f].mesh_size);
           _gmsh_face_embedded_vertex_tags[f].push_back(_gv_tag_curr);
 
           // If there are more than one embedded vertices, add embedded edges
@@ -360,7 +360,7 @@ void PModel::createGmshEmbeddedEntities() {
   for (auto f : _dcel->faces()) {
 
     PLOG(debug) << g_msg->message("");
-    PLOG(debug) << g_msg->message("  face: " + f->name());
+    PLOG(debug) << g_msg->message("  face: " + _face_data[f].name);
 
     auto it_ev = _gmsh_face_embedded_vertex_tags.find(f);
     if (it_ev != _gmsh_face_embedded_vertex_tags.end() && !it_ev->second.empty()) {
@@ -395,7 +395,7 @@ void PModel::createGmshPhyscialGroups() {
   for (auto f : _dcel->faces()) {
 
     PLOG(debug) << g_msg->message("");
-    PLOG(debug) << g_msg->message("  face: " + f->name());
+    PLOG(debug) << g_msg->message("  face: " + _face_data[f].name);
 
     if (f->isBounded() && f->outer() != nullptr) {
 

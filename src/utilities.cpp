@@ -572,15 +572,6 @@ void discretizeArcA(const PGeoArc &arc, double stepAngle, Baseline *baseline, PM
 //   }
 // }
 
-PDCELVertex *getPVertexByName(std::string name,
-                              std::vector<PDCELVertex *> &vertices) {
-  for (auto it = vertices.begin(); it != vertices.end(); ++it) {
-    if ((*it)->name() == name)
-      return *it;
-  }
-  return nullptr;
-}
-
 Baseline *getBaselineByName(std::string name,
                             std::vector<Baseline> &baselines) {
   for (auto it = baselines.begin(); it != baselines.end(); ++it) {

@@ -12,8 +12,6 @@
 #include <vector>
 
 PDCELFace::PDCELFace() {
-  _name = "null";
-
   _outer = nullptr;
   _area = nullptr;
   _material = nullptr;
@@ -25,8 +23,6 @@ PDCELFace::PDCELFace() {
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
-  _name = "null";
-
   _outer = outer;
   _area = nullptr;
   _material = nullptr;
@@ -38,8 +34,6 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
-  _name = "null";
-
   _outer = outer;
   _area = nullptr;
   _material = nullptr;
@@ -51,7 +45,6 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
 }
 
 void PDCELFace::print() {
-  PLOG(debug) << "name: " << _name;
 
   PDCELHalfEdge *he;
   // Print the outer boundary

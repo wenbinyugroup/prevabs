@@ -13,11 +13,13 @@
 
 #include "geo_types.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <iterator>
 #include <limits>
 #include <list>
 #include <map>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -61,7 +63,6 @@ void PDCEL::initialize() {
   PDCELHalfEdgeLoop *hel = addHalfEdgeLoop(he_top);
 
   PDCELFace *f = new PDCELFace(he_top, false); // The unbounded face
-  f->setName("background");
 
   hel->setDirection(1);
   hel->setFace(f);
@@ -152,6 +153,48 @@ bool PDCEL::validate() {
                     << " next->source != he->target";
       ok = false;
     }
+
+    // self-loop: source == target is degenerate
+    if (he->source() == he->target()) {
+      PLOG(warning) << "validate: half-edge " << he
+                    << " is a self-loop (source == target)";
+      ok = false;
+    }
+
+    // orphaned half-edge: every entry in _halfedges must have an incident face
+    // (background half-edges were moved to _background_halfedges)
+    if (he->face() == nullptr) {
+      PLOG(warning) << "validate: half-edge " << he
+                    << " has null incident face (orphaned)";
+      ok = false;
+    }
+  }
+
+  // ── Multi-edge check ──────────────────────────────────────────────────────
+  // Two distinct half-edges both going from v1 → v2 is degenerate.
+  {
+    std::unordered_map<PDCELVertex *, std::vector<PDCELVertex *>> seen;
+    for (auto he : _halfedges) {
+      PDCELVertex *src = he->source();
+      PDCELVertex *tgt = he->target();
+      auto &nbrs = seen[src];
+      if (std::find(nbrs.begin(), nbrs.end(), tgt) != nbrs.end()) {
+        PLOG(warning) << "validate: multi-edge detected from vertex "
+                      << src << " to vertex " << tgt;
+        ok = false;
+      } else {
+        nbrs.push_back(tgt);
+      }
+    }
+  }
+
+  // ── Vertex invariants ─────────────────────────────────────────────────────
+  for (auto v : _vertices) {
+    if (v->edge() == nullptr) {
+      PLOG(warning) << "validate: vertex " << v
+                    << " is isolated (no incident edge)";
+      ok = false;
+    }
   }
 
   // ── Face invariants ───────────────────────────────────────────────────────
@@ -233,7 +276,7 @@ PDCELVertex *PDCEL::findCoincidentVertex(PDCELVertex *v) const {
 }
 
 PDCELVertex *PDCEL::addVertex(PDCELVertex *v) {
-  if (v->dcel() == this)
+  if (v->isRegistered())
     return v;  // already in this DCEL
 
   // Merge with any geometrically coincident vertex that is already present.
@@ -242,7 +285,7 @@ PDCELVertex *PDCEL::addVertex(PDCELVertex *v) {
 
   _vertices.push_back(v);
   _vertex_tree.insert(v);
-  v->setDCEL(this);
+  v->setRegistered(true);
   return v;
 }
 
@@ -252,10 +295,10 @@ void PDCEL::removeVertex(PDCELVertex *v) {
                 << " still has incident edges; cannot remove";
     return;
   }
-  if (v->dcel() != nullptr) {
+  if (v->isRegistered()) {
     _vertices.remove(v);
     _vertex_tree.erase(v);
-    v->setDCEL(nullptr);
+    v->setRegistered(false);
   }
 }
 

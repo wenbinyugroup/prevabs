@@ -132,7 +132,6 @@ std::vector<double> getDxyFromAngle(double, char = 'x', double = 1.0,
 void discretizeArcN(const PGeoArc &, int, Baseline *, PModel *);
 void discretizeArcA(const PGeoArc &, double, Baseline *, PModel *);
 // Basepoint *getBasepointByName(std::string, std::vector<Basepoint> &);
-PDCELVertex *getPVertexByName(std::string, std::vector<PDCELVertex *> &);
 Baseline *getBaselineByName(std::string, std::vector<Baseline> &);
 Material *getMaterialByName(std::string, std::vector<Material> &);
 std::vector<double> decodeStackSequence(std::string);

@@ -26,7 +26,7 @@ void PDCELHalfEdgeLoop::log() {
   // } else {
   //   ss << "nullptr" << std::endl;
   // }
-  PLOG(debug) << "face: " << (_face ? _face->name() : "nullptr");
+  PLOG(debug) << "face: " << (_face ? "(face)" : "nullptr");
 
   PDCELHalfEdge *he = _incident_edge;
   // std::cout << "half edges:" << std::endl;
@@ -56,7 +56,7 @@ void PDCELHalfEdgeLoop::print() {
 
   std::cout << "face: ";
   if (_face != nullptr) {
-    std::cout << _face->name() << std::endl;
+    std::cout << "(face)" << std::endl;
   } else {
     std::cout << "nullptr" << std::endl;
   }

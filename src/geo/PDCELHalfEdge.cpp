@@ -39,7 +39,7 @@ std::string PDCELHalfEdge::printString() {
   // } else {
   //   ss << _face->name();
   // }
-  ss << " | face: " << (_face ? _face->name() : "nullptr");
+  ss << " | face: " << (_face ? "(face)" : "nullptr");
   
   return ss.str();
 }
@@ -75,7 +75,7 @@ void PDCELHalfEdge::print2() {
   if (_face == nullptr) {
     std::cout << "nullptr";
   } else {
-    std::cout << _face->name();
+    std::cout << "(face)";
   }
 
   // std::cout << " | address: ";

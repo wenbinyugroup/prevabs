@@ -212,6 +212,8 @@ void PModel::build() {
     _dcel, this,
     [this](Message* msg) { this->plotGeoDebug(); }
   };
+  bcfg.model = this;
+  _face_data[_dcel->faces().front()].name = "background";
 
   // for (auto cs : crosssections) {
   //   cs->build();

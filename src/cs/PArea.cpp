@@ -3,6 +3,7 @@
 #include "Material.hpp"
 #include "PDCELFace.hpp"
 #include "PGeoClasses.hpp"
+#include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "PSegment.hpp"
 #include "geo.hpp"
@@ -111,7 +112,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   // if (bcfg.debug) {
   //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
   // }
-  PLOG(debug) << g_msg->message("building layers for area: " + _face->name());
+  PLOG(debug) << g_msg->message("building layers for area: " + bcfg.model->faceData(_face).name);
 
   // std::cout << "        area face:" << std::endl;
   // _face->print();
@@ -136,7 +137,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   // PGeoLineSegment *ls_offset, *ls_prev;
   Layer layer;
   // double thk;
-  std::string area_name = _face->name();
+  std::string area_name = bcfg.model->faceData(_face).name;
 
   // std::cout << "        line segment _line_segment_base: " << _line_segment_base << std::endl;
 
@@ -171,7 +172,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
 
     // std::cout << "        setting new layer face properties" << std::endl;
     // std::cout << "        name" << std::endl;
-    _faces.back()->setName(area_name + "_layer_" + std::to_string(i + 1));
+    bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(i + 1);
     // std::cout << "        material" << std::endl;
     _faces.back()->setMaterial(layer.getLamina()->getMaterial());
     // std::cout << "        theta3" << std::endl;
@@ -203,7 +204,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   layer = layup->getLayers().back();
   // layer = layup->getLayers()[i];
   // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
-  _faces.back()->setName(area_name + "_layer_" + std::to_string(layup->getLayers().size()));
+  bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(layup->getLayers().size());
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());

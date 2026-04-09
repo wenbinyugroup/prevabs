@@ -120,7 +120,7 @@ PDCELVertex *readXMLElementPoint(
     p_bsl_vertices = p_bsl->vertices();
 
     pv = new PDCELVertex(label);
-    pv->setOnLine(p_bsl);
+    pmodel->vertexData(pv).on_line = p_bsl;
 
     // The number is the non-dimensional curvlinear location
     if (by == "curve") {
@@ -219,7 +219,7 @@ PDCELVertex *readXMLElementPoint(
           p_bsl->insertPVertex(_id, pv);
         }
         else {
-          pv->setLinkToVertex(p_bsl_vertices[_id]);
+          pmodel->vertexData(pv).link_to = p_bsl_vertices[_id];
         }
       }
     }

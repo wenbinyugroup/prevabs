@@ -253,8 +253,8 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
           // TODO: raise error 'cannot find point' and exit.
         }
 
-        if (pv->getLinkToVertex()) {
-          pv = pv->getLinkToVertex();
+        if (pmodel->vertexData(pv).link_to) {
+          pv = pmodel->vertexData(pv).link_to;
         }
 
         line->addPVertex(pv);
@@ -283,17 +283,17 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
         // The new line is a segment of the existing line
         // std::cout << "is pvbegin on line: " << pvbegin->getOnLine() << std::endl;
         // std::cout << "is pvend on line: " << pvend->getOnLine() << std::endl;
-        if (pvbegin->getOnLine() || pvend->getOnLine()) {
-          Baseline *p_on_bsl = pvbegin->getOnLine();
-          if (!p_on_bsl) p_on_bsl = pvend->getOnLine();
+        if (pmodel->vertexData(pvbegin).on_line || pmodel->vertexData(pvend).on_line) {
+          Baseline *p_on_bsl = pmodel->vertexData(pvbegin).on_line;
+          if (!p_on_bsl) p_on_bsl = pmodel->vertexData(pvend).on_line;
 
           // std::cout << "\non line: " << p_on_bsl->getName() << std::endl;
           // p_on_bsl->print(pmessage, 9);
 
-          if (pvbegin->getLinkToVertex())
-            basepointLabelBegin = pvbegin->getLinkToVertex()->name();
-          if (pvend->getLinkToVertex())
-            basepointLabelEnd = pvend->getLinkToVertex()->name();
+          if (pmodel->vertexData(pvbegin).link_to)
+            basepointLabelBegin = pmodel->vertexData(pvbegin).link_to->name();
+          if (pmodel->vertexData(pvend).link_to)
+            basepointLabelEnd = pmodel->vertexData(pvend).link_to->name();
 
           int _id{0};
           while (1) {

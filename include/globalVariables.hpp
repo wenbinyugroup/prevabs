@@ -10,6 +10,7 @@ class PDCEL;
 class LayerType;
 class Material;
 class Message;
+class PModel;
 
 extern bool debug;
 extern int i_indent;
@@ -128,4 +129,5 @@ struct BuilderConfig {
   PDCEL*           dcel      = nullptr;
   IMaterialLookup* materials = nullptr;
   std::function<void(Message*)> plotDebug;
+  PModel*          model     = nullptr;
 };

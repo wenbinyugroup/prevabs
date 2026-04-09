@@ -302,7 +302,7 @@ void Segment::build(const BuilderConfig &bcfg) {
   // std::cout << hel << std::endl;
 
   _face = bcfg.dcel->addFace(hel);
-  _face->setName(_name + "_face");
+  bcfg.model->faceData(_face).name = _name + "_face";
   // std::cout << "        face _face:" << std::endl;
   // _face->print();
 

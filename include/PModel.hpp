@@ -20,6 +20,8 @@ class PMesh;
 #include "globalVariables.hpp"
 #include "Material.hpp"
 #include "PDCEL.hpp"
+#include "PDCELFaceData.hpp"
+#include "PDCELVertexData.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
 #include "GeometryRepository.hpp"
@@ -181,6 +183,10 @@ private:
 
   CrossSection *_cross_section;
 
+  // Domain property maps — keyed by DCEL object pointer; owned by PModel.
+  std::unordered_map<PDCELFace*,   PDCELFaceData>   _face_data;
+  std::unordered_map<PDCELVertex*, PDCELVertexData> _vertex_data;
+
   // Gmsh entity maps — Gmsh integer tags for DCEL objects, owned by the Gmsh bridge.
   // Keyed by pointer; cleared between debug geometry plots.
   std::unordered_map<PDCELVertex*, int> _gmsh_vertex_tags;
@@ -228,6 +234,13 @@ public:
 
   // GModel *gmodel() { return _gmodel; }
   PDCEL *dcel() { return _dcel; }
+
+  // Face property map accessor.  Returns a reference to the PDCELFaceData
+  // for face f, default-constructing an entry if f is not yet present.
+  PDCELFaceData&   faceData(PDCELFace* f)     { return _face_data[f]; }
+  // Vertex property map accessor.  Returns a reference to the PDCELVertexData
+  // for vertex v, default-constructing an entry if v is not yet present.
+  PDCELVertexData& vertexData(PDCELVertex* v)  { return _vertex_data[v]; }
 
   double globalMeshSize() { return _global_mesh_size; }
   unsigned int elementType() { return _element_type; }

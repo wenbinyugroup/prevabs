@@ -10,7 +10,6 @@
 #include "geo_types.hpp"
 
 #include <cmath>
-#include <string>
 #include <vector>
 
 class PDCELHalfEdge;
@@ -19,6 +18,10 @@ class PArea;
 
 /** @ingroup geo
  * A DCEL face class.
+ *
+ * Topology only: _outer, _inners, _is_bounded.
+ * Domain data (name, material, mesh_size, etc.) live in PDCELFaceData,
+ * owned by PModel and accessed via BuilderConfig::model->faceData(f).
  */
 class PDCELFace {
 private:
@@ -29,13 +32,9 @@ private:
   double _theta3, _theta1;
   LayerType *_layertype;
   SVector3 _y1{1, 0, 0}, _y2{0, 1, 0};
-  double _mesh_size = -1;
-  std::vector<PDCELVertex *> _embedded_vertices;
 
   // True for bounded (real) faces; false for the unbounded background face.
   bool _is_bounded;
-
-  std::string _name;
 
 public:
   PDCELFace();
@@ -57,12 +56,7 @@ public:
   SVector3 localy2() { return _y2; }
   double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / PI; }
 
-  double getMeshSize() const { return _mesh_size; }
-  std::vector<PDCELVertex *> getEmbeddedVertices() { return _embedded_vertices; }
-
   bool isBounded() { return _is_bounded; }
-
-  std::string name() { return _name; }
 
   PDCELHalfEdge *getOuterHalfEdgeWithSource(PDCELVertex *);
   PDCELHalfEdge *getOuterHalfEdgeWithTarget(PDCELVertex *);
@@ -81,11 +75,6 @@ public:
   double calcTheta1Fromy2(SVector3, bool deg = true);
   SVector3 calcy2FromTheta1(double, bool deg = true);
 
-  void setMeshSize(double ms) { _mesh_size = ms; }
-  void addEmbeddedVertex(PDCELVertex *v) { _embedded_vertices.push_back(v); }
-
   void setBounded(bool b) { _is_bounded = b; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
-
-  void setName(std::string name) { _name = name; }
 };

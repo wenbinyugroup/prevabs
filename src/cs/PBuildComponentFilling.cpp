@@ -3,6 +3,7 @@
 #include "Material.hpp"
 #include "PDCEL.hpp"
 #include "PGeoClasses.hpp"
+#include "PModel.hpp"
 #include "PSegment.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
@@ -200,7 +201,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
   }
   else {
     _fill_face = bcfg.dcel->addFace(hel_out);
-    _fill_face->setName(_name + "_fill_face");
+    bcfg.model->faceData(_fill_face).name = _name + "_fill_face";
     _fill_face->setMaterial(_fill_material);
     bcfg.dcel->setLoopKept(hel_out, true);
     hel_out->setFace(_fill_face);
@@ -232,12 +233,12 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
 
 
-  // Set local mesh size
+  // Set local mesh size and embedded vertices in the property map.
   if (_mesh_size != -1) {
-    // std::cout << _mesh_size << std::endl;
-    _fill_face->setMeshSize(_mesh_size);
+    PDCELFaceData &fd = bcfg.model->faceData(_fill_face);
+    fd.mesh_size = _mesh_size;
     for (auto v : _embedded_vertices) {
-      _fill_face->addEmbeddedVertex(v);
+      fd.embedded_vertices.push_back(v);
     }
   }
 

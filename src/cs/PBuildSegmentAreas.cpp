@@ -293,7 +293,7 @@ void Segment::createIntermediateAreas(
       area->setLocaly2(ls_layup->toVector());
     }
 
-    area->face()->setName(_name + "_area_" + std::to_string(count));
+    bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
     area->setPrevBoundVertices(prev_bound_vertices);
 
     for (auto v : splitBoundByLayup(vb_tmp, vo_tmp, bcfg)) {
@@ -339,7 +339,7 @@ void Segment::buildLastArea(
     area->setLocaly2(ls_layup->toVector());
   }
 
-  area->face()->setName(_name + "_area_" + std::to_string(count));
+  bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
   area->setPrevBoundVertices(prev_bound_vertices);
 
   if (_closed) {

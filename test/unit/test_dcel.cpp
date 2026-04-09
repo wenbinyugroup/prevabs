@@ -369,6 +369,68 @@ TEST_CASE("validate: passes after addFace with a rectangular face",
   CHECK(dcel.validate());
 }
 
+TEST_CASE("validate: fails when an isolated vertex exists", "[dcel][validate]") {
+  PDCEL dcel;
+  // addVertex without addEdge leaves the vertex with no incident edge.
+  dcel.addVertex(new PDCELVertex(0, 5.0, 5.0));
+  CHECK(!dcel.validate());
+}
+
+TEST_CASE("validate: fails on self-loop half-edge (source == target)",
+          "[dcel][validate]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 3.0, 0.0));
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 2.0, 3.0));
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v1};
+  dcel.addFace(vloop);
+
+  REQUIRE(dcel.validate());  // sanity: starts valid
+
+  // Corrupt: redirect the source of he(v1→v2) to v2 → source == target.
+  PDCELHalfEdge *he = dcel.findHalfEdgeBetween(v1, v2);
+  REQUIRE(he != nullptr);
+  he->setSource(he->target());
+
+  CHECK(!dcel.validate());
+}
+
+TEST_CASE("validate: fails when a multi-edge exists (v1→v2 duplicated)",
+          "[dcel][validate]") {
+  PDCEL dcel;
+  // Create two edges between the same pair of vertices.
+  // addEdge does not deduplicate; calling it twice creates a multi-edge.
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  dcel.addEdge(v1, v2);
+  dcel.addEdge(v1, v2);  // duplicate
+
+  CHECK(!dcel.validate());
+}
+
+TEST_CASE("validate: fails when a half-edge has a null incident face (orphaned)",
+          "[dcel][validate]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 3.0, 0.0));
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 2.0, 3.0));
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v1};
+  dcel.addFace(vloop);
+
+  REQUIRE(dcel.validate());  // sanity: starts valid
+
+  // Corrupt: clear the incident face of one boundary half-edge.
+  PDCELHalfEdge *he = dcel.findHalfEdgeBetween(v1, v2);
+  REQUIRE(he != nullptr);
+  he->setIncidentFace(nullptr);
+
+  CHECK(!dcel.validate());
+}
+
 
 // ==================================================================
 // 7. Face operations
