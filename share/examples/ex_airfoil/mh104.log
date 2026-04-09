@@ -3338,10 +3338,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.463351 , -0.00273548 ) -> gmsh tag 33
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.460678 , -0.00589326 ) -> gmsh tag 34
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: nullptr | face: nullptr | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: nullptr | face: nullptr | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -3439,10 +3439,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.430488 , 0.0373562 ) -> gmsh tag 45
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.447013 , 0.0193253 ) -> gmsh tag 46
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -3577,10 +3577,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.165518 , 0.100427 ) -> gmsh tag 65
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.222631 , 0.0875175 ) -> gmsh tag 66
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -3798,10 +3798,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.668353 , 0.0910275 ) -> gmsh tag 109
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.571147 , 0.107336 ) -> gmsh tag 110
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -4065,10 +4065,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.399286 , -0.0332791 ) -> gmsh tag 127
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.499099 , -0.0269859 ) -> gmsh tag 128
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -4361,10 +4361,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.316271 , -0.0563584 ) -> gmsh tag 139
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.261448 , -0.0674553 ) -> gmsh tag 140
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -8803,10 +8803,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.1691 , 0.0996172 ) -> gmsh tag 145
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.212505 , 0.0898063 ) -> gmsh tag 146
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -9120,10 +9120,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.1691 , 0.0996172 ) -> gmsh tag 145
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , -0.212505 , 0.0898063 ) -> gmsh tag 146
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -11931,10 +11931,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.4959 , 0.0789833 ) -> gmsh tag 151
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.452495 , 0.0856001 ) -> gmsh tag 152
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -12263,10 +12263,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.4959 , 0.0789833 ) -> gmsh tag 151
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43            -   vertex ( 0 , 0.452495 , 0.0856001 ) -> gmsh tag 152
 [info] PModelBuildGmsh.cpp:createGmshEdges:176            - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237            -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194            -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -12590,10 +12590,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0.4959 , 0.0789833 ) -> gmsh tag 151
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0.452495 , 0.0856001 ) -> gmsh tag 152
 [info] PModelBuildGmsh.cpp:createGmshEdges:176        - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.458261 , 0.0157324 ) | loop: keep | face: sg_lps_2_face | src_tag=1 tgt_tag=2
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -0.467298 , -0.0139885 ) -> ( 0 , -0.460143 , -0.00639786 ) | loop: keep | face: sg_le_face | src_tag=4 tgt_tag=5
@@ -13015,10 +13015,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.467036 , -0.0137112 ) -> gmsh tag 171
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.466686 , -0.0133401 ) -> gmsh tag 172
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: keep | face: sg_lps_2_face | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.256994 , 0.141239 ) -> ( 0 , -0.251786 , 0.123611 ) | loop: keep | face: sg_lps_3_face | src_tag=7 tgt_tag=8
@@ -13492,10 +13492,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.461619 , 0.0300288 ) -> gmsh tag 185
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.461206 , 0.0297255 ) -> gmsh tag 186
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.251786 , 0.123611 ) -> ( 0 , -0.239638 , 0.0824929 ) | loop: keep | face: sg_lps_3_face | src_tag=8 tgt_tag=9
@@ -14170,10 +14170,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.247597 , 0.109432 ) -> gmsh tag 255
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.242041 , 0.0906254 ) -> gmsh tag 256
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.54457 , -0.0851905 ) -> ( 0 , 0.543059 , -0.0637377 ) | loop: keep | face: sg_hps_3_face | src_tag=13 tgt_tag=14
@@ -15160,10 +15160,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.57251 , 0.115705 ) -> gmsh tag 368
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.542537 , 0.120442 ) -> gmsh tag 369
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.543059 , -0.0637377 ) -> ( 0 , 0.540266 , -0.024086 ) | loop: keep | face: sg_hps_3_face | src_tag=14 tgt_tag=15
@@ -15802,7 +15802,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face:  | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: keep | face:  | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -16403,10 +16403,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.54224 , -0.0521065 ) -> gmsh tag 431
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.540862 , -0.032545 ) -> gmsh tag 432
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -17042,7 +17042,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_8_layer_7 | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_5_layer_3 | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -17699,10 +17699,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.264532 , -0.085196 ) -> gmsh tag 443
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.264445 , -0.0846933 ) -> gmsh tag 444
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -18338,7 +18338,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_8_layer_7 | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_5_layer_3 | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -19009,10 +19009,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.18924 , 0 ) -> gmsh tag 447
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.192365 , 0 ) -> gmsh tag 448
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -19646,7 +19646,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_8_layer_7 | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_5_layer_3 | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -20324,10 +20324,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.18924 , 0.0950649 ) -> gmsh tag 449
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , -0.192365 , 0.0943585 ) -> gmsh tag 450
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -20960,7 +20960,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_8_layer_7 | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_5_layer_3 | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -21650,10 +21650,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.47576 , 0 ) -> gmsh tag 453
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.472635 , 0 ) -> gmsh tag 454
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -22284,7 +22284,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_8_layer_7 | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_5_layer_3 | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -22981,10 +22981,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.47576 , 0.082166 ) -> gmsh tag 455
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43          -   vertex ( 0 , 0.472635 , 0.0826598 ) -> gmsh tag 456
 [info] PModelBuildGmsh.cpp:createGmshEdges:176          - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237          -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -23614,7 +23614,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.671813 , 0.11135 ) -> ( 0 , 0.574461 , 0.127683 ) | loop: temp | face: sg_te_area_27_layer_3 | src_tag=362 tgt_tag=366
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.670301 , 0.102468 ) -> ( 0 , 0.573013 , 0.11879 ) | loop: temp | face: sg_te_area_27_layer_4 | src_tag=363 tgt_tag=367
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.669776 , 0.0993872 ) -> ( 0 , 0.57251 , 0.115705 ) | loop: temp | face: sg_te_area_27_layer_5 | src_tag=364 tgt_tag=368
-[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_8_layer_7 | src_tag=365 tgt_tag=365
+[debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574543 , 0.128186 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_hps_3_area_5_layer_3 | src_tag=365 tgt_tag=365
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.574461 , 0.127683 ) -> ( 0 , 0.544431 , 0.132428 ) | loop: temp | face: sg_te_area_28_layer_3 | src_tag=366 tgt_tag=188
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.573013 , 0.11879 ) -> ( 0 , 0.543025 , 0.123529 ) | loop: temp | face: sg_te_area_28_layer_4 | src_tag=367 tgt_tag=189
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.57251 , 0.115705 ) -> ( 0 , 0.542537 , 0.120442 ) | loop: temp | face: sg_te_area_28_layer_5 | src_tag=368 tgt_tag=369
@@ -23812,7 +23812,7 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.47576 , 0 ) -> ( 0 , 0.47576 , 0.082166 ) | loop: temp | face: sg_web_2_2_area_1_layer_2 | src_tag=453 tgt_tag=455
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194          -   he ( 0 , 0.472635 , 0 ) -> ( 0 , 0.472635 , 0.0826598 ) | loop: temp | face: sg_web_2_2_area_1_layer_3 | src_tag=454 tgt_tag=456
 [info] PModelIOGmsh.cpp:writeGmshGeo:351          - writing gmsh .geo file: .\share\examples\ex_airfoil\mh104_debug_21.geo_unrolled
-[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
+[info] PDCEL.cpp:fixGeometry:192      - fixing geometry
 [info] PModel.cpp:homogenize:297    - building the shape -- done
 [info] PModel.cpp:homogenize:305    - modeling in Gmsh
 [info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
@@ -24276,10 +24276,10 @@
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0.47576 , 0.082166 ) -> gmsh tag 454
 [debug] PModelBuildGmsh.cpp:createGmshVertices:43        -   vertex ( 0 , 0.472635 , 0.0826598 ) -> gmsh tag 455
 [info] PModelBuildGmsh.cpp:createGmshEdges:176        - creating gmsh edges
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: nullptr skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: keep | face: background skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: keep | face: background skipped (not finite)
-[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: nullptr skipped (not finite)
+[debug] PModelBuildGmsh.cpp:createGmshEdges:237        -   he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: keep | face: background skipped (not finite)
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -0.458261 , 0.0157324 ) -> ( 0 , -0.451373 , 0.0117619 ) | loop: temp | face: sg_lps_2_area_7_layer_3 | src_tag=2 tgt_tag=3
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -0.460143 , -0.00639786 ) -> ( 0 , -0.45469 , -0.000612674 ) | loop: temp | face: nullptr | src_tag=5 tgt_tag=6
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , -0.467298 , 0.020942 ) -> ( 0 , -0.472273 , 0.012311 ) | loop: temp | face: sg_le_area_1_layer_1 | src_tag=1 tgt_tag=19
@@ -24797,5 +24797,5 @@
 [debug] PModelBuildGmsh.cpp:createGmshEdges:194        -   he ( 0 , 0.574605 , 0.128562 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_te_area_28_layer_1 | src_tag=93 tgt_tag=0
 [error] PModelBuildGmsh.cpp:createGmshEdges:199        -   vertex tag is 0 for he ( 0 , 0.574605 , 0.128562 ) -> ( 0 , 0.574543 , 0.128186 ) | loop: temp | face: sg_te_area_28_layer_1 | src=( 0 , 0.574605 , 0.128562 ) (tag=93) | tgt=( 0 , 0.574543 , 0.128186 ) (tag=0)
 [info] PModel.cpp:plot:469    - running Gmsh for visualization
-[info] main.cpp:main:285  - prevabs finished (2026-04-08 16:50:12)
-[info] main.cpp:main:286  total running time: 32.8801 sec
+[info] main.cpp:main:285  - prevabs finished (2026-04-08 20:48:19)
+[info] main.cpp:main:286  total running time: 5.66761 sec

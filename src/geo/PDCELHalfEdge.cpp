@@ -31,7 +31,7 @@ std::string PDCELHalfEdge::printString() {
   //     ss << "temp";
   //   }
   // }
-  ss << " | loop: " << (_loop ? (_loop->keep() ? "keep" : "temp") : "nullptr");
+  ss << " | loop: " << (_loop ? "set" : "nullptr");
 
   // ss << " | face: ";
   // if (_face == nullptr) {
@@ -68,11 +68,7 @@ void PDCELHalfEdge::print2() {
   if (_loop == nullptr) {
     std::cout << "nullptr";
   } else {
-    if (_loop->keep()) {
-      std::cout << "keep";
-    } else {
-      std::cout << "temp";
-    }
+    std::cout << "set";
   }
 
   std::cout << " | face: ";
@@ -106,5 +102,5 @@ double PDCELHalfEdge::angle() {
 
 void PDCELHalfEdge::setLoop(PDCELHalfEdgeLoop *hel) {
   _loop = hel;
-  hel->updateVertexEdge(this);
+  if (hel) hel->updateIncidentEdge(this);
 }

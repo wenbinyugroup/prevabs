@@ -11,7 +11,6 @@ class PDCELFace;
 class PGeoLineSegment;
 
 #include "declarations.hpp"
-#include "PBaseLine.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
@@ -20,7 +19,9 @@ class PGeoLineSegment;
 #include "globalVariables.hpp"
 
 #include <list>
+#include <memory>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 /// Comparator for PDCELVertex* — orders by geometric position (lexicographic
@@ -44,12 +45,17 @@ private:
 
   std::set<PDCELVertex *, CompareVertexByPoint> _vertex_tree;
 
-  /// Segments created internally by addEdge(v1, v2) — owned and deleted by PDCEL.
-  std::list<PGeoLineSegment *> _owned_segments;
+  /// Segments created internally by addEdge(v1, v2) — owned by PDCEL.
+  std::list<std::unique_ptr<PGeoLineSegment>> _owned_segments;
 
   /// Half-edges removed from _halfedges but kept live so that ->twin() traversal
-  /// through bounding-box edges continues to work.  Deleted in ~PDCEL().
-  std::vector<PDCELHalfEdge *> _background_halfedges;
+  /// through bounding-box edges continues to work.  Owned by PDCEL.
+  std::vector<std::unique_ptr<PDCELHalfEdge>> _background_halfedges;
+
+  /// Sweep-line keep flag for each half-edge loop (default: false).
+  std::unordered_map<PDCELHalfEdgeLoop *, bool> _loop_keep;
+  /// Sweep-line adjacent-loop link: inner loop → its enclosing outer loop.
+  std::unordered_map<PDCELHalfEdgeLoop *, PDCELHalfEdgeLoop *> _loop_adjacent;
 
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
@@ -107,27 +113,30 @@ public:
   // =================================================================
   // HALF EDGE
 
-  /// Find the half edge with source vertex v having incident face f
-  PDCELHalfEdge *findHalfEdge(PDCELVertex *v, PDCELFace *f);
+  /// Find the half-edge with source vertex v whose incident face is f.
+  PDCELHalfEdge *findHalfEdgeInFace(PDCELVertex *v, PDCELFace *f);
 
-  /// Add a new vertex on an existing edge
-  /*!
-    \param v a new vertex.
-    \param e the existing edge.
-  */
-  void splitEdge(PDCELHalfEdge *e, PDCELVertex *&v);
+  /// Split an existing edge at v.
+  /// v is resolved to the canonical DCEL vertex (an existing coincident vertex
+  /// may be reused instead of v; if so, v is deleted).
+  /// Returns the canonical split vertex.
+  PDCELVertex *splitEdge(PDCELHalfEdge *e, PDCELVertex *v);
 
   /*!
     \return The half edge from v1 to v2.
    */
   PDCELHalfEdge *addEdge(PDCELVertex *v1, PDCELVertex *v2);
   PDCELHalfEdge *addEdge(PGeoLineSegment *ls);
+  /// Remove an edge and collapse its two endpoints into the source vertex.
+  /// The target vertex is deleted and all half-edges formerly incident on it
+  /// are redirected to the source vertex. Any external pointer to the target
+  /// vertex becomes dangling after this call.
   void removeEdge(PDCELHalfEdge *);
 
-  /// Check if two vertices are already connected by halfedges
-  PDCELHalfEdge *findHalfEdge(PDCELVertex *v1, PDCELVertex *v2);
+  /// Return the half-edge from v1 to v2, or nullptr if none exists.
+  PDCELHalfEdge *findHalfEdgeBetween(PDCELVertex *v1, PDCELVertex *v2);
 
-  void addEdgesFromCurve(Baseline *);
+  void addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices);
 
   // =================================================================
   // HALF EDGE LOOP
@@ -144,6 +153,14 @@ public:
 
   PDCELHalfEdgeLoop *addHalfEdgeLoop(PDCELHalfEdge *he);
   void removeHalfEdgeLoop(PDCELHalfEdgeLoop *);
+
+  /// Sweep-line keep flag: true if this loop belongs to a finalized face boundary.
+  bool isLoopKept(PDCELHalfEdgeLoop *hel) const;
+  void setLoopKept(PDCELHalfEdgeLoop *hel, bool kept);
+  /// Sweep-line adjacent-loop link: the enclosing outer loop for an inner loop,
+  /// or nullptr if none has been set.
+  PDCELHalfEdgeLoop *adjacentLoop(PDCELHalfEdgeLoop *hel) const;
+  void setAdjacentLoop(PDCELHalfEdgeLoop *hel, PDCELHalfEdgeLoop *adj);
 
   void removeTempLoops();
   void createTempLoops();
@@ -168,9 +185,11 @@ public:
   PDCELFace *addFace(const std::list<PDCELVertex *> &vloop,
                      PDCELFace *f = nullptr);
 
-  /// Split a bounded face by new edges connecting two vertices
+  /// Split a bounded face by new edges connecting two vertices.
+  /// The original face f is deleted; any external pointer to f becomes
+  /// dangling after this call. Use only the returned faces going forward.
   /*!
-    \param f the bounded face
+    \param f the bounded face (deleted on return)
     \param v1 the first vertex
     \param v2 the second vertex
     \return A list of two new faces. The first one is the incident face of the

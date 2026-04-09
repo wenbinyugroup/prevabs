@@ -41,8 +41,8 @@ std::vector<PDCELVertex *> Segment::splitBoundByLayup(
         getParametricPoint(vb->point(), vo->point(), norm_thk));
 
     PDCELVertex *v1_tmp = (i == 0) ? vb : v_layer_prev;
-    PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdge(v1_tmp, vo);
-    bcfg.dcel->splitEdge(he_tmp, v_layer);
+    PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdgeBetween(v1_tmp, vo);
+    v_layer = bcfg.dcel->splitEdge(he_tmp, v_layer);
 
     layer_vertices.push_back(v_layer);
     v_layer_prev = v_layer;
@@ -62,7 +62,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
   PDCELVertex *v_layer = nullptr;
   double u1_tmp, u2_tmp;
 
-  PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdge(v_prev, face);
+  PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdgeInFace(v_prev, face);
   PDCELHalfEdge *he_base = he_tmp;
   if (go_prev) {
     he_tmp = he_tmp->prev();
@@ -105,7 +105,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
           PLOG(debug) << g_msg->message("  case 3: intersect current edge");
           v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
           PLOG(debug) << g_msg->message("  v_layer: " + v_layer->printString());
-          bcfg.dcel->splitEdge(he_tmp, v_layer);
+          v_layer = bcfg.dcel->splitEdge(he_tmp, v_layer);
           break;
         }
         // u1 out of range on this edge: fall through to advance

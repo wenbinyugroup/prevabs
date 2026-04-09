@@ -257,8 +257,8 @@ void Segment::build(const BuilderConfig &bcfg) {
     // Debug log the two vertices i and i+1
     PLOG(debug) << g_msg->message("vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1));
 
-    he = bcfg.dcel->findHalfEdge(_curve_base->vertices()[i],
-                                       _curve_base->vertices()[i + 1]);
+    he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[i],
+                                            _curve_base->vertices()[i + 1]);
 
     if (he == nullptr) {
       bcfg.dcel->addEdge(_curve_base->vertices()[i],
@@ -287,8 +287,8 @@ void Segment::build(const BuilderConfig &bcfg) {
   PLOG(debug) << g_msg->message("creating the half edge loop and face");
   // pmessage->print(9, "creating the half edge loop and face");
   PDCELHalfEdgeLoop *hel;
-  he = bcfg.dcel->findHalfEdge(_curve_base->vertices()[0],
-                                     _curve_base->vertices()[1]);
+  he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[0],
+                                          _curve_base->vertices()[1]);
   if (slayupside == "right") {
     he = he->twin();
   }
@@ -306,7 +306,7 @@ void Segment::build(const BuilderConfig &bcfg) {
   // std::cout << "        face _face:" << std::endl;
   // _face->print();
 
-  hel->setKeep(true);
+  bcfg.dcel->setLoopKept(hel, true);
   hel->setFace(_face);
 
   // for (auto f : _pmodel->dcel()->faces()) {

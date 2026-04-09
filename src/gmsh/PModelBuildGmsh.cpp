@@ -262,7 +262,7 @@ void PModel::createGmshFaces() {
     PLOG(debug) << g_msg->message("");
     PLOG(debug) << g_msg->message("  face: " + f->name());
 
-    if (f->realGeometry() && f->outer() != nullptr) {
+    if (f->isBounded() && f->outer() != nullptr) {
 
       // Vector of edge tags of a loop
       std::vector<int> _ge_tags;
@@ -397,7 +397,7 @@ void PModel::createGmshPhyscialGroups() {
     PLOG(debug) << g_msg->message("");
     PLOG(debug) << g_msg->message("  face: " + f->name());
 
-    if (f->realGeometry() && f->outer() != nullptr) {
+    if (f->isBounded() && f->outer() != nullptr) {
 
       PLOG(debug) << g_msg->message(
         "  id: " + std::to_string(f->layertype()->id())

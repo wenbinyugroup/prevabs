@@ -62,7 +62,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
       PDCELHalfEdgeLoop *hel_tool_head, *hel_tool_tail;
 
       for (auto hel : bcfg.dcel->halfedgeloops()) {
-        if (!hel->keep()) {
+        if (!bcfg.dcel->isLoopKept(hel)) {
           // he = findCurvesIntersection(bl, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
           tmp_vertices = {bl->vertices()[0], bl->vertices()[1]};
           he = findCurvesIntersection(tmp_vertices, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
@@ -114,7 +114,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
         ls = new PGeoLineSegment(he_tool_head->source(),
                                   he_tool_head->target());
         vnew = ls->getParametricVertex(u2_head);
-        bcfg.dcel->splitEdge(he_tool_head, vnew);
+        vnew = bcfg.dcel->splitEdge(he_tool_head, vnew);
       }
       bl->vertices()[0] = vnew;
 
@@ -126,7 +126,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
         ls = new PGeoLineSegment(he_tool_tail->source(),
                                   he_tool_tail->target());
         vnew = ls->getParametricVertex(u2_tail);
-        bcfg.dcel->splitEdge(he_tool_tail, vnew);
+        vnew = bcfg.dcel->splitEdge(he_tool_tail, vnew);
       }
       bl->vertices()[bl->vertices().size() - 1] = vnew;
 
@@ -141,11 +141,11 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
       //   v->printWithAddress();
       // }
 
-      bcfg.dcel->addEdgesFromCurve(bl);
+      bcfg.dcel->addEdgesFromCurve(bl->vertices());
     }
 
     for (auto bl : bl_closed) {
-      bcfg.dcel->addEdgesFromCurve(bl);
+      bcfg.dcel->addEdgesFromCurve(bl->vertices());
     }
 
     bcfg.dcel->removeTempLoops();
@@ -174,8 +174,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
   else {
     // The filling area is defined by the side of some baseline
     PDCELHalfEdge *he;
-    he = bcfg.dcel->findHalfEdge(_fill_ref_baseline->vertices()[0],
-                                        _fill_ref_baseline->vertices()[1]);
+    he = bcfg.dcel->findHalfEdgeBetween(_fill_ref_baseline->vertices()[0],
+                                             _fill_ref_baseline->vertices()[1]);
 
     // std::cout << "        half edge he:" << he << std::endl;
 
@@ -185,8 +185,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
     // Find the outer boundary
     hel_out = he->loop();
-    while (hel_out->adjacentLoop() != nullptr) {
-      hel_out = hel_out->adjacentLoop();
+    while (bcfg.dcel->adjacentLoop(hel_out) != nullptr) {
+      hel_out = bcfg.dcel->adjacentLoop(hel_out);
     }
   }
 
@@ -202,7 +202,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
     _fill_face = bcfg.dcel->addFace(hel_out);
     _fill_face->setName(_name + "_fill_face");
     _fill_face->setMaterial(_fill_material);
-    hel_out->setKeep(true);
+    bcfg.dcel->setLoopKept(hel_out, true);
     hel_out->setFace(_fill_face);
 
     LayerType *lt = bcfg.materials->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
@@ -212,15 +212,15 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
     // Update all corresponding inner boundaries, if there are any
     bcfg.dcel->linkHalfEdgeLoops();
     for (auto heli : bcfg.dcel->halfedgeloops()) {
-      if (!heli->keep()) {
+      if (!bcfg.dcel->isLoopKept(heli)) {
         // heli->print();
         PDCELHalfEdgeLoop *helj = heli;
-        while (helj->adjacentLoop() != nullptr) {
+        while (bcfg.dcel->adjacentLoop(helj) != nullptr) {
           // helj->print();
-          helj = helj->adjacentLoop();
+          helj = bcfg.dcel->adjacentLoop(helj);
         }
         if (helj == hel_out) {
-          heli->setKeep(true);
+          bcfg.dcel->setLoopKept(heli, true);
           heli->setFace(_fill_face);
           _fill_face->addInnerComponent(heli->incidentEdge());
         }

@@ -16,36 +16,29 @@ class PDCELHalfEdgeLoop {
 private:
   // int _direction; // 1: outer boundary; -1: inner boundary
   PDCELHalfEdge *_incident_edge;
-  PDCELHalfEdgeLoop *_adjacent_loop;
   PDCELFace *_face;
-  PDCELVertex *_bottom_left_vertex;
   int _direction;
-  bool _keep;
 
 public:
   PDCELHalfEdgeLoop()
-      : _incident_edge(nullptr), _adjacent_loop(nullptr),
-        _face(nullptr), _bottom_left_vertex(nullptr), _direction(0), _keep(false) {};
+      : _incident_edge(nullptr), _face(nullptr), _direction(0) {};
 
   void log();
   void print();
 
   int direction();
   PDCELHalfEdge *incidentEdge() { return _incident_edge; }
-  PDCELHalfEdgeLoop *adjacentLoop() { return _adjacent_loop; }
   PDCELFace *face() { return _face; }
-  PDCELVertex *bottomLeftVertex() { return _bottom_left_vertex; }
-  bool keep() { return _keep; }
+  /// The bottom-left vertex of this loop (source of the incident edge).
+  PDCELVertex *bottomLeftVertex();
   // int isOuterOrInnerBoundary();
 
   // void setDirection(int direction) { _direction = direction; }
   void setIncidentEdge(PDCELHalfEdge *he) { _incident_edge = he; }
-  void setAdjacentLoop(PDCELHalfEdgeLoop *hel) { _adjacent_loop = hel; }
   // void setFace(PDCELFace *f) { _face = f; }
   void setFace(PDCELFace *f);
-  void setBottomLeftVertex(PDCELVertex *v) { _bottom_left_vertex = v; }
   void setDirection(int direction) { _direction = direction; }
-  void setKeep(bool keep) { _keep = keep; }
 
-  void updateVertexEdge(PDCELHalfEdge *);
+  /// Update _incident_edge to track the half-edge with the bottom-left source.
+  void updateIncidentEdge(PDCELHalfEdge *);
 };

@@ -114,11 +114,13 @@ switch ($Mode) {
 }
 
 if ($Run -and $Mode -ne 'clean') {
-    # Multi-config generators (VS) put the exe in Release\; single-config (NMake/Ninja) put it at root.
-    $testExeRelease = Join-Path $buildDir "Release\test_geo.exe"
-    $testExeRoot    = Join-Path $buildDir "test_geo.exe"
-    $testExe = if (Test-Path $testExeRelease) { $testExeRelease } else { $testExeRoot }
-    Write-ToLog "=== running tests ($testExe) ==="
-    Invoke-Logged $testExe @()
-    Write-ToLog "=== tests finished ==="
+    # Multi-config generators (VS) put executables in Release\; single-config at root.
+    foreach ($name in @("test_geo", "test_dcel")) {
+        $exeRelease = Join-Path $buildDir "Release\$name.exe"
+        $exeRoot    = Join-Path $buildDir "$name.exe"
+        $exe = if (Test-Path $exeRelease) { $exeRelease } else { $exeRoot }
+        Write-ToLog "=== running $name ($exe) ==="
+        Invoke-Logged $exe @()
+        Write-ToLog "=== $name finished ==="
+    }
 }

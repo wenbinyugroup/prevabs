@@ -52,7 +52,7 @@ static PDCELHalfEdge *findBestIntersection(
     const std::vector<PDCELHalfEdgeLoop *> &hels,
     int e, int last_seg_idx,
     double &u1_out, double &u2_out, int &ls_i_out,
-    double tol)
+    double tol, PDCEL *dcel)
 {
   double u1 = (e == 0) ? -INF : INF;
   int ls_i_prev = (e == 0) ? -1 : static_cast<int>(vertices.size());
@@ -60,7 +60,7 @@ static PDCELHalfEdge *findBestIntersection(
   PDCELHalfEdge *he_tool = nullptr;
 
   for (auto hel : hels) {
-    if (!hel->keep()) {
+    if (!dcel->isLoopKept(hel)) {
       PDCELHalfEdge *he = findCurvesIntersection(
           vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, tol);
       if (he != nullptr &&
@@ -214,10 +214,10 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
         if (tmp_face->inners().size() == 0) {
           bcfg.dcel->linkHalfEdgeLoops();
           for (auto heli : bcfg.dcel->halfedgeloops()) {
-            if (!heli->keep()) {
+            if (!bcfg.dcel->isLoopKept(heli)) {
               PDCELHalfEdgeLoop *helj = heli;
-              while (helj->adjacentLoop() != nullptr) {
-                helj = helj->adjacentLoop();
+              while (bcfg.dcel->adjacentLoop(helj) != nullptr) {
+                helj = bcfg.dcel->adjacentLoop(helj);
               }
               if (helj == tmp_hel_out) {
                 // hels.push_back(helj);
@@ -254,7 +254,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       he_tool = findBestIntersection(
         s->curveBase()->vertices(), hels, e,
         (int)s->curveBase()->vertices().size() - 1,
-        u1, u2, ls_i_prev, TOLERANCE);
+        u1, u2, ls_i_prev, TOLERANCE, bcfg.dcel);
       ls_i = ls_i_prev;
       if ((fabs(1 - u1) <= TOLERANCE) || e == 1) ls_i += 1;
 
@@ -276,7 +276,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
         }
         else {
           v_new = he_tool->toLineSegment()->getParametricVertex(u2);
-          bcfg.dcel->splitEdge(he_tool, v_new);
+          v_new = bcfg.dcel->splitEdge(he_tool, v_new);
         }
       }
       PLOG(debug) << g_msg->message("  v_new = ") << v_new->printString();
@@ -307,7 +307,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       he_tool = findBestIntersection(
         s->curveOffset()->vertices(), hels, e,
         (int)s->curveOffset()->vertices().size() - 2,
-        u1, u2, ls_i_prev, TOLERANCE);
+        u1, u2, ls_i_prev, TOLERANCE, bcfg.dcel);
       ls_i = ls_i_prev;
       if ((fabs(1 - u1) <= TOLERANCE) || e == 1) ls_i += 1;
 
@@ -329,7 +329,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       }
       else {
         v_new = he_tool->toLineSegment()->getParametricVertex(u2);
-        bcfg.dcel->splitEdge(he_tool, v_new);
+        v_new = bcfg.dcel->splitEdge(he_tool, v_new);
       }
       PLOG(debug) << g_msg->message("  v_new = ") << v_new->printString();
 

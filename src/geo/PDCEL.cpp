@@ -8,13 +8,11 @@
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
-#include "PBaseLine.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
 #include "geo_types.hpp"
 
-#include <cassert>
 #include <cmath>
 #include <iterator>
 #include <limits>
@@ -34,10 +32,8 @@ PDCEL::~PDCEL() {
     delete f;
   for (auto l : _halfedge_loops)
     delete l;
-  for (auto ls : _owned_segments)
-    delete ls;
-  for (auto he : _background_halfedges)
-    delete he;
+  // _owned_segments and _background_halfedges are unique_ptr collections;
+  // elements are freed automatically when the lists are destroyed.
 }
 
 void PDCEL::initialize() {
@@ -52,10 +48,10 @@ void PDCEL::initialize() {
   PGeoLineSegment *ls_bottom = new PGeoLineSegment(v_bl, v_br);
   PGeoLineSegment *ls_right = new PGeoLineSegment(v_br, v_tr);
 
-  _owned_segments.push_back(ls_top);
-  _owned_segments.push_back(ls_left);
-  _owned_segments.push_back(ls_bottom);
-  _owned_segments.push_back(ls_right);
+  _owned_segments.push_back(std::unique_ptr<PGeoLineSegment>(ls_top));
+  _owned_segments.push_back(std::unique_ptr<PGeoLineSegment>(ls_left));
+  _owned_segments.push_back(std::unique_ptr<PGeoLineSegment>(ls_bottom));
+  _owned_segments.push_back(std::unique_ptr<PGeoLineSegment>(ls_right));
 
   PDCELHalfEdge *he_top = addEdge(ls_top);
   PDCELHalfEdge *he_left = addEdge(ls_left);
@@ -69,17 +65,23 @@ void PDCEL::initialize() {
 
   hel->setDirection(1);
   hel->setFace(f);
-  hel->setKeep(true);
+  setLoopKept(hel, true);
+
+  // Assign background face to its bounding half-edges so validate() passes.
+  he_top->setIncidentFace(f);
+  he_left->setIncidentFace(f);
+  he_bottom->setIncidentFace(f);
+  he_right->setIncidentFace(f);
 
   _vertices.push_back(v_tr);
   _vertices.push_back(v_tl);
   _vertices.push_back(v_bl);
   _vertices.push_back(v_br);
 
-  _background_halfedges.push_back(he_top->twin());
-  _background_halfedges.push_back(he_left->twin());
-  _background_halfedges.push_back(he_bottom->twin());
-  _background_halfedges.push_back(he_right->twin());
+  _background_halfedges.push_back(std::unique_ptr<PDCELHalfEdge>(he_top->twin()));
+  _background_halfedges.push_back(std::unique_ptr<PDCELHalfEdge>(he_left->twin()));
+  _background_halfedges.push_back(std::unique_ptr<PDCELHalfEdge>(he_bottom->twin()));
+  _background_halfedges.push_back(std::unique_ptr<PDCELHalfEdge>(he_right->twin()));
 
   _halfedges.remove(he_top->twin());
   _halfedges.remove(he_left->twin());
@@ -245,6 +247,11 @@ PDCELVertex *PDCEL::addVertex(PDCELVertex *v) {
 }
 
 void PDCEL::removeVertex(PDCELVertex *v) {
+  if (v->edge() != nullptr) {
+    PLOG(error) << "removeVertex: vertex " << v->name()
+                << " still has incident edges; cannot remove";
+    return;
+  }
   if (v->dcel() != nullptr) {
     _vertices.remove(v);
     _vertex_tree.erase(v);
@@ -283,7 +290,7 @@ void PDCEL::removeVertex(PDCELVertex *v) {
 //
 // ===================================================================
 
-PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v, PDCELFace *f) {
+PDCELHalfEdge *PDCEL::findHalfEdgeInFace(PDCELVertex *v, PDCELFace *f) {
   if (v->edge() == nullptr) {
     return nullptr;
   }
@@ -295,13 +302,14 @@ PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v, PDCELFace *f) {
     if (he->face() == f) {
       return he;
     }
+    if (he->twin() == nullptr) break;
     he = he->twin()->next();
-  } while (he != v->edge() && he != nullptr);
+  } while (he != nullptr && he != v->edge());
 
   return nullptr;
 }
 
-void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *&v0) {
+PDCELVertex *PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
   //          e12
   //          -->
   //     e10      e02
@@ -328,7 +336,7 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *&v0) {
   // If v0 is already one of the edge's endpoints, splitting would produce a
   // zero-length (degenerate) edge and corrupt the DCEL. Skip the split.
   if (v0 == v1 || v0 == v2) {
-    return;
+    return v0;
   }
 
   PDCELHalfEdgeLoop *hel12 = e12->loop();
@@ -369,11 +377,11 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *&v0) {
 
   v0->setIncidentEdge(e01);
 
-  // Update prev and next
-  e12->prev()->setNext(e10);
-  e12->next()->setPrev(e02);
-  e21->prev()->setNext(e20);
-  e21->next()->setPrev(e01);
+  // Update prev and next (guard for edges not yet wired into a face/loop)
+  if (e12->prev()) e12->prev()->setNext(e10);
+  if (e12->next()) e12->next()->setPrev(e02);
+  if (e21->prev()) e21->prev()->setNext(e20);
+  if (e21->next()) e21->next()->setPrev(e01);
 
   // Update vertex incident half edge if necessary
   if (v1->edge() == e12) {
@@ -411,6 +419,13 @@ void PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *&v0) {
   _halfedges.remove(e21);
   delete e12;
   delete e21;
+
+  // Invalidate cached loop direction: the incident edge may have changed, so
+  // any previously computed _direction value is potentially stale.
+  if (hel12 != nullptr) hel12->setDirection(0);
+  if (hel21 != nullptr) hel21->setDirection(0);
+
+  return v0;
 }
 
 PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
@@ -421,7 +436,7 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   v2 = addVertex(v2);
 
   PGeoLineSegment *ls = new PGeoLineSegment(v1, v2);
-  _owned_segments.push_back(ls);
+  _owned_segments.push_back(std::unique_ptr<PGeoLineSegment>(ls));
 
   PDCELHalfEdge *he12 = new PDCELHalfEdge(v1, 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(v2, -1);
@@ -593,7 +608,9 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
     } while (_he_tmp != nullptr && _he_tmp != vt->edge());
   }
 
-  // Remove target vertex
+  // All edges formerly incident on vt have been redirected to vs.
+  // Clear vt's incident edge so removeVertex's precondition passes.
+  vt->setIncidentEdge(nullptr);
   removeVertex(vt);
 
   _halfedges.remove(he);
@@ -602,7 +619,7 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
   delete he2;
 }
 
-PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
+PDCELHalfEdge *PDCEL::findHalfEdgeBetween(PDCELVertex *v1, PDCELVertex *v2) {
   if (v1->edge() == nullptr) {
     return nullptr;
   }
@@ -613,16 +630,17 @@ PDCELHalfEdge *PDCEL::findHalfEdge(PDCELVertex *v1, PDCELVertex *v2) {
     if (heit->target() == v2) {
       return heit;
     }
+    if (heit->twin() == nullptr) break;
     heit = heit->twin()->next();
-  } while (heit != he1 && heit != nullptr);
+  } while (heit != nullptr && heit != he1);
 
   return nullptr;
 }
 
-void PDCEL::addEdgesFromCurve(Baseline *bl) {
-  if (bl->vertices().size() < 2) return;
-  for (std::size_t i = 0; i < bl->vertices().size() - 1; ++i) {
-    addEdge(bl->vertices()[i], bl->vertices()[i + 1]);
+void PDCEL::addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices) {
+  if (vertices.size() < 2) return;
+  for (std::size_t i = 0; i < vertices.size() - 1; ++i) {
+    addEdge(vertices[i], vertices[i + 1]);
   }
 }
 
@@ -649,7 +667,7 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
   std::vector<PDCELHalfEdge *> visited;
   do {
     hei->setLoop(hel);
-    hel->updateVertexEdge(hei);
+    hel->updateIncidentEdge(hei);
     visited.push_back(hei);
     hei = hei->next();
   } while (hei != nullptr && hei != he);
@@ -677,8 +695,29 @@ void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
   }
 
   _halfedge_loops.remove(hel);
+  _loop_keep.erase(hel);
+  _loop_adjacent.erase(hel);
 
   delete hel;
+}
+
+
+bool PDCEL::isLoopKept(PDCELHalfEdgeLoop *hel) const {
+  auto it = _loop_keep.find(hel);
+  return it != _loop_keep.end() && it->second;
+}
+
+void PDCEL::setLoopKept(PDCELHalfEdgeLoop *hel, bool kept) {
+  _loop_keep[hel] = kept;
+}
+
+PDCELHalfEdgeLoop *PDCEL::adjacentLoop(PDCELHalfEdgeLoop *hel) const {
+  auto it = _loop_adjacent.find(hel);
+  return it != _loop_adjacent.end() ? it->second : nullptr;
+}
+
+void PDCEL::setAdjacentLoop(PDCELHalfEdgeLoop *hel, PDCELHalfEdgeLoop *adj) {
+  _loop_adjacent[hel] = adj;
 }
 
 
@@ -698,20 +737,22 @@ PDCELHalfEdgeLoop *PDCEL::findNearestLoop(PDCELHalfEdgeLoop *loop) {
 void PDCEL::removeTempLoops() {
   // Remove all half edge loops, excluding segments face boundaries
   for (auto he : _halfedges) {
-    if ((he->loop() != nullptr) && !(he->loop()->keep())) {
+    if ((he->loop() != nullptr) && !isLoopKept(he->loop())) {
       he->resetLoop();
     }
   }
 
   std::vector<PDCELHalfEdgeLoop *> loops_to_remove;
   for (auto hel : _halfedge_loops) {
-    if (!hel->keep()) {
+    if (!isLoopKept(hel)) {
       loops_to_remove.push_back(hel);
     }
   }
 
   for (auto hel : loops_to_remove) {
     _halfedge_loops.remove(hel);
+    _loop_keep.erase(hel);
+    _loop_adjacent.erase(hel);
     delete hel;
   }
 }
@@ -747,7 +788,7 @@ void PDCEL::linkHalfEdgeLoops() {
       // Each inner loop should have a path linking to an outer loop
       PDCELHalfEdgeLoop *hel = findNearestLoop(loop);
       if (hel != nullptr) {
-        loop->setAdjacentLoop(hel);
+        setAdjacentLoop(loop, hel);
       }
     }
   }
@@ -762,9 +803,9 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
   if (he != nullptr) {
     loop_near = he->loop();
 
-    while (loop_near->adjacentLoop() != nullptr) {
+    while (adjacentLoop(loop_near) != nullptr) {
       // Need to return the outer loop
-      loop_near = loop_near->adjacentLoop();
+      loop_near = adjacentLoop(loop_near);
     }
   }
 
@@ -868,11 +909,11 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
 
   // Split half edges if necessary
   if (v1->degree() == 0) {
-    splitEdge(he1, v1);
+    v1 = splitEdge(he1, v1);
   }
 
   if (v2->degree() == 0) {
-    splitEdge(he2, v2);
+    v2 = splitEdge(he2, v2);
   }
 
   // Update the line segment, keeping the same orientation
@@ -921,89 +962,89 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
     f = _faces.front();
   }
 
+  // ── Phase 1: resolve canonical vertices ──────────────────────────────────
+  // addVertex never corrupts topology, so vertex insertions are safe here.
+  std::vector<PDCELVertex *> cverts;
+  cverts.reserve(vloop.size());
+  for (auto vraw : vloop) {
+    cverts.push_back(addVertex(vraw));
+  }
+
+  // ── Phase 2: pre-allocate new half-edge pairs ─────────────────────────────
+  // All new PDCELHalfEdge allocations happen before any prev/next/face
+  // mutations.  If any allocation throws, no topology has been patched.
+  struct EdgeSlot {
+    PDCELVertex  *v1, *v2;
+    PDCELHalfEdge *he12, *he21;
+    bool is_new;
+  };
+  std::vector<EdgeSlot> slots;
+  slots.reserve(cverts.size() - 1);
+  for (std::size_t i = 0; i + 1 < cverts.size(); ++i) {
+    PDCELVertex  *v1  = cverts[i];
+    PDCELVertex  *v2  = cverts[i + 1];
+    PDCELHalfEdge *he12 = findHalfEdgeBetween(v1, v2);
+    bool is_new = (he12 == nullptr);
+    PDCELHalfEdge *he21;
+    if (is_new) {
+      he12 = new PDCELHalfEdge(v1, 1);
+      he21 = new PDCELHalfEdge(v2, -1);
+      he12->setTwin(he21);
+      he21->setTwin(he12);
+    } else {
+      he21 = he12->twin();
+    }
+    slots.push_back({v1, v2, he12, he21, is_new});
+  }
+
+  // ── Phase 3: topology mutations ───────────────────────────────────────────
+  // All allocations succeeded; safe to patch prev/next/face/incidentEdge.
   PDCELFace *fnew = new PDCELFace();
   std::list<PDCELFace *> other_faces;
 
-  // Add vertices and create half edges
-  PDCELVertex *v1, *v2;
-  PDCELHalfEdge *he12, *he21;
   PDCELHalfEdge *head = nullptr, *he12prev = nullptr, *he21next = nullptr;
-  // Use the return value of addVertex so that geometrically coincident input
-  // vertices are resolved to the canonical DCEL vertex before edge creation.
-  PDCELVertex *cv_prev = nullptr;
-  for (auto vraw : vloop) {
-    PDCELVertex *cv = addVertex(vraw);
-    if (cv_prev != nullptr) {
-      // Create half edges from the second vertex
-      v1 = cv_prev;
-      v2 = cv;
-
-      he12 = findHalfEdge(v1, v2);
-      if (he12 == nullptr) {
-        // New half edges
-        he12 = new PDCELHalfEdge(v1, 1);
-        he21 = new PDCELHalfEdge(v2, -1);
-
-        he12->setTwin(he21);
-        he21->setTwin(he12);
-
-        if (v1->edge() == nullptr) {
-          v1->setIncidentEdge(he12);
+  for (auto &s : slots) {
+    PDCELHalfEdge *he12 = s.he12, *he21 = s.he21;
+    if (s.is_new) {
+      if (s.v1->edge() == nullptr) s.v1->setIncidentEdge(he12);
+      if (s.v2->edge() == nullptr) s.v2->setIncidentEdge(he21);
+      he21->setIncidentFace(f);
+      if (he12prev != nullptr) {
+        he12->setPrev(he12prev);
+        he12prev->setNext(he12);
+        he21->setNext(he21next);
+        he21next->setPrev(he21);
+      }
+      _halfedges.push_back(he12);
+      _halfedges.push_back(he21);
+    } else {
+      // Record all neighboring faces that are not the background f
+      if (he21->face() != f) {
+        other_faces.push_back(he21->face());
+      }
+      // Update the incident edge of any inner hole of f
+      for (std::size_t i = 0; i < f->inners().size(); ++i) {
+        if (f->inners()[i] == he12) {
+          f->inners()[i] = he12->next();
         }
-        if (v2->edge() == nullptr) {
-          v2->setIncidentEdge(he21);
-        }
-
-        he21->setIncidentFace(f);
-
-        if (he12prev != nullptr) {
-          he12->setPrev(he12prev);
-          he12prev->setNext(he12);
+      }
+      if (he12prev != nullptr) {
+        he12->setPrev(he12prev);
+        he12prev->setNext(he12);
+        if (he21->face() == f) {
           he21->setNext(he21next);
           he21next->setPrev(he21);
         }
-
-        _halfedges.push_back(he12);
-        _halfedges.push_back(he21);
-      } else {
-        // Half edges already exist
-        // Record all neighboring faces that are not the background f
-        he21 = he12->twin();
-        if (he21->face() != f) {
-          other_faces.push_back(he21->face());
-        }
-
-        // Update the incident edge of the inner hole of the face f
-        for (std::size_t i = 0; i < f->inners().size(); ++i) {
-          if (f->inners()[i] == he12) {
-            f->inners()[i] = he12->next();
-          }
-        }
-
-        if (he12prev != nullptr) {
-          he12->setPrev(he12prev);
-          he12prev->setNext(he12);
-          if (he21->face() == f) {
-            he21->setNext(he21next);
-            he21next->setPrev(he21);
-          }
-        }
-      }
-
-      he12->setIncidentFace(fnew);
-
-      if (fnew->outer() == nullptr) {
-        fnew->setOuterComponent(he12);
-      }
-
-      he12prev = he12;
-      he21next = he21;
-
-      if (head == nullptr) {
-        head = he12;
       }
     }
-    cv_prev = cv;
+
+    he12->setIncidentFace(fnew);
+    if (fnew->outer() == nullptr) {
+      fnew->setOuterComponent(he12);
+    }
+    he12prev = he12;
+    he21next = he21;
+    if (head == nullptr) head = he12;
   }
 
   head->setPrev(he12prev);
@@ -1017,12 +1058,10 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
 
   // For all other faces, update the corresponding prev and next
   other_faces.unique();
-  std::list<PDCELFace *>::iterator fit;
-  for (fit = other_faces.begin(); fit != other_faces.end(); ++fit) {
-    PDCELHalfEdge *out_he = (*fit)->outer(), *out_he_next;
+  for (auto of : other_faces) {
+    PDCELHalfEdge *out_he = of->outer(), *out_he_next;
     do {
       out_he_next = out_he->next();
-
       if ((out_he->twin()->face() == fnew) &&
           (out_he_next->twin()->face() == f)) {
         out_he_next->twin()->setNext(out_he->twin()->prev()->twin());
@@ -1032,9 +1071,8 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
         out_he->twin()->setPrev(out_he_next->twin()->next()->twin());
         out_he_next->twin()->next()->twin()->setNext(out_he->twin());
       }
-
       out_he = out_he->next();
-    } while (out_he != (*fit)->outer());
+    } while (out_he != of->outer());
   }
 
   return fnew;
@@ -1043,8 +1081,14 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
 std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PDCELVertex *v1,
                                         PDCELVertex *v2) {
   // Precondition: f must be a bounded face with a fully wired outer boundary.
-  assert(f->outer() != nullptr);
-  assert(f->outer()->loop() != nullptr);
+  if (f->outer() == nullptr) {
+    PLOG(error) << "splitFace: face has no outer boundary";
+    return {};
+  }
+  if (f->outer()->loop() == nullptr) {
+    PLOG(error) << "splitFace: face outer boundary has no loop";
+    return {};
+  }
 
   PDCELHalfEdge *he12, *he21;
   PDCELHalfEdgeLoop *hel = f->outer()->loop();
@@ -1073,8 +1117,14 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PDCELVertex *v1,
 
 std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PGeoLineSegment *ls) {
   // Precondition: f must be a bounded face with a fully wired outer boundary.
-  assert(f->outer() != nullptr);
-  assert(f->outer()->loop() != nullptr);
+  if (f->outer() == nullptr) {
+    PLOG(error) << "splitFace: face has no outer boundary";
+    return {};
+  }
+  if (f->outer()->loop() == nullptr) {
+    PLOG(error) << "splitFace: face outer boundary has no loop";
+    return {};
+  }
 
   // Find the two intersections
   findCurvesIntersection(f->outer()->loop(), ls);
@@ -1109,7 +1159,11 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
 
     hei = v->edge();
     cycle_list.push_back(hei);
-    assert(hei->prev() != nullptr && hei->prev()->twin() != nullptr);
+    if (hei->prev() == nullptr || hei->prev()->twin() == nullptr) {
+      PLOG(error) << "updateEdgeNeighbors: broken half-edge cycle at vertex "
+                  << v->name();
+      return;
+    }
     hei = hei->prev()->twin();
     do {
       if (hei->angle() < cycle_list.back()->angle()) {
@@ -1120,7 +1174,11 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
       } else if (list_num == 2) {
         cycle_list_2.push_back(hei);
       }
-      assert(hei->prev() != nullptr && hei->prev()->twin() != nullptr);
+      if (hei->prev() == nullptr || hei->prev()->twin() == nullptr) {
+        PLOG(error) << "updateEdgeNeighbors: broken half-edge cycle at vertex "
+                    << v->name();
+        return;
+      }
       hei = hei->prev()->twin();
     } while (hei != v->edge());
 
@@ -1260,7 +1318,7 @@ PDCELHalfEdge *PDCEL::findHalfEdgeBelowVertex(PDCELVertex *v) {
   // Resolve to a half-edge before temporary segments are freed.
   PDCELHalfEdge *he_below = nullptr;
   if (ls_below != nullptr) {
-    he_below = findHalfEdge(ls_below->vin(), ls_below->vout());
+    he_below = findHalfEdgeBetween(ls_below->vin(), ls_below->vout());
   }
 
   // Delete all temporary segments created during the sweep.

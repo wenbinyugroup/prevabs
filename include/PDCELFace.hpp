@@ -32,8 +32,8 @@ private:
   double _mesh_size = -1;
   std::vector<PDCELVertex *> _embedded_vertices;
 
-  // Whether this is a real geometry face (false for the unbounded background face)
-  bool _real_geometry;
+  // True for bounded (real) faces; false for the unbounded background face.
+  bool _is_bounded;
 
   std::string _name;
 
@@ -60,7 +60,7 @@ public:
   double getMeshSize() const { return _mesh_size; }
   std::vector<PDCELVertex *> getEmbeddedVertices() { return _embedded_vertices; }
 
-  bool realGeometry() { return _real_geometry; }
+  bool isBounded() { return _is_bounded; }
 
   std::string name() { return _name; }
 
@@ -84,7 +84,7 @@ public:
   void setMeshSize(double ms) { _mesh_size = ms; }
   void addEmbeddedVertex(PDCELVertex *v) { _embedded_vertices.push_back(v); }
 
-  void setRealGeometry(bool b) { _real_geometry = b; }
+  void setBounded(bool b) { _is_bounded = b; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
 
   void setName(std::string name) { _name = name; }

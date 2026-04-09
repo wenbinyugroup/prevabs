@@ -21,7 +21,7 @@ PDCELFace::PDCELFace() {
 
   _y2 = SVector3(0, 1, 0);
 
-  _real_geometry = true;
+  _is_bounded = true;
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
@@ -34,7 +34,7 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer) {
 
   _y2 = SVector3(0, 1, 0);
 
-  _real_geometry = true;
+  _is_bounded = true;
 }
 
 PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
@@ -47,7 +47,7 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
 
   _y2 = SVector3(0, 1, 0);
 
-  _real_geometry = build;
+  _is_bounded = build;
 }
 
 void PDCELFace::print() {
