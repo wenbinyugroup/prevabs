@@ -24,7 +24,6 @@ private:
   PDCELFace *_face = nullptr;
   PGeoLineSegment *_line_segment;
   int _sign;
-  bool _on_joint = false;
 
 public:
   PDCELHalfEdge()
@@ -60,7 +59,6 @@ public:
   PGeoLineSegment *lineSegment() { return _line_segment; }
 
   bool isFinite();
-  bool onJoint() { return _on_joint; }
 
   int sign() { return _sign; }
 
@@ -80,7 +78,5 @@ public:
   void setSign(int sign) { _sign = sign; }
 
   void clearLineSegment() { _line_segment = nullptr; }
-
-  void setOnJoint(bool on_joint) { _on_joint = on_joint; }
 
 };

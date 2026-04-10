@@ -32,6 +32,7 @@ class PMesh;
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <utility>
 
@@ -210,6 +211,8 @@ private:
   std::vector<std::pair<double, double>> _itf_theta3_pairs;
   std::vector<std::vector<PDCELVertex *>> _itf_vertices;
   std::vector<std::vector<PDCELHalfEdge *>> _itf_halfedges;
+  // Joint half-edges: set during interface recording to prevent double-counting.
+  std::unordered_set<PDCELHalfEdge *> _joint_halfedges;
 
 public:
   std::vector<std::vector<int>> node_elements;

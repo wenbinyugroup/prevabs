@@ -65,7 +65,7 @@ void PModel::createGmshVertices() {
 
 void PModel::recordInterface(PDCELHalfEdge *he) {
 
-  if (!he->onJoint() && !he->twin()->onJoint()) {
+  if (_joint_halfedges.count(he) == 0 && _joint_halfedges.count(he->twin()) == 0) {
 
     if (he->face() != nullptr && he->twin()->face() != nullptr) {
       // std::cout << he->face()->material() << std::endl;
@@ -152,7 +152,7 @@ void PModel::recordInterface(PDCELHalfEdge *he) {
             _itf_halfedges.push_back(itf_hes);
           }
 
-          he->setOnJoint(true);
+          _joint_halfedges.insert(he);
         }
 
       }
