@@ -229,7 +229,7 @@ bool PDCEL::validate() {
 
 void PDCEL::fixGeometry(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
-  PLOG(info) << g_msg->message("fixing geometry");
+    g_msg->print("fixing geometry");
 
   // Find all small edges. Use an unordered_set so the twin-skip check is O(1)
   // instead of O(n), reducing the overall loop from O(n²) to O(n).

@@ -43,7 +43,7 @@ PComponent *readXMLElementComponent(
     cmp_name = "cmp_" + std::to_string(PComponent::count_tmp);
   }
   // std::cout << "[debug] reading component: " << cmp_name << std::endl;
-  PLOG(debug) << g_msg->message("reading component: " + cmp_name);
+    PLOG(debug) << "reading component: " + cmp_name;
   p_component->setName(cmp_name);
 
   std::string s_cmp_type;

@@ -59,7 +59,7 @@ void PModel::writeNodes(
   ) {
 
   MESSAGE_SCOPE(g_msg);
-  PLOG(info) << g_msg->message("writing nodes");
+    g_msg->print("writing nodes");
 
   // std::vector<size_t> node_tags;
   // std::vector<double> node_coords, node_params;
@@ -133,7 +133,7 @@ void PModel::writeElements(
   ) {
 
   MESSAGE_SCOPE(g_msg);
-  PLOG(info) << g_msg->message("writing elements");
+    g_msg->print("writing elements");
 
   if (config.isVABS()) {
     writeElementsVABS(
@@ -164,14 +164,14 @@ void PModel::writeElementsVABS(
   MESSAGE_SCOPE(g_msg);
 
   // Write connectivity for each element
-  PLOG(info) << g_msg->message("  writing connectivity");
+    g_msg->print("  writing connectivity");
   // std::vector<int> elem_types;
   // std::vector<std::vector<size_t>> elem_tags, elem_node_tags;
   // gmsh::model::mesh::getElements(
   //   elem_types, elem_tags, elem_node_tags, -1, -1);
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
-    PLOG(debug) << g_msg->message("  face " + std::to_string(_face_i));
+        PLOG(debug) << "  face " + std::to_string(_face_i);
 
     // For each element type of the face
     for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
@@ -212,11 +212,11 @@ void PModel::writeElementsVABS(
   fprintf(file, "\n");
 
   // Wirte local coordinate for each element
-  PLOG(info) << g_msg->message("  writing local orientation");
+    g_msg->print("  writing local orientation");
   std::vector<double> dnums;
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
-    PLOG(debug) << g_msg->message("  face " + std::to_string(_face_i));
+        PLOG(debug) << "  face " + std::to_string(_face_i);
 
     auto face_prop_tag = face_prop_tags[_face_i];
     auto face_local_orient = face_local_orients[_face_i];
@@ -348,7 +348,7 @@ int PModel::writeGmsh(const std::string &fn_base) {
 
 int PModel::writeGmshGeo(const std::string &fn) {
   MESSAGE_SCOPE(g_msg);
-  PLOG(info) << g_msg->message("writing gmsh .geo file: " + fn);
+    g_msg->print("writing gmsh .geo file: " + fn);
 
   // std::string fn;
   if (config.isHomo()) {
@@ -393,7 +393,7 @@ int PModel::writeGmshMsh(const std::string &fn_base) {
   if (config.isHomo()) {
 
     fn_msh = fn_base + ".msh";
-    PLOG(info) << g_msg->message("writing gmsh .msh file: " + fn_msh);
+        g_msg->print("writing gmsh .msh file: " + fn_msh);
     // _gmodel->writeMSH(fn_msh, 2.2);
     gmsh::write(fn_msh);
 
@@ -410,7 +410,7 @@ int PModel::writeGmshMsh(const std::string &fn_base) {
       else {
         fn_msh = fn_base + "_local_case_" + case_name + ".msh";
       }
-      PLOG(info) << g_msg->message("writing gmsh .msh file: " + fn_msh);
+            g_msg->print("writing gmsh .msh file: " + fn_msh);
 
       FILE *f_msh, *f_opt;
       f_msh = fopen(fn_msh.c_str(), "w");
@@ -462,7 +462,7 @@ int PModel::writeGmshOpt(const std::string &fn_base) {
     fn = fn_base + "_local.opt";
   }
 
-  PLOG(info) << g_msg->message("writing gmsh .opt file: " + fn);
+    g_msg->print("writing gmsh .opt file: " + fn);
 
   FILE *file;
   file = fopen(fn.c_str(), "w");
@@ -641,15 +641,15 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id) {
   // Write scaler/vector/tensor as a single quantity
   view_id++;
   if (_type == 0) {
-    PLOG(info) << g_msg->message("writing node data: " + _label);
+        g_msg->print("writing node data: " + _label);
     fprintf(f_msh, "$NodeData\n");
   }
   else if (_type == 1) {
-    PLOG(info) << g_msg->message("writing element data: " + _label);
+        g_msg->print("writing element data: " + _label);
     fprintf(f_msh, "$ElementData\n");
   }
   else if (_type == 2) {
-    PLOG(info) << g_msg->message("writing element node data: " + _label);
+        g_msg->print("writing element node data: " + _label);
     fprintf(f_msh, "$ElementNodeData\n");
   }
   runtime.gmsh_views += 1;
@@ -756,7 +756,7 @@ void PElementNodeData::writeGmshMsh(FILE *f_msh, FILE *f_opt, int &view_id) {
 
   // Write each component individually for vector/tensor
   for (int comp{0}; comp < _component_labels.size(); ++comp) {
-    PLOG(info) << g_msg->message("writing component: " + _component_labels[comp]);
+        g_msg->print("writing component: " + _component_labels[comp]);
 
     // For each strain/stress component
     view_id++;

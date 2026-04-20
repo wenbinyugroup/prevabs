@@ -168,7 +168,7 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
 
   std::string baselineName{p_xn_line->first_attribute("name")->value()};
 
-  PLOG(debug) << g_msg->message("reading line: " + baselineName);
+    PLOG(debug) << "reading line: " + baselineName;
 
   Baseline *line = new Baseline();
 
@@ -728,11 +728,11 @@ int readLineTypeAirfoil(
     std::ifstream _ifs{s_fn};
 
     if (!_ifs.is_open()) {
-      PLOG(error) << g_msg->message("unable to open file: " + s_fn);
+            g_msg->error("unable to open file: " + s_fn);
       return 0;
     }
 
-    PLOG(info) << g_msg->message("reading airfoil data file: " + s_fn);
+        g_msg->print("reading airfoil data file: " + s_fn);
 
     // Read data
     std::string data_line;
@@ -762,8 +762,8 @@ int readLineTypeAirfoil(
         if (trimmed_line.empty()) {continue;}
 
         counter++;
-        PLOG(debug) << g_msg->message(
-          "reading line " + std::to_string(counter) + ": " + trimmed_line);
+                PLOG(debug) << 
+          "reading line " + std::to_string(counter) + ": " + trimmed_line;
 
         // Skip header rows
         if (counter <= head_rows) {continue;}
@@ -772,23 +772,23 @@ int readLineTypeAirfoil(
         std::stringstream _ss(trimmed_line);
         double x, y;
         _ss >> x >> y;
-        PLOG(debug) << g_msg->message(
-          "x: " + std::to_string(x) + ", y: " + std::to_string(y));
+                PLOG(debug) << 
+          "x: " + std::to_string(x) + ", y: " + std::to_string(y);
 
         // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {
-          PLOG(debug) << g_msg->message("skipping trailing edge");
+                    PLOG(debug) << "skipping trailing edge";
           continue;
         }
 
         // Add the point (0, 0), i.e., leading edge
         if (fabs(x) <= tol && fabs(y) <= tol) {
-          PLOG(debug) << g_msg->message("skipping and adding leading edge");
+                    PLOG(debug) << "skipping and adding leading edge";
           line->addPVertex(pv_le);
           continue;
         }
 
-        PLOG(debug) << g_msg->message("creating and adding point");
+                PLOG(debug) << "creating and adding point";
         _pv_tmp = new PDCELVertex(_pv_tmp_name, 0, x, y);
         pmodel->addVertex(_pv_tmp);
         line->addPVertex(_pv_tmp);

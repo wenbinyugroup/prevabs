@@ -30,21 +30,21 @@ void PComponent::print() {
 
 void PComponent::print(int i_type, int /*i_indent*/) {
   MESSAGE_SCOPE(g_msg);
-  PLOG(debug) << g_msg->message("name: " + _name);
-  PLOG(debug) << g_msg->message("order: " + std::to_string(_order));
-  PLOG(debug) << g_msg->message("cyclic: " + std::to_string(_cycle));
-  PLOG(debug) << g_msg->message("segments:");
+    PLOG(debug) << "name: " + _name;
+    PLOG(debug) << "order: " + std::to_string(_order);
+    PLOG(debug) << "cyclic: " + std::to_string(_cycle);
+    PLOG(debug) << "segments:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(16) << "name"
      << std::setw(16) << "base line"
      << std::setw(32) << "layup"
      << std::setw(16) << "side"
      << std::setw(8) << "level";
-  PLOG(debug) << g_msg->message(ss.str());
+    PLOG(debug) << ss.str();
   for (int i = 0; i < _segments.size(); i++) {
     std::stringstream ss_seg;
     ss_seg << std::setw(4) << (i+1) << _segments[i];
-    PLOG(debug) << g_msg->message(ss_seg.str());
+        PLOG(debug) << ss_seg.str();
   }
   return;
 }
@@ -88,7 +88,7 @@ void PComponent::build(const BuilderConfig &bcfg) {
   // i_indent++;
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << g_msg->message("building component: " + _name);
+    g_msg->print("building component: " + _name);
 
   // Laminate type component
   if (_type == 1) {
@@ -123,7 +123,7 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
   if (_type == 1) {
 
-    PLOG(info) << g_msg->message("building component details: " + _name);
+        g_msg->print("building component details: " + _name);
 
     for (auto sgm : _segments) {
 

@@ -23,26 +23,26 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
 void Material::print(int i_type, int /*i_indent*/) {
   MESSAGE_SCOPE(g_msg);
   std::string msg;
-  PLOG(debug) << g_msg->message("name: " + _name);
-  PLOG(debug) << g_msg->message("density = " + std::to_string(_density));
-  PLOG(debug) << g_msg->message("type: " + _type);
+    PLOG(debug) << "name: " + _name;
+    PLOG(debug) << "density = " + std::to_string(_density);
+    PLOG(debug) << "type: " + _type;
 
   if (_type == "isotropic") {
-    PLOG(debug) << g_msg->message("E = " + std::to_string(_elastic[0]));
-    PLOG(debug) << g_msg->message("nu = " + std::to_string(_elastic[1]));
+        PLOG(debug) << "E = " + std::to_string(_elastic[0]);
+        PLOG(debug) << "nu = " + std::to_string(_elastic[1]);
   } else if (_type == "orthotropic") {
-    PLOG(debug) << g_msg->message("E1 = " + std::to_string(_elastic[0]));
-    PLOG(debug) << g_msg->message("E2 = " + std::to_string(_elastic[1]));
-    PLOG(debug) << g_msg->message("E3 = " + std::to_string(_elastic[2]));
-    PLOG(debug) << g_msg->message("G12 = " + std::to_string(_elastic[3]));
-    PLOG(debug) << g_msg->message("G13 = " + std::to_string(_elastic[4]));
-    PLOG(debug) << g_msg->message("G23 = " + std::to_string(_elastic[5]));
-    PLOG(debug) << g_msg->message("nu12 = " + std::to_string(_elastic[6]));
-    PLOG(debug) << g_msg->message("nu13 = " + std::to_string(_elastic[7]));
-    PLOG(debug) << g_msg->message("nu23 = " + std::to_string(_elastic[8]));
+        PLOG(debug) << "E1 = " + std::to_string(_elastic[0]);
+        PLOG(debug) << "E2 = " + std::to_string(_elastic[1]);
+        PLOG(debug) << "E3 = " + std::to_string(_elastic[2]);
+        PLOG(debug) << "G12 = " + std::to_string(_elastic[3]);
+        PLOG(debug) << "G13 = " + std::to_string(_elastic[4]);
+        PLOG(debug) << "G23 = " + std::to_string(_elastic[5]);
+        PLOG(debug) << "nu12 = " + std::to_string(_elastic[6]);
+        PLOG(debug) << "nu13 = " + std::to_string(_elastic[7]);
+        PLOG(debug) << "nu23 = " + std::to_string(_elastic[8]);
   } else if (_type == "anisotropic") {
     for (std::size_t i = 0; i < elasticLabelAniso.size(); ++i) {
-      PLOG(debug) << g_msg->message(upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]));
+            PLOG(debug) << upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]);
     }
   }
 
@@ -451,18 +451,18 @@ void Layup::print() {
   MESSAGE_SCOPE(g_msg);
 
   std::string msg;
-  PLOG(debug) << g_msg->message("name: " + lname);
-  PLOG(debug) << g_msg->message("layers:");
+    PLOG(debug) << "name: " + lname;
+    PLOG(debug) << "layers:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(32) << "material"
      << std::setw(16) << "thickness"
      << std::setw(8) << "angle"
      << std::setw(8) << "plies";
-  PLOG(debug) << g_msg->message(ss.str());
+    PLOG(debug) << ss.str();
   for (int i = 0; i < llayers.size(); i++) {
     std::stringstream ss_layer;
     ss_layer << std::setw(4) << (i+1) << llayers[i];
-    PLOG(debug) << g_msg->message(ss_layer.str());
+        PLOG(debug) << ss_layer.str();
   }
 
   return;

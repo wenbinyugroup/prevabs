@@ -25,11 +25,11 @@ int readInputDehomo(const std::string & /*filenameCrossSection*/,
   if (!ifs_cs.is_open()) {
     // std::cout << markError << " Unable to open file: " << config.main_input
     //           << std::endl;
-    PLOG(error) << g_msg->message("unable to open file: " + config.main_input);
+        g_msg->error("unable to open file: " + config.main_input);
     return 1;
   } else {
     // printInfo(i_indent, "reading main input data: " + config.main_input);
-    PLOG(info) << g_msg->message("reading main input data: " + config.main_input);
+        g_msg->print("reading main input data: " + config.main_input);
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(ifs_cs)),
@@ -41,7 +41,7 @@ int readInputDehomo(const std::string & /*filenameCrossSection*/,
   } catch (parse_error &e) {
     // std::cout << markError << " Unable to parse the file: " << config.main_input
     //           << std::endl;
-    PLOG(error) << g_msg->message("unable to parse file: " + config.main_input);
+        g_msg->error("unable to parse file: " + config.main_input);
     std::cerr << e.what() << std::endl;
   }
 
@@ -146,7 +146,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel) {
   std::string fn;
 
   if (config.isDehomo()) {
-    PLOG(info) << g_msg->message("reading dehomogenization outputs...");
+        g_msg->print("reading dehomogenization outputs...");
 
     // Read node data (displacement)
     fn = fn_sg + ".U";
@@ -166,7 +166,7 @@ int readOutputDehomo(const std::string &fn_sg, PModel *pmodel) {
   }
 
   if (config.isFailure()) {
-    PLOG(info) << g_msg->message("reading failure analysis outputs...");
+        g_msg->print("reading failure analysis outputs...");
 
     // Read element data (failure index and strength ratio)
     fn = fn_sg + ".fi";
@@ -355,7 +355,7 @@ int readLoadCasesFromCSV(
 
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << g_msg->message("reading load cases from file <" + fn + ">...");
+    g_msg->print("reading load cases from file <" + fn + ">...");
 
   std::vector<std::vector<std::string>> s_load_cases;
 
@@ -405,7 +405,7 @@ int readLoadCasesFromCSV(
 
 int PModel::writeGLB(std::string fn) {
   MESSAGE_SCOPE(g_msg);
-  PLOG(info) << g_msg->message("writing glb file: " + fn);
+    g_msg->print("writing glb file: " + fn);
 
   FILE *file;
   file = fopen(fn.c_str(), "w");
@@ -529,9 +529,9 @@ int readVABSU(const std::string &filename, LocalState *state) {
   std::ifstream ifen;
   ifen.open(filename);
   if (ifen.fail()) {
-    PLOG(error) << g_msg->message("unable to find the file: " + filename);
+        g_msg->error("unable to find the file: " + filename);
   } else {
-    PLOG(info) << g_msg->message("reading VABS recovered data: " + filename);
+        g_msg->print("reading VABS recovered data: " + filename);
 
     while (ifen) {
 
@@ -610,9 +610,9 @@ int readVABSEle(const std::string &filename, LocalState *state) {
   std::ifstream ifen;
   ifen.open(filename);
   if (ifen.fail()) {
-    PLOG(error) << g_msg->message("unable to find the file: " + filename);
+        g_msg->error("unable to find the file: " + filename);
   } else {
-    PLOG(info) << g_msg->message("reading VABS recovered data: " + filename);
+        g_msg->print("reading VABS recovered data: " + filename);
 
     while (ifen) {
 
@@ -699,13 +699,13 @@ int readSCSn(const std::string &filename, LocalState *state) {
   std::ifstream ifen;
   ifen.open(filename);
   if (ifen.fail()) {
-    PLOG(error) << g_msg->message("unable to find the file: " + filename);
+        g_msg->error("unable to find the file: " + filename);
   } else {
-    PLOG(info) << g_msg->message("reading SwiftComp dehomogenization data: " + filename);
+        g_msg->print("reading SwiftComp dehomogenization data: " + filename);
 
     int comp_id{0};
     PElementNodeData *p_elnd = new PElementNodeData(2, 0, comp_names[comp_id]);
-    PLOG(info) << g_msg->message("  reading component " + comp_names[comp_id]);
+        g_msg->print("  reading component " + comp_names[comp_id]);
 
     std::string line;
     // while (ifen) {
@@ -726,7 +726,7 @@ int readSCSn(const std::string &filename, LocalState *state) {
         // create new empty data
         comp_id++;
         p_elnd = new PElementNodeData(2, 0, comp_names[comp_id]);
-        PLOG(info) << g_msg->message("  reading component " + comp_names[comp_id]);
+                g_msg->print("  reading component " + comp_names[comp_id]);
         continue;
       }
 
@@ -793,10 +793,10 @@ int readMsgFi(const std::string &filename, LocalState *state, std::size_t nelem)
   int eid_sr_min = 0;
 
   if (ifen.fail()) {
-    PLOG(error) << g_msg->message("unable to find the file: " + filename);
+        g_msg->error("unable to find the file: " + filename);
   }
   else {
-    PLOG(info) << g_msg->message("reading failure analysis result: " + filename);
+        g_msg->print("reading failure analysis result: " + filename);
 
     int ecount = 0;
 

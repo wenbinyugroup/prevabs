@@ -89,7 +89,7 @@ PDCELVertex *readXMLElementPoint(
 
   std::string label{p_xn_point->first_attribute("name")->value()};
 
-  PLOG(debug) << g_msg->message("reading point: " + label);
+    PLOG(debug) << "reading point: " + label;
 
   std::string s_constraint{"none"};
   xml_attribute<> *p_xa_constraint{p_xn_point->first_attribute("constraint")};
@@ -145,9 +145,9 @@ PDCELVertex *readXMLElementPoint(
       // Linear interpolation
       for (int i = 0; i < static_cast<int>(p_bsl_vertices.size()) - 1; i++) {
 
-        PLOG(debug) << g_msg->message("checking segment: " + std::to_string(i));
-        PLOG(debug) << g_msg->message("segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y()));
-        PLOG(debug) << g_msg->message("loc: " + std::to_string(loc));
+                PLOG(debug) << "checking segment: " + std::to_string(i);
+                PLOG(debug) << "segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y());
+                PLOG(debug) << "loc: " + std::to_string(loc);
 
         if (
           (p_bsl_vertices[i]->y() <= loc && loc <= p_bsl_vertices[i+1]->y()) ||
@@ -160,7 +160,7 @@ PDCELVertex *readXMLElementPoint(
 
           // The point is close to the starting point of the segment
           if (fabs(loc - p_bsl_vertices[i]->y()) < TOLERANCE) {
-            PLOG(debug) << g_msg->message("found point close to the starting point of the segment");
+                        PLOG(debug) << "found point close to the starting point of the segment";
             // _pv_tmp->setLinkToVertex(p_bsl_vertices[i]);
             // break;
             _z_tmp = p_bsl_vertices[i]->z();
@@ -170,7 +170,7 @@ PDCELVertex *readXMLElementPoint(
 
           // The point is close to the ending point of the segment
           else if (fabs(loc - p_bsl_vertices[i+1]->y()) < TOLERANCE) {
-            PLOG(debug) << g_msg->message("found point close to the ending point of the segment");
+                        PLOG(debug) << "found point close to the ending point of the segment";
             // _pv_tmp->setLinkToVertex(p_bsl_vertices[i+1]);
             // break;
             _z_tmp = p_bsl_vertices[i+1]->z();
@@ -180,7 +180,7 @@ PDCELVertex *readXMLElementPoint(
 
           // The point is in the middle of the segment
           else {
-            PLOG(debug) << g_msg->message("found point in the middle of the segment");
+                        PLOG(debug) << "found point in the middle of the segment";
             double dy, dz;
             dy = p_bsl_vertices[i+1]->y() - p_bsl_vertices[i]->y();
             dz = p_bsl_vertices[i+1]->z() - p_bsl_vertices[i]->z();
@@ -191,9 +191,9 @@ PDCELVertex *readXMLElementPoint(
           }
 
           // debug message
-          PLOG(debug) << g_msg->message("_z_tmp = " + std::to_string(_z_tmp));
-          PLOG(debug) << g_msg->message("_id_tmp = " + std::to_string(_id_tmp));
-          PLOG(debug) << g_msg->message("_is_new_tmp = " + std::to_string(_is_new_tmp));
+                    PLOG(debug) << "_z_tmp = " + std::to_string(_z_tmp);
+                    PLOG(debug) << "_id_tmp = " + std::to_string(_id_tmp);
+                    PLOG(debug) << "_is_new_tmp = " + std::to_string(_is_new_tmp);
 
           // If found more than one point
           if (count > 1) {

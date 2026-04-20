@@ -90,7 +90,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
 
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(info) << g_msg->message("writing sg file: " + fn);
+    g_msg->print("writing sg file: " + fn);
 
   size_t nnode = 0;
   size_t nelem = 0;
@@ -163,7 +163,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
   // Write a supplementary file
   // to store the mapping between the material id and name
   std::string fn_mid2name = fn + ".mat";
-  PLOG(info) << g_msg->message("writing material id-name file: " + fn_mid2name);
+    g_msg->print("writing material id-name file: " + fn_mid2name);
 
   FILE *fsg_mat;
   fsg_mat = fopen(fn_mid2name.c_str(), "w");
@@ -190,9 +190,9 @@ int readSG(const std::string & /*fn*/, PModel *pmodel, const WriterConfig &wcfg)
   // printInfo(i_indent, "reading VABS input data: " + wcfg.file_name_vsc);
 
   if (wcfg.tool == AnalysisTool::VABS)
-    PLOG(info) << g_msg->message("reading VABS input data: " + wcfg.file_name_vsc);
+        g_msg->print("reading VABS input data: " + wcfg.file_name_vsc);
   else if (wcfg.tool == AnalysisTool::SwiftComp)
-    PLOG(info) << g_msg->message("reading SwiftComp input data: " + wcfg.file_name_vsc);
+        g_msg->print("reading SwiftComp input data: " + wcfg.file_name_vsc);
 
   int nnode{0}, nelem{0}, nsg;
   int ln(1); // line counter

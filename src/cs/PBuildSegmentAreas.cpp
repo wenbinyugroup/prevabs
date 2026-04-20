@@ -72,15 +72,15 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
   g_msg->increaseIndent();
   do {
-    PLOG(debug) << g_msg->message("");
-    PLOG(debug) << g_msg->message("he_tmp: " + he_tmp->printString());
+        PLOG(debug) << "";
+        PLOG(debug) << "he_tmp: " + he_tmp->printString();
 
     // Skip degenerate edges (source and target at the same position).
     // These can be created by splitEdge when the split vertex lands on an
     // existing endpoint, producing a zero-length half-edge.
     if (he_tmp->source()->point().distance(he_tmp->target()->point())
         < TOLERANCE) {
-      PLOG(warning) << g_msg->message("degenerate edge, skipping");
+            g_msg->warn("degenerate edge, skipping");
     }
     else {
       bool not_parallel = calcLineIntersection2D(
@@ -88,23 +88,23 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
       std::stringstream ss_u1_tmp;
       ss_u1_tmp << u1_tmp;
-      PLOG(debug) << g_msg->message("u1_tmp = " + ss_u1_tmp.str());
+            PLOG(debug) << "u1_tmp = " + ss_u1_tmp.str();
 
       if (not_parallel) {
         if (fabs(u1_tmp) < bcfg.tol) {
-          PLOG(debug) << g_msg->message("  case 1: intersect at source");
+                    PLOG(debug) << "  case 1: intersect at source";
           v_layer = he_tmp->source();
           break;
         }
         else if (fabs(1 - u1_tmp) < bcfg.tol) {
-          PLOG(debug) << g_msg->message("  case 2: intersect at target");
+                    PLOG(debug) << "  case 2: intersect at target";
           v_layer = he_tmp->target();
           break;
         }
         else if (u1_tmp > 0 && u1_tmp < 1) {
-          PLOG(debug) << g_msg->message("  case 3: intersect current edge");
+                    PLOG(debug) << "  case 3: intersect current edge";
           v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
-          PLOG(debug) << g_msg->message("  v_layer: " + v_layer->printString());
+                    PLOG(debug) << "  v_layer: " + v_layer->printString();
           v_layer = bcfg.dcel->splitEdge(he_tmp, v_layer);
           break;
         }
@@ -115,11 +115,11 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
     // Stop condition: reached the boundary of the offset curve
     if (go_prev && he_tmp->source() == stop_vertex) {
-      PLOG(debug) << g_msg->message("reach the last edge");
+            PLOG(debug) << "reach the last edge";
       break;
     }
     if (!go_prev && he_tmp->target() == stop_vertex) {
-      PLOG(debug) << g_msg->message("reach the last edge");
+            PLOG(debug) << "reach the last edge";
       break;
     }
 
@@ -146,27 +146,27 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
 
   g_msg->increaseIndent();
   for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
-    PLOG(debug) << g_msg->message("layer " + std::to_string(i + 1));
+        PLOG(debug) << "layer " + std::to_string(i + 1);
 
     cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
                 _layup->getLayers()[i].getStack();
 
     std::stringstream ss;
     ss << cumu_thk;
-    PLOG(debug) << g_msg->message("cumu_thk = " + ss.str());
+        PLOG(debug) << "cumu_thk = " + ss.str();
 
     PGeoLineSegment *ls_offset = offsetLineSegment(ls_base, offset_dir, cumu_thk);
-    PLOG(debug) << g_msg->message("ls_offset: " + ls_offset->printString());
+        PLOG(debug) << "ls_offset: " + ls_offset->printString();
 
     PDCELVertex *v_layer = findLayerIntersectionOnFace(
         v_layer_prev, _face, ls_offset, go_prev, bcfg);
 
     if (v_layer == nullptr) {
-      PLOG(error) << g_msg->message("cannot find intersection");
+            g_msg->error("cannot find intersection");
       break;
     }
 
-    PLOG(debug) << g_msg->message("v_layer: " + v_layer->printString());
+        PLOG(debug) << "v_layer: " + v_layer->printString();
     layer_vertices.push_back(v_layer);
     v_layer_prev = v_layer;
   }
@@ -181,27 +181,27 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
     std::vector<PDCELVertex *> &first_bound_vertices,
     const BuilderConfig &bcfg) {
 
-  PLOG(debug) << g_msg->message(
-      "1. creating the beginning bound of the first area");
+    PLOG(debug) << 
+      "1. creating the beginning bound of the first area";
   g_msg->increaseIndent();
 
   std::vector<PDCELVertex *> prev_bound_vertices;
 
   if (_closed) {
-    PLOG(debug) << g_msg->message("closed segment");
+        PLOG(debug) << "closed segment";
     prev_bound_vertices = splitBoundByLayup(
         _curve_base->vertices()[0], _curve_offset->vertices()[0], bcfg);
     first_bound_vertices = prev_bound_vertices;
   }
   else {
-    PLOG(debug) << g_msg->message("open segment");
+        PLOG(debug) << "open segment";
 
     PDCELVertex *vb = _curve_base->vertices()[0];
     PDCELVertex *vo = _curve_offset->vertices()[0];
-    PLOG(debug) << g_msg->message(
-        "first vertex of the base: " + vb->printString());
-    PLOG(debug) << g_msg->message(
-        "first vertex of the offset: " + vo->printString());
+        PLOG(debug) << 
+        "first vertex of the base: " + vb->printString();
+        PLOG(debug) << 
+        "first vertex of the offset: " + vo->printString();
 
     bool use_offset_as_base =
         (_base_offset_indices_pairs[0][0] == _base_offset_indices_pairs[1][0]);
@@ -212,13 +212,13 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
           _curve_base->vertices()[0], _curve_base->vertices()[1]);
     }
     else {
-      PLOG(debug) << g_msg->message("degenerated case");
+            PLOG(debug) << "degenerated case";
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
           _curve_offset->vertices()[0], _curve_offset->vertices()[1]);
       int dir = (slayupside == "left") ? -1 : 1;
       ls_base = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
-      PLOG(debug) << g_msg->message(" ls_tmp: " + ls_tmp->printString());
-      PLOG(debug) << g_msg->message(" ls_base: " + ls_base->printString());
+            PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
+            PLOG(debug) << " ls_base: " + ls_base->printString();
     }
 
     bool go_prev = (slayupside == "left");
@@ -236,11 +236,11 @@ void Segment::createIntermediateAreas(
     std::vector<PDCELVertex *> &prev_bound_vertices,
     int &count, const BuilderConfig &bcfg) {
 
-  PLOG(debug) << g_msg->message("2. creating areas");
+    PLOG(debug) << "2. creating areas";
   g_msg->increaseIndent();
 
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
-    PLOG(debug) << g_msg->message("area " + std::to_string(k));
+        PLOG(debug) << "area " + std::to_string(k);
 
     int vbi_tmp = _base_offset_indices_pairs[k][0];
     int voi_tmp = _base_offset_indices_pairs[k][1];
@@ -249,9 +249,9 @@ void Segment::createIntermediateAreas(
 
     PDCELVertex *vb_tmp = _curve_base->vertices()[vbi_tmp];
     PDCELVertex *vo_tmp = _curve_offset->vertices()[voi_tmp];
-    PLOG(debug) << g_msg->message("  base vertex: " + vb_tmp->printString());
-    PLOG(debug) << g_msg->message(
-        "  offset vertex: " + vo_tmp->printString());
+        PLOG(debug) << "  base vertex: " + vb_tmp->printString();
+        PLOG(debug) << 
+        "  offset vertex: " + vo_tmp->printString();
 
     PGeoLineSegment *ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
 
@@ -313,7 +313,7 @@ void Segment::buildLastArea(
     const std::vector<PDCELVertex *> &first_bound_vertices,
     int count, const BuilderConfig &bcfg) {
 
-  PLOG(debug) << g_msg->message("3. creating the last area");
+    PLOG(debug) << "3. creating the last area";
   g_msg->increaseIndent();
 
   PArea *area = new PArea(this);
@@ -357,14 +357,14 @@ void Segment::buildLastArea(
           _curve_base->vertices()[_curve_base->vertices().size() - 1]);
     }
     else {
-      PLOG(debug) << g_msg->message("degenerated case");
+            PLOG(debug) << "degenerated case";
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
           _curve_offset->vertices()[_curve_base->vertices().size() - 2],
           _curve_offset->vertices()[_curve_base->vertices().size() - 1]);
       int dir = (slayupside == "left") ? 1 : -1;
       ls_base_end = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
-      PLOG(debug) << g_msg->message(" ls_tmp: " + ls_tmp->printString());
-      PLOG(debug) << g_msg->message(" ls_base: " + ls_base_end->printString());
+            PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
+            PLOG(debug) << " ls_base: " + ls_base_end->printString();
     }
 
     bool go_prev = (slayupside == "right");
@@ -380,7 +380,7 @@ void Segment::buildLastArea(
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
-  PLOG(debug) << g_msg->message("building areas of segment: " + _name);
+    PLOG(debug) << "building areas of segment: " + _name;
 
   std::vector<PDCELVertex *> first_bound_vertices;
   std::vector<PDCELVertex *> prev_bound_vertices =

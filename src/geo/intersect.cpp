@@ -349,7 +349,7 @@ PDCELHalfEdge *findCurvesIntersection(
   ) {
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(debug) << g_msg->message("in function: findCurvesIntersection");
+    PLOG(debug) << "in function: findCurvesIntersection";
 
   PDCELHalfEdge *he = nullptr;
 
@@ -372,16 +372,16 @@ PDCELHalfEdge *findCurvesIntersection(
 
   // Iterate through all line segments of the half edge loop
   do {
-    PLOG(debug) << g_msg->message("----------");
+        PLOG(debug) << "----------";
 
     tmp_ls.clear();
     tmp_ls.push_back(hei->source());
     tmp_ls.push_back(hei->target());
 
     // std::cout << "tmp_ls: " << tmp_ls[0] << ", " << tmp_ls[1] << std::endl;
-    PLOG(debug) << g_msg->message(
+        PLOG(debug) << 
       "line segment of the half edge loop (tmp_ls): " + tmp_ls[0]->printString() + " -- " + tmp_ls[1]->printString()
-      );
+      ;
 
     c_is.clear();
     t_is.clear();
@@ -394,13 +394,13 @@ PDCELHalfEdge *findCurvesIntersection(
       vertices, tmp_ls, c_is, t_is, c_us, t_us
     );
 
-    PLOG(debug) << g_msg->message("all intersections");
-    PLOG(debug) << g_msg->message("curve index (i) -- param loc (u) | tool index (i) -- param loc (u)");
+        PLOG(debug) << "all intersections";
+        PLOG(debug) << "curve index (i) -- param loc (u) | tool index (i) -- param loc (u)";
 
     for (auto k = 0; k < c_is.size(); k++) {
-      PLOG(debug) << g_msg->message(
+            PLOG(debug) << 
         std::to_string(c_is[k]) + " -- " + std::to_string(c_us[k]) + " | "
-        + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]));
+        + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]);
     }
 
 
@@ -420,27 +420,27 @@ PDCELHalfEdge *findCurvesIntersection(
       }
       tmp_t_u = t_us[j0];
 
-      PLOG(debug) << g_msg->message("closest intersection to end " + std::to_string(end));
-      PLOG(debug) << g_msg->message("curve segment index (ls_i) = " + std::to_string(ls_i));
-      PLOG(debug) << g_msg->message("prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev));
-      PLOG(debug) << g_msg->message("curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u));
-      PLOG(debug) << g_msg->message("tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u));
-      PLOG(debug) << g_msg->message(
+            PLOG(debug) << "closest intersection to end " + std::to_string(end);
+            PLOG(debug) << "curve segment index (ls_i) = " + std::to_string(ls_i);
+            PLOG(debug) << "prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev);
+            PLOG(debug) << "curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u);
+            PLOG(debug) << "tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u);
+            PLOG(debug) << 
         "curve segment: v11 = " + vertices[ls_i]->printString() + " -> "
         + "v12 = " + vertices[ls_i+1]->printString()
-      );
-      PLOG(debug) << g_msg->message(
+      ;
+            PLOG(debug) << 
         "tool segment: v21 = " + tmp_ls[0]->printString() + " -> "
         + "v22 = " + tmp_ls[1]->printString()
-      );
-      // PLOG(debug) << g_msg->message("tol = " + std::to_string(tol));
-      // PLOG(debug) << g_msg->message("number of vertices of the curve = " + std::to_string(vertices.size()));
+      ;
+      //       // PLOG(debug) << "tol = " + std::to_string(tol);
+      //       // PLOG(debug) << "number of vertices of the curve = " + std::to_string(vertices.size());
 
       bool update = false;
 
       // If the intersection is within the tool segment
-      PLOG(debug) << g_msg->message("u1 = " + std::to_string(u1));
-      PLOG(debug) << g_msg->message("tol = " + std::to_string(tol));
+            PLOG(debug) << "u1 = " + std::to_string(u1);
+            PLOG(debug) << "tol = " + std::to_string(tol);
       if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
 
         // If want the intersection closer to the beginning
@@ -508,16 +508,16 @@ PDCELHalfEdge *findCurvesIntersection(
 
       if (update) {
 
-        PLOG(debug) << g_msg->message("update intersection");
+                PLOG(debug) << "update intersection";
 
         u1 = tmp_c_u;
         u2 = tmp_t_u;
         he = hei;
         ls_i_prev = ls_i;
 
-        PLOG(debug) << g_msg->message("u1 = " + std::to_string(u1));
-        PLOG(debug) << g_msg->message("u2 = " + std::to_string(u2));
-        PLOG(debug) << g_msg->message("end = " + std::to_string(end));
+                PLOG(debug) << "u1 = " + std::to_string(u1);
+                PLOG(debug) << "u2 = " + std::to_string(u2);
+                PLOG(debug) << "end = " + std::to_string(end);
 
       }
 
@@ -843,7 +843,7 @@ double getIntersectionLocation(
   // Find the intersection location that is the closest to the expected end
   MESSAGE_SCOPE(g_msg);
 
-  // PLOG(debug) << g_msg->message("in function: getIntersectionLocation");
+  //   // PLOG(debug) << "in function: getIntersectionLocation";
 
   // Initialise with sentinel values; the loop below applies inner_only uniformly
   // from k=0 so the seed element is also filtered correctly.
@@ -896,12 +896,12 @@ double getIntersectionLocation(
   }
 
 
-  // PLOG(debug) << g_msg->message(
+  //   // PLOG(debug) << 
   //   "ls_i = " + std::to_string(ls_i)
   //   + ", u = " + std::to_string(u)
   //   + ", v1 = " + c[ls_i]->printString()
   //   + ", v2 = " + c[ls_i+1]->printString()
-  // );
+  // ;
 
   return u;
 }

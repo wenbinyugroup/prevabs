@@ -56,6 +56,11 @@ public:
 
   std::string message(const std::string &);
 
+  // User-channel output — clean prose, no source location.
+  void print(const std::string &msg);   // info line:    "- msg"
+  void warn(const std::string &msg);    // warning line: "[warning] msg"
+  void error(const std::string &msg);   // error line:   "[error] msg"
+
   void printPrompt(int, int = 0);
   int print(int, std::string);
   int print(int, std::stringstream &);

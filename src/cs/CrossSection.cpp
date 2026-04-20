@@ -171,7 +171,7 @@ void CrossSection::build(const BuilderConfig &bcfg) {
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
-  PLOG(info) << g_msg->message("building the cross section, step 1");
+    g_msg->print("building the cross section, step 1");
 
   for (auto cmp : _components) {
 
@@ -213,7 +213,7 @@ void CrossSection::build(const BuilderConfig &bcfg) {
 
   // Build details (mainly slice layers for each segment)
   g_msg->printBlank();
-  PLOG(info) << g_msg->message("building the cross section, step 2");
+    g_msg->print("building the cross section, step 2");
 
   for (auto cmp : _components) {
     cmp->buildDetails(bcfg);

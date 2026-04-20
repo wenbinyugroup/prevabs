@@ -30,15 +30,15 @@ void Baseline::print() {
 
   std::string msg;
   // pmessage->print(i_type, "name: " + blname);
-  PLOG(debug) << g_msg->message("name: " + blname);
+    PLOG(debug) << "name: " + blname;
   // pmessage->print(i_type, "type: " + bltype);
-  PLOG(debug) << g_msg->message("type: " + bltype);
+    PLOG(debug) << "type: " + bltype;
   // pmessage->print(i_type, "point: (x, y, z)");
-  PLOG(debug) << g_msg->message("point: (x, y, z)");
+    PLOG(debug) << "point: (x, y, z)";
   for (int i = 0; i < _pvertices.size(); i++) {
     msg = std::to_string(i+1) + " [" + _pvertices[i]->name() + "]: " + _pvertices[i]->printString();
     // pmessage->print(i_type, msg);
-    PLOG(debug) << g_msg->message(msg);
+        PLOG(debug) << msg;
   }
 
   return;

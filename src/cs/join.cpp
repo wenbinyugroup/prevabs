@@ -142,23 +142,23 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
 
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(debug) << g_msg->message("making segment end: " + s->getName() + " " + std::to_string(e));
+    PLOG(debug) << "making segment end: " + s->getName() + " " + std::to_string(e);
 
-  PLOG(debug) << g_msg->message("number of dependencies: " + std::to_string(_dependencies.size()));
+    PLOG(debug) << "number of dependencies: " + std::to_string(_dependencies.size());
 
   if (_dependencies.empty()) {
-    PLOG(debug) << g_msg->message("making segment end because of no dependency.");
+        PLOG(debug) << "making segment end because of no dependency.";
     createSegmentFreeEnd(s, e, bcfg);
     return;
   }
 
   else {
 
-    PLOG(debug) << g_msg->message("the end to be done (e): " + std::to_string(e));
-    PLOG(debug) << g_msg->message("free end of the segment (s->free()): " + std::to_string(s->free()));
+        PLOG(debug) << "the end to be done (e): " + std::to_string(e);
+        PLOG(debug) << "free end of the segment (s->free()): " + std::to_string(s->free());
 
     if (e == s->free()) {
-      PLOG(debug) << g_msg->message("making segment end because of free end set although with dependency.");
+            PLOG(debug) << "making segment end because of free end set although with dependency.";
       createSegmentFreeEnd(s, e, bcfg);
       return;
     }
@@ -183,7 +183,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
           _ref_vertex = _segments[0]->curveBase()->vertices()[i];
         }
       }
-      PLOG(debug) << g_msg->message("ref vertex: " + _ref_vertex->printString());
+            PLOG(debug) << "ref vertex: " + _ref_vertex->printString();
 
       bool to_be_removed;
       if (_ref_vertex->isRegistered()) {
@@ -195,7 +195,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       }
 
       // 1.
-      PLOG(debug) << g_msg->message("step 1: find the outer half edge loop");
+            PLOG(debug) << "step 1: find the outer half edge loop";
 
       std::vector<PDCELHalfEdgeLoop *> hels;
       PDCELHalfEdgeLoop *tmp_hel_out;
@@ -206,7 +206,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       }
 
       // 2.
-      PLOG(debug) << g_msg->message("step 2: find all inner half edge loops");
+            PLOG(debug) << "step 2: find all inner half edge loops";
 
       PDCELFace *tmp_face = tmp_hel_out->face();
       if (tmp_face != nullptr) {
@@ -239,17 +239,17 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
 
       if (bcfg.debug) {
         std::cout << "\nhels:\n";
-        PLOG(debug) << g_msg->message("found half edge loops");
+                PLOG(debug) << "found half edge loops";
         for (auto hel : hels) {
           hel->log();
         }
       }
 
       // 3.
-      PLOG(debug) << g_msg->message("step 3: calculate intersections");
+            PLOG(debug) << "step 3: calculate intersections";
 
       // 3.1. For the base curve
-      PLOG(debug) << g_msg->message("step 3.1: for the base curve");
+            PLOG(debug) << "step 3.1: for the base curve";
 
       he_tool = findBestIntersection(
         s->curveBase()->vertices(), hels, e,
@@ -258,11 +258,11 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       ls_i = ls_i_prev;
       if ((fabs(1 - u1) <= TOLERANCE) || e == 1) ls_i += 1;
 
-      PLOG(debug) << g_msg->message("  u1 = " + std::to_string(u1));
-      PLOG(debug) << g_msg->message("  u2 = " + std::to_string(u2));
+            PLOG(debug) << "  u1 = " + std::to_string(u1);
+            PLOG(debug) << "  u2 = " + std::to_string(u2);
 
       if (fabs(u1) == INF) {
-        PLOG(debug) << g_msg->message("making segment end because of not touching any other components although with dependency.");
+                PLOG(debug) << "making segment end because of not touching any other components although with dependency.";
         createSegmentFreeEnd(s, e, bcfg);
         return;
       }
@@ -279,10 +279,10 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
           v_new = bcfg.dcel->splitEdge(he_tool, v_new);
         }
       }
-      PLOG(debug) << g_msg->message("  v_new = ") << v_new->printString();
+      PLOG(debug) << "  v_new = " << v_new->printString();
 
       int ls_i_base = ls_i;
-      PLOG(debug) << g_msg->message("  ls_i = " + std::to_string(ls_i));
+            PLOG(debug) << "  ls_i = " + std::to_string(ls_i);
 
       if (e == 0) {
         for (auto k = 0; k < ls_i; k++) {
@@ -302,7 +302,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       }
 
       // 3.2. For the offset curve
-      PLOG(debug) << g_msg->message("step 3.2: for the offset curve");
+            PLOG(debug) << "step 3.2: for the offset curve";
 
       he_tool = findBestIntersection(
         s->curveOffset()->vertices(), hels, e,
@@ -311,11 +311,11 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       ls_i = ls_i_prev;
       if ((fabs(1 - u1) <= TOLERANCE) || e == 1) ls_i += 1;
 
-      PLOG(debug) << g_msg->message("  u1 = " + std::to_string(u1));
-      PLOG(debug) << g_msg->message("  u2 = " + std::to_string(u2));
+            PLOG(debug) << "  u1 = " + std::to_string(u1);
+            PLOG(debug) << "  u2 = " + std::to_string(u2);
 
       if (fabs(u1) == INF) {
-        PLOG(debug) << g_msg->message("offset curve: no intersection found, using free end.");
+                PLOG(debug) << "offset curve: no intersection found, using free end.";
         createSegmentFreeEnd(s, e, bcfg);
         return;
       }
@@ -331,10 +331,10 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
         v_new = he_tool->toLineSegment()->getParametricVertex(u2);
         v_new = bcfg.dcel->splitEdge(he_tool, v_new);
       }
-      PLOG(debug) << g_msg->message("  v_new = ") << v_new->printString();
+      PLOG(debug) << "  v_new = " << v_new->printString();
 
       int ls_i_offset = ls_i;
-      PLOG(debug) << g_msg->message("  ls_i = " + std::to_string(ls_i));
+            PLOG(debug) << "  ls_i = " + std::to_string(ls_i);
 
       if (e == 0) {
         for (auto k = 0; k < ls_i; k++) {
@@ -357,12 +357,12 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
       // 1. Remove the index pairs is they are in the trim region
       // 2. Renumber the indices (if trim start end)
       // 3. Add the pairs for the trimmed end
-      PLOG(debug) << g_msg->message("adjust base-offset linking indices");
+            PLOG(debug) << "adjust base-offset linking indices";
 
       int nv_base = static_cast<int>(s->curveBase()->vertices().size());
       int nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
-      PLOG(debug) << g_msg->message("  nv_base = " + std::to_string(nv_base));
-      PLOG(debug) << g_msg->message("  nv_offset = " + std::to_string(nv_offset));
+            PLOG(debug) << "  nv_base = " + std::to_string(nv_base);
+            PLOG(debug) << "  nv_offset = " + std::to_string(nv_offset);
 
       if (e == 0) {
 
@@ -406,11 +406,11 @@ void PComponent::joinSegments(
   ) {
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(debug) << g_msg->message(
+    PLOG(debug) << 
     "joining segments ends: "
     + s1->getName() + " " + std::to_string(e1) + ", "
     + s2->getName() + " " + std::to_string(e2)
-  );
+  ;
 
   PDCELVertex *v1_new = nullptr, *v2_new = nullptr, *v_intersect = nullptr;
   Baseline *bl1_off_new, *bl2_off_new;
@@ -462,12 +462,12 @@ void PComponent::joinSegments(
     );
     trim(s1->curveOffset()->vertices(), v1_new, e1);
 
-    PLOG(debug) << g_msg->message("  ls_i1 = " + std::to_string(ls_i1));
+        PLOG(debug) << "  ls_i1 = " + std::to_string(ls_i1);
 
-    PLOG(debug) << g_msg->message(
+        PLOG(debug) << 
       "  intersection vertex for " + s1->getName()
       + ": " + v1_new->printString()
-    );
+    ;
 
     // Adjust linking indices
 
@@ -587,12 +587,12 @@ void PComponent::joinSegments(
     );
     trim(s2->curveOffset()->vertices(), v2_new, e2);
 
-    PLOG(debug) << g_msg->message("  ls_i2 = " + std::to_string(ls_i2));
+        PLOG(debug) << "  ls_i2 = " + std::to_string(ls_i2);
 
-    PLOG(debug) << g_msg->message(
+        PLOG(debug) << 
       "  intersection vertex for " + s2->getName()
       + ": " + v2_new->printString()
-    );
+    ;
 
     // Adjust linking indices
 
@@ -899,7 +899,7 @@ void PComponent::joinSegments(
     else {
       for (auto p : lss1) delete p;
       for (auto p : lss2) delete p;
-      PLOG(debug) << g_msg->message("style 2: no intersection found between offset curves, skipping join.");
+            PLOG(debug) << "style 2: no intersection found between offset curves, skipping join.";
       return;
     }
 
@@ -927,30 +927,30 @@ void PComponent::joinSegments(
     he_new = bcfg.dcel->addEdge(bound_vertices[i], bound_vertices[i + 1]);
   }
 
-  PLOG(debug) << g_msg->message("  base -- offset index pairs of segment: " + s1->getName());
+    PLOG(debug) << "  base -- offset index pairs of segment: " + s1->getName();
   for (auto i = 0; i < s1->baseOffsetIndicesPairs().size(); i++) {
-    PLOG(debug) << g_msg->message(
+        PLOG(debug) << 
       "  " + std::to_string(s1->baseOffsetIndicesPairs()[i][0]) + " : "
       + s1->curveBase()->vertices()[s1->baseOffsetIndicesPairs()[i][0]]->printString()
       + " -- " + std::to_string(s1->baseOffsetIndicesPairs()[i][1]) + " : "
       + s1->curveOffset()->vertices()[s1->baseOffsetIndicesPairs()[i][1]]->printString()
-    );
+    ;
   }
 
-  PLOG(debug) << g_msg->message("  base -- offset index pairs of segment: " + s2->getName());
+    PLOG(debug) << "  base -- offset index pairs of segment: " + s2->getName();
   for (auto i = 0; i < s2->baseOffsetIndicesPairs().size(); i++) {
-    PLOG(debug) << g_msg->message(
+        PLOG(debug) << 
       "  " + std::to_string(s2->baseOffsetIndicesPairs()[i][0]) + " : "
       + s2->curveBase()->vertices()[s2->baseOffsetIndicesPairs()[i][0]]->printString()
       + " -- " + std::to_string(s2->baseOffsetIndicesPairs()[i][1]) + " : "
       + s2->curveOffset()->vertices()[s2->baseOffsetIndicesPairs()[i][1]]->printString()
-    );
+    ;
   }
 
 }
 
 void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bcfg) {
-  PLOG(debug) << g_msg->message("createSegmentFreeEnd: " + s->getName() + " " + std::to_string(e));
+    PLOG(debug) << "createSegmentFreeEnd: " + s->getName() + " " + std::to_string(e);
 
   // Trim head
   if (e == 0 && s->prevBound().normSq() != 0) {
@@ -984,7 +984,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
       s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 0, 0,
       false, false, is_new_1, is_new_2, tol
     );
-    PLOG(debug) << g_msg->message("ip = " + ip->printString());
+        PLOG(debug) << "ip = " + ip->printString();
 
     trim(s->curveOffset()->vertices(), ip, 0);
 
@@ -1027,13 +1027,13 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
       s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 1, 1,
       false, false, is_new_1, is_new_2, tol
     );
-    PLOG(debug) << g_msg->message("ip = " + ip->printString());
+        PLOG(debug) << "ip = " + ip->printString();
 
     trim(s->curveOffset()->vertices(), ip, 1);
 
-    PLOG(debug) << g_msg->message("curve base:");
+        PLOG(debug) << "curve base:";
     s->getBaseline()->print();
-    PLOG(debug) << g_msg->message("curve offset:");
+        PLOG(debug) << "curve offset:";
     s->curveOffset()->print();
 
     // Adjust linking indices
@@ -1049,9 +1049,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
   }
 
-  PLOG(debug) << g_msg->message("curve base:");
+    PLOG(debug) << "curve base:";
   s->getBaseline()->print();
-  PLOG(debug) << g_msg->message("curve offset:");
+    PLOG(debug) << "curve offset:";
   s->curveOffset()->print();
   s->printBaseOffsetPairs();
 

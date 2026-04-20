@@ -46,7 +46,7 @@
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
 
-  PLOG(debug) << g_msg->message("in function: readLayups");
+    PLOG(debug) << "in function: readLayups";
 
   std::vector<Layup> tempLayups;
 
@@ -55,7 +55,7 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
     std::string layupName{};
     layupName = nodeLayup->first_attribute("name")->value();
     // std::cout << "[debug] reading layup: " << layupName << std::endl;
-    PLOG(debug) << g_msg->message("reading layup: " + layupName);
+        PLOG(debug) << "reading layup: " + layupName;
 
     std::string layupMethod{"layer list"};
     xml_attribute<> *attrMethod = nodeLayup->first_attribute("method");

@@ -112,7 +112,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   // if (bcfg.debug) {
   //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
   // }
-  PLOG(debug) << g_msg->message("building layers for area: " + bcfg.model->faceData(_face).name);
+    PLOG(debug) << "building layers for area: " + bcfg.model->faceData(_face).name;
 
   // std::cout << "        area face:" << std::endl;
   // _face->print();

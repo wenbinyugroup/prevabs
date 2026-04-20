@@ -52,11 +52,11 @@ int readMaterialsFile(
   std::ifstream fileMaterials{fn_material_global};
   if (!fileMaterials.is_open()) {
     // std::cout << "Unable to open file: " << fn_material_global << std::endl;
-    PLOG(warning) << g_msg->message("unable to open file: " + fn_material_global);
+        g_msg->warn("unable to open file: " + fn_material_global);
     return 1;
   } else {
     // printInfo(i_indent, "reading materials file: " + fn_material_global);
-    PLOG(info) << g_msg->message("reading materials file: " + fn_material_global);
+        g_msg->print("reading materials file: " + fn_material_global);
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(fileMaterials)),
@@ -68,7 +68,7 @@ int readMaterialsFile(
   } catch (parse_error &e) {
     // std::cout << markError << " Unable to parse the file: " << fn_material_global
     //           << std::endl;
-    PLOG(error) << g_msg->message("unable to parse the file: " + fn_material_global);
+        g_msg->error("unable to parse the file: " + fn_material_global);
     std::cerr << e.what() << std::endl;
     // std::cout << e.where() << std::endl;
   }
@@ -159,7 +159,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   std::string materialName{};
   materialName = p_xn_material->first_attribute("name")->value();
 
-  PLOG(debug) << g_msg->message("reading material: " + materialName);
+    PLOG(debug) << "reading material: " + materialName;
 
   // Check if the material with the name exists
   m = pmodel->getMaterialByName(materialName);
@@ -520,7 +520,7 @@ Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /
   std::string laminaName{};
   laminaName = p_xn_lamina->first_attribute("name")->value();
 
-  PLOG(debug) << g_msg->message("reading lamina: " + laminaName);
+    PLOG(debug) << "reading lamina: " + laminaName;
 
   std::string lm{};
   lm = p_xn_lamina->first_node("material")->value();

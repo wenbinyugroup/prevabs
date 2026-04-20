@@ -72,6 +72,24 @@ std::string Message::message(const std::string &str) {
   return s_msg;
 }
 
+void Message::print(const std::string &msg) {
+  std::string line = std::string(m_i_indent, ' ') + "- " + msg;
+  m_ofs << line << std::endl;
+  if (m_b_to_screen) std::cout << line << std::endl;
+}
+
+void Message::warn(const std::string &msg) {
+  std::string line = std::string(m_i_indent, ' ') + "[warning] " + msg;
+  m_ofs << line << std::endl;
+  if (m_b_to_screen) std::cout << line << std::endl;
+}
+
+void Message::error(const std::string &msg) {
+  std::string line = std::string(m_i_indent, ' ') + "[error] " + msg;
+  m_ofs << line << std::endl;
+  if (m_b_to_screen) std::cout << line << std::endl;
+}
+
 void Message::printPrompt(int i_type, int indent_override) {
   std::string s_prepend{""};
   if (indent_override == 0) {

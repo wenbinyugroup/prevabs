@@ -9,7 +9,7 @@ void PModel::plotDehomo() {
   MESSAGE_SCOPE(g_msg);
 
   g_msg->printBlank();
-  PLOG(info) << g_msg->message("post-processing recover results");
+    g_msg->print("post-processing recover results");
 
 
   std::string fn_base = config.file_directory + config.file_base_name;
@@ -32,7 +32,7 @@ void PModel::plotDehomo() {
 
 
 
-  PLOG(info) << g_msg->message("post-processing recover results -- done");
+    g_msg->print("post-processing recover results -- done");
   g_msg->printBlank();
 
   return;
