@@ -36,7 +36,23 @@ bool isClose(
   const double&, const double&,
   double, double);
 
-double calcPolylineLength(const std::vector<PDCELVertex *>);
+enum class PolylineAxis {
+  X2,
+  X3
+};
+
+enum class CurveEnd {
+  Begin,
+  End
+};
+
+enum class AnglePlane {
+  YZ,
+  ZX,
+  XY
+};
+
+double calcPolylineLength(const std::vector<PDCELVertex *> &);
 
 template <typename P>
 P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, const double &tol) {
@@ -56,7 +72,7 @@ P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, co
 }
 
 // template <typename P>
-// P findParamPointOnPolyline(const std::vector<P> &ps, const double &u, bool &is_new, const double &tol) {
+// P findPolylinePointAtParam(const std::vector<P> &ps, const double &u, bool &is_new, const double &tol) {
 //   // Calculate the total length
 //   double length = calcPolylineLength(ps);
 //   double ulength = u * length;
@@ -76,27 +92,27 @@ P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, co
 //   return newp;
 // }
 
-PDCELVertex *findParamPointOnPolyline(
-  const std::vector<PDCELVertex *>,
+PDCELVertex *findPolylinePointAtParam(
+  const std::vector<PDCELVertex *> &,
   const double &, bool &, int &, const double &
 );
 
-PDCELVertex *findPointOnPolylineByCoordinate(
+PDCELVertex *findPolylinePointByCoordinate(
   const std::vector<PDCELVertex *> &, const std::string ,
   const double ,   double ,double &,
-  const int count = 1, const std::string by = "x2"
+  const int count = 1, const PolylineAxis axis = PolylineAxis::X2
 ); 
 
-PDCELVertex *findPointOnPolylineByCoordinate(
+PDCELVertex *findPolylinePointByCoordinate(
   const std::vector<PDCELVertex *> &, const std::string,
   const double , double , 
-  const int count = 1, const std::string by = "x2"
+  const int count = 1, const PolylineAxis axis = PolylineAxis::X2
 );
 
-double findPointOnPolylineByCoordinate(
+double findPolylineParamByCoordinate(
   const std::vector<PDCELVertex *> &,
   const double ,   double ,
-  const int count = 1, const std::string by = "x2" 
+  const int count = 1, const PolylineAxis axis = PolylineAxis::X2
 );
 
 bool calcLineIntersection2D(
@@ -144,7 +160,7 @@ int joinCurves(Baseline *, std::list<Baseline *>);
   \param ls The tool line segment
   \param end Indicate which end to be adjusted (0: head; 1: tail)
  */
-void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end);
+int adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, CurveEnd end);
 
 /// Calculate the direction vector given an angle in a plane.
 /*!
@@ -152,7 +168,7 @@ void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end);
   \param plane The plane considered (0(x)/1(y)/2(z))
   \return The directional vector
  */
-SVector3 getVectorFromAngle(double &angle, const int &plane);
+SVector3 getVectorFromAngle(double angle, AnglePlane plane);
 
 SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
 
@@ -194,16 +210,18 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 // int offset2(const std::vector<PDCELVertex *> &base, int side, double dist,
 //            std::vector<PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
 
-SVector3 calcAngleBisectVector(SPoint3 &, SPoint3 &, SPoint3 &);
-SVector3 calcAngleBisectVector(SVector3 &, SVector3 &, std::string,
-                               std::string);
+SVector3 calcAngleBisectVector(const SPoint3 &, const SPoint3 &,
+                               const SPoint3 &);
+SVector3 calcAngleBisectVector(const SVector3 &, const SVector3 &,
+                               const std::string &, const std::string &);
 
-void calcBoundVertices(std::vector<PDCELVertex *> &, SVector3 &, SVector3 &,
-                       Layup *);
+int calcBoundVertices(std::vector<PDCELVertex *> &, const SVector3 &,
+                      const SVector3 &, Layup *);
 
-void combineVertexLists(std::vector<PDCELVertex *> &,
-                        std::vector<PDCELVertex *> &, std::vector<int> &,
-                        std::vector<int> &, std::vector<PDCELVertex *> &);
+int mergeSortedVertexLists(const std::vector<PDCELVertex *> &,
+                           const std::vector<PDCELVertex *> &,
+                           std::vector<int> &, std::vector<int> &,
+                           std::vector<PDCELVertex *> &);
 
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
               PDCELVertex *&intersect);
@@ -271,4 +289,5 @@ PDCELVertex *getIntersectionVertex(
   const double &tol
 );
 
-int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove);
+int trimCurveAtVertex(std::vector<PDCELVertex *> &c, PDCELVertex *v,
+                      CurveEnd remove);

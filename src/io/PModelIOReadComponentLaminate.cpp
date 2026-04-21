@@ -20,6 +20,7 @@
 #include <stack>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 
 
 int readXMLElementComponentLaminate(
@@ -321,7 +322,9 @@ int readXMLElementComponentLaminate(
         pos = static_cast<int>(begin_x2_value.find(":"));
         double begin_x2 = std::stod(begin_x2_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(begin_x2_value.substr(pos+1)) : 1;
-        u_begin = findPointOnPolylineByCoordinate(p_bsl->vertices(), begin_x2, tol, intersection_count);
+        u_begin = findPolylineParamByCoordinate(
+            p_bsl->vertices(), begin_x2, tol, intersection_count,
+            PolylineAxis::X2);
       }
       xml_attribute<> *p_xa_begin_x3{p_xn_layup->first_attribute("begin_x3")};
       if (p_xa_begin_x3) {
@@ -329,7 +332,9 @@ int readXMLElementComponentLaminate(
         pos = static_cast<int>(begin_x3_value.find(":"));
         double begin_x3 = std::stod(begin_x3_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(begin_x3_value.substr(pos+1)) : 1;
-        u_begin = findPointOnPolylineByCoordinate(p_bsl->vertices(), begin_x3, tol, intersection_count);
+        u_begin = findPolylineParamByCoordinate(
+            p_bsl->vertices(), begin_x3, tol, intersection_count,
+            PolylineAxis::X3);
       }
 
       xml_attribute<> *p_xa_end{p_xn_layup->first_attribute("end")};
@@ -342,7 +347,9 @@ int readXMLElementComponentLaminate(
         pos = static_cast<int>(end_x2_value.find(":"));
         double end_x2 = std::stod(end_x2_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(end_x2_value.substr(pos+1)) : 1;
-        u_end = findPointOnPolylineByCoordinate(p_bsl->vertices(), end_x2, tol, intersection_count);
+        u_end = findPolylineParamByCoordinate(
+            p_bsl->vertices(), end_x2, tol, intersection_count,
+            PolylineAxis::X2);
       }
       xml_attribute<> *p_xa_end_x3{p_xn_layup->first_attribute("end_x3")};
       if (p_xa_end_x3) {
@@ -350,7 +357,15 @@ int readXMLElementComponentLaminate(
         pos = static_cast<int>(end_x3_value.find(":"));
         double end_x3 = std::stod(end_x3_value.substr(0,pos));
         int intersection_count = (pos != std::string::npos) ? std::stoi(end_x3_value.substr(pos+1)) : 1;
-        u_end = findPointOnPolylineByCoordinate(p_bsl->vertices(), end_x3, tol, intersection_count);
+        u_end = findPolylineParamByCoordinate(
+            p_bsl->vertices(), end_x3, tol, intersection_count,
+            PolylineAxis::X3);
+      }
+
+      if (!std::isfinite(u_begin) || !std::isfinite(u_end)) {
+        PLOG(error) << "failed to resolve layup begin/end coordinates on"
+                    << " baseline '" << s_bsl_name << "'";
+        return -1;
       }
 
       while (u_begin <= -1 || u_end > 1) {
@@ -574,9 +589,14 @@ int readXMLElementComponentLaminate(
         PDCELVertex *p_v_param;
         bool is_new;
         int i_seg;
-        p_v_param = findParamPointOnPolyline(
+        p_v_param = findPolylinePointAtParam(
           tmp_v_p_vertex, v_u_sorted[i], is_new, i_seg, tol
         );
+        if (p_v_param == nullptr) {
+          PLOG(error) << "findPolylinePointAtParam failed for baseline '"
+                      << s_bsl_name << "' at u = " << v_u_sorted[i];
+          return -1;
+        }
         // std::cout << "u = " << v_u_sorted[i];
         // std::cout << ", i_seg = " << i_seg;
         // std::cout << ", is_new = " << is_new;

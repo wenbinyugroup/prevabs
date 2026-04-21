@@ -213,7 +213,12 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
   else if (method == "join") {
 
     line->setName(baselineName);
-    readLineByJoin(line, p_xn_line, p_xn_geo, pmodel);
+    int join_status = readLineByJoin(line, p_xn_line, p_xn_geo, pmodel);
+    if (join_status != 0) {
+      PLOG(error) << "failed to join baseline '" << baselineName << "'";
+      delete line;
+      return nullptr;
+    }
     // line->print(pmessage, 1);
 
   }
@@ -359,7 +364,7 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
       // TODO: raise error 'cannot find point' and exit.
     }
 
-    SVector3 dir = getVectorFromAngle(angle, 0);
+    SVector3 dir = getVectorFromAngle(angle, AnglePlane::YZ);
     pvStart = new PDCELVertex(pvMid->point() - dir.point());
     pvEnd = new PDCELVertex(pvMid->point() + dir.point());
 
@@ -868,7 +873,12 @@ int readLineByJoin(
 
   }
 
-  joinCurves(line, sublines);
+  int join_status = joinCurves(line, sublines);
+  if (join_status != 0) {
+    PLOG(error) << "readLineByJoin: failed to join sublines for baseline '"
+                << line->getName() << "'";
+    return -1;
+  }
   // line->print(pmessage, 1);
 
   return 0;
@@ -878,7 +888,7 @@ PDCELVertex *getIntersectionWithWeb(double x, double angle, PDCELVertex *left, P
   // Find the intersection of small segment with a straight web
   // std::cout << "\n[debug] function: getIntersectionWithWeb\n";
 
-  SVector3 dir = getVectorFromAngle(angle, 0);
+  SVector3 dir = getVectorFromAngle(angle, AnglePlane::YZ);
   double dir_x = dir.point().y();
   double dir_y = dir.point().z();
   double l_x = left->point().y();
@@ -1057,7 +1067,7 @@ int addBaselineByPointAndAngle(PModel *pmodel, std::string name, PDCELVertex *pv
   PDCELVertex *pvStart, *pvEnd;
   Baseline *baseline = new Baseline(name, "straight");
 
-  SVector3 dir = getVectorFromAngle(angle, 0);
+  SVector3 dir = getVectorFromAngle(angle, AnglePlane::YZ);
   pvStart = new PDCELVertex( "P" + name + "_start", pvMid->point() - dir.point());
   pvEnd = new PDCELVertex("P" + name + "_end", pvMid->point() + dir.point());
 

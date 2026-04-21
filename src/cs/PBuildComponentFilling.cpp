@@ -33,6 +33,11 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
     Baseline *bl_joined;
     for (auto blg : _fill_baseline_groups) {
       bl_joined = joinCurves(blg);
+      if (bl_joined == nullptr) {
+        PLOG(error) << "buildFilling: failed to join a filling baseline group"
+                    << " for component '" << _name << "'";
+        return;
+      }
 
       if (_fill_ref_baseline == blg.front()) {
         _fill_ref_baseline = bl_joined;

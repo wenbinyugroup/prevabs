@@ -15,10 +15,23 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 #include <list>
 #include <string>
 #include <vector>
 #include <algorithm>
+
+namespace {
+
+const char *toAxisString(PolylineAxis axis) {
+  return axis == PolylineAxis::X2 ? "x2" : "x3";
+}
+
+const char *toEndString(CurveEnd end) {
+  return end == CurveEnd::Begin ? "begin" : "end";
+}
+
+}  // namespace
 
 bool isClose(
   const double& p1x, const double& p1y,
@@ -42,7 +55,7 @@ bool isClose(
  * @param ps A vector of pointers to PDCELVertex objects representing the polyline.
  * @return The total length of the polyline as a double.
  */
-double calcPolylineLength(const std::vector<PDCELVertex *> ps) {
+double calcPolylineLength(const std::vector<PDCELVertex *> &ps) {
   double len = 0;
   for (auto i = 1; i < ps.size(); ++i) {
     // len += dist(ps[i]->point(), ps[i-1]->point());
@@ -66,34 +79,50 @@ double calcPolylineLength(const std::vector<PDCELVertex *> ps) {
  * @param by A string specifying whether to search by "x2" or "x3" coordinate.
  * @return A pointer to the newly created PDCELVertex representing the found point.
  */
-PDCELVertex *findPointOnPolylineByCoordinate(
+PDCELVertex *findPolylinePointByCoordinate(
   const std::vector<PDCELVertex *> &ps, const std::string label,
   const double loc,   double tol,double &param,
-  const int count, const std::string by 
+  const int count, const PolylineAxis axis
 ) {
-  PDCELVertex *pv = new PDCELVertex(label);
+  param = 0.0;
+  if (ps.size() < 2) {
+    std::cout << markError
+              << " findPolylinePointByCoordinate: polyline needs at least"
+              << " two vertices" << std::endl;
+    return nullptr;
+  }
+
+  if (count < 1) {
+    std::cout << markError
+              << " findPolylinePointByCoordinate: count must be >= 1"
+              << std::endl;
+    return nullptr;
+  }
+
   double length = calcPolylineLength(ps);
+  if (length <= tol) {
+    std::cout << markError
+              << " findPolylinePointByCoordinate: polyline length is zero"
+              << std::endl;
+    return nullptr;
+  }
+
+  PDCELVertex *pv = new PDCELVertex(label);
   double ulength{0};
   int counter{0};
-  double left_x2, left_x3, right_x2, right_x3;
+  double left_x2{0.0}, left_x3{0.0}, right_x2{0.0}, right_x3{0.0};
+  bool found{false};
 
-  for (auto i = 0; i < ps.size() - 1; i++) {
-    if (by == "x2") {
+  for (std::size_t i = 0; i + 1 < ps.size(); ++i) {
+    double dl = ps[i]->point().distance(ps[i+1]->point());
+    if (axis == PolylineAxis::X2) {
       left_x2 = ps[i]->y(); left_x3 = ps[i]->z();
       right_x2 = ps[i+1]->y(); right_x3 = ps[i+1]->z();
-    } else if (by == "x3") {
+    } else {
       // switch inputs to tackle partion by x3
       left_x3 = ps[i]->y(); left_x2 = ps[i]->z();
       right_x3 = ps[i+1]->y(); right_x2 = ps[i+1]->z();
-    } else {
-      // Bug fix: previously fell through with uninitialized left_x2/left_x3/
-      // right_x2/right_x3, causing UB in the comparison below. Return nullptr
-      // immediately so callers can detect the invalid-axis error.
-      std::cout << markError << " Point should be specified by x2 or x3 coordinate"
-          << std::endl;
-      delete pv;
-      return nullptr;
-    };
+    }
     if (
     (left_x2 <= loc && loc <= right_x2) ||
     (left_x2 >= loc && loc >= right_x2)
@@ -106,28 +135,48 @@ PDCELVertex *findPointOnPolylineByCoordinate(
           break;
         }
         else if (fabs(loc - right_x2) < tol) {
-          ulength += ps[i]->point().distance(ps[i+1]->point());
+          ulength += dl;
           pv->setPosition(ps[i+1]->x(), ps[i+1]->y(), ps[i+1]->z());
+          found = true;
           break;
         }
         else {
-          double dy, dz, loc2, dl;
-          dl = ps[i]->point().distance(ps[i+1]->point());
+          double dy, dz, loc2;
           dy = right_x2 - left_x2;
+          if (std::abs(dy) < tol) {
+            std::cout << markError
+                      << " findPolylinePointByCoordinate: coordinate "
+                      << toAxisString(axis)
+                      << " is constant on the matched segment"
+                      << std::endl;
+            delete pv;
+            return nullptr;
+          }
           dz = right_x3 - left_x3;
           loc2 = dz / dy * (loc - left_x2) + left_x3;
           ulength +=  dl * (loc - left_x2) / dy;
-          if (by == "x2") {
+          if (axis == PolylineAxis::X2) {
             pv->setPosition(0, loc, loc2);
           } else {
             pv->setPosition(0, loc2, loc);
           }
+          found = true;
           break;
         }
       }
     }
-    ulength += ps[i]->point().distance(ps[i+1]->point());
+    ulength += dl;
   }
+
+  if (!found) {
+    std::cout << markError
+              << " findPolylinePointByCoordinate: failed to find coordinate "
+              << loc << " on polyline by " << toAxisString(axis)
+              << " (count = " << count << ")" << std::endl;
+    delete pv;
+    return nullptr;
+  }
+
   param = ulength / length;
   return pv;
 }
@@ -145,13 +194,14 @@ PDCELVertex *findPointOnPolylineByCoordinate(
  * @param by A string specifying the method or criteria to use for the search.
  * @return A pointer to the PDCELVertex object that matches the specified coordinate.
  */
-PDCELVertex *findPointOnPolylineByCoordinate(
+PDCELVertex *findPolylinePointByCoordinate(
   const std::vector<PDCELVertex *> &ps, const std::string label,
   const double loc,   double tol,
-  const int count, const std::string by
+  const int count, const PolylineAxis axis
 ) {
   double param{0};
-  return findPointOnPolylineByCoordinate(ps, label, loc, tol, param, count, by); 
+  return findPolylinePointByCoordinate(
+      ps, label, loc, tol, param, count, axis);
 }
 
 /**
@@ -168,14 +218,19 @@ PDCELVertex *findPointOnPolylineByCoordinate(
  * @param by A string specifying the method or criteria for the search.
  * @return The parameter value corresponding to the location of the point on the polyline.
  */
-double findPointOnPolylineByCoordinate(
+double findPolylineParamByCoordinate(
   const std::vector<PDCELVertex *> &ps,
   const double loc,   double tol,
-  const int count, const std::string by 
+  const int count, const PolylineAxis axis
 ) {
   double param{0};
   std::string label{"newp"};
-  findPointOnPolylineByCoordinate(ps, label, loc, tol, param, count, by); 
+  PDCELVertex *pv =
+      findPolylinePointByCoordinate(ps, label, loc, tol, param, count, axis);
+  if (pv == nullptr) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
+  delete pv;
   return param;
 }
 
@@ -192,8 +247,8 @@ double findPointOnPolylineByCoordinate(
  * @param tol The tolerance value used for determining if the point is new.
  * @return A pointer to the PDCELVertex representing the found or newly created point.
  */
-PDCELVertex *findParamPointOnPolyline(
-  const std::vector<PDCELVertex *> ps,
+PDCELVertex *findPolylinePointAtParam(
+  const std::vector<PDCELVertex *> &ps,
   const double &u, bool &is_new, int &seg, const double &tol
   ) {
   // Bug fix: li is used after the loop; if ps has fewer than 2 vertices the
@@ -205,32 +260,72 @@ PDCELVertex *findParamPointOnPolyline(
     return nullptr;
   }
 
+  if (u < -tol || u > 1.0 + tol) {
+    std::cout << markError
+              << " findPolylinePointAtParam: parameter u = " << u
+              << " is outside [0, 1]" << std::endl;
+    is_new = false;
+    seg = 0;
+    return nullptr;
+  }
+
   // Calculate the total length
   double length = calcPolylineLength(ps);
+  if (length <= tol) {
+    std::cout << markError
+              << " findPolylinePointAtParam: polyline length is zero"
+              << std::endl;
+    is_new = false;
+    seg = 0;
+    return nullptr;
+  }
+
+  if (u <= tol) {
+    is_new = false;
+    seg = 0;
+    return ps.front();
+  }
+  if (u >= 1.0 - tol) {
+    is_new = false;
+    seg = static_cast<int>(ps.size()) - 1;
+    return ps.back();
+  }
+
   double ulength = u * length;
 
   std::size_t nlseg = ps.size() - 1;
   double ui = 0, li = 0.0;
-  // int i;
-  for (seg = 0; seg < nlseg; ++seg) {
-    // li = dist(ps[seg], ps[seg+1]);
-    li = ps[seg]->point().distance(ps[seg+1]->point());
+  bool found_segment{false};
+  for (std::size_t i = 0; i < nlseg; ++i) {
+    li = ps[i]->point().distance(ps[i+1]->point());
+    if (li <= tol) {
+      continue;
+    }
     if (ulength > li) {
       ulength -= li;
     }
-    else break;
+    else {
+      seg = static_cast<int>(i);
+      found_segment = true;
+      break;
+    }
   }
+
+  if (!found_segment) {
+    is_new = false;
+    seg = static_cast<int>(ps.size()) - 1;
+    return ps.back();
+  }
+
   ui = ulength / li;
   SPoint3 newp = calcPointFromParam(
     ps[seg]->point(), ps[seg+1]->point(), ui, is_new, tol
   );
   if (!is_new) {
-    if (ui < 0.5) {
+    if (ui <= 0.5) {
       return ps[seg];
     }
-    else if (ui > 0.5) {
-      return ps[seg+1];
-    }
+    return ps[seg+1];
   }
   PDCELVertex *newv = new PDCELVertex(newp);
   seg += 1;  // index to insert the new vertex
@@ -271,6 +366,11 @@ double calcDistanceSquared(PDCELVertex *v1, PDCELVertex *v2) {
  */
 Baseline *joinCurves(std::list<Baseline *> curves) {
   // std::cout << "[debug] joining curves" << std::endl;
+  if (curves.empty()) {
+    std::cout << markError << " joinCurves: no curves were provided"
+              << std::endl;
+    return nullptr;
+  }
 
   Baseline *bl;
   bl = new Baseline(curves.front());
@@ -304,9 +404,10 @@ Baseline *joinCurves(std::list<Baseline *> curves) {
     if (blit == curves.end()) {
       std::cout << markError << " joinCurves: disconnected curve set,"
                 << " could not join all segments" << std::endl;
-      break;
+      delete bl;
+      return nullptr;
     }
-    curves.remove(*blit);
+    curves.erase(blit);
   }
 
   // std::cout << "line bl:" << std::endl;
@@ -331,6 +432,21 @@ Baseline *joinCurves(std::list<Baseline *> curves) {
  */
 int joinCurves(Baseline *line, std::list<Baseline *> curves) {
   // std::cout << "[debug] joining curves" << std::endl;
+  if (line == nullptr) {
+    std::cout << markError << " joinCurves: output baseline must be valid"
+              << std::endl;
+    return -1;
+  }
+  if (line->vertices().empty() == false) {
+    std::cout << markError << " joinCurves: output baseline must start empty"
+              << std::endl;
+    return -1;
+  }
+  if (curves.empty()) {
+    std::cout << markError << " joinCurves: no curves were provided"
+              << std::endl;
+    return -1;
+  }
 
   // Baseline *bl, *bl_tmp;
   // bl = new Baseline(curves.front());
@@ -366,9 +482,9 @@ int joinCurves(Baseline *line, std::list<Baseline *> curves) {
     if (blit == curves.end()) {
       std::cout << markError << " joinCurves: disconnected curve set,"
                 << " could not join all segments" << std::endl;
-      break;
+      return -1;
     }
-    curves.remove(*blit);
+    curves.erase(blit);
   }
 
   return 0;
@@ -385,36 +501,53 @@ int joinCurves(Baseline *line, std::list<Baseline *> curves) {
  * @param ls Pointer to the PGeoLineSegment object representing the line segment to intersect with.
  * @param end Integer indicating which end of the baseline curve segment to adjust (0 for the beginning, 1 for the end).
  */
-void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end) {
+int adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, CurveEnd end) {
   // Bug fix: previously ls_end was left uninitialized when end is neither 0
   // nor 1, and was never deleted (memory leak). Use a local pointer with an
   // explicit delete before every return path.
+  if (bl == nullptr || ls == nullptr) {
+    std::cout << markError
+              << " adjustCurveEnd: baseline and tool line must be valid"
+              << std::endl;
+    return -1;
+  }
+  if (bl->vertices().size() < 2) {
+    std::cout << markError
+              << " adjustCurveEnd: baseline needs at least two vertices"
+              << std::endl;
+    return -1;
+  }
+
   PGeoLineSegment *ls_end;
-  if (end == 0) {
+  if (end == CurveEnd::Begin) {
     ls_end = new PGeoLineSegment(bl->vertices().front(),
                                  bl->getTangentVectorBegin());
-  } else if (end == 1) {
+  } else {
     ls_end =
         new PGeoLineSegment(bl->vertices().back(), bl->getTangentVectorEnd());
-  } else {
-    std::cout << markError << " adjustCurveEnd: end must be 0 (begin) or 1 (end)"
-              << std::endl;
-    return;
   }
 
   double u1, u2;
-  calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
+  bool has_intersection = calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
+  if (!has_intersection) {
+    std::cout << markError
+              << " adjustCurveEnd: failed to intersect baseline tangent with"
+              << " tool line" << std::endl;
+    delete ls_end;
+    return -1;
+  }
   PDCELVertex *vnew = ls_end->getParametricVertex(u1);
   delete ls_end;
 
-  if (end == 0) {
+  if (end == CurveEnd::Begin) {
     bl->vertices()[0] = vnew;
-  } else if (end == 1) {
+  } else {
     bl->vertices()[bl->vertices().size() - 1] = vnew;
   }
+  return 0;
 }
 
-SVector3 getVectorFromAngle(double &angle, const int &plane) {
+SVector3 getVectorFromAngle(double angle, AnglePlane plane) {
   SVector3 v;
 
   // Map the angle into the range (-90, 270]
@@ -440,13 +573,13 @@ SVector3 getVectorFromAngle(double &angle, const int &plane) {
     d2 = tan(deg2rad(angle));
   }
 
-  if (plane == 0) {
+  if (plane == AnglePlane::YZ) {
     // y-z plane
     v = SVector3(0, d1, d2);
-  } else if (plane == 1) {
+  } else if (plane == AnglePlane::ZX) {
     // z-x plane
     v = SVector3(d2, 0, d1);
-  } else if (plane == 2) {
+  } else {
     // x-y plane
     v = SVector3(d1, d2, 0);
   }
@@ -514,7 +647,8 @@ bool isOverlapped(PGeoLineSegment *ls1, PGeoLineSegment *ls2) {
   return true;
 }
 
-SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
+SVector3 calcAngleBisectVector(
+  const SPoint3 &p0, const SPoint3 &p1, const SPoint3 &p2) {
   // Given three points, p0, p1, p2, calculate the line bisecting the
   // angle of <p1p0p2, and return the vector parallel this line.
   SVector3 v1{p0, p1}, v2{p0, p2}, vb;
@@ -528,8 +662,9 @@ SVector3 calcAngleBisectVector(SPoint3 &p0, SPoint3 &p1, SPoint3 &p2) {
   return vb;
 }
 
-SVector3 calcAngleBisectVector(SVector3 &v1, SVector3 &v2, std::string s1,
-                               std::string s2) {
+SVector3 calcAngleBisectVector(
+  const SVector3 &v1, const SVector3 &v2,
+  const std::string &s1, const std::string &s2) {
   // s1, s2 are the layup side (left or right) of v1, v2, respectively.
   SVector3 n1{1, 0, 0}, n2{1, 0, 0}, p1, p2;
   if (s1 == "right") {
@@ -545,53 +680,83 @@ SVector3 calcAngleBisectVector(SVector3 &v1, SVector3 &v2, std::string s1,
   return p1 + p2;
 }
 
-void calcBoundVertices(std::vector<PDCELVertex *> &vertices,
-                       SVector3 &sv_baseline, SVector3 &sv_bound,
-                       Layup *layup) {
+int calcBoundVertices(std::vector<PDCELVertex *> &vertices,
+                      const SVector3 &sv_baseline,
+                      const SVector3 &sv_bound, Layup *layup) {
   // Given the baseline direction, bound direction and layup,
   // calculate vertices dividing layers on the bound and
   // store them into the repository `vertices`
-  SVector3 n = crossprod(sv_bound, sv_baseline);
+  if (layup == nullptr) {
+    std::cout << markError
+              << " calcBoundVertices: layup must be valid" << std::endl;
+    return -1;
+  }
+  if (vertices.empty()) {
+    std::cout << markError
+              << " calcBoundVertices: vertices must contain the starting point"
+              << std::endl;
+    return -1;
+  }
+
+  SVector3 bound_dir = sv_bound;
+  SVector3 n = crossprod(bound_dir, sv_baseline);
   SVector3 p = crossprod(sv_baseline, n);
   p.normalize();
-  sv_bound.normalize();
+  bound_dir.normalize();
 
   // std::cout << "p: " << p.point() << std::endl;
+
+  double dp = dot(bound_dir, p);
+  if (std::abs(dp) < TOLERANCE) {
+    std::cout << markError << " calcBoundVertices: bound direction is"
+              << " perpendicular to the layer normal" << std::endl;
+    return -1;
+  }
 
   PDCELVertex *pv_prev, *pv_new;
   double thk, thkp;
   for (int i = 0; i < layup->getLayers().size(); ++i) {
     thk = layup->getLayers()[i].getLamina()->getThickness() *
           layup->getLayers()[i].getStack();
-    // Bug fix: dot(sv_bound, p) can be zero when the bound direction is
-    // perpendicular to the local normal, producing thkp = ±inf. Skip the
-    // layer and warn rather than inserting a vertex at infinity.
-    double dp = dot(sv_bound, p);
-    if (std::abs(dp) < TOLERANCE) {
-      std::cout << markError << " calcBoundVertices: bound direction is"
-                << " perpendicular to the layer normal; layer skipped"
-                << std::endl;
-      continue;
-    }
     thkp = thk / dp;
     pv_prev = vertices.back();
     // SPoint3 p_new = pv_prev->point() + (thkp * sv_bound).point();
     // std::cout << "thkp * sv_bound = " << (thkp * sv_bound).point() <<
     // std::endl;
-    SPoint3 p_new = (SVector3(pv_prev->point()) + thkp * sv_bound).point();
+    SPoint3 p_new = (SVector3(pv_prev->point()) + thkp * bound_dir).point();
     pv_new = new PDCELVertex();
     pv_new->setPoint(p_new);
     vertices.push_back(pv_new);
   }
+  return 0;
 }
 
-void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
-                        std::vector<PDCELVertex *> &vl_2,
-                        std::vector<int> &vi_1, std::vector<int> &vi_2,
-                        std::vector<PDCELVertex *> &vl_c) {
+int mergeSortedVertexLists(const std::vector<PDCELVertex *> &vl_1,
+                           const std::vector<PDCELVertex *> &vl_2,
+                           std::vector<int> &vi_1, std::vector<int> &vi_2,
+                           std::vector<PDCELVertex *> &vl_c) {
   std::size_t m, n;
   m = vl_1.size();
   n = vl_2.size();
+  int k{static_cast<int>(vl_c.size())};
+
+  if (m == 0 && n == 0) {
+    return 0;
+  }
+  if (m == 0) {
+    for (std::size_t p = 0; p < n; ++p) {
+      vl_c.push_back(vl_2[p]);
+      vi_2.push_back(k++);
+    }
+    return 0;
+  }
+  if (n == 0) {
+    for (std::size_t p = 0; p < m; ++p) {
+      vl_c.push_back(vl_1[p]);
+      vi_1.push_back(k++);
+    }
+    return 0;
+  }
 
   // Decide which dimension (y or z) is used to sort
   // Bug fix: bare abs() resolves to C integer abs() when <cstdlib> is
@@ -621,15 +786,16 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
     b_reverse_2 = false;
   else
     b_reverse_2 = true;
+  std::vector<PDCELVertex *> vl_2_ordered = vl_2;
   if (b_reverse_2)
-    std::reverse(vl_2.begin(), vl_2.end());
+    std::reverse(vl_2_ordered.begin(), vl_2_ordered.end());
 
   // std::cout << b_reverse_2 << std::endl;
 
   // std::vector<PDCELVertex *> vl_c;
-  int i{0}, j{0}, k{0};
+  int i{0}, j{0};
   while (i < m && j < n) {
-    double diff{vl_1[i]->point()[d] - vl_2[j]->point()[d]};
+    double diff{vl_1[i]->point()[d] - vl_2_ordered[j]->point()[d]};
     if ((order == "asc" && diff < (-TOLERANCE)) ||
         (order == "des" && diff > TOLERANCE)) {
       // vl_c[k] = vl_1[i];
@@ -639,7 +805,7 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
     } else if ((order == "asc" && diff > TOLERANCE) ||
                (order == "des" && diff < (-TOLERANCE))) {
       // vl_c[k] = vl_2[j];
-      vl_c.push_back(vl_2[j]);
+      vl_c.push_back(vl_2_ordered[j]);
       vi_2.push_back(k);
       j++;
     } else if (std::abs(diff) <= TOLERANCE) {
@@ -662,7 +828,7 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
   } else if (j < n) {
     for (int p = j; p < n; ++p) {
       // vl_c[k] = vl_2[p];
-      vl_c.push_back(vl_2[p]);
+      vl_c.push_back(vl_2_ordered[p]);
       vi_2.push_back(k);
       k++;
     }
@@ -686,44 +852,34 @@ void combineVertexLists(std::vector<PDCELVertex *> &vl_1,
   if (b_reverse_2)
     std::reverse(vi_2.begin(), vi_2.end());
 
-  return;
+  return 0;
 }
 
-int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
+int trimCurveAtVertex(std::vector<PDCELVertex *> &c, PDCELVertex *v,
+                      CurveEnd remove) {
   // Trim the curve c at the vertex v
   // Remove the one that is closer to the end remove
 
-  // remove: beginning (0) or ending (1)
+  // remove: beginning or ending
 
   // std::cout << "\n[debug] function: trim\n";
 
-  // Split the curve
-  std::vector<PDCELVertex *> tmp_c1, tmp_c2;
-
-  int s = 0;
-
-  for (auto i = 0; i < c.size(); i++) {
-    if (c[i] == v) {
-      tmp_c1.push_back(c[i]);
-      tmp_c2.push_back(c[i]);
-      s = 1;
-    }
-    else {
-      if (s == 0) {
-        tmp_c1.push_back(c[i]);
-      }
-      else if (s == 1) {
-        tmp_c2.push_back(c[i]);
-      }
-    }
+  if (v == nullptr) {
+    std::cout << markError << " trim: trim vertex must be valid" << std::endl;
+    return -1;
   }
 
-  c.clear();
-  if (remove == 0) {
-    for (auto vtx : tmp_c2) c.push_back(vtx);
+  std::vector<PDCELVertex *>::iterator it = std::find(c.begin(), c.end(), v);
+  if (it == c.end()) {
+    std::cout << markError << " trim: trim vertex was not found on the curve"
+              << std::endl;
+    return -1;
   }
-  else if (remove == 1) {
-    for (auto vtx : tmp_c1) c.push_back(vtx);
+
+  if (remove == CurveEnd::Begin) {
+    c.assign(it, c.end());
+  } else {
+    c.assign(c.begin(), it + 1);
   }
 
   // std::cout << "resulting curve\n";
@@ -731,4 +887,3 @@ int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove) {
 
   return 0;
 }
-

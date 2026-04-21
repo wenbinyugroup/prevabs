@@ -658,10 +658,13 @@ static void trimSubLinePair(
   }
 
   // Step 4: trim the curves at the junction vertex.
-  //   trim(..., 1): keep from the beginning up to junction; discard the tail.
-  //   trim(..., 0): keep from junction to the end; discard the head.
-  trim(tail_line, junction, 1);
-  trim(head_line, junction, 0);
+  //   trimCurveAtVertex(..., CurveEnd::End): keep from the beginning up to
+  //     junction;
+  //     discard the tail.
+  //   trimCurveAtVertex(..., CurveEnd::Begin): keep from junction to the end;
+  //     discard the head.
+  trimCurveAtVertex(tail_line, junction, CurveEnd::End);
+  trimCurveAtVertex(head_line, junction, CurveEnd::Begin);
 
   if (config.debug) {
     std::ostringstream oss;

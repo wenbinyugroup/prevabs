@@ -300,7 +300,8 @@ static PDCELVertex *intersectAndTrimOffsetWithBound(
       seg->curveOffset()->vertices(), bound,
       ls_i, ls_bi, ls_u, ls_bu, end, 0, 0, 0,
       is_new, is_new_b, TOLERANCE);
-  trim(seg->curveOffset()->vertices(), v_new, end);
+  trimCurveAtVertex(seg->curveOffset()->vertices(), v_new,
+                    end == 0 ? CurveEnd::Begin : CurveEnd::End);
 
   PLOG(debug) << "  ls_i = " + std::to_string(ls_i);
   PLOG(debug) << "  intersection vertex for " + seg->getName()
@@ -850,7 +851,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     );
         PLOG(debug) << "ip = " + ip->printString();
 
-    trim(s->curveOffset()->vertices(), ip, 0);
+    trimCurveAtVertex(s->curveOffset()->vertices(), ip, CurveEnd::Begin);
 
     // Adjust linking indices
     int ls_i_offset = ls_i1 - 1;
@@ -893,7 +894,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     );
         PLOG(debug) << "ip = " + ip->printString();
 
-    trim(s->curveOffset()->vertices(), ip, 1);
+    trimCurveAtVertex(s->curveOffset()->vertices(), ip, CurveEnd::End);
 
         PLOG(debug) << "curve base:";
     s->getBaseline()->print();
