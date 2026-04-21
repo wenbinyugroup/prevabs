@@ -10,6 +10,29 @@
 #include "linalg.h"
 #include <cmath>
 #include <cstdlib>
+#include <vector>
+
+// A single base-vertex/offset-vertex correspondence point.
+struct BaseOffsetPair {
+  int base;
+  int offset;
+
+  BaseOffsetPair() : base(0), offset(0) {}
+  BaseOffsetPair(int base_index, int offset_index)
+      : base(base_index), offset(offset_index) {}
+};
+
+// Ordered base/offset correspondence points.
+//
+// Staircase invariant:
+// - each entry stores one base index and one offset index
+// - indices are non-negative
+// - for consecutive entries p[k], p[k+1]:
+//   - p[k+1].base   >= p[k].base
+//   - p[k+1].offset >= p[k].offset
+//   - p[k+1].base   - p[k].base   <= 1
+//   - p[k+1].offset - p[k].offset <= 1
+using BaseOffsetMap = std::vector<BaseOffsetPair>;
 
 // ============================================================
 // SPoint2 — 2-D point

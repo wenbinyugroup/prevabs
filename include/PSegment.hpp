@@ -81,8 +81,7 @@ private:
   std::list<PGeoLineSegment *> _inner_bounds_tt;
 
   std::vector<int> _offset_vertices_link_to;
-  std::vector<int> _offset_indices_base_link_to;
-  std::vector<std::vector<int> > _base_offset_indices_pairs;
+  BaseOffsetMap _base_offset_indices_pairs;
 
   // Inner bounding line segments in the following index range (w.r.t base line)
   // can create the DCEL edge directly, without trimming
@@ -158,8 +157,7 @@ public:
   std::vector<int> &prevBoundIndices() { return _prev_bound_indices; }
   std::vector<int> &nextBoundIndices() { return _next_bound_indices; }
   std::vector<int> &offsetVerticesLinkToList() { return _offset_vertices_link_to; }
-  std::vector<int> &baseOffsetIndicesLink() { return _offset_indices_base_link_to; }
-  std::vector<std::vector<int>> &baseOffsetIndicesPairs() { return _base_offset_indices_pairs; }
+  BaseOffsetMap &baseOffsetIndicesPairs() { return _base_offset_indices_pairs; }
 
   PDCELFace *face() { return _face; }
 

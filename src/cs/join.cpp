@@ -14,6 +14,7 @@
 
 #include "geo_types.hpp"
 
+#include <cassert>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -21,6 +22,21 @@
 #include <list>
 #include <sstream>
 #include <string>
+
+namespace {
+
+void assertValidBaseOffsetMap(
+    const BaseOffsetMap &map, const std::string &caller)
+{
+  std::string error_message;
+  const bool valid = validateBaseOffsetMap(map, &error_message);
+  if (!valid) {
+    PLOG(error) << caller + ": invalid BaseOffsetMap: " + error_message;
+  }
+  assert(valid && "BaseOffsetMap staircase invariant violated");
+}
+
+} // namespace
 
 // Returns true if (ls_i_tmp, u1_tmp) is a better intersection than the
 // current best (ls_i_prev, u1) when searching from end `e` of a polyline.
@@ -141,139 +157,172 @@ static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
   return hels;
 }
 
-// Adjusts base-offset index pairs after trimming the head (e==0) of a segment.
-// Steps: (1) remove pairs in trim region, (2) renumber, (3) insert staircase.
-// If remove_base is false, only offset pairs are removed/renumbered in steps 1-2.
-static void adjustPairsAfterTrimHead(
-    std::vector<std::vector<int>> &pairs,
-    int ls_i_base, int ls_i_offset,
-    bool remove_base)
-{
-  if (remove_base) {
-    while (pairs.front()[0] <= ls_i_base)
-      pairs.erase(pairs.begin());
-  }
-  while (pairs.front()[1] <= ls_i_offset)
-    pairs.erase(pairs.begin());
+struct TailTrimCaps {
+  bool has_base_cap;
+  bool has_offset_cap;
+  int base_cap;
+  int offset_cap;
 
-  for (auto &p : pairs) {
-    p[0] -= ls_i_base;
-    p[1] -= ls_i_offset;
-  }
+  TailTrimCaps()
+      : has_base_cap(false), has_offset_cap(false),
+        base_cap(0), offset_cap(0) {}
 
-  int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-  auto it = pairs.begin();
-  for (int k = 0; k < nv_diff; k++) {
-    if (ls_i_base > ls_i_offset)
-      it = pairs.insert(it, {0, nv_diff - k});
-    else if (ls_i_base < ls_i_offset)
-      it = pairs.insert(it, {nv_diff - k, 0});
-  }
-  pairs.insert(it, {0, 0});
-}
+  TailTrimCaps(int base_cap_value, int offset_cap_value)
+      : has_base_cap(true), has_offset_cap(true),
+        base_cap(base_cap_value), offset_cap(offset_cap_value) {}
+};
 
-// Adjusts base-offset index pairs after trimming the tail (e==1) of a segment.
-// Steps: (1) remove pairs in trim region, (3) append staircase (no renumber at tail).
-// If remove_base is false, only offset pairs are removed in step 1.
-// nv_base_cap / nv_offset_cap: bounds to prevent over-extension (-1 = no cap).
-static void adjustPairsAfterTrimTail(
-    std::vector<std::vector<int>> &pairs,
-    int ls_i_base, int ls_i_offset,
-    bool remove_base,
-    int nv_base_cap, int nv_offset_cap)
-{
-  if (remove_base) {
-    while (pairs.back()[0] >= ls_i_base)
-      pairs.pop_back();
-  }
-  while (pairs.back()[1] >= ls_i_offset)
-    pairs.pop_back();
+class BaseOffsetMapEditor {
+public:
+  explicit BaseOffsetMapEditor(
+      BaseOffsetMap &pairs, const std::string &caller)
+      : _pairs(pairs), _caller(caller) {}
 
-  int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-  int id_base = pairs.back()[0];
-  int id_offset = pairs.back()[1];
-  for (int k = 0; k < nv_diff; k++) {
-    if (nv_base_cap >= 0 && id_base == nv_base_cap - 2 &&
-        nv_offset_cap >= 0 && id_offset == nv_offset_cap - 2)
-      break;
-    pairs.push_back({id_base + 1, id_offset + 1});
-    if (ls_i_base > ls_i_offset)      id_base++;
-    else if (ls_i_base < ls_i_offset) id_offset++;
-  }
-  pairs.push_back({id_base + 1, id_offset + 1});
-}
-
-// Adjusts base-offset index pairs for the 2-segment style-1 join after
-// intersecting and trimming the offset curve against the shared bound.
-static void adjustLinkingIndicesStyle1(
-    Segment *seg, int end, int ls_i, int is_new)
-{
-  std::vector<std::vector<int>> &pairs = seg->baseOffsetIndicesPairs();
-  const bool extending =
-      seg->curveOffset()->vertices().size() > pairs.back()[1] + 1;
-
-  if (is_new) {
-    if (end == 0) {
-      if (extending) {
-        for (auto &pair : pairs) {
-          pair[1]++;
-        }
-        pairs.insert(pairs.begin(), {0, 0});
-      } else {
-        while (true) {
-          const int id_offset_tmp = pairs.front()[1];
-          if (id_offset_tmp > (ls_i - 1)) {
-            break;
-          }
-          pairs.erase(pairs.begin());
-        }
-
-        for (auto &pair : pairs) {
-          pair[1] -= (ls_i - 1);
-        }
-
-        std::vector<std::vector<int>>::iterator it_tmp = pairs.begin();
-        const int id_base_tmp = pairs.front()[0];
-        for (int k = 0; k < id_base_tmp; k++) {
-          it_tmp = pairs.insert(it_tmp, {id_base_tmp - 1 - k, 0});
-        }
-      }
-    } else if (end == 1) {
-      if (extending) {
-        pairs.push_back({pairs.back()[0], pairs.back()[1] + 1});
-      } else {
-        while (true) {
-          const int id_offset_tmp = pairs.back()[1];
-          if (id_offset_tmp < ls_i) {
-            break;
-          }
-          pairs.pop_back();
-        }
-
-        for (int k = pairs.back()[0] + 1;
-             k < seg->curveBase()->vertices().size(); k++) {
-          pairs.push_back({k, ls_i});
-        }
-      }
+  void trimHead(int ls_i_base, int ls_i_offset, bool remove_base)
+  {
+    BaseOffsetMap::iterator keep_it = _pairs.begin();
+    if (remove_base) {
+      keep_it = std::find_if(
+          _pairs.begin(), _pairs.end(),
+          [ls_i_base](const BaseOffsetPair &pair) {
+            return pair.base > ls_i_base;
+          });
+      _pairs.erase(_pairs.begin(), keep_it);
     }
-  } else {
-    if (end == 0) {
-      for (auto &pair : pairs) {
-        if (pair[1] <= ls_i) {
-          pair[1] = 0;
+    keep_it = std::find_if(
+        _pairs.begin(), _pairs.end(),
+        [ls_i_offset](const BaseOffsetPair &pair) {
+          return pair.offset > ls_i_offset;
+        });
+    _pairs.erase(_pairs.begin(), keep_it);
+
+    for (auto &p : _pairs) {
+      p.base -= ls_i_base;
+      p.offset -= ls_i_offset;
+    }
+
+    int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
+    auto it = _pairs.begin();
+    for (int k = 0; k < nv_diff; k++) {
+      if (ls_i_base > ls_i_offset)
+        it = _pairs.insert(it, BaseOffsetPair(0, nv_diff - k));
+      else if (ls_i_base < ls_i_offset)
+        it = _pairs.insert(it, BaseOffsetPair(nv_diff - k, 0));
+    }
+    _pairs.insert(it, BaseOffsetPair(0, 0));
+    validate("trimHead");
+  }
+
+  void trimTail(
+      int ls_i_base, int ls_i_offset, bool remove_base,
+      const TailTrimCaps &caps)
+  {
+    if (remove_base) {
+      while (_pairs.back().base >= ls_i_base)
+        _pairs.pop_back();
+    }
+    while (_pairs.back().offset >= ls_i_offset)
+      _pairs.pop_back();
+
+    int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
+    int id_base = _pairs.back().base;
+    int id_offset = _pairs.back().offset;
+    for (int k = 0; k < nv_diff; k++) {
+      if (caps.has_base_cap && caps.has_offset_cap
+          && id_base == caps.base_cap - 2
+          && id_offset == caps.offset_cap - 2)
+        break;
+      _pairs.push_back(BaseOffsetPair(id_base + 1, id_offset + 1));
+      if (ls_i_base > ls_i_offset)      id_base++;
+      else if (ls_i_base < ls_i_offset) id_offset++;
+    }
+    _pairs.push_back(BaseOffsetPair(id_base + 1, id_offset + 1));
+    validate("trimTail");
+  }
+
+  void adjustStyle1(
+      int end, int ls_i, int is_new,
+      std::size_t offset_vertex_count,
+      std::size_t base_vertex_count)
+  {
+    const bool extending =
+        offset_vertex_count > static_cast<std::size_t>(_pairs.back().offset + 1);
+
+    if (is_new) {
+      if (end == 0) {
+        if (extending) {
+          for (auto &pair : _pairs) {
+            pair.offset++;
+          }
+          _pairs.insert(_pairs.begin(), BaseOffsetPair(0, 0));
         } else {
-          pair[1] -= ls_i;
+          while (true) {
+            const int id_offset_tmp = _pairs.front().offset;
+            if (id_offset_tmp > (ls_i - 1)) {
+              break;
+            }
+            _pairs.erase(_pairs.begin());
+          }
+
+          for (auto &pair : _pairs) {
+            pair.offset -= (ls_i - 1);
+          }
+
+          BaseOffsetMap::iterator it_tmp = _pairs.begin();
+          const int id_base_tmp = _pairs.front().base;
+          for (int k = 0; k < id_base_tmp; k++) {
+            it_tmp = _pairs.insert(
+                it_tmp, BaseOffsetPair(id_base_tmp - 1 - k, 0));
+          }
+        }
+      } else if (end == 1) {
+        if (extending) {
+          _pairs.push_back(
+              BaseOffsetPair(_pairs.back().base, _pairs.back().offset + 1));
+        } else {
+          while (true) {
+            const int id_offset_tmp = _pairs.back().offset;
+            if (id_offset_tmp < ls_i) {
+              break;
+            }
+            _pairs.pop_back();
+          }
+
+          for (int k = _pairs.back().base + 1;
+               k < static_cast<int>(base_vertex_count); k++) {
+            _pairs.push_back(BaseOffsetPair(k, ls_i));
+          }
         }
       }
-    } else if (end == 1) {
-      for (auto &pair : pairs) {
-        if (pair[1] > ls_i) {
-          pair[1] = ls_i;
+    } else {
+      if (end == 0) {
+        for (auto &pair : _pairs) {
+          if (pair.offset <= ls_i) {
+            pair.offset = 0;
+          } else {
+            pair.offset -= ls_i;
+          }
+        }
+      } else if (end == 1) {
+        for (auto &pair : _pairs) {
+          if (pair.offset > ls_i) {
+            pair.offset = ls_i;
+          }
         }
       }
     }
+    validate("adjustStyle1");
   }
-}
+
+private:
+  void validate(const char *operation) const
+  {
+    assertValidBaseOffsetMap(_pairs, _caller + "::" + operation);
+  }
+
+  BaseOffsetMap &_pairs;
+  std::string _caller;
+};
 
 // Intersects a segment's offset curve with the shared style-1 bound,
 // resolves the chosen intersection vertex, and trims the offset curve.
@@ -338,11 +387,19 @@ static void joinStyle1(
 
   v1_new = intersectAndTrimOffsetWithBound(
       s1, e1, tmp_bound_1, ls_i1, ls_bu1, is_new_1);
-  adjustLinkingIndicesStyle1(s1, e1, ls_i1, is_new_1);
+  BaseOffsetMapEditor(s1->baseOffsetIndicesPairs(), "joinStyle1 s1")
+      .adjustStyle1(
+          e1, ls_i1, is_new_1,
+          s1->curveOffset()->vertices().size(),
+          s1->curveBase()->vertices().size());
 
   v2_new = intersectAndTrimOffsetWithBound(
       s2, e2, tmp_bound_2, ls_i2, ls_bu2, is_new_2);
-  adjustLinkingIndicesStyle1(s2, e2, ls_i2, is_new_2);
+  BaseOffsetMapEditor(s2->baseOffsetIndicesPairs(), "joinStyle1 s2")
+      .adjustStyle1(
+          e2, ls_i2, is_new_2,
+          s2->curveOffset()->vertices().size(),
+          s2->curveBase()->vertices().size());
 
   if (fabs(ls_bu1 - ls_bu2) < TOLERANCE) {
     v2_new = v1_new;
@@ -746,11 +803,11 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
   PLOG(debug) << "  nv_offset = " + std::to_string(nv_offset);
 
   if (e == 0) {
-    adjustPairsAfterTrimHead(
-        s->baseOffsetIndicesPairs(), ls_i_base, ls_i_offset, true);
+    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "joinSegments")
+        .trimHead(ls_i_base, ls_i_offset, true);
   } else {
-    adjustPairsAfterTrimTail(
-        s->baseOffsetIndicesPairs(), ls_i_base, ls_i_offset, true, -1, -1);
+    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "joinSegments")
+        .trimTail(ls_i_base, ls_i_offset, true, TailTrimCaps());
   }
 
   s->printBaseOffsetPairs();
@@ -793,21 +850,23 @@ void PComponent::joinSegments(
 
   PLOG(debug) << "  base -- offset index pairs of segment: " + s1->getName();
   for (auto i = 0; i < s1->baseOffsetIndicesPairs().size(); i++) {
+    const BaseOffsetPair &pair = s1->baseOffsetIndicesPairs()[i];
     PLOG(debug) <<
-      "  " + std::to_string(s1->baseOffsetIndicesPairs()[i][0]) + " : "
-      + s1->curveBase()->vertices()[s1->baseOffsetIndicesPairs()[i][0]]->printString()
-      + " -- " + std::to_string(s1->baseOffsetIndicesPairs()[i][1]) + " : "
-      + s1->curveOffset()->vertices()[s1->baseOffsetIndicesPairs()[i][1]]->printString()
+      "  " + std::to_string(pair.base) + " : "
+      + s1->curveBase()->vertices()[pair.base]->printString()
+      + " -- " + std::to_string(pair.offset) + " : "
+      + s1->curveOffset()->vertices()[pair.offset]->printString()
     ;
   }
 
   PLOG(debug) << "  base -- offset index pairs of segment: " + s2->getName();
   for (auto i = 0; i < s2->baseOffsetIndicesPairs().size(); i++) {
+    const BaseOffsetPair &pair = s2->baseOffsetIndicesPairs()[i];
     PLOG(debug) <<
-      "  " + std::to_string(s2->baseOffsetIndicesPairs()[i][0]) + " : "
-      + s2->curveBase()->vertices()[s2->baseOffsetIndicesPairs()[i][0]]->printString()
-      + " -- " + std::to_string(s2->baseOffsetIndicesPairs()[i][1]) + " : "
-      + s2->curveOffset()->vertices()[s2->baseOffsetIndicesPairs()[i][1]]->printString()
+      "  " + std::to_string(pair.base) + " : "
+      + s2->curveBase()->vertices()[pair.base]->printString()
+      + " -- " + std::to_string(pair.offset) + " : "
+      + s2->curveOffset()->vertices()[pair.offset]->printString()
     ;
   }
 
@@ -853,7 +912,8 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
     // Adjust linking indices
     int ls_i_offset = ls_i1 - 1;
-    adjustPairsAfterTrimHead(s->baseOffsetIndicesPairs(), 0, ls_i_offset, false);
+    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "createSegmentFreeEnd head")
+        .trimHead(0, ls_i_offset, false);
 
   }
 
@@ -904,9 +964,10 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     int _tmp_nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
 
     s->printBaseOffsetPairs();
-    adjustPairsAfterTrimTail(
-      s->baseOffsetIndicesPairs(), ls_i_base, ls_i_offset,
-      false, ls_i_base, _tmp_nv_offset);
+    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "createSegmentFreeEnd tail")
+        .trimTail(
+            ls_i_base, ls_i_offset, false,
+            TailTrimCaps(ls_i_base, _tmp_nv_offset));
     s->printBaseOffsetPairs();
 
   }

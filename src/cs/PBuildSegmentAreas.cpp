@@ -37,11 +37,11 @@ void deleteDetachedLineSegment(PGeoLineSegment *segment) {
 
 PGeoLineSegment *buildAreaBaseSegmentFromPair(
     Baseline *curve_base, Baseline *curve_offset,
-    const std::vector<std::vector<int>> &pairs, std::size_t pair_index) {
-  const int vbi = pairs[pair_index][0];
-  const int voi = pairs[pair_index][1];
+    const BaseOffsetMap &pairs, std::size_t pair_index) {
+  const int vbi = pairs[pair_index].base;
+  const int voi = pairs[pair_index].offset;
   const bool use_offset_as_base =
-      (pair_index > 0 && vbi == pairs[pair_index - 1][0]);
+      (pair_index > 0 && vbi == pairs[pair_index - 1].base);
 
   if (!use_offset_as_base) {
     return new PGeoLineSegment(
@@ -235,7 +235,7 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
         "first vertex of the offset: " + vo->printString();
 
     bool use_offset_as_base =
-        (_base_offset_indices_pairs[0][0] == _base_offset_indices_pairs[1][0]);
+        (_base_offset_indices_pairs[0].base == _base_offset_indices_pairs[1].base);
 
     PGeoLineSegment *ls_base;
     bool owns_ls_base_vertices = false;
@@ -283,8 +283,8 @@ void Segment::createIntermediateAreas(
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
         PLOG(debug) << "area " + std::to_string(k);
 
-    int vbi_tmp = _base_offset_indices_pairs[k][0];
-    int voi_tmp = _base_offset_indices_pairs[k][1];
+    int vbi_tmp = _base_offset_indices_pairs[k].base;
+    int voi_tmp = _base_offset_indices_pairs[k].offset;
     PDCELVertex *vb_tmp = _curve_base->vertices()[vbi_tmp];
     PDCELVertex *vo_tmp = _curve_offset->vertices()[voi_tmp];
         PLOG(debug) << "  base vertex: " + vb_tmp->printString();
@@ -378,8 +378,8 @@ void Segment::buildLastArea(
   }
   else {
     bool use_offset_as_base = (
-        _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 1][0]
-        == _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 2][0]);
+        _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 1].base
+        == _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 2].base);
 
     PGeoLineSegment *ls_base_end;
     bool owns_ls_base_end_vertices = false;

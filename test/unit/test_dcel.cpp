@@ -199,12 +199,12 @@ TEST_CASE("buildAreas: last area uses final pair instead of area count",
   offset->addPVertex(new PDCELVertex(0.0, 1.5, 1.0));
   offset->addPVertex(new PDCELVertex(0.0, 2.0, 1.0));
 
-  std::vector<std::vector<int>> &pairs = segment.baseOffsetIndicesPairs();
+  BaseOffsetMap &pairs = segment.baseOffsetIndicesPairs();
   pairs.clear();
-  pairs.push_back({0, 0});
-  pairs.push_back({1, 1});
-  pairs.push_back({2, 2});
-  pairs.push_back({2, 3});
+  pairs.push_back(BaseOffsetPair(0, 0));
+  pairs.push_back(BaseOffsetPair(1, 1));
+  pairs.push_back(BaseOffsetPair(2, 2));
+  pairs.push_back(BaseOffsetPair(2, 3));
 
   PDCEL dcel;
   dcel.initialize();

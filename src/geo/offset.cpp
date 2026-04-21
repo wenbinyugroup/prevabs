@@ -20,6 +20,7 @@
 
 #include "geo_types.hpp"
 
+#include <cassert>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -28,6 +29,57 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+bool validateBaseOffsetMap(
+    const BaseOffsetMap &map, std::string *error_message) {
+  for (std::size_t i = 0; i < map.size(); ++i) {
+    if (map[i].base < 0 || map[i].offset < 0) {
+      if (error_message != nullptr) {
+        *error_message =
+            "negative index at pair " + std::to_string(i)
+            + " [" + std::to_string(map[i].base)
+            + ", " + std::to_string(map[i].offset) + "]";
+      }
+      return false;
+    }
+
+    if (i == 0) {
+      continue;
+    }
+
+    const int base_delta = map[i].base - map[i - 1].base;
+    const int offset_delta = map[i].offset - map[i - 1].offset;
+    if (base_delta < 0 || offset_delta < 0
+        || base_delta > 1 || offset_delta > 1) {
+      if (error_message != nullptr) {
+        *error_message =
+            "staircase violation between pairs "
+            + std::to_string(i - 1) + " and " + std::to_string(i)
+            + " [" + std::to_string(map[i - 1].base)
+            + ", " + std::to_string(map[i - 1].offset) + "] -> ["
+            + std::to_string(map[i].base)
+            + ", " + std::to_string(map[i].offset) + "]";
+      }
+      return false;
+    }
+  }
+
+  return true;
+}
+
+namespace {
+
+void assertValidBaseOffsetMap(
+    const BaseOffsetMap &map, const std::string &caller) {
+  std::string error_message;
+  const bool valid = validateBaseOffsetMap(map, &error_message);
+  if (!valid) {
+    PLOG(error) << caller + ": invalid BaseOffsetMap: " + error_message;
+  }
+  assert(valid && "BaseOffsetMap staircase invariant violated");
+}
+
+} // namespace
 
 /**
  * @brief Offsets a line segment by a given direction and distance.
@@ -211,14 +263,16 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  *
  * For each consecutive pair of base vertices, an offset segment is computed.
  * Adjacent offset segments are intersected to yield the junction vertex that
- * is added to the returned list.  The caller receives a flat list of junction
- * vertices and the corresponding link_to_tmp index vector.
+ * is added to the returned list. The caller receives a flat list of junction
+ * vertices and the corresponding base-offset map entries.
  *
  * @param base        Original polyline vertices (must have at least 3 vertices;
  *                    an error is logged and an empty list is returned otherwise).
  * @param side        Offset side (+1 / -1).
  * @param dist        Offset distance.
- * @param link_to_tmp Output: index in base[] each junction entry corresponds to.
+ * @param junction_map Output: one entry per returned junction vertex.
+ *                     `pair.base` is the corresponding base-vertex index.
+ *                     `pair.offset` is the current junction-vertex index.
  * @return            The junction-vertex list.
  *
  * @note Ownership: every vertex in the returned list is heap-allocated by this
@@ -228,13 +282,13 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
 static std::vector<PDCELVertex *> computeOffsetJunctions(
     const std::vector<PDCELVertex *> &base,
     int side, double dist,
-    std::vector<int> &link_to_tmp
+    BaseOffsetMap &junction_map
   ) {
 
   MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
-  link_to_tmp.clear();
+  junction_map.clear();
 
   if (size < 3) {
         g_msg->error(
@@ -264,7 +318,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
   std::vector<PDCELVertex *> local_allocs;
   local_allocs.reserve(2 * (size - 1));
 
-  link_to_tmp.reserve(size);
+  junction_map.reserve(size);
 
   // cur_start/cur_end: endpoints of the current segment's offset.
   // prev_start/prev_end: endpoints of the previous segment's offset (needed to
@@ -297,7 +351,8 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
 
     // Record that the junction vertex we are about to add corresponds to base
     // vertex i (the shared vertex between segment i-1 and segment i).
-    link_to_tmp.push_back(i);
+    junction_map.push_back(
+        BaseOffsetPair(i, static_cast<int>(junctions.size())));
 
     if (i == 0) {
       // First segment: no previous segment to intersect with, so the junction
@@ -390,7 +445,8 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
     // junction vertex and record its correspondence with base vertex i+1.
     if (i == static_cast<int>(size) - 2) {
       junctions.push_back(cur_end);
-      link_to_tmp.push_back(i + 1);
+      junction_map.push_back(
+          BaseOffsetPair(i + 1, static_cast<int>(junctions.size()) - 1));
       if (config.debug) {
         std::ostringstream oss;
         oss << "  last segment: appended tail junction[" << junctions.size() - 1
@@ -436,28 +492,29 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
  * @param base           Original polyline vertices.
  * @param vertices_tmp   Junction-vertex list from computeOffsetJunctions.
  *                       Must have the same size as base.
- * @param link_to_tmp    Index mapping from computeOffsetJunctions.
- *                       Must have the same size as base.
+ * @param junction_map   Mapping from computeOffsetJunctions. Must have the
+ *                       same size as base.
  * @param lines_group    Output: cleared on entry; each element is one valid sub-line.
- * @param link_tos_group Output: cleared on entry; base indices for each sub-line vertex.
+ * @param maps_group     Output: cleared on entry; mapping entries for each
+ *                       sub-line vertex.
  */
 static void groupValidSegments(
     const std::vector<PDCELVertex *> &base,
     const std::vector<PDCELVertex *> &vertices_tmp,
-    const std::vector<int> &link_to_tmp,
+    const BaseOffsetMap &junction_map,
     std::vector<std::vector<PDCELVertex *>> &lines_group,
-    std::vector<std::vector<int>> &link_tos_group) {
+    std::vector<BaseOffsetMap> &maps_group) {
 
   MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
 
-  // Enforce size consistency: vertices_tmp and link_to_tmp must match base.
-  if (vertices_tmp.size() != size || link_to_tmp.size() != size) {
+  // Enforce size consistency: vertices_tmp and junction_map must match base.
+  if (vertices_tmp.size() != size || junction_map.size() != size) {
         g_msg->error(
       "groupValidSegments: size mismatch — base=" + std::to_string(size)
       + ", vertices_tmp=" + std::to_string(vertices_tmp.size())
-      + ", link_to_tmp=" + std::to_string(link_to_tmp.size())
+      + ", junction_map=" + std::to_string(junction_map.size())
       + "; skipping grouping");
     return;
   }
@@ -465,7 +522,7 @@ static void groupValidSegments(
   // Clear outputs so this function always produces a fresh result regardless
   // of what the caller passed in.
   lines_group.clear();
-  link_tos_group.clear();
+  maps_group.clear();
 
   if (config.debug) {
     std::ostringstream oss;
@@ -508,7 +565,7 @@ static void groupValidSegments(
       if (!prev_valid) {
         // This segment starts a new run of valid segments — open a new sub-line.
         lines_group.push_back(std::vector<PDCELVertex *>{vertices_tmp[j]});
-        link_tos_group.push_back(std::vector<int>{link_to_tmp[j]});
+        maps_group.push_back(BaseOffsetMap{junction_map[j]});
         if (config.debug) {
           std::ostringstream oss;
           oss << "    opened sub-line " << lines_group.size() - 1
@@ -518,7 +575,7 @@ static void groupValidSegments(
       }
       // Extend the current sub-line with the tail vertex of this segment.
       lines_group.back().push_back(vertices_tmp[j + 1]);
-      link_tos_group.back().push_back(link_to_tmp[j + 1]);
+      maps_group.back().push_back(junction_map[j + 1]);
     } else if (prev_valid) {
       // This segment is invalid and the previous one was valid — the run just
       // ended; the current sub-line is now complete.
@@ -552,14 +609,14 @@ static void groupValidSegments(
  *                   toward its tail; the junction becomes its new last vertex.
  * @param head_line  Head sub-line (modified in place): trimmed from the junction
  *                   toward its head; the junction becomes its new first vertex.
- * @param link_tail  Base-index links for tail_line (modified in place).
- * @param link_head  Base-index links for head_line (modified in place).
+ * @param map_tail   Base-offset map entries for tail_line (modified in place).
+ * @param map_head   Base-offset map entries for head_line (modified in place).
  */
 static void trimSubLinePair(
     std::vector<PDCELVertex *> &tail_line,
     std::vector<PDCELVertex *> &head_line,
-    std::vector<int> &link_tail,
-    std::vector<int> &link_head
+    BaseOffsetMap &map_tail,
+    BaseOffsetMap &map_head
   ) {
 
   MESSAGE_SCOPE(g_msg);
@@ -672,23 +729,23 @@ static void trimSubLinePair(
         PLOG(debug) << oss.str();
   }
 
-  // Step 5: adjust the base-index link vectors to match the trimmed curves.
+  // Step 5: adjust the mapping entries to match the trimmed curves.
   //
   // tail_line now ends at junction, which was at segment seg_idx_tail.
-  // Keep only the first seg_idx_tail + 1 link entries (0 … seg_idx_tail).
-  link_tail.resize(seg_idx_tail + 1);
+  // Keep only the first seg_idx_tail + 1 entries (0 … seg_idx_tail).
+  map_tail.resize(seg_idx_tail + 1);
   //
   // head_line now starts at junction, which was at segment seg_idx_head.
   // Drop the first seg_idx_head - 1 entries (those before the junction segment).
   if (seg_idx_head > 1) {
-    link_head.erase(link_head.begin(), link_head.begin() + (seg_idx_head - 1));
+    map_head.erase(map_head.begin(), map_head.begin() + (seg_idx_head - 1));
   }
 
   if (config.debug) {
     std::ostringstream oss;
-    oss << "  after link adjust:"
-        << " link_tail=" << link_tail.size() << " entries"
-        << ", link_head=" << link_head.size() << " entries";
+    oss << "  after map adjust:"
+        << " map_tail=" << map_tail.size() << " entries"
+        << ", map_head=" << map_head.size() << " entries";
         PLOG(debug) << oss.str();
   }
 }
@@ -716,15 +773,13 @@ static void trimSubLinePair(
  * @param side             The side on which to offset (e.g., left or right).
  * @param dist             The offset distance.
  * @param offset_vertices  Output: the offset vertex sequence.  Cleared on entry.
- * @param link_to_2        Output: link_to_2[i] is the index of the offset vertex
- *                         that corresponds to base vertex i.  Overwritten on entry.
  * @param id_pairs         Output: list of {base_idx, offset_idx} pairs.  Cleared on entry.
  * @return int Returns 1 on success, 0 if the input is degenerate or all segments
  *             are invalid.
  */
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
-           std::vector<PDCELVertex *> &offset_vertices, std::vector<int> &link_to_2,
-           std::vector<std::vector<int>> &id_pairs) {
+           std::vector<PDCELVertex *> &offset_vertices,
+           BaseOffsetMap &id_pairs) {
 
   MESSAGE_SCOPE(g_msg);
 
@@ -761,10 +816,9 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     offset_vertices.push_back(seg_start);
     offset_vertices.push_back(seg_end);
 
-    link_to_2 = {0, 1};
-
-    id_pairs.push_back({0, 0});
-    id_pairs.push_back({1, 1});
+    id_pairs.push_back(BaseOffsetPair(0, 0));
+    id_pairs.push_back(BaseOffsetPair(1, 1));
+    assertValidBaseOffsetMap(id_pairs, "offset fast path");
 
     return 1;
   }
@@ -777,9 +831,10 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       "offset (multi-vertex): step 1 — compute junction vertices";
   }
 
-  std::vector<int> link_to_tmp;
+  BaseOffsetMap junction_map;
   std::vector<PDCELVertex *> vertices_tmp =
-      computeOffsetJunctions(base, side, dist, link_to_tmp);
+      computeOffsetJunctions(base, side, dist, junction_map);
+  assertValidBaseOffsetMap(junction_map, "offset step 1");
 
   // -------------------------------------------------------------------------
   // Step 2: Group valid offset segments into sub-lines.
@@ -790,8 +845,13 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   }
 
   std::vector<std::vector<PDCELVertex *>> lines_group;
-  std::vector<std::vector<int>> link_tos_group;
-  groupValidSegments(base, vertices_tmp, link_to_tmp, lines_group, link_tos_group);
+  std::vector<BaseOffsetMap> maps_group;
+  groupValidSegments(base, vertices_tmp, junction_map, lines_group, maps_group);
+  for (std::size_t i = 0; i < maps_group.size(); ++i) {
+    assertValidBaseOffsetMap(
+        maps_group[i],
+        "offset step 2 group " + std::to_string(i));
+  }
 
   // Free junction vertices that were filtered out by groupValidSegments.
   // computeOffsetJunctions transfers ownership of all vertices_tmp entries to
@@ -828,7 +888,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // Step 3: Trim adjacent sub-line pairs at their mutual intersection.
   //
   // trimSubLinePair modifies both sub-lines in place, so lines_group and
-  // link_tos_group are the authoritative post-trim state.  No separate
+  // maps_group are the authoritative post-trim state.  No separate
   // "trimmed" copy is maintained — Step 5 reads lines_group directly.
   // -------------------------------------------------------------------------
   if (config.debug) {
@@ -845,8 +905,14 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       }
       trimSubLinePair(
         lines_group[line_i], lines_group[line_i + 1],
-        link_tos_group[line_i], link_tos_group[line_i + 1]
+        maps_group[line_i], maps_group[line_i + 1]
       );
+      assertValidBaseOffsetMap(
+          maps_group[line_i],
+          "offset step 3 group " + std::to_string(line_i));
+      assertValidBaseOffsetMap(
+          maps_group[line_i + 1],
+          "offset step 3 group " + std::to_string(line_i + 1));
     }
   }
 
@@ -868,8 +934,12 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       }
       trimSubLinePair(
         lines_group.back(), lines_group.front(),
-        link_tos_group.back(), link_tos_group.front()
+        maps_group.back(), maps_group.front()
       );
+      assertValidBaseOffsetMap(
+          maps_group.back(), "offset step 4 closed tail group");
+      assertValidBaseOffsetMap(
+          maps_group.front(), "offset step 4 closed head group");
     } else {
       // Single sub-line closed curve: find the self-intersection of the offset
       // curve and extract the valid sub-sequence between the two junction points.
@@ -985,22 +1055,26 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
               }
             }
 
-            // Adjust link index vector for the back sub-line:
+            // Adjust map entries for the back sub-line:
             // keep only entries [0 .. seg_idx_back] (the portion up to the junction).
-            link_tos_group.back().resize(seg_idx_back + 1);
+            maps_group.back().resize(seg_idx_back + 1);
 
-            // Adjust link index vector for the front sub-line:
+            // Adjust map entries for the front sub-line:
             // drop entries that correspond to segments before the junction.
             if (seg_idx_front > 1) {
-              link_tos_group.front().erase(
-                link_tos_group.front().begin(),
-                link_tos_group.front().begin() + (seg_idx_front - 1)
+              maps_group.front().erase(
+                maps_group.front().begin(),
+                maps_group.front().begin() + (seg_idx_front - 1)
               );
             }
+            assertValidBaseOffsetMap(
+                maps_group.back(), "offset step 4 self-intersection back group");
+            assertValidBaseOffsetMap(
+                maps_group.front(), "offset step 4 self-intersection front group");
 
             if (config.debug) {
                             PLOG(debug) << 
-                "offset (multi-vertex): link indices adjusted after self-intersection trim";
+                "offset (multi-vertex): map entries adjusted after self-intersection trim";
             }
           }
         }
@@ -1016,7 +1090,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // The inner loop therefore pushes all but the last vertex of each sub-line,
   // and the final vertex of the last sub-line is appended after the loop.
   //
-  // The pre-assignment of link_to_2 for the last vertex of each sub-line uses
+  // The pre-assignment of each sub-line map entry's offset for the last vertex
+  // uses
   // offset_vertices.size() *before* the corresponding push_back — it anticipates
   // the index that the next push_back will assign.  No push_back must be inserted
   // between the pre-assignment and the push_back that fills it.
@@ -1028,19 +1103,24 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 
   // Use -1 as the "unmapped" sentinel. 0 is a valid offset vertex index and
   // must not be used as a sentinel (it would collide with the first vertex).
-  link_to_2 = std::vector<int>(base.size(), -1);
+  id_pairs.assign(base.size(), BaseOffsetPair());
+  for (int i = 0; i < static_cast<int>(base.size()); ++i) {
+    id_pairs[i].base = i;
+    id_pairs[i].offset = -1;
+  }
 
   for (auto i = 0; i < static_cast<int>(lines_group.size()); i++) {
     for (auto j = 0; j < static_cast<int>(lines_group[i].size()) - 1; j++) {
       offset_vertices.push_back(lines_group[i][j]);
-      link_to_2[link_tos_group[i][j]] =
+      maps_group[i][j].offset =
           static_cast<int>(offset_vertices.size()) - 1;
+      id_pairs[maps_group[i][j].base].offset = maps_group[i][j].offset;
     }
     // Pre-assign the index that the last vertex of this sub-line will occupy.
     // It will be pushed by the next iteration's j=0 (as the junction that
     // starts the following sub-line), or by the push_back below for the very last.
-    link_to_2[link_tos_group[i].back()] =
-        static_cast<int>(offset_vertices.size());
+    maps_group[i].back().offset = static_cast<int>(offset_vertices.size());
+    id_pairs[maps_group[i].back().base].offset = maps_group[i].back().offset;
   }
   // Push the final vertex (last of the last sub-line), whose index was
   // pre-assigned in the loop above.
@@ -1048,19 +1128,21 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 
   // Forward-fill unmapped entries: a base vertex that was trimmed away inherits
   // the nearest offset index from its predecessor (or 0 for the very first).
-  for (auto i = 0; i < static_cast<int>(link_to_2.size()); i++) {
-    if (link_to_2[i] == -1) {
-      link_to_2[i] = (i > 0 && link_to_2[i - 1] >= 0) ? link_to_2[i - 1] : 0;
+  for (auto i = 0; i < static_cast<int>(id_pairs.size()); i++) {
+    if (id_pairs[i].offset == -1) {
+      id_pairs[i].offset =
+          (i > 0 && id_pairs[i - 1].offset >= 0) ? id_pairs[i - 1].offset : 0;
     }
-    id_pairs.push_back({i, link_to_2[i]});
   }
+  assertValidBaseOffsetMap(id_pairs, "offset step 5");
 
   if (config.debug) {
         PLOG(debug) << "base vertices -- base_link_to_offset_indices";
     for (auto i = 0; i < static_cast<int>(id_pairs.size()); i++) {
             PLOG(debug) << 
-        "  " + std::to_string(id_pairs[i][0]) + ": " + base[id_pairs[i][0]]->printString()
-        + " -- " + std::to_string(id_pairs[i][1])
+        "  " + std::to_string(id_pairs[i].base) + ": "
+        + base[id_pairs[i].base]->printString()
+        + " -- " + std::to_string(id_pairs[i].offset)
       ;
     }
   }

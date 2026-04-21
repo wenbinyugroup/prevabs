@@ -109,8 +109,6 @@ Segment::Segment(Segment &&other) noexcept
       _inner_bounds(std::move(other._inner_bounds)),
       _inner_bounds_tt(std::move(other._inner_bounds_tt)),
       _offset_vertices_link_to(std::move(other._offset_vertices_link_to)),
-      _offset_indices_base_link_to(
-          std::move(other._offset_indices_base_link_to)),
       _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
       _ib_begin(other._ib_begin),
       _ib_end(other._ib_end),
@@ -164,7 +162,6 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _inner_bounds = std::move(other._inner_bounds);
   _inner_bounds_tt = std::move(other._inner_bounds_tt);
   _offset_vertices_link_to = std::move(other._offset_vertices_link_to);
-  _offset_indices_base_link_to = std::move(other._offset_indices_base_link_to);
   _base_offset_indices_pairs = std::move(other._base_offset_indices_pairs);
   _ib_begin = other._ib_begin;
   _ib_end = other._ib_end;
@@ -340,16 +337,26 @@ void Segment::printBaseOffsetLink() {
     return;
   }
 
-  std::size_t n = _curve_base->vertices().size();
+  std::vector<int> link_to_offset(
+      _curve_base->vertices().size(), 0);
+  for (const BaseOffsetPair &pair : _base_offset_indices_pairs) {
+    if (pair.base >= 0
+        && pair.base < static_cast<int>(link_to_offset.size())) {
+      link_to_offset[pair.base] = pair.offset;
+    }
+  }
+
   std::cout << "\nsegment " << _name << std::endl;
   std::cout << "base vertices: " << _curve_base->vertices().size() << std::endl;
   std::cout << "offset vertices: " << _curve_offset->vertices().size() << std::endl;
   std::cout << "base vertex -- link to, offset vertex\n";
-  for (auto k = 0; k < n; k++) {
+  for (std::size_t k = 0; k < link_to_offset.size(); k++) {
     std::cout << k << ": " << _curve_base->vertices()[k]
-    << " -- " << _offset_indices_base_link_to[k];
-    if (k < _curve_offset->vertices().size()) {
-      std::cout << ", " << k << ": " << _curve_offset->vertices()[k];
+    << " -- " << link_to_offset[k];
+    if (link_to_offset[k] >= 0
+        && link_to_offset[k] < static_cast<int>(_curve_offset->vertices().size())) {
+      std::cout << ", " << link_to_offset[k] << ": "
+                << _curve_offset->vertices()[link_to_offset[k]];
     }
     std::cout << std::endl;
   }
@@ -369,10 +376,11 @@ void Segment::printBaseOffsetPairs() {
   for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
     // std::cout << "        " << i << ": " << base[i]
     // << " -- " << link_to_2[i] << std::endl;
-    std::string s = std::to_string(_base_offset_indices_pairs[i][0]) + ": "
-      + _curve_base->vertices()[_base_offset_indices_pairs[i][0]]->printString()
-      + " -- " + std::to_string(_base_offset_indices_pairs[i][1]) + ": "
-      + _curve_offset->vertices()[_base_offset_indices_pairs[i][1]]->printString();
+    const BaseOffsetPair &pair = _base_offset_indices_pairs[i];
+    std::string s = std::to_string(pair.base) + ": "
+      + _curve_base->vertices()[pair.base]->printString()
+      + " -- " + std::to_string(pair.offset) + ": "
+      + _curve_offset->vertices()[pair.offset]->printString();
 
     // std::cout << s << std::endl;
         PLOG(debug) << s;
@@ -466,7 +474,6 @@ void Segment::offsetCurveBase() {
     delete _curve_offset;
     _curve_offset = nullptr;
   }
-  _offset_indices_base_link_to.clear();
   _base_offset_indices_pairs.clear();
 
   int side = 1;
@@ -477,13 +484,12 @@ void Segment::offsetCurveBase() {
   // New offset function
   // _curve_offset = new Baseline();
   // offset2(_curve_base->vertices(), side, _layup->getTotalThickness(),
-  //        _curve_offset->vertices(), _offset_indices_base_link_to);
+  //        _curve_offset->vertices());
 
   // Old offset function
   _curve_offset = new Baseline();
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
-         _curve_offset->vertices(), _offset_indices_base_link_to,
-         _base_offset_indices_pairs);
+         _curve_offset->vertices(), _base_offset_indices_pairs);
   _face = nullptr;
   _areas.clear();
   _head_vertex_offset = nullptr;
@@ -514,10 +520,6 @@ void Segment::offsetCurveBase() {
   //   std::cout << "        " << i << " -- " << _offset_vertices_link_to[i] << std::endl;
   // }
 
-  // std::cout << "        base-offset linking indices:" << std::endl;
-  // for (auto i = 0; i < _offset_indices_base_link_to.size(); i++) {
-  //   std::cout << "        " << i << " -- " << _offset_indices_base_link_to[i] << std::endl;
-  // }
 }
 
 void Segment::build(const BuilderConfig &bcfg) {

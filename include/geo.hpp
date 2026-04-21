@@ -96,11 +96,14 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  * @param side Offset side.
  * @param dist Offset distance.
  * @param offset Resulting line (list of vertices).
- * @param link_to_list Links of corresponding vertices.
  */
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
-           std::vector<PDCELVertex *> &offset, std::vector<int> &link_to_list_2,
-           std::vector<std::vector<int>> &id_pairs);
+           std::vector<PDCELVertex *> &offset, BaseOffsetMap &id_pairs);
+
+// Validates the BaseOffsetMap staircase invariant.
+bool validateBaseOffsetMap(
+  const BaseOffsetMap &map,
+  std::string *error_message = nullptr);
 
 // int offset2(const std::vector<PDCELVertex *> &base, int side, double dist,
 //            std::vector<PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
