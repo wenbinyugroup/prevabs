@@ -15,6 +15,7 @@
 
 #include "geo_types.hpp"
 
+#include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <iomanip>
@@ -29,6 +30,20 @@
 int Segment::count_tmp = 0;
 
 namespace {
+
+const char *toString(Segment::LifecycleState state) {
+  switch (state) {
+  case Segment::LifecycleState::BaseReady:
+    return "BaseReady";
+  case Segment::LifecycleState::OffsetReady:
+    return "OffsetReady";
+  case Segment::LifecycleState::ShellBuilt:
+    return "ShellBuilt";
+  case Segment::LifecycleState::AreasBuilt:
+    return "AreasBuilt";
+  }
+  return "Unknown";
+}
 
 void deleteUnregisteredVertices(const std::vector<PDCELVertex *> &vertices) {
   std::unordered_set<PDCELVertex *> visited;
@@ -99,7 +114,8 @@ Segment::Segment(Segment &&other) noexcept
       _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
       _ib_begin(other._ib_begin),
       _ib_end(other._ib_end),
-      _inner_bounds_dc(std::move(other._inner_bounds_dc)) {
+      _inner_bounds_dc(std::move(other._inner_bounds_dc)),
+      _state(other._state) {
   other._curve_base = nullptr;
   other._curve_offset = nullptr;
   other._layup = nullptr;
@@ -109,6 +125,7 @@ Segment::Segment(Segment &&other) noexcept
   other._head_vertex_offset = nullptr;
   other._tail_vertex_offset = nullptr;
   other._areas.clear();
+  other._state = LifecycleState::BaseReady;
 }
 
 Segment &Segment::operator=(Segment &&other) noexcept {
@@ -152,6 +169,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _ib_begin = other._ib_begin;
   _ib_end = other._ib_end;
   _inner_bounds_dc = std::move(other._inner_bounds_dc);
+  _state = other._state;
 
   other._curve_base = nullptr;
   other._curve_offset = nullptr;
@@ -162,6 +180,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   other._head_vertex_offset = nullptr;
   other._tail_vertex_offset = nullptr;
   other._areas.clear();
+  other._state = LifecycleState::BaseReady;
 
   return *this;
 }
@@ -177,6 +196,103 @@ void Segment::releaseOwnedResources() {
     delete _curve_offset;
     _curve_offset = nullptr;
   }
+  _face = nullptr;
+  _head_vertex_offset = nullptr;
+  _tail_vertex_offset = nullptr;
+  _state = LifecycleState::BaseReady;
+}
+
+bool Segment::requireBaseDefinition(const char *caller) const {
+  const bool valid = (_curve_base != nullptr && _layup != nullptr);
+  if (valid) {
+    return true;
+  }
+
+  const std::string message =
+      std::string("Segment::") + caller
+      + " requires both base curve and layup for segment '"
+      + _name + "'";
+  PLOG(error) << message;
+  assert(valid && "Segment requires both base curve and layup");
+  return false;
+}
+
+bool Segment::requireStateAtLeast(
+    LifecycleState minimum_state, const char *caller) const {
+  if (static_cast<int>(_state) >= static_cast<int>(minimum_state)) {
+    return true;
+  }
+
+  const std::string message =
+      std::string("Segment::") + caller + " requires state >= "
+      + toString(minimum_state) + " but current state is "
+      + toString(_state) + " for segment '" + _name + "'";
+  PLOG(error) << message;
+  assert(static_cast<int>(_state) >= static_cast<int>(minimum_state));
+  return false;
+}
+
+bool Segment::requireExactState(
+    LifecycleState expected_state, const char *caller) const {
+  if (_state == expected_state) {
+    return true;
+  }
+
+  const std::string message =
+      std::string("Segment::") + caller + " requires state "
+      + toString(expected_state) + " but current state is "
+      + toString(_state) + " for segment '" + _name + "'";
+  PLOG(error) << message;
+  assert(_state == expected_state);
+  return false;
+}
+
+bool Segment::validateStateInvariants(const char *caller) const {
+  if (!requireBaseDefinition(caller)) {
+    return false;
+  }
+
+  const bool offset_ready = (_curve_offset != nullptr);
+  const bool shell_built = (_face != nullptr);
+  const bool areas_built = !_areas.empty();
+
+  bool valid = true;
+  switch (_state) {
+  case LifecycleState::BaseReady:
+    valid = !offset_ready && !shell_built && !areas_built;
+    break;
+  case LifecycleState::OffsetReady:
+    valid = offset_ready && !shell_built && !areas_built;
+    break;
+  case LifecycleState::ShellBuilt:
+    valid = offset_ready && shell_built && !areas_built;
+    break;
+  case LifecycleState::AreasBuilt:
+    valid = offset_ready && shell_built && areas_built;
+    break;
+  }
+
+  if (valid) {
+    return true;
+  }
+
+  std::ostringstream oss;
+  oss << "Segment::" << caller << " violates lifecycle invariants for segment '"
+      << _name << "'"
+      << " [state=" << toString(_state)
+      << ", has_offset=" << offset_ready
+      << ", has_face=" << shell_built
+      << ", areas=" << _areas.size() << "]";
+  PLOG(error) << oss.str();
+  assert(valid && "Segment lifecycle invariants violated");
+  return false;
+}
+
+bool Segment::requireOffsetCurve(const char *caller) const {
+  if (!requireStateAtLeast(LifecycleState::OffsetReady, caller)) {
+    return false;
+  }
+  return validateStateInvariants(caller);
 }
 
 void Segment::print() {
@@ -220,6 +336,10 @@ void Segment::print() {
 }
 
 void Segment::printBaseOffsetLink() {
+  if (!requireOffsetCurve("printBaseOffsetLink")) {
+    return;
+  }
+
   std::size_t n = _curve_base->vertices().size();
   std::cout << "\nsegment " << _name << std::endl;
   std::cout << "base vertices: " << _curve_base->vertices().size() << std::endl;
@@ -237,6 +357,9 @@ void Segment::printBaseOffsetLink() {
 
 void Segment::printBaseOffsetPairs() {
   MESSAGE_SCOPE(g_msg);
+  if (!requireOffsetCurve("printBaseOffsetPairs")) {
+    return;
+  }
 
     PLOG(debug) << "base vertices -- base_link_to_offset_indices";
 
@@ -307,6 +430,19 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
 
 void Segment::offsetCurveBase() {
   MESSAGE_SCOPE(g_msg);
+  if (!requireBaseDefinition("offsetCurveBase")) {
+    return;
+  }
+  if (_state == LifecycleState::ShellBuilt ||
+      _state == LifecycleState::AreasBuilt) {
+    const std::string message =
+        "Segment::offsetCurveBase cannot run after shell/areas build for segment '"
+        + _name + "'";
+    PLOG(error) << message;
+    assert(false && "offsetCurveBase cannot run after build/buildAreas");
+    return;
+  }
+
   // if (config.debug) {
   //   pmessage->print(9, "offsetting the base curve of segment: " + _name);
   // }
@@ -320,6 +456,9 @@ void Segment::offsetCurveBase() {
 
   if (_curve_base->vertices().front() == _curve_base->vertices().back()) {
     _closed = true;
+  }
+  else {
+    _closed = false;
   }
 
   if (_curve_offset != nullptr) {
@@ -345,6 +484,12 @@ void Segment::offsetCurveBase() {
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
          _curve_offset->vertices(), _offset_indices_base_link_to,
          _base_offset_indices_pairs);
+  _face = nullptr;
+  _areas.clear();
+  _head_vertex_offset = nullptr;
+  _tail_vertex_offset = nullptr;
+  _state = LifecycleState::OffsetReady;
+  validateStateInvariants("offsetCurveBase");
 
   // if (config.debug) {
   //   std::cout << "base line: " <<  _curve_base->vertices().front();
@@ -377,6 +522,13 @@ void Segment::offsetCurveBase() {
 
 void Segment::build(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
+  if (!requireExactState(LifecycleState::OffsetReady, "build")) {
+    return;
+  }
+  if (!validateStateInvariants("build")) {
+    return;
+  }
+
   if (bcfg.debug) {
     // std::cout << "[debug] building the overall shape of segment: " << _name
     //           << std::endl;
@@ -456,6 +608,8 @@ void Segment::build(const BuilderConfig &bcfg) {
 
   bcfg.dcel->setLoopKept(hel, true);
   hel->setFace(_face);
+  _state = LifecycleState::ShellBuilt;
+  validateStateInvariants("build");
 
   // for (auto f : _pmodel->dcel()->faces()) {
   //   f->outer()->print2();

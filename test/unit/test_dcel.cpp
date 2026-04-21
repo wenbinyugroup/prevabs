@@ -48,6 +48,10 @@ struct LoggerSetup {
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
+#include "PBaseLine.hpp"
+#include "Material.hpp"
+#include "PSegment.hpp"
+#include "PModel.hpp"
 
 #include <list>
 
@@ -86,6 +90,16 @@ static std::vector<PDCELHalfEdge *> collectFaceBoundary(
     if (he == nullptr) break;
   } while (he != start && (int)result.size() < limit);
   return result;
+}
+
+static PDCELFace *findFaceByName(PDCEL &dcel, PModel &model,
+                                 const std::string &name) {
+  for (PDCELFace *face : dcel.faces()) {
+    if (model.faceData(face).name == name) {
+      return face;
+    }
+  }
+  return nullptr;
 }
 
 
@@ -153,6 +167,193 @@ TEST_CASE("addEdge: creates two half-edges with correct twin relationship",
 
   // Twin symmetry: he->twin()->twin() == he
   CHECK(he->twin()->twin() == he);
+}
+
+TEST_CASE("buildAreas: last area uses final pair instead of area count",
+          "[dcel][segment][areas]") {
+  Message msg;
+  g_msg = &msg;
+
+  Material material("mat");
+  Lamina lamina("lam", &material, 1.0);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("base", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 1.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 2.0, 0.0));
+
+  Segment segment("seg", &base, &layup, "left", 1);
+  segment.setMatOrient1("baseline");
+  segment.offsetCurveBase();
+
+  Baseline *offset = segment.curveOffset();
+  for (PDCELVertex *vertex : offset->vertices()) {
+    delete vertex;
+  }
+  offset->vertices().clear();
+  offset->addPVertex(new PDCELVertex(0.0, 0.0, 1.0));
+  offset->addPVertex(new PDCELVertex(0.0, 1.0, 1.0));
+  offset->addPVertex(new PDCELVertex(0.0, 1.5, 1.0));
+  offset->addPVertex(new PDCELVertex(0.0, 2.0, 1.0));
+
+  std::vector<std::vector<int>> &pairs = segment.baseOffsetIndicesPairs();
+  pairs.clear();
+  pairs.push_back({0, 0});
+  pairs.push_back({1, 1});
+  pairs.push_back({2, 2});
+  pairs.push_back({2, 3});
+
+  PDCEL dcel;
+  dcel.initialize();
+  dcel.addEdge(base.vertices().front(), offset->vertices().front());
+  dcel.addEdge(base.vertices().back(), offset->vertices().back());
+  segment.setHeadVertexOffset(offset->vertices().front());
+  segment.setTailVertexOffset(offset->vertices().back());
+
+  PModel model;
+  BuilderConfig bcfg{};
+  bcfg.debug = false;
+  bcfg.tool = AnalysisTool::VABS;
+  bcfg.tol = 1e-12;
+  bcfg.geo_tol = 1e-9;
+  bcfg.dcel = &dcel;
+  bcfg.materials = &model;
+  bcfg.model = &model;
+
+  segment.build(bcfg);
+  segment.buildAreas(bcfg);
+
+  PDCELFace *last_layer_face = findFaceByName(
+      dcel, model, "seg_area_3_layer_1");
+  REQUIRE(last_layer_face != nullptr);
+
+  const SVector3 y1 = last_layer_face->localy1();
+  CHECK(y1[0] == Catch::Approx(0.0));
+  CHECK(y1[1] == Catch::Approx(0.5));
+  CHECK(y1[2] == Catch::Approx(0.0));
+}
+
+TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
+          "[dcel][segment][areas][head][tail]") {
+  Message msg;
+  g_msg = &msg;
+
+  Material material("mat");
+  Lamina lamina("lam", &material, 1.0);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("base", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 1.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 2.0, 0.0));
+
+  Segment segment("seg", &base, &layup, "left", 1);
+  segment.offsetCurveBase();
+
+  PDCEL dcel;
+  dcel.initialize();
+  dcel.addEdge(base.vertices().front(), segment.curveOffset()->vertices().front());
+  dcel.addEdge(base.vertices().back(), segment.curveOffset()->vertices().back());
+  segment.setHeadVertexOffset(segment.curveOffset()->vertices().front());
+  segment.setTailVertexOffset(segment.curveOffset()->vertices().back());
+
+  PModel model;
+  BuilderConfig bcfg{};
+  bcfg.debug = false;
+  bcfg.tool = AnalysisTool::VABS;
+  bcfg.tol = 1e-12;
+  bcfg.geo_tol = 1e-9;
+  bcfg.dcel = &dcel;
+  bcfg.materials = &model;
+  bcfg.model = &model;
+
+  segment.build(bcfg);
+  segment.buildAreas(bcfg);
+
+  std::string face_names_left;
+  for (PDCELFace *face : dcel.faces()) {
+    const std::string &name = model.faceData(face).name;
+    if (!name.empty()) {
+      if (!face_names_left.empty()) {
+        face_names_left += ", ";
+      }
+      face_names_left += name;
+    }
+  }
+  INFO("left face names: " << face_names_left);
+
+  for (const char *name : {
+           "seg_area_1_layer_1",
+           "seg_area_2_layer_1"}) {
+    REQUIRE(findFaceByName(dcel, model, name) != nullptr);
+  }
+}
+
+TEST_CASE("buildAreas: right-side open segment builds head and tail layer faces",
+          "[dcel][segment][areas][head][tail]") {
+  Message msg;
+  g_msg = &msg;
+
+  Material material("mat");
+  Lamina lamina("lam", &material, 1.0);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("base", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 1.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 2.0, 0.0));
+
+  Segment segment("seg", &base, &layup, "right", 1);
+  segment.offsetCurveBase();
+
+  PDCEL dcel;
+  dcel.initialize();
+  dcel.addEdge(base.vertices().front(), segment.curveOffset()->vertices().front());
+  dcel.addEdge(base.vertices().back(), segment.curveOffset()->vertices().back());
+  segment.setHeadVertexOffset(segment.curveOffset()->vertices().front());
+  segment.setTailVertexOffset(segment.curveOffset()->vertices().back());
+
+  PModel model;
+  BuilderConfig bcfg{};
+  bcfg.debug = false;
+  bcfg.tool = AnalysisTool::VABS;
+  bcfg.tol = 1e-12;
+  bcfg.geo_tol = 1e-9;
+  bcfg.dcel = &dcel;
+  bcfg.materials = &model;
+  bcfg.model = &model;
+
+  segment.build(bcfg);
+  segment.buildAreas(bcfg);
+
+  std::string face_names_right;
+  for (PDCELFace *face : dcel.faces()) {
+    const std::string &name = model.faceData(face).name;
+    if (!name.empty()) {
+      if (!face_names_right.empty()) {
+        face_names_right += ", ";
+      }
+      face_names_right += name;
+    }
+  }
+  INFO("right face names: " << face_names_right);
+
+  for (const char *name : {
+           "seg_area_1_layer_1",
+           "seg_area_2_layer_1"}) {
+    REQUIRE(findFaceByName(dcel, model, name) != nullptr);
+  }
 }
 
 TEST_CASE("addEdge: source and target are consistent", "[dcel][edge]") {

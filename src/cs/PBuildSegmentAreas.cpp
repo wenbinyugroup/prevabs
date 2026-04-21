@@ -35,6 +35,25 @@ void deleteDetachedLineSegment(PGeoLineSegment *segment) {
   delete segment;
 }
 
+PGeoLineSegment *buildAreaBaseSegmentFromPair(
+    Baseline *curve_base, Baseline *curve_offset,
+    const std::vector<std::vector<int>> &pairs, std::size_t pair_index) {
+  const int vbi = pairs[pair_index][0];
+  const int voi = pairs[pair_index][1];
+  const bool use_offset_as_base =
+      (pair_index > 0 && vbi == pairs[pair_index - 1][0]);
+
+  if (!use_offset_as_base) {
+    return new PGeoLineSegment(
+        curve_base->vertices()[vbi - 1],
+        curve_base->vertices()[vbi]);
+  }
+
+  return new PGeoLineSegment(
+      curve_offset->vertices()[voi - 1],
+      curve_offset->vertices()[voi]);
+}
+
 } // namespace
 
 // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
@@ -69,7 +88,7 @@ std::vector<PDCELVertex *> Segment::splitBoundByLayup(
 // May split an edge. Returns the intersection vertex, or nullptr if not found.
 PDCELVertex *Segment::findLayerIntersectionOnFace(
     PDCELVertex *v_prev, PDCELFace *face,
-    PGeoLineSegment *ls_offset, bool go_prev,
+    PGeoLineSegment *ls_offset, bool go_prev, PDCELVertex *stop_vertex,
     const BuilderConfig &bcfg) {
 
   PDCELVertex *v_layer = nullptr;
@@ -80,8 +99,6 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
   if (go_prev) {
     he_tmp = he_tmp->prev();
   }
-
-  PDCELVertex *stop_vertex = _curve_offset->vertices().front();
 
   g_msg->increaseIndent();
   do {
@@ -150,7 +167,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 // traversal direction. Returns the new layer vertices.
 std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
     PDCELVertex *v_start, PGeoLineSegment *ls_base,
-    bool go_prev, const BuilderConfig &bcfg) {
+    bool go_prev, PDCELVertex *stop_vertex, const BuilderConfig &bcfg) {
 
   std::vector<PDCELVertex *> layer_vertices;
   PDCELVertex *v_layer_prev = v_start;
@@ -172,7 +189,7 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
         PLOG(debug) << "ls_offset: " + ls_offset->printString();
 
     PDCELVertex *v_layer = findLayerIntersectionOnFace(
-        v_layer_prev, _face, ls_offset, go_prev, bcfg);
+        v_layer_prev, _face, ls_offset, go_prev, stop_vertex, bcfg);
     deleteDetachedLineSegment(ls_offset);
 
     if (v_layer == nullptr) {
@@ -240,7 +257,8 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
 
     bool go_prev = (slayupside == "left");
     prev_bound_vertices = buildOpenBoundLayerVertices(
-        _curve_base->vertices()[0], ls_base, go_prev, bcfg);
+        _curve_base->vertices()[0], ls_base, go_prev,
+        _curve_offset->vertices().front(), bcfg);
     if (owns_ls_base_vertices) {
       deleteDetachedLineSegment(ls_base);
     }
@@ -267,9 +285,6 @@ void Segment::createIntermediateAreas(
 
     int vbi_tmp = _base_offset_indices_pairs[k][0];
     int voi_tmp = _base_offset_indices_pairs[k][1];
-    bool use_offset_as_base =
-        (vbi_tmp == _base_offset_indices_pairs[k - 1][0]);
-
     PDCELVertex *vb_tmp = _curve_base->vertices()[vbi_tmp];
     PDCELVertex *vo_tmp = _curve_offset->vertices()[voi_tmp];
         PLOG(debug) << "  base vertex: " + vb_tmp->printString();
@@ -292,17 +307,8 @@ void Segment::createIntermediateAreas(
       _face = new_faces.front();
     }
 
-    PGeoLineSegment *ls_base;
-    if (!use_offset_as_base) {
-      ls_base = new PGeoLineSegment(
-          _curve_base->vertices()[vbi_tmp - 1],
-          _curve_base->vertices()[vbi_tmp]);
-    }
-    else {
-      ls_base = new PGeoLineSegment(
-          _curve_offset->vertices()[voi_tmp - 1],
-          _curve_offset->vertices()[voi_tmp]);
-    }
+    PGeoLineSegment *ls_base = buildAreaBaseSegmentFromPair(
+        _curve_base, _curve_offset, _base_offset_indices_pairs, k);
 
     area->setLineSegmentBase(ls_base);
 
@@ -344,9 +350,9 @@ void Segment::buildLastArea(
   count++;
   area->setFace(_face);
 
-  PGeoLineSegment *ls_base = new PGeoLineSegment(
-      _curve_base->vertices()[count - 1],
-      _curve_base->vertices()[count]);
+  const std::size_t last_pair_index = _base_offset_indices_pairs.size() - 1;
+  PGeoLineSegment *ls_base = buildAreaBaseSegmentFromPair(
+      _curve_base, _curve_offset, _base_offset_indices_pairs, last_pair_index);
   area->setLineSegmentBase(ls_base);
 
   PGeoLineSegment *ls_layup = new PGeoLineSegment(
@@ -397,7 +403,8 @@ void Segment::buildLastArea(
 
     bool go_prev = (slayupside == "right");
     for (auto v : buildOpenBoundLayerVertices(
-             _curve_base->vertices().back(), ls_base_end, go_prev, bcfg)) {
+             _curve_base->vertices().back(), ls_base_end, go_prev,
+             _curve_offset->vertices().back(), bcfg)) {
       area->addNextBoundVertex(v);
     }
     if (owns_ls_base_end_vertices) {
@@ -414,6 +421,13 @@ void Segment::buildLastArea(
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
+  if (!requireExactState(LifecycleState::ShellBuilt, "buildAreas")) {
+    return;
+  }
+  if (!validateStateInvariants("buildAreas")) {
+    return;
+  }
+
     PLOG(debug) << "building areas of segment: " + _name;
 
   std::vector<PDCELVertex *> first_bound_vertices;
@@ -428,4 +442,6 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   for (auto each_area : _areas) {
     each_area->buildLayers(bcfg);
   }
+  _state = LifecycleState::AreasBuilt;
+  validateStateInvariants("buildAreas");
 }

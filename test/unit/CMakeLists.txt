@@ -57,14 +57,19 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/curve.cpp
   ${SRC_GEO}/geo_math.cpp
   ${SRC_GEO}/intersect.cpp
+  ${SRC_GEO}/offset.cpp
   ${SRC_GEO}/PBST.cpp
   ${SRC_GEO}/polyline.cpp
   ${SRC_ROOT}/plog.cpp
   ${SRC_ROOT}/utilities.cpp
   ${SRC_ROOT}/overloadOperator.cpp
   ${SRC_ROOT}/GeometryRepository.cpp
+  ${SRC_ROOT}/MaterialRepository.cpp
   ${SRC_ROOT}/cs/Material.cpp
+  ${SRC_ROOT}/cs/PArea.cpp
   ${SRC_ROOT}/cs/PBaseLine.cpp
+  ${SRC_ROOT}/cs/PBuildSegmentAreas.cpp
+  ${SRC_ROOT}/cs/PSegment.cpp
 )
 
 add_executable(test_dcel ${TEST_DCEL_SOURCES})

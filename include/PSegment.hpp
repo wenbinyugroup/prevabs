@@ -37,6 +37,18 @@ class PModel;
  * A cross-sectional segment class.
  */
 class Segment {
+public:
+  // Segment lifecycle is strictly ordered:
+  // BaseReady -> OffsetReady -> ShellBuilt -> AreasBuilt.
+  // offsetCurveBase() may be re-run only before build(); build() and
+  // buildAreas() are single-use transitions.
+  enum class LifecycleState {
+    BaseReady,
+    OffsetReady,
+    ShellBuilt,
+    AreasBuilt
+  };
+
 private:
   std::string _name;
   Baseline *_curve_base, *_curve_offset;
@@ -78,6 +90,7 @@ private:
 
   // Indicate if each inner bound can be created by direct connecting;
   std::list<bool> _inner_bounds_dc;
+  LifecycleState _state{LifecycleState::BaseReady};
 
 public:
   static int count_tmp;
@@ -193,6 +206,13 @@ public:
   void buildAreas(const BuilderConfig &);
 
 private:
+  bool requireBaseDefinition(const char *caller) const;
+  bool requireOffsetCurve(const char *caller) const;
+  bool requireStateAtLeast(
+      LifecycleState minimum_state, const char *caller) const;
+  bool requireExactState(
+      LifecycleState expected_state, const char *caller) const;
+  bool validateStateInvariants(const char *caller) const;
   void releaseOwnedResources();
 
   // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
@@ -202,18 +222,21 @@ private:
 
   // Search face boundary edges from v_prev for the intersection with ls_offset.
   // go_prev controls traversal direction (true = prev(), false = next()).
+  // stop_vertex is the offset-bound endpoint that terminates this local
+  // traversal (head uses offset.front(), tail uses offset.back()).
   // May split an edge. Returns the intersection vertex, or nullptr if not found.
   PDCELVertex *findLayerIntersectionOnFace(
       PDCELVertex *v_prev, PDCELFace *face,
-      PGeoLineSegment *ls_offset, bool go_prev,
+      PGeoLineSegment *ls_offset, bool go_prev, PDCELVertex *stop_vertex,
       const BuilderConfig &bcfg);
 
   // Build layer vertices on an open bound by intersecting offset line segments
   // with the face boundary. v_start is the seed vertex; go_prev controls
-  // traversal direction. Returns the new layer vertices.
+  // traversal direction; stop_vertex selects the current offset-side boundary
+  // endpoint. Returns the new layer vertices.
   std::vector<PDCELVertex *> buildOpenBoundLayerVertices(
       PDCELVertex *v_start, PGeoLineSegment *ls_base,
-      bool go_prev, const BuilderConfig &bcfg);
+      bool go_prev, PDCELVertex *stop_vertex, const BuilderConfig &bcfg);
 
   // Section 1: compute beginning-bound layer vertices.
   // For closed segments, also fills first_bound_vertices.
