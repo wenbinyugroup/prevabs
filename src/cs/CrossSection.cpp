@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 int CrossSection::used_material_index = 0;
@@ -34,7 +35,6 @@ CrossSection::CrossSection(std::string name) {
   // csrotatem = STensor3{1.0};
   // csmeshsize = 1.0;
   // cselementtype = "linear";
-  cssegments = {};
   // csconnections = {};
   // csfillings = {};
 }
@@ -148,8 +148,8 @@ void CrossSection::addUsedLayerType(LayerType *p_layertype) {
   csusedlayertypes.push_back(p_layertype);
 }
 
-void CrossSection::addSegment(Segment segment) {
-  cssegments.push_back(segment);
+void CrossSection::addSegment(Segment &&segment) {
+  cssegments.push_back(std::move(segment));
 }
 
 // void CrossSection::addConnection(Connection connection) {

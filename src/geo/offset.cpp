@@ -638,8 +638,6 @@ static void trimSubLinePair(
   PDCELVertex *junction = getIntersectionVertex(
     tail_line, head_line,
     seg_idx_tail, seg_idx_head, u_tail, u_head,
-    /*which_end_1=*/1,    /*which_end_2=*/0,
-    /*inner_only_1=*/0,   /*inner_only_2=*/0,
     is_new_tail, is_new_head, TOLERANCE
   );
 
@@ -945,8 +943,6 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
           PDCELVertex *junction = getIntersectionVertex(
             lines_group.back(), lines_group.front(),
             seg_idx_back, seg_idx_front, u_back, u_front,
-            /*which_end_1=*/1,    /*which_end_2=*/0,
-            /*inner_only_1=*/0,   /*inner_only_2=*/0,
             is_new_back, is_new_front, TOLERANCE
           );
 

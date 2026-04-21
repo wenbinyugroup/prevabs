@@ -41,6 +41,7 @@ private:
 public:
   PArea();
   PArea(Segment *);
+  ~PArea();
 
   void print();
 

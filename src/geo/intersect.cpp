@@ -12,26 +12,9 @@
 #include "homog2d.hpp"
 
 
-/**
- * @brief Calculates the intersection of two 2D lines.
- *
- * This function determines whether two lines in 2D space intersect and, if so, 
- * calculates the intersection parameters u1 and u2.
- *
- * @param l1p1x The x-coordinate of the first point of the first line.
- * @param l1p1y The y-coordinate of the first point of the first line.
- * @param l1p2x The x-coordinate of the second point of the first line.
- * @param l1p2y The y-coordinate of the second point of the first line.
- * @param l2p1x The x-coordinate of the first point of the second line.
- * @param l2p1y The y-coordinate of the first point of the second line.
- * @param l2p2x The x-coordinate of the second point of the second line.
- * @param l2p2y The y-coordinate of the second point of the second line.
- * @param u1 Reference to a double where the intersection parameter for the first line will be stored.
- * @param u2 Reference to a double where the intersection parameter for the second line will be stored.
- * @param tol The tolerance value used to determine if the lines are parallel.
- * @return true if the lines intersect, false if they are parallel within the given tolerance.
- */
-bool calcLineIntersection2D(
+namespace {
+
+bool calcLineIntersectionRaw(
   const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
   double &u1, double &u2, const double & /*tol*/
@@ -77,6 +60,26 @@ bool calcLineIntersection2D(
   return true;
 }
 
+}  // namespace
+
+/**
+ * @brief Calculates the intersection of two 2D lines.
+ *
+ * This function determines whether two lines in 2D space intersect and, if so,
+ * calculates the intersection parameters u1 and u2.
+ */
+bool calcLineIntersection2D(
+  const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
+  const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
+  double &u1, double &u2, const double &tol
+  ) {
+  return calcLineIntersectionRaw(
+    l1p1x, l1p1y, l1p2x, l1p2y,
+    l2p1x, l2p1y, l2p2x, l2p2y,
+    u1, u2, tol
+  );
+}
+
 
 
 
@@ -100,7 +103,7 @@ bool calcLineIntersection2D(
   double &u1, double &u2, const double &tol
   ) {
 
-  return calcLineIntersection2D(
+  return calcLineIntersectionRaw(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
     u1, u2, tol
@@ -148,7 +151,7 @@ bool calcLineIntersection2D(
     PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
     return false;
   }
-  return calcLineIntersection2D(
+  return calcLineIntersectionRaw(
     l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
     l2p1[d1], l2p1[d2], l2p2[d1], l2p2[d2],
     u1, u2, tol
@@ -163,7 +166,7 @@ bool calcLineIntersection2D(
   double &u1, double &u2, const double &tol
   ) {
 
-  return calcLineIntersection2D(
+  return calcLineIntersectionRaw(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
     u1, u2, tol
@@ -343,13 +346,13 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * @param pmessage A pointer to a Message object used for logging and debugging.
  * @return A pointer to the PDCELHalfEdge where the intersection occurs, or nullptr if no intersection is found.
  */
-PDCELHalfEdge *findCurvesIntersection(
-  std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
+PDCELHalfEdge *findCurveLoopIntersection(
+  const std::vector<PDCELVertex *> &vertices, PDCELHalfEdgeLoop *hel,
   int end, int &ls_i, double &u1, double &u2, const double &tol
   ) {
   MESSAGE_SCOPE(g_msg);
 
-    PLOG(debug) << "in function: findCurvesIntersection";
+    PLOG(debug) << "in function: findCurveLoopIntersection";
 
   PDCELHalfEdge *he = nullptr;
 
@@ -561,10 +564,10 @@ PDCELHalfEdge *findCurvesIntersection(
  * @param base_offset_indices_links Reference to a vector of integers representing the base offset indices links.
  * @return Pointer to the new baseline with the adjusted vertices. Returns nullptr if the intersection is not found.
  */
-Baseline *findCurvesIntersection(
+Baseline *trimCurveAtLineSegment(
   Baseline *bl, PGeoLineSegment *ls, int end,
   double &u1, double &u2, int &iold, int &inew,
-  std::vector<int> &link_to_list, std::vector<int> & /*base_offset_indices_links*/
+  std::vector<int> &link_to_list
   ) {
   // After adjusting the curve
   // the first kept vertex will be at index iold in the old curve
@@ -835,7 +838,7 @@ int findAllIntersections(
  * @return The intersection parameter (u) of the closest intersection.
  */
 double getIntersectionLocation(
-  std::vector<PDCELVertex *> & /*c*/,
+  const std::vector<PDCELVertex *> & /*c*/,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
   int &ls_i, int &j
@@ -936,8 +939,6 @@ double getIntersectionLocation(
 PDCELVertex *getIntersectionVertex(
   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
   int &i1, int &i2, const double &u1, const double &u2,
-  const int & /*which_end_1*/, const int & /*which_end_2*/,
-  const int & /*inner_only_1*/, const int & /*inner_only_2*/,
   int &is_new_1, int &is_new_2,
   const double &tol
 ) {
@@ -945,9 +946,6 @@ PDCELVertex *getIntersectionVertex(
 
   // i1s, i2s: indices of line segments having intersection
   // u1s, u2s: non-dimensional location of the intersection on the line segment
-  // which_end_1, which_end_2: choose the intersection closer to beginning (0) or ending (1)
-  // inner_only_1, inner_only_2: whether consider intersections between two ends (1) or not (0)
-
   // std::cout << "\n[debug] function: getIntersectionVertex\n";
 
   PDCELVertex *ip = nullptr; // The intersection vertex

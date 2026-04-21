@@ -45,6 +45,8 @@ target_compile_definitions(test_geo PRIVATE
 set(TEST_DCEL_SOURCES
   catch_amalgamated.cpp
   test_dcel.cpp
+  ${SRC_GEO}/DCELSweepLine.cpp
+  ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp
   ${SRC_GEO}/PDCELFace.cpp
   ${SRC_GEO}/PDCELHalfEdge.cpp
@@ -52,9 +54,11 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/PDCELVertex.cpp
   ${SRC_GEO}/PGeoClasses.cpp
   ${SRC_GEO}/PGeoLine.cpp
-  ${SRC_GEO}/geo.cpp
+  ${SRC_GEO}/curve.cpp
+  ${SRC_GEO}/geo_math.cpp
   ${SRC_GEO}/intersect.cpp
   ${SRC_GEO}/PBST.cpp
+  ${SRC_GEO}/polyline.cpp
   ${SRC_ROOT}/plog.cpp
   ${SRC_ROOT}/utilities.cpp
   ${SRC_ROOT}/overloadOperator.cpp

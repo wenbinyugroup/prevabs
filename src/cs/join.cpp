@@ -61,7 +61,7 @@ static PDCELHalfEdge *findBestIntersection(
 
   for (auto hel : hels) {
     if (!dcel->isLoopKept(hel)) {
-      PDCELHalfEdge *he = findCurvesIntersection(
+      PDCELHalfEdge *he = findCurveLoopIntersection(
           vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, tol);
       if (he != nullptr &&
           isBetterIntersection(e, ls_i_tmp, u1_tmp,
@@ -298,8 +298,7 @@ static PDCELVertex *intersectAndTrimOffsetWithBound(
 
   PDCELVertex *v_new = getIntersectionVertex(
       seg->curveOffset()->vertices(), bound,
-      ls_i, ls_bi, ls_u, ls_bu, end, 0, 0, 0,
-      is_new, is_new_b, TOLERANCE);
+      ls_i, ls_bi, ls_u, ls_bu, is_new, is_new_b, TOLERANCE);
   trimCurveAtVertex(seg->curveOffset()->vertices(), v_new,
                     end == 0 ? CurveEnd::Begin : CurveEnd::End);
 
@@ -844,10 +843,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
     PDCELVertex *ip;
     int is_new_1, is_new_2;
-    double tol{1.0e-9};
     ip = getIntersectionVertex(
-      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 0, 0,
-      false, false, is_new_1, is_new_2, tol
+      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2,
+      is_new_1, is_new_2, TOLERANCE
     );
         PLOG(debug) << "ip = " + ip->printString();
 
@@ -887,10 +885,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
     PDCELVertex *ip;
     int is_new_1, is_new_2;
-    double tol{1.0e-9};
     ip = getIntersectionVertex(
-      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2, 1, 1,
-      false, false, is_new_1, is_new_2, tol
+      s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2,
+      is_new_1, is_new_2, TOLERANCE
     );
         PLOG(debug) << "ip = " + ip->printString();
 

@@ -53,7 +53,10 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/cs/PModel.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PSegment.cpp
   ${CMAKE_SOURCE_DIR}/src/execu.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/geo.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/DCELSweepLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/DCELValidator.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/curve.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geo_math.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PBST.cpp
@@ -64,6 +67,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/PDCELVertex.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoClasses.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/polyline.cpp
   ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp

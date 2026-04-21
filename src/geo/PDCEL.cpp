@@ -5,6 +5,8 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
+#include "DCELSweepLine.hpp"
+#include "DCELValidator.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
@@ -117,137 +119,11 @@ void PDCEL::print_dcel() {
 }
 
 bool PDCEL::validate() {
-  bool ok = true;
-  const std::size_t limit = _halfedges.size() + 1;
-
-  // ── Half-edge invariants ──────────────────────────────────────────────────
-  for (auto he : _halfedges) {
-    // twin must be non-null
-    if (he->twin() == nullptr) {
-      PLOG(warning) << "validate: half-edge " << he << " has null twin";
-      ok = false;
-      continue;  // cannot check twin-dependent invariants below
-    }
-
-    // twin(twin(e)) == e
-    if (he->twin()->twin() != he) {
-      PLOG(warning) << "validate: half-edge " << he << " twin->twin != he";
-      ok = false;
-    }
-
-    // next->prev == he
-    if (he->next() != nullptr && he->next()->prev() != he) {
-      PLOG(warning) << "validate: half-edge " << he << " next->prev != he";
-      ok = false;
-    }
-
-    // prev->next == he
-    if (he->prev() != nullptr && he->prev()->next() != he) {
-      PLOG(warning) << "validate: half-edge " << he << " prev->next != he";
-      ok = false;
-    }
-
-    // source(next(e)) == target(e)  [target() = twin->source()]
-    if (he->next() != nullptr && he->next()->source() != he->target()) {
-      PLOG(warning) << "validate: half-edge " << he
-                    << " next->source != he->target";
-      ok = false;
-    }
-
-    // self-loop: source == target is degenerate
-    if (he->source() == he->target()) {
-      PLOG(warning) << "validate: half-edge " << he
-                    << " is a self-loop (source == target)";
-      ok = false;
-    }
-
-    // orphaned half-edge: every entry in _halfedges must have an incident face
-    // (background half-edges were moved to _background_halfedges)
-    if (he->face() == nullptr) {
-      PLOG(warning) << "validate: half-edge " << he
-                    << " has null incident face (orphaned)";
-      ok = false;
-    }
-  }
-
-  // ── Multi-edge check ──────────────────────────────────────────────────────
-  // Two distinct half-edges both going from v1 → v2 is degenerate.
-  {
-    std::unordered_map<PDCELVertex *, std::vector<PDCELVertex *>> seen;
-    for (auto he : _halfedges) {
-      PDCELVertex *src = he->source();
-      PDCELVertex *tgt = he->target();
-      auto &nbrs = seen[src];
-      if (std::find(nbrs.begin(), nbrs.end(), tgt) != nbrs.end()) {
-        PLOG(warning) << "validate: multi-edge detected from vertex "
-                      << src << " to vertex " << tgt;
-        ok = false;
-      } else {
-        nbrs.push_back(tgt);
-      }
-    }
-  }
-
-  // ── Vertex invariants ─────────────────────────────────────────────────────
-  for (auto v : _vertices) {
-    if (v->edge() == nullptr) {
-      PLOG(warning) << "validate: vertex " << v
-                    << " is isolated (no incident edge)";
-      ok = false;
-    }
-  }
-
-  // ── Face invariants ───────────────────────────────────────────────────────
-  for (auto f : _faces) {
-    if (f->outer() == nullptr) continue;  // unbounded background face
-
-    PDCELHalfEdge *start = f->outer();
-    PDCELHalfEdge *hei = start;
-    std::size_t count = 0;
-    do {
-      if (hei == nullptr) {
-        PLOG(warning) << "validate: face outer loop broken (null next)";
-        ok = false;
-        break;
-      }
-      if (hei->face() != f) {
-        PLOG(warning) << "validate: face outer loop contains half-edge "
-                         "with wrong incident face";
-        ok = false;
-      }
-      hei = hei->next();
-      if (++count > limit) {
-        PLOG(warning) << "validate: face outer loop does not close";
-        ok = false;
-        break;
-      }
-    } while (hei != start);
-  }
-
-  return ok;
+  return validateDCEL(*this);
 }
 
 void PDCEL::fixGeometry(const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
-    g_msg->print("fixing geometry");
-
-  // Find all small edges. Use an unordered_set so the twin-skip check is O(1)
-  // instead of O(n), reducing the overall loop from O(n²) to O(n).
-  std::unordered_set<PDCELHalfEdge *> small_edges;
-  for (auto he : _halfedges) {
-    if (small_edges.count(he->twin())) continue;
-
-    // Calculate edge length
-    double sqlen = calcDistanceSquared(he->source(), he->target());
-    if (sqlen <= bcfg.geo_tol*bcfg.geo_tol) {
-      small_edges.insert(he);
-    }
-  }
-
-  // Remove small edges
-  for (auto he : small_edges) {
-    removeEdge(he);
-  }
+  fixDCELGeometry(*this, bcfg);
 }
 
 // ===================================================================
@@ -663,6 +539,12 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
 }
 
 PDCELHalfEdge *PDCEL::findHalfEdgeBetween(PDCELVertex *v1, PDCELVertex *v2) {
+  return const_cast<PDCELHalfEdge *>(
+      static_cast<const PDCEL *>(this)->findHalfEdgeBetween(v1, v2));
+}
+
+PDCELHalfEdge *PDCEL::findHalfEdgeBetween(PDCELVertex *v1,
+                                          PDCELVertex *v2) const {
   if (v1->edge() == nullptr) {
     return nullptr;
   }
@@ -769,7 +651,8 @@ PDCELHalfEdgeLoop *PDCEL::findNearestLoop(PDCELHalfEdgeLoop *loop) {
 
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
-  PDCELHalfEdge *he = findHalfEdgeBelowVertex(loop->bottomLeftVertex());
+  PDCELHalfEdge *he = ::findHalfEdgeBelowVertex(*this,
+                                                loop->bottomLeftVertex());
   if (he != nullptr) {
     loop_near = he->loop();
   }
@@ -842,7 +725,7 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
 
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
-  PDCELHalfEdge *he = findHalfEdgeBelowVertex(v);
+  PDCELHalfEdge *he = ::findHalfEdgeBelowVertex(*this, v);
   if (he != nullptr) {
     loop_near = he->loop();
 
@@ -1253,121 +1136,3 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
   }
 }
 
-std::list<PGeoLineSegment *>
-PDCEL::findLineSegmentsAtSweepLine(PDCELVertex *v,
-                                   std::vector<PGeoLineSegment *> &temp_segs) {
-  std::list<PGeoLineSegment *> ls_list;
-  // Maps a half-edge (or its twin) to a temporary segment created for it.
-  // Temporary segments are never stored on the half-edge itself to avoid
-  // ownership ambiguity with the permanent segments in _owned_segments.
-  std::map<PDCELHalfEdge *, PGeoLineSegment *> temp_map;
-
-  // Vertical sweep line passing through each vertex from left to right.
-  // _vertex_tree is a std::set ordered by position, so iteration is in-order.
-  for (PDCELVertex *vi : _vertex_tree) {
-    if (vi == v) {
-      break;
-    }
-
-    // For each line segment having this vertex,
-    // if this vertex is on the left (or bottom), add this line segment to the
-    // list; otherwise (on the right or top), remove it from the list.
-    PDCELHalfEdge *he = vi->edge();
-    do {
-      if (vi->point() < he->target()->point()) {
-        // vi is the left (or bottom) endpoint — add segment to active set.
-        PGeoLineSegment *ls = he->lineSegment();
-        if (ls == nullptr) {
-          auto it = temp_map.find(he);
-          if (it != temp_map.end()) {
-            ls = it->second;
-          } else {
-            ls = he->toLineSegment();
-            temp_map[he] = ls;
-            temp_map[he->twin()] = ls;
-            temp_segs.push_back(ls);
-          }
-        }
-        ls_list.push_back(ls);
-      } else {
-        // vi is the right (or top) endpoint — remove segment from active set.
-        PGeoLineSegment *ls = he->lineSegment();
-        if (ls == nullptr) {
-          auto it = temp_map.find(he);
-          if (it != temp_map.end()) {
-            ls = it->second;
-          }
-        }
-        if (ls != nullptr) {
-          ls_list.remove(ls);
-        }
-      }
-      he = he->twin()->next();
-    } while (he != nullptr && he != vi->edge());
-  }
-
-  return ls_list;
-}
-
-PDCELHalfEdge *PDCEL::findHalfEdgeBelowVertex(PDCELVertex *v) {
-  std::vector<PGeoLineSegment *> temp_segs;
-  std::list<PGeoLineSegment *> ls_list = findLineSegmentsAtSweepLine(v, temp_segs);
-
-  PDCELVertex *vt = new PDCELVertex(v->x(), v->y(), v->z() + 1);
-  PGeoLineSegment *ls_tmp = new PGeoLineSegment(v, vt);
-
-  PGeoLineSegment *ls_below = nullptr;
-  double u1 = INF, u2, u1_tmp;
-  double best_dist_sq = INF;
-  bool is_intersect;
-
-  for (auto lsit = ls_list.begin(); lsit != ls_list.end(); ++lsit) {
-    is_intersect = calcLineIntersection2D(ls_tmp, (*lsit), u1_tmp, u2, TOLERANCE);
-
-    if (is_intersect) {
-      // not parallel
-      if (u1_tmp < 0) {
-        // the intersection point is below the vertex
-        if (ls_below == nullptr || fabs(u1_tmp) < fabs(u1)) {
-          u1 = u1_tmp;
-          ls_below = (*lsit);
-          PDCELVertex *pt = (*lsit)->getParametricVertex(u2);
-          best_dist_sq = calcDistanceSquared(v, pt);
-          if (pt != (*lsit)->v1() && pt != (*lsit)->v2()) {
-            delete pt;
-          }
-        }
-      }
-    } else {
-      // parallel, i.e. the line segment is also vertical
-      if (!isCollinear(ls_tmp, (*lsit))) {
-        continue;
-      }
-
-      if ((*lsit)->vout()->point() < v->point()) {
-        double d = calcDistanceSquared(v, (*lsit)->vout());
-        if (ls_below == nullptr || d < best_dist_sq) {
-          ls_below = (*lsit);
-          best_dist_sq = d;
-          u1 = ls_tmp->getParametricLocation((*lsit)->vout());
-        }
-      }
-    }
-  }
-
-  delete ls_tmp;
-  delete vt;
-
-  // Resolve to a half-edge before temporary segments are freed.
-  PDCELHalfEdge *he_below = nullptr;
-  if (ls_below != nullptr) {
-    he_below = findHalfEdgeBetween(ls_below->vin(), ls_below->vout());
-  }
-
-  // Delete all temporary segments created during the sweep.
-  for (auto ls : temp_segs) {
-    delete ls;
-  }
-
-  return he_below;
-}

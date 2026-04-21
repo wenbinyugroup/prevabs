@@ -24,6 +24,19 @@
 #include <string>
 #include <vector>
 
+namespace {
+
+void deleteDetachedLineSegment(PGeoLineSegment *segment) {
+  if (segment == nullptr) {
+    return;
+  }
+  delete segment->v1();
+  delete segment->v2();
+  delete segment;
+}
+
+} // namespace
+
 // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
 // Splits DCEL edges in place. Returns the new intermediate vertices.
 std::vector<PDCELVertex *> Segment::splitBoundByLayup(
@@ -160,6 +173,7 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
 
     PDCELVertex *v_layer = findLayerIntersectionOnFace(
         v_layer_prev, _face, ls_offset, go_prev, bcfg);
+    deleteDetachedLineSegment(ls_offset);
 
     if (v_layer == nullptr) {
             g_msg->error("cannot find intersection");
@@ -207,23 +221,32 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
         (_base_offset_indices_pairs[0][0] == _base_offset_indices_pairs[1][0]);
 
     PGeoLineSegment *ls_base;
+    bool owns_ls_base_vertices = false;
     if (!use_offset_as_base) {
       ls_base = new PGeoLineSegment(
           _curve_base->vertices()[0], _curve_base->vertices()[1]);
     }
     else {
-            PLOG(debug) << "degenerated case";
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
           _curve_offset->vertices()[0], _curve_offset->vertices()[1]);
       int dir = (slayupside == "left") ? -1 : 1;
       ls_base = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
+      owns_ls_base_vertices = true;
+            PLOG(debug) << "degenerated case";
             PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
             PLOG(debug) << " ls_base: " + ls_base->printString();
+      delete ls_tmp;
     }
 
     bool go_prev = (slayupside == "left");
     prev_bound_vertices = buildOpenBoundLayerVertices(
         _curve_base->vertices()[0], ls_base, go_prev, bcfg);
+    if (owns_ls_base_vertices) {
+      deleteDetachedLineSegment(ls_base);
+    }
+    else {
+      delete ls_base;
+    }
   }
 
   g_msg->decreaseIndent();
@@ -292,6 +315,7 @@ void Segment::createIntermediateAreas(
     else if (_mat_orient_e2 == "layup") {
       area->setLocaly2(ls_layup->toVector());
     }
+    delete ls_layup;
 
     bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
     area->setPrevBoundVertices(prev_bound_vertices);
@@ -338,6 +362,7 @@ void Segment::buildLastArea(
   else if (_mat_orient_e2 == "layup") {
     area->setLocaly2(ls_layup->toVector());
   }
+  delete ls_layup;
 
   bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
   area->setPrevBoundVertices(prev_bound_vertices);
@@ -351,26 +376,35 @@ void Segment::buildLastArea(
         == _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 2][0]);
 
     PGeoLineSegment *ls_base_end;
+    bool owns_ls_base_end_vertices = false;
     if (!use_offset_as_base) {
       ls_base_end = new PGeoLineSegment(
           _curve_base->vertices()[_curve_base->vertices().size() - 2],
           _curve_base->vertices()[_curve_base->vertices().size() - 1]);
     }
     else {
-            PLOG(debug) << "degenerated case";
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
           _curve_offset->vertices()[_curve_base->vertices().size() - 2],
           _curve_offset->vertices()[_curve_base->vertices().size() - 1]);
       int dir = (slayupside == "left") ? 1 : -1;
       ls_base_end = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
+      owns_ls_base_end_vertices = true;
+            PLOG(debug) << "degenerated case";
             PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
             PLOG(debug) << " ls_base: " + ls_base_end->printString();
+      delete ls_tmp;
     }
 
     bool go_prev = (slayupside == "right");
     for (auto v : buildOpenBoundLayerVertices(
              _curve_base->vertices().back(), ls_base_end, go_prev, bcfg)) {
       area->addNextBoundVertex(v);
+    }
+    if (owns_ls_base_end_vertices) {
+      deleteDetachedLineSegment(ls_base_end);
+    }
+    else {
+      delete ls_base_end;
     }
   }
 

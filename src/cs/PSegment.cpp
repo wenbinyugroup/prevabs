@@ -22,9 +22,30 @@
 #include <list>
 #include <sstream>
 #include <string>
+#include <unordered_set>
+#include <utility>
 #include <vector>
 
 int Segment::count_tmp = 0;
+
+namespace {
+
+void deleteUnregisteredVertices(const std::vector<PDCELVertex *> &vertices) {
+  std::unordered_set<PDCELVertex *> visited;
+  for (PDCELVertex *vertex : vertices) {
+    if (vertex == nullptr) {
+      continue;
+    }
+    if (!visited.insert(vertex).second) {
+      continue;
+    }
+    if (!vertex->isRegistered()) {
+      delete vertex;
+    }
+  }
+}
+
+} // namespace
 
 // void calcBoundVertices(std::vector<PDCELVertex *> &, SVector3 &, SVector3 &,
 // Layup *);
@@ -37,6 +58,125 @@ std::ostream &operator<<(std::ostream &out, Segment *s) {
       << std::setw(32) << s->_layup->getName() << std::setw(16) << s->slayupside
       << std::setw(8) << s->slevel;
   return out;
+}
+
+Segment::~Segment() {
+  releaseOwnedResources();
+}
+
+Segment::Segment(Segment &&other) noexcept
+    : _name(std::move(other._name)),
+      _curve_base(other._curve_base),
+      _curve_offset(other._curve_offset),
+      _u_begin(other._u_begin),
+      _u_end(other._u_end),
+      _layup(other._layup),
+      _areas(std::move(other._areas)),
+      slayupside(std::move(other.slayupside)),
+      slevel(other.slevel),
+      _prev(other._prev),
+      _next(other._next),
+      _prev_bound(other._prev_bound),
+      _next_bound(other._next_bound),
+      _closed(other._closed),
+      _mat_orient_e1(std::move(other._mat_orient_e1)),
+      _mat_orient_e2(std::move(other._mat_orient_e2)),
+      _prev_bound_vertices(std::move(other._prev_bound_vertices)),
+      _next_bound_vertices(std::move(other._next_bound_vertices)),
+      _prev_bound_indices(std::move(other._prev_bound_indices)),
+      _next_bound_indices(std::move(other._next_bound_indices)),
+      _vertices_outer(std::move(other._vertices_outer)),
+      _face(other._face),
+      _free(other._free),
+      _head_vertex_offset(other._head_vertex_offset),
+      _tail_vertex_offset(other._tail_vertex_offset),
+      _inner_bounds_end(std::move(other._inner_bounds_end)),
+      _inner_bounds(std::move(other._inner_bounds)),
+      _inner_bounds_tt(std::move(other._inner_bounds_tt)),
+      _offset_vertices_link_to(std::move(other._offset_vertices_link_to)),
+      _offset_indices_base_link_to(
+          std::move(other._offset_indices_base_link_to)),
+      _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
+      _ib_begin(other._ib_begin),
+      _ib_end(other._ib_end),
+      _inner_bounds_dc(std::move(other._inner_bounds_dc)) {
+  other._curve_base = nullptr;
+  other._curve_offset = nullptr;
+  other._layup = nullptr;
+  other._prev = nullptr;
+  other._next = nullptr;
+  other._face = nullptr;
+  other._head_vertex_offset = nullptr;
+  other._tail_vertex_offset = nullptr;
+  other._areas.clear();
+}
+
+Segment &Segment::operator=(Segment &&other) noexcept {
+  if (this == &other) {
+    return *this;
+  }
+
+  releaseOwnedResources();
+
+  _name = std::move(other._name);
+  _curve_base = other._curve_base;
+  _curve_offset = other._curve_offset;
+  _u_begin = other._u_begin;
+  _u_end = other._u_end;
+  _layup = other._layup;
+  _areas = std::move(other._areas);
+  slayupside = std::move(other.slayupside);
+  slevel = other.slevel;
+  _prev = other._prev;
+  _next = other._next;
+  _prev_bound = other._prev_bound;
+  _next_bound = other._next_bound;
+  _closed = other._closed;
+  _mat_orient_e1 = std::move(other._mat_orient_e1);
+  _mat_orient_e2 = std::move(other._mat_orient_e2);
+  _prev_bound_vertices = std::move(other._prev_bound_vertices);
+  _next_bound_vertices = std::move(other._next_bound_vertices);
+  _prev_bound_indices = std::move(other._prev_bound_indices);
+  _next_bound_indices = std::move(other._next_bound_indices);
+  _vertices_outer = std::move(other._vertices_outer);
+  _face = other._face;
+  _free = other._free;
+  _head_vertex_offset = other._head_vertex_offset;
+  _tail_vertex_offset = other._tail_vertex_offset;
+  _inner_bounds_end = std::move(other._inner_bounds_end);
+  _inner_bounds = std::move(other._inner_bounds);
+  _inner_bounds_tt = std::move(other._inner_bounds_tt);
+  _offset_vertices_link_to = std::move(other._offset_vertices_link_to);
+  _offset_indices_base_link_to = std::move(other._offset_indices_base_link_to);
+  _base_offset_indices_pairs = std::move(other._base_offset_indices_pairs);
+  _ib_begin = other._ib_begin;
+  _ib_end = other._ib_end;
+  _inner_bounds_dc = std::move(other._inner_bounds_dc);
+
+  other._curve_base = nullptr;
+  other._curve_offset = nullptr;
+  other._layup = nullptr;
+  other._prev = nullptr;
+  other._next = nullptr;
+  other._face = nullptr;
+  other._head_vertex_offset = nullptr;
+  other._tail_vertex_offset = nullptr;
+  other._areas.clear();
+
+  return *this;
+}
+
+void Segment::releaseOwnedResources() {
+  for (PArea *area : _areas) {
+    delete area;
+  }
+  _areas.clear();
+
+  if (_curve_offset != nullptr) {
+    deleteUnregisteredVertices(_curve_offset->vertices());
+    delete _curve_offset;
+    _curve_offset = nullptr;
+  }
 }
 
 void Segment::print() {
@@ -181,6 +321,14 @@ void Segment::offsetCurveBase() {
   if (_curve_base->vertices().front() == _curve_base->vertices().back()) {
     _closed = true;
   }
+
+  if (_curve_offset != nullptr) {
+    deleteUnregisteredVertices(_curve_offset->vertices());
+    delete _curve_offset;
+    _curve_offset = nullptr;
+  }
+  _offset_indices_base_link_to.clear();
+  _base_offset_indices_pairs.clear();
 
   int side = 1;
   if (slayupside == "right") {

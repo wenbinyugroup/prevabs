@@ -10,7 +10,7 @@
   
   - reading input files
       - reading main input file: .\test\integration\t4_I\i_web.xml
-        - reading materials file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+        [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
         - reading materials file: .\test\integration\t4_I\materials.xml
   - reading input files -- done
   
@@ -54,5 +54,5 @@
 
 ========================================
 
-0:15)                      main.cpp:main:285
-[info]     total running time: 0.0534152 sec                             main.cpp:main:286
+3:26)                      main.cpp:main:285
+[info]     total running time: 0.049483 sec                              main.cpp:main:286

@@ -99,7 +99,7 @@ public:
   std::vector<LayerType *> getUsedLayerTypes() { return csusedlayertypes; }
   LayerType *getUsedLayerTypeByMaterialAngle(Material *, double);
   LayerType *getUsedLayerTypeByMaterialNameAngle(std::string, double);
-  std::vector<Segment> getSegments() { return cssegments; }
+  const std::vector<Segment> &getSegments() const { return cssegments; }
   // std::vector<Connection> getConnections() { return csconnections; }
   // std::vector<Filling> getFillings() { return csfillings; }
   std::list<PComponent *> components() { return _components; }
@@ -115,7 +115,7 @@ public:
   void addUsedMaterial(Material *);
   void addUsedLayerType(LayerType *);
 
-  void addSegment(Segment);
+  void addSegment(Segment &&);
   void addComponent(PComponent *);
 
   void sortComponents();

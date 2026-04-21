@@ -9,6 +9,16 @@ class PDCELHalfEdge;
 class PDCELHalfEdgeLoop;
 class PDCELFace;
 class PGeoLineSegment;
+struct BuilderConfig;
+
+#include <list>
+#include <vector>
+
+std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
+    const class PDCEL &dcel, PDCELVertex *v,
+    std::vector<PGeoLineSegment *> &temp_segs);
+PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
+                                       PDCELVertex *v);
 
 #include "declarations.hpp"
 #include "PDCELFace.hpp"
@@ -18,11 +28,9 @@ class PGeoLineSegment;
 #include "PGeoClasses.hpp"
 #include "globalVariables.hpp"
 
-#include <list>
 #include <memory>
 #include <set>
 #include <unordered_map>
-#include <vector>
 
 /// Comparator for PDCELVertex* — orders by geometric position (lexicographic
 /// x, y, z), matching the sort order required by the sweep-line algorithm.
@@ -60,18 +68,14 @@ private:
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
 
-  /// Find line segments intersecting the vertical sweep line passing the given vertex.
-  /// Temporary segments created for half-edges without a pre-existing line segment
-  /// are appended to temp_segs; the caller is responsible for deleting them.
-  std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
-      PDCELVertex *, std::vector<PGeoLineSegment *> &temp_segs);
-
-  /// Find the half-edge of the nearest segment below v, or nullptr if none.
-  /// All temporary segments allocated during the sweep are deleted before returning.
-  PDCELHalfEdge *findHalfEdgeBelowVertex(PDCELVertex *);
-
   /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.
   PDCELVertex *findCoincidentVertex(PDCELVertex *v) const;
+
+  friend std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
+      const PDCEL &dcel, PDCELVertex *v,
+      std::vector<PGeoLineSegment *> &temp_segs);
+  friend PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel,
+                                                PDCELVertex *v);
 
 public:
   PDCEL() = default;
@@ -135,6 +139,8 @@ public:
 
   /// Return the half-edge from v1 to v2, or nullptr if none exists.
   PDCELHalfEdge *findHalfEdgeBetween(PDCELVertex *v1, PDCELVertex *v2);
+  PDCELHalfEdge *findHalfEdgeBetween(PDCELVertex *v1,
+                                     PDCELVertex *v2) const;
 
   void addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices);
 

@@ -30,6 +30,7 @@ class PModel;
 #include <iostream>
 #include <list>
 #include <string>
+#include <utility>
 #include <vector>
 
 /** @ingroup cs
@@ -82,6 +83,7 @@ public:
   static int count_tmp;
 
   Segment(){};
+  ~Segment();
   Segment(std::string name, Baseline *p_baseline, Layup *p_layup,
           std::string layupside, int level = 1)
       : _name(name), _curve_base(p_baseline), _curve_offset(nullptr),
@@ -94,6 +96,10 @@ public:
     _ib_begin = 0;
     _ib_end = 0;
   }
+  Segment(const Segment &) = delete;
+  Segment &operator=(const Segment &) = delete;
+  Segment(Segment &&other) noexcept;
+  Segment &operator=(Segment &&other) noexcept;
   friend std::ostream &operator<<(std::ostream &, Segment *);
   void print();
   void printBaseOffsetLink();
@@ -187,6 +193,8 @@ public:
   void buildAreas(const BuilderConfig &);
 
 private:
+  void releaseOwnedResources();
+
   // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
   // Splits DCEL edges in place. Returns the new intermediate vertices.
   std::vector<PDCELVertex *> splitBoundByLayup(

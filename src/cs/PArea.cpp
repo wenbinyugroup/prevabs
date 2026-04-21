@@ -39,6 +39,11 @@ PArea::PArea(Segment *segment) {
   _line_segment_base = nullptr;
 }
 
+PArea::~PArea() {
+  delete _line_segment_base;
+  _line_segment_base = nullptr;
+}
+
 void PArea::print() {
   std::cout << "prev bound vector: " << _prev_bound << std::endl;
   std::cout << "prev bound vertices: " << std::endl;
