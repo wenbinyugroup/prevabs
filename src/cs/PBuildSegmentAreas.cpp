@@ -20,7 +20,6 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -138,9 +137,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
       bool not_parallel = calcLineIntersection2D(
           he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
 
-      std::stringstream ss_u1_tmp;
-      ss_u1_tmp << u1_tmp;
-            PLOG(debug) << "u1_tmp = " + ss_u1_tmp.str();
+            PLOG(debug) << "u1_tmp = " << u1_tmp;
 
       if (not_parallel) {
         if (fabs(u1_tmp) < bcfg.tol) {
@@ -203,9 +200,7 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
     cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
                 _layup->getLayers()[i].getStack();
 
-    std::stringstream ss;
-    ss << cumu_thk;
-        PLOG(debug) << "cumu_thk = " + ss.str();
+        PLOG(debug) << "cumu_thk = " << cumu_thk;
 
     PGeoLineSegment *ls_offset = offsetLineSegment(ls_base, offset_dir, cumu_thk);
         PLOG(debug) << "ls_offset: " + ls_offset->printString();
@@ -240,7 +235,7 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
 
   std::vector<PDCELVertex *> prev_bound_vertices;
 
-  if (_closed) {
+  if (closed()) {
         PLOG(debug) << "closed segment";
     prev_bound_vertices = splitBoundByLayup(
         _curve_base->vertices()[0], _curve_offset->vertices()[0], bcfg);
@@ -335,7 +330,7 @@ void Segment::createIntermediateAreas(
     }
 
     PGeoLineSegment *ls_base = buildAreaBaseSegmentFromPair(
-        _curve_base, _curve_offset, _base_offset_indices_pairs, k);
+        _curve_base, _curve_offset.get(), _base_offset_indices_pairs, k);
 
     area->setLineSegmentBase(ls_base);
 
@@ -357,7 +352,7 @@ void Segment::createIntermediateAreas(
       area->addNextBoundVertex(v);
     }
 
-    _areas.push_back(area);
+    _areas.emplace_back(area);
     prev_bound_vertices = area->nextBoundVertices();
   }
 
@@ -379,7 +374,7 @@ void Segment::buildLastArea(
 
   const std::size_t last_pair_index = _base_offset_indices_pairs.size() - 1;
   PGeoLineSegment *ls_base = buildAreaBaseSegmentFromPair(
-      _curve_base, _curve_offset, _base_offset_indices_pairs, last_pair_index);
+      _curve_base, _curve_offset.get(), _base_offset_indices_pairs, last_pair_index);
   area->setLineSegmentBase(ls_base);
 
   PGeoLineSegment *ls_layup = new PGeoLineSegment(
@@ -400,7 +395,7 @@ void Segment::buildLastArea(
   bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
   area->setPrevBoundVertices(prev_bound_vertices);
 
-  if (_closed) {
+  if (closed()) {
     area->setNextBoundVertices(first_bound_vertices);
   }
   else {
@@ -446,7 +441,7 @@ void Segment::buildLastArea(
   }
 
   g_msg->decreaseIndent();
-  _areas.push_back(area);
+  _areas.emplace_back(area);
 }
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
@@ -469,7 +464,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
 
   buildLastArea(prev_bound_vertices, first_bound_vertices, count, bcfg);
 
-  for (auto each_area : _areas) {
+  for (auto &each_area : _areas) {
     each_area->buildLayers(bcfg);
   }
   _state = LifecycleState::AreasBuilt;

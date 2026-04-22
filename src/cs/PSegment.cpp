@@ -1,19 +1,17 @@
 #include "PSegment.hpp"
 
 #include "Material.hpp"
+#include "PArea.hpp"
+#include "PBaseLine.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
-#include "PModelIO.hpp"
 #include "geo.hpp"
-#include "globalConstants.hpp"
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
-#include "utilities.hpp"
 #include "plog.hpp"
-
-#include "geo_types.hpp"
+#include "utilities.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -62,16 +60,13 @@ void deleteUnregisteredVertices(const std::vector<PDCELVertex *> &vertices) {
 
 } // namespace
 
-// void calcBoundVertices(std::vector<PDCELVertex *> &, SVector3 &, SVector3 &,
-// Layup *);
-
 std::ostream &operator<<(std::ostream &out, Segment *s) {
   if (scientific_format) {
     out << std::scientific;
   }
   out << std::setw(16) << s->_name << std::setw(16) << s->_curve_base->getName()
-      << std::setw(32) << s->_layup->getName() << std::setw(16) << s->slayupside
-      << std::setw(8) << s->slevel;
+      << std::setw(32) << s->_layup->getName() << std::setw(16) << s->_layupside
+      << std::setw(8) << s->_level;
   return out;
 }
 
@@ -82,40 +77,28 @@ Segment::~Segment() {
 Segment::Segment(Segment &&other) noexcept
     : _name(std::move(other._name)),
       _curve_base(other._curve_base),
-      _curve_offset(other._curve_offset),
-      _u_begin(other._u_begin),
-      _u_end(other._u_end),
+      _curve_offset(std::move(other._curve_offset)),
       _layup(other._layup),
       _areas(std::move(other._areas)),
-      slayupside(std::move(other.slayupside)),
-      slevel(other.slevel),
+      _layupside(std::move(other._layupside)),
+      _level(other._level),
       _prev(other._prev),
       _next(other._next),
       _prev_bound(other._prev_bound),
       _next_bound(other._next_bound),
-      _closed(other._closed),
       _mat_orient_e1(std::move(other._mat_orient_e1)),
       _mat_orient_e2(std::move(other._mat_orient_e2)),
       _prev_bound_vertices(std::move(other._prev_bound_vertices)),
       _next_bound_vertices(std::move(other._next_bound_vertices)),
       _prev_bound_indices(std::move(other._prev_bound_indices)),
       _next_bound_indices(std::move(other._next_bound_indices)),
-      _vertices_outer(std::move(other._vertices_outer)),
       _face(other._face),
       _free(other._free),
       _head_vertex_offset(other._head_vertex_offset),
       _tail_vertex_offset(other._tail_vertex_offset),
-      _inner_bounds_end(std::move(other._inner_bounds_end)),
-      _inner_bounds(std::move(other._inner_bounds)),
-      _inner_bounds_tt(std::move(other._inner_bounds_tt)),
-      _offset_vertices_link_to(std::move(other._offset_vertices_link_to)),
       _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
-      _ib_begin(other._ib_begin),
-      _ib_end(other._ib_end),
-      _inner_bounds_dc(std::move(other._inner_bounds_dc)),
       _state(other._state) {
   other._curve_base = nullptr;
-  other._curve_offset = nullptr;
   other._layup = nullptr;
   other._prev = nullptr;
   other._next = nullptr;
@@ -135,41 +118,29 @@ Segment &Segment::operator=(Segment &&other) noexcept {
 
   _name = std::move(other._name);
   _curve_base = other._curve_base;
-  _curve_offset = other._curve_offset;
-  _u_begin = other._u_begin;
-  _u_end = other._u_end;
+  _curve_offset = std::move(other._curve_offset);
   _layup = other._layup;
   _areas = std::move(other._areas);
-  slayupside = std::move(other.slayupside);
-  slevel = other.slevel;
+  _layupside = std::move(other._layupside);
+  _level = other._level;
   _prev = other._prev;
   _next = other._next;
   _prev_bound = other._prev_bound;
   _next_bound = other._next_bound;
-  _closed = other._closed;
   _mat_orient_e1 = std::move(other._mat_orient_e1);
   _mat_orient_e2 = std::move(other._mat_orient_e2);
   _prev_bound_vertices = std::move(other._prev_bound_vertices);
   _next_bound_vertices = std::move(other._next_bound_vertices);
   _prev_bound_indices = std::move(other._prev_bound_indices);
   _next_bound_indices = std::move(other._next_bound_indices);
-  _vertices_outer = std::move(other._vertices_outer);
   _face = other._face;
   _free = other._free;
   _head_vertex_offset = other._head_vertex_offset;
   _tail_vertex_offset = other._tail_vertex_offset;
-  _inner_bounds_end = std::move(other._inner_bounds_end);
-  _inner_bounds = std::move(other._inner_bounds);
-  _inner_bounds_tt = std::move(other._inner_bounds_tt);
-  _offset_vertices_link_to = std::move(other._offset_vertices_link_to);
   _base_offset_indices_pairs = std::move(other._base_offset_indices_pairs);
-  _ib_begin = other._ib_begin;
-  _ib_end = other._ib_end;
-  _inner_bounds_dc = std::move(other._inner_bounds_dc);
   _state = other._state;
 
   other._curve_base = nullptr;
-  other._curve_offset = nullptr;
   other._layup = nullptr;
   other._prev = nullptr;
   other._next = nullptr;
@@ -183,15 +154,11 @@ Segment &Segment::operator=(Segment &&other) noexcept {
 }
 
 void Segment::releaseOwnedResources() {
-  for (PArea *area : _areas) {
-    delete area;
-  }
   _areas.clear();
 
   if (_curve_offset != nullptr) {
     deleteUnregisteredVertices(_curve_offset->vertices());
-    delete _curve_offset;
-    _curve_offset = nullptr;
+    _curve_offset.reset();
   }
   _face = nullptr;
   _head_vertex_offset = nullptr;
@@ -215,17 +182,17 @@ bool Segment::requireBaseDefinition(const char *caller) const {
 }
 
 int Segment::requireValidLayupSide(const char *caller) const {
-  if (slayupside == "left") {
+  if (_layupside == "left") {
     return 1;
   }
-  if (slayupside == "right") {
+  if (_layupside == "right") {
     return -1;
   }
 
   const std::string message =
       std::string("Segment::") + caller
       + " requires layup side 'left' or 'right' but got '"
-      + slayupside + "' for segment '" + _name + "'";
+      + _layupside + "' for segment '" + _name + "'";
   PLOG(error) << message;
   assert(false && "Invalid segment layup side");
   return 0;
@@ -387,19 +354,15 @@ void Segment::printBaseOffsetPairs() {
 
     PLOG(debug) << "base vertices -- base_link_to_offset_indices";
 
-  // std::cout << _base_offset_indices_pairs.size() << std::endl;
     PLOG(debug) << "number of pairs: " + std::to_string(_base_offset_indices_pairs.size());
 
   for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
-    // std::cout << "        " << i << ": " << base[i]
-    // << " -- " << link_to_2[i] << std::endl;
     const BaseOffsetPair &pair = _base_offset_indices_pairs[i];
     std::string s = std::to_string(pair.base) + ": "
       + _curve_base->vertices()[pair.base]->printString()
       + " -- " + std::to_string(pair.offset) + ": "
       + _curve_offset->vertices()[pair.offset]->printString();
 
-    // std::cout << s << std::endl;
         PLOG(debug) << s;
   }
 
@@ -409,6 +372,10 @@ int Segment::layupSide() {
   // Sign convention used throughout offset/build/buildAreas:
   // +1 = offset/build on the left of the directed base curve, -1 = right.
   return requireValidLayupSide("layupSide");
+}
+
+bool Segment::closed() const {
+  return _curve_base != nullptr && _curve_base->isClosed();
 }
 
 PDCELVertex *Segment::getBeginVertex() {
@@ -428,19 +395,9 @@ SVector3 Segment::getEndTangent() {
                   _curve_base->vertices()[n - 1]->point());
 }
 
-// void Segment::setPModel(PModel *pmodel) { _pmodel = pmodel; }
+void Segment::addArea(PArea *area) { _areas.emplace_back(area); }
 
-void Segment::addArea(PArea *area) { _areas.push_back(area); }
-
-// void Segment::setLevel(int level) { slevel = level; }
-
-// void Segment::setPrevSegment(Segment *prev) { _prev = prev; }
-
-// void Segment::setNextSegment(Segment *next) { _next = next; }
-
-// void Segment::setPrevBound(SVector3 &prev) { _prev_bound = prev; }
-
-// void Segment::setNextBound(SVector3 &next) { _next_bound = next; }
+void Segment::setCurveOffset(Baseline *c) { _curve_offset.reset(c); }
 
 void Segment::setPrevBoundVertices(std::vector<PDCELVertex *> vertices) {
   _prev_bound_vertices = vertices;
@@ -465,28 +422,11 @@ void Segment::offsetCurveBase() {
     return;
   }
 
-  // if (config.debug) {
-  //   pmessage->print(9, "offsetting the base curve of segment: " + _name);
-  // }
-    PLOG(debug) << "offsetting the base curve of segment: " + _name;
-  // pmessage->print(9, "offsetting the base curve of segment: " + _name);
-
-  // std::cout << "\n[debug] base line:" << std::endl;
-  // for (auto v : _curve_base->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
-  if (_curve_base->vertices().front() == _curve_base->vertices().back()) {
-    _closed = true;
-  }
-  else {
-    _closed = false;
-  }
+  PLOG(debug) << "offsetting the base curve of segment: " + _name;
 
   if (_curve_offset != nullptr) {
     deleteUnregisteredVertices(_curve_offset->vertices());
-    delete _curve_offset;
-    _curve_offset = nullptr;
+    _curve_offset.reset();
   }
   _base_offset_indices_pairs.clear();
 
@@ -495,13 +435,7 @@ void Segment::offsetCurveBase() {
     return;
   }
 
-  // New offset function
-  // _curve_offset = new Baseline();
-  // offset2(_curve_base->vertices(), side, _layup->getTotalThickness(),
-  //        _curve_offset->vertices());
-
-  // Old offset function
-  _curve_offset = new Baseline();
+  _curve_offset.reset(new Baseline());
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
          _curve_offset->vertices(), _base_offset_indices_pairs);
   _face = nullptr;
@@ -511,29 +445,12 @@ void Segment::offsetCurveBase() {
   _state = LifecycleState::OffsetReady;
   validateStateInvariants("offsetCurveBase");
 
-  // if (config.debug) {
-  //   std::cout << "base line: " <<  _curve_base->vertices().front();
-  //   std::cout << " -> " <<  _curve_base->vertices().back() << std::endl;
-  //   std::cout << "offset line: " <<  _curve_offset->vertices().front();
-  //   std::cout << " -> " <<  _curve_offset->vertices().back() << std::endl;
-  // }
   PLOG(debug) << "base line: "
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
   PLOG(debug) << "offset line: "
     << _curve_offset->vertices().front()->printString() << " -> "
     << _curve_offset->vertices().back()->printString();
-
-  // std::cout << "\n[debug] curve _curve_offset:" << std::endl;
-  // for (auto v : _curve_offset->vertices()) {
-  //   std::cout << "        " << v << std::endl;
-  // }
-
-  // std::cout << "        _offset_vertices_link_to:" << std::endl;
-  // for (auto i = 0; i < _offset_vertices_link_to.size(); i++) {
-  //   std::cout << "        " << i << " -- " << _offset_vertices_link_to[i] << std::endl;
-  // }
-
 }
 
 void Segment::build(const BuilderConfig &bcfg) {
@@ -546,20 +463,11 @@ void Segment::build(const BuilderConfig &bcfg) {
   }
 
   if (bcfg.debug) {
-    // std::cout << "[debug] building the overall shape of segment: " << _name
-    //           << std::endl;
-    // fprintf(config.fdeb, "- building segment areas: %s\n", _name.c_str());
-    // pmessage->print(9, "building the overall shape of segment: " + _name);
-        PLOG(debug) << "building the overall shape of segment: " + _name;
-    // std::cout << "base line: " <<  _curve_base->vertices().front();
-    // std::cout << " -> " <<  _curve_base->vertices().back() << std::endl;
+    PLOG(debug) << "building the overall shape of segment: " + _name;
     PLOG(debug) << "base line: "
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
   }
-  // pmessage->print(9, "building the overall shape of segment: " + _name);
-
-  // printBaseOffsetLink();
 
   PDCELHalfEdge *he;
 
@@ -580,60 +488,29 @@ void Segment::build(const BuilderConfig &bcfg) {
       bcfg.dcel->addEdge(_curve_base->vertices()[i],
                                _curve_base->vertices()[i + 1]);
     }
-
   }
-  // _pmodel->dcel()->print_dcel();
 
-  // std::cout << "[debug] creating half edges for the offset curve" <<
-  // std::endl;
-  // if (config.debug) {
-  //   pmessage->print(9, "creating half edges for the offset curve");
-  // }
     PLOG(debug) << "creating half edges for the offset curve";
-  // pmessage->print(9, "creating half edges for the offset curve");
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
     bcfg.dcel->addEdge(_curve_offset->vertices()[i],
                              _curve_offset->vertices()[i + 1]);
   }
 
   // Create half edge loop and face
-  // if (config.debug) {
-  //   pmessage->print(9, "creating the half edge loop and face");
-  // }
     PLOG(debug) << "creating the half edge loop and face";
-  // pmessage->print(9, "creating the half edge loop and face");
   PDCELHalfEdgeLoop *hel;
   he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[0],
                                           _curve_base->vertices()[1]);
   if (requireValidLayupSide("build") < 0) {
     he = he->twin();
   }
-
-  // std::cout << "[debug] half edges of vertex " << he->target() << std::endl;
-  // he->target()->printAllLeavingHalfEdges();
-
-  // std::cout << "\n[debug] half edge he: " << he << std::endl;
   hel = bcfg.dcel->addHalfEdgeLoop(he);
-  // std::cout << "\nhalf edge loop:\n";
-  // std::cout << hel << std::endl;
 
   _face = bcfg.dcel->addFace(hel);
   bcfg.model->faceData(_face).name = _name + "_face";
-  // std::cout << "        face _face:" << std::endl;
-  // _face->print();
 
   bcfg.dcel->setLoopKept(hel, true);
   hel->setFace(_face);
   _state = LifecycleState::ShellBuilt;
   validateStateInvariants("build");
-
-  // for (auto f : _pmodel->dcel()->faces()) {
-  //   f->outer()->print2();
-  // }
-}
-
-// ===================================================================
-//                                                       Class Filling
-void Filling::setLayerType(LayerType *p_layertype) {
-  p_flayertype = p_layertype;
 }

@@ -211,7 +211,6 @@ int readXMLElementComponentLaminate(
       if (i_freeend == 0 || i_freeend == -1) {
         p_sgm_1->setFreeEnd(i_freeend);
       }
-      p_sgm_1->setClosed(false);
       p_sgm_1->setMatOrient1(p_component->getMatOrient1());
       p_sgm_1->setMatOrient2(p_component->getMatOrient2());
       p_component->addSegment(p_sgm_1);
@@ -220,7 +219,6 @@ int readXMLElementComponentLaminate(
       if (i_freeend == 1 || i_freeend == -1) {
         p_sgm_2->setFreeEnd(i_freeend);
       }
-      p_sgm_2->setClosed(false);
       p_sgm_2->setMatOrient1(p_component->getMatOrient1());
       p_sgm_2->setMatOrient2(p_component->getMatOrient2());
       p_component->addSegment(p_sgm_2);
@@ -232,7 +230,6 @@ int readXMLElementComponentLaminate(
       p_segment =
           new Segment(segmentName, p_baseline, p_layup, layupSide, 0);
       p_segment->setFreeEnd(i_freeend);
-      p_segment->setClosed(false);
       p_segment->setMatOrient1(p_component->getMatOrient1());
       p_segment->setMatOrient2(p_component->getMatOrient2());
 
@@ -672,8 +669,6 @@ int readXMLElementComponentLaminate(
       // p_sgm->setUBegin(v_u_begin[i]);
       // p_sgm->setUEnd(v_u_end[i]);
       p_sgm->setFreeEnd(i_freeend);
-      p_sgm->setClosed(false);
-
       p_sgm->setMatOrient1(p_component->getMatOrient1());
       p_sgm->setMatOrient2(p_component->getMatOrient2());
 

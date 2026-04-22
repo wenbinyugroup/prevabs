@@ -878,13 +878,13 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   // Trim head
   if (e == 0 && s->prevBound().normSq() != 0) {
 
-    SPoint3 sp0{s->getBaseline()->vertices().front()->point()};
+    SPoint3 sp0{s->curveBase()->vertices().front()->point()};
     SVector3 sv1{s->prevBound()};
     SPoint3 sp1{sp0 + sv1.point()};
     PDCELVertex *p = new PDCELVertex(sp1);
 
     std::vector<PDCELVertex *> b;
-    b.assign({s->getBaseline()->vertices().front(), p});
+    b.assign({s->curveBase()->vertices().front(), p});
 
     std::vector<int> i1s, i2s;
     std::vector<double> u1s, u2s;
@@ -921,13 +921,13 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   else if (e == 1 && s->nextBound().normSq() != 0) {
 
 
-    SPoint3 sp0{s->getBaseline()->vertices().back()->point()};
+    SPoint3 sp0{s->curveBase()->vertices().back()->point()};
     SVector3 sv1{s->nextBound()};
     SPoint3 sp1{sp0 + sv1.point()};
     PDCELVertex *p = new PDCELVertex(sp1);
 
     std::vector<PDCELVertex *> b;
-    b.assign({s->getBaseline()->vertices().back(), p});
+    b.assign({s->curveBase()->vertices().back(), p});
 
     std::vector<int> i1s, i2s;
     std::vector<double> u1s, u2s;
@@ -954,12 +954,12 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     trimCurveAtVertex(s->curveOffset()->vertices(), ip, CurveEnd::End);
 
         PLOG(debug) << "curve base:";
-    s->getBaseline()->print();
+    s->curveBase()->print();
         PLOG(debug) << "curve offset:";
     s->curveOffset()->print();
 
     // Adjust linking indices
-    int ls_i_base = static_cast<int>(s->getBaseline()->vertices().size());
+    int ls_i_base = static_cast<int>(s->curveBase()->vertices().size());
     int ls_i_offset = ls_i1;
     int _tmp_nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
 
@@ -973,18 +973,18 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
   }
 
     PLOG(debug) << "curve base:";
-  s->getBaseline()->print();
+  s->curveBase()->print();
     PLOG(debug) << "curve offset:";
   s->curveOffset()->print();
   s->printBaseOffsetPairs();
 
   if (e == 0) {
-    bcfg.dcel->addEdge(s->getBaseline()->vertices().front(),
+    bcfg.dcel->addEdge(s->curveBase()->vertices().front(),
                              s->curveOffset()->vertices().front());
     s->setHeadVertexOffset(s->curveOffset()->vertices().front());
   }
   else if (e == 1) {
-    bcfg.dcel->addEdge(s->getBaseline()->vertices().back(),
+    bcfg.dcel->addEdge(s->curveBase()->vertices().back(),
                              s->curveOffset()->vertices().back());
     s->setTailVertexOffset(s->curveOffset()->vertices().back());
   }

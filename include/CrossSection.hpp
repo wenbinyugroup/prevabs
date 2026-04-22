@@ -3,6 +3,7 @@
 #include "declarations.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"
+#include "PFilling.hpp"
 #include "PModel.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
@@ -17,7 +18,6 @@
 
 class Segment;
 // class Connection;
-class Filling;
 class PModel;
 class PComponent;
 

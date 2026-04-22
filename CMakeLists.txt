@@ -50,6 +50,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/cs/PBuildComponentLaminate.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PBuildSegmentAreas.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PComponent.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PFilling.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PModel.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PSegment.cpp
   ${CMAKE_SOURCE_DIR}/src/execu.cpp

@@ -1,6 +1,7 @@
 #include "overloadOperator.hpp"
 
 #include "Material.hpp"
+#include "PFilling.hpp"
 #include "PDCELVertex.hpp"
 #include "PSegment.hpp"
 #include "globalConstants.hpp"
@@ -118,7 +119,7 @@ std::ostream &operator<<(std::ostream &out, Segment &s) {
     out << std::scientific;
   }
   out << std::setw(16) << s.getName() << std::setw(16)
-      << s.getBaseline()->getName() << std::setw(32) << s.getLayup()->getName()
+      << s.curveBase()->getName() << std::setw(32) << s.getLayup()->getName()
       << std::setw(16) << s.getLayupside() << std::setw(8) << s.getLevel();
   return out;
 }
