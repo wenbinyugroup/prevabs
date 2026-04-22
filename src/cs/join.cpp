@@ -8,6 +8,7 @@
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
 #include "PBaseLine.hpp"
+#include "joinHelpers.hpp"
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -36,7 +37,66 @@ void assertValidBaseOffsetMap(
   assert(valid && "BaseOffsetMap staircase invariant violated");
 }
 
+
+
+
+
+static bool isAcceptableOffsetIntersection(
+    PGeoLineSegment *ls1, PGeoLineSegment *ls2,
+    const std::vector<PGeoLineSegment *> &lss1,
+    const std::vector<PGeoLineSegment *> &lss2,
+    double u1, double u2)
+{
+  if (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1) {
+    return true;
+  }
+
+  if (ls1 == lss1.front() || ls2 == lss2.front()) {
+    if (ls1 == lss1.front() && u1 < 0 &&
+        ls2 == lss2.front() && u2 < 0) {
+      return true;
+    }
+    if (ls1 == lss1.front() && u1 < 0 &&
+        u2 >= 0 && u2 <= 1) {
+      return true;
+    }
+    if (ls2 == lss2.front() && u2 < 0 &&
+        u1 >= 0 && u1 <= 1) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+
+
+
+static bool scanOffsetIntersectionCandidates(
+    PGeoLineSegment *&fixed_ls,
+    PGeoLineSegment *&moving_ls,
+    const std::vector<PGeoLineSegment *> &fixed_list,
+    const std::vector<PGeoLineSegment *> &moving_list,
+    double &u1_out, double &u2_out,
+    int &matched_index)
+{
+  for (int i = 0; i < moving_list.size(); ++i) {
+    moving_ls = moving_list[i];
+    calcLineIntersection2D(fixed_ls, moving_ls, u1_out, u2_out, TOLERANCE);
+    if (isAcceptableOffsetIntersection(
+            fixed_ls, moving_ls, fixed_list, moving_list, u1_out, u2_out)) {
+      matched_index = i;
+      return true;
+    }
+  }
+  return false;
+}
+
 } // namespace
+
+
+
 
 // Returns true if (ls_i_tmp, u1_tmp) is a better intersection than the
 // current best (ls_i_prev, u1) when searching from end `e` of a polyline.
@@ -59,6 +119,9 @@ static bool isBetterIntersection(
         || (u_on_seg && ls_i_tmp == ls_i_prev && u1_tmp < u1);
   }
 }
+
+
+
 
 // Finds the best-intersecting half-edge from `hels` against `vertices`,
 // working from end `e`. Returns the winning half-edge (nullptr if none found).
@@ -92,6 +155,9 @@ static PDCELHalfEdge *findBestIntersection(
   return he_tool;
 }
 
+
+
+
 // Returns the vertex at parametric position u2 on he's line segment.
 // Splits the DCEL edge at that position if u2 is not at an endpoint.
 static PDCELVertex *getOrSplitVertex(
@@ -102,6 +168,9 @@ static PDCELVertex *getOrSplitVertex(
   PDCELVertex *v = he->toLineSegment()->getParametricVertex(u2);
   return dcel->splitEdge(he, v);
 }
+
+
+
 
 // Finds the half-edge loops from already-built components that could
 // intersect a segment whose interior reference point is ref_vertex.
@@ -157,6 +226,10 @@ static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
   return hels;
 }
 
+
+
+
+
 struct TailTrimCaps {
   bool has_base_cap;
   bool has_offset_cap;
@@ -171,6 +244,10 @@ struct TailTrimCaps {
       : has_base_cap(true), has_offset_cap(true),
         base_cap(base_cap_value), offset_cap(offset_cap_value) {}
 };
+
+
+
+
 
 class BaseOffsetMapEditor {
 public:
@@ -324,6 +401,10 @@ private:
   std::string _caller;
 };
 
+
+
+
+
 // Intersects a segment's offset curve with the shared style-1 bound,
 // resolves the chosen intersection vertex, and trims the offset curve.
 static PDCELVertex *intersectAndTrimOffsetWithBound(
@@ -357,6 +438,10 @@ static PDCELVertex *intersectAndTrimOffsetWithBound(
   return v_new;
 }
 
+
+
+
+
 // Handles the step-like 2-segment joint by intersecting each segment's
 // offset curve with the shared angle-bisector bound and ordering the
 // resulting bound vertices.
@@ -370,16 +455,16 @@ static void joinStyle1(
   SVector3 b = calcAngleBisectVector(
       t1, t2, s1->getLayupside(), s2->getLayupside());
 
-  PDCELVertex *tmp_v = new PDCELVertex((v->point() + b).point());
+  PDCELVertex tmp_v((v->point() + b).point());
   // getIntersectionVertex mutates both input curves by inserting/replacing
   // the resolved intersection vertex. Keep one bound copy per segment so the
   // second intersection sees the same 2-vertex bisector as the original code.
   std::vector<PDCELVertex *> tmp_bound_1;
   std::vector<PDCELVertex *> tmp_bound_2;
   tmp_bound_1.push_back(v);
-  tmp_bound_1.push_back(tmp_v);
+  tmp_bound_1.push_back(&tmp_v);
   tmp_bound_2.push_back(v);
-  tmp_bound_2.push_back(tmp_v);
+  tmp_bound_2.push_back(&tmp_v);
 
   int ls_i1 = 0, ls_i2 = 0;
   double ls_bu1 = 0.0, ls_bu2 = 0.0;
@@ -421,6 +506,10 @@ static void joinStyle1(
     }
   }
 }
+
+
+
+
 
 // Sweeps outward from the requested ends of two offset curves and finds the
 // first acceptable intersection between their line segments.
@@ -474,67 +563,13 @@ static bool findOffsetCurvesIntersection(
     }
 
     ls1_out = lss1_out.back();
-    for (int i = 0; i < lss2_out.size(); ++i) {
-      ls2_out = lss2_out[i];
-      calcLineIntersection2D(ls1_out, ls2_out, u1_out, u2_out, TOLERANCE);
-      if (u1_out >= 0 && u1_out <= 1 && u2_out >= 0 && u2_out <= 1) {
-        found = true;
-        i2_out = i;
-        break;
-      }
-      if (ls1_out == lss1_out.front() || ls2_out == lss2_out.front()) {
-        if (ls1_out == lss1_out.front() && u1_out < 0 &&
-            ls2_out == lss2_out.front() && u2_out < 0) {
-          found = true;
-          i2_out = i;
-          break;
-        }
-        if (ls1_out == lss1_out.front() && u1_out < 0 &&
-            u2_out >= 0 && u2_out <= 1) {
-          found = true;
-          i2_out = i;
-          break;
-        }
-        if (ls2_out == lss2_out.front() && u2_out < 0 &&
-            u1_out >= 0 && u1_out <= 1) {
-          found = true;
-          i2_out = i;
-          break;
-        }
-      }
-    }
+    found = scanOffsetIntersectionCandidates(
+        ls1_out, ls2_out, lss1_out, lss2_out, u1_out, u2_out, i2_out);
 
     if (!found) {
       ls2_out = lss2_out.back();
-      for (int i = 0; i < lss1_out.size(); ++i) {
-        ls1_out = lss1_out[i];
-        calcLineIntersection2D(ls1_out, ls2_out, u1_out, u2_out, TOLERANCE);
-        if (u1_out >= 0 && u1_out <= 1 && u2_out >= 0 && u2_out <= 1) {
-          found = true;
-          i1_out = i;
-          break;
-        }
-        if (ls1_out == lss1_out.front() || ls2_out == lss2_out.front()) {
-          if (ls1_out == lss1_out.front() && u1_out < 0 &&
-              ls2_out == lss2_out.front() && u2_out < 0) {
-            found = true;
-            i1_out = i;
-            break;
-          }
-          if (ls1_out == lss1_out.front() && u1_out < 0 &&
-              u2_out >= 0 && u2_out <= 1) {
-            found = true;
-            i1_out = i;
-            break;
-          }
-          if (ls2_out == lss2_out.front() && u2_out < 0 &&
-              u1_out >= 0 && u1_out <= 1) {
-            found = true;
-            i1_out = i;
-            break;
-          }
-        }
-      }
+      found = scanOffsetIntersectionCandidates(
+          ls2_out, ls1_out, lss2_out, lss1_out, u2_out, u1_out, i1_out);
     }
 
     if (found || (i1_out == n1 - 2 && i2_out == n2 - 2)) {
@@ -552,6 +587,10 @@ static bool findOffsetCurvesIntersection(
   return found;
 }
 
+
+
+
+
 // Converts the winning style-2 segment parameters into the concrete
 // intersection vertex and updates the segment counters to vertex indices.
 static PDCELVertex *resolveIntersectionParams(
@@ -561,30 +600,23 @@ static PDCELVertex *resolveIntersectionParams(
   PDCELVertex *v_intersect = nullptr;
 
   if (fabs(u1_tmp) < TOLERANCE) {
-    i1 += 1;
     v_intersect = ls1->v1();
   }
   else if (fabs(1 - u1_tmp) < TOLERANCE) {
-    i1 += 2;
     v_intersect = ls1->v2();
   }
   else {
-    i1 += 1;
     v_intersect = ls1->getParametricVertex(u1_tmp);
   }
-
-  if (fabs(u2_tmp) < TOLERANCE) {
-    i2 += 1;
-  }
-  else if (fabs(1 - u2_tmp) < TOLERANCE) {
-    i2 += 2;
-  }
-  else {
-    i2 += 1;
-  }
+  i1 = advanceIntersectionVertexIndex(i1, u1_tmp, TOLERANCE);
+  i2 = advanceIntersectionVertexIndex(i2, u2_tmp, TOLERANCE);
 
   return v_intersect;
 }
+
+
+
+
 
 // Rebuilds both offset baselines after the style-2 intersection vertex
 // and vertex indices have been resolved.
@@ -626,6 +658,10 @@ static void buildTrimmedOffsetBaselines(
   s2->setCurveOffset(bl2_off_new);
 }
 
+
+
+
+
 // Handles the non-step 2-segment joint by finding the offset-curve
 // intersection, resolving the vertex, and rebuilding both offset baselines.
 static bool joinStyle2(
@@ -666,6 +702,10 @@ static bool joinStyle2(
   return true;
 }
  
+
+
+
+
 void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
 
@@ -813,6 +853,10 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
   s->printBaseOffsetPairs();
 }
 
+
+
+
+
 void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
   PDCELVertex *v, int style, const BuilderConfig &bcfg
@@ -871,6 +915,10 @@ void PComponent::joinSegments(
   }
 
 }
+
+
+
+
 
 void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bcfg) {
     PLOG(debug) << "createSegmentFreeEnd: " + s->getName() + " " + std::to_string(e);

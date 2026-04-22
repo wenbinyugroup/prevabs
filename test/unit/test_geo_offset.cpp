@@ -4,6 +4,7 @@
 // (JSONC data loader). No project headers, no Gmsh dependency.
 
 #include "catch_amalgamated.hpp"
+#include "joinHelpers.hpp"
 #include "test_common.hpp"
 #include "jsonc_loader.hpp"
 
@@ -338,6 +339,31 @@ TEST_CASE("trim link indices: head trim at ls_i2=1 removes nothing",
   }
   REQUIRE(link_b.size() == 3);
   CHECK(link_b[0] == 20);
+}
+
+TEST_CASE("join index advance: u=0 resolves to the segment start vertex",
+          "[geo][join]") {
+  CHECK(advanceIntersectionVertexIndex(3, 0.0, 1e-9) == 4);
+}
+
+TEST_CASE("join index advance: interior u resolves to the inserted vertex",
+          "[geo][join]") {
+  CHECK(advanceIntersectionVertexIndex(3, 0.25, 1e-9) == 4);
+}
+
+TEST_CASE("join index advance: u=1 resolves to the segment end vertex",
+          "[geo][join]") {
+  CHECK(advanceIntersectionVertexIndex(3, 1.0, 1e-9) == 5);
+}
+
+TEST_CASE("join index advance: values within tolerance of 0 use the start vertex",
+          "[geo][join]") {
+  CHECK(advanceIntersectionVertexIndex(3, 5e-10, 1e-9) == 4);
+}
+
+TEST_CASE("join index advance: values within tolerance of 1 use the end vertex",
+          "[geo][join]") {
+  CHECK(advanceIntersectionVertexIndex(3, 1.0 - 5e-10, 1e-9) == 5);
 }
 
 

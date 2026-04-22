@@ -9,7 +9,7 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t6_circle\circle.xml
+      - reading main input file: .\test\integration\t6_circle\circle_param_layup_range.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
         - reading materials file: .\test\integration\t6_circle\materials.xml
   - reading input files -- done
@@ -17,10 +17,10 @@
   
   - building the shape
     - building the cross section, step 1
-      - building component: in
+      - building component: wall
     
     - building the cross section, step 2
-      - building component details: in
+      - building component details: wall
   
     - fixing geometry
   - building the shape -- done
@@ -36,15 +36,15 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t6_circle\circle.opt
-    - writing gmsh .geo file: .\test\integration\t6_circle\circle.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t6_circle\circle.msh
-    - writing sg file: .\test\integration\t6_circle\circle.sg
+    - writing gmsh .opt file: .\test\integration\t6_circle\circle_param_layup_range.opt
+    - writing gmsh .geo file: .\test\integration\t6_circle\circle_param_layup_range.geo_unrolled
+    - writing gmsh .msh file: .\test\integration\t6_circle\circle_param_layup_range.msh
+    - writing sg file: .\test\integration\t6_circle\circle_param_layup_range.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t6_circle\circle.sg.mat
+    - writing material id-name file: .\test\integration\t6_circle\circle_param_layup_range.sg.mat
   - writing outputs -- done
   
   
@@ -55,5 +55,5 @@
 
 ========================================
 
-0:58)                      main.cpp:main:285
-[info]     total running time: 3.4255 sec                                main.cpp:main:286
+1:36)                      main.cpp:main:285
+[info]     total running time: 2.77924 sec                               main.cpp:main:286

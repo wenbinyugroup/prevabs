@@ -19,6 +19,81 @@
 #include <list>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <vector>
+
+namespace {
+
+enum class OrderVisitState {
+  unvisited,
+  visiting,
+  visited
+};
+
+static std::string formatDependencyCycle(
+    const std::vector<PComponent *> &stack, PComponent *node)
+{
+  std::ostringstream oss;
+  bool found = false;
+  for (auto component : stack) {
+    if (component == node) {
+      found = true;
+    }
+    if (found) {
+      if (oss.tellp() > 0) {
+        oss << " -> ";
+      }
+      oss << component->name();
+    }
+  }
+  if (oss.tellp() > 0) {
+    oss << " -> ";
+  }
+  oss << node->name();
+  return oss.str();
+}
+
+static int resolveComponentOrder(
+    PComponent *component,
+    std::unordered_map<PComponent *, OrderVisitState> &states,
+    std::vector<PComponent *> &stack,
+    bool &has_cycle)
+{
+  const std::unordered_map<PComponent *, OrderVisitState>::const_iterator it =
+      states.find(component);
+  const OrderVisitState state =
+      (it == states.end()) ? OrderVisitState::unvisited : it->second;
+
+  if (state == OrderVisitState::visited) {
+    return component->order();
+  }
+
+  if (state == OrderVisitState::visiting) {
+    PLOG(error) << "order: circular dependency detected: "
+                << formatDependencyCycle(stack, component);
+    has_cycle = true;
+    return 0;
+  }
+
+  states[component] = OrderVisitState::visiting;
+  stack.push_back(component);
+
+  int resolved_order = 1;
+  for (auto dependency : component->dependents()) {
+    resolved_order = std::max(
+        resolved_order,
+        resolveComponentOrder(dependency, states, stack, has_cycle) + 1);
+  }
+
+  stack.pop_back();
+  states[component] = OrderVisitState::visited;
+  if (!has_cycle) {
+    component->setOrder(resolved_order);
+  }
+  return resolved_order;
+}
+
+} // namespace
 
 int PComponent::count_tmp = 0;
 
@@ -51,15 +126,15 @@ void PComponent::print(int i_type, int /*i_indent*/) {
 
 int PComponent::order() {
   if (_order == 0) {
-    // Update the order
-    if (_dependencies.empty()) {
-      _order = 1;
-    } else {
-      for (auto dc : _dependencies) {
-        _order = std::max(_order, dc->order());
-      }
-      _order += 1;
+    std::unordered_map<PComponent *, OrderVisitState> states;
+    std::vector<PComponent *> stack;
+    bool has_cycle = false;
+    const int resolved_order =
+        resolveComponentOrder(this, states, stack, has_cycle);
+    if (has_cycle) {
+      return 0;
     }
+    _order = resolved_order;
   }
 
   return _order;

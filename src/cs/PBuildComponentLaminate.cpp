@@ -20,6 +20,25 @@
 #include <sstream>
 #include <string>
 
+namespace {
+
+static int resolveJointStyle(
+    Segment *seg, Segment *seg_p, int default_style,
+    const std::vector<std::vector<std::string>> &joint_segments,
+    const std::vector<int> &joint_styles)
+{
+  for (int jsi = 0; jsi < joint_segments.size(); ++jsi) {
+    if ((seg->getName() == joint_segments[jsi][0] &&
+         seg_p->getName() == joint_segments[jsi][1]) ||
+        (seg->getName() == joint_segments[jsi][1] &&
+         seg_p->getName() == joint_segments[jsi][0])) {
+      return joint_styles[jsi];
+    }
+  }
+  return default_style;
+}
+
+} // namespace
 
 void PComponent::buildLaminate(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
@@ -64,16 +83,8 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
         if (seg_p != seg) {
 
           if (seg->headVertexOffset() == nullptr) {
-            int js = _style;
-            for (int jsi = 0; jsi < _joint_segments.size(); ++jsi) {
-              if ((seg->getName() == _joint_segments[jsi][0] &&
-                    seg_p->getName() == _joint_segments[jsi][1]) ||
-                  (seg->getName() == _joint_segments[jsi][1] &&
-                    seg_p->getName() == _joint_segments[jsi][0])) {
-                js = _joint_styles[jsi];
-                break;
-              }
-            }
+            const int js = resolveJointStyle(
+                seg, seg_p, _style, _joint_segments, _joint_styles);
             if (seg->getBeginVertex() == seg_p->getBeginVertex()) {
               // Head to head
               found_begin = true;
@@ -87,16 +98,8 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
             }
           }
           if (seg->tailVertexOffset() == nullptr) {
-            int js = _style;
-            for (int jsi = 0; jsi < _joint_segments.size(); ++jsi) {
-              if ((seg->getName() == _joint_segments[jsi][0] &&
-                    seg_p->getName() == _joint_segments[jsi][1]) ||
-                  (seg->getName() == _joint_segments[jsi][1] &&
-                    seg_p->getName() == _joint_segments[jsi][0])) {
-                js = _joint_styles[jsi];
-                break;
-              }
-            }
+            const int js = resolveJointStyle(
+                seg, seg_p, _style, _joint_segments, _joint_styles);
             if (seg->getEndVertex() == seg_p->getBeginVertex()) {
               // Tail to head
               found_end = true;
@@ -141,6 +144,19 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
   // Build for each segment
   // Create half edge loops for each segment (outer boundary)
   for (auto seg : _segments) {
+    if (seg->headVertexOffset() == nullptr) {
+      PLOG(error) << "buildLaminate: missing head offset vertex"
+                  << " for segment '" << seg->getName()
+                  << "' in component '" << _name << "'";
+      return;
+    }
+
+    if (seg->tailVertexOffset() == nullptr) {
+      PLOG(error) << "buildLaminate: missing tail offset vertex"
+                  << " for segment '" << seg->getName()
+                  << "' in component '" << _name << "'";
+      return;
+    }
 
     seg->build(bcfg);
 

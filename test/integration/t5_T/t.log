@@ -8,48 +8,54 @@
 ========================================
 
   
+  - reading input files
+      - reading main input file: .\test\integration\t5_T\t.xml
+        [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+        - reading materials file: .\test\integration\t5_T\materials.xml
+  - reading input files -- done
   
   
+  - building the shape
+    - building the cross section, step 1
+      - building component: cpflange
+      - building component: cpwebl
     
+    - building the cross section, step 2
+      - building component details: cpflange
+      - building component details: cpwebl
+  
+    - fixing geometry
+  - building the shape -- done
   
   
+  - modeling in Gmsh
+      - creating gmsh vertices
+      - creating gmsh edges
+      - creating gmsh faces
+      - creating physical groups
+    - meshing
+  - modeling in Gmsh -- done
   
   
+  - writing outputs
+    - writing gmsh .opt file: .\test\integration\t5_T\t.opt
+    - writing gmsh .geo file: .\test\integration\t5_T\t.geo_unrolled
+    - writing gmsh .msh file: .\test\integration\t5_T\t.msh
+    - writing sg file: .\test\integration\t5_T\t.sg
+      - writing nodes
+      - writing elements
+        -   writing connectivity
+        -   writing local orientation
+    - writing material id-name file: .\test\integration\t5_T\t.sg.mat
+  - writing outputs -- done
   
   
+  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-delIOReadCrossSection.cpp:readCrossSection:69        - reading main input file: .\test\integration\t5_T\t.xml
-[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info] PModelIOReadMaterial.cpp:readMaterialsFile:59          - reading materials file: .\test\integration\t5_T\materials.xml
-[info] PModel.cpp:homogenize:287    - reading input files -- done
-[info] PModel.cpp:homogenize:295    - building the shape
-[info] CrossSection.cpp:build:174      - building the cross section, step 1
-[info] PComponent.cpp:build:91        - building component: cpflange
-[info] PComponent.cpp:build:91        - building component: cpwebl
-[info] CrossSection.cpp:build:216      - building the cross section, step 2
-[info] PComponent.cpp:buildDetails:126        - building component details: cpflange
-[info] PComponent.cpp:buildDetails:126        - building component details: cpwebl
-[info] PDCEL.cpp:fixGeometry:232      - fixing geometry
-[info] PModel.cpp:homogenize:299    - building the shape -- done
-[info] PModel.cpp:homogenize:307    - modeling in Gmsh
-[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
-[info] PModelBuildGmsh.cpp:createGmshEdges:176        - creating gmsh edges
-[info] PModelBuildGmsh.cpp:createGmshFaces:254        - creating gmsh faces
-[info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:390        - creating physical groups
-[info] PModelBuildGmsh.cpp:buildGmsh:515      - meshing
-[info] PModel.cpp:homogenize:311    - modeling in Gmsh -- done
-[info] PModel.cpp:homogenize:321    - writing outputs
-[info] PModelIOSG.cpp:writeSG:93      - writing sg file: .\test\integration\t5_T\t.sg
-[info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
-[info] PModelIOGmsh.cpp:writeElements:136        - writing elements
-[info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
-[info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
-[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: .\test\integration\t5_T\t.sg.mat
-[info] PModel.cpp:homogenize:334    - writing outputs -- done
-[info] main.cpp:main:285  - prevabs finished (2026-04-20 10:47:21)
-[info] main.cpp:main:286  total running time: 0.10755 sec
+2:04)                      main.cpp:main:285
+[info]     total running time: 3.812 sec                                 main.cpp:main:286

@@ -51,7 +51,8 @@ private:
   int _fill_side;
   Baseline *_fill_ref_baseline;
   PDCELFace *_fill_face;
-  double _fill_theta1, _fill_theta3;
+  double _fill_theta1 = 0.0;
+  double _fill_theta3 = 0.0;
 
   // Trim
   bool _trim_head{false};
