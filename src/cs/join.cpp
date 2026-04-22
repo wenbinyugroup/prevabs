@@ -21,10 +21,13 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <sstream>
 #include <string>
 
 namespace {
+
+using LineSegmentPtr = std::unique_ptr<PGeoLineSegment>;
 
 void assertValidBaseOffsetMap(
     const BaseOffsetMap &map, const std::string &caller)
@@ -43,24 +46,24 @@ void assertValidBaseOffsetMap(
 
 static bool isAcceptableOffsetIntersection(
     PGeoLineSegment *ls1, PGeoLineSegment *ls2,
-    const std::vector<PGeoLineSegment *> &lss1,
-    const std::vector<PGeoLineSegment *> &lss2,
+    const std::vector<LineSegmentPtr> &lss1,
+    const std::vector<LineSegmentPtr> &lss2,
     double u1, double u2)
 {
   if (u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1) {
     return true;
   }
 
-  if (ls1 == lss1.front() || ls2 == lss2.front()) {
-    if (ls1 == lss1.front() && u1 < 0 &&
-        ls2 == lss2.front() && u2 < 0) {
+  if (ls1 == lss1.front().get() || ls2 == lss2.front().get()) {
+    if (ls1 == lss1.front().get() && u1 < 0 &&
+        ls2 == lss2.front().get() && u2 < 0) {
       return true;
     }
-    if (ls1 == lss1.front() && u1 < 0 &&
+    if (ls1 == lss1.front().get() && u1 < 0 &&
         u2 >= 0 && u2 <= 1) {
       return true;
     }
-    if (ls2 == lss2.front() && u2 < 0 &&
+    if (ls2 == lss2.front().get() && u2 < 0 &&
         u1 >= 0 && u1 <= 1) {
       return true;
     }
@@ -76,13 +79,13 @@ static bool isAcceptableOffsetIntersection(
 static bool scanOffsetIntersectionCandidates(
     PGeoLineSegment *&fixed_ls,
     PGeoLineSegment *&moving_ls,
-    const std::vector<PGeoLineSegment *> &fixed_list,
-    const std::vector<PGeoLineSegment *> &moving_list,
+    const std::vector<LineSegmentPtr> &fixed_list,
+    const std::vector<LineSegmentPtr> &moving_list,
     double &u1_out, double &u2_out,
     int &matched_index)
 {
   for (int i = 0; i < moving_list.size(); ++i) {
-    moving_ls = moving_list[i];
+    moving_ls = moving_list[i].get();
     calcLineIntersection2D(fixed_ls, moving_ls, u1_out, u2_out, TOLERANCE);
     if (isAcceptableOffsetIntersection(
             fixed_ls, moving_ls, fixed_list, moving_list, u1_out, u2_out)) {
@@ -515,8 +518,8 @@ static void joinStyle1(
 // first acceptable intersection between their line segments.
 static bool findOffsetCurvesIntersection(
     Segment *s1, Segment *s2, int e1, int e2,
-    std::vector<PGeoLineSegment *> &lss1_out,
-    std::vector<PGeoLineSegment *> &lss2_out,
+    std::vector<LineSegmentPtr> &lss1_out,
+    std::vector<LineSegmentPtr> &lss2_out,
     PGeoLineSegment *&ls1_out, PGeoLineSegment *&ls2_out,
     double &u1_out, double &u2_out,
     int &i1_out, int &i2_out)
@@ -546,8 +549,8 @@ static bool findOffsetCurvesIntersection(
         v11 = s1->curveOffset()->vertices()[n1 - 1 - i1_out];
         v12 = s1->curveOffset()->vertices()[n1 - 2 - i1_out];
       }
-      ls1_out = new PGeoLineSegment(v11, v12);
-      lss1_out.push_back(ls1_out);
+      lss1_out.push_back(LineSegmentPtr(new PGeoLineSegment(v11, v12)));
+      ls1_out = lss1_out.back().get();
     }
 
     if (lss2_out.size() < n2 - 1) {
@@ -558,16 +561,16 @@ static bool findOffsetCurvesIntersection(
         v21 = s2->curveOffset()->vertices()[n2 - 1 - i2_out];
         v22 = s2->curveOffset()->vertices()[n2 - 2 - i2_out];
       }
-      ls2_out = new PGeoLineSegment(v21, v22);
-      lss2_out.push_back(ls2_out);
+      lss2_out.push_back(LineSegmentPtr(new PGeoLineSegment(v21, v22)));
+      ls2_out = lss2_out.back().get();
     }
 
-    ls1_out = lss1_out.back();
+    ls1_out = lss1_out.back().get();
     found = scanOffsetIntersectionCandidates(
         ls1_out, ls2_out, lss1_out, lss2_out, u1_out, u2_out, i2_out);
 
     if (!found) {
-      ls2_out = lss2_out.back();
+      ls2_out = lss2_out.back().get();
       found = scanOffsetIntersectionCandidates(
           ls2_out, ls1_out, lss2_out, lss1_out, u2_out, u1_out, i1_out);
     }
@@ -675,24 +678,19 @@ static bool joinStyle2(
   int i2 = 0;
   PGeoLineSegment *ls1 = nullptr;
   PGeoLineSegment *ls2 = nullptr;
-  std::vector<PGeoLineSegment *> lss1;
-  std::vector<PGeoLineSegment *> lss2;
+  std::vector<LineSegmentPtr> lss1;
+  std::vector<LineSegmentPtr> lss2;
 
   bool found = findOffsetCurvesIntersection(
       s1, s2, e1, e2, lss1, lss2, ls1, ls2, u1_tmp, u2_tmp, i1, i2);
 
   if (!found) {
-    for (auto p : lss1) delete p;
-    for (auto p : lss2) delete p;
     PLOG(debug) << "style 2: no intersection found between offset curves, skipping join.";
     return false;
   }
 
   PDCELVertex *v_intersect =
       resolveIntersectionParams(ls1, u1_tmp, u2_tmp, i1, i2);
-
-  for (auto p : lss1) delete p;
-  for (auto p : lss2) delete p;
 
   buildTrimmedOffsetBaselines(s1, s2, e1, e2, v_intersect, i1, i2);
 
@@ -706,7 +704,7 @@ static bool joinStyle2(
 
 
 
-void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const BuilderConfig &bcfg) {
+void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
 
   PLOG(debug) << "making segment end: " + s->getName() + " "

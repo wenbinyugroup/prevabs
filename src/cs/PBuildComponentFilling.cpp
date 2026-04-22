@@ -1,25 +1,15 @@
 #include "PComponent.hpp"
 
-#include "Material.hpp"
 #include "PDCEL.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
-#include "PSegment.hpp"
+#include "curve.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
-#include "globalVariables.hpp"
-#include "PBaseLine.hpp"
-#include "overloadOperator.hpp"
-#include "utilities.hpp"
 #include "plog.hpp"
 
-#include <algorithm>
 #include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <list>
-#include <sstream>
-#include <string>
 
 namespace {
 
@@ -83,7 +73,11 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
       for (auto hel : bcfg.dcel->halfedgeloops()) {
         if (!bcfg.dcel->isLoopKept(hel)) {
-          // he = findCurveLoopIntersection(bl, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
+          // Assumption: open filling baselines are trimmed/extended only from
+          // the leading segment at the head and the trailing segment at the
+          // tail. This does not search the full polyline for the earliest
+          // intersection; if internal vertices matter, this algorithm must be
+          // upgraded to use the whole baseline rather than just the end span.
           tmp_vertices = {bl->vertices()[0], bl->vertices()[1]};
           he = findCurveLoopIntersection(tmp_vertices, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
           if (he != nullptr) {
@@ -99,7 +93,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
             }
           }
 
-          // he = findCurveLoopIntersection(bl, hel, 1, ls_i, u1_tmp, u2_tmp, TOLERANCE);
+          // Same limitation for the tail search: only the last baseline span
+          // participates in the intersection test.
           tmp_vertices.clear();
           tmp_vertices = {bl->vertices()[bl->vertices().size() - 2], bl->vertices()[bl->vertices().size() - 1]};
           he = findCurveLoopIntersection(tmp_vertices, hel, 1, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);

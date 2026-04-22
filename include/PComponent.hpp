@@ -82,7 +82,7 @@ private:
   // void calcBoundingVertices(Segment *s1, PDCELVertex *v, Segment *s2);
 
   void createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &);
-  void joinSegments(Segment *s, int e, PDCELVertex *v, const BuilderConfig &);
+  void joinSegments(Segment *s, int e, const BuilderConfig &);
   void joinSegments(
       Segment *s1, Segment *s2, int e1, int e2,
       PDCELVertex *v, JointStyle style, const BuilderConfig &);
@@ -95,7 +95,7 @@ public:
   PComponent() : _order(0), _type(ComponentType::reserved) {};
 
   void print();
-  void print(int, int = 0);
+  void print(int /*i_type*/, int = 0);
 
   std::string name() { return _name; }
   std::vector<Segment *> segments() { return _laminate.segments; }
@@ -153,6 +153,8 @@ public:
   void addJointSegments(std::vector<std::string> sns) { _laminate.joint_segments.push_back(sns); }
 
   void build(const BuilderConfig &);
+  // Build post-outline details for laminate components. Filling components
+  // finish their geometry in build() and intentionally have no step-2 work.
   void buildDetails(const BuilderConfig &);
 };
 

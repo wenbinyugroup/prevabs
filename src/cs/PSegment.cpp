@@ -412,6 +412,16 @@ void Segment::offsetCurveBase() {
   if (!requireBaseDefinition("offsetCurveBase")) {
     return;
   }
+
+  if (_state == LifecycleState::OffsetReady) {
+    if (!validateStateInvariants("offsetCurveBase")) {
+      return;
+    }
+    PLOG(debug) << "offsetCurveBase: reusing existing offset curve for segment '"
+                << _name << "'";
+    return;
+  }
+
   if (_state == LifecycleState::ShellBuilt ||
       _state == LifecycleState::AreasBuilt) {
     const std::string message =
@@ -425,6 +435,8 @@ void Segment::offsetCurveBase() {
   PLOG(debug) << "offsetting the base curve of segment: " + _name;
 
   if (_curve_offset != nullptr) {
+    PLOG(error) << "Segment::offsetCurveBase found stale offset state for segment '"
+                << _name << "' while lifecycle state is BaseReady";
     deleteUnregisteredVertices(_curve_offset->vertices());
     _curve_offset.reset();
   }

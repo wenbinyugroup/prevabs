@@ -1,26 +1,13 @@
 #include "PComponent.hpp"
 
-#include "Material.hpp"
-#include "PDCEL.hpp"
-#include "PGeoClasses.hpp"
-#include "PSegment.hpp"
-#include "geo.hpp"
-#include "globalConstants.hpp"
-#include "globalVariables.hpp"
-#include "PBaseLine.hpp"
-#include "overloadOperator.hpp"
-#include "utilities.hpp"
 #include "plog.hpp"
+#include "utilities.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <list>
 #include <sstream>
-#include <string>
 #include <unordered_map>
-#include <vector>
 
 namespace {
 
@@ -104,7 +91,7 @@ void PComponent::print() {
             << std::endl;
 }
 
-void PComponent::print(int i_type, int /*i_indent*/) {
+void PComponent::print(int /*i_type*/, int /*i_indent*/) {
   MESSAGE_SCOPE(g_msg);
     PLOG(debug) << "name: " + _name;
     PLOG(debug) << "order: " + std::to_string(_order);
@@ -197,20 +184,27 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
   MESSAGE_SCOPE(g_msg);
 
-  if (_type == ComponentType::laminate) {
-
-        g_msg->print("building component details: " + _name);
-
-    for (auto sgm : _laminate.segments) {
-
-      sgm->buildAreas(bcfg);
-
-      if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(g_msg);
-
-    }
-
+  if (_type == ComponentType::fill) {
+    PLOG(debug) << "buildDetails: skipping filling component '" << _name
+                << "' because step 2 only builds laminate segment areas.";
+    return;
   }
 
+  if (_type != ComponentType::laminate) {
+    PLOG(error) << "buildDetails: unsupported component type for '" << _name
+                << "'";
+    return;
+  }
+
+      g_msg->print("building component details: " + _name);
+
+  for (auto sgm : _laminate.segments) {
+
+    sgm->buildAreas(bcfg);
+
+    if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(g_msg);
+
+  }
 }
 
 

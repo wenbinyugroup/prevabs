@@ -283,6 +283,29 @@ TEST_CASE("buildFilling: open baseline is split onto the enclosing boundary",
   CHECK(fixture.dcel.findHalfEdgeBetween(mid_vertex, right_split) != nullptr);
 }
 
+TEST_CASE("buildDetails: filling component is an explicit no-op",
+          "[dcel][component][fill][details]") {
+  FillComponentFixture fixture;
+
+  PComponent component;
+  component.setName("fill_details_skip");
+  component.setType(ComponentType::fill);
+  component.setFillMaterial(&fixture.material);
+  component.setFillLayertype(&fixture.fill_layertype);
+  component.setFillFace(nullptr);
+
+  const std::size_t faces_before = fixture.dcel.faces().size();
+  const std::size_t edges_before = fixture.dcel.halfedges().size();
+  const std::size_t loops_before = fixture.dcel.halfedgeloops().size();
+
+  component.buildDetails(fixture.bcfg);
+
+  CHECK(component.fillface() == nullptr);
+  CHECK(fixture.dcel.faces().size() == faces_before);
+  CHECK(fixture.dcel.halfedges().size() == edges_before);
+  CHECK(fixture.dcel.halfedgeloops().size() == loops_before);
+}
+
 TEST_CASE("buildLaminate: unresolved connected end aborts before shell build",
           "[dcel][component][laminate][failure]") {
   LaminateComponentFixture fixture;
@@ -507,6 +530,33 @@ TEST_CASE("buildAreas: last area uses final pair instead of area count",
   CHECK(y1[0] == Catch::Approx(0.0));
   CHECK(y1[1] == Catch::Approx(0.5));
   CHECK(y1[2] == Catch::Approx(0.0));
+}
+
+TEST_CASE("offsetCurveBase: repeated pre-build calls reuse the same offset curve",
+          "[dcel][segment][offset]") {
+  Material material("mat");
+  Lamina lamina("lam", &material, 1.0);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("base", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.0, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 2.0, 0.0));
+
+  Segment segment("seg", &base, &layup, "left", 1);
+
+  segment.offsetCurveBase();
+  Baseline *first_offset = segment.curveOffset();
+  REQUIRE(first_offset != nullptr);
+  const std::size_t offset_vertex_count = first_offset->vertices().size();
+  const std::size_t pair_count = segment.baseOffsetIndicesPairs().size();
+
+  segment.offsetCurveBase();
+
+  CHECK(segment.curveOffset() == first_offset);
+  CHECK(segment.curveOffset()->vertices().size() == offset_vertex_count);
+  CHECK(segment.baseOffsetIndicesPairs().size() == pair_count);
 }
 
 TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",

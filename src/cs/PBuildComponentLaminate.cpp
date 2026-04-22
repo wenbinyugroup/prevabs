@@ -1,24 +1,11 @@
 #include "PComponent.hpp"
 
-#include "Material.hpp"
 #include "PDCEL.hpp"
-#include "PGeoClasses.hpp"
-#include "PSegment.hpp"
-#include "geo.hpp"
 #include "globalConstants.hpp"
-#include "globalVariables.hpp"
-#include "PBaseLine.hpp"
-#include "overloadOperator.hpp"
-#include "utilities.hpp"
 #include "plog.hpp"
+#include "utilities.hpp"
 
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <sstream>
-#include <string>
+#include <vector>
 
 namespace {
 
@@ -83,9 +70,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
   for (auto seg : laminate.segments) {
 
     // seg->curveBase()->print(pmessage, 9);
-    if (seg->curveOffset() == nullptr) {
-      seg->offsetCurveBase();
-    }
+    seg->offsetCurveBase();
 
     // std::cout << "base line: " <<  seg->curveBase()->vertices().front();
     // std::cout << " -> " <<  seg->curveBase()->vertices().back() << std::endl;
@@ -113,9 +98,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
         seg->tailVertexOffset() == nullptr) {
       // Check if the segment connects to any other segment or is a free end
       for (auto seg_p : laminate.segments) {
-        if (seg_p->curveOffset() == nullptr) {
-          seg_p->offsetCurveBase();
-        }
+        seg_p->offsetCurveBase();
 
         if (seg_p != seg) {
 
@@ -127,12 +110,10 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
               // Head to head
               found_begin = true;
               joinSegments(seg, seg_p, 0, 0, seg->getBeginVertex(), js, bcfg);
-              // break;
             } else if (seg->getBeginVertex() == seg_p->getEndVertex()) {
               // Head to tail
               found_begin = true;
               joinSegments(seg, seg_p, 0, 1, seg->getBeginVertex(), js, bcfg);
-              // break;
             }
           }
           if (seg->tailVertexOffset() == nullptr) {
@@ -143,12 +124,10 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
               // Tail to head
               found_end = true;
               joinSegments(seg, seg_p, 1, 0, seg->getEndVertex(), js, bcfg);
-              // break;
             } else if (seg->getEndVertex() == seg_p->getEndVertex()) {
               // Tail to tail
               found_end = true;
               joinSegments(seg, seg_p, 1, 1, seg->getEndVertex(), js, bcfg);
-              // break;
             }
           }
         }
@@ -166,7 +145,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
           seg == first_segment && first_segment != last_segment;
       if (seg->headVertexOffset() == nullptr && !found_begin &&
           !is_cyclic_head) {
-        joinSegments(seg, 0, seg->getBeginVertex(), bcfg);
+        joinSegments(seg, 0, bcfg);
       }
 
       // seg->curveBase()->print(pmessage, 9);
@@ -176,7 +155,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
           seg == last_segment && first_segment != last_segment;
       if (seg->tailVertexOffset() == nullptr && !found_end &&
           !is_cyclic_tail) {
-        joinSegments(seg, 1, seg->getEndVertex(), bcfg);
+        joinSegments(seg, 1, bcfg);
       }
 
       // seg->curveBase()->print(pmessage, 9);

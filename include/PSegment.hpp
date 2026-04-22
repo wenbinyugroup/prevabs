@@ -25,8 +25,8 @@ class Segment {
 public:
   // Segment lifecycle is strictly ordered:
   // BaseReady -> OffsetReady -> ShellBuilt -> AreasBuilt.
-  // offsetCurveBase() may be re-run only before build(); build() and
-  // buildAreas() are single-use transitions.
+  // offsetCurveBase() is idempotent while the segment remains OffsetReady;
+  // build() and buildAreas() are single-use transitions.
   enum class LifecycleState {
     BaseReady,
     OffsetReady,
@@ -165,6 +165,7 @@ public:
 
   void setPDCELFace(PDCELFace *face) { _face = face; }
 
+  // Build the offset curve once. Repeated calls before build() are no-ops.
   void offsetCurveBase();
 
   void build(const BuilderConfig &);
