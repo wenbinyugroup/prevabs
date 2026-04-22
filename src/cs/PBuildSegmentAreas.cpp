@@ -35,13 +35,23 @@ void deleteDetachedLineSegment(PGeoLineSegment *segment) {
   delete segment;
 }
 
+bool usesOffsetAsBaseAtPair(
+    const BaseOffsetMap &pairs, std::size_t pair_index) {
+  // Repeated base indices mean the staircase map advanced only on the offset
+  // side at this step. Geometrically, the laminate consumed offset length
+  // while the base curve stayed on the same vertex, so the local "base" edge
+  // for area construction must come from the offset curve instead.
+  return pair_index > 0
+         && pairs[pair_index].base == pairs[pair_index - 1].base;
+}
+
 PGeoLineSegment *buildAreaBaseSegmentFromPair(
     Baseline *curve_base, Baseline *curve_offset,
     const BaseOffsetMap &pairs, std::size_t pair_index) {
   const int vbi = pairs[pair_index].base;
   const int voi = pairs[pair_index].offset;
   const bool use_offset_as_base =
-      (pair_index > 0 && vbi == pairs[pair_index - 1].base);
+      usesOffsetAsBaseAtPair(pairs, pair_index);
 
   if (!use_offset_as_base) {
     return new PGeoLineSegment(
@@ -52,6 +62,18 @@ PGeoLineSegment *buildAreaBaseSegmentFromPair(
   return new PGeoLineSegment(
       curve_offset->vertices()[voi - 1],
       curve_offset->vertices()[voi]);
+}
+
+bool traversesPrevOnHeadBound(int layup_side) {
+  // Open-bound traversal starts from the base vertex and then walks the
+  // current face boundary until it meets the offset-side endpoint.
+  // The head and tail see opposite boundary orientations, so the correct
+  // traversal direction is intentionally inverted between the two ends.
+  return layup_side > 0;
+}
+
+bool traversesPrevOnTailBound(int layup_side) {
+  return layup_side < 0;
 }
 
 } // namespace
@@ -172,7 +194,7 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
   std::vector<PDCELVertex *> layer_vertices;
   PDCELVertex *v_layer_prev = v_start;
   double cumu_thk = 0;
-  int offset_dir = (slayupside == "left") ? 1 : -1;
+  const int offset_dir = layupSide();
 
   g_msg->increaseIndent();
   for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
@@ -234,8 +256,9 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
         PLOG(debug) << 
         "first vertex of the offset: " + vo->printString();
 
-    bool use_offset_as_base =
-        (_base_offset_indices_pairs[0].base == _base_offset_indices_pairs[1].base);
+    const bool use_offset_as_base =
+        usesOffsetAsBaseAtPair(_base_offset_indices_pairs, 1);
+    const int layup_side = layupSide();
 
     PGeoLineSegment *ls_base;
     bool owns_ls_base_vertices = false;
@@ -244,9 +267,12 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
           _curve_base->vertices()[0], _curve_base->vertices()[1]);
     }
     else {
+      // Degenerate head case: the first staircase step stays on base vertex 0,
+      // so the physical head thickness stack must be generated from the offset
+      // edge and translated back by the total laminate thickness.
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
           _curve_offset->vertices()[0], _curve_offset->vertices()[1]);
-      int dir = (slayupside == "left") ? -1 : 1;
+      const int dir = -layup_side;
       ls_base = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
       owns_ls_base_vertices = true;
             PLOG(debug) << "degenerated case";
@@ -255,7 +281,7 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
       delete ls_tmp;
     }
 
-    bool go_prev = (slayupside == "left");
+    const bool go_prev = traversesPrevOnHeadBound(layup_side);
     prev_bound_vertices = buildOpenBoundLayerVertices(
         _curve_base->vertices()[0], ls_base, go_prev,
         _curve_offset->vertices().front(), bcfg);
@@ -282,6 +308,7 @@ void Segment::createIntermediateAreas(
 
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
         PLOG(debug) << "area " + std::to_string(k);
+    const int layup_side = layupSide();
 
     int vbi_tmp = _base_offset_indices_pairs[k].base;
     int voi_tmp = _base_offset_indices_pairs[k].offset;
@@ -298,11 +325,11 @@ void Segment::createIntermediateAreas(
 
     PArea *area = new PArea(this);
     count++;
-    if (slayupside == "left") {
+    if (layup_side > 0) {
       area->setFace(new_faces.front());
       _face = new_faces.back();
     }
-    else if (slayupside == "right") {
+    else {
       area->setFace(new_faces.back());
       _face = new_faces.front();
     }
@@ -377,9 +404,9 @@ void Segment::buildLastArea(
     area->setNextBoundVertices(first_bound_vertices);
   }
   else {
-    bool use_offset_as_base = (
-        _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 1].base
-        == _base_offset_indices_pairs[_base_offset_indices_pairs.size() - 2].base);
+    const bool use_offset_as_base =
+        usesOffsetAsBaseAtPair(_base_offset_indices_pairs, last_pair_index);
+    const int layup_side = layupSide();
 
     PGeoLineSegment *ls_base_end;
     bool owns_ls_base_end_vertices = false;
@@ -389,10 +416,13 @@ void Segment::buildLastArea(
           _curve_base->vertices()[_curve_base->vertices().size() - 1]);
     }
     else {
+      // Degenerate tail case: the last staircase step stays on the previous
+      // base vertex, so the closing bound is anchored on the offset edge and
+      // shifted back to recover the effective base-side construction segment.
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
           _curve_offset->vertices()[_curve_base->vertices().size() - 2],
           _curve_offset->vertices()[_curve_base->vertices().size() - 1]);
-      int dir = (slayupside == "left") ? 1 : -1;
+      const int dir = layup_side;
       ls_base_end = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
       owns_ls_base_end_vertices = true;
             PLOG(debug) << "degenerated case";
@@ -401,7 +431,7 @@ void Segment::buildLastArea(
       delete ls_tmp;
     }
 
-    bool go_prev = (slayupside == "right");
+    const bool go_prev = traversesPrevOnTailBound(layup_side);
     for (auto v : buildOpenBoundLayerVertices(
              _curve_base->vertices().back(), ls_base_end, go_prev,
              _curve_offset->vertices().back(), bcfg)) {

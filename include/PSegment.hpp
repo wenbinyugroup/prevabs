@@ -58,12 +58,21 @@ private:
 
   Layup *_layup;
   std::vector<PArea *> _areas;
+  // Layup offset side relative to the directed base curve:
+  // "left" means positive offset from base start -> end,
+  // "right" means negative offset.
   std::string slayupside;
   int slevel;
   Segment *_prev, *_next;
   SVector3 _prev_bound, _next_bound;
   bool _closed;
 
+  // Local material-axis selectors used when each PArea assigns face axes.
+  // e1/e2 are interpreted relative to the area geometry created from this
+  // segment:
+  // - "baseline": tangent of the local base-side segment of the area
+  // - "layup":    through-thickness connector from base side to offset side
+  // - "normal":   cross-section normal (the global x1 direction)
   std::string _mat_orient_e1{"normal"};
   std::string _mat_orient_e2{"baseline"};
 
@@ -127,6 +136,8 @@ public:
   std::string getLayupside() { return slayupside; }
   int getLevel() { return slevel; }
   int free() { return _free; }
+  // Returns +1 for "left" and -1 for "right" with respect to the directed
+  // base curve. Invalid values assert via requireValidLayupSide().
   int layupSide();
   bool closed() { return _closed; }
 
@@ -161,6 +172,10 @@ public:
 
   PDCELFace *face() { return _face; }
 
+  // Material orientation selectors consumed during area construction.
+  // Typical values are:
+  // - e1: "normal" or "baseline"
+  // - e2: "baseline" or "layup"
   void setMatOrient1(std::string orient) { _mat_orient_e1 = orient; }
   void setMatOrient2(std::string orient) { _mat_orient_e2 = orient; }
 
@@ -205,6 +220,7 @@ public:
 
 private:
   bool requireBaseDefinition(const char *caller) const;
+  int requireValidLayupSide(const char *caller) const;
   bool requireOffsetCurve(const char *caller) const;
   bool requireStateAtLeast(
       LifecycleState minimum_state, const char *caller) const;

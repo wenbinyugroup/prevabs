@@ -214,6 +214,23 @@ bool Segment::requireBaseDefinition(const char *caller) const {
   return false;
 }
 
+int Segment::requireValidLayupSide(const char *caller) const {
+  if (slayupside == "left") {
+    return 1;
+  }
+  if (slayupside == "right") {
+    return -1;
+  }
+
+  const std::string message =
+      std::string("Segment::") + caller
+      + " requires layup side 'left' or 'right' but got '"
+      + slayupside + "' for segment '" + _name + "'";
+  PLOG(error) << message;
+  assert(false && "Invalid segment layup side");
+  return 0;
+}
+
 bool Segment::requireStateAtLeast(
     LifecycleState minimum_state, const char *caller) const {
   if (static_cast<int>(_state) >= static_cast<int>(minimum_state)) {
@@ -389,12 +406,9 @@ void Segment::printBaseOffsetPairs() {
 }
 
 int Segment::layupSide() {
-  if (slayupside == "left") {
-    return 1;
-  } else if (slayupside == "right") {
-    return -1;
-  }
-  return 0;
+  // Sign convention used throughout offset/build/buildAreas:
+  // +1 = offset/build on the left of the directed base curve, -1 = right.
+  return requireValidLayupSide("layupSide");
 }
 
 PDCELVertex *Segment::getBeginVertex() {
@@ -476,9 +490,9 @@ void Segment::offsetCurveBase() {
   }
   _base_offset_indices_pairs.clear();
 
-  int side = 1;
-  if (slayupside == "right") {
-    side = -1;
+  const int side = requireValidLayupSide("offsetCurveBase");
+  if (side == 0) {
+    return;
   }
 
   // New offset function
@@ -591,7 +605,7 @@ void Segment::build(const BuilderConfig &bcfg) {
   PDCELHalfEdgeLoop *hel;
   he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[0],
                                           _curve_base->vertices()[1]);
-  if (slayupside == "right") {
+  if (requireValidLayupSide("build") < 0) {
     he = he->twin();
   }
 
