@@ -23,6 +23,16 @@
 
 using namespace rapidxml;
 
+namespace {
+
+static bool parseBoolAttributeValue(const std::string &value)
+{
+  const std::string lowered = lowerString(value);
+  return lowered == "1" || lowered == "true" || lowered == "yes"
+      || lowered == "on";
+}
+
+} // namespace
 
 PComponent *readXMLElementComponent(
   const xml_node<> *xn_component, std::vector<std::vector<std::string>> &dependents_all,
@@ -73,6 +83,14 @@ PComponent *readXMLElementComponent(
     }
   }
   p_component->setStyle(cmp_style);
+
+  xml_attribute<> *p_xa_cycle = xn_component->first_attribute("cycle");
+  if (p_xa_cycle == nullptr) {
+    p_xa_cycle = xn_component->first_attribute("cyclic");
+  }
+  if (p_xa_cycle) {
+    p_component->setCycle(parseBoolAttributeValue(p_xa_cycle->value()));
+  }
 
   // Record the dependency relations between components (names only)
   std::vector<std::string> tmp_dependents_one;

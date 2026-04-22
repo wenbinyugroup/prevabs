@@ -198,6 +198,7 @@ TEST_CASE("buildFilling: open baseline without loop intersection returns early",
   component.setName("fill_no_intersection");
   component.setType(ComponentType::fill);
   component.setFillMaterial(&fixture.material);
+  component.setFillLayertype(&fixture.fill_layertype);
   component.setFillFace(nullptr);
 
   PDCELVertex location(0.0, 2.0, 2.0);
@@ -228,6 +229,7 @@ TEST_CASE("buildFilling: outside fill location does not create a face",
   component.setName("fill_outside");
   component.setType(ComponentType::fill);
   component.setFillMaterial(&fixture.material);
+  component.setFillLayertype(&fixture.fill_layertype);
   component.setFillFace(nullptr);
 
   PDCELVertex location(0.0, 5.0, 2.0);
@@ -249,6 +251,7 @@ TEST_CASE("buildFilling: open baseline is split onto the enclosing boundary",
   component.setName("fill_split");
   component.setType(ComponentType::fill);
   component.setFillMaterial(&fixture.material);
+  component.setFillLayertype(&fixture.fill_layertype);
   component.setFillFace(nullptr);
 
   PDCELVertex location(0.0, 2.0, 3.0);
@@ -321,6 +324,55 @@ TEST_CASE("buildLaminate: unresolved connected end aborts before shell build",
   CHECK(fixture.dcel.halfedgeloops().size() == loops_before);
   CHECK(fixture.dcel.findHalfEdgeBetween(shared, east) == nullptr);
   CHECK(fixture.dcel.findHalfEdgeBetween(shared, west) == nullptr);
+}
+
+TEST_CASE("buildLaminate: cyclic component closes first and last segments",
+          "[dcel][component][laminate][cycle]") {
+  LaminateComponentFixture fixture;
+
+  PDCELVertex *a_head = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *b = new PDCELVertex(0.0, 2.0, 0.0);
+  PDCELVertex *c = new PDCELVertex(0.0, 1.0, 2.0);
+  PDCELVertex *a_tail = new PDCELVertex(0.0, 0.0, 0.0);
+
+  Baseline base_1("base_1", "line");
+  base_1.addPVertex(a_head);
+  base_1.addPVertex(b);
+
+  Baseline base_2("base_2", "line");
+  base_2.addPVertex(b);
+  base_2.addPVertex(c);
+
+  Baseline base_3("base_3", "line");
+  base_3.addPVertex(c);
+  base_3.addPVertex(a_tail);
+
+  Segment seg_1("seg_1", &base_1, &fixture.layup, "left", 1);
+  Segment seg_2("seg_2", &base_2, &fixture.layup, "left", 1);
+  Segment seg_3("seg_3", &base_3, &fixture.layup, "left", 1);
+
+  PComponent component;
+  component.setName("laminate_cycle");
+  component.setType(ComponentType::laminate);
+  component.setCycle(true);
+  component.addSegment(&seg_1);
+  component.addSegment(&seg_2);
+  component.addSegment(&seg_3);
+
+  const std::size_t faces_before = fixture.dcel.faces().size();
+
+  component.build(fixture.bcfg);
+
+  CHECK(seg_1.headVertexOffset() != nullptr);
+  CHECK(seg_1.tailVertexOffset() != nullptr);
+  CHECK(seg_2.headVertexOffset() != nullptr);
+  CHECK(seg_2.tailVertexOffset() != nullptr);
+  CHECK(seg_3.headVertexOffset() != nullptr);
+  CHECK(seg_3.tailVertexOffset() != nullptr);
+  CHECK(seg_1.face() != nullptr);
+  CHECK(seg_2.face() != nullptr);
+  CHECK(seg_3.face() != nullptr);
+  CHECK(fixture.dcel.faces().size() > faces_before);
 }
 
 

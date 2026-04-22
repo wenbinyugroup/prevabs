@@ -35,16 +35,17 @@ static PDCELHalfEdgeLoop *findOutermostLoop(
 } // namespace
 
 void PComponent::buildFilling(const BuilderConfig &bcfg) {
+  FillingState &filling = _filling;
   PDCELHalfEdgeLoop *hel_out = nullptr;
 
-  if (!_fill_baseline_groups.empty()) {
+  if (!filling.baseline_groups.empty()) {
 
     std::list<Baseline *> bl_closed;
     std::list<Baseline *> bl_open;
 
     // Join baselines
     Baseline *bl_joined;
-    for (auto blg : _fill_baseline_groups) {
+    for (auto blg : filling.baseline_groups) {
       bl_joined = joinCurves(blg);
       if (bl_joined == nullptr) {
         PLOG(error) << "buildFilling: failed to join a filling baseline group"
@@ -52,8 +53,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
         return;
       }
 
-      if (_fill_ref_baseline == blg.front()) {
-        _fill_ref_baseline = bl_joined;
+      if (filling.ref_baseline == blg.front()) {
+        filling.ref_baseline = bl_joined;
       }
 
       if (bl_joined->vertices().front() == bl_joined->vertices().back()) {
@@ -186,16 +187,16 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
     // bcfg.dcel->print_dcel();
   }
-  if (_fill_location != nullptr) {
+  if (filling.location != nullptr) {
     // The filling area is defined by a point The half edge loop
     // has been already created
 
     // Find the half edge loop enclosing the point
-    bcfg.dcel->addVertex(_fill_location);
-    hel_out = bcfg.dcel->findEnclosingLoop(_fill_location);
+    bcfg.dcel->addVertex(filling.location);
+    hel_out = bcfg.dcel->findEnclosingLoop(filling.location);
     // std::cout << "[debug] half edge loop hel_out:" << std::endl;
     // hel_out->print();
-    bcfg.dcel->removeVertex(_fill_location);
+    bcfg.dcel->removeVertex(filling.location);
 
     if (hel_out == nullptr) {
       PLOG(error) << "buildFilling: failed to find an enclosing loop"
@@ -207,8 +208,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
   else {
     // The filling area is defined by the side of some baseline
     PDCELHalfEdge *he;
-    he = bcfg.dcel->findHalfEdgeBetween(_fill_ref_baseline->vertices()[0],
-                                             _fill_ref_baseline->vertices()[1]);
+    he = bcfg.dcel->findHalfEdgeBetween(filling.ref_baseline->vertices()[0],
+                                        filling.ref_baseline->vertices()[1]);
 
     if (he == nullptr) {
       PLOG(error) << "buildFilling: failed to find the reference half edge"
@@ -218,7 +219,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
     // std::cout << "        half edge he:" << he << std::endl;
 
-    if (_fill_side == FillSide::right) {
+    if (filling.side == FillSide::right) {
       he = he->twin();
     }
 
@@ -236,20 +237,24 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
     return;
   }
   else {
-    _fill_face = bcfg.dcel->addFace(hel_out);
-    if (_fill_face == nullptr) {
+    filling.face = bcfg.dcel->addFace(hel_out);
+    if (filling.face == nullptr) {
       PLOG(error) << "buildFilling: failed to create fill face"
                   << " for component '" << _name << "'";
       return;
     }
-    bcfg.model->faceData(_fill_face).name = _name + "_fill_face";
-    _fill_face->setMaterial(_fill_material);
+    if (filling.layertype == nullptr) {
+      PLOG(error) << "buildFilling: missing fill layer type"
+                  << " for component '" << _name << "'";
+      return;
+    }
+    bcfg.model->faceData(filling.face).name = _name + "_fill_face";
+    filling.face->setMaterial(filling.material);
     bcfg.dcel->setLoopKept(hel_out, true);
-    hel_out->setFace(_fill_face);
+    hel_out->setFace(filling.face);
 
-    LayerType *lt = bcfg.materials->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
-    _fill_face->setLayerType(lt);
-    _fill_face->setTheta1(_fill_theta1);
+    filling.face->setLayerType(filling.layertype);
+    filling.face->setTheta1(filling.theta1);
 
     // Update all corresponding inner boundaries, if there are any
     bcfg.dcel->linkHalfEdgeLoops();
@@ -259,8 +264,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
         PDCELHalfEdgeLoop *helj = findOutermostLoop(heli, bcfg.dcel);
         if (helj == hel_out) {
           bcfg.dcel->setLoopKept(heli, true);
-          heli->setFace(_fill_face);
-          _fill_face->addInnerComponent(heli->incidentEdge());
+          heli->setFace(filling.face);
+          filling.face->addInnerComponent(heli->incidentEdge());
         }
       }
     }
@@ -272,7 +277,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
   // Set local mesh size and embedded vertices in the property map.
   if (_mesh_size != -1) {
-    PDCELFaceData &fd = bcfg.model->faceData(_fill_face);
+    PDCELFaceData &fd = bcfg.model->faceData(filling.face);
     fd.mesh_size = _mesh_size;
     for (auto v : _embedded_vertices) {
       fd.embedded_vertices.push_back(v);

@@ -678,43 +678,6 @@ int readXMLElementComponentLaminate(
 
   }
 
-
-  // Read trim config
-  for (auto p_xn_trim = xn_component->first_node("trim"); p_xn_trim;
-        p_xn_trim = p_xn_trim->next_sibling("trim")) {
-
-
-    std::string loc;
-    double x2, x3;
-
-    xml_node<> *p_xn_location{p_xn_trim->first_node("location")};
-    if (p_xn_location) {
-      loc = p_xn_location->value();
-      if (loc == "head") {
-        p_component->setTrimHead(true);
-      }
-      else if (loc == "tail") {
-        p_component->setTrimTail(true);
-      }
-    }
-
-    xml_node<> *p_xn_direction{p_xn_trim->first_node("direction")};
-    if (p_xn_direction) {
-      std::stringstream ss{p_xn_direction->value()};
-      ss >> x2 >> x3;
-      if (loc == "head") {
-        p_component->setTrimHeadVector(x2, x3);
-      }
-      else if (loc == "tail") {
-        p_component->setTrimTailVector(x2, x3);
-      }
-    }
-
-  }
-
-
-
-
   // if (config.debug) {
   //   pmessage->printBlank();
   //   pmessage->print(9, "summary of layups");

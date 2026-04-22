@@ -72,6 +72,7 @@ int readXMLElementComponentFilling(
     p_lt_tmp->setId(CrossSection::used_layertype_index);
     cs->addUsedLayerType(p_lt_tmp);
   }
+  p_component->setFillLayertype(p_lt_tmp);
   // Check used material
   if (p_mtr_tmp->id() == 0) {
     CrossSection::used_material_index++;

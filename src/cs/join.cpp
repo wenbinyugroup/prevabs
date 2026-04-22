@@ -730,20 +730,21 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
   }
 
   // Phase 1: initialize reference vertex.
-  if (_ref_vertex == nullptr) {
-    _ref_vertex = _segments[0]->curveBase()->refVertex();
-    if (_ref_vertex == nullptr) {
-      int i = static_cast<int>(_segments[0]->curveBase()->vertices().size() / 2);
-      _ref_vertex = _segments[0]->curveBase()->vertices()[i];
+  if (_laminate.ref_vertex == nullptr) {
+    _laminate.ref_vertex = _laminate.segments[0]->curveBase()->refVertex();
+    if (_laminate.ref_vertex == nullptr) {
+      int i = static_cast<int>(
+          _laminate.segments[0]->curveBase()->vertices().size() / 2);
+      _laminate.ref_vertex = _laminate.segments[0]->curveBase()->vertices()[i];
     }
   }
-  PLOG(debug) << "ref vertex: " + _ref_vertex->printString();
+  PLOG(debug) << "ref vertex: " + _laminate.ref_vertex->printString();
 
   // Phase 2: collect candidate DCEL loops from dependency components.
   PLOG(debug) << "step 1: find the outer half edge loop";
   PLOG(debug) << "step 2: find all inner half edge loops";
   std::vector<PDCELHalfEdgeLoop *> hels =
-      collectCandidateLoops(_ref_vertex, bcfg.dcel);
+      collectCandidateLoops(_laminate.ref_vertex, bcfg.dcel);
 
   if (bcfg.debug) {
     std::cout << "\nhels:\n";

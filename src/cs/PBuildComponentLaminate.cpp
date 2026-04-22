@@ -22,6 +22,12 @@
 
 namespace {
 
+static bool areCoincidentVertices(PDCELVertex *v1, PDCELVertex *v2)
+{
+  return v1 != nullptr && v2 != nullptr
+      && v1->point().distance(v2->point()) <= GEO_TOL;
+}
+
 static JointStyle resolveJointStyle(
     Segment *seg, Segment *seg_p, JointStyle default_style,
     const std::vector<std::vector<std::string>> &joint_segments,
@@ -42,8 +48,39 @@ static JointStyle resolveJointStyle(
 
 void PComponent::buildLaminate(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
+  LaminateState &laminate = _laminate;
+  Segment *first_segment =
+      laminate.segments.empty() ? nullptr : laminate.segments.front();
+  Segment *last_segment =
+      laminate.segments.empty() ? nullptr : laminate.segments.back();
 
-  for (auto seg : _segments) {
+  if (laminate.cycle) {
+    if (laminate.segments.size() == 1 && first_segment != nullptr &&
+        !first_segment->closed()) {
+      PLOG(error) << "buildLaminate: cyclic component '" << _name
+                  << "' with a single open segment is not supported";
+      return;
+    }
+
+    if (laminate.segments.size() > 1 && first_segment != nullptr &&
+        last_segment != nullptr) {
+      if (!areCoincidentVertices(
+              first_segment->getBeginVertex(), last_segment->getEndVertex())) {
+        PLOG(error) << "buildLaminate: cyclic component '" << _name
+                    << "' does not close between first segment '"
+                    << first_segment->getName() << "' and last segment '"
+                    << last_segment->getName() << "'";
+        return;
+      }
+
+      if (first_segment->getBeginVertex() != last_segment->getEndVertex()) {
+        last_segment->curveBase()->vertices().back() =
+            first_segment->getBeginVertex();
+      }
+    }
+  }
+
+  for (auto seg : laminate.segments) {
 
     // seg->curveBase()->print(pmessage, 9);
     if (seg->curveOffset() == nullptr) {
@@ -75,7 +112,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
     if (seg->headVertexOffset() == nullptr ||
         seg->tailVertexOffset() == nullptr) {
       // Check if the segment connects to any other segment or is a free end
-      for (auto seg_p : _segments) {
+      for (auto seg_p : laminate.segments) {
         if (seg_p->curveOffset() == nullptr) {
           seg_p->offsetCurveBase();
         }
@@ -84,7 +121,8 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
 
           if (seg->headVertexOffset() == nullptr) {
             const JointStyle js = resolveJointStyle(
-                seg, seg_p, _style, _joint_segments, _joint_styles);
+                seg, seg_p, laminate.style, laminate.joint_segments,
+                laminate.joint_styles);
             if (seg->getBeginVertex() == seg_p->getBeginVertex()) {
               // Head to head
               found_begin = true;
@@ -99,7 +137,8 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
           }
           if (seg->tailVertexOffset() == nullptr) {
             const JointStyle js = resolveJointStyle(
-                seg, seg_p, _style, _joint_segments, _joint_styles);
+                seg, seg_p, laminate.style, laminate.joint_segments,
+                laminate.joint_styles);
             if (seg->getEndVertex() == seg_p->getBeginVertex()) {
               // Tail to head
               found_end = true;
@@ -122,13 +161,21 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
 
       // seg->curveBase()->print(pmessage, 9);
 
-      if (seg->headVertexOffset() == nullptr && !found_begin) {
+      const bool is_cyclic_head =
+          laminate.cycle &&
+          seg == first_segment && first_segment != last_segment;
+      if (seg->headVertexOffset() == nullptr && !found_begin &&
+          !is_cyclic_head) {
         joinSegments(seg, 0, seg->getBeginVertex(), bcfg);
       }
 
       // seg->curveBase()->print(pmessage, 9);
 
-      if (seg->tailVertexOffset() == nullptr && !found_end) {
+      const bool is_cyclic_tail =
+          laminate.cycle &&
+          seg == last_segment && first_segment != last_segment;
+      if (seg->tailVertexOffset() == nullptr && !found_end &&
+          !is_cyclic_tail) {
         joinSegments(seg, 1, seg->getEndVertex(), bcfg);
       }
 
@@ -143,7 +190,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
 
   // Build for each segment
   // Create half edge loops for each segment (outer boundary)
-  for (auto seg : _segments) {
+  for (auto seg : laminate.segments) {
     if (seg->headVertexOffset() == nullptr) {
       PLOG(error) << "buildLaminate: missing head offset vertex"
                   << " for segment '" << seg->getName()

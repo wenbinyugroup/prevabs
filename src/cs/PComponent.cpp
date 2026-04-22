@@ -100,14 +100,15 @@ int PComponent::count_tmp = 0;
 void PComponent::print() {
   std::cout << "name: " << _name << " | "
             << "order: " << _order << " | "
-            << "cyclic: " << (_cycle ? "true" : "false") << std::endl;
+            << "cyclic: " << (_laminate.cycle ? "true" : "false")
+            << std::endl;
 }
 
 void PComponent::print(int i_type, int /*i_indent*/) {
   MESSAGE_SCOPE(g_msg);
     PLOG(debug) << "name: " + _name;
     PLOG(debug) << "order: " + std::to_string(_order);
-    PLOG(debug) << "cyclic: " + std::to_string(_cycle);
+    PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
     PLOG(debug) << "segments:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(16) << "name"
@@ -116,9 +117,9 @@ void PComponent::print(int i_type, int /*i_indent*/) {
      << std::setw(16) << "side"
      << std::setw(8) << "level";
     PLOG(debug) << ss.str();
-  for (int i = 0; i < _segments.size(); i++) {
+  for (int i = 0; i < _laminate.segments.size(); i++) {
     std::stringstream ss_seg;
-    ss_seg << std::setw(4) << (i+1) << _segments[i];
+    ss_seg << std::setw(4) << (i+1) << _laminate.segments[i];
         PLOG(debug) << ss_seg.str();
   }
   return;
@@ -142,7 +143,7 @@ int PComponent::order() {
 
 void PComponent::setName(std::string name) { _name = name; }
 
-void PComponent::addSegment(Segment *s) { _segments.push_back(s); }
+void PComponent::addSegment(Segment *s) { _laminate.segments.push_back(s); }
 
 void PComponent::setOrder(int order) { _order = order; }
 
@@ -200,7 +201,7 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
         g_msg->print("building component details: " + _name);
 
-    for (auto sgm : _segments) {
+    for (auto sgm : _laminate.segments) {
 
       sgm->buildAreas(bcfg);
 
