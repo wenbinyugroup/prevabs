@@ -80,6 +80,26 @@ static std::vector<Pt3> multiVertexOffset(
   return result;
 }
 
+// Mirrors the offset-baseline rebuild step in join.cpp after the
+// intersection vertex index has been resolved.
+static std::vector<int> trimOffsetIndicesAfterIntersection(
+    const std::vector<int>& vertices, int end, int index_after_resolve,
+    int intersection_marker) {
+  std::vector<int> trimmed;
+  if (end == 0) {
+    trimmed.push_back(intersection_marker);
+    for (int i = index_after_resolve; i < static_cast<int>(vertices.size()); ++i) {
+      trimmed.push_back(vertices[i]);
+    }
+  } else if (end == 1) {
+    for (int i = 0; i < static_cast<int>(vertices.size()) - index_after_resolve; ++i) {
+      trimmed.push_back(vertices[i]);
+    }
+    trimmed.push_back(intersection_marker);
+  }
+  return trimmed;
+}
+
 
 // ===================================================================
 // Test data loader (reads test_offset.jsonc via loadJsonc)
@@ -364,6 +384,82 @@ TEST_CASE("join index advance: values within tolerance of 0 use the start vertex
 TEST_CASE("join index advance: values within tolerance of 1 use the end vertex",
           "[geo][join]") {
   CHECK(advanceIntersectionVertexIndex(3, 1.0 - 5e-10, 1e-9) == 5);
+}
+
+TEST_CASE("join index trim: head-side u=0 skips the duplicated start vertex",
+          "[geo][join]") {
+  const std::vector<int> vertices = {10, 11, 12, 13};
+  const int i2 = advanceIntersectionVertexIndex(1, 0.0, 1e-9);
+  const std::vector<int> trimmed =
+      trimOffsetIndicesAfterIntersection(vertices, 0, i2, 99);
+
+  REQUIRE(trimmed.size() == 3);
+  CHECK(trimmed[0] == 99);
+  CHECK(trimmed[1] == 12);
+  CHECK(trimmed[2] == 13);
+}
+
+TEST_CASE("join index trim: head-side interior u keeps the remaining tail",
+          "[geo][join]") {
+  const std::vector<int> vertices = {10, 11, 12, 13};
+  const int i2 = advanceIntersectionVertexIndex(1, 0.25, 1e-9);
+  const std::vector<int> trimmed =
+      trimOffsetIndicesAfterIntersection(vertices, 0, i2, 99);
+
+  REQUIRE(trimmed.size() == 3);
+  CHECK(trimmed[0] == 99);
+  CHECK(trimmed[1] == 12);
+  CHECK(trimmed[2] == 13);
+}
+
+TEST_CASE("join index trim: head-side u=1 skips the duplicated end vertex",
+          "[geo][join]") {
+  const std::vector<int> vertices = {10, 11, 12, 13};
+  const int i2 = advanceIntersectionVertexIndex(1, 1.0, 1e-9);
+  const std::vector<int> trimmed =
+      trimOffsetIndicesAfterIntersection(vertices, 0, i2, 99);
+
+  REQUIRE(trimmed.size() == 2);
+  CHECK(trimmed[0] == 99);
+  CHECK(trimmed[1] == 13);
+}
+
+TEST_CASE("join index trim: tail-side u=0 preserves the prefix before the segment",
+          "[geo][join]") {
+  const std::vector<int> vertices = {10, 11, 12, 13};
+  const int i2 = advanceIntersectionVertexIndex(1, 0.0, 1e-9);
+  const std::vector<int> trimmed =
+      trimOffsetIndicesAfterIntersection(vertices, 1, i2, 99);
+
+  REQUIRE(trimmed.size() == 3);
+  CHECK(trimmed[0] == 10);
+  CHECK(trimmed[1] == 11);
+  CHECK(trimmed[2] == 99);
+}
+
+TEST_CASE("join index trim: tail-side interior u preserves the prefix before insertion",
+          "[geo][join]") {
+  const std::vector<int> vertices = {10, 11, 12, 13};
+  const int i2 = advanceIntersectionVertexIndex(1, 0.25, 1e-9);
+  const std::vector<int> trimmed =
+      trimOffsetIndicesAfterIntersection(vertices, 1, i2, 99);
+
+  REQUIRE(trimmed.size() == 3);
+  CHECK(trimmed[0] == 10);
+  CHECK(trimmed[1] == 11);
+  CHECK(trimmed[2] == 99);
+}
+
+TEST_CASE("join index trim: tail-side u=1 keeps the duplicated end vertex out",
+          "[geo][join]") {
+  const std::vector<int> vertices = {10, 11, 12, 13};
+  const int i2 = advanceIntersectionVertexIndex(1, 1.0, 1e-9);
+  const std::vector<int> trimmed =
+      trimOffsetIndicesAfterIntersection(vertices, 1, i2, 99);
+
+  REQUIRE(trimmed.size() == 2);
+  CHECK(trimmed[0] == 10);
+  CHECK(trimmed[1] == 99);
 }
 
 

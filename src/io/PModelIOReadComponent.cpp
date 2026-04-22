@@ -47,26 +47,29 @@ PComponent *readXMLElementComponent(
   p_component->setName(cmp_name);
 
   std::string s_cmp_type;
-  int cmp_type = 1;
+  ComponentType cmp_type = ComponentType::laminate;
   xml_attribute<> *p_xa_type = xn_component->first_attribute("type");
   if (p_xa_type) {
     s_cmp_type = p_xa_type->value();
     if (s_cmp_type == "laminate") {
-      cmp_type = 1;
+      cmp_type = ComponentType::laminate;
     }
     else if (s_cmp_type == "fill") {
-      cmp_type = 2;
+      cmp_type = ComponentType::fill;
     }
   }
   // std::cout << "[debug] cmp_type = " << cmp_type << std::endl;
   p_component->setType(cmp_type);
 
-  int cmp_style = 1;
+  JointStyle cmp_style = JointStyle::step;
   xml_attribute<> *p_xa_style = xn_component->first_attribute("style");
   if (p_xa_style) {
     std::string ss{p_xa_style->value()};
     if (ss[0] != '\0') {
-      cmp_style = atoi(ss.c_str());
+      cmp_style =
+          (atoi(ss.c_str()) == static_cast<int>(JointStyle::smooth))
+              ? JointStyle::smooth
+              : JointStyle::step;
     }
   }
   p_component->setStyle(cmp_style);
@@ -106,7 +109,7 @@ PComponent *readXMLElementComponent(
 
 
   // Laminate type component
-  if (cmp_type == 1) {
+  if (cmp_type == ComponentType::laminate) {
 
     readXMLElementComponentLaminate(
       p_component, xn_component, dependents_all, depend_names,
@@ -117,7 +120,7 @@ PComponent *readXMLElementComponent(
   }
 
   // Fill type component
-  else if (cmp_type == 2) {
+  else if (cmp_type == ComponentType::fill) {
 
     readXMLElementComponentFilling(
       p_component, xn_component, cs, pmodel

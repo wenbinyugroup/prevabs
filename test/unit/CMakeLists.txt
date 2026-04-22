@@ -68,9 +68,13 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/cs/Material.cpp
   ${SRC_ROOT}/cs/PArea.cpp
   ${SRC_ROOT}/cs/PBaseLine.cpp
+  ${SRC_ROOT}/cs/PComponent.cpp
+  ${SRC_ROOT}/cs/PBuildComponentFilling.cpp
+  ${SRC_ROOT}/cs/PBuildComponentLaminate.cpp
   ${SRC_ROOT}/cs/PBuildSegmentAreas.cpp
   ${SRC_ROOT}/cs/PFilling.cpp
   ${SRC_ROOT}/cs/PSegment.cpp
+  ${SRC_ROOT}/cs/join.cpp
 )
 
 add_executable(test_dcel ${TEST_DCEL_SOURCES})

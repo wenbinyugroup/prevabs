@@ -22,10 +22,10 @@
 
 namespace {
 
-static int resolveJointStyle(
-    Segment *seg, Segment *seg_p, int default_style,
+static JointStyle resolveJointStyle(
+    Segment *seg, Segment *seg_p, JointStyle default_style,
     const std::vector<std::vector<std::string>> &joint_segments,
-    const std::vector<int> &joint_styles)
+    const std::vector<JointStyle> &joint_styles)
 {
   for (int jsi = 0; jsi < joint_segments.size(); ++jsi) {
     if ((seg->getName() == joint_segments[jsi][0] &&
@@ -83,7 +83,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
         if (seg_p != seg) {
 
           if (seg->headVertexOffset() == nullptr) {
-            const int js = resolveJointStyle(
+            const JointStyle js = resolveJointStyle(
                 seg, seg_p, _style, _joint_segments, _joint_styles);
             if (seg->getBeginVertex() == seg_p->getBeginVertex()) {
               // Head to head
@@ -98,7 +98,7 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
             }
           }
           if (seg->tailVertexOffset() == nullptr) {
-            const int js = resolveJointStyle(
+            const JointStyle js = resolveJointStyle(
                 seg, seg_p, _style, _joint_segments, _joint_styles);
             if (seg->getEndVertex() == seg_p->getBeginVertex()) {
               // Tail to head

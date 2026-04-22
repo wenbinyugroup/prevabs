@@ -218,7 +218,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
     // std::cout << "        half edge he:" << he << std::endl;
 
-    if (_fill_side == -1) {
+    if (_fill_side == FillSide::right) {
       he = he->twin();
     }
 

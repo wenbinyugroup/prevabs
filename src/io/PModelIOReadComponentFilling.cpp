@@ -101,9 +101,9 @@ int readXMLElementComponentFilling(
       p_component->setFillRefBaseline(blg.front());
       std::string fs = p_xn_baseline->first_attribute("fillside")->value();
       if (fs == "left") {
-        p_component->setFillSide(1);
+        p_component->setFillSide(FillSide::left);
       } else if (fs == "right") {
-        p_component->setFillSide(-1);
+        p_component->setFillSide(FillSide::right);
       }
     }
 

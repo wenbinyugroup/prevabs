@@ -859,7 +859,7 @@ void PComponent::joinSegments(Segment *s, int e, PDCELVertex * /*v*/, const Buil
 
 void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
-  PDCELVertex *v, int style, const BuilderConfig &bcfg
+  PDCELVertex *v, JointStyle style, const BuilderConfig &bcfg
   ) {
   MESSAGE_SCOPE(g_msg);
 
@@ -873,10 +873,10 @@ void PComponent::joinSegments(
   std::vector<PDCELVertex *> bound_vertices;
   bound_vertices.push_back(v);
 
-  if (style == 1) {
+  if (style == JointStyle::step) {
     joinStyle1(s1, s2, e1, e2, v, v1_new, v2_new, bound_vertices);
   }
-  else if (style == 2) {
+  else if (style == JointStyle::smooth) {
     if (!joinStyle2(s1, s2, e1, e2, v1_new, v2_new, bound_vertices)) {
       return;
     }

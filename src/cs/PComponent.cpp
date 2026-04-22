@@ -166,7 +166,7 @@ void PComponent::build(const BuilderConfig &bcfg) {
     g_msg->print("building component: " + _name);
 
   // Laminate type component
-  if (_type == 1) {
+  if (_type == ComponentType::laminate) {
 
     buildLaminate(bcfg);
 
@@ -174,7 +174,7 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 
   // Fill type component
-  else if (_type == 2) {
+  else if (_type == ComponentType::fill) {
 
     buildFilling(bcfg);
 
@@ -196,7 +196,7 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
   MESSAGE_SCOPE(g_msg);
 
-  if (_type == 1) {
+  if (_type == ComponentType::laminate) {
 
         g_msg->print("building component details: " + _name);
 

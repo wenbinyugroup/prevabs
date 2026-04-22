@@ -49,6 +49,7 @@ struct LoggerSetup {
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PBaseLine.hpp"
+#include "PComponent.hpp"
 #include "Material.hpp"
 #include "PSegment.hpp"
 #include "PModel.hpp"
@@ -100,6 +101,226 @@ static PDCELFace *findFaceByName(PDCEL &dcel, PModel &model,
     }
   }
   return nullptr;
+}
+
+struct FillComponentFixture {
+  Message msg;
+  PDCEL dcel;
+  PModel model;
+  Material material;
+  LayerType fill_layertype;
+  BuilderConfig bcfg{};
+
+  FillComponentFixture()
+      : material("fill_mat"),
+        fill_layertype(1, &material, 0.0) {
+    g_msg = &msg;
+
+    dcel.initialize();
+    addRectangularSection();
+
+    model.addMaterial(&material);
+    model.addLayerType(&fill_layertype);
+
+    bcfg.debug = false;
+    bcfg.tool = AnalysisTool::VABS;
+    bcfg.tol = 1e-12;
+    bcfg.geo_tol = 1e-9;
+    bcfg.dcel = &dcel;
+    bcfg.materials = &model;
+    bcfg.model = &model;
+  }
+
+  void addRectangularSection() {
+    PDCELVertex *v1 = new PDCELVertex(0.0, 0.0, 0.0);
+    PDCELVertex *v2 = new PDCELVertex(0.0, 4.0, 0.0);
+    PDCELVertex *v3 = new PDCELVertex(0.0, 4.0, 4.0);
+    PDCELVertex *v4 = new PDCELVertex(0.0, 0.0, 4.0);
+    std::list<PDCELVertex *> loop = {v1, v2, v3, v4, v1};
+
+    PDCELFace *face = dcel.addFace(loop);
+    REQUIRE(face != nullptr);
+    REQUIRE(face->outer() != nullptr);
+
+    PDCELHalfEdgeLoop *hel = dcel.addHalfEdgeLoop(face->outer());
+    REQUIRE(hel != nullptr);
+    hel->setFace(face);
+  }
+
+  PDCELVertex *findVertex(double y, double z) {
+    for (PDCELVertex *vertex : dcel.vertices()) {
+      if (vertex->y() == y && vertex->z() == z) {
+        return vertex;
+      }
+    }
+    return nullptr;
+  }
+};
+
+struct LaminateComponentFixture {
+  Message msg;
+  PDCEL dcel;
+  PModel model;
+  Material material;
+  Lamina lamina;
+  LayerType layertype;
+  Layup layup;
+  BuilderConfig bcfg{};
+
+  LaminateComponentFixture()
+      : material("lam_mat"),
+        lamina("lam", &material, 1.0),
+        layertype(1, &material, 0.0),
+        layup("layup") {
+    g_msg = &msg;
+
+    dcel.initialize();
+    model.addMaterial(&material);
+    model.addLayerType(&layertype);
+    layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+    bcfg.debug = false;
+    bcfg.tool = AnalysisTool::VABS;
+    bcfg.tol = 1e-12;
+    bcfg.geo_tol = 1e-9;
+    bcfg.dcel = &dcel;
+    bcfg.materials = &model;
+    bcfg.model = &model;
+  }
+};
+
+
+TEST_CASE("buildFilling: open baseline without loop intersection returns early",
+          "[dcel][component][fill][failure]") {
+  FillComponentFixture fixture;
+
+  PComponent component;
+  component.setName("fill_no_intersection");
+  component.setType(ComponentType::fill);
+  component.setFillMaterial(&fixture.material);
+  component.setFillFace(nullptr);
+
+  PDCELVertex location(0.0, 2.0, 2.0);
+  component.setFillLocation(&location);
+
+  Baseline open("open_inside", "line");
+  open.addPVertex(new PDCELVertex(0.0, 1.0, 1.0));
+  open.addPVertex(new PDCELVertex(0.0, 3.0, 1.0));
+  component.addFillBaselineGroup({&open});
+
+  const std::size_t faces_before = fixture.dcel.faces().size();
+  const std::size_t edges_before = fixture.dcel.halfedges().size();
+  const std::size_t loops_before = fixture.dcel.halfedgeloops().size();
+
+  component.build(fixture.bcfg);
+
+  CHECK(component.fillface() == nullptr);
+  CHECK(fixture.dcel.faces().size() == faces_before);
+  CHECK(fixture.dcel.halfedges().size() == edges_before);
+  CHECK(fixture.dcel.halfedgeloops().size() == loops_before);
+}
+
+TEST_CASE("buildFilling: outside fill location does not create a face",
+          "[dcel][component][fill][failure]") {
+  FillComponentFixture fixture;
+
+  PComponent component;
+  component.setName("fill_outside");
+  component.setType(ComponentType::fill);
+  component.setFillMaterial(&fixture.material);
+  component.setFillFace(nullptr);
+
+  PDCELVertex location(0.0, 5.0, 2.0);
+  component.setFillLocation(&location);
+
+  const std::size_t faces_before = fixture.dcel.faces().size();
+
+  component.build(fixture.bcfg);
+
+  CHECK(component.fillface() == nullptr);
+  CHECK(fixture.dcel.faces().size() == faces_before);
+}
+
+TEST_CASE("buildFilling: open baseline is split onto the enclosing boundary",
+          "[dcel][component][fill][split]") {
+  FillComponentFixture fixture;
+
+  PComponent component;
+  component.setName("fill_split");
+  component.setType(ComponentType::fill);
+  component.setFillMaterial(&fixture.material);
+  component.setFillFace(nullptr);
+
+  PDCELVertex location(0.0, 2.0, 3.0);
+  component.setFillLocation(&location);
+
+  Baseline open("open_crossing", "line");
+  open.addPVertex(new PDCELVertex(0.0, -1.0, 2.0));
+  open.addPVertex(new PDCELVertex(0.0, 2.0, 2.0));
+  open.addPVertex(new PDCELVertex(0.0, 5.0, 2.0));
+  component.addFillBaselineGroup({&open});
+
+  const std::size_t faces_before = fixture.dcel.faces().size();
+  const std::size_t vertices_before = fixture.dcel.vertices().size();
+
+  component.build(fixture.bcfg);
+
+  REQUIRE(component.fillface() != nullptr);
+  CHECK(fixture.model.faceData(component.fillface()).name == "fill_split_fill_face");
+  CHECK(fixture.dcel.faces().size() == faces_before + 1);
+
+  PDCELVertex *left_split = fixture.findVertex(0.0, 2.0);
+  PDCELVertex *mid_vertex = fixture.findVertex(2.0, 2.0);
+  PDCELVertex *right_split = fixture.findVertex(4.0, 2.0);
+  REQUIRE(left_split != nullptr);
+  REQUIRE(mid_vertex != nullptr);
+  REQUIRE(right_split != nullptr);
+  CHECK(fixture.dcel.vertices().size() == vertices_before + 3);
+  CHECK(fixture.dcel.findHalfEdgeBetween(left_split, mid_vertex) != nullptr);
+  CHECK(fixture.dcel.findHalfEdgeBetween(mid_vertex, right_split) != nullptr);
+}
+
+TEST_CASE("buildLaminate: unresolved connected end aborts before shell build",
+          "[dcel][component][laminate][failure]") {
+  LaminateComponentFixture fixture;
+
+  PDCELVertex *shared = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *east = new PDCELVertex(0.0, 2.0, 0.0);
+  PDCELVertex *west = new PDCELVertex(0.0, -2.0, 0.0);
+
+  Baseline base_1("base_1", "line");
+  base_1.addPVertex(shared);
+  base_1.addPVertex(east);
+
+  Baseline base_2("base_2", "line");
+  base_2.addPVertex(shared);
+  base_2.addPVertex(west);
+
+  Segment seg_1("seg_1", &base_1, &fixture.layup, "left", 1);
+  Segment seg_2("seg_2", &base_2, &fixture.layup, "left", 1);
+
+  PComponent component;
+  component.setName("laminate_parallel_heads");
+  component.setType(ComponentType::laminate);
+  component.setStyle(static_cast<JointStyle>(0));
+  component.addSegment(&seg_1);
+  component.addSegment(&seg_2);
+
+  const std::size_t faces_before = fixture.dcel.faces().size();
+  const std::size_t loops_before = fixture.dcel.halfedgeloops().size();
+
+  component.build(fixture.bcfg);
+
+  CHECK(seg_1.headVertexOffset() == nullptr);
+  CHECK(seg_2.headVertexOffset() == nullptr);
+  CHECK(seg_1.tailVertexOffset() != nullptr);
+  CHECK(seg_2.tailVertexOffset() != nullptr);
+  CHECK(seg_1.face() == nullptr);
+  CHECK(seg_2.face() == nullptr);
+  CHECK(fixture.dcel.faces().size() == faces_before);
+  CHECK(fixture.dcel.halfedgeloops().size() == loops_before);
+  CHECK(fixture.dcel.findHalfEdgeBetween(shared, east) == nullptr);
+  CHECK(fixture.dcel.findHalfEdgeBetween(shared, west) == nullptr);
 }
 
 

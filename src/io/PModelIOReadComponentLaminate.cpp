@@ -730,7 +730,11 @@ int readXMLElementComponentLaminate(
   //
   for (auto p_xn_joint = xn_component->first_node("joint"); p_xn_joint;
         p_xn_joint = p_xn_joint->next_sibling("joint")) {
-    int js = atoi(p_xn_joint->first_attribute("style")->value());
+    const int js_value = atoi(p_xn_joint->first_attribute("style")->value());
+    const JointStyle js =
+        (js_value == static_cast<int>(JointStyle::smooth))
+            ? JointStyle::smooth
+            : JointStyle::step;
     std::vector<std::string> sns;
     sns = splitString(p_xn_joint->value(), ',');
     p_component->addJointSegments(sns);
