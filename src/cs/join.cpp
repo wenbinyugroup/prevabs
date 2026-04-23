@@ -226,10 +226,15 @@ static PDCELVertex *getOrSplitVertex(
 // a segment could potentially intersect.
 //
 // Iterates the dependency components' segments directly and returns the
-// boundary loop of each built segment. This avoids relying on DCEL adjacency
-// queries (findEnclosingLoop / linkHalfEdgeLoops), which fail when dependency
-// components are parallel (not nested) in the cross-section — e.g. a web
-// connecting two flanges at different heights.
+// exterior (temp) boundary loop of each built segment. This avoids relying on
+// DCEL adjacency queries (findEnclosingLoop / linkHalfEdgeLoops), which fail
+// when dependency components are parallel (not nested) in the cross-section —
+// e.g. a web connecting two flanges at different heights.
+//
+// Each segment face has an interior (kept) boundary loop and an exterior
+// (temp) boundary loop whose half-edges are the twins of the kept ones.
+// findBestIntersection only processes non-kept loops, so we return the temp
+// (exterior) loop via face->outer()->twin()->loop().
 static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
     const std::list<PComponent *> &dependencies)
 {
@@ -239,7 +244,11 @@ static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
     for (auto seg : dep->segments()) {
       PDCELFace *face = seg->face();
       if (face == nullptr || face->outer() == nullptr) continue;
-      PDCELHalfEdgeLoop *loop = face->outer()->loop();
+      // face->outer() is the kept (interior) half-edge; its twin belongs to
+      // the temp (exterior) loop that findBestIntersection will process.
+      PDCELHalfEdge *he_twin = face->outer()->twin();
+      if (he_twin == nullptr) continue;
+      PDCELHalfEdgeLoop *loop = he_twin->loop();
       if (loop != nullptr) {
         hels.push_back(loop);
       }
