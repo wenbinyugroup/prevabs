@@ -40,9 +40,6 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t4_I\i_web.opt
-    - writing gmsh .geo file: .\test\integration\t4_I\i_web.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t4_I\i_web.msh
     - writing sg file: .\test\integration\t4_I\i_web.sg
       - writing nodes
       - writing elements
@@ -52,12 +49,22 @@
   - writing outputs -- done
   
   
-  - running Gmsh for visualization
+  - running VABS for homogenization
+  
+  -  [VABS Messages] 
+  
+  - running: VABS ".\test\integration\t4_I\i_web.sg"
+  - command completed successfully.
+  
+  -  [VABS Messages End] 
+  
+  - running VABS for homogenization -- done
+  
 
 ========================================
 
 
 ========================================
 
-6:55)                      main.cpp:main:285
-[info]     total running time: 6.46392 sec                               main.cpp:main:286
+9:44)                      main.cpp:main:285
+[info]     total running time: 0.146007 sec                              main.cpp:main:286

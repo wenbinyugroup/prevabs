@@ -36,9 +36,6 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t7_box\box.opt
-    - writing gmsh .geo file: .\test\integration\t7_box\box.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t7_box\box.msh
     - writing sg file: .\test\integration\t7_box\box.sg
       - writing nodes
       - writing elements
@@ -48,12 +45,22 @@
   - writing outputs -- done
   
   
-  - running Gmsh for visualization
+  - running VABS for homogenization
+  
+  -  [VABS Messages] 
+  
+  - running: VABS ".\test\integration\t7_box\box.sg"
+  - command completed successfully.
+  
+  -  [VABS Messages End] 
+  
+  - running VABS for homogenization -- done
+  
 
 ========================================
 
 
 ========================================
 
-9:07)                      main.cpp:main:285
-[info]     total running time: 102.809 sec                               main.cpp:main:286
+2:13)                      main.cpp:main:285
+[info]     total running time: 0.638341 sec                              main.cpp:main:286

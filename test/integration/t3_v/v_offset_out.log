@@ -8,15 +8,52 @@
 ========================================
 
   
+  - reading input files
+      - reading main input file: .\test\integration\t3_v\v_offset_out.xml
+        [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+  - reading input files -- done
   
   
+  - building the shape
+    - building the cross section, step 1
+      - building component: surface
     
+    - building the cross section, step 2
+      - building component details: surface
+  
+    - fixing geometry
+  - building the shape -- done
   
   
+  - modeling in Gmsh
+      - creating gmsh vertices
+      - creating gmsh edges
+      - creating gmsh faces
+      - creating physical groups
+    - meshing
+  - modeling in Gmsh -- done
   
   
+  - writing outputs
+    - writing sg file: .\test\integration\t3_v\v_offset_out.sg
+      - writing nodes
+      - writing elements
+        -   writing connectivity
+        -   writing local orientation
+    - writing material id-name file: .\test\integration\t3_v\v_offset_out.sg.mat
+  - writing outputs -- done
   
   
+  - running VABS for homogenization
+  
+  -  [VABS Messages] 
+  
+  - running: VABS ".\test\integration\t3_v\v_offset_out.sg"
+  - command completed successfully.
+  
+  -  [VABS Messages End] 
+  
+  - running VABS for homogenization -- done
   
 
 ========================================
@@ -24,34 +61,5 @@
 
 ========================================
 
-OReadCrossSection.cpp:readCrossSection:69        - reading main input file: .\test\integration\t3_v\v_offset_out.xml
-[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info] PModel.cpp:homogenize:274    - reading input files -- done
-[info] PModel.cpp:homogenize:282    - building the shape
-[info] CrossSection.cpp:build:174      - building the cross section, step 1
-[info] PComponent.cpp:build:91        - building component: surface
-[info] CrossSection.cpp:build:216      - building the cross section, step 2
-[info] PComponent.cpp:buildDetails:126        - building component details: surface
-[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
-[info] PModel.cpp:homogenize:286    - building the shape -- done
-[info] PModel.cpp:homogenize:294    - modeling in Gmsh
-[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
-[info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
-[info] PModelBuildGmsh.cpp:createGmshFaces:219        - creating gmsh faces
-[info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:355        - creating physical groups
-[info] PModelBuildGmsh.cpp:buildGmsh:480      - meshing
-[info] PModel.cpp:homogenize:298    - modeling in Gmsh -- done
-[info] PModel.cpp:homogenize:308    - writing outputs
-[info] PModelIOGmsh.cpp:writeGmshOpt:465      - writing gmsh .opt file: .\test\integration\t3_v\v_offset_out.opt
-[info] PModelIOGmsh.cpp:writeGmshGeo:351      - writing gmsh .geo file: .\test\integration\t3_v\v_offset_out.geo_unrolled
-[info] PModelIOGmsh.cpp:writeGmshMsh:396      - writing gmsh .msh file: .\test\integration\t3_v\v_offset_out.msh
-[info] PModelIOSG.cpp:writeSG:93      - writing sg file: .\test\integration\t3_v\v_offset_out.sg
-[info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
-[info] PModelIOGmsh.cpp:writeElements:136        - writing elements
-[info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
-[info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
-[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: .\test\integration\t3_v\v_offset_out.sg.mat
-[info] PModel.cpp:homogenize:321    - writing outputs -- done
-[info] PModel.cpp:plot:458    - running Gmsh for visualization
-[info] main.cpp:main:285  - prevabs finished (2026-03-30 22:34:04)
-[info] main.cpp:main:286  total running time: 4.84316 sec
+9:08)                      main.cpp:main:285
+[info]     total running time: 0.295648 sec                              main.cpp:main:286

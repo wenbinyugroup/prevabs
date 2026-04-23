@@ -122,7 +122,10 @@ std::vector<PDCELVertex *> Segment::splitBoundByLayup(
 
 
 
-// Search face boundary edges from v_prev for the intersection with ls_offset.
+// Search face boundary edges from v_prev for the intersection with the
+// infinite support line of ls_offset. Open-bound construction uses offset
+// construction lines whose valid hit may lie beyond the finite ls_offset end
+// points, so only the face-edge parameter is range-checked here.
 // go_prev controls traversal direction (true = prev(), false = next()).
 // May split an edge. Returns the intersection vertex, or nullptr if not found.
 PDCELVertex *Segment::findLayerIntersectionOnFace(
@@ -132,6 +135,8 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
   PDCELVertex *v_layer = nullptr;
   double u1_tmp, u2_tmp;
+  const double endpoint_tol =
+      (bcfg.tol > TOLERANCE) ? bcfg.tol : TOLERANCE;
 
   PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdgeInFace(v_prev, face);
   PDCELHalfEdge *he_base = he_tmp;
@@ -156,14 +161,15 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
           he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
 
             PLOG(debug) << "u1_tmp = " << u1_tmp;
+            PLOG(debug) << "u2_tmp = " << u2_tmp;
 
       if (not_parallel) {
-        if (fabs(u1_tmp) < bcfg.tol) {
+        if (fabs(u1_tmp) <= endpoint_tol) {
                     PLOG(debug) << "  case 1: intersect at source";
           v_layer = he_tmp->source();
           break;
         }
-        else if (fabs(1 - u1_tmp) < bcfg.tol) {
+        else if (fabs(1 - u1_tmp) <= endpoint_tol) {
                     PLOG(debug) << "  case 2: intersect at target";
           v_layer = he_tmp->target();
           break;

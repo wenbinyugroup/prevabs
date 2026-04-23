@@ -1,47 +1,65 @@
-[info] - prevabs start (2026-02-16 16:53:43)
-[info] - reading input files
-[info]     - reading main input file: .\share\examples\ex_pipe\pipe.xml
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  - reading input files
+      - reading main input file: .\share\examples\ex_pipe\pipe.xml
+        [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+  - reading input files -- done
   
   
+  - building the shape
+    - building the cross section, step 1
+      - building component: cmp_1
     
+    - building the cross section, step 2
+      - building component details: cmp_1
+  
+    - fixing geometry
+  - building the shape -- done
   
   
+  - modeling in Gmsh
+      - creating gmsh vertices
+      - creating gmsh edges
+      - creating gmsh faces
+      - creating physical groups
+    - meshing
+  - modeling in Gmsh -- done
   
   
+  - writing outputs
+    - writing sg file: .\share\examples\ex_pipe\pipe.sg
+      - writing nodes
+      - writing elements
+        -   writing connectivity
+        -   writing local orientation
+    - writing material id-name file: .\share\examples\ex_pipe\pipe.sg.mat
+  - writing outputs -- done
   
   
+  - running VABS for homogenization
   
+  -  [VABS Messages] 
   
-  ========================================
+  - running: VABS ".\share\examples\ex_pipe\pipe.sg"
+  - command completed successfully.
   
+  -  [VABS Messages End] 
   
-  ========================================
+  - running VABS for homogenization -- done
   
-info]   - building the shape
-[info]     - building the cross section, step 1
-[info]       - building component: cmp_1
-[info]     - building the cross section, step 2
-[info]       - building component details: cmp_1
-[info]     - fixing geometry
-[info]   - building the shape -- done
-[info]   - modeling in Gmsh
-[info]     - creating gmsh vertices
-[info]     - creating gmsh edges
-[info]     - creating gmsh faces
-[info]     - creating physical groups
-[info]     - meshing
-[info]   - modeling in Gmsh -- done
-[info]   - writing outputs
-[info]     - writing gmsh .opt file: .\share\examples\ex_pipe\pipe.opt
-[info]     - writing gmsh .geo file: .\share\examples\ex_pipe\pipe.geo_unrolled
-[info]     - writing gmsh .msh file: .\share\examples\ex_pipe\pipe.msh
-[info]     - writing sg file: .\share\examples\ex_pipe\pipe.sg
-[info]       - writing nodes
-[info]       - writing elements
-[info]         -   writing connectivity
-[info]         -   writing local orientation
-[info]     - writing material id-name file: .\share\examples\ex_pipe\pipe.sg.mat
-[info]   - writing outputs -- done
-[info]   - running Gmsh for visualization
-[info]   - prevabs finished (2026-02-16 16:53:49)
-[info] total running time: 5.76 sec
+
+========================================
+
+
+========================================
+
+4:45)                      main.cpp:main:285
+[info]     total running time: 0.207706 sec                              main.cpp:main:286

@@ -8,50 +8,51 @@
 ========================================
 
   
+  - reading input files
+      - reading main input file: .\test\integration\t1_strip\strip.xml
+        [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+  - reading input files -- done
   
   
+  - building the shape
+    - building the cross section, step 1
+      - building component: top
     
+    - building the cross section, step 2
+      - building component details: top
+  
+    - fixing geometry
+  - building the shape -- done
   
   
+  - modeling in Gmsh
+      - creating gmsh vertices
+      - creating gmsh edges
+      - creating gmsh faces
+      - creating physical groups
+    - meshing
+  - modeling in Gmsh -- done
   
   
+  - writing outputs
+    - writing gmsh .opt file: .\test\integration\t1_strip\strip.opt
+    - writing gmsh .geo file: .\test\integration\t1_strip\strip.geo_unrolled
+    - writing gmsh .msh file: .\test\integration\t1_strip\strip.msh
+    - writing sg file: .\test\integration\t1_strip\strip.sg
+      - writing nodes
+      - writing elements
+        -   writing connectivity
+        -   writing local orientation
+    - writing material id-name file: .\test\integration\t1_strip\strip.sg.mat
+  - writing outputs -- done
   
   
-  
+  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-1_strip\strip.xml
-[warning]         - unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info]   - reading input files -- done
-[info]   - building the shape
-[info]     - building the cross section, step 1
-[info]       - building component: top
-[info]     - building the cross section, step 2
-[info]       - building component details: top
-[info]     - fixing geometry
-[info]   - building the shape -- done
-[info]   - modeling in Gmsh
-[info]     - creating gmsh vertices
-[info]     - creating gmsh edges
-[info]     - creating gmsh faces
-[info]     - creating physical groups
-[info]     - meshing
-[info]   - modeling in Gmsh -- done
-[info]   - writing outputs
-[info]     - writing gmsh .opt file: .\test\integration\t1_strip\strip.opt
-[info]     - writing gmsh .geo file: .\test\integration\t1_strip\strip.geo_unrolled
-[info]     - writing gmsh .msh file: .\test\integration\t1_strip\strip.msh
-[info]     - writing sg file: .\test\integration\t1_strip\strip.sg
-[info]       - writing nodes
-[info]       - writing elements
-[info]         -   writing connectivity
-[info]         -   writing local orientation
-[info]     - writing material id-name file: .\test\integration\t1_strip\strip.sg.mat
-[info]   - writing outputs -- done
-[info]   - running Gmsh for visualization
-[info] - prevabs finished (2026-02-24 16:22:05)
-[info] total running time: 2.33085 sec
+8:23)                      main.cpp:main:285
+[info]     total running time: 2.71331 sec                               main.cpp:main:286

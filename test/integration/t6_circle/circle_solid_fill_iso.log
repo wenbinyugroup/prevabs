@@ -34,9 +34,6 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t6_circle\circle_solid_fill_iso.opt
-    - writing gmsh .geo file: .\test\integration\t6_circle\circle_solid_fill_iso.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t6_circle\circle_solid_fill_iso.msh
     - writing sg file: .\test\integration\t6_circle\circle_solid_fill_iso.sg
       - writing nodes
       - writing elements
@@ -46,12 +43,22 @@
   - writing outputs -- done
   
   
-  - running Gmsh for visualization
+  - running VABS for homogenization
+  
+  -  [VABS Messages] 
+  
+  - running: VABS ".\test\integration\t6_circle\circle_solid_fill_iso.sg"
+  - command completed successfully.
+  
+  -  [VABS Messages End] 
+  
+  - running VABS for homogenization -- done
+  
 
 ========================================
 
 
 ========================================
 
-1:16)                      main.cpp:main:285
-[info]     total running time: 1.88341 sec                               main.cpp:main:286
+1:23)                      main.cpp:main:285
+[info]     total running time: 0.0587927 sec                             main.cpp:main:286

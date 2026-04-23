@@ -1,0 +1,17 @@
+
+========================================
+
+  PreVABS 1.6.0
+
+  (For VABS 4.0 and SwiftComp 2.1)
+
+========================================
+
+  
+  - reading input files
+      [error] unable to open file: .\test\integration\t1_strip\string_two_layups.xml
+  - reading input files -- done
+  
+  
+  - building the shape
+    - building the cross section, step 1

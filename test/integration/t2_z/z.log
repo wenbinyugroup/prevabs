@@ -8,51 +8,52 @@
 ========================================
 
   
+  - reading input files
+      - reading main input file: .\test\integration\t2_z\z.xml
+        [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+        - reading materials file: .\test\integration\t2_z\materials.xml
+  - reading input files -- done
   
   
+  - building the shape
+    - building the cross section, step 1
+      - building component: cmp_1
     
+    - building the cross section, step 2
+      - building component details: cmp_1
+  
+    - fixing geometry
+  - building the shape -- done
   
   
+  - modeling in Gmsh
+      - creating gmsh vertices
+      - creating gmsh edges
+      - creating gmsh faces
+      - creating physical groups
+    - meshing
+  - modeling in Gmsh -- done
   
   
+  - writing outputs
+    - writing gmsh .opt file: .\test\integration\t2_z\z.opt
+    - writing gmsh .geo file: .\test\integration\t2_z\z.geo_unrolled
+    - writing gmsh .msh file: .\test\integration\t2_z\z.msh
+    - writing sg file: .\test\integration\t2_z\z.sg
+      - writing nodes
+      - writing elements
+        -   writing connectivity
+        -   writing local orientation
+    - writing material id-name file: .\test\integration\t2_z\z.sg.mat
+  - writing outputs -- done
   
   
-  
+  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-OReadCrossSection.cpp:readCrossSection:69        - reading main input file: .\test\integration\t2_z\z.xml
-[warning] PModelIOReadMaterial.cpp:readMaterialsFile:55          - unable to open file: C:\Users\foxta\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-[info] PModelIOReadMaterial.cpp:readMaterialsFile:59          - reading materials file: .\test\integration\t2_z\materials.xml
-[info] PModel.cpp:homogenize:274    - reading input files -- done
-[info] PModel.cpp:homogenize:282    - building the shape
-[info] CrossSection.cpp:build:174      - building the cross section, step 1
-[info] PComponent.cpp:build:91        - building component: cmp_1
-[info] CrossSection.cpp:build:216      - building the cross section, step 2
-[info] PComponent.cpp:buildDetails:126        - building component details: cmp_1
-[info] PDCEL.cpp:fixGeometry:187      - fixing geometry
-[info] PModel.cpp:homogenize:286    - building the shape -- done
-[info] PModel.cpp:homogenize:294    - modeling in Gmsh
-[info] PModelBuildGmsh.cpp:createGmshVertices:33        - creating gmsh vertices
-[info] PModelBuildGmsh.cpp:createGmshEdges:169        - creating gmsh edges
-[info] PModelBuildGmsh.cpp:createGmshFaces:219        - creating gmsh faces
-[info] PModelBuildGmsh.cpp:createGmshPhyscialGroups:355        - creating physical groups
-[info] PModelBuildGmsh.cpp:buildGmsh:480      - meshing
-[info] PModel.cpp:homogenize:298    - modeling in Gmsh -- done
-[info] PModel.cpp:homogenize:308    - writing outputs
-[info] PModelIOGmsh.cpp:writeGmshOpt:465      - writing gmsh .opt file: .\test\integration\t2_z\z.opt
-[info] PModelIOGmsh.cpp:writeGmshGeo:351      - writing gmsh .geo file: .\test\integration\t2_z\z.geo_unrolled
-[info] PModelIOGmsh.cpp:writeGmshMsh:396      - writing gmsh .msh file: .\test\integration\t2_z\z.msh
-[info] PModelIOSG.cpp:writeSG:93      - writing sg file: .\test\integration\t2_z\z.sg
-[info] PModelIOGmsh.cpp:writeNodes:62        - writing nodes
-[info] PModelIOGmsh.cpp:writeElements:136        - writing elements
-[info] PModelIOGmsh.cpp:writeElementsVABS:167          -   writing connectivity
-[info] PModelIOGmsh.cpp:writeElementsVABS:215          -   writing local orientation
-[info] PModelIOSG.cpp:writeSG:166      - writing material id-name file: .\test\integration\t2_z\z.sg.mat
-[info] PModel.cpp:homogenize:321    - writing outputs -- done
-[info] PModel.cpp:plot:458    - running Gmsh for visualization
-[info] main.cpp:main:285  - prevabs finished (2026-03-30 22:30:47)
-[info] main.cpp:main:286  total running time: 3.48333 sec
+8:41)                      main.cpp:main:285
+[info]     total running time: 2.18039 sec                               main.cpp:main:286
