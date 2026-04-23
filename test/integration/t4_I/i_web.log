@@ -18,13 +18,41 @@
   - building the shape
     - building the cross section, step 1
       - building component: top
+          - creating gmsh vertices
+          - creating gmsh edges
+          - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_1.geo_unrolled
+          - writing gmsh .opt file: .\test\integration\t4_I\i_web_debug.opt
       - building component: bottom
+          - creating gmsh vertices
+          - creating gmsh edges
+          - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_2.geo_unrolled
       - building component: web
+          - creating gmsh vertices
+          - creating gmsh edges
+          - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_3.geo_unrolled
+          - creating gmsh vertices
+          - creating gmsh edges
+          - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_4.geo_unrolled
+      - creating gmsh vertices
+      - creating gmsh edges
+      - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_5.geo_unrolled
     
     - building the cross section, step 2
       - building component details: top
+        - creating gmsh vertices
+        - creating gmsh edges
+        - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_6.geo_unrolled
       - building component details: bottom
+        - creating gmsh vertices
+        - creating gmsh edges
+        - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_7.geo_unrolled
       - building component details: web
+        - creating gmsh vertices
+        - creating gmsh edges
+        - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_8.geo_unrolled
+        - creating gmsh vertices
+        - creating gmsh edges
+        - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_9.geo_unrolled
   
     - fixing geometry
   - building the shape -- done
@@ -35,14 +63,12 @@
       - creating gmsh edges
       - creating gmsh faces
       - creating physical groups
+      - writing gmsh .geo file: .\test\integration\t4_I\i_web_debug_10.geo_unrolled
     - meshing
   - modeling in Gmsh -- done
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t4_I\i_web.opt
-    - writing gmsh .geo file: .\test\integration\t4_I\i_web.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t4_I\i_web.msh
     - writing sg file: .\test\integration\t4_I\i_web.sg
       - writing nodes
       - writing elements
@@ -51,13 +77,1707 @@
     - writing material id-name file: .\test\integration\t4_I\i_web.sg.mat
   - writing outputs -- done
   
-  
-  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-5:42)                      main.cpp:main:285
-[info]     total running time: 1.05806 sec                               main.cpp:main:286
+int:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [bl]: ( 0 , -1.5 , -3 )                                     PBaseLine.cpp:print:41
+[debug]    2 [bc]: ( 0 , 0 , -3 )                                        PBaseLine.cpp:print:41
+[debug]    3 [br]: ( 0 , 1.5 , -3 )                                      PBaseLine.cpp:print:41
+[debug]    reading line: bl_web                                          PModelIOReadBaseLine.cpp:readXMLElementLine:171
+[debug]    name: bl_web                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , 0.04 , -3 )                                       PBaseLine.cpp:print:41
+[debug]    2 [web]: ( 0 , 0.04 , -2 )                                    PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 0.04 , -1 )                                       PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:612
+[debug]    summary of base lines (before transformation)                 PModelIOReadCrossSection.cpp:readCrossSection:613
+[debug]    name: bl_top                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [tl]: ( 0 , -1 , 0 )                                        PBaseLine.cpp:print:41
+[debug]    2 [tc]: ( 0 , 0 , 0 )                                         PBaseLine.cpp:print:41
+[debug]    3 [tr]: ( 0 , 1 , 0 )                                         PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:617
+[debug]    name: bl_bottom                                               PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [bl]: ( 0 , -1.5 , -3 )                                     PBaseLine.cpp:print:41
+[debug]    2 [bc]: ( 0 , 0 , -3 )                                        PBaseLine.cpp:print:41
+[debug]    3 [br]: ( 0 , 1.5 , -3 )                                      PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:617
+[debug]    name: bl_web                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , 0.04 , -3 )                                       PBaseLine.cpp:print:41
+[debug]    2 [web]: ( 0 , 0.04 , -2 )                                    PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 0.04 , -1 )                                       PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:617
+[debug]    transforming base geometry                                    PModelIOReadCrossSection.cpp:readCrossSection:623
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:634
+[debug]    summary of base lines (after transformation)                  PModelIOReadCrossSection.cpp:readCrossSection:635
+[debug]    name: bl_top                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [tl]: ( 0 , -1 , 0 )                                        PBaseLine.cpp:print:41
+[debug]    2 [tc]: ( 0 , 0 , 0 )                                         PBaseLine.cpp:print:41
+[debug]    3 [tr]: ( 0 , 1 , 0 )                                         PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:639
+[debug]    name: bl_bottom                                               PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [bl]: ( 0 , -1.5 , -3 )                                     PBaseLine.cpp:print:41
+[debug]    2 [bc]: ( 0 , 0 , -3 )                                        PBaseLine.cpp:print:41
+[debug]    3 [br]: ( 0 , 1.5 , -3 )                                      PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:639
+[debug]    name: bl_web                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , 0.04 , -3 )                                       PBaseLine.cpp:print:41
+[debug]    2 [web]: ( 0 , 0.04 , -2 )                                    PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 0.04 , -1 )                                       PBaseLine.cpp:print:41
+[debug]                                                                  PModelIOReadCrossSection.cpp:readCrossSection:639
+[debug]    finished reading geometry.                                    PModelIOReadCrossSection.cpp:readCrossSection:643
+[debug]    reading materials...                                          PModelIOReadCrossSection.cpp:readCrossSection:647
+[debug]    reading material: iso5_1                                      PModelIOReadMaterial.cpp:readXMLElementMaterial:162
+[debug]    reading material: iso5_2                                      PModelIOReadMaterial.cpp:readXMLElementMaterial:162
+[debug]    reading material: iso5_3                                      PModelIOReadMaterial.cpp:readXMLElementMaterial:162
+[debug]    reading material: iso5_4                                      PModelIOReadMaterial.cpp:readXMLElementMaterial:162
+[debug]    reading material: iso5_5                                      PModelIOReadMaterial.cpp:readXMLElementMaterial:162
+[debug]    reading lamina: la_iso5_1_003                                 PModelIOReadMaterial.cpp:readXMLElementLamina:523
+[debug]    reading lamina: la_iso5_2_005                                 PModelIOReadMaterial.cpp:readXMLElementLamina:523
+[debug]    reading lamina: la_iso5_3_0015                                PModelIOReadMaterial.cpp:readXMLElementLamina:523
+[debug]    reading lamina: la_iso5_4_002                                 PModelIOReadMaterial.cpp:readXMLElementLamina:523
+[debug]    reading lamina: la_iso5_5_002                                 PModelIOReadMaterial.cpp:readXMLElementLamina:523
+[debug]    finished reading materials.                                   PModelIOReadCrossSection.cpp:readCrossSection:708
+[debug]    reading layups...                                             PModelIOReadCrossSection.cpp:readCrossSection:712
+[debug]    in function: readLayups                                       PModelIOReadLayup.cpp:readLayups:49
+[debug]    reading layup: layup_1                                        PModelIOReadLayup.cpp:readLayups:58
+[debug]    reading layup: layup_2                                        PModelIOReadLayup.cpp:readLayups:58
+[debug]    reading layup: layup_web                                      PModelIOReadLayup.cpp:readLayups:58
+[debug]    finished reading layups.                                      PModelIOReadCrossSection.cpp:readCrossSection:746
+[debug]    reading components...                                         PModelIOReadCrossSection.cpp:readCrossSection:764
+[debug]    reading component: top                                        PModelIOReadComponent.cpp:readXMLElementComponent:56
+[debug]    reading component: bottom                                     PModelIOReadComponent.cpp:readXMLElementComponent:56
+[debug]    reading component: web                                        PModelIOReadComponent.cpp:readXMLElementComponent:56
+[debug]    finished reading components.                                  PModelIOReadCrossSection.cpp:readCrossSection:783
+[debug]    offsetting the base curve of segment: sgtop                   PSegment.cpp:offsetCurveBase:435
+[debug]    offset (multi-vertex): size=3 side=1 dist=0.110000            offset.cpp:offset:801
+[debug]    offset (multi-vertex): step 1 — compute junction vertices   offset.cpp:offset:830
+[debug]    computeOffsetJunctions: 3 base vertices, side=1, dist=0.11    offset.cpp:computeOffsetJunctions:304
+[debug]    segment [0]: base ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 )             offset.cpp:computeOffsetJunctions:334
+[debug]    offset result: cur_start=( 0 , -1 , 0.11 ), cur_end=( 0 , 0   offset.cpp:computeOffsetJunctions:349
+           , 0.11 )
+[debug]    first segment: junction = cur_start (no prev segment)         offset.cpp:computeOffsetJunctions:362
+[debug]    segment [1]: base ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 )              offset.cpp:computeOffsetJunctions:334
+[debug]    offset result: cur_start=( 0 , 0 , 0.11 ), cur_end=( 0 , 1 ,  offset.cpp:computeOffsetJunctions:349
+           0.11 )
+[debug]    find intersection: prev_start = ( 0 , -1 , 0.11 ), prev_end   offset.cpp:computeOffsetJunctions:383
+           = ( 0 , 0 , 0.11 ) cur_start = ( 0 , 0 , 0.11 ), cur_end = (
+           0 , 1 , 0.11 ) prev segment: [-1,0.11] - [0,0.11] cur
+           segment: [0,0.11] - [1,0.11]
+[debug]    segments parallel/collinear: fell back to prev_end            offset.cpp:computeOffsetJunctions:433
+[debug]    junction[1] = ( 0 , 0 , 0.11 )                                offset.cpp:computeOffsetJunctions:440
+[debug]    last segment: appended tail junction[2] = ( 0 , 1 , 0.11 )    offset.cpp:computeOffsetJunctions:454
+[debug]    computeOffsetJunctions: returning 3 junction vertices         offset.cpp:computeOffsetJunctions:479
+[debug]    offset (multi-vertex): step 2 — group valid segments        offset.cpp:offset:843
+[debug]    groupValidSegments: 3 base vertices, 2 segment(s) to check    offset.cpp:groupValidSegments:531
+[debug]    segment [0]: valid                                            offset.cpp:groupValidSegments:561
+[debug]    opened sub-line 0 at junction vertex 0                        offset.cpp:groupValidSegments:573
+[debug]    segment [1]: valid                                            offset.cpp:groupValidSegments:561
+[debug]    groupValidSegments: produced 1 sub-line(s)                    offset.cpp:groupValidSegments:596
+[debug]    offset (multi-vertex): 1 sub-line(s) after grouping           offset.cpp:offset:882
+[debug]    offset (multi-vertex): step 3 — trim adjacent sub-line      offset.cpp:offset:895
+           pairs
+[debug]    offset (multi-vertex): step 4 — closed-curve head-tail      offset.cpp:offset:923
+           trim
+[debug]    offset (multi-vertex): step 5 — build output mappings       offset.cpp:offset:1100
+[debug]    base vertices -- base_link_to_offset_indices                  offset.cpp:offset:1140
+[debug]    0: ( 0 , -1 , 0 ) -- 0                                        offset.cpp:offset:1142
+[debug]    1: ( 0 , 0 , 0 ) -- 1                                         offset.cpp:offset:1142
+[debug]    2: ( 0 , 1 , 0 ) -- 2                                         offset.cpp:offset:1142
+[debug]    base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )                    PSegment.cpp:offsetCurveBase:460
+[debug]    offset line: ( 0 , -1 , 0.11 ) -> ( 0 , 1 , 0.11 )            PSegment.cpp:offsetCurveBase:463
+[debug]    offsetCurveBase: reusing existing offset curve for segment    PSegment.cpp:offsetCurveBase:420
+           'sgtop'
+[debug]    making segment end: sgtop 0                                   join.cpp:joinSegments:870
+[debug]    number of dependencies: 0                                     join.cpp:joinSegments:872
+[debug]    the end to be done (e): 0                                     join.cpp:joinSegments:876
+[debug]    free end of the segment (s->free()): -1                       join.cpp:joinSegments:877
+[debug]    making segment end because of no dependency.                  join.cpp:joinSegments:881
+[debug]    createSegmentFreeEnd: sgtop end=0                             join.cpp:createSegmentFreeEnd:1115
+[debug]    curve base:                                                   join.cpp:createSegmentFreeEnd:1222
+[debug]    name: bl_top                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [tl]: ( 0 , -1 , 0 )                                        PBaseLine.cpp:print:41
+[debug]    2 [tc]: ( 0 , 0 , 0 )                                         PBaseLine.cpp:print:41
+[debug]    3 [tr]: ( 0 , 1 , 0 )                                         PBaseLine.cpp:print:41
+[debug]    curve offset:                                                 join.cpp:createSegmentFreeEnd:1224
+[debug]    name:                                                         PBaseLine.cpp:print:33
+[debug]    type:                                                         PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , -1 , 0.11 )                                       PBaseLine.cpp:print:41
+[debug]    2 []: ( 0 , 0 , 0.11 )                                        PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 1 , 0.11 )                                        PBaseLine.cpp:print:41
+[debug]    base vertices -- base_link_to_offset_indices                  PSegment.cpp:printBaseOffsetPairs:355
+[debug]    number of pairs: 3                                            PSegment.cpp:printBaseOffsetPairs:357
+[debug]    0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.11 )                     PSegment.cpp:printBaseOffsetPairs:366
+[debug]    1: ( 0 , 0 , 0 ) -- 1: ( 0 , 0 , 0.11 )                       PSegment.cpp:printBaseOffsetPairs:366
+[debug]    2: ( 0 , 1 , 0 ) -- 2: ( 0 , 1 , 0.11 )                       PSegment.cpp:printBaseOffsetPairs:366
+[debug]    adding head edge: base.front() -- offset.front()              join.cpp:createSegmentFreeEnd:1230
+[debug]    making segment end: sgtop 1                                   join.cpp:joinSegments:870
+[debug]    number of dependencies: 0                                     join.cpp:joinSegments:872
+[debug]    the end to be done (e): 1                                     join.cpp:joinSegments:876
+[debug]    free end of the segment (s->free()): -1                       join.cpp:joinSegments:877
+[debug]    making segment end because of no dependency.                  join.cpp:joinSegments:881
+[debug]    createSegmentFreeEnd: sgtop end=1                             join.cpp:createSegmentFreeEnd:1115
+[debug]    curve base:                                                   join.cpp:createSegmentFreeEnd:1222
+[debug]    name: bl_top                                                  PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [tl]: ( 0 , -1 , 0 )                                        PBaseLine.cpp:print:41
+[debug]    2 [tc]: ( 0 , 0 , 0 )                                         PBaseLine.cpp:print:41
+[debug]    3 [tr]: ( 0 , 1 , 0 )                                         PBaseLine.cpp:print:41
+[debug]    curve offset:                                                 join.cpp:createSegmentFreeEnd:1224
+[debug]    name:                                                         PBaseLine.cpp:print:33
+[debug]    type:                                                         PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , -1 , 0.11 )                                       PBaseLine.cpp:print:41
+[debug]    2 []: ( 0 , 0 , 0.11 )                                        PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 1 , 0.11 )                                        PBaseLine.cpp:print:41
+[debug]    base vertices -- base_link_to_offset_indices                  PSegment.cpp:printBaseOffsetPairs:355
+[debug]    number of pairs: 3                                            PSegment.cpp:printBaseOffsetPairs:357
+[debug]    0: ( 0 , -1 , 0 ) -- 0: ( 0 , -1 , 0.11 )                     PSegment.cpp:printBaseOffsetPairs:366
+[debug]    1: ( 0 , 0 , 0 ) -- 1: ( 0 , 0 , 0.11 )                       PSegment.cpp:printBaseOffsetPairs:366
+[debug]    2: ( 0 , 1 , 0 ) -- 2: ( 0 , 1 , 0.11 )                       PSegment.cpp:printBaseOffsetPairs:366
+[debug]    adding tail edge: base.back() -- offset.back()                join.cpp:createSegmentFreeEnd:1236
+[debug]    building the overall shape of segment: sgtop                  PSegment.cpp:build:478
+[debug]    base line: ( 0 , -1 , 0 ) -> ( 0 , 1 , 0 )                    PSegment.cpp:build:479
+[debug]    creating half edges for the base curve                        PSegment.cpp:build:486
+[debug]    number of vertices of the base curve: 3                       PSegment.cpp:build:489
+[debug]    vertices: 0 -- 1                                              PSegment.cpp:build:494
+[debug]    vertices: 1 -- 2                                              PSegment.cpp:build:494
+[debug]    creating half edges for the offset curve                      PSegment.cpp:build:505
+[debug]    creating the half edge loop and face                          PSegment.cpp:build:512
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: nullptr |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=1 tgt_tag=2
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=4
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: nullptr |    PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: nullptr |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=6 tgt_tag=4
+[debug]    offsetting the base curve of segment: sgbottom                PSegment.cpp:offsetCurveBase:435
+[debug]    offset (multi-vertex): size=3 side=1 dist=0.065000            offset.cpp:offset:801
+[debug]    offset (multi-vertex): step 1 — compute junction vertices   offset.cpp:offset:830
+[debug]    computeOffsetJunctions: 3 base vertices, side=1, dist=0.065   offset.cpp:computeOffsetJunctions:304
+[debug]    segment [0]: base ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 )         offset.cpp:computeOffsetJunctions:334
+[debug]    offset result: cur_start=( 0 , -1.5 , -2.935 ), cur_end=( 0   offset.cpp:computeOffsetJunctions:349
+           , 0 , -2.935 )
+[debug]    first segment: junction = cur_start (no prev segment)         offset.cpp:computeOffsetJunctions:362
+[debug]    segment [1]: base ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 )          offset.cpp:computeOffsetJunctions:334
+[debug]    offset result: cur_start=( 0 , 0 , -2.935 ), cur_end=( 0 ,    offset.cpp:computeOffsetJunctions:349
+           1.5 , -2.935 )
+[debug]    find intersection: prev_start = ( 0 , -1.5 , -2.935 ),        offset.cpp:computeOffsetJunctions:383
+           prev_end = ( 0 , 0 , -2.935 ) cur_start = ( 0 , 0 , -2.935
+           ), cur_end = ( 0 , 1.5 , -2.935 ) prev segment:
+           [-1.5,-2.935] - [0,-2.935] cur segment: [0,-2.935] -
+           [1.5,-2.935]
+[debug]    segments parallel/collinear: fell back to prev_end            offset.cpp:computeOffsetJunctions:433
+[debug]    junction[1] = ( 0 , 0 , -2.935 )                              offset.cpp:computeOffsetJunctions:440
+[debug]    last segment: appended tail junction[2] = ( 0 , 1.5 , -2.935  offset.cpp:computeOffsetJunctions:454
+           )
+[debug]    computeOffsetJunctions: returning 3 junction vertices         offset.cpp:computeOffsetJunctions:479
+[debug]    offset (multi-vertex): step 2 — group valid segments        offset.cpp:offset:843
+[debug]    groupValidSegments: 3 base vertices, 2 segment(s) to check    offset.cpp:groupValidSegments:531
+[debug]    segment [0]: valid                                            offset.cpp:groupValidSegments:561
+[debug]    opened sub-line 0 at junction vertex 0                        offset.cpp:groupValidSegments:573
+[debug]    segment [1]: valid                                            offset.cpp:groupValidSegments:561
+[debug]    groupValidSegments: produced 1 sub-line(s)                    offset.cpp:groupValidSegments:596
+[debug]    offset (multi-vertex): 1 sub-line(s) after grouping           offset.cpp:offset:882
+[debug]    offset (multi-vertex): step 3 — trim adjacent sub-line      offset.cpp:offset:895
+           pairs
+[debug]    offset (multi-vertex): step 4 — closed-curve head-tail      offset.cpp:offset:923
+           trim
+[debug]    offset (multi-vertex): step 5 — build output mappings       offset.cpp:offset:1100
+[debug]    base vertices -- base_link_to_offset_indices                  offset.cpp:offset:1140
+[debug]    0: ( 0 , -1.5 , -3 ) -- 0                                     offset.cpp:offset:1142
+[debug]    1: ( 0 , 0 , -3 ) -- 1                                        offset.cpp:offset:1142
+[debug]    2: ( 0 , 1.5 , -3 ) -- 2                                      offset.cpp:offset:1142
+[debug]    base line: ( 0 , -1.5 , -3 ) -> ( 0 , 1.5 , -3 )              PSegment.cpp:offsetCurveBase:460
+[debug]    offset line: ( 0 , -1.5 , -2.935 ) -> ( 0 , 1.5 , -2.935 )    PSegment.cpp:offsetCurveBase:463
+[debug]    offsetCurveBase: reusing existing offset curve for segment    PSegment.cpp:offsetCurveBase:420
+           'sgbottom'
+[debug]    making segment end: sgbottom 0                                join.cpp:joinSegments:870
+[debug]    number of dependencies: 0                                     join.cpp:joinSegments:872
+[debug]    the end to be done (e): 0                                     join.cpp:joinSegments:876
+[debug]    free end of the segment (s->free()): -1                       join.cpp:joinSegments:877
+[debug]    making segment end because of no dependency.                  join.cpp:joinSegments:881
+[debug]    createSegmentFreeEnd: sgbottom end=0                          join.cpp:createSegmentFreeEnd:1115
+[debug]    curve base:                                                   join.cpp:createSegmentFreeEnd:1222
+[debug]    name: bl_bottom                                               PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [bl]: ( 0 , -1.5 , -3 )                                     PBaseLine.cpp:print:41
+[debug]    2 [bc]: ( 0 , 0 , -3 )                                        PBaseLine.cpp:print:41
+[debug]    3 [br]: ( 0 , 1.5 , -3 )                                      PBaseLine.cpp:print:41
+[debug]    curve offset:                                                 join.cpp:createSegmentFreeEnd:1224
+[debug]    name:                                                         PBaseLine.cpp:print:33
+[debug]    type:                                                         PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , -1.5 , -2.935 )                                   PBaseLine.cpp:print:41
+[debug]    2 []: ( 0 , 0 , -2.935 )                                      PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 1.5 , -2.935 )                                    PBaseLine.cpp:print:41
+[debug]    base vertices -- base_link_to_offset_indices                  PSegment.cpp:printBaseOffsetPairs:355
+[debug]    number of pairs: 3                                            PSegment.cpp:printBaseOffsetPairs:357
+[debug]    0: ( 0 , -1.5 , -3 ) -- 0: ( 0 , -1.5 , -2.935 )              PSegment.cpp:printBaseOffsetPairs:366
+[debug]    1: ( 0 , 0 , -3 ) -- 1: ( 0 , 0 , -2.935 )                    PSegment.cpp:printBaseOffsetPairs:366
+[debug]    2: ( 0 , 1.5 , -3 ) -- 2: ( 0 , 1.5 , -2.935 )                PSegment.cpp:printBaseOffsetPairs:366
+[debug]    adding head edge: base.front() -- offset.front()              join.cpp:createSegmentFreeEnd:1230
+[debug]    making segment end: sgbottom 1                                join.cpp:joinSegments:870
+[debug]    number of dependencies: 0                                     join.cpp:joinSegments:872
+[debug]    the end to be done (e): 1                                     join.cpp:joinSegments:876
+[debug]    free end of the segment (s->free()): -1                       join.cpp:joinSegments:877
+[debug]    making segment end because of no dependency.                  join.cpp:joinSegments:881
+[debug]    createSegmentFreeEnd: sgbottom end=1                          join.cpp:createSegmentFreeEnd:1115
+[debug]    curve base:                                                   join.cpp:createSegmentFreeEnd:1222
+[debug]    name: bl_bottom                                               PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [bl]: ( 0 , -1.5 , -3 )                                     PBaseLine.cpp:print:41
+[debug]    2 [bc]: ( 0 , 0 , -3 )                                        PBaseLine.cpp:print:41
+[debug]    3 [br]: ( 0 , 1.5 , -3 )                                      PBaseLine.cpp:print:41
+[debug]    curve offset:                                                 join.cpp:createSegmentFreeEnd:1224
+[debug]    name:                                                         PBaseLine.cpp:print:33
+[debug]    type:                                                         PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , -1.5 , -2.935 )                                   PBaseLine.cpp:print:41
+[debug]    2 []: ( 0 , 0 , -2.935 )                                      PBaseLine.cpp:print:41
+[debug]    3 []: ( 0 , 1.5 , -2.935 )                                    PBaseLine.cpp:print:41
+[debug]    base vertices -- base_link_to_offset_indices                  PSegment.cpp:printBaseOffsetPairs:355
+[debug]    number of pairs: 3                                            PSegment.cpp:printBaseOffsetPairs:357
+[debug]    0: ( 0 , -1.5 , -3 ) -- 0: ( 0 , -1.5 , -2.935 )              PSegment.cpp:printBaseOffsetPairs:366
+[debug]    1: ( 0 , 0 , -3 ) -- 1: ( 0 , 0 , -2.935 )                    PSegment.cpp:printBaseOffsetPairs:366
+[debug]    2: ( 0 , 1.5 , -3 ) -- 2: ( 0 , 1.5 , -2.935 )                PSegment.cpp:printBaseOffsetPairs:366
+[debug]    adding tail edge: base.back() -- offset.back()                join.cpp:createSegmentFreeEnd:1236
+[debug]    building the overall shape of segment: sgbottom               PSegment.cpp:build:478
+[debug]    base line: ( 0 , -1.5 , -3 ) -> ( 0 , 1.5 , -3 )              PSegment.cpp:build:479
+[debug]    creating half edges for the base curve                        PSegment.cpp:build:486
+[debug]    number of vertices of the base curve: 3                       PSegment.cpp:build:489
+[debug]    vertices: 0 -- 1                                              PSegment.cpp:build:494
+[debug]    vertices: 1 -- 2                                              PSegment.cpp:build:494
+[debug]    creating half edges for the offset curve                      PSegment.cpp:build:505
+[debug]    creating the half edge loop and face                          PSegment.cpp:build:512
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=1 tgt_tag=2
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=4
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop:         PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | face: nullptr | src_tag=7 tgt_tag=8
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop:        PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | face: nullptr | src_tag=8 tgt_tag=12
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop:         PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | face: nullptr | src_tag=12 tgt_tag=10
+[debug]    offsetting the base curve of segment: sgm_1_1                 PSegment.cpp:offsetCurveBase:435
+[debug]    offset (multi-vertex): size=2 side=1 dist=0.080000            offset.cpp:offset:801
+[debug]    base line: ( 0 , 0.04 , -3 ) -> ( 0 , 0.04 , -2 )             PSegment.cpp:offsetCurveBase:460
+[debug]    offset line: ( 0 , -0.04 , -3 ) -> ( 0 , -0.04 , -2 )         PSegment.cpp:offsetCurveBase:463
+[debug]    offsetCurveBase: reusing existing offset curve for segment    PSegment.cpp:offsetCurveBase:420
+           'sgm_1_1'
+[debug]    offsetting the base curve of segment: sgm_1_2                 PSegment.cpp:offsetCurveBase:435
+[debug]    offset (multi-vertex): size=2 side=1 dist=0.080000            offset.cpp:offset:801
+[debug]    base line: ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 )             PSegment.cpp:offsetCurveBase:460
+[debug]    offset line: ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 )         PSegment.cpp:offsetCurveBase:463
+[debug]    joining segments ends: sgm_1_1 1, sgm_1_2 0                   join.cpp:joinSegments:1039
+[debug]    joint style: step                                             join.cpp:joinSegments:1044
+[debug]    joint base vertex: ( 0 , 0.04 , -2 )                          join.cpp:joinSegments:1046
+[debug]    joinStyle1: computing angle bisector at ( 0 , 0.04 , -2 )     join.cpp:joinStyle1:564
+[debug]    bisector direction: (0.000000, -2.000000, 0.000000)           join.cpp:joinStyle1:571
+[debug]    intersecting offset of sgm_1_1 with bound                     join.cpp:joinStyle1:591
+[debug]    ls_i = 1                                                      join.cpp:intersectAndTrimOffsetWithBound:539
+[debug]    intersection vertex for sgm_1_1: ( 0 , -0.04 , -2 )           join.cpp:intersectAndTrimOffsetWithBound:540
+[debug]    intersecting offset of sgm_1_2 with bound                     join.cpp:joinStyle1:600
+[debug]    ls_i = 0                                                      join.cpp:intersectAndTrimOffsetWithBound:539
+[debug]    intersection vertex for sgm_1_2: ( 0 , -0.04 , -2 )           join.cpp:intersectAndTrimOffsetWithBound:540
+[debug]    both offsets hit the same bound point → unifying vertices   join.cpp:joinStyle1:612
+[debug]    adding 1 bound edge(s) to DCEL                                join.cpp:joinSegments:1071
+[debug]    base -- offset index pairs of segment: sgm_1_1                join.cpp:joinSegments:1077
+[debug]    0 : ( 0 , 0.04 , -3 ) -- 0 : ( 0 , -0.04 , -3 )               join.cpp:joinSegments:1080
+[debug]    1 : ( 0 , 0.04 , -2 ) -- 1 : ( 0 , -0.04 , -2 )               join.cpp:joinSegments:1080
+[debug]    base -- offset index pairs of segment: sgm_1_2                join.cpp:joinSegments:1088
+[debug]    0 : ( 0 , 0.04 , -2 ) -- 0 : ( 0 , -0.04 , -2 )               join.cpp:joinSegments:1091
+[debug]    1 : ( 0 , 0.04 , -1 ) -- 1 : ( 0 , -0.04 , -1 )               join.cpp:joinSegments:1091
+[debug]    making segment end: sgm_1_1 0                                 join.cpp:joinSegments:870
+[debug]    number of dependencies: 2                                     join.cpp:joinSegments:872
+[debug]    the end to be done (e): 0                                     join.cpp:joinSegments:876
+[debug]    free end of the segment (s->free()): -1                       join.cpp:joinSegments:877
+[debug]    ref vertex: ( 0 , 0.04 , -2 )                                 join.cpp:joinSegments:901
+[debug]    step 1: find the outer half edge loop                         join.cpp:joinSegments:904
+[debug]    step 2: find all inner half edge loops                        join.cpp:joinSegments:905
+[debug]    found half edge loops                                         join.cpp:joinSegments:911
+[debug]    direction: inner                                              PDCELHalfEdgeLoop.cpp:log:19
+[debug]    face: nullptr                                                 PDCELHalfEdgeLoop.cpp:log:29
+[debug]    half edges:                                                   PDCELHalfEdgeLoop.cpp:log:33
+[debug]    ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: set |      PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , -1.5 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set |     PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , 0 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |      PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , 1.5 , -2.935 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:  PDCELHalfEdgeLoop.cpp:log:36
+           nullptr
+[debug]    ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:        PDCELHalfEdgeLoop.cpp:log:36
+           nullptr
+[debug]    ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: set | face:       PDCELHalfEdgeLoop.cpp:log:36
+           nullptr
+[debug]    step 3: calculate intersections                               join.cpp:joinSegments:918
+[debug]    step 3.1: for the base curve                                  join.cpp:joinSegments:919
+[debug]    in function: findCurveLoopIntersection                        intersect.cpp:findCurveLoopIntersection:355
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -3  intersect.cpp:findCurveLoopIntersection:385
+           ) -- ( 0 , -1.5 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -1.5 ,     intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 0 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.065000 | 0 -- 1.026667                                 intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = -1                     intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.065000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 1.026667                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -2 )
+[debug]    tool segment: v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , 0 ,  intersect.cpp:findCurveLoopIntersection:435
+           -2.935 )
+[debug]    u1 = -inf                                                     intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0 ,        intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 1.5 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.065000 | 0 -- 0.026667                                 intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = -1                     intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.065000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 0.026667                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -2 )
+[debug]    tool segment: v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 1.5 ,   intersect.cpp:findCurveLoopIntersection:435
+           -2.935 )
+[debug]    u1 = -inf                                                     intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    update intersection                                           intersect.cpp:findCurveLoopIntersection:514
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:521
+[debug]    u2 = 0.026667                                                 intersect.cpp:findCurveLoopIntersection:522
+[debug]    end = 0                                                       intersect.cpp:findCurveLoopIntersection:523
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 1.5 ,      intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 1.5 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -3   intersect.cpp:findCurveLoopIntersection:385
+           ) -- ( 0 , 0 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.000000 | 0 -- 0.973333                                 intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 0                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.000000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 0.973333                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -2 )
+[debug]    tool segment: v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )  intersect.cpp:findCurveLoopIntersection:435
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0 , -3 )   intersect.cpp:findCurveLoopIntersection:385
+           -- ( 0 , -1.5 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.000000 | 0 -- -0.026667                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 0                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.000000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = -0.026667                          intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -3 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -2 )
+[debug]    tool segment: v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3   intersect.cpp:findCurveLoopIntersection:435
+           )
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    u1 = 0.065000                                                 join.cpp:joinSegments:928
+[debug]    u2 = 0.026667                                                 join.cpp:joinSegments:929
+[debug]    v_new = ( 0 , 0.04 , -2.935 )                                 join.cpp:joinSegments:942
+[debug]    ls_i = 0                                                      join.cpp:joinSegments:947
+[debug]    step 3.2: for the offset curve                                join.cpp:joinSegments:964
+[debug]    in function: findCurveLoopIntersection                        intersect.cpp:findCurveLoopIntersection:355
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -3  intersect.cpp:findCurveLoopIntersection:385
+           ) -- ( 0 , -1.5 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -1.5 ,     intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 0 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.065000 | 0 -- 0.973333                                 intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = -1                     intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.065000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 0.973333                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04  intersect.cpp:findCurveLoopIntersection:431
+           , -2 )
+[debug]    tool segment: v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 , 0 ,  intersect.cpp:findCurveLoopIntersection:435
+           -2.935 )
+[debug]    u1 = -inf                                                     intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    update intersection                                           intersect.cpp:findCurveLoopIntersection:514
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:521
+[debug]    u2 = 0.973333                                                 intersect.cpp:findCurveLoopIntersection:522
+[debug]    end = 0                                                       intersect.cpp:findCurveLoopIntersection:523
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0 ,        intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 0.04 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.065000 | 0 -- -1.000000                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 0                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.065000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = -1.000000                          intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04  intersect.cpp:findCurveLoopIntersection:431
+           , -2 )
+[debug]    tool segment: v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:435
+           -2.935 )
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0.04 ,     intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 1.5 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.065000 | 0 -- -0.054795                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 0                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.065000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = -0.054795                          intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04  intersect.cpp:findCurveLoopIntersection:431
+           , -2 )
+[debug]    tool segment: v21 = ( 0 , 0.04 , -2.935 ) -> v22 = ( 0 , 1.5  intersect.cpp:findCurveLoopIntersection:435
+           , -2.935 )
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 1.5 ,      intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 1.5 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -3   intersect.cpp:findCurveLoopIntersection:385
+           ) -- ( 0 , 0 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.000000 | 0 -- 1.026667                                 intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 0                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.000000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 1.026667                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04  intersect.cpp:findCurveLoopIntersection:431
+           , -2 )
+[debug]    tool segment: v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )  intersect.cpp:findCurveLoopIntersection:435
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0 , -3 )   intersect.cpp:findCurveLoopIntersection:385
+           -- ( 0 , -1.5 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- 0.000000 | 0 -- 0.026667                                 intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 0                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 0                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = 0.000000                          intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 0.026667                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , -0.04 , -3 ) -> v12 = ( 0 , -0.04  intersect.cpp:findCurveLoopIntersection:431
+           , -2 )
+[debug]    tool segment: v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3   intersect.cpp:findCurveLoopIntersection:435
+           )
+[debug]    u1 = 0.065000                                                 intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    u1 = 0.065000                                                 join.cpp:joinSegments:971
+[debug]    u2 = 0.973333                                                 join.cpp:joinSegments:972
+[debug]    v_new = ( 0 , -0.04 , -2.935 )                                join.cpp:joinSegments:981
+[debug]    ls_i = 0                                                      join.cpp:joinSegments:985
+[debug]    adjust base-offset linking indices                            join.cpp:joinSegments:1004
+[debug]    nv_base = 2                                                   join.cpp:joinSegments:1007
+[debug]    nv_offset = 2                                                 join.cpp:joinSegments:1008
+[debug]    ls_i_base = 0, ls_i_offset = 0                                join.cpp:joinSegments:1009
+[debug]    base vertices -- base_link_to_offset_indices                  PSegment.cpp:printBaseOffsetPairs:355
+[debug]    number of pairs: 2                                            PSegment.cpp:printBaseOffsetPairs:357
+[debug]    0: ( 0 , 0.04 , -2.935 ) -- 0: ( 0 , -0.04 , -2.935 )         PSegment.cpp:printBaseOffsetPairs:366
+[debug]    1: ( 0 , 0.04 , -2 ) -- 1: ( 0 , -0.04 , -2 )                 PSegment.cpp:printBaseOffsetPairs:366
+[debug]    offsetCurveBase: reusing existing offset curve for segment    PSegment.cpp:offsetCurveBase:420
+           'sgm_1_2'
+[debug]    offsetCurveBase: reusing existing offset curve for segment    PSegment.cpp:offsetCurveBase:420
+           'sgm_1_1'
+[debug]    offsetCurveBase: reusing existing offset curve for segment    PSegment.cpp:offsetCurveBase:420
+           'sgm_1_2'
+[debug]    making segment end: sgm_1_2 1                                 join.cpp:joinSegments:870
+[debug]    number of dependencies: 2                                     join.cpp:joinSegments:872
+[debug]    the end to be done (e): 1                                     join.cpp:joinSegments:876
+[debug]    free end of the segment (s->free()): -1                       join.cpp:joinSegments:877
+[debug]    ref vertex: ( 0 , 0.04 , -2 )                                 join.cpp:joinSegments:901
+[debug]    step 1: find the outer half edge loop                         join.cpp:joinSegments:904
+[debug]    step 2: find all inner half edge loops                        join.cpp:joinSegments:905
+[debug]    found half edge loops                                         join.cpp:joinSegments:911
+[debug]    direction: inner                                              PDCELHalfEdgeLoop.cpp:log:19
+[debug]    face: nullptr                                                 PDCELHalfEdgeLoop.cpp:log:29
+[debug]    half edges:                                                   PDCELHalfEdgeLoop.cpp:log:33
+[debug]    ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: set |      PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop: set   PDCELHalfEdgeLoop.cpp:log:36
+           | face: nullptr
+[debug]    ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set |    PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |     PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |   PDCELHalfEdgeLoop.cpp:log:36
+           face: nullptr
+[debug]    ( 0 , 1.5 , -2.935 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:  PDCELHalfEdgeLoop.cpp:log:36
+           nullptr
+[debug]    ( 0 , 1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:        PDCELHalfEdgeLoop.cpp:log:36
+           nullptr
+[debug]    ( 0 , 0 , -3 ) -> ( 0 , -1.5 , -3 ) | loop: set | face:       PDCELHalfEdgeLoop.cpp:log:36
+           nullptr
+[debug]    step 3: calculate intersections                               join.cpp:joinSegments:918
+[debug]    step 3.1: for the base curve                                  join.cpp:joinSegments:919
+[debug]    in function: findCurveLoopIntersection                        intersect.cpp:findCurveLoopIntersection:355
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -1.5 , -3  intersect.cpp:findCurveLoopIntersection:385
+           ) -- ( 0 , -1.5 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -1.5 ,     intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , -0.04 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- -0.935000 | 0 -- 1.054795                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 1                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 2                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = -0.935000                         intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 1.054795                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -1 )
+[debug]    tool segment: v21 = ( 0 , -1.5 , -2.935 ) -> v22 = ( 0 ,      intersect.cpp:findCurveLoopIntersection:435
+           -0.04 , -2.935 )
+[debug]    u1 = inf                                                      intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , -0.04 ,    intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 0 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- -0.935000 | 0 -- 2.000000                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 1                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 2                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = -0.935000                         intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 2.000000                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -1 )
+[debug]    tool segment: v21 = ( 0 , -0.04 , -2.935 ) -> v22 = ( 0 , 0   intersect.cpp:findCurveLoopIntersection:435
+           , -2.935 )
+[debug]    u1 = inf                                                      intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0 ,        intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 0.04 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- -0.935000 | 0 -- 1.000000                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 1                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 2                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = -0.935000                         intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 1.000000                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -1 )
+[debug]    tool segment: v21 = ( 0 , 0 , -2.935 ) -> v22 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:435
+           -2.935 )
+[debug]    u1 = inf                                                      intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0.04 ,     intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 1.5 , -2.935 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- -0.935000 | 0 -- 0.000000                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 1                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 2                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = -0.935000                         intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 0.000000                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -1 )
+[debug]    tool segment: v21 = ( 0 , 0.04 , -2.935 ) -> v22 = ( 0 , 1.5  intersect.cpp:findCurveLoopIntersection:435
+           , -2.935 )
+[debug]    u1 = inf                                                      intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 1.5 ,      intersect.cpp:findCurveLoopIntersection:385
+           -2.935 ) -- ( 0 , 1.5 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 1.5 , -3   intersect.cpp:findCurveLoopIntersection:385
+           ) -- ( 0 , 0 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- -1.000000 | 0 -- 0.973333                                intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 1                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 2                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = -1.000000                         intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = 0.973333                           intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -1 )
+[debug]    tool segment: v21 = ( 0 , 1.5 , -3 ) -> v22 = ( 0 , 0 , -3 )  intersect.cpp:findCurveLoopIntersection:435
+[debug]    u1 = inf                                                      intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    ----------                                                    intersect.cpp:findCurveLoopIntersection:378
+[debug]    line segment of the half edge loop (tmp_ls): ( 0 , 0 , -3 )   intersect.cpp:findCurveLoopIntersection:385
+           -- ( 0 , -1.5 , -3 )
+[debug]    all intersections                                             intersect.cpp:findCurveLoopIntersection:400
+[debug]    curve index (i) -- param loc (u) | tool index (i) -- param    intersect.cpp:findCurveLoopIntersection:401
+           loc (u)
+[debug]    0 -- -1.000000 | 0 -- -0.026667                               intersect.cpp:findCurveLoopIntersection:404
+[debug]    closest intersection to end 1                                 intersect.cpp:findCurveLoopIntersection:426
+[debug]    curve segment index (ls_i) = 0                                intersect.cpp:findCurveLoopIntersection:427
+[debug]    prev curve segment index (ls_i_prev) = 2                      intersect.cpp:findCurveLoopIntersection:428
+[debug]    curve param loc (tmp_c_u) = -1.000000                         intersect.cpp:findCurveLoopIntersection:429
+[debug]    tool param loc (tmp_t_u) = -0.026667                          intersect.cpp:findCurveLoopIntersection:430
+[debug]    curve segment: v11 = ( 0 , 0.04 , -2 ) -> v12 = ( 0 , 0.04 ,  intersect.cpp:findCurveLoopIntersection:431
+           -1 )
+[debug]    tool segment: v21 = ( 0 , 0 , -3 ) -> v22 = ( 0 , -1.5 , -3   intersect.cpp:findCurveLoopIntersection:435
+           )
+[debug]    u1 = inf                                                      intersect.cpp:findCurveLoopIntersection:445
+[debug]    tol = 0.000000                                                intersect.cpp:findCurveLoopIntersection:446
+[debug]    u1 = inf                                                      join.cpp:joinSegments:928
+[debug]    u2 = 0.000000                                                 join.cpp:joinSegments:929
+[debug]    making segment end because of not touching any other          join.cpp:joinSegments:934
+           components although with dependency.
+[debug]    createSegmentFreeEnd: sgm_1_2 end=1                           join.cpp:createSegmentFreeEnd:1115
+[debug]    curve base:                                                   join.cpp:createSegmentFreeEnd:1222
+[debug]    name: bl_web_2                                                PBaseLine.cpp:print:33
+[debug]    type: straight                                                PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 [web]: ( 0 , 0.04 , -2 )                                    PBaseLine.cpp:print:41
+[debug]    2 []: ( 0 , 0.04 , -1 )                                       PBaseLine.cpp:print:41
+[debug]    curve offset:                                                 join.cpp:createSegmentFreeEnd:1224
+[debug]    name:                                                         PBaseLine.cpp:print:33
+[debug]    type:                                                         PBaseLine.cpp:print:35
+[debug]    point: (x, y, z)                                              PBaseLine.cpp:print:37
+[debug]    1 []: ( 0 , -0.04 , -2 )                                      PBaseLine.cpp:print:41
+[debug]    2 []: ( 0 , -0.04 , -1 )                                      PBaseLine.cpp:print:41
+[debug]    base vertices -- base_link_to_offset_indices                  PSegment.cpp:printBaseOffsetPairs:355
+[debug]    number of pairs: 2                                            PSegment.cpp:printBaseOffsetPairs:357
+[debug]    0: ( 0 , 0.04 , -2 ) -- 0: ( 0 , -0.04 , -2 )                 PSegment.cpp:printBaseOffsetPairs:366
+[debug]    1: ( 0 , 0.04 , -1 ) -- 1: ( 0 , -0.04 , -1 )                 PSegment.cpp:printBaseOffsetPairs:366
+[debug]    adding tail edge: base.back() -- offset.back()                join.cpp:createSegmentFreeEnd:1236
+[debug]    building the overall shape of segment: sgm_1_1                PSegment.cpp:build:478
+[debug]    base line: ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 )         PSegment.cpp:build:479
+[debug]    creating half edges for the base curve                        PSegment.cpp:build:486
+[debug]    number of vertices of the base curve: 2                       PSegment.cpp:build:489
+[debug]    vertices: 0 -- 1                                              PSegment.cpp:build:494
+[debug]    creating half edges for the offset curve                      PSegment.cpp:build:505
+[debug]    creating the half edge loop and face                          PSegment.cpp:build:512
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=1 tgt_tag=2
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=4
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=7 tgt_tag=8
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: nullptr |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop:       PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    building the overall shape of segment: sgm_1_2                PSegment.cpp:build:478
+[debug]    base line: ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 )             PSegment.cpp:build:479
+[debug]    creating half edges for the base curve                        PSegment.cpp:build:486
+[debug]    number of vertices of the base curve: 2                       PSegment.cpp:build:489
+[debug]    vertices: 0 -- 1                                              PSegment.cpp:build:494
+[debug]    creating half edges for the offset curve                      PSegment.cpp:build:505
+[debug]    creating the half edge loop and face                          PSegment.cpp:build:512
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=1 tgt_tag=2
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=4
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=7 tgt_tag=8
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop:       PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: nullptr   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=14 tgt_tag=18
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , -1 , 0.11 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=1 tgt_tag=2
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=4
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=7 tgt_tag=8
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=14 tgt_tag=18
+[debug]    building areas of segment: sgtop                              PBuildSegmentAreas.cpp:buildAreas:489
+[debug]    1. creating the beginning bound of the first area             PBuildSegmentAreas.cpp:buildBeginningBound:256
+[debug]    open segment                                                  PBuildSegmentAreas.cpp:buildBeginningBound:269
+[debug]    first vertex of the base: ( 0 , -1 , 0 )                      PBuildSegmentAreas.cpp:buildBeginningBound:273
+[debug]    first vertex of the offset: ( 0 , -1 , 0.11 )                 PBuildSegmentAreas.cpp:buildBeginningBound:275
+[debug]    layer 1                                                       PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:219
+[debug]    cumu_thk = 0.06                                               PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:224
+[debug]    ls_offset: ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 )              PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:227
+[debug]                                                                  PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:144
+[debug]    he_tmp: ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0 ) | loop: set |     PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:145
+           face: (face)
+[debug]    u1_tmp = 0.454545                                             PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:158
+[debug]    case 3: intersect current edge                                PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:172
+[debug]    v_layer: ( 0 , -1 , 0.06 )                                    PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:174
+[debug]    v_layer: ( 0 , -1 , 0.06 )                                    PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:238
+[debug]    2. creating areas                                             PBuildSegmentAreas.cpp:createIntermediateAreas:328
+[debug]    area 1                                                        PBuildSegmentAreas.cpp:createIntermediateAreas:332
+[debug]    base vertex: ( 0 , 0 , 0 )                                    PBuildSegmentAreas.cpp:createIntermediateAreas:339
+[debug]    offset vertex: ( 0 , 0 , 0.11 )                               PBuildSegmentAreas.cpp:createIntermediateAreas:340
+[debug]    3. creating the last area                                     PBuildSegmentAreas.cpp:buildLastArea:398
+[debug]    layer 1                                                       PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:219
+[debug]    cumu_thk = 0.06                                               PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:224
+[debug]    ls_offset: ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 )               PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:227
+[debug]                                                                  PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:144
+[debug]    he_tmp: ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.11 ) | loop: set |       PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:145
+           face: (face)
+[debug]    u1_tmp = 0.545455                                             PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:158
+[debug]    case 3: intersect current edge                                PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:172
+[debug]    v_layer: ( 0 , 1 , 0.06 )                                     PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:174
+[debug]    v_layer: ( 0 , 1 , 0.06 )                                     PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:238
+[debug]    building layers for area: sgtop_area_1                        PArea.cpp:buildLayers:120
+[debug]    building layers for area: sgtop_area_2                        PArea.cpp:buildLayers:120
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.06 ) -> gmsh tag 19                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.06 ) -> gmsh tag 20                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.06 ) -> gmsh tag 21                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , -1.5 , -2.935 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=7 tgt_tag=8
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=14 tgt_tag=18
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=2 tgt_tag=19
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=1
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=5 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=6
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=21
+[debug]    he ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=21 tgt_tag=4
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=21
+[debug]    building areas of segment: sgbottom                           PBuildSegmentAreas.cpp:buildAreas:489
+[debug]    1. creating the beginning bound of the first area             PBuildSegmentAreas.cpp:buildBeginningBound:256
+[debug]    open segment                                                  PBuildSegmentAreas.cpp:buildBeginningBound:269
+[debug]    first vertex of the base: ( 0 , -1.5 , -3 )                   PBuildSegmentAreas.cpp:buildBeginningBound:273
+[debug]    first vertex of the offset: ( 0 , -1.5 , -2.935 )             PBuildSegmentAreas.cpp:buildBeginningBound:275
+[debug]    layer 1                                                       PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:219
+[debug]    cumu_thk = 0.045                                              PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:224
+[debug]    ls_offset: ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 )        PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:227
+[debug]                                                                  PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:144
+[debug]    he_tmp: ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -3 ) | loop:    PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:145
+           set | face: (face)
+[debug]    u1_tmp = 0.307692                                             PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:158
+[debug]    case 3: intersect current edge                                PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:172
+[debug]    v_layer: ( 0 , -1.5 , -2.955 )                                PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:174
+[debug]    v_layer: ( 0 , -1.5 , -2.955 )                                PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:238
+[debug]    2. creating areas                                             PBuildSegmentAreas.cpp:createIntermediateAreas:328
+[debug]    area 1                                                        PBuildSegmentAreas.cpp:createIntermediateAreas:332
+[debug]    base vertex: ( 0 , 0 , -3 )                                   PBuildSegmentAreas.cpp:createIntermediateAreas:339
+[debug]    offset vertex: ( 0 , 0 , -2.935 )                             PBuildSegmentAreas.cpp:createIntermediateAreas:340
+[debug]    3. creating the last area                                     PBuildSegmentAreas.cpp:buildLastArea:398
+[debug]    layer 1                                                       PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:219
+[debug]    cumu_thk = 0.045                                              PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:224
+[debug]    ls_offset: ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 )         PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:227
+[debug]                                                                  PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:144
+[debug]    he_tmp: ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:145
+           | face: (face)
+[debug]    u1_tmp = 0.692308                                             PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:158
+[debug]    case 3: intersect current edge                                PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:172
+[debug]    v_layer: ( 0 , 1.5 , -2.955 )                                 PBuildSegmentAreas.cpp:findLayerIntersectionOnFace:174
+[debug]    v_layer: ( 0 , 1.5 , -2.955 )                                 PBuildSegmentAreas.cpp:buildOpenBoundLayerVertices:238
+[debug]    building layers for area: sgbottom_area_1                     PArea.cpp:buildLayers:120
+[debug]    building layers for area: sgbottom_area_2                     PArea.cpp:buildLayers:120
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.06 ) -> gmsh tag 19                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.06 ) -> gmsh tag 20                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.06 ) -> gmsh tag 21                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.955 ) -> gmsh tag 22                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.955 ) -> gmsh tag 23                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.955 ) -> gmsh tag 24                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=14 tgt_tag=18
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=2 tgt_tag=19
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=1
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=5 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=6
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=21
+[debug]    he ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=21 tgt_tag=4
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=21
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -2.955 ) | loop:     PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: (face) | src_tag=8 tgt_tag=22
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , -1.5 , -3 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=7
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 0 , -2.955 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 0 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=12
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=24
+[debug]    he ( 0 , 1.5 , -2.955 ) -> ( 0 , 1.5 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=24 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=24
+[debug]    building areas of segment: sgm_1_1                            PBuildSegmentAreas.cpp:buildAreas:489
+[debug]    1. creating the beginning bound of the first area             PBuildSegmentAreas.cpp:buildBeginningBound:256
+[debug]    open segment                                                  PBuildSegmentAreas.cpp:buildBeginningBound:269
+[debug]    first vertex of the base: ( 0 , 0.04 , -2.935 )               PBuildSegmentAreas.cpp:buildBeginningBound:273
+[debug]    first vertex of the offset: ( 0 , -0.04 , -2.935 )            PBuildSegmentAreas.cpp:buildBeginningBound:275
+[debug]    2. creating areas                                             PBuildSegmentAreas.cpp:createIntermediateAreas:328
+[debug]    3. creating the last area                                     PBuildSegmentAreas.cpp:buildLastArea:398
+[debug]    building layers for area: sgm_1_1_area_1                      PArea.cpp:buildLayers:120
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.06 ) -> gmsh tag 19                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.06 ) -> gmsh tag 20                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.06 ) -> gmsh tag 21                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.955 ) -> gmsh tag 22                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.955 ) -> gmsh tag 23                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.955 ) -> gmsh tag 24                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=14 tgt_tag=18
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=2 tgt_tag=19
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=1
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=5 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=6
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=21
+[debug]    he ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=21 tgt_tag=4
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=21
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -2.955 ) | loop:     PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: (face) | src_tag=8 tgt_tag=22
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , -1.5 , -3 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=7
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 0 , -2.955 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 0 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=12
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=24
+[debug]    he ( 0 , 1.5 , -2.955 ) -> ( 0 , 1.5 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=24 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=24
+[debug]    building areas of segment: sgm_1_2                            PBuildSegmentAreas.cpp:buildAreas:489
+[debug]    1. creating the beginning bound of the first area             PBuildSegmentAreas.cpp:buildBeginningBound:256
+[debug]    open segment                                                  PBuildSegmentAreas.cpp:buildBeginningBound:269
+[debug]    first vertex of the base: ( 0 , 0.04 , -2 )                   PBuildSegmentAreas.cpp:buildBeginningBound:273
+[debug]    first vertex of the offset: ( 0 , -0.04 , -2 )                PBuildSegmentAreas.cpp:buildBeginningBound:275
+[debug]    2. creating areas                                             PBuildSegmentAreas.cpp:createIntermediateAreas:328
+[debug]    3. creating the last area                                     PBuildSegmentAreas.cpp:buildLastArea:398
+[debug]    building layers for area: sgm_1_2_area_1                      PArea.cpp:buildLayers:120
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.06 ) -> gmsh tag 19                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.06 ) -> gmsh tag 20                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.06 ) -> gmsh tag 21                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.955 ) -> gmsh tag 22                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.955 ) -> gmsh tag 23                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.955 ) -> gmsh tag 24                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=14 tgt_tag=18
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=2 tgt_tag=19
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=1
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=5 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=6
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=21
+[debug]    he ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=21 tgt_tag=4
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=21
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -2.955 ) | loop:     PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: (face) | src_tag=8 tgt_tag=22
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , -1.5 , -3 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=7
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 0 , -2.955 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 0 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=12
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=24
+[debug]    he ( 0 , 1.5 , -2.955 ) -> ( 0 , 1.5 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=24 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=24
+[debug]    vertex ( 0 , inf , inf ) skipped (not finite)                 PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -inf , -inf ) skipped (not finite)               PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , inf , -inf ) skipped (not finite)                PModelBuildGmsh.cpp:createGmshVertices:48
+[debug]    vertex ( 0 , -1 , 0 ) -> gmsh tag 1                           PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.11 ) -> gmsh tag 2                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0 ) -> gmsh tag 3                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.11 ) -> gmsh tag 4                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0 ) -> gmsh tag 5                            PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.11 ) -> gmsh tag 6                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -3 ) -> gmsh tag 7                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.935 ) -> gmsh tag 8                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -3 ) -> gmsh tag 9                         PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.935 ) -> gmsh tag 10                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -3 ) -> gmsh tag 11                          PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.935 ) -> gmsh tag 12                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2 ) -> gmsh tag 13                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2 ) -> gmsh tag 14                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -2.935 ) -> gmsh tag 15                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -2.935 ) -> gmsh tag 16                  PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0.04 , -1 ) -> gmsh tag 17                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -0.04 , -1 ) -> gmsh tag 18                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1 , 0.06 ) -> gmsh tag 19                       PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , 0.06 ) -> gmsh tag 20                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1 , 0.06 ) -> gmsh tag 21                        PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , -1.5 , -2.955 ) -> gmsh tag 22                   PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 0 , -2.955 ) -> gmsh tag 23                      PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    vertex ( 0 , 1.5 , -2.955 ) -> gmsh tag 24                    PModelBuildGmsh.cpp:createGmshVertices:43
+[debug]    he ( 0 , inf , inf ) -> ( 0 , -inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , inf ) -> ( 0 , -inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -inf , -inf ) -> ( 0 , inf , -inf ) | loop: set |    PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , inf , -inf ) -> ( 0 , inf , inf ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:237
+           face: (face) skipped (not finite)
+[debug]    he ( 0 , -1 , 0 ) -> ( 0 , 0 , 0 ) | loop: set | face:        PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=1 tgt_tag=5
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 1 , 0 ) | loop: set | face: (face)  PModelBuildGmsh.cpp:createGmshEdges:194
+           | src_tag=5 tgt_tag=3
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=2 tgt_tag=6
+[debug]    he ( 0 , 0 , 0.11 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           nullptr | src_tag=6 tgt_tag=4
+[debug]    he ( 0 , -1.5 , -3 ) -> ( 0 , 0 , -3 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=7 tgt_tag=11
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 1.5 , -3 ) | loop: set | face:     PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=9
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , -0.04 , -2 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=14
+[debug]    he ( 0 , 0 , -2.935 ) -> ( 0 , 0.04 , -2.935 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=12 tgt_tag=15
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 1.5 , -2.935 ) | loop: set  PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=15 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -0.04 , -2.935 ) | loop:    PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: nullptr | src_tag=8 tgt_tag=16
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , 0 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=16 tgt_tag=12
+[debug]    he ( 0 , 0.04 , -1 ) -> ( 0 , -0.04 , -1 ) | loop: set |      PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=17 tgt_tag=18
+[debug]    he ( 0 , 0.04 , -2.935 ) -> ( 0 , 0.04 , -2 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=15 tgt_tag=13
+[debug]    he ( 0 , -0.04 , -2.935 ) -> ( 0 , -0.04 , -2 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: nullptr | src_tag=16 tgt_tag=14
+[debug]    he ( 0 , 0.04 , -2 ) -> ( 0 , 0.04 , -1 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=13 tgt_tag=17
+[debug]    he ( 0 , -0.04 , -2 ) -> ( 0 , -0.04 , -1 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: nullptr | src_tag=14 tgt_tag=18
+[debug]    he ( 0 , -1 , 0.11 ) -> ( 0 , -1 , 0.06 ) | loop: set |       PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=2 tgt_tag=19
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , -1 , 0 ) | loop: set | face:    PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=1
+[debug]    he ( 0 , 0 , 0 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=5 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 0 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=6
+[debug]    he ( 0 , 1 , 0 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:      PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=3 tgt_tag=21
+[debug]    he ( 0 , 1 , 0.06 ) -> ( 0 , 1 , 0.11 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=21 tgt_tag=4
+[debug]    he ( 0 , -1 , 0.06 ) -> ( 0 , 0 , 0.06 ) | loop: set | face:  PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=19 tgt_tag=20
+[debug]    he ( 0 , 0 , 0.06 ) -> ( 0 , 1 , 0.06 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=20 tgt_tag=21
+[debug]    he ( 0 , -1.5 , -2.935 ) -> ( 0 , -1.5 , -2.955 ) | loop:     PModelBuildGmsh.cpp:createGmshEdges:194
+           set | face: (face) | src_tag=8 tgt_tag=22
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , -1.5 , -3 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=7
+[debug]    he ( 0 , 0 , -3 ) -> ( 0 , 0 , -2.955 ) | loop: set | face:   PModelBuildGmsh.cpp:createGmshEdges:194
+           (face) | src_tag=11 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 0 , -2.935 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=12
+[debug]    he ( 0 , 1.5 , -3 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |     PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=9 tgt_tag=24
+[debug]    he ( 0 , 1.5 , -2.955 ) -> ( 0 , 1.5 , -2.935 ) | loop: set   PModelBuildGmsh.cpp:createGmshEdges:194
+           | face: (face) | src_tag=24 tgt_tag=10
+[debug]    he ( 0 , -1.5 , -2.955 ) -> ( 0 , 0 , -2.955 ) | loop: set |  PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=22 tgt_tag=23
+[debug]    he ( 0 , 0 , -2.955 ) -> ( 0 , 1.5 , -2.955 ) | loop: set |   PModelBuildGmsh.cpp:createGmshEdges:194
+           face: (face) | src_tag=23 tgt_tag=24
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: background                                              PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgm_1_1_area_1_layer_1                                  PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgm_1_2_area_1_layer_1                                  PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgtop_area_1_layer_2                                    PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgtop_area_1_layer_1                                    PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgtop_area_2_layer_2                                    PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgtop_area_2_layer_1                                    PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgbottom_area_1_layer_2                                 PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgbottom_area_1_layer_1                                 PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgbottom_area_2_layer_2                                 PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshFaces:262
+[debug]    face: sgbottom_area_2_layer_1                                 PModelBuildGmsh.cpp:createGmshFaces:263
+[debug]    adding outer loop                                             PModelBuildGmsh.cpp:createGmshFaces:275
+[debug]    adding inner loops                                            PModelBuildGmsh.cpp:createGmshFaces:297
+[debug]    adding local mesh size                                        PModelBuildGmsh.cpp:createGmshFaces:323
+[debug]    adding embedded entities                                      PModelBuildGmsh.cpp:createGmshEmbeddedEntities:359
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: background                                              PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgm_1_1_area_1_layer_1                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgm_1_2_area_1_layer_1                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgtop_area_1_layer_2                                    PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgtop_area_1_layer_1                                    PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgtop_area_2_layer_2                                    PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgtop_area_2_layer_1                                    PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgbottom_area_1_layer_2                                 PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgbottom_area_1_layer_1                                 PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgbottom_area_2_layer_2                                 PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshEmbeddedEntities:362
+[debug]    face: sgbottom_area_2_layer_1                                 PModelBuildGmsh.cpp:createGmshEmbeddedEntities:363
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: background                                              PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgm_1_1_area_1_layer_1                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 5, material: iso5_5, theta_3 = 0.000000                   PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgm_1_2_area_1_layer_1                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 5, material: iso5_5, theta_3 = 0.000000                   PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgtop_area_1_layer_2                                    PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 2, material: iso5_2, theta_3 = 0.000000                   PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgtop_area_1_layer_1                                    PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 1, material: iso5_1, theta_3 = 90.000000                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgtop_area_2_layer_2                                    PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 2, material: iso5_2, theta_3 = 0.000000                   PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgtop_area_2_layer_1                                    PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 1, material: iso5_1, theta_3 = 90.000000                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgbottom_area_1_layer_2                                 PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 4, material: iso5_4, theta_3 = 90.000000                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgbottom_area_1_layer_1                                 PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 3, material: iso5_3, theta_3 = 0.000000                   PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgbottom_area_2_layer_2                                 PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 4, material: iso5_4, theta_3 = 90.000000                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[debug]                                                                  PModelBuildGmsh.cpp:createGmshPhyscialGroups:397
+[debug]    face: sgbottom_area_2_layer_1                                 PModelBuildGmsh.cpp:createGmshPhyscialGroups:398
+[debug]    id: 3, material: iso5_3, theta_3 = 0.000000                   PModelBuildGmsh.cpp:createGmshPhyscialGroups:402
+[info]     - prevabs finished (2026-04-22 20:56:34)                      main.cpp:main:285
+[info]     total running time: 0.222047 sec                              main.cpp:main:286

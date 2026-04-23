@@ -34,6 +34,9 @@ void deleteDetachedLineSegment(PGeoLineSegment *segment) {
   delete segment;
 }
 
+
+
+
 bool usesOffsetAsBaseAtPair(
     const BaseOffsetMap &pairs, std::size_t pair_index) {
   // Repeated base indices mean the staircase map advanced only on the offset
@@ -43,6 +46,9 @@ bool usesOffsetAsBaseAtPair(
   return pair_index > 0
          && pairs[pair_index].base == pairs[pair_index - 1].base;
 }
+
+
+
 
 PGeoLineSegment *buildAreaBaseSegmentFromPair(
     Baseline *curve_base, Baseline *curve_offset,
@@ -63,6 +69,9 @@ PGeoLineSegment *buildAreaBaseSegmentFromPair(
       curve_offset->vertices()[voi]);
 }
 
+
+
+
 bool traversesPrevOnHeadBound(int layup_side) {
   // Open-bound traversal starts from the base vertex and then walks the
   // current face boundary until it meets the offset-side endpoint.
@@ -71,11 +80,17 @@ bool traversesPrevOnHeadBound(int layup_side) {
   return layup_side > 0;
 }
 
+
+
+
 bool traversesPrevOnTailBound(int layup_side) {
   return layup_side < 0;
 }
 
 } // namespace
+
+
+
 
 // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
 // Splits DCEL edges in place. Returns the new intermediate vertices.
@@ -103,6 +118,9 @@ std::vector<PDCELVertex *> Segment::splitBoundByLayup(
 
   return layer_vertices;
 }
+
+
+
 
 // Search face boundary edges from v_prev for the intersection with ls_offset.
 // go_prev controls traversal direction (true = prev(), false = next()).
@@ -181,6 +199,9 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
   return v_layer;
 }
 
+
+
+
 // Build layer vertices on an open bound by intersecting offset line segments
 // with the face boundary. v_start is the seed vertex; go_prev controls
 // traversal direction. Returns the new layer vertices.
@@ -222,6 +243,9 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
 
   return layer_vertices;
 }
+
+
+
 
 // Section 1: compute beginning-bound layer vertices.
 // For closed segments, also fills first_bound_vertices.
@@ -292,6 +316,9 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
   return prev_bound_vertices;
 }
 
+
+
+
 // Section 2: create all intermediate areas and update prev_bound_vertices
 // and count.
 void Segment::createIntermediateAreas(
@@ -358,6 +385,9 @@ void Segment::createIntermediateAreas(
 
   g_msg->decreaseIndent();
 }
+
+
+
 
 // Section 3: create and append the last (or only) area.
 void Segment::buildLastArea(
@@ -443,6 +473,9 @@ void Segment::buildLastArea(
   g_msg->decreaseIndent();
   _areas.emplace_back(area);
 }
+
+
+
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
   MESSAGE_SCOPE(g_msg);
