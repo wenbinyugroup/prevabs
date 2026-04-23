@@ -9,9 +9,9 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t4_I\i_web.xml
+      - reading main input file: i_web.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-        - reading materials file: .\test\integration\t4_I\materials.xml
+        - reading materials file: materials.xml
   - reading input files -- done
   
   
@@ -40,31 +40,19 @@
   
   
   - writing outputs
-    - writing sg file: .\test\integration\t4_I\i_web.sg
+    - writing sg file: i_web.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t4_I\i_web.sg.mat
+    - writing material id-name file: i_web.sg.mat
   - writing outputs -- done
   
-  
-  - running VABS for homogenization
-  
-  -  [VABS Messages] 
-  
-  - running: VABS ".\test\integration\t4_I\i_web.sg"
-  - command completed successfully.
-  
-  -  [VABS Messages End] 
-  
-  - running VABS for homogenization -- done
-  
 
 ========================================
 
 
 ========================================
 
-9:44)                      main.cpp:main:285
-[info]     total running time: 0.146007 sec                              main.cpp:main:286
+5:19)                      main.cpp:main:285
+[info]     total running time: 0.0590249 sec                             main.cpp:main:286

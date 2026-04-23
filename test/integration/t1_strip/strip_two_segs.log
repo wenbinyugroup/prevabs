@@ -9,7 +9,7 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t1_strip\strip_two_segs.xml
+      - reading main input file: strip_two_segs.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
   - reading input files -- done
   
@@ -35,24 +35,19 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t1_strip\strip_two_segs.opt
-    - writing gmsh .geo file: .\test\integration\t1_strip\strip_two_segs.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t1_strip\strip_two_segs.msh
-    - writing sg file: .\test\integration\t1_strip\strip_two_segs.sg
+    - writing sg file: strip_two_segs.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t1_strip\strip_two_segs.sg.mat
+    - writing material id-name file: strip_two_segs.sg.mat
   - writing outputs -- done
   
-  
-  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-8:14)                      main.cpp:main:285
-[info]     total running time: 2.82021 sec                               main.cpp:main:286
+5:18)                      main.cpp:main:285
+[info]     total running time: 0.0687234 sec                             main.cpp:main:286

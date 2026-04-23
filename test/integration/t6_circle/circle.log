@@ -9,9 +9,9 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t6_circle\circle.xml
+      - reading main input file: circle.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-        - reading materials file: .\test\integration\t6_circle\materials.xml
+        - reading materials file: materials.xml
   - reading input files -- done
   
   
@@ -36,31 +36,19 @@
   
   
   - writing outputs
-    - writing sg file: .\test\integration\t6_circle\circle.sg
+    - writing sg file: circle.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t6_circle\circle.sg.mat
+    - writing material id-name file: circle.sg.mat
   - writing outputs -- done
   
-  
-  - running VABS for homogenization
-  
-  -  [VABS Messages] 
-  
-  - running: VABS ".\test\integration\t6_circle\circle.sg"
-  - command completed successfully.
-  
-  -  [VABS Messages End] 
-  
-  - running VABS for homogenization -- done
-  
 
 ========================================
 
 
 ========================================
 
-1:02)                      main.cpp:main:285
-[info]     total running time: 0.142692 sec                              main.cpp:main:286
+5:20)                      main.cpp:main:285
+[info]     total running time: 0.0618255 sec                             main.cpp:main:286

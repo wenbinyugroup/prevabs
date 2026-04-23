@@ -9,9 +9,9 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t7_box\box.xml
+      - reading main input file: box.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-        - reading materials file: .\test\integration\t7_box\materials.xml
+        - reading materials file: materials.xml
   - reading input files -- done
   
   
@@ -36,31 +36,19 @@
   
   
   - writing outputs
-    - writing sg file: .\test\integration\t7_box\box.sg
+    - writing sg file: box.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t7_box\box.sg.mat
+    - writing material id-name file: box.sg.mat
   - writing outputs -- done
   
-  
-  - running VABS for homogenization
-  
-  -  [VABS Messages] 
-  
-  - running: VABS ".\test\integration\t7_box\box.sg"
-  - command completed successfully.
-  
-  -  [VABS Messages End] 
-  
-  - running VABS for homogenization -- done
-  
 
 ========================================
 
 
 ========================================
 
-2:13)                      main.cpp:main:285
-[info]     total running time: 0.638341 sec                              main.cpp:main:286
+5:20)                      main.cpp:main:285
+[info]     total running time: 0.103279 sec                              main.cpp:main:286

@@ -9,9 +9,9 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t6_circle\circle_param_layup_range.xml
+      - reading main input file: circle_param_layup_range.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-        - reading materials file: .\test\integration\t6_circle\materials.xml
+        - reading materials file: materials.xml
   - reading input files -- done
   
   
@@ -36,24 +36,19 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t6_circle\circle_param_layup_range.opt
-    - writing gmsh .geo file: .\test\integration\t6_circle\circle_param_layup_range.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t6_circle\circle_param_layup_range.msh
-    - writing sg file: .\test\integration\t6_circle\circle_param_layup_range.sg
+    - writing sg file: circle_param_layup_range.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t6_circle\circle_param_layup_range.sg.mat
+    - writing material id-name file: circle_param_layup_range.sg.mat
   - writing outputs -- done
   
-  
-  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-1:36)                      main.cpp:main:285
-[info]     total running time: 2.77924 sec                               main.cpp:main:286
+5:19)                      main.cpp:main:285
+[info]     total running time: 0.0655779 sec                             main.cpp:main:286

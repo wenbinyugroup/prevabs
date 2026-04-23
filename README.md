@@ -157,8 +157,24 @@ cmake --build . --config Release
 
 ### Integration tests (Windows)
 
-```bat
-test\run_integration_tests.bat
+Requires a built `prevabs.exe` (see [Build from source](#build-from-source)).
+
+```powershell
+# Run all tests
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1
+
+# Run a subset by name prefix (e.g. t1 matches all t1_strip cases)
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 -Filter t1
+
+# Clean generated output files, keep source inputs
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean
+```
+
+Or call CTest directly after the first run has configured the build directory:
+
+```powershell
+ctest --test-dir test\integration\build_msvc --output-on-failure
+ctest --test-dir test\integration\build_msvc -R t1
 ```
 
 ## License

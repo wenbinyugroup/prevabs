@@ -9,9 +9,9 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t2_z\z.xml
+      - reading main input file: z.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-        - reading materials file: .\test\integration\t2_z\materials.xml
+        - reading materials file: materials.xml
   - reading input files -- done
   
   
@@ -36,24 +36,19 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t2_z\z.opt
-    - writing gmsh .geo file: .\test\integration\t2_z\z.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t2_z\z.msh
-    - writing sg file: .\test\integration\t2_z\z.sg
+    - writing sg file: z.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t2_z\z.sg.mat
+    - writing material id-name file: z.sg.mat
   - writing outputs -- done
   
-  
-  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-8:41)                      main.cpp:main:285
-[info]     total running time: 2.18039 sec                               main.cpp:main:286
+5:18)                      main.cpp:main:285
+[info]     total running time: 0.0541816 sec                             main.cpp:main:286

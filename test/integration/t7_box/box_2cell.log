@@ -9,9 +9,9 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t7_box\box_2cell.xml
+      - reading main input file: box_2cell.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
-        - reading materials file: .\test\integration\t7_box\materials.xml
+        - reading materials file: materials.xml
   - reading input files -- done
   
   
@@ -36,24 +36,19 @@
   
   
   - writing outputs
-    - writing gmsh .opt file: .\test\integration\t7_box\box_2cell.opt
-    - writing gmsh .geo file: .\test\integration\t7_box\box_2cell.geo_unrolled
-    - writing gmsh .msh file: .\test\integration\t7_box\box_2cell.msh
-    - writing sg file: .\test\integration\t7_box\box_2cell.sg
+    - writing sg file: box_2cell.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t7_box\box_2cell.sg.mat
+    - writing material id-name file: box_2cell.sg.mat
   - writing outputs -- done
   
-  
-  - running Gmsh for visualization
 
 ========================================
 
 
 ========================================
 
-2:32)                      main.cpp:main:285
-[info]     total running time: 1.81995 sec                               main.cpp:main:286
+5:20)                      main.cpp:main:285
+[info]     total running time: 0.122718 sec                              main.cpp:main:286

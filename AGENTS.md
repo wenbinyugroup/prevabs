@@ -7,7 +7,7 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 - **Language**: C++11
 - **Build System**: CMake (minimum 3.14)
 - **Dependencies**: Gmsh SDK
-- **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (single-header, v3.x)
+- **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (unit, single-header v3.x), CTest (integration)
 
 ## First Principles
 
@@ -99,15 +99,49 @@ cmake --build . --config Release
 ./test_geo -l                   # List all test cases
 ```
 
-**Integration tests:**
+**Integration tests (CTest):**
 
-```bash
-# Run all integration tests
-test\run_integration_tests.bat
+Each test directory under `test/integration/` has an `INDEX.txt`:
 
-# Run a specific test manually
-prevabs.exe -i test\integration\box\input.xml --hm
 ```
+main
+- case1.xml
+- case2.xml
+
+support
+- materials.xml
+```
+
+`main` lists input files to run; `support` lists files preserved during clean.
+Every case runs `prevabs -i <xml> --hm` with a 15-second timeout.
+
+Test names follow `<dir>/<case>`, e.g. `t1_strip/strip`.
+
+```powershell
+# Run all integration tests (from repo root)
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1
+
+# Run a subset — "t1" matches all t1_strip/* cases
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 -Filter t1
+
+# Run one specific case (exact match via regex anchor)
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 -Filter "t1_strip/strip$"
+
+# Clean generated outputs (keeps INDEX.txt and listed source files)
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean -Filter t6
+```
+
+Or call CTest directly (after the script has run once to configure the build directory):
+
+```powershell
+ctest --test-dir test\integration\build_msvc --output-on-failure
+ctest --test-dir test\integration\build_msvc -R t1        # filter by name regex
+ctest --test-dir test\integration\build_msvc -L t1_strip  # filter by label
+```
+
+Adding a new test: create the directory, add `INDEX.txt` with the `main`/`support` sections,
+and drop the XML input file in. No script changes needed — CMakeLists.txt picks it up automatically.
 
 ---
 

@@ -9,7 +9,7 @@
 
   
   - reading input files
-      - reading main input file: .\test\integration\t1_strip\strip_two_lines.xml
+      - reading main input file: strip_two_lines.xml
         [warning] unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
   - reading input files -- done
   
@@ -35,31 +35,19 @@
   
   
   - writing outputs
-    - writing sg file: .\test\integration\t1_strip\strip_two_lines.sg
+    - writing sg file: strip_two_lines.sg
       - writing nodes
       - writing elements
         -   writing connectivity
         -   writing local orientation
-    - writing material id-name file: .\test\integration\t1_strip\strip_two_lines.sg.mat
+    - writing material id-name file: strip_two_lines.sg.mat
   - writing outputs -- done
   
-  
-  - running VABS for homogenization
-  
-  -  [VABS Messages] 
-  
-  - running: VABS ".\test\integration\t1_strip\strip_two_lines.sg"
-  - command completed successfully.
-  
-  -  [VABS Messages End] 
-  
-  - running VABS for homogenization -- done
-  
 
 ========================================
 
 
 ========================================
 
-7:53)                      main.cpp:main:285
-[info]     total running time: 0.155404 sec                              main.cpp:main:286
+5:18)                      main.cpp:main:285
+[info]     total running time: 0.0669793 sec                             main.cpp:main:286
