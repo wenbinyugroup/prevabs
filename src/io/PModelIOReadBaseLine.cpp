@@ -767,8 +767,8 @@ int readLineTypeAirfoil(
         if (trimmed_line.empty()) {continue;}
 
         counter++;
-                PLOG(debug) << 
-          "reading line " + std::to_string(counter) + ": " + trimmed_line;
+          //       PLOG(debug) << 
+          // "reading line " + std::to_string(counter) + ": " + trimmed_line;
 
         // Skip header rows
         if (counter <= head_rows) {continue;}
@@ -777,8 +777,8 @@ int readLineTypeAirfoil(
         std::stringstream _ss(trimmed_line);
         double x, y;
         _ss >> x >> y;
-                PLOG(debug) << 
-          "x: " + std::to_string(x) + ", y: " + std::to_string(y);
+          //       PLOG(debug) << 
+          // "x: " + std::to_string(x) + ", y: " + std::to_string(y);
 
         // Skip the point (1, 0), i.e., trailing edge
         if (fabs(x-1) <= tol && fabs(y) <= tol) {
@@ -793,7 +793,7 @@ int readLineTypeAirfoil(
           continue;
         }
 
-                PLOG(debug) << "creating and adding point";
+                // PLOG(debug) << "creating and adding point";
         _pv_tmp = new PDCELVertex(_pv_tmp_name, 0, x, y);
         pmodel->addVertex(_pv_tmp);
         line->addPVertex(_pv_tmp);

@@ -750,6 +750,196 @@ static void trimSubLinePair(
   }
 }
 
+/**
+ * @brief Step 3.5: Remove interior self-intersecting loops within a sub-line.
+ *
+ * At highly curved baseline regions the miter junction from computeOffsetJunctions
+ * can overshoot, creating a small self-intersecting loop even when
+ * groupValidSegments detects no fold (because the base direction is nearly
+ * perpendicular to the offset reversal direction at the nose of the curve).
+ *
+ * The function searches for the first pair of non-adjacent segments (j >= i+2)
+ * that cross, inserts the intersection vertex, and removes the loop vertices
+ * between them.  The process repeats until no interior crossing remains.
+ *
+ * Map notes: after removal the maps_group entry for the intersection vertex
+ * reuses the entry of the first trimmed vertex (map[i+1]) so that Step 5's
+ * id_pairs assignment and forward-fill produce a valid staircase.  The
+ * maps_group staircase invariant itself may be violated (base_delta > 1
+ * between the new entry and the next retained entry); assertValidBaseOffsetMap
+ * is therefore NOT called for maps_group after this step.
+ *
+ * @param line  Sub-line vertex list; modified in place.
+ * @param map   BaseOffsetMap for this sub-line; modified to stay in sync
+ *              with line (map.size() == line.size() after return).
+ */
+static void trimSubLineSelfIntersections(
+    std::vector<PDCELVertex *> &line,
+    BaseOffsetMap &map
+  ) {
+  MESSAGE_SCOPE(g_msg);
+
+  bool found = true;
+  while (found) {
+    found = false;
+    const int n = static_cast<int>(line.size());
+
+    for (int i = 0; i < n - 2 && !found; ++i) {
+      for (int j = i + 2; j < n - 1 && !found; ++j) {
+        double u1, u2;
+        const bool not_parallel = calcLineIntersection2D(
+            line[i], line[i + 1],
+            line[j], line[j + 1],
+            u1, u2, TOLERANCE);
+
+        // Only act on true interior-to-interior crossings.
+        if (!not_parallel || u1 <= 0.0 || u1 >= 1.0 || u2 <= 0.0 || u2 >= 1.0)
+          continue;
+
+        PDCELVertex *xx = new PDCELVertex(
+            getParametricPoint(line[i]->point(), line[i + 1]->point(), u1));
+
+        if (config.debug) {
+          std::ostringstream oss;
+          oss << "trimSubLineSelfIntersections: loop between seg "
+              << i << " and seg " << j
+              << " u1=" << u1 << " u2=" << u2
+              << " at " << xx;
+          PLOG(debug) << oss.str();
+        }
+
+        // Rebuild line: erase loop [i+1 .. j], insert xx at position i+1.
+        line.erase(line.begin() + i + 1, line.begin() + j + 1);
+        line.insert(line.begin() + i + 1, xx);
+
+        // Rebuild map to stay in sync (map.size() must equal line.size()).
+        // Assign xx the entry of the first trimmed vertex (map[i+1]) so that
+        // id_pairs[i+1] gets xx's offset index in Step 5, and base vertices
+        // i+2..j are forward-filled to that same index.
+        BaseOffsetMap new_map;
+        new_map.reserve(
+            i + 1 + 1 + static_cast<int>(map.size()) - j - 1);
+        for (int k = 0; k <= i; ++k)
+          new_map.push_back(map[k]);
+        new_map.push_back(map[i + 1]);  // entry for xx
+        for (int k = j + 1; k < static_cast<int>(map.size()); ++k)
+          new_map.push_back(map[k]);
+        map = std::move(new_map);
+
+        found = true;
+      }
+    }
+  }
+}
+
+/**
+ * @brief Step 5.5: Remove cross-sub-line self-intersecting loops from the
+ *        joined output curve.
+ *
+ * After Step 5 joins all sub-lines, the result may contain a self-intersection
+ * that spans sub-line boundaries — e.g., trimSubLinePair can produce a
+ * degenerate "bridge" sub-line (two vertices) whose enclosing segments cross
+ * a neighbour sub-line, creating a backward loop that Step 3.5 cannot see
+ * because it operates per-sub-line before joining.
+ *
+ * The function finds the first pair of non-adjacent segments (j >= i+2)
+ * in offset_vertices that cross in their interiors (u1, u2 in (0,1)),
+ * inserts the intersection vertex at position i+1, removes the loop
+ * [i+1..j], and updates id_pairs accordingly. Repeats until no crossing
+ * remains.
+ *
+ * id_pairs update after removing loop [i+1..j] and inserting xx at i+1:
+ *   - offset <= i        : unchanged
+ *   - offset in [i+1, j] : set to i+1 (the new intersection vertex)
+ *   - offset > j         : subtract (j - i - 1)
+ * The resulting staircase remains valid (see comment in implementation).
+ *
+ * @param offset_vertices Joined output curve; modified in place.
+ * @param id_pairs        BaseOffsetMap for the full curve; modified in sync.
+ */
+static void trimJoinedCurveSelfIntersections(
+    std::vector<PDCELVertex *> &offset_vertices,
+    BaseOffsetMap &id_pairs) {
+  MESSAGE_SCOPE(g_msg);
+
+  bool found = true;
+  while (found) {
+    found = false;
+    const int n = static_cast<int>(offset_vertices.size());
+    const bool is_closed =
+        n >= 3
+        && offset_vertices.front() != nullptr
+        && offset_vertices.back() != nullptr
+        && offset_vertices.front()->point().distance(
+               offset_vertices.back()->point()) <= TOLERANCE;
+    const double param_tol = TOLERANCE;
+
+    for (int i = 0; i < n - 2 && !found; ++i) {
+      for (int j = i + 2; j < n - 1 && !found; ++j) {
+        // For a closed curve the first and last segments are adjacent through
+        // the closure vertex, so their shared endpoint is not a removable loop.
+        if (is_closed && i == 0 && j == n - 2) {
+          continue;
+        }
+
+        double u1, u2;
+        const bool not_parallel = calcLineIntersection2D(
+            offset_vertices[i], offset_vertices[i + 1],
+            offset_vertices[j], offset_vertices[j + 1],
+            u1, u2, TOLERANCE);
+
+        if (!not_parallel
+            || u1 <= param_tol || u1 >= 1.0 - param_tol
+            || u2 <= param_tol || u2 >= 1.0 - param_tol)
+          continue;
+
+        PDCELVertex *xx = new PDCELVertex(
+            getParametricPoint(
+                offset_vertices[i]->point(),
+                offset_vertices[i + 1]->point(), u1));
+
+        if (config.debug) {
+          std::ostringstream oss;
+          oss << "trimJoinedCurveSelfIntersections: loop between seg "
+              << i << " and seg " << j
+              << " u1=" << u1 << " u2=" << u2
+              << " at " << xx->printString();
+          PLOG(debug) << oss.str();
+        }
+
+        // Remove the loop [i+1..j] and insert xx at position i+1.
+        // (Ownership of removed heap vertices is not transferred — the
+        // vertices may have been shared across sub-line boundaries and the
+        // caller retains responsibility for their lifetimes.)
+        offset_vertices.erase(
+            offset_vertices.begin() + i + 1,
+            offset_vertices.begin() + j + 1);
+        offset_vertices.insert(offset_vertices.begin() + i + 1, xx);
+
+        // Update id_pairs to reflect the new offset indices.
+        // Proof that the staircase invariant is preserved after clamping:
+        //   - Entries with offset <= i: unchanged → staircase preserved.
+        //   - Entries with offset in [i+1, j]: all become i+1 (non-decreasing
+        //     within this range since they were already non-decreasing).
+        //   - Transition from the last clamped entry (i+1) to the first
+        //     non-clamped entry: old offset j+1 → new i+2, delta = 1. ✓
+        //   - Entries with offset > j: each reduced by (j-i-1), relative
+        //     order preserved → staircase preserved.
+        const int loop_count = j - i;  // vertices removed = j - i
+        for (auto &p : id_pairs) {
+          if (p.offset >= i + 1 && p.offset <= j) {
+            p.offset = i + 1;
+          } else if (p.offset > j) {
+            p.offset -= (loop_count - 1);
+          }
+        }
+
+        found = true;
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Public multi-vertex offset() function
 // ---------------------------------------------------------------------------
@@ -917,10 +1107,28 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   }
 
   // -------------------------------------------------------------------------
+  // Step 3.5: Trim any interior self-intersecting loops within each sub-line.
+  //
+  // A miter junction can overshoot at high-curvature baseline regions,
+  // producing a loop that the dot-product fold test in groupValidSegments
+  // misses (e.g. when the base is nearly horizontal at the leading edge).
+  // NOTE: maps_group staircase invariant may be violated after this step —
+  // assertValidBaseOffsetMap is intentionally NOT called here.  The final
+  // id_pairs staircase is restored by Step 5's forward-fill.
+  // -------------------------------------------------------------------------
+  // if (config.debug) {
+  //   PLOG(debug) <<
+  //       "offset (multi-vertex): step 3.5 — trim sub-line self-intersections";
+  // }
+  // for (int line_i = 0; line_i < static_cast<int>(lines_group.size()); ++line_i) {
+  //   trimSubLineSelfIntersections(lines_group[line_i], maps_group[line_i]);
+  // }
+
+  // -------------------------------------------------------------------------
   // Step 4: Handle closed-curve head-tail trimming.
   // -------------------------------------------------------------------------
   if (config.debug) {
-        PLOG(debug) << 
+        PLOG(debug) <<
       "offset (multi-vertex): step 4 — closed-curve head-tail trim";
   }
 
@@ -1135,6 +1343,23 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     }
   }
   assertValidBaseOffsetMap(id_pairs, "offset step 5");
+
+  // -------------------------------------------------------------------------
+  // Step 5.5: Trim cross-sub-line self-intersecting loops from the joined
+  //           output curve.
+  //
+  // trimSubLinePair can produce a degenerate 2-vertex "bridge" sub-line
+  // (e.g. [junction1, junction2] at a high-curvature nose) whose surrounding
+  // segments cross a neighbour sub-line once the curves are joined, creating a
+  // backward loop invisible to Step 3.5 (which operates per-sub-line).
+  // This step detects and removes any such cross-sub-line crossing.
+  // -------------------------------------------------------------------------
+  if (config.debug) {
+    PLOG(debug) <<
+        "offset (multi-vertex): step 5.5 — trim joined-curve self-intersections";
+  }
+  trimJoinedCurveSelfIntersections(offset_vertices, id_pairs);
+  assertValidBaseOffsetMap(id_pairs, "offset step 5.5");
 
   if (config.debug) {
         PLOG(debug) << "base vertices -- base_link_to_offset_indices";

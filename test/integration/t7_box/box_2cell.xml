@@ -55,6 +55,11 @@
       <points>rt,lt,lb,rb,rt</points>
     </baseline>
 
+    <line name="ln_web">
+      <point>o</point>
+      <angle>80</angle>
+    </line>
+
   </baselines>
 
 
@@ -63,9 +68,11 @@
     <layup name="layup1">
       <layer lamina="la_mtr_lamina_0.01">0:2</layer>
       <layer lamina="la_mtr_lamina_0.01">90:2</layer>
-
     </layup>
 
+    <layup name="layup2">
+      <layer lamina="la_mtr_lamina_0.01">0:2</layer>
+    </layup>
   </layups>
 
 
@@ -75,15 +82,13 @@
       <baseline>bsl_all</baseline>
       <layup>layup1</layup>
     </segment>
-
   </component>
 
-
-  <global measure="stress">
-    <displacements>0 0 0</displacements>
-    <rotations>1 0 0 0 1 0 0 0 1</rotations>
-    <loads>1 2 3 4 5 6</loads>
-  </global>
-
+  <component name="web" depend="main">
+    <segment>
+      <baseline>ln_web</baseline>
+      <layup>layup2</layup>
+    </segment>
+  </component>
 
 </cross_section>

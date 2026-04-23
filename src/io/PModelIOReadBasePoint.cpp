@@ -145,9 +145,9 @@ PDCELVertex *readXMLElementPoint(
       // Linear interpolation
       for (int i = 0; i < static_cast<int>(p_bsl_vertices.size()) - 1; i++) {
 
-                PLOG(debug) << "checking segment: " + std::to_string(i);
-                PLOG(debug) << "segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y());
-                PLOG(debug) << "loc: " + std::to_string(loc);
+                // PLOG(debug) << "checking segment: " + std::to_string(i);
+                // PLOG(debug) << "segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y());
+                // PLOG(debug) << "loc: " + std::to_string(loc);
 
         if (
           (p_bsl_vertices[i]->y() <= loc && loc <= p_bsl_vertices[i+1]->y()) ||

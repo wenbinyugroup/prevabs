@@ -54,6 +54,7 @@ struct LoggerSetup {
 #include "PSegment.hpp"
 #include "PModel.hpp"
 
+#include <cmath>
 #include <list>
 
 
@@ -557,6 +558,45 @@ TEST_CASE("offsetCurveBase: repeated pre-build calls reuse the same offset curve
   CHECK(segment.curveOffset() == first_offset);
   CHECK(segment.curveOffset()->vertices().size() == offset_vertex_count);
   CHECK(segment.baseOffsetIndicesPairs().size() == pair_count);
+}
+
+TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset loop",
+          "[dcel][segment][offset][closed]") {
+  Material material("mat");
+  Lamina lamina("lam", &material, 0.04);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+  layup.addLayer(&lamina, 90.0, 1, &layertype);
+
+  Baseline base("box", "line");
+  PDCELVertex *rt = new PDCELVertex(0.0, 0.5, 0.5);
+  PDCELVertex *lt = new PDCELVertex(0.0, -0.5, 0.5);
+  PDCELVertex *lb = new PDCELVertex(0.0, -0.5, -0.5);
+  PDCELVertex *rb = new PDCELVertex(0.0, 0.5, -0.5);
+  base.addPVertex(rt);
+  base.addPVertex(lt);
+  base.addPVertex(lb);
+  base.addPVertex(rb);
+  base.addPVertex(rt);
+
+  Segment segment("seg", &base, &layup, "left", 1);
+  segment.offsetCurveBase();
+
+  Baseline *offset = segment.curveOffset();
+  REQUIRE(offset != nullptr);
+  REQUIRE(offset->vertices().size() == 5);
+  CHECK(offset->vertices().front() == offset->vertices().back());
+
+  const double tol = 1e-9;
+  CHECK(offset->vertices()[0]->point().y() == Catch::Approx(0.42).margin(tol));
+  CHECK(offset->vertices()[0]->point().z() == Catch::Approx(0.42).margin(tol));
+  CHECK(offset->vertices()[1]->point().y() == Catch::Approx(-0.42).margin(tol));
+  CHECK(offset->vertices()[1]->point().z() == Catch::Approx(0.42).margin(tol));
+  CHECK(offset->vertices()[2]->point().y() == Catch::Approx(-0.42).margin(tol));
+  CHECK(offset->vertices()[2]->point().z() == Catch::Approx(-0.42).margin(tol));
+  CHECK(offset->vertices()[3]->point().y() == Catch::Approx(0.42).margin(tol));
+  CHECK(offset->vertices()[3]->point().z() == Catch::Approx(-0.42).margin(tol));
 }
 
 TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",

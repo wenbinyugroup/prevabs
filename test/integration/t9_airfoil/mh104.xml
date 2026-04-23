@@ -168,12 +168,12 @@
   </component>
 
   <!-- Rear web -->
-  <!-- <component name="web2" depend="surface">
+  <component name="web2" depend="surface">
     <segment name="sg_web_2">
       <baseline>bl_web_2</baseline>
       <layup>layup_web</layup>
     </segment>
-  </component> -->
+  </component>
 
 
 </cross_section>

@@ -51,7 +51,7 @@
       <points>p5:p1</points>
     </baseline> -->
     <baseline name="bsl_le">
-      <points>p6:p5</points>
+      <points>p4:p1</points>
     </baseline>
     <!-- <baseline name="bsl_le_bottom">
       <points>p4:p6</points>
@@ -111,15 +111,15 @@
 
 
 
-  <!-- <component name="spar">
+  <component name="spar">
     <segments>
       <baseline>bsl_spar</baseline>
       <layup>lyp_skin_graphite</layup>
       <layup>lyp_spar</layup>
     </segments>
-  </component> -->
+  </component>
 
-  <component name="le">
+  <component name="le" depend="spar">
     <segments>
       <baseline>bsl_le</baseline>
       <layup>lyp_steel</layup>
