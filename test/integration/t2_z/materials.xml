@@ -1,6 +1,6 @@
 <materials>
-	<material name="iso5_1" type="orthotropic">
-		<density>1.86E+03</density>
+    <material name="iso5_1" type="orthotropic">
+        <density>1.86E+03</density>
         <elastic>
             <e1>3.70E+10</e1>
             <e2>9.00E+09</e2>
@@ -12,9 +12,9 @@
             <nu13>0.28</nu13>
             <nu23>0.28</nu23>
         </elastic>
-	</material>
-	<material name="iso5_2" type="orthotropic">
-		<density>1.83E+03</density>
+    </material>
+    <material name="iso5_2" type="orthotropic">
+        <density>1.83E+03</density>
         <elastic>
             <e1>1.03E+10</e1>
             <e2>1.03E+10</e2>
@@ -26,9 +26,9 @@
             <nu13>0.30</nu13>
             <nu23>0.30</nu23>
         </elastic>
-	</material>
-	<material name="iso5_3" type="orthotropic">
-		<density>1.83E+03</density>
+    </material>
+    <material name="iso5_3" type="orthotropic">
+        <density>1.83E+03</density>
         <elastic>
             <e1>1.00E+01</e1>
             <e2>1.00E+01</e2>
@@ -40,9 +40,9 @@
             <nu13>0.30</nu13>
             <nu23>0.30</nu23>
         </elastic>
-	</material>
-	<material name="iso5_4" type="orthotropic">
-		<density>1.664E+03</density>
+    </material>
+    <material name="iso5_4" type="orthotropic">
+        <density>1.664E+03</density>
         <elastic>
             <e1>1.03E+10</e1>
             <e2>1.03E+10</e2>
@@ -54,9 +54,9 @@
             <nu13>0.30</nu13>
             <nu23>0.30</nu23>
         </elastic>
-	</material>
-	<material name="iso5_5" type="orthotropic">
-		<density>1.28E+02</density>
+    </material>
+    <material name="iso5_5" type="orthotropic">
+        <density>1.28E+02</density>
         <elastic>
             <e1>1.00E+07</e1>
             <e2>1.00E+07</e2>
@@ -68,7 +68,11 @@
             <nu13>0.30</nu13>
             <nu23>0.30</nu23>
         </elastic>
-	</material>
+    </material>
+    <lamina name="la_iso5_1_0005">
+        <material>iso5_1</material>
+        <thickness>0.005</thickness>
+    </lamina>
     <lamina name="la_iso5_1_02">
         <material>iso5_1</material>
         <thickness>0.02</thickness>

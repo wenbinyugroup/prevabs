@@ -28,7 +28,7 @@
     <!-- Global mesh size -->
     <mesh_size>0.01</mesh_size>
 
-    <element_type>linear</element_type>
+    <element_type>2</element_type>
   </general>
 
 
