@@ -171,13 +171,18 @@ static bool isBetterIntersection(
 // Outputs u1_out / u2_out: parametric positions on the curve / half-edge.
 // ls_i_out: winning segment index in `vertices`.
 //
+// `hels` is already filtered to the dependency-component loops that may clip
+// the current segment end, so both kept and non-kept loops are considered
+// here. This is required for closed shell dependencies whose relevant trim
+// boundary may be the kept inner loop rather than the exterior temp loop.
+//
 // last_seg_idx: (vertices.size()-1) for base curve, (vertices.size()-2) for offset.
 static PDCELHalfEdge *findBestIntersection(
     const std::vector<PDCELVertex *> &vertices,
     const std::vector<PDCELHalfEdgeLoop *> &hels,
     int e, int last_seg_idx,
     double &u1_out, double &u2_out, int &ls_i_out,
-    double tol, PDCEL *dcel)
+    double tol)
 {
   // Initialise to sentinel: -INF means "no candidate yet" for head search,
   // +INF means "no candidate yet" for tail search.
@@ -187,15 +192,13 @@ static PDCELHalfEdge *findBestIntersection(
   PDCELHalfEdge *he_tool = nullptr;
 
   for (auto hel : hels) {
-    if (!dcel->isLoopKept(hel)) {
-      PDCELHalfEdge *he = findCurveLoopIntersection(
-          vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, tol);
-      if (he != nullptr &&
-          isBetterIntersection(e, ls_i_tmp, u1_tmp,
-                               ls_i_prev, u1, last_seg_idx, tol)) {
-        // New best candidate found.
-        u1 = u1_tmp; u2_out = u2_tmp; he_tool = he; ls_i_prev = ls_i_tmp;
-      }
+    PDCELHalfEdge *he = findCurveLoopIntersection(
+        vertices, hel, e, ls_i_tmp, u1_tmp, u2_tmp, tol);
+    if (he != nullptr &&
+        isBetterIntersection(e, ls_i_tmp, u1_tmp,
+                             ls_i_prev, u1, last_seg_idx, tol)) {
+      // New best candidate found.
+      u1 = u1_tmp; u2_out = u2_tmp; he_tool = he; ls_i_prev = ls_i_tmp;
     }
   }
 
@@ -225,33 +228,33 @@ static PDCELVertex *getOrSplitVertex(
 // Collects the half-edge loops from already-built dependency components that
 // a segment could potentially intersect.
 //
-// Iterates the dependency components' segments directly and returns the
-// exterior (temp) boundary loop of each built segment. This avoids relying on
-// DCEL adjacency queries (findEnclosingLoop / linkHalfEdgeLoops), which fail
-// when dependency components are parallel (not nested) in the cross-section —
-// e.g. a web connecting two flanges at different heights.
-//
-// Each segment face has an interior (kept) boundary loop and an exterior
-// (temp) boundary loop whose half-edges are the twins of the kept ones.
-// findBestIntersection only processes non-kept loops, so we return the temp
-// (exterior) loop via face->outer()->twin()->loop().
+// We gather both the face loop itself and its twin loop. Closed shell
+// dependencies can expose either side as the correct trim boundary:
+// a web inside a box must clip against the shell's inner contour, while other
+// configurations still need the exterior loop. The downstream intersection
+// ranking picks the geometrically deepest hit from the requested end.
 static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
     const std::list<PComponent *> &dependencies)
 {
   std::vector<PDCELHalfEdgeLoop *> hels;
+  auto add_loop_once = [&hels](PDCELHalfEdgeLoop *loop) {
+    if (loop == nullptr) {
+      return;
+    }
+    if (std::find(hels.begin(), hels.end(), loop) == hels.end()) {
+      hels.push_back(loop);
+    }
+  };
 
   for (auto dep : dependencies) {
     for (auto seg : dep->segments()) {
       PDCELFace *face = seg->face();
       if (face == nullptr || face->outer() == nullptr) continue;
-      // face->outer() is the kept (interior) half-edge; its twin belongs to
-      // the temp (exterior) loop that findBestIntersection will process.
+      add_loop_once(face->outer()->loop());
+
       PDCELHalfEdge *he_twin = face->outer()->twin();
       if (he_twin == nullptr) continue;
-      PDCELHalfEdgeLoop *loop = he_twin->loop();
-      if (loop != nullptr) {
-        hels.push_back(loop);
-      }
+      add_loop_once(he_twin->loop());
     }
   }
 
@@ -894,7 +897,7 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
   PDCELHalfEdge *he_tool = findBestIntersection(
       s->curveBase()->vertices(), hels, e,
       static_cast<int>(s->curveBase()->vertices().size()) - 2,
-      u1, u2, ls_i_prev, TOLERANCE, bcfg.dcel);
+      u1, u2, ls_i_prev, TOLERANCE);
 
   PLOG(debug) << "  u1 = " + std::to_string(u1);
   PLOG(debug) << "  u2 = " + std::to_string(u2);
@@ -937,7 +940,7 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
   he_tool = findBestIntersection(
       s->curveOffset()->vertices(), hels, e,
       static_cast<int>(s->curveOffset()->vertices().size()) - 2,
-      u1, u2, ls_i_prev, TOLERANCE, bcfg.dcel);
+      u1, u2, ls_i_prev, TOLERANCE);
 
   PLOG(debug) << "  u1 = " + std::to_string(u1);
   PLOG(debug) << "  u2 = " + std::to_string(u2);
