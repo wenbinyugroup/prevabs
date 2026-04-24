@@ -46,16 +46,13 @@
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
   MESSAGE_SCOPE(g_msg);
 
-    PLOG(debug) << "in function: readLayups";
-
-  std::vector<Layup> tempLayups;
+  PLOG(debug) << "in function: readLayups";
 
   for (xml_node<> *nodeLayup = nodeLayups->first_node("layup"); nodeLayup;
        nodeLayup = nodeLayup->next_sibling("layup")) {
     std::string layupName{};
     layupName = requireAttr(nodeLayup, "name", "<layup>")->value();
-    // std::cout << "[debug] reading layup: " << layupName << std::endl;
-        PLOG(debug) << "reading layup: " + layupName;
+    PLOG(debug) << "reading layup: " + layupName;
 
     // method: optional; defaults to "layer list" when attribute is absent
     std::string layupMethod{"layer list"};
@@ -63,21 +60,29 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
     if (attrMethod)
       layupMethod = lowerString(attrMethod->value());
 
-    // if (debug) {
-    //   std::cout << layupName << std::endl;
-    //   std::cout << layupMethod << std::endl;
-    // }
-
     Layup *layup = new Layup(layupName);
 
     if ((layupMethod == "layer list") || (layupMethod == "ll")) {
       for (xml_node<> *nodeLayer = nodeLayup->first_node("layer"); nodeLayer;
            nodeLayer = nodeLayer->next_sibling("layer")) {
         std::string laminaName{};
-        std::string attrName{};
-        attrName = nodeLayer->first_attribute()->name();
-        if (attrName == "lamina") {
-          laminaName = nodeLayer->first_attribute("lamina")->value();
+        xml_attribute<> *attrLamina = nodeLayer->first_attribute("lamina");
+        xml_attribute<> *attrLayup = nodeLayer->first_attribute("layup");
+        std::string layerContext =
+          "<layer> in <layup name='" + layupName + "'>";
+        if (attrLamina && attrLayup) {
+          throw std::runtime_error(
+            layerContext + " cannot define both 'lamina' and 'layup'"
+          );
+        }
+        if (!attrLamina && !attrLayup) {
+          throw std::runtime_error(
+            "Missing required XML attribute 'lamina' or 'layup' in "
+            + layerContext
+          );
+        }
+        if (attrLamina) {
+          laminaName = attrLamina->value();
 
           std::string angleStack{nodeLayer->value()};
           double angle{};
@@ -129,10 +134,10 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
           for (int i = 1; i <= stack; ++i)
             layup->addPly(lamina->getMaterial(), lamina->getThickness(), angle);
         }
-        else if (attrName == "layup") {
+        else {
           // handle sub-layup
           // must make sure the sub-layup appears before current layup
-          std::string subLayupName=nodeLayer->first_attribute("layup")->value();
+          std::string subLayupName{attrLayup->value()};
           Layup *subLayup = pmodel->getLayupByName(subLayupName);
           if (subLayup == nullptr) {
             throw std::runtime_error(

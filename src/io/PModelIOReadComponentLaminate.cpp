@@ -19,8 +19,44 @@
 #include <vector>
 #include <stack>
 #include <sstream>
+#include <cstddef>
 #include <cmath>
 
+namespace {
+
+std::string makeAutoSingleSegmentName(std::size_t index) {
+  return "sgm_" + std::to_string(index);
+}
+
+std::string makeAutoSegmentsBaseName(
+  const xml_node<> *node_segments,
+  std::size_t &unnamed_block_counter
+) {
+  xml_attribute<> *attr_name = node_segments->first_attribute("name");
+  if (attr_name != nullptr) {
+    const std::string name = trim(attr_name->value());
+    if (!name.empty()) {
+      return name;
+    }
+  }
+
+  ++unnamed_block_counter;
+  return "sgm_blk_" + std::to_string(unnamed_block_counter);
+}
+
+std::string makeGeneratedSegmentName(
+  const std::string &base_name,
+  std::size_t segment_index,
+  std::size_t segment_count
+) {
+  if (segment_count <= 1) {
+    return base_name;
+  }
+
+  return base_name + "_" + std::to_string(segment_index + 1);
+}
+
+}  // namespace
 
 int readXMLElementComponentLaminate(
   PComponent *p_component, const xml_node<> *xn_component,
@@ -28,6 +64,8 @@ int readXMLElementComponentLaminate(
   std::vector<Layup *> &p_layups, int &num_combined_layups,
   CrossSection *cs, PModel *pmodel
   ) {
+  std::size_t unnamed_segment_counter = 0;
+  std::size_t unnamed_segments_block_counter = 0;
 
   if (xn_component->first_node("location")) {
     p_component->setRefVertex(pmodel->getPointByName(
@@ -52,8 +90,7 @@ int readXMLElementComponentLaminate(
       segmentName = nodeSegment->first_attribute("name")->value();
     }
     else {
-      Segment::count_tmp++;
-      segmentName = "sgm_" + std::to_string(Segment::count_tmp);
+      segmentName = makeAutoSingleSegmentName(++unnamed_segment_counter);
     }
 
     int i_freeend = -1;
@@ -230,6 +267,9 @@ int readXMLElementComponentLaminate(
   // the base line.
   for (auto p_xn_segments = xn_component->first_node("segments"); p_xn_segments;
     p_xn_segments = p_xn_segments->next_sibling("segments")) {
+    const std::string segment_name_base = makeAutoSegmentsBaseName(
+      p_xn_segments, unnamed_segments_block_counter
+    );
     std::string s_bsl_name{requireNode(p_xn_segments, "baseline", "<segments>")->value()};
     Baseline *p_bsl = pmodel->getBaselineByName(s_bsl_name);
     if (p_bsl == nullptr) {
@@ -348,7 +388,7 @@ int readXMLElementComponentLaminate(
 
     }
 
-    for (auto k = 0; k < v_s_layup.size(); k++) {
+    for (std::size_t k = 0; k < v_s_layup.size(); ++k) {
       u_begin = v_u_begin[k];
       u_end = v_u_end[k];
       s_layup_name = v_s_layup[k];
@@ -417,35 +457,33 @@ int readXMLElementComponentLaminate(
       PLOG(debug) << oss.str();
     }
 
-    // int n_sgms = v_p_layup.size();
+    if (v_u_sorted.size() < 2) {
+      PLOG(warning) << "<segments> on baseline '" << s_bsl_name
+                    << "' does not define any non-empty segment interval;"
+                    << " skipping segment creation";
+      continue;
+    }
+
     std::size_t n_sgms = v_u_sorted.size() - 1;
-
-
 
     // Combine layups
     std::vector<Layup *> v_p_layup_combined;
-
-    std::vector< std::vector<double> > vv_u;
-    std::vector< std::vector<Layup *> > vv_p_layup;
     Layup *tmp_layup_combined;
-    for (int i = 0; i < n_sgms; i++) {
+    for (std::size_t i = 0; i < n_sgms; ++i) {
       // For every two adjacent u points,
       // find out all layups in this segment
       double sgm_pos = v_u_sorted[i];
-      std::vector<double> tmp_v_u{v_u_sorted[i], v_u_sorted[i+1]};
-      vv_u.push_back(tmp_v_u);
 
       // Sweep line for all u points from the begin to the end
       // except the last one.
       // The layup is counted if the sweep line is at the beginning
       // or in the segment.
       std::vector<Layup *> tmp_v_p_layup;
-      for (int j = 0; j < v_p_layup.size(); j++) {
+      for (std::size_t j = 0; j < v_p_layup.size(); ++j) {
         if (sgm_pos >= v_u_begin[j] && sgm_pos < v_u_end[j]) {
           tmp_v_p_layup.push_back(v_p_layup[j]);
         }
       }
-      vv_p_layup.push_back(tmp_v_p_layup);
 
       // Create a new combined layup if there are multiple layups
       // otherwise, use the existing one
@@ -463,19 +501,23 @@ int readXMLElementComponentLaminate(
     }
 
     // Combine successive layups and points if layups are the same
-    std::stack<int> tmp_index_to_erase;
-    for (auto i = 1; i < v_u_sorted.size()-1; i++) {
+    std::stack<std::size_t> tmp_index_to_erase;
+    for (std::size_t i = 1; i + 1 < v_u_sorted.size(); ++i) {
       if (*(v_p_layup_combined[i]) == *(v_p_layup_combined[i-1])) {
         tmp_index_to_erase.push(i);
       }
     }
 
     while (!tmp_index_to_erase.empty()) {
+      const std::vector<double>::difference_type erase_index =
+        static_cast<std::vector<double>::difference_type>(
+          tmp_index_to_erase.top()
+        );
       v_u_sorted.erase(
-        v_u_sorted.begin() + tmp_index_to_erase.top()
+        v_u_sorted.begin() + erase_index
       );
       v_p_layup_combined.erase(
-        v_p_layup_combined.begin() + tmp_index_to_erase.top()
+        v_p_layup_combined.begin() + erase_index
       );
       tmp_index_to_erase.pop();
     }
@@ -486,7 +528,7 @@ int readXMLElementComponentLaminate(
     std::stack<PDCELVertex *> newv_insert;
     std::vector<int> index_split, index_shift;
     int i_shift = 0;
-    for (auto i = 0; i < v_u_sorted.size(); i++) {
+    for (std::size_t i = 0; i < v_u_sorted.size(); ++i) {
       if (v_u_sorted[i] == 0.0) {
         index_split.push_back(0);
         index_shift.push_back(0);
@@ -523,7 +565,7 @@ int readXMLElementComponentLaminate(
       newv_insert.pop();
     }
 
-    for (int i = 0; i < index_split.size(); i++) {
+    for (std::size_t i = 0; i < index_split.size(); ++i) {
       if (index_split[i] != 0) {
         index_split[i] += index_shift[i];
       }
@@ -533,7 +575,7 @@ int readXMLElementComponentLaminate(
     std::vector<Baseline *> v_p_bsl;
     std::vector<PDCELVertex *> tmp_v_full = p_bsl->vertices();
     Baseline *tmp_p_bsl;
-    for (int i = 0; i < n_sgms; i++) {
+    for (std::size_t i = 0; i < n_sgms; ++i) {
       if (index_split[i] == 0 && index_split[i+1] == tmp_v_full.size() - 1) {
         tmp_p_bsl = new Baseline(p_bsl);
       }
@@ -541,7 +583,7 @@ int readXMLElementComponentLaminate(
         tmp_p_bsl = new Baseline(
           p_bsl->getName() + "_sub_" + std::to_string(v_p_bsl.size()+1), "straight"
         );
-        for (int j = index_split[i]; j <= index_split[i+1]; j++) {
+        for (int j = index_split[i]; j <= index_split[i+1]; ++j) {
           tmp_p_bsl->addPVertex(tmp_v_full[j]);
         }
       }
@@ -549,9 +591,10 @@ int readXMLElementComponentLaminate(
     }
 
     // Create segments
-    for (auto i = 0; i < n_sgms; ++i) {
-      Segment::count_tmp++;
-      std::string s_sgm_name = "sgm_" + std::to_string(Segment::count_tmp);
+    for (std::size_t i = 0; i < n_sgms; ++i) {
+      const std::string s_sgm_name = makeGeneratedSegmentName(
+        segment_name_base, i, n_sgms
+      );
       int i_freeend = -1;
       Segment *p_sgm = new Segment(
         s_sgm_name, v_p_bsl[i], v_p_layup_combined[i], s_layup_side, 0

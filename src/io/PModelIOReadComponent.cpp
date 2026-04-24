@@ -21,21 +21,9 @@
 #include <sstream>
 #include <iostream>
 
-using namespace rapidxml;
-
-namespace {
-
-static bool parseBoolAttributeValue(const std::string &value)
-{
-  const std::string lowered = lowerString(value);
-  return lowered == "1" || lowered == "true" || lowered == "yes"
-      || lowered == "on";
-}
-
-} // namespace
-
 PComponent *readXMLElementComponent(
-  const xml_node<> *xn_component, std::vector<std::vector<std::string>> &dependents_all,
+  const rapidxml::xml_node<> *xn_component,
+  std::vector<std::vector<std::string>> &dependents_all,
   std::vector<Layup *> &p_layups, int &num_combined_layups,
   CrossSection *cs, PModel *pmodel
   ) {
@@ -45,7 +33,7 @@ PComponent *readXMLElementComponent(
   PComponent *p_component = new PComponent();
 
   std::string cmp_name;
-  xml_attribute<> *p_xa_name = xn_component->first_attribute("name");
+  rapidxml::xml_attribute<> *p_xa_name = xn_component->first_attribute("name");
   if (p_xa_name) {
     cmp_name = p_xa_name->value();
   } else {
@@ -58,7 +46,7 @@ PComponent *readXMLElementComponent(
 
   std::string s_cmp_type;
   ComponentType cmp_type = ComponentType::laminate;
-  xml_attribute<> *p_xa_type = xn_component->first_attribute("type");
+  rapidxml::xml_attribute<> *p_xa_type = xn_component->first_attribute("type");
   if (p_xa_type) {
     s_cmp_type = p_xa_type->value();
     if (s_cmp_type == "laminate") {
@@ -72,7 +60,7 @@ PComponent *readXMLElementComponent(
   p_component->setType(cmp_type);
 
   JointStyle cmp_style = JointStyle::step;
-  xml_attribute<> *p_xa_style = xn_component->first_attribute("style");
+  rapidxml::xml_attribute<> *p_xa_style = xn_component->first_attribute("style");
   if (p_xa_style) {
     std::string ss{p_xa_style->value()};
     if (ss[0] != '\0') {
@@ -84,12 +72,14 @@ PComponent *readXMLElementComponent(
   }
   p_component->setStyle(cmp_style);
 
-  xml_attribute<> *p_xa_cycle = xn_component->first_attribute("cycle");
+  rapidxml::xml_attribute<> *p_xa_cycle = xn_component->first_attribute("cycle");
   if (p_xa_cycle == nullptr) {
     p_xa_cycle = xn_component->first_attribute("cyclic");
   }
   if (p_xa_cycle) {
-    p_component->setCycle(parseBoolAttributeValue(p_xa_cycle->value()));
+    p_component->setCycle(
+      parseXmlBoolValue(p_xa_cycle->value(), "<component>@cycle/@cyclic")
+    );
   }
 
   // Record the dependency relations between components (names only)
@@ -107,13 +97,13 @@ PComponent *readXMLElementComponent(
   dependents_all.push_back(tmp_dependents_one);
 
   // Read extra material orientation setting
-  xml_node<> *p_xn_orient = xn_component->first_node("material_orientation");
+  rapidxml::xml_node<> *p_xn_orient = xn_component->first_node("material_orientation");
   if (p_xn_orient) {
-    xml_node<> *p_xn_moe1 = p_xn_orient->first_node("e1");
+    rapidxml::xml_node<> *p_xn_moe1 = p_xn_orient->first_node("e1");
     if (p_xn_moe1) {
       p_component->setMatOrient1(p_xn_moe1->value());
     }
-    xml_node<> *p_xn_moe2 = p_xn_orient->first_node("e2");
+    rapidxml::xml_node<> *p_xn_moe2 = p_xn_orient->first_node("e2");
     if (p_xn_moe2) {
       p_component->setMatOrient2(p_xn_moe2->value());
     }

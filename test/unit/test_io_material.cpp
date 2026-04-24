@@ -246,3 +246,69 @@ TEST_CASE("readLayups: lamina without material fails before layer creation",
       && Catch::Matchers::ContainsSubstring("has no material")
   );
 }
+
+TEST_CASE("readMaterials: null materials node is rejected",
+          "[io][material][hygiene]") {
+  Message message;
+  g_msg = &message;
+
+  PModel model;
+  CHECK_THROWS_WITH(
+    readMaterials(nullptr, &model),
+    Catch::Matchers::ContainsSubstring(
+      "Missing required XML element <materials>"
+    )
+  );
+}
+
+TEST_CASE("readLayups: layer without lamina or layup attribute fails clearly",
+          "[io][material][layup][hygiene]") {
+  Message message;
+  g_msg = &message;
+
+  PModel model;
+  std::vector<char> buffer;
+  rapidxml::xml_document<> doc;
+  parseXmlDocument(
+    "<layups>"
+      "<layup name=\"lay\">"
+        "<layer angle=\"0\">0</layer>"
+      "</layup>"
+    "</layups>",
+    buffer, doc
+  );
+
+  CHECK_THROWS_WITH(
+    readLayups(doc.first_node("layups"), &model),
+    Catch::Matchers::ContainsSubstring(
+      "Missing required XML attribute 'lamina' or 'layup'"
+    )
+      && Catch::Matchers::ContainsSubstring("<layer> in <layup name='lay'>")
+  );
+}
+
+TEST_CASE("readLayups: layer cannot define lamina and layup together",
+          "[io][material][layup][hygiene]") {
+  Message message;
+  g_msg = &message;
+
+  PModel model;
+  std::vector<char> buffer;
+  rapidxml::xml_document<> doc;
+  parseXmlDocument(
+    "<layups>"
+      "<layup name=\"lay\">"
+        "<layer lamina=\"lam\" layup=\"sub\">0</layer>"
+      "</layup>"
+    "</layups>",
+    buffer, doc
+  );
+
+  CHECK_THROWS_WITH(
+    readLayups(doc.first_node("layups"), &model),
+    Catch::Matchers::ContainsSubstring(
+      "cannot define both 'lamina' and 'layup'"
+    )
+      && Catch::Matchers::ContainsSubstring("<layer> in <layup name='lay'>")
+  );
+}

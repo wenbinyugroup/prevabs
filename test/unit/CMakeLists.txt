@@ -45,7 +45,9 @@ target_compile_definitions(test_geo PRIVATE
 set(TEST_DCEL_SOURCES
   catch_amalgamated.cpp
   test_dcel.cpp
+  test_io_component_laminate.cpp
   test_io_material.cpp
+  test_io_p6_helpers.cpp
   ${SRC_GEO}/DCELSweepLine.cpp
   ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp
@@ -66,8 +68,12 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/overloadOperator.cpp
   ${SRC_ROOT}/GeometryRepository.cpp
   ${SRC_ROOT}/MaterialRepository.cpp
+  ${SRC_ROOT}/io/PModelIOReadComponent.cpp
+  ${SRC_ROOT}/io/PModelIOReadComponentFilling.cpp
+  ${SRC_ROOT}/io/PModelIOReadComponentLaminate.cpp
   ${SRC_ROOT}/io/PModelIOReadLayup.cpp
   ${SRC_ROOT}/io/PModelIOReadMaterial.cpp
+  ${SRC_ROOT}/cs/CrossSection.cpp
   ${SRC_ROOT}/cs/Material.cpp
   ${SRC_ROOT}/cs/PArea.cpp
   ${SRC_ROOT}/cs/PBaseLine.cpp

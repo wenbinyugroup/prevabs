@@ -42,20 +42,7 @@
 #include <windows.h>
 #endif
 
-using namespace rapidxml;
-
 namespace {
-
-bool parseXmlBoolValue(const std::string &value) {
-  const std::string s = lowerString(trim(value));
-  if (s == "1" || s == "true" || s == "yes" || s == "on") {
-    return true;
-  }
-  if (s == "0" || s == "false" || s == "no" || s == "off") {
-    return false;
-  }
-  throw std::runtime_error("Invalid boolean value: " + value);
-}
 
 unsigned int parseElementShapeValue(const std::string &value) {
   const std::string s = lowerString(trim(value));
@@ -73,18 +60,9 @@ unsigned int parseElementShapeValue(const std::string &value) {
 
 }  // namespace
 
-// int CrossSection::used_material_index = 0;
-// int CrossSection::used_layertype_index = 0;
-// int PComponent::count_tmp = 0;
-// int Segment::count_tmp = 0;
-
 int readCrossSection(const std::string &filenameCrossSection,
                      const std::string &filePath, PModel *pmodel) {
-  // i_indent++;
-
-  (void)0;  // material_id and layertype_id removed (unused)
-
-  xml_document<> xmlDocCrossSection;
+  rapidxml::xml_document<> xmlDocCrossSection;
   std::ifstream fileCrossSection{filenameCrossSection};
   if (!fileCrossSection.is_open()) {
     PLOG(error) << "unable to open file: " << filenameCrossSection;
@@ -99,20 +77,20 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   try {
     xmlDocCrossSection.parse<0>(&buffer[0]);
-  } catch (parse_error &e) {
+  } catch (rapidxml::parse_error &e) {
     throw std::runtime_error(
       "XML parse error in '" + filenameCrossSection + "': " + e.what()
     );
   }
 
-  xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
+  rapidxml::xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
   if (!p_xn_sg) {
     p_xn_sg = xmlDocCrossSection.first_node("sg");
   }
   if (!p_xn_sg) {
     throw std::runtime_error("Missing root XML element <cross_section> or <sg>");
   }
-  xml_attribute<> *p_xa_name{p_xn_sg->first_attribute("name")};
+  rapidxml::xml_attribute<> *p_xa_name{p_xn_sg->first_attribute("name")};
   if (!p_xa_name) {
     throw std::runtime_error("Missing required attribute 'name' on root element");
   }
@@ -128,22 +106,24 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // format: optional; 0 = layups in a separate include file,
   //         1 (default) = layups inline in the main file
-  double d_fmt{1};
-  xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
+  int format_version{1};
+  rapidxml::xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
   if (p_xa_fmt) {
     std::string ss{p_xa_fmt->value()};
     if (ss[0] != '\0') {
-      d_fmt = std::stod(ss);
+      format_version = parseFormatVersionValue(
+        ss, "root attribute 'format'"
+      );
     }
   }
 
   // -----------------------------------------------------------------
   // Read settings
-  xml_node<> *p_xn_settings{p_xn_sg->first_node("settings")};
+  rapidxml::xml_node<> *p_xn_settings{p_xn_sg->first_node("settings")};
   if (p_xn_settings) {
         PLOG(debug) << "reading settings...";
 
-    xml_node<> *p_xn_tolerance{p_xn_settings->first_node("tolerance")};
+    rapidxml::xml_node<> *p_xn_tolerance{p_xn_settings->first_node("tolerance")};
     if (p_xn_tolerance) {
       std::string ss{p_xn_tolerance->value()};
       if (ss[0] != '\0') {
@@ -172,10 +152,10 @@ int readCrossSection(const std::string &filenameCrossSection,
   double cos11 = 1.0;   // optional: oblique direction cosine (default: normal)
   double cos21 = 0.0;
 
-  xml_node<> *p_xn_analysis{p_xn_sg->first_node("analysis")};
+  rapidxml::xml_node<> *p_xn_analysis{p_xn_sg->first_node("analysis")};
   if (p_xn_analysis) {
 
-    xml_node<> *p_xn_model_dim{p_xn_analysis->first_node("model_dim")};
+    rapidxml::xml_node<> *p_xn_model_dim{p_xn_analysis->first_node("model_dim")};
     if (p_xn_model_dim) {
       std::string ss{p_xn_model_dim->value()};
       if (ss[0] != '\0') {
@@ -183,7 +163,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_model{p_xn_analysis->first_node("model")};
+    rapidxml::xml_node<> *p_xn_model{p_xn_analysis->first_node("model")};
     if (p_xn_model) {
       std::string ss{p_xn_model->value()};
       if (ss[0] != '\0') {
@@ -191,14 +171,14 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_physics{p_xn_analysis->first_node("physics")};
+    rapidxml::xml_node<> *p_xn_physics{p_xn_analysis->first_node("physics")};
     if (p_xn_physics) {
       std::string ss{p_xn_physics->value()};
       int _physics = std::stoi(ss.c_str());
       pmodel->setAnalysisPhysics(_physics);
     }
 
-    xml_node<> *p_xn_damping{p_xn_analysis->first_node("damping")};
+    rapidxml::xml_node<> *p_xn_damping{p_xn_analysis->first_node("damping")};
     if (p_xn_damping) {
       std::string ss{p_xn_damping->value()};
       if (ss[0] != '\0') {
@@ -206,7 +186,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_thermal{p_xn_analysis->first_node("thermal")};
+    rapidxml::xml_node<> *p_xn_thermal{p_xn_analysis->first_node("thermal")};
     if (p_xn_thermal) {
       std::string ss{p_xn_thermal->value()};
       if (ss[0] != '\0') {
@@ -214,7 +194,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_k1{p_xn_analysis->first_node("initial_twist")};
+    rapidxml::xml_node<> *p_xn_k1{p_xn_analysis->first_node("initial_twist")};
     if (p_xn_k1) {
       std::string ss{p_xn_k1->value()};
       if (ss[0] != '\0') {
@@ -222,7 +202,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_k2{p_xn_analysis->first_node("initial_curvature_2")};
+    rapidxml::xml_node<> *p_xn_k2{p_xn_analysis->first_node("initial_curvature_2")};
     if (p_xn_k2) {
       std::string ss{p_xn_k2->value()};
       if (ss[0] != '\0') {
@@ -230,7 +210,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_k3{p_xn_analysis->first_node("initial_curvature_3")};
+    rapidxml::xml_node<> *p_xn_k3{p_xn_analysis->first_node("initial_curvature_3")};
     if (p_xn_k3) {
       std::string ss{p_xn_k3->value()};
       if (ss[0] != '\0') {
@@ -238,7 +218,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_cos11{p_xn_analysis->first_node("oblique_y1")};
+    rapidxml::xml_node<> *p_xn_cos11{p_xn_analysis->first_node("oblique_y1")};
     if (p_xn_cos11) {
       std::string ss{p_xn_cos11->value()};
       if (ss[0] != '\0') {
@@ -246,7 +226,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_cos21{p_xn_analysis->first_node("oblique_y2")};
+    rapidxml::xml_node<> *p_xn_cos21{p_xn_analysis->first_node("oblique_y2")};
     if (p_xn_cos21) {
       std::string ss{p_xn_cos21->value()};
       if (ss[0] != '\0') {
@@ -254,7 +234,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_trapeze{p_xn_analysis->first_node("trapeze")};
+    rapidxml::xml_node<> *p_xn_trapeze{p_xn_analysis->first_node("trapeze")};
     if (p_xn_trapeze) {
       std::string ss{p_xn_trapeze->value()};
       if (ss[0] != '\0') {
@@ -262,7 +242,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
 
-    xml_node<> *p_xn_vlasov{p_xn_analysis->first_node("vlasov")};
+    rapidxml::xml_node<> *p_xn_vlasov{p_xn_analysis->first_node("vlasov")};
     if (p_xn_vlasov) {
       std::string ss{p_xn_vlasov->value()};
       if (ss[0] != '\0') {
@@ -282,15 +262,6 @@ int readCrossSection(const std::string &filenameCrossSection,
 
     PLOG(debug) << "finished reading analysis.";
 
-  // cs->setModel(model);
-  // cs->setFlagThermal(flag_thermal);
-  // cs->setFlagCurvature(flag_curvature);
-  // cs->setCurvatures(k1, k2, k3);
-  // cs->setObliques(cos11, cos21);
-  // cs->setFlagOblique(flag_oblique);
-  // cs->setFlagTrapeze(flag_trapeze);
-  // cs->setFlagVlasov(flag_vlasov);
-
   pmodel->setAnalysisModelDim(model_dim);
   pmodel->setAnalysisModel(model);
   pmodel->setAnalysisDamping(flag_damping);
@@ -307,13 +278,13 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Read general
     PLOG(debug) << "reading general...";
 
-  xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
+  rapidxml::xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
   if (!nodeGeneral) {
     throw std::runtime_error("Missing required XML element <general>");
   }
 
   double dx{0}, dy{0}, dz{0};
-  xml_node<> *nodeTranslate{nodeGeneral->first_node("translate")};
+  rapidxml::xml_node<> *nodeTranslate{nodeGeneral->first_node("translate")};
   if (nodeTranslate) {
     std::stringstream ss{nodeTranslate->value()};
     if (ss.str()[0] != '\0') {
@@ -322,28 +293,28 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   double sfactor{1.0};
-  xml_node<> *nodeScale{nodeGeneral->first_node("scale")};
+  rapidxml::xml_node<> *nodeScale{nodeGeneral->first_node("scale")};
   if (nodeScale) {
     std::string sscale{nodeScale->value()};
     if (sscale[0] != '\0')
       sfactor = std::stod(sscale.c_str());
   }
   double rangle{0.0};
-  xml_node<> *nodeRotate{nodeGeneral->first_node("rotate")};
+  rapidxml::xml_node<> *nodeRotate{nodeGeneral->first_node("rotate")};
   if (nodeRotate) {
     std::string srotate{nodeRotate->value()};
     if (srotate[0] != '\0')
       rangle = std::stod(srotate.c_str());
   }
   double meshsize{0.0};
-  xml_node<> *nodeMeshsize{nodeGeneral->first_node("mesh_size")};
+  rapidxml::xml_node<> *nodeMeshsize{nodeGeneral->first_node("mesh_size")};
   if (nodeMeshsize) {
     std::string smeshsize{nodeMeshsize->value()};
     if (smeshsize[0] != '\0')
       meshsize = std::stod(smeshsize.c_str());
   }
   int elementtype = 2;
-  xml_node<> *nodeElementType{nodeGeneral->first_node("element_type")};
+  rapidxml::xml_node<> *nodeElementType{nodeGeneral->first_node("element_type")};
   if (nodeElementType) {
     if (nodeElementType->value()[0] != '\0') {
       std::string et{nodeElementType->value()};
@@ -357,7 +328,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   pmodel->setElementType(elementtype);
 
   unsigned int elementshape = 3;
-  xml_node<> *nodeElementShape{nodeGeneral->first_node("element_shape")};
+  rapidxml::xml_node<> *nodeElementShape{nodeGeneral->first_node("element_shape")};
   if (nodeElementShape) {
     std::string es{trim(nodeElementShape->value())};
     if (!es.empty()) {
@@ -366,17 +337,19 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
   pmodel->setElementShape(elementshape);
 
-  xml_node<> *nodeTransfiniteAuto{
+  rapidxml::xml_node<> *nodeTransfiniteAuto{
     nodeGeneral->first_node("transfinite_auto")
   };
   if (nodeTransfiniteAuto) {
     std::string s{trim(nodeTransfiniteAuto->value())};
     if (!s.empty()) {
-      pmodel->setTransfiniteAuto(parseXmlBoolValue(s));
+      pmodel->setTransfiniteAuto(
+        parseXmlBoolValue(s, "<general>/<transfinite_auto>")
+      );
     }
   }
 
-  xml_node<> *nodeTransfiniteCornerAngle{
+  rapidxml::xml_node<> *nodeTransfiniteCornerAngle{
     nodeGeneral->first_node("transfinite_corner_angle")
   };
   if (nodeTransfiniteCornerAngle) {
@@ -386,25 +359,27 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
   }
 
-  xml_node<> *nodeTransfiniteRecombine{
+  rapidxml::xml_node<> *nodeTransfiniteRecombine{
     nodeGeneral->first_node("transfinite_recombine")
   };
   if (nodeTransfiniteRecombine) {
     std::string s{trim(nodeTransfiniteRecombine->value())};
     if (!s.empty()) {
-      pmodel->setTransfiniteRecombine(parseXmlBoolValue(s));
+      pmodel->setTransfiniteRecombine(
+        parseXmlBoolValue(s, "<general>/<transfinite_recombine>")
+      );
     }
   }
 
-  xml_node<> *nodeRecombine{nodeGeneral->first_node("recombine")};
+  rapidxml::xml_node<> *nodeRecombine{nodeGeneral->first_node("recombine")};
   if (nodeRecombine) {
     std::string s{trim(nodeRecombine->value())};
     if (!s.empty()) {
-      pmodel->setRecombine(parseXmlBoolValue(s));
+      pmodel->setRecombine(parseXmlBoolValue(s, "<general>/<recombine>"));
     }
   }
 
-  xml_node<> *nodeRecombineAngle{
+  rapidxml::xml_node<> *nodeRecombineAngle{
     nodeGeneral->first_node("recombine_angle")
   };
   if (nodeRecombineAngle) {
@@ -415,7 +390,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   double omega{1.0};
-  xml_node<> *p_xn_omega{nodeGeneral->first_node("omega")};
+  rapidxml::xml_node<> *p_xn_omega{nodeGeneral->first_node("omega")};
   if (p_xn_omega) {
     std::string stol{p_xn_omega->value()};
     if (stol[0] != '\0') {
@@ -424,7 +399,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
   pmodel->setOmega(omega);
 
-  xml_node<> *p_xn_tol{nodeGeneral->first_node("tolerance")};
+  rapidxml::xml_node<> *p_xn_tol{nodeGeneral->first_node("tolerance")};
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
     if (stol[0] != '\0')
@@ -434,7 +409,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   ss_tol << config.app.tol;
     PLOG(debug) << "tolerance = " + ss_tol.str();
 
-  xml_node<> *p_xn_itf;
+  rapidxml::xml_node<> *p_xn_itf;
 
   bool track_interface;
   p_xn_itf = nodeGeneral->first_node("track_interface");
@@ -471,8 +446,8 @@ int readCrossSection(const std::string &filenameCrossSection,
   // -----------------------------------------------------------------
   // Read include
     PLOG(debug) << "finding includings...";
-  xml_node<> *nodeInclude{p_xn_sg->first_node("include")};
-  xml_node<> *nodeBaselines;
+  rapidxml::xml_node<> *nodeInclude{p_xn_sg->first_node("include")};
+  rapidxml::xml_node<> *nodeBaselines;
 
   // -----------------------------------------------------------------
   // Read geometry (base points and base lines)
@@ -480,7 +455,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // 1: Try to read geometry from a seperated file
   if (nodeInclude) {
-    xml_node<> *p_xn_include_bsl{nodeInclude->first_node("baseline")};
+    rapidxml::xml_node<> *p_xn_include_bsl{nodeInclude->first_node("baseline")};
     if (p_xn_include_bsl) {
 
       // General type cross-section
@@ -491,7 +466,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
         std::ifstream fileBaselines;
         openFile(fileBaselines, filenameBaselines);
-        xml_document<> xmlDocBaselines;
+        rapidxml::xml_document<> xmlDocBaselines;
         std::vector<char> buffer_bsl{(std::istreambuf_iterator<char>(fileBaselines)),
                                 std::istreambuf_iterator<char>()};
         buffer_bsl.push_back('\0');
@@ -499,7 +474,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         try {
           xmlDocBaselines.parse<0>(&buffer_bsl[0]);
         }
-        catch (parse_error &e) {
+        catch (rapidxml::parse_error &e) {
           throw std::runtime_error(
             "XML parse error in '" + filenameBaselines + "': " + e.what()
           );
@@ -584,7 +559,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   std::string fn_material_local = "";
   if (nodeInclude) {
-    xml_node<> *xn_material{nodeInclude->first_node("material")};
+    rapidxml::xml_node<> *xn_material{nodeInclude->first_node("material")};
     if (xn_material) {
       fn_material_local = filePath + xn_material->value() + ".xml";
     }
@@ -598,7 +573,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     readMaterialsFile(fn_material_local, pmodel);
   }
 
-  xml_node<> *p_xn_materials{p_xn_sg->first_node("materials")};
+  rapidxml::xml_node<> *p_xn_materials{p_xn_sg->first_node("materials")};
   if (p_xn_materials) {
     readMaterials(p_xn_materials, pmodel);
   }
@@ -609,23 +584,28 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Read layups
     PLOG(debug) << "reading layups...";
 
-  xml_node<> *nodeLayups;
-  if (d_fmt == 0) {
+  rapidxml::xml_node<> *nodeLayups;
+  if (format_version == 0) {
     if (nodeInclude) {
-      xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
+      rapidxml::xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
+      if (!p_xn_include_lyp) {
+        throw std::runtime_error(
+          "Missing required XML element <include>/<layup> for format version 0"
+        );
+      }
       std::string filenameLayups{p_xn_include_lyp->value()};
       filenameLayups = filePath + filenameLayups + ".xml";
       PLOG(info) << "include layups file: " << filenameLayups;
       std::ifstream fileLayups;
       openFile(fileLayups, filenameLayups);
-      xml_document<> xmlDocLayups;
+      rapidxml::xml_document<> xmlDocLayups;
       std::vector<char> buffer_lyp{(std::istreambuf_iterator<char>(fileLayups)),
                               std::istreambuf_iterator<char>()};
       buffer_lyp.push_back('\0');
 
       try {
         xmlDocLayups.parse<0>(&buffer_lyp[0]);
-      } catch (parse_error &e) {
+      } catch (rapidxml::parse_error &e) {
         throw std::runtime_error(
           "XML parse error in '" + filenameLayups + "': " + e.what()
         );
@@ -634,14 +614,25 @@ int readCrossSection(const std::string &filenameCrossSection,
       readLayups(nodeLayups, pmodel);
             PLOG(debug) << "finished reading layups.";
     }
+    else {
+      throw std::runtime_error(
+        "Format version 0 requires an <include> section with <layup>"
+      );
+    }
   }
 
-  else if (d_fmt == 1) {
+  else if (format_version == 1) {
     nodeLayups = p_xn_sg->first_node("layups");
     if (nodeLayups) {
       readLayups(nodeLayups, pmodel);
             PLOG(debug) << "finished reading layups.";
     }
+  }
+  else {
+    throw std::runtime_error(
+      "Unsupported format version '" + std::to_string(format_version)
+      + "' on root element"
+    );
   }
 
   // -----------------------------------------------------------------

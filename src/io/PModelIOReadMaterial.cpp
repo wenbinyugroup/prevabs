@@ -205,26 +205,22 @@ int readMaterialsFile(
 }
 
 int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
+  if (!nodeMaterials) {
+    throw std::runtime_error("Missing required XML element <materials>");
+  }
+
   // -----------------------------------------------------------------
   // Read material data
   for (xml_node<> *nodeMaterial = nodeMaterials->first_node("material");
        nodeMaterial; nodeMaterial = nodeMaterial->next_sibling("material")) {
-
-    Material *m;
-
-    m = readXMLElementMaterial(nodeMaterial, nodeMaterials, pmodel);
-
+    readXMLElementMaterial(nodeMaterial, nodeMaterials, pmodel);
   }
 
   // -----------------------------------------------------------------
   // Read lamina data
   for (xml_node<> *nodeLamina = nodeMaterials->first_node("lamina"); nodeLamina;
        nodeLamina = nodeLamina->next_sibling("lamina")) {
-
-    Lamina *l;
-
-    l = readXMLElementLamina(nodeLamina, nodeMaterials, pmodel);
-
+    readXMLElementLamina(nodeLamina, nodeMaterials, pmodel);
   }
 
   return 0;
@@ -348,10 +344,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       if (p_xn_nu) {
         materialElastic[1] = atof(p_xn_nu->value());
       }
-      // for (std::string label : elasticLabelIso) {
-      //   double value{atof(nodeElastic->first_node(label.c_str())->value())};
-      //   materialElastic.push_back(value);
-      // }
     }
     
     else if (materialSymmetryType == "transversely isotropic") {
@@ -434,10 +426,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
   m->setElastic(materialElastic);
 
-  // for (auto p : materialElastic) {
-  //   std::cout << p << std::endl;
-  // }
-
   // Read thermal properties
   // -----------------------
   xml_node<> *p_xn_cte = p_xn_material->first_node("cte");
@@ -493,80 +481,13 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   // Read strength properties
   // ------------------------
 
-  // std::vector<double> v_d_strength{};
   xml_node<> *p_xn_strength = p_xn_material->first_node("strength");
 
   if (p_xn_strength) {
-
-    // New input
     Strength struct_strength;
     struct_strength = readXMLElementStrength(p_xn_strength);
     struct_strength._type = materialSymmetryType;
     m->setStrength(struct_strength);
-
-    // Old input
-    // if (materialType == "isotropic") {
-
-    //   if (fc == 1 || fc == 2) {
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("xt")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("xc")->value()));
-    //   }
-
-    //   else if (fc == 3 || fc == 4) {
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("s")->value()));
-    //   }
-
-    //   else if (fc == 5) {
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("x")->value()));
-    //   }
-    // }
-
-    // else if (materialType == "orthotropic" ||
-    //             materialType == "anisotropic") {
-
-    //   if (fc == 1 || fc == 2 || fc == 4) {
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("xt")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("yt")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("zt")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("xc")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("yc")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("zc")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("r")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("t")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("s")->value()));
-    //   }
-      
-    //   else if (fc == 3) {
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("x")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("y")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("z")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("r")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("t")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("s")->value()));
-    //   }
-      
-    //   else if (fc == 5) {
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("xt")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("yt")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("xc")->value()));
-    //     v_d_strength.push_back(
-    //         atof(p_xn_strength->first_node("yc")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("r")->value()));
-    //     v_d_strength.push_back(atof(p_xn_strength->first_node("s")->value()));
-    //   }
-    // }
-
   }
 
   return m;
