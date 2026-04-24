@@ -1,5 +1,5 @@
 <materials>
-  <material name="mtr_lamina" type="lamina">
+  <material name="mtr_lamina" type="transversely isotropic">
     <density>1</density>
     <elastic>
       <e1>1</e1>

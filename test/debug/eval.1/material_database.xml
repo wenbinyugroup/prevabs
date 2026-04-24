@@ -269,7 +269,7 @@
   <!--Material: Newport Carbon Plain Weave Fabric 3K70P/NB321   
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="3K70P/NB321 fabric" type="lamina">
+  <material name="3K70P/NB321 fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0541909</density>
     <elastic>
@@ -289,7 +289,7 @@
   <!--Material: Newport Graphite Unitape G150 NASS/NCT321  
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="3G150 NASS/NCT321" type="lamina">
+  <material name="3G150 NASS/NCT321" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05346839</density>
     <elastic>
@@ -309,7 +309,7 @@
   <!--Material Cytec (formally 3M) S-Glass Unitape S2/SP381 
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="S2/SP381" type="lamina">
+  <material name="S2/SP381" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.06719676</density>
     <elastic>
@@ -329,7 +329,7 @@
   <!--Material: Cytec (formally Fiberite) Plain Weave Graphite Fabric T650 3K-70-PW/7740
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="T650 3K-70-PW/7740 Fabric" type="lamina">
+  <material name="T650 3K-70-PW/7740 Fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05491348</density>
     <elastic>
@@ -349,7 +349,7 @@
   <!--Material Cytec (formally Fiberite) Graphite Unitape G30-500 12K/7740
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="G30-500 12K/7740" type="lamina">
+  <material name="G30-500 12K/7740" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05491348</density>
     <elastic>
@@ -369,7 +369,7 @@
   <!--Material: Nelcote (formerly FiberCote) Graphite Fabric T300 3KPW/E765 
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="T300 3KPW/E765" type="lamina">
+  <material name="T300 3KPW/E765" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.06719676</density>
     <elastic>
@@ -389,7 +389,7 @@
   <!--Material: Nelcote (formerly FiberCote) Graphite Unitape T700 24KP/E765
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="T700 24KP/E765" type="lamina">
+  <material name="T700 24KP/E765" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05527476</density>
     <elastic>
@@ -409,7 +409,7 @@
   <!--Material: Nelcote (formerly FiberCote) Graphite Fabric T300 3KPW/E765
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="T300 3KPW/E765" type="lamina">
+  <material name="T300 3KPW/E765" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05527476</density>
     <elastic>
@@ -429,7 +429,7 @@
   <!--Material: Nelcote (formerly FiberCote) Graphite Fabric T300 6K 5HS/E765
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="T300 6K 5HS/E765" type="lamina">
+  <material name="T300 6K 5HS/E765" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05527476</density>
     <elastic>
@@ -449,7 +449,7 @@
   <!--Material: TORAY T700GC-12K-31E/#2510 Unidirectional Tape [US Units]
     Source: AGATE Database. Wichita State University. 2003
 	Unit:Imperial unit -->
-  <material name="T700GC-12K-31E" type="lamina">
+  <material name="T700GC-12K-31E" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05527476</density>
     <elastic>
@@ -469,7 +469,7 @@
   <!-- Material: HITEX 33 6k/E7K8
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="HITEX 33 6k/E7K8" type="lamina">
+  <material name="HITEX 33 6k/E7K8" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05744239</density>
     <elastic>
@@ -489,7 +489,7 @@
   <!--Material: AS4 12k/E7K8 unidirectional tape  
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="AS4 12k/E7K8" type="lamina">
+  <material name="AS4 12k/E7K8" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05635858</density>
     <elastic>
@@ -509,7 +509,7 @@
   <!--Material: Celion 3000/E7K8 plain weave fabric   
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="Celion 3000/E7K8 fabric" type="lamina">
+  <material name="Celion 3000/E7K8 fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0559973</density>
     <elastic>
@@ -529,7 +529,7 @@
   <!--Material: HITEX 33 6k/E7K8 plain weave fabric
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="HITEX 33 6k/E7K8 fabric" type="lamina">
+  <material name="HITEX 33 6k/E7K8 fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05563603</density>
     <elastic>
@@ -550,7 +550,7 @@
   Source: ULTRA-HIGH-MODÜLUS GRAPHITBEPOXY CONICAL SHELL DEVELOPMENT, 
   ARMY MATERIALS AND MECHANICS RESEARCH CENTER. Watertown, Massachusetts 02172
   Unit:Imperial unit -->
-  <material name="GY-70/934" type="lamina">
+  <material name="GY-70/934" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05744239</density>
     <elastic>
@@ -570,7 +570,7 @@
   <!--Material: E-Glass 7781/EA 9396 8-harness satin weave fabric    
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="E-Glass 7781/EA 9396" type="lamina">
+  <material name="E-Glass 7781/EA 9396" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0693644</density>
     <elastic>
@@ -590,7 +590,7 @@
   <!--Material: T650-35 12k/976 unidirectional tape   
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="T650-35 12k/976" type="lamina">
+  <material name="T650-35 12k/976" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05744239</density>
     <elastic>
@@ -610,7 +610,7 @@
   <!--Material: S2-449 43k/SP381 unidirectional tape   
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="S2-449 43k/SP381" type="lamina">
+  <material name="S2-449 43k/SP381" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0686419</density>
     <elastic>
@@ -630,7 +630,7 @@
   <!--Material: E-Glass 7781/EA9396 8-harness satin weave fabric  
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="7781/EA9396 fabric" type="lamina">
+  <material name="7781/EA9396 fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0686419</density>
     <elastic>
@@ -650,7 +650,7 @@
   <!--Material: Celion 12k/938 unidirectional tape 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="Celion 12k/938" type="lamina">
+  <material name="Celion 12k/938" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0686419</density>
     <elastic>
@@ -671,7 +671,7 @@
   <!--Material: AS4 12k/3502 unidirectional tape  
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="AS4 12k/3502" type="lamina">
+  <material name="AS4 12k/3502" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05635858</density>
     <elastic>
@@ -692,7 +692,7 @@
   <!--Material: T300 15k/976 unidirectional tape 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="T300 15k/976" type="lamina">
+  <material name="T300 15k/976" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0578037</density>
     <elastic>
@@ -712,7 +712,7 @@
   <!--Material: AS4 6k/PR 500 harness satin weave fabric 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="AS4 6k/PR 500_fabric" type="lamina">
+  <material name="AS4 6k/PR 500_fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05635858</density>
     <elastic>
@@ -733,7 +733,7 @@
   <!--Material: T300 3k/EA 9396 8-harness satin weave fabric 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="T300 3k/EA 9396_fabric" type="lamina">
+  <material name="T300 3k/EA 9396_fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05635858</density>
     <elastic>
@@ -754,7 +754,7 @@
   <!--Material: T650-35 3k 976 plain weave fabric 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="T650-35 3k 976_fabric" type="lamina">
+  <material name="T650-35 3k 976_fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.05635858</density>
     <elastic>
@@ -775,7 +775,7 @@
   <!--Material: AS4/5250-3 unidirectional tape
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="AS4/5250-3" type="lamina">
+  <material name="AS4/5250-3" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0578037</density>
     <elastic>
@@ -796,7 +796,7 @@
   <!--Material: Celion 3000/F670 8-harness satin weave fabric 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="Celion 3000/F670_fabric" type="lamina">
+  <material name="Celion 3000/F670_fabric" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0578037</density>
     <elastic>
@@ -818,7 +818,7 @@
    <!--Material: IM6 12k/APC-2 unidirectional tape 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="IM6 12k/APC-2" type="lamina">
+  <material name="IM6 12k/APC-2" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.0559973</density>
     <elastic>
@@ -840,7 +840,7 @@
   <!--Material: S2-449 17k/SP 381 unidirectional tape 
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="S2-449 17k/SP 381" type="lamina">
+  <material name="S2-449 17k/SP 381" type="transversely isotropic">
 	<!--density unit:lb/cubic inch -->
     <density>0.06683549</density>
     <elastic>

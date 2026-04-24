@@ -110,12 +110,17 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
           }
 
           p_material = lamina->getMaterial();
-
-          p_layertype = pmodel->getLayerTypeByMaterialAngle(p_material, angle);
-          if (p_layertype == nullptr) {
-            p_layertype = new LayerType{0, p_material, angle};
-            pmodel->addLayerType(p_layertype);
+          if (p_material == nullptr) {
+            throw std::runtime_error(
+              "lamina '" + laminaName + "' in layup '" + layupName
+              + "' has no material"
+            );
           }
+
+          p_layertype = ensureLayerType(
+            p_material, angle, pmodel,
+            "<layup name='" + layupName + "'>"
+          );
 
           if (stack > 0) {
             layup->addLayer(lamina, angle, stack, p_layertype);
@@ -129,12 +134,44 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
           // must make sure the sub-layup appears before current layup
           std::string subLayupName=nodeLayer->first_attribute("layup")->value();
           Layup *subLayup = pmodel->getLayupByName(subLayupName);
+          if (subLayup == nullptr) {
+            throw std::runtime_error(
+              "cannot find sub-layup '" + subLayupName
+              + "' in layup '" + layupName + "'"
+            );
+          }
 
           std::vector<Layer> llayers{subLayup->getLayers()};
           std::vector<Ply> lplies{subLayup->getPlies()};
       
           for (auto it=llayers.begin(); it != llayers.end(); it++) {
-            layup->addLayer(it->getLamina(), it->getAngle(), it->getStack(), it->getLayerType());
+            Lamina *subLamina = it->getLamina();
+            if (subLamina == nullptr) {
+              throw std::runtime_error(
+                "sub-layup '" + subLayupName + "' in layup '" + layupName
+                + "' contains a layer without lamina"
+              );
+            }
+
+            Material *subMaterial = subLamina->getMaterial();
+            if (subMaterial == nullptr) {
+              throw std::runtime_error(
+                "sub-layup '" + subLayupName + "' in layup '" + layupName
+                + "' contains a lamina without material"
+              );
+            }
+
+            LayerType *subLayerType = it->getLayerType();
+            if (subLayerType == nullptr) {
+              subLayerType = ensureLayerType(
+                subMaterial, it->getAngle(), pmodel,
+                "<layup name='" + layupName + "'>"
+              );
+            }
+
+            layup->addLayer(
+              subLamina, it->getAngle(), it->getStack(), subLayerType
+            );
           }
 
           for (auto jt=lplies.begin(); jt != lplies.end(); jt++) {
@@ -147,20 +184,26 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
       const std::string ssctx = "<layup name='" + layupName + "'>";
       std::string laminaName{requireNode(nodeLayup, "lamina", ssctx)->value()};
       Lamina *lamina = pmodel->getLaminaByName(laminaName);
+      if (lamina == nullptr) {
+        throw std::runtime_error(
+          "cannot find lamina '" + laminaName + "' in layup '" + layupName + "'"
+        );
+      }
 
       LayerType *p_lt = nullptr;
       Material *p_material;
       p_material = lamina->getMaterial();
+      if (p_material == nullptr) {
+        throw std::runtime_error(
+          "lamina '" + laminaName + "' in layup '" + layupName
+          + "' has no material"
+        );
+      }
 
       std::string layupCode{requireNode(nodeLayup, "code", ssctx)->value()};
       std::vector<double> anglesList{decodeStackSequence(layupCode)};
       for (auto angle : anglesList) {
-        p_lt = pmodel->getLayerTypeByMaterialAngle(p_material, angle);
-
-        if (p_lt == nullptr) {
-          p_lt = new LayerType{0, p_material, angle};
-          pmodel->addLayerType(p_lt);
-        }
+        p_lt = ensureLayerType(p_material, angle, pmodel, ssctx);
 
         layup->addLayer(lamina, angle, 1, p_lt);
         layup->addPly(lamina->getMaterial(), lamina->getThickness(), angle);

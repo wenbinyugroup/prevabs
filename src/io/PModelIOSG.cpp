@@ -443,11 +443,12 @@ void writeMaterialVABS(FILE *file, Material *m) {
 
 void writeMaterialStrength(FILE *file, Material *m) {
   Strength sp = m->getStrength();
-  std::string type = sp._type;
+  std::string type = m->getType();
   int fc = m->getFailureCriterion();
 
-  if (type == "lamina") {
+  if (m->getSymmetryType() == "transversely isotropic") {
     m->completeStrengthProperties();
+    sp = m->getStrength();
     type = "orthotropic";
   }
 

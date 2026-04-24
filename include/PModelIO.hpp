@@ -118,6 +118,7 @@ int readMaterials(const xml_node<> *, PModel *);
 Material *readXMLElementMaterial(const xml_node<> *, const xml_node<> *,
                                  PModel *);
 Lamina *readXMLElementLamina(const xml_node<> *, const xml_node<> *, PModel *);
+LayerType *ensureLayerType(Material *, double, PModel *, const std::string &);
 
 /** @ingroup io
  * Read the layup definitions.

@@ -97,7 +97,7 @@ unit system: us (ft)
   </material>
 
 
-  <material name="AS4 12k/E7K8" type="lamina">
+  <material name="AS4 12k/E7K8" type="transversely isotropic">
     <density>3.027</density>
     <elastic>
       <e1>2779.2E+06</e1>
@@ -119,7 +119,7 @@ unit system: us (ft)
   </lamina>
 
 
-  <material name="S2/SP381" type="lamina">
+  <material name="S2/SP381" type="transversely isotropic">
     <density>3.589588</density>
     <elastic>
       <e1>1015.2E+06</e1>
@@ -142,7 +142,7 @@ unit system: us (ft)
   </lamina>
 
 
-  <material name="T300 15k/976" type="lamina">
+  <material name="T300 15k/976" type="transversely isotropic">
     <density>3.104511</density>
     <elastic>
       <e1>2822.4E+06</e1>
@@ -165,7 +165,7 @@ unit system: us (ft)
   </lamina>
 
 
-  <material name="T650-35 12k/976" type="lamina">
+  <material name="T650-35 12k/976" type="transversely isotropic">
     <density>3.085123</density>
     <elastic>
       <e1>3168E+06</e1>
@@ -188,7 +188,7 @@ unit system: us (ft)
   </lamina>
 
 
-  <material name="T700 24K/E765" type="lamina">
+  <material name="T700 24K/E765" type="transversely isotropic">
     <density>3.007487</density>
     <elastic>
       <e1>2694.24E+06</e1>

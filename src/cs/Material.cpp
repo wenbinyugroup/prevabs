@@ -26,6 +26,9 @@ void Material::print(int i_type, int /*i_indent*/) {
     PLOG(debug) << "name: " + _name;
     PLOG(debug) << "density = " + std::to_string(_density);
     PLOG(debug) << "type: " + _type;
+  if (getSymmetryType() != _type) {
+      PLOG(debug) << "symmetry type: " + getSymmetryType();
+  }
 
   if (_type == "isotropic") {
         PLOG(debug) << "E = " + std::to_string(_elastic[0]);
@@ -100,6 +103,10 @@ void Material::printMaterial() {
   std::cout << std::setw(32) << "Density" << std::setw(32) << _density
             << std::endl;
   std::cout << std::setw(32) << "Type" << std::setw(32) << _type << std::endl;
+  if (getSymmetryType() != _type) {
+    std::cout << std::setw(32) << "Symmetry Type" << std::setw(32)
+              << getSymmetryType() << std::endl;
+  }
   std::cout << std::setw(32) << "Failure Criterion" << std::setw(32)
             << mfcriterion << std::endl;
   std::cout << std::setw(32) << "Characteristic Length" << std::setw(32)
@@ -288,14 +295,9 @@ void Material::completeStrengthProperties() {
 void Material::writeStrengthProperties(FILE *file) {
   MESSAGE_SCOPE(g_msg);
 
-  // Strength sp = m->getStrength();
-  std::string type = _strength._type;
-  // int fc = m->getFailureCriterion();
-  // std::cout << "type = " << type << std::endl;
-
-  completeStrengthProperties();
-  if (type == "lamina") {
-    type = "orthotropic";
+  std::string type = _type;
+  if (getSymmetryType() == "transversely isotropic") {
+    completeStrengthProperties();
   }
 
   fprintf(file, "%8d", mfcriterion);

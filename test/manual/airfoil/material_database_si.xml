@@ -97,7 +97,7 @@ unit system: si
   </material>
 
 
-  <material name="AS4 12k/E7K8" type="lamina">
+  <material name="AS4 12k/E7K8" type="transversely isotropic">
     <density>1.560e3</density>
     <elastic>
       <e1>133.069e9</e1>
@@ -123,7 +123,7 @@ unit system: si
   </lamina>
 
 
-  <material name="S2/SP381" type="lamina">
+  <material name="S2/SP381" type="transversely isotropic">
     <density>1.850e3</density>
     <elastic>
       <e1>48.608e9</e1>
@@ -146,7 +146,7 @@ unit system: si
   </lamina>
 
 
-  <material name="ud_lam" type="lamina">
+  <material name="ud_lam" type="transversely isotropic">
     <density>1.600e3</density>
     <elastic>
       <e1>135.137e9</e1>
@@ -169,7 +169,7 @@ unit system: si
   </lamina>
 
 
-  <material name="T650-35 12k/976" type="lamina">
+  <material name="T650-35 12k/976" type="transversely isotropic">
     <density>1.590e3</density>
     <elastic>
       <e1>151.684e9</e1>
@@ -192,7 +192,7 @@ unit system: si
   </lamina>
 
 
-  <material name="T700 24K/E765" type="lamina">
+  <material name="T700 24K/E765" type="transversely isotropic">
     <density>1.550e3</density>
     <elastic>
       <e1>129e9</e1>

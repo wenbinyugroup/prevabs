@@ -43,6 +43,135 @@
 #include <windows.h>
 #endif
 
+namespace {
+
+bool usesIsotropicFailureCriteria(const std::string &materialType) {
+  return materialType == "isotropic";
+}
+
+bool usesNonIsotropicFailureCriteria(const std::string &materialType) {
+  return materialType == "transversely isotropic"
+      || materialType == "orthotropic"
+      || materialType == "engineering"
+      || materialType == "anisotropic";
+}
+
+std::string normalizeMaterialSymmetryType(
+  const std::string &rawType,
+  const std::string &materialName
+) {
+  const std::string materialType = lowerString(trim(rawType));
+
+  if (materialType == "lamina") {
+    throw std::runtime_error(
+      "Material '" + materialName
+      + "': type='lamina' is no longer supported as a material symmetry type. "
+        "Use type='transversely isotropic' for the material symmetry class "
+        "and keep <lamina> only for material-thickness definitions."
+    );
+  }
+
+  if (materialType == "transversely isotropic"
+      || materialType == "transverse isotropic"
+      || materialType == "transversely-isotropic"
+      || materialType == "transverse-isotropic") {
+    return "transversely isotropic";
+  }
+
+  if (materialType == "isotropic"
+      || materialType == "orthotropic"
+      || materialType == "engineering"
+      || materialType == "anisotropic") {
+    return materialType;
+  }
+
+  throw std::runtime_error(
+    "Unsupported material type '" + trim(rawType) + "' for material '"
+    + materialName + "'. Supported values: isotropic, transversely isotropic, "
+      "orthotropic, engineering, anisotropic"
+  );
+}
+
+std::string toInternalMaterialType(const std::string &symmetryType) {
+  if (symmetryType == "transversely isotropic") {
+    return "orthotropic";
+  }
+  return symmetryType;
+}
+
+std::string supportedFailureCriteriaFor(const std::string &materialType) {
+  if (usesIsotropicFailureCriteria(materialType)) {
+    return "1/max principal stress, 2/max principal strain, "
+           "3/max shear stress/tresca, 4/max shear strain, 5/mises";
+  }
+
+  if (usesNonIsotropicFailureCriteria(materialType)) {
+    return "1/max stress, 2/max strain, 3/tsai-hill, 4/tsai-wu, 5/hashin";
+  }
+
+  return "unknown because material type is unsupported";
+}
+
+int parseFailureCriterion(
+  const std::string &rawValue,
+  const std::string &materialType,
+  const std::string &materialName
+) {
+  const std::string value = lowerString(trim(rawValue));
+  const std::string context =
+    "material '" + materialName + "' with type '" + materialType + "'";
+
+  if (value.empty()) {
+    throw std::runtime_error(
+      "Empty failure criterion in " + context
+    );
+  }
+
+  if (value == "1" || value == "max principal stress" || value == "max stress") {
+    return 1;
+  }
+
+  if (value == "2" || value == "max principal strain" || value == "max strain") {
+    return 2;
+  }
+
+  if (usesIsotropicFailureCriteria(materialType)) {
+    if (value == "3" || value == "max shear stress" || value == "tresca") {
+      return 3;
+    }
+    if (value == "4" || value == "max shear strain") {
+      return 4;
+    }
+    if (value == "5" || value == "mises") {
+      return 5;
+    }
+  }
+  else if (usesNonIsotropicFailureCriteria(materialType)) {
+    if (value == "3" || value == "tsai-hill") {
+      return 3;
+    }
+    if (value == "4" || value == "tsai-wu") {
+      return 4;
+    }
+    if (value == "5" || value == "hashin") {
+      return 5;
+    }
+  }
+  else {
+    throw std::runtime_error(
+      "Unsupported material type '" + materialType
+      + "' while parsing failure criterion for material '" + materialName + "'"
+    );
+  }
+
+  throw std::runtime_error(
+    "Unsupported failure criterion '" + trim(rawValue) + "' for " + context
+    + ". Supported values: " + supportedFailureCriteriaFor(materialType)
+  );
+}
+
+}  // namespace
+
 int readMaterialsFile(
   const std::string &fn_material_global, PModel *pmodel
   ) {
@@ -101,6 +230,27 @@ int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
   return 0;
 }
 
+LayerType *ensureLayerType(
+  Material *material,
+  double angle,
+  PModel *pmodel,
+  const std::string &context
+) {
+  if (!material) {
+    throw std::runtime_error(
+      "Missing material while resolving layer type in " + context
+    );
+  }
+
+  LayerType *layertype = pmodel->getLayerTypeByMaterialAngle(material, angle);
+  if (!layertype) {
+    layertype = new LayerType{0, material, angle};
+    pmodel->addLayerType(layertype);
+  }
+
+  return layertype;
+}
+
 Strength readXMLElementStrength(const xml_node<> *p_xn_strength) {
   Strength strength;
 
@@ -146,7 +296,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   MESSAGE_SCOPE(g_msg);
 
   Material *m;
-  LayerType *p_layertype;
 
   std::string materialName{};
   materialName = requireAttr(p_xn_material, "name", "<material>")->value();
@@ -157,16 +306,20 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   m = pmodel->getMaterialByName(materialName);
   if (!m) {
     m = new Material{materialName};
-    p_layertype = new LayerType{0, m, 0.0};
     pmodel->addMaterial(m);
-    pmodel->addLayerType(p_layertype);
   }
 
+  ensureLayerType(m, 0.0, pmodel, "<material name='" + materialName + "'>");
+
   // Type
-  std::string materialType{};
-  materialType = lowerString(
-    requireAttr(p_xn_material, "type", "<material name='" + materialName + "'")->value()
+  const std::string materialTypeContext =
+    "<material name='" + materialName + "'>";
+  const std::string materialSymmetryType = normalizeMaterialSymmetryType(
+    requireAttr(p_xn_material, "type", materialTypeContext)->value(),
+    materialName
   );
+  const std::string materialType = toInternalMaterialType(materialSymmetryType);
+  m->setSymmetryType(materialSymmetryType);
   m->setType(materialType);
 
   // Density — optional; defaults to 1.0 when absent
@@ -201,25 +354,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       // }
     }
     
-    else if (materialType == "orthotropic" || materialType == "engineering") {
-      materialElastic.clear();
-      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
-      for (std::string label : elasticLabelOrtho) {
-        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
-        materialElastic.push_back(value);
-      }
-    }
-
-    else if (materialType == "anisotropic") {
-      materialElastic.clear();
-      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
-      for (std::string label : elasticLabelAniso) {
-        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
-        materialElastic.push_back(value);
-      }
-    }
-
-    else if (materialType == "lamina") {
+    else if (materialSymmetryType == "transversely isotropic") {
       materialElastic.clear();
       const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       double e1, e2, e3, g12, g13, g23, nu12, nu13, nu23;
@@ -228,7 +363,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       nu12 = atof(requireNode(nodeElastic, "nu12", ectx)->value());
       g12  = atof(requireNode(nodeElastic, "g12",  ectx)->value());
 
-      // Optional lamina properties — transverse isotropy defaults (2-3 plane):
+      // Optional transverse-isotropic properties — keep the legacy defaults:
       //   e3   defaults to e2   (E3 = E2)
       //   nu13 defaults to nu12 (nu13 = nu12)
       //   g13  defaults to g12  (G13 = G12)
@@ -275,9 +410,26 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       }
 
       materialElastic = {e1, e2, e3, g12, g13, g23, nu12, nu13, nu23};
-      // materialType = "orthotropic";
-
     }
+
+    else if (materialType == "orthotropic" || materialType == "engineering") {
+      materialElastic.clear();
+      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
+      for (std::string label : elasticLabelOrtho) {
+        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
+        materialElastic.push_back(value);
+      }
+    }
+
+    else if (materialType == "anisotropic") {
+      materialElastic.clear();
+      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
+      for (std::string label : elasticLabelAniso) {
+        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
+        materialElastic.push_back(value);
+      }
+    }
+
   }
 
   m->setElastic(materialElastic);
@@ -299,7 +451,9 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       cte.push_back(_a);
     }
 
-    else if (materialType == "orthotropic" || materialType == "engineering") {
+    else if (materialSymmetryType == "transversely isotropic"
+          || materialType == "orthotropic"
+          || materialType == "engineering") {
       for (auto _name : TAG_NAME_CTE_ORTHO) {
         double _value{atof(requireNode(p_xn_cte, _name.c_str(), ctectx)->value())};
         cte.push_back(_value);
@@ -323,27 +477,9 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   xml_node<> *p_xn_fc = p_xn_material->first_node("failure_criterion");
 
   if (p_xn_fc) {
-
-    std::string s_fc;
-    s_fc = lowerString(p_xn_fc->value());
-
-    if (s_fc == "max principal stress" || s_fc == "max stress" || s_fc == "1")
-      fc = 1;
-
-    else if (s_fc == "max principal strain" || s_fc == "max strain" ||
-              s_fc == "2")
-      fc = 2;
-
-    else if (s_fc == "max shear stress" || s_fc == "tresca" ||
-              s_fc == "tsai-hill" || s_fc == "3")
-      fc = 3;
-
-    else if (s_fc == "max shear strain" || s_fc == "tsai-wu" || s_fc == "4")
-      fc = 4;
-
-    else if (s_fc == "mises" || s_fc == "hashin" || s_fc == "5")
-      fc = 5;
-
+    fc = parseFailureCriterion(
+      p_xn_fc->value(), materialSymmetryType, materialName
+    );
   }
   m->setFailureCriterion(fc);
 
@@ -365,7 +501,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     // New input
     Strength struct_strength;
     struct_strength = readXMLElementStrength(p_xn_strength);
-    struct_strength._type = materialType;
+    struct_strength._type = materialSymmetryType;
     m->setStrength(struct_strength);
 
     // Old input
@@ -431,88 +567,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     //   }
     // }
 
-    // else if (materialType == "lamina") {
-
-    //   if (fc == 1 || fc == 2 || fc == 4) {
-    //     double xt, yt, zt, xc, yc, zc, rr, tt, ss;
-
-    //     xt = atof(p_xn_strength->first_node("xt")->value());
-    //     xc = atof(p_xn_strength->first_node("xc")->value());
-    //     yt = atof(p_xn_strength->first_node("yt")->value());
-    //     ss = atof(p_xn_strength->first_node("s")->value());
-
-    //     xml_node<> *p_xn_yc = p_xn_strength->first_node("yc");
-    //     if (p_xn_yc) yc = atof(p_xn_yc->value());
-    //     else yc = yt;
-
-    //     xml_node<> *p_xn_zt = p_xn_strength->first_node("zt");
-    //     if (p_xn_zt) zt = atof(p_xn_zt->value());
-    //     else zt = yt;
-
-    //     xml_node<> *p_xn_zc = p_xn_strength->first_node("zc");
-    //     if (p_xn_zc) zc = atof(p_xn_zc->value());
-    //     else zc = zt;
-
-    //     xml_node<> *p_xn_tt = p_xn_strength->first_node("t");
-    //     if (p_xn_tt) tt = atof(p_xn_tt->value());
-    //     else tt = ss;
-
-    //     xml_node<> *p_xn_rr = p_xn_strength->first_node("r");
-    //     if (p_xn_rr) rr = atof(p_xn_rr->value());
-    //     else rr = (yt + yc) / 4;
-
-    //     v_d_strength.push_back(xt);
-    //     v_d_strength.push_back(yt);
-    //     v_d_strength.push_back(zt);
-    //     v_d_strength.push_back(xc);
-    //     v_d_strength.push_back(yc);
-    //     v_d_strength.push_back(zc);
-    //     v_d_strength.push_back(rr);
-    //     v_d_strength.push_back(tt);
-    //     v_d_strength.push_back(ss);
-
-    //   }
-
-    //   else if (fc == 3) {
-
-    //   }
-
-    //   else if (fc == 5) {
-
-    //   }
-
-    // }
   }
-
-  // m = pmodel->getMaterialByName(materialName);
-
-  if (materialType == "lamina") {
-    materialType = "orthotropic";
-    m->setType("orthotropic");
-  }
-
-  // if (m == nullptr) {
-  //   m = new Material{
-  //       0,  materialName, materialType, materialDensity, materialElastic,
-  //       fc, cl,           v_d_strength};
-  //   p_layertype = new LayerType{0, m, 0.0};
-
-  //   // pmodel->p_materials.push_back(m);
-  //   // pmodel->p_layertypes.push_back(p_layertype);
-  //   pmodel->addMaterial(m);
-  //   pmodel->addLayerType(p_layertype);
-  // }
-  
-  // else {
-  //   m->setType(materialType);
-  //   m->setDensity(materialDensity);
-  //   m->setElastic(materialElastic);
-  //   m->setFailureCriterion(fc);
-  //   m->setCharacteristicLength(cl);
-  //   m->setStrength(v_d_strength);
-  // }
-
-  // m->printMaterial();
 
   return m;
 }
@@ -532,6 +587,12 @@ Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /
   lm = requireNode(p_xn_lamina, "material", ctx)->value();
   Material *p_laminaMaterial{};
   p_laminaMaterial = pmodel->getMaterialByName(lm);
+  if (!p_laminaMaterial) {
+    throw std::runtime_error(
+      "cannot find material '" + lm + "' for lamina '" + laminaName + "'"
+    );
+  }
+  ensureLayerType(p_laminaMaterial, 0.0, pmodel, ctx);
 
   double laminaThickness{};
   laminaThickness = atof(requireNode(p_xn_lamina, "thickness", ctx)->value());
