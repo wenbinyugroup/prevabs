@@ -56,6 +56,41 @@ std::string makeGeneratedSegmentName(
   return base_name + "_" + std::to_string(segment_index + 1);
 }
 
+// Register layer types and materials from a layup into the cross-section's
+// used-index lists. Only registers items not already assigned an id.
+void registerLayupUsage(Layup *p_layup, CrossSection *cs) {
+  for (auto layer : p_layup->getLayers()) {
+    LayerType *p_lt = layer.getLayerType();
+    if (p_lt->id() == 0) {
+      CrossSection::used_layertype_index++;
+      p_lt->setId(CrossSection::used_layertype_index);
+      cs->addUsedLayerType(p_lt);
+
+      Material *p_mat = p_lt->material();
+      if (p_mat->id() == 0) {
+        CrossSection::used_material_index++;
+        p_mat->setId(CrossSection::used_material_index);
+        cs->addUsedMaterial(p_mat);
+      }
+    }
+  }
+}
+
+// Parse a coordinate attribute of the form "coord" or "coord:nth_intersection"
+// and resolve it to a polyline parameter u. No-ops when the attribute is absent.
+void resolveCoordParam(
+  const xml_attribute<> *attr,
+  const std::vector<PDCELVertex *> &vertices,
+  PolylineAxis axis, double tol, double &u
+) {
+  if (!attr) return;
+  std::string value{attr->value()};
+  int pos = static_cast<int>(value.find(":"));
+  double coord = std::stod(value.substr(0, pos));  // substr(0,-1) == whole str
+  int count = (pos >= 0) ? std::stoi(value.substr(pos + 1)) : 1;
+  u = findPolylineParamByCoordinate(vertices, coord, tol, count, axis);
+}
+
 }  // namespace
 
 int readXMLElementComponentLaminate(
@@ -118,33 +153,11 @@ int readXMLElementComponentLaminate(
         "cannot find baseline '" + baselineName + "' in segment '" + segmentName + "'"
       );
     }
-    Layup *p_layup;
-    LayerType *p_layertype_temp;
-    Material *p_material_temp;
-    p_layup = pmodel->getLayupByName(layupName);
+    Layup *p_layup = pmodel->getLayupByName(layupName);
 
     if (p_layup != nullptr) {
-      for (auto layer : p_layup->getLayers()) {
-        // Layer type has been added to the used list if its id > 0
-        // If layer type has been used,
-        // then the corresponding material must also been used
-        p_layertype_temp = layer.getLayerType();
-        if (p_layertype_temp->id() == 0) {
-          CrossSection::used_layertype_index++;
-          p_layertype_temp->setId(CrossSection::used_layertype_index);
-          cs->addUsedLayerType(p_layertype_temp);
-
-          // Check the material
-          p_material_temp = p_layertype_temp->material();
-          if (p_material_temp->id() == 0) {
-            CrossSection::used_material_index++;
-            p_material_temp->setId(CrossSection::used_material_index);
-            cs->addUsedMaterial(p_material_temp);
-          }
-        }
-      }
-    }
-    else {
+      registerLayupUsage(p_layup, cs);
+    } else {
       throw std::runtime_error(
         "cannot find layup '" + layupName + "' in segment '" + segmentName + "'"
       );
@@ -297,58 +310,21 @@ int readXMLElementComponentLaminate(
     for (auto p_xn_layup = p_xn_segments->first_node("layup"); p_xn_layup;
       p_xn_layup = p_xn_layup->next_sibling("layup")) {
       xml_attribute<> *p_xa_begin{p_xn_layup->first_attribute("begin")};
-      if (p_xa_begin) {
-        u_begin = atof(p_xa_begin->value());
-      }
-      
-      // using x2 coordinate to partion segments
-      // convert it into length-based partition
-      xml_attribute<> *p_xa_begin_x2{p_xn_layup->first_attribute("begin_x2")};
-      int pos{0};
-      if (p_xa_begin_x2) {
-        std::string begin_x2_value{p_xa_begin_x2->value()};
-        pos = static_cast<int>(begin_x2_value.find(":"));
-        double begin_x2 = std::stod(begin_x2_value.substr(0,pos));
-        int intersection_count = (pos != std::string::npos) ? std::stoi(begin_x2_value.substr(pos+1)) : 1;
-        u_begin = findPolylineParamByCoordinate(
-            p_bsl->vertices(), begin_x2, tol, intersection_count,
-            PolylineAxis::X2);
-      }
-      xml_attribute<> *p_xa_begin_x3{p_xn_layup->first_attribute("begin_x3")};
-      if (p_xa_begin_x3) {
-        std::string begin_x3_value{p_xa_begin_x3->value()};
-        pos = static_cast<int>(begin_x3_value.find(":"));
-        double begin_x3 = std::stod(begin_x3_value.substr(0,pos));
-        int intersection_count = (pos != std::string::npos) ? std::stoi(begin_x3_value.substr(pos+1)) : 1;
-        u_begin = findPolylineParamByCoordinate(
-            p_bsl->vertices(), begin_x3, tol, intersection_count,
-            PolylineAxis::X3);
-      }
+      if (p_xa_begin) u_begin = atof(p_xa_begin->value());
+
+      // x2/x3 coordinate attributes override the normalized begin/end value
+      resolveCoordParam(p_xn_layup->first_attribute("begin_x2"),
+                        p_bsl->vertices(), PolylineAxis::X2, tol, u_begin);
+      resolveCoordParam(p_xn_layup->first_attribute("begin_x3"),
+                        p_bsl->vertices(), PolylineAxis::X3, tol, u_begin);
 
       xml_attribute<> *p_xa_end{p_xn_layup->first_attribute("end")};
-      if (p_xa_end) {
-        u_end = atof(p_xa_end->value());
-      }
-      xml_attribute<> *p_xa_end_x2{p_xn_layup->first_attribute("end_x2")};
-      if (p_xa_end_x2) {
-        std::string end_x2_value{p_xa_end_x2->value()};
-        pos = static_cast<int>(end_x2_value.find(":"));
-        double end_x2 = std::stod(end_x2_value.substr(0,pos));
-        int intersection_count = (pos != std::string::npos) ? std::stoi(end_x2_value.substr(pos+1)) : 1;
-        u_end = findPolylineParamByCoordinate(
-            p_bsl->vertices(), end_x2, tol, intersection_count,
-            PolylineAxis::X2);
-      }
-      xml_attribute<> *p_xa_end_x3{p_xn_layup->first_attribute("end_x3")};
-      if (p_xa_end_x3) {
-        std::string end_x3_value{p_xa_end_x3->value()};
-        pos = static_cast<int>(end_x3_value.find(":"));
-        double end_x3 = std::stod(end_x3_value.substr(0,pos));
-        int intersection_count = (pos != std::string::npos) ? std::stoi(end_x3_value.substr(pos+1)) : 1;
-        u_end = findPolylineParamByCoordinate(
-            p_bsl->vertices(), end_x3, tol, intersection_count,
-            PolylineAxis::X3);
-      }
+      if (p_xa_end) u_end = atof(p_xa_end->value());
+
+      resolveCoordParam(p_xn_layup->first_attribute("end_x2"),
+                        p_bsl->vertices(), PolylineAxis::X2, tol, u_end);
+      resolveCoordParam(p_xn_layup->first_attribute("end_x3"),
+                        p_bsl->vertices(), PolylineAxis::X3, tol, u_end);
 
       if (!std::isfinite(u_begin) || !std::isfinite(u_end)) {
         PLOG(error) << "failed to resolve layup begin/end coordinates on"
@@ -414,32 +390,10 @@ int readXMLElementComponentLaminate(
         }
       }
       if (it == v_u_sorted.end()) v_u_sorted.push_back(u_end);
-      Layup *p_layup_temp;
-      LayerType *p_layertype_temp;
-      Material *p_material_temp;
-      p_layup_temp = pmodel->getLayupByName(s_layup_name);
+      Layup *p_layup_temp = pmodel->getLayupByName(s_layup_name);
       if (p_layup_temp != nullptr) {
-        for (auto layer : p_layup_temp->getLayers()) {
-          // Layer type has been added to the used list if its id > 0
-          // If layer type has been used,
-          // then the corresponding material must also been used
-          p_layertype_temp = layer.getLayerType();
-          if (p_layertype_temp->id() == 0) {
-            CrossSection::used_layertype_index++;
-            p_layertype_temp->setId(CrossSection::used_layertype_index);
-            cs->addUsedLayerType(p_layertype_temp);
-
-            // Check the material
-            p_material_temp = p_layertype_temp->material();
-            if (p_material_temp->id() == 0) {
-              CrossSection::used_material_index++;
-              p_material_temp->setId(CrossSection::used_material_index);
-              cs->addUsedMaterial(p_material_temp);
-            }
-          }
-        }
-      }
-      else {
+        registerLayupUsage(p_layup_temp, cs);
+      } else {
         throw std::runtime_error(
           "cannot find layup '" + s_layup_name + "' in <segments>"
         );

@@ -253,45 +253,20 @@ LoadCase readXMLElementLoadCase(
 
   xml_node<> *p_xn_distributed{p_xn_loadcase->first_node("distributed")};
   if (p_xn_distributed) {
-    p_xn_temp = p_xn_distributed->first_node("forces");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_force = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("forces_d1");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_force_d1 = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("forces_d2");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_force_d2 = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("forces_d3");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_force_d3 = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("moments");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_moment = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("moments_d1");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_moment_d1 = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("moments_d2");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_moment_d2 = parseNumbersFromString(p_xn_temp->value());
-    }
-
-    p_xn_temp = p_xn_distributed->first_node("moments_d3");
-    if (p_xn_temp && (splitString(p_xn_temp->value(), ' ')).size() != 0) {
-      loadcase.distr_moment_d3 = parseNumbersFromString(p_xn_temp->value());
-    }
+    auto parseVectorField = [&](const char *tag, std::vector<double> &field) {
+      p_xn_temp = p_xn_distributed->first_node(tag);
+      if (p_xn_temp && !splitString(p_xn_temp->value(), ' ').empty()) {
+        field = parseNumbersFromString(p_xn_temp->value());
+      }
+    };
+    parseVectorField("forces",     loadcase.distr_force);
+    parseVectorField("forces_d1",  loadcase.distr_force_d1);
+    parseVectorField("forces_d2",  loadcase.distr_force_d2);
+    parseVectorField("forces_d3",  loadcase.distr_force_d3);
+    parseVectorField("moments",    loadcase.distr_moment);
+    parseVectorField("moments_d1", loadcase.distr_moment_d1);
+    parseVectorField("moments_d2", loadcase.distr_moment_d2);
+    parseVectorField("moments_d3", loadcase.distr_moment_d3);
   }
 
   if (config.isFailEnvelope()) {
@@ -629,22 +604,16 @@ int readVABSEle(const std::string &filename, LocalState *state) {
       PElementNodeDatum *p_ei_em = new PElementNodeDatum(eid);
       PElementNodeDatum *p_ei_sm = new PElementNodeDatum(eid);
 
-      for (int i = 0; i < 6; i++) {
-        ss >> value;
-        p_ei_e->addData(value);
-      }
-      for (int i = 0; i < 6; i++) {
-        ss >> value;
-        p_ei_s->addData(value);
-      }
-      for (int i = 0; i < 6; i++) {
-        ss >> value;
-        p_ei_em->addData(value);
-      }
-      for (int i = 0; i < 6; i++) {
-        ss >> value;
-        p_ei_sm->addData(value);
-      }
+      auto readComponents = [&](PElementNodeDatum *datum) {
+        for (int i = 0; i < 6; i++) {
+          ss >> value;
+          datum->addData(value);
+        }
+      };
+      readComponents(p_ei_e);
+      readComponents(p_ei_s);
+      readComponents(p_ei_em);
+      readComponents(p_ei_sm);
 
       p_elm_e->addData(p_ei_e);
       p_elm_s->addData(p_ei_s);
