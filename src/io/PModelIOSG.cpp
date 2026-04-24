@@ -26,7 +26,6 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -87,10 +86,7 @@ std::unique_ptr<ISGWriter> makeSGWriter(AnalysisTool tool) {
 // =============================================================
 
 int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
-
-  MESSAGE_SCOPE(g_msg);
-
-    g_msg->print("writing sg file: " + fn);
+  PLOG(info) << "writing sg file: " << fn;
 
   size_t nnode = 0;
   size_t nelem = 0;
@@ -163,7 +159,7 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
   // Write a supplementary file
   // to store the mapping between the material id and name
   std::string fn_mid2name = fn + ".mat";
-    g_msg->print("writing material id-name file: " + fn_mid2name);
+  PLOG(info) << "writing material id-name file: " << fn_mid2name;
 
   FILE *fsg_mat;
   fsg_mat = fopen(fn_mid2name.c_str(), "w");
@@ -179,20 +175,16 @@ int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
 }
 
 int readSG(const std::string & /*fn*/, PModel *pmodel, const WriterConfig &wcfg) {
-  MESSAGE_SCOPE(g_msg);
-
   PMesh *mesh = new PMesh();
 
   std::ifstream ifs;
   ifs.open(wcfg.file_name_vsc);
   if (ifs.fail())
     throw std::runtime_error("Unable to find the file: " + wcfg.file_name_vsc);
-  // printInfo(i_indent, "reading VABS input data: " + wcfg.file_name_vsc);
-
   if (wcfg.tool == AnalysisTool::VABS)
-        g_msg->print("reading VABS input data: " + wcfg.file_name_vsc);
+    PLOG(info) << "reading VABS input data: " << wcfg.file_name_vsc;
   else if (wcfg.tool == AnalysisTool::SwiftComp)
-        g_msg->print("reading SwiftComp input data: " + wcfg.file_name_vsc);
+    PLOG(info) << "reading SwiftComp input data: " << wcfg.file_name_vsc;
 
   int nnode{0}, nelem{0}, nsg;
   int ln(1); // line counter
@@ -418,8 +410,6 @@ void writeSettingsVABS(FILE *file, PModel *model, const WriterConfig & /*wcfg*/)
 // }
 
 void writeMaterialVABS(FILE *file, Material *m) {
-  // std::cout << "writing material " << m->getName() << std::endl;
-  // m->printMaterial();
   fprintf(file, "%8d", m->id());
 
   if (m->getType() == "isotropic") {

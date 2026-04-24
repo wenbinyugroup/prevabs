@@ -6,10 +6,8 @@
 #include "plog.hpp"
 
 void PModel::plotDehomo() {
-  MESSAGE_SCOPE(g_msg);
-
-  g_msg->printBlank();
-    g_msg->print("post-processing recover results");
+  PLOG(info) << "";
+  PLOG(info) << "post-processing recover results";
 
 
   std::string fn_base = config.file_directory + config.file_base_name;
@@ -30,10 +28,8 @@ void PModel::plotDehomo() {
   //   postSCDehomo();
   // }
 
-
-
-    g_msg->print("post-processing recover results -- done");
-  g_msg->printBlank();
+  PLOG(info) << "post-processing recover results -- done";
+  PLOG(info) << "";
 
   return;
 }
