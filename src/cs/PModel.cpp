@@ -23,6 +23,12 @@ PModel::PModel(std::string name) {
   _name = name;
   _global_mesh_size = 1.0;
   _element_type = 1;
+  _element_shape = 3;
+  _transfinite_auto = true;
+  _transfinite_corner_angle = PI;
+  _transfinite_recombine = true;
+  _recombine = true;
+  _recombine_angle = 45.0;
 }
 
 

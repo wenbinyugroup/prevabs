@@ -45,6 +45,35 @@
 
 using namespace rapidxml;
 
+namespace {
+
+bool parseXmlBoolValue(const std::string &value) {
+  const std::string s = lowerString(trim(value));
+  if (s == "1" || s == "true" || s == "yes" || s == "on") {
+    return true;
+  }
+  if (s == "0" || s == "false" || s == "no" || s == "off") {
+    return false;
+  }
+  throw std::runtime_error("Invalid boolean value: " + value);
+}
+
+unsigned int parseElementShapeValue(const std::string &value) {
+  const std::string s = lowerString(trim(value));
+  if (s == "3" || s == "tri" || s == "triangle") {
+    return 3;
+  }
+  if (s == "4" || s == "quad" || s == "quadrilateral") {
+    return 4;
+  }
+  throw std::runtime_error(
+    "Invalid <element_shape> value: " + value
+    + " (expected 3/tri/triangle or 4/quad/quadrilateral)"
+  );
+}
+
+}  // namespace
+
 // int CrossSection::used_material_index = 0;
 // int CrossSection::used_layertype_index = 0;
 // int PComponent::count_tmp = 0;
@@ -370,6 +399,64 @@ int readCrossSection(const std::string &filenameCrossSection,
   // cs->setElementtype(elementtype);
   // pmessage->print(9, "elementtype = " + std::to_string(elementtype));
   pmodel->setElementType(elementtype);
+
+  unsigned int elementshape = 3;
+  xml_node<> *nodeElementShape{nodeGeneral->first_node("element_shape")};
+  if (nodeElementShape) {
+    std::string es{trim(nodeElementShape->value())};
+    if (!es.empty()) {
+      elementshape = parseElementShapeValue(es);
+    }
+  }
+  pmodel->setElementShape(elementshape);
+
+  xml_node<> *nodeTransfiniteAuto{
+    nodeGeneral->first_node("transfinite_auto")
+  };
+  if (nodeTransfiniteAuto) {
+    std::string s{trim(nodeTransfiniteAuto->value())};
+    if (!s.empty()) {
+      pmodel->setTransfiniteAuto(parseXmlBoolValue(s));
+    }
+  }
+
+  xml_node<> *nodeTransfiniteCornerAngle{
+    nodeGeneral->first_node("transfinite_corner_angle")
+  };
+  if (nodeTransfiniteCornerAngle) {
+    std::string s{trim(nodeTransfiniteCornerAngle->value())};
+    if (!s.empty()) {
+      pmodel->setTransfiniteCornerAngle(std::stod(s));
+    }
+  }
+
+  xml_node<> *nodeTransfiniteRecombine{
+    nodeGeneral->first_node("transfinite_recombine")
+  };
+  if (nodeTransfiniteRecombine) {
+    std::string s{trim(nodeTransfiniteRecombine->value())};
+    if (!s.empty()) {
+      pmodel->setTransfiniteRecombine(parseXmlBoolValue(s));
+    }
+  }
+
+  xml_node<> *nodeRecombine{nodeGeneral->first_node("recombine")};
+  if (nodeRecombine) {
+    std::string s{trim(nodeRecombine->value())};
+    if (!s.empty()) {
+      pmodel->setRecombine(parseXmlBoolValue(s));
+    }
+  }
+
+  xml_node<> *nodeRecombineAngle{
+    nodeGeneral->first_node("recombine_angle")
+  };
+  if (nodeRecombineAngle) {
+    std::string s{trim(nodeRecombineAngle->value())};
+    if (!s.empty()) {
+      pmodel->setRecombineAngle(std::stod(s));
+    }
+  }
 
   double omega{1.0};
   xml_node<> *p_xn_omega{nodeGeneral->first_node("omega")};

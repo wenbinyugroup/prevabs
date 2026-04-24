@@ -514,6 +514,22 @@ void PModel::buildGmsh() {
 
     g_msg->print("meshing");
 
+  if (_element_shape == 4) {
+    if (_transfinite_auto) {
+      gmsh::model::mesh::setTransfiniteAutomatic(
+        {}, _transfinite_corner_angle, _transfinite_recombine
+      );
+    }
+
+    if (_recombine) {
+      for (const auto &face_tag : _gmsh_face_tags) {
+        gmsh::model::mesh::setRecombine(
+          2, face_tag.second, _recombine_angle
+        );
+      }
+    }
+  }
+
   // gmsh::logger::stop();
 
   // unsigned int mesh_algo = 6;

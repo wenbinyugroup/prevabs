@@ -29,6 +29,16 @@
     <mesh_size>0.01</mesh_size>
 
     <element_type>2</element_type>
+
+    <!-- Mesh element shape: 3/tri/triangle or 4/quad/quadrilateral -->
+    <!-- <element_shape>4</element_shape> -->
+
+    <!-- Quadrilateral meshing controls (used when element_shape = 4) -->
+    <!-- <transfinite_auto>1</transfinite_auto> -->
+    <!-- <transfinite_corner_angle>3.141592653589793</transfinite_corner_angle> -->
+    <!-- <transfinite_recombine>1</transfinite_recombine> -->
+    <!-- <recombine>1</recombine> -->
+    <!-- <recombine_angle>45</recombine_angle> -->
   </general>
 
 

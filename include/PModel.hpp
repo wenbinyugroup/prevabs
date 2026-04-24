@@ -150,6 +150,12 @@ private:
 
   double _global_mesh_size;
   unsigned int _element_type; // 1: linear, 2: quadratic
+  unsigned int _element_shape; // 3: triangle, 4: quadrilateral
+  bool _transfinite_auto;
+  double _transfinite_corner_angle;
+  bool _transfinite_recombine;
+  bool _recombine;
+  double _recombine_angle;
 
   // Analysis
   unsigned int _analysis_model_dim; // model dimension (1: beam, 2: plate/shell, 3: solid)
@@ -247,6 +253,12 @@ public:
 
   double globalMeshSize() { return _global_mesh_size; }
   unsigned int elementType() { return _element_type; }
+  unsigned int elementShape() { return _element_shape; }
+  bool transfiniteAuto() { return _transfinite_auto; }
+  double transfiniteCornerAngle() { return _transfinite_corner_angle; }
+  bool transfiniteRecombine() { return _transfinite_recombine; }
+  bool recombine() { return _recombine; }
+  double recombineAngle() { return _recombine_angle; }
 
   unsigned int analysisModelDim() { return _analysis_model_dim; }
   unsigned int analysisModel() { return _analysis_model; }
@@ -365,6 +377,12 @@ public:
 
   void setGlobalMeshSize(double s) { _global_mesh_size = s; }
   void setElementType(int t) { _element_type = t; }
+  void setElementShape(int s) { _element_shape = s; }
+  void setTransfiniteAuto(bool v) { _transfinite_auto = v; }
+  void setTransfiniteCornerAngle(double v) { _transfinite_corner_angle = v; }
+  void setTransfiniteRecombine(bool v) { _transfinite_recombine = v; }
+  void setRecombine(bool v) { _recombine = v; }
+  void setRecombineAngle(double v) { _recombine_angle = v; }
 
   void setAnalysisModelDim(int a) { _analysis_model_dim = a; }
   void setAnalysisModel(int a) { _analysis_model = a; }
