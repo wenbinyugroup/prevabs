@@ -28,10 +28,12 @@ int readXMLElementComponentFilling(
   ) {
 
   // Read material
-  std::string fmn = xn_component->first_node("material")->value();
+  std::string fmn = requireNode(xn_component, "material", "<component type='filling'>")->value();
   Material *p_mtr_tmp = pmodel->getMaterialByName(fmn);
   if (p_mtr_tmp == nullptr) {
-    std::cout << "[error] cannot find material: " << fmn << std::endl;
+    throw std::runtime_error(
+      "cannot find material '" + fmn + "' in filling component"
+    );
   }
   // p_mtr_tmp->printMaterial();
   p_component->setFillMaterial(p_mtr_tmp);
@@ -120,7 +122,7 @@ int readXMLElementComponentFilling(
 
     std::vector<std::string> point_names;
     point_names =
-        splitString(p_xn_meshsize->first_attribute("at")->value(), ',');
+        splitString(requireAttr(p_xn_meshsize, "at", "<mesh_size>")->value(), ',');
     for (auto n : point_names) {
       p_component->addEmbeddedVertex(pmodel->getPointByName(n));
     }

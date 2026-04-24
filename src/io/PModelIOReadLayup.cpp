@@ -53,10 +53,11 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
   for (xml_node<> *nodeLayup = nodeLayups->first_node("layup"); nodeLayup;
        nodeLayup = nodeLayup->next_sibling("layup")) {
     std::string layupName{};
-    layupName = nodeLayup->first_attribute("name")->value();
+    layupName = requireAttr(nodeLayup, "name", "<layup>")->value();
     // std::cout << "[debug] reading layup: " << layupName << std::endl;
         PLOG(debug) << "reading layup: " + layupName;
 
+    // method: optional; defaults to "layer list" when attribute is absent
     std::string layupMethod{"layer list"};
     xml_attribute<> *attrMethod = nodeLayup->first_attribute("method");
     if (attrMethod)
@@ -103,8 +104,9 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
 
           lamina = pmodel->getLaminaByName(laminaName);
           if (lamina == nullptr) {
-            std::cout << "[error] cannot find lamina: " << laminaName
-                      << std::endl;
+            throw std::runtime_error(
+              "cannot find lamina '" + laminaName + "' in layup '" + layupName + "'"
+            );
           }
 
           p_material = lamina->getMaterial();
@@ -142,14 +144,15 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
       }
     }
     else if ((layupMethod == "stack sequence") || (layupMethod == "ss")) {
-      std::string laminaName{nodeLayup->first_node("lamina")->value()};
+      const std::string ssctx = "<layup name='" + layupName + "'>";
+      std::string laminaName{requireNode(nodeLayup, "lamina", ssctx)->value()};
       Lamina *lamina = pmodel->getLaminaByName(laminaName);
 
       LayerType *p_lt = nullptr;
       Material *p_material;
       p_material = lamina->getMaterial();
 
-      std::string layupCode{nodeLayup->first_node("code")->value()};
+      std::string layupCode{requireNode(nodeLayup, "code", ssctx)->value()};
       std::vector<double> anglesList{decodeStackSequence(layupCode)};
       for (auto angle : anglesList) {
         p_lt = pmodel->getLayerTypeByMaterialAngle(p_material, angle);

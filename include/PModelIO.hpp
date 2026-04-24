@@ -27,6 +27,55 @@
 
 using namespace rapidxml;
 
+// ---------------------------------------------------------------------------
+// XML access utilities
+// ---------------------------------------------------------------------------
+
+/** Require a child element; throw std::runtime_error when absent.
+ *
+ * Parameters:
+ *   parent  - parent node to search under
+ *   name    - element tag name
+ *   context - human-readable description of what is being read (for errors)
+ *
+ * Returns:
+ *   Non-null xml_node<>* pointing to the found child.
+ */
+inline xml_node<> *requireNode(
+  const xml_node<> *parent, const char *name, const std::string &context
+) {
+  xml_node<> *n = parent->first_node(name);
+  if (!n) {
+    throw std::runtime_error(
+      std::string("Missing required XML element <") + name + "> in " + context
+    );
+  }
+  return n;
+}
+
+/** Require an attribute; throw std::runtime_error when absent.
+ *
+ * Parameters:
+ *   node    - element node to search on
+ *   name    - attribute name
+ *   context - human-readable description of what is being read (for errors)
+ *
+ * Returns:
+ *   Non-null xml_attribute<>* pointing to the found attribute.
+ */
+inline xml_attribute<> *requireAttr(
+  const xml_node<> *node, const char *name, const std::string &context
+) {
+  xml_attribute<> *a = node->first_attribute(name);
+  if (!a) {
+    throw std::runtime_error(
+      std::string("Missing required XML attribute '") + name + "' in " + context
+    );
+  }
+  return a;
+}
+
+// ---------------------------------------------------------------------------
 // Reading functions
 
 /** @ingroup io
@@ -86,13 +135,6 @@ int readXMLElementComponentLaminate(PComponent *, const xml_node<> *,
                                     CrossSection *, PModel *);
 int readXMLElementComponentFilling(PComponent *, const xml_node<> *,
                                    CrossSection *, PModel *);
-
-int addBaselinesFromAirfoil(const xml_node<> *, PModel *, const std::string &,
-                            std::vector<std::pair<double, double>>, double,
-                            double, double, double, double);
-int addBaselineByPointAndAngle(PModel *, std::string, PDCELVertex *, double);
-double getWebEnd(const xml_node<> *, const std::string &, double,
-                 bool top = true);
 
 
 // Dehomogenization

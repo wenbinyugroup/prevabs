@@ -13,6 +13,10 @@
             <nu23>0.28</nu23>
         </elastic>
     </material>
+    <lamina name="la_iso5_1_002">
+        <material>iso5_1</material>
+        <thickness>0.02</thickness>
+    </lamina>
     <lamina name="la_iso5_1_003">
         <material>iso5_1</material>
         <thickness>0.03</thickness>
@@ -32,6 +36,10 @@
             <nu23>0.30</nu23>
         </elastic>
     </material>
+    <lamina name="la_iso5_2_003">
+        <material>iso5_2</material>
+        <thickness>0.03</thickness>
+    </lamina>
     <lamina name="la_iso5_2_005">
         <material>iso5_2</material>
         <thickness>0.05</thickness>
@@ -89,6 +97,10 @@
             <nu23>0.30</nu23>
         </elastic>
     </material>
+    <lamina name="la_iso5_5_001">
+        <material>iso5_5</material>
+        <thickness>0.01</thickness>
+    </lamina>
     <lamina name="la_iso5_5_002">
         <material>iso5_5</material>
         <thickness>0.02</thickness>

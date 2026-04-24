@@ -25,7 +25,6 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -49,29 +48,20 @@ int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
   std::string line;
   std::ifstream fileBasepoints{filenameBasepoints};
   if (!fileBasepoints.is_open()) {
-    std::cout << "Unable to open file: " << filenameBasepoints << std::endl;
-    return 1;
-  } else {
-    printInfo(i_indent, "reading basepoints file: " + filenameBasepoints);
+    throw std::runtime_error("unable to open basepoints file: " + filenameBasepoints);
   }
+  PLOG(info) << "reading basepoints file: " << filenameBasepoints;
 
-  if (fileBasepoints.is_open()) {
-    while (getline(fileBasepoints, line)) {
-      std::stringstream ss(line);
-      std::string label;
-      double x, y;
-      ss >> label >> x >> y;
+  while (getline(fileBasepoints, line)) {
+    std::stringstream ss(line);
+    std::string label;
+    double x, y;
+    ss >> label >> x >> y;
 
-      // std::cout << "[debug] reading point: " << label << " (" << x << ", " <<
-      // y << ")" << std::endl;
-      PDCELVertex *pv = new PDCELVertex{label, 0, x * scale, y * scale};
-      // pmodel->_vertices.push_back(pv);
-      pmodel->addVertex(pv);
-    }
-    fileBasepoints.close();
-  } else {
-    std::cout << "Unable to open file." << std::endl;
+    PDCELVertex *pv = new PDCELVertex{label, 0, x * scale, y * scale};
+    pmodel->addVertex(pv);
   }
+  fileBasepoints.close();
 
   return 0;
 }
@@ -87,7 +77,7 @@ PDCELVertex *readXMLElementPoint(
   
   PDCELVertex *pv;
 
-  std::string label{p_xn_point->first_attribute("name")->value()};
+  std::string label{requireAttr(p_xn_point, "name", "<point>")->value()};
 
     PLOG(debug) << "reading point: " + label;
 
@@ -104,11 +94,11 @@ PDCELVertex *readXMLElementPoint(
     Baseline *p_bsl;
     p_bsl = findLineByName(bsl_name, p_xn_geo, pmodel);
     if (!p_bsl) {
-      // TODO: raise error 'cannot find line' and exit.
-      std::cout << "cannot find base line: " << bsl_name << std::endl;
+      throw std::runtime_error(
+        "cannot find baseline '" + bsl_name
+        + "' referenced by point '" + label + "'"
+      );
     }
-    // std::cout << "find base line: " << bsl_name << std::endl;
-
     std::string by{"curve"};
     if (p_xn_point->first_attribute("by")) {
       by = p_xn_point->first_attribute("by")->value();
@@ -229,9 +219,6 @@ PDCELVertex *readXMLElementPoint(
       // TODO:
     }
 
-    // p_bsl->print(pmessage, 9);
-    // std::cout << pv << std::endl;
-
   }
 
   // Point defined using explicit coordinates
@@ -267,21 +254,23 @@ PDCELVertex *findPointByName(
   if (!pv) {
     for (auto p_xn_bpp = p_xn_geo->first_node("point"); p_xn_bpp;
         p_xn_bpp = p_xn_bpp->next_sibling("point")) {
-      if (p_xn_bpp->first_attribute("name")->value() == name) {
+      if (requireAttr(p_xn_bpp, "name", "<point>")->value() == name) {
         pv = readXMLElementPoint(p_xn_bpp, p_xn_geo, pmodel);
         pmodel->addVertex(pv);
         break;
       }
     }
 
-    // Also consider points in <basepoints>
-    // Will be deprecated in the future
-    for (auto p_xn_bpp = p_xn_geo->first_node("basepoints")->first_node("point"); p_xn_bpp;
-        p_xn_bpp = p_xn_bpp->next_sibling("point")) {
-      if (p_xn_bpp->first_attribute("name")->value() == name) {
-        pv = readXMLElementPoint(p_xn_bpp, p_xn_geo, pmodel);
-        pmodel->addVertex(pv);
-        break;
+    // Also consider points in <basepoints> (deprecated, will be removed)
+    xml_node<> *p_xn_basepoints = p_xn_geo->first_node("basepoints");
+    if (p_xn_basepoints) {
+      for (auto p_xn_bpp = p_xn_basepoints->first_node("point"); p_xn_bpp;
+          p_xn_bpp = p_xn_bpp->next_sibling("point")) {
+        if (requireAttr(p_xn_bpp, "name", "<point>")->value() == name) {
+          pv = readXMLElementPoint(p_xn_bpp, p_xn_geo, pmodel);
+          pmodel->addVertex(pv);
+          break;
+        }
       }
     }
   }

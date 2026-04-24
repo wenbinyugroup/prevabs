@@ -46,17 +46,13 @@
 int readMaterialsFile(
   const std::string &fn_material_global, PModel *pmodel
   ) {
-  MESSAGE_SCOPE(g_msg);
-
   xml_document<> xmlDocMaterials;
   std::ifstream fileMaterials{fn_material_global};
   if (!fileMaterials.is_open()) {
-    // std::cout << "Unable to open file: " << fn_material_global << std::endl;
-        g_msg->warn("unable to open file: " + fn_material_global);
+    PLOG(warning) << "unable to open file: " << fn_material_global;
     return 1;
   } else {
-    // printInfo(i_indent, "reading materials file: " + fn_material_global);
-        g_msg->print("reading materials file: " + fn_material_global);
+    PLOG(info) << "reading materials file: " << fn_material_global;
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(fileMaterials)),
@@ -66,11 +62,9 @@ int readMaterialsFile(
   try {
     xmlDocMaterials.parse<0>(&buffer[0]);
   } catch (parse_error &e) {
-    // std::cout << markError << " Unable to parse the file: " << fn_material_global
-    //           << std::endl;
-        g_msg->error("unable to parse the file: " + fn_material_global);
-    std::cerr << e.what() << std::endl;
-    // std::cout << e.where() << std::endl;
+    throw std::runtime_error(
+      "XML parse error in '" + fn_material_global + "': " + e.what()
+    );
   }
 
   xml_node<> *nodeMaterials{};
@@ -82,8 +76,6 @@ int readMaterialsFile(
 }
 
 int readMaterials(const xml_node<> *nodeMaterials, PModel *pmodel) {
-  MESSAGE_SCOPE(g_msg);
-  
   // -----------------------------------------------------------------
   // Read material data
   for (xml_node<> *nodeMaterial = nodeMaterials->first_node("material");
@@ -157,7 +149,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   LayerType *p_layertype;
 
   std::string materialName{};
-  materialName = p_xn_material->first_attribute("name")->value();
+  materialName = requireAttr(p_xn_material, "name", "<material>")->value();
 
     PLOG(debug) << "reading material: " + materialName;
 
@@ -172,18 +164,18 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
   // Type
   std::string materialType{};
-  materialType = lowerString(p_xn_material->first_attribute("type")->value());
+  materialType = lowerString(
+    requireAttr(p_xn_material, "type", "<material name='" + materialName + "'")->value()
+  );
   m->setType(materialType);
 
-  // Density
+  // Density — optional; defaults to 1.0 when absent
   double materialDensity{1.0};
   xml_node<> *nodeDensity{p_xn_material->first_node("density")};
   if (nodeDensity) {
-    // std::cout << (nodeDensity->value()[0] == '\0') << std::endl;
     if (nodeDensity->value()[0] != '\0')
       materialDensity = atof(nodeDensity->value());
   }
-  // materialDensity = atof(p_xn_material->first_node("density")->value());
   m->setDensity(materialDensity);
 
   // Read elastic properties
@@ -211,62 +203,75 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     
     else if (materialType == "orthotropic" || materialType == "engineering") {
       materialElastic.clear();
+      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       for (std::string label : elasticLabelOrtho) {
-        double value{atof(nodeElastic->first_node(label.c_str())->value())};
+        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
         materialElastic.push_back(value);
       }
     }
-    
+
     else if (materialType == "anisotropic") {
       materialElastic.clear();
+      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       for (std::string label : elasticLabelAniso) {
-        double value{atof(nodeElastic->first_node(label.c_str())->value())};
+        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
         materialElastic.push_back(value);
       }
     }
-    
+
     else if (materialType == "lamina") {
       materialElastic.clear();
-      // xml_node<> *p_xn_tmp;
+      const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       double e1, e2, e3, g12, g13, g23, nu12, nu13, nu23;
-      e1 = atof(nodeElastic->first_node("e1")->value());
-      e2 = atof(nodeElastic->first_node("e2")->value());
-      nu12 = atof(nodeElastic->first_node("nu12")->value());
-      g12 = atof(nodeElastic->first_node("g12")->value());
+      e1   = atof(requireNode(nodeElastic, "e1",   ectx)->value());
+      e2   = atof(requireNode(nodeElastic, "e2",   ectx)->value());
+      nu12 = atof(requireNode(nodeElastic, "nu12", ectx)->value());
+      g12  = atof(requireNode(nodeElastic, "g12",  ectx)->value());
+
+      // Optional lamina properties — transverse isotropy defaults (2-3 plane):
+      //   e3   defaults to e2   (E3 = E2)
+      //   nu13 defaults to nu12 (nu13 = nu12)
+      //   g13  defaults to g12  (G13 = G12)
+      //   g23  defaults to e3/(2*(1+nu23)) (isotropic 2-3 plane relation)
+      // nu23 has NO physically derived default; 0.3 is an arbitrary fallback —
+      //   always specify nu23 explicitly for accuracy.
 
       xml_node<> *p_xn_e3 = nodeElastic->first_node("e3");
       if (p_xn_e3) {
         e3 = atof(p_xn_e3->value());
       } else {
-        e3 = e2;
+        e3 = e2;  // transverse isotropy: E3 = E2
       }
 
       xml_node<> *p_xn_nu13 = nodeElastic->first_node("nu13");
       if (p_xn_nu13) {
         nu13 = atof(p_xn_nu13->value());
       } else {
-        nu13 = nu12;
+        nu13 = nu12;  // transverse isotropy: nu13 = nu12
       }
 
       xml_node<> *p_xn_nu23 = nodeElastic->first_node("nu23");
       if (p_xn_nu23) {
         nu23 = atof(p_xn_nu23->value());
       } else {
-        nu23 = 0.3;
+        nu23 = 0.3;  // arbitrary fallback — not physically derived
+        PLOG(warning) << "material '" + materialName
+                         + "': <nu23> not specified, using default 0.3; "
+                           "provide nu23 explicitly for accuracy";
       }
 
       xml_node<> *p_xn_g13 = nodeElastic->first_node("g13");
       if (p_xn_g13) {
         g13 = atof(p_xn_g13->value());
       } else {
-        g13 = g12;
+        g13 = g12;  // transverse isotropy: G13 = G12
       }
 
       xml_node<> *p_xn_g23 = nodeElastic->first_node("g23");
       if (p_xn_g23) {
         g23 = atof(p_xn_g23->value());
       } else {
-        g23 = e3 / (2.0 * (1 + nu23));
+        g23 = e3 / (2.0 * (1 + nu23));  // isotropic 2-3 plane: G23 = E3/(2*(1+nu23))
       }
 
       materialElastic = {e1, e2, e3, g12, g13, g23, nu12, nu13, nu23};
@@ -288,15 +293,15 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   if (p_xn_cte) {
     std::vector<double> cte;
 
+    const std::string ctectx = "<cte> in <material name='" + materialName + "'>";
     if (materialType == "isotropic") {
-      xml_node<> *p_xn_a = p_xn_cte->first_node("a");
-      double _a = atof(p_xn_a->value());
+      double _a = atof(requireNode(p_xn_cte, "a", ctectx)->value());
       cte.push_back(_a);
     }
 
     else if (materialType == "orthotropic" || materialType == "engineering") {
       for (auto _name : TAG_NAME_CTE_ORTHO) {
-        double _value{atof(p_xn_cte->first_node(_name.c_str())->value())};
+        double _value{atof(requireNode(p_xn_cte, _name.c_str(), ctectx)->value())};
         cte.push_back(_value);
       }
     }
@@ -518,27 +523,18 @@ Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /
   Lamina *l;
 
   std::string laminaName{};
-  laminaName = p_xn_lamina->first_attribute("name")->value();
+  laminaName = requireAttr(p_xn_lamina, "name", "<lamina>")->value();
 
     PLOG(debug) << "reading lamina: " + laminaName;
 
+  const std::string ctx = "<lamina name='" + laminaName + "'>";
   std::string lm{};
-  lm = p_xn_lamina->first_node("material")->value();
+  lm = requireNode(p_xn_lamina, "material", ctx)->value();
   Material *p_laminaMaterial{};
-  // for (auto it = pmodel->materials.begin(); it != pmodel->materials.end();
-  // ++it) {
-  // for (auto it : pmodel->p_materials) {
-  //   // std::cout << &(*it) << std::endl;
-  //   // std::cout << it->getName() << std::endl;
-  //   // std::cout << std::endl;
-  //   if (lm == it->getName()) {
-  //     p_laminaMaterial = &(*it);
-  //   }
-  // }
   p_laminaMaterial = pmodel->getMaterialByName(lm);
 
   double laminaThickness{};
-  laminaThickness = atof(p_xn_lamina->first_node("thickness")->value());
+  laminaThickness = atof(requireNode(p_xn_lamina, "thickness", ctx)->value());
 
   l = pmodel->getLaminaByName(laminaName);
 

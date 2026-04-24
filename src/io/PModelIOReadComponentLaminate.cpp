@@ -19,7 +19,6 @@
 #include <vector>
 #include <stack>
 #include <sstream>
-#include <iostream>
 #include <cmath>
 
 
@@ -35,28 +34,14 @@ int readXMLElementComponentLaminate(
       xn_component->first_node("location")->value()));
   }
 
-  // std::cout << "- reading segments" << std::endl;
-  //
-  //
-
   // Count the total number of segments
   int nseg = 0;
   for (auto nodeSegment = xn_component->first_node("segment"); nodeSegment;
         nodeSegment = nodeSegment->next_sibling("segment")) {
     nseg++;
   }
-
-
-
-
-
-
-
-
-
   // Read segments defined explicitly by a single base line and
   // a single layup in <segment>
-  //
   for (auto nodeSegment = xn_component->first_node("segment"); nodeSegment;
         nodeSegment = nodeSegment->next_sibling("segment")) {
     Segment *p_segment;
@@ -71,13 +56,9 @@ int readXMLElementComponentLaminate(
       segmentName = "sgm_" + std::to_string(Segment::count_tmp);
     }
 
-    // std::cout << "[debug] reading segment: " << segmentName << std::endl;
-
     int i_freeend = -1;
     xml_attribute<> *p_xa_free{nodeSegment->first_attribute("free")};
     if (p_xa_free) {
-      // std::cout << "[debug] p_xa_free->value() = " << p_xa_free->value()
-      // << std::endl;
       std::string s_freeend = p_xa_free->value();
       if (s_freeend == "head" || s_freeend == "begin") {
         i_freeend = 0;
@@ -85,10 +66,8 @@ int readXMLElementComponentLaminate(
         i_freeend = 1;
       }
     }
-    // std::cout << "[debug] i_freeend = " << i_freeend << std::endl;
-
-    std::string baselineName{nodeSegment->first_node("baseline")->value()};
-    xml_node<> *nodeLayup{nodeSegment->first_node("layup")};
+    std::string baselineName{requireNode(nodeSegment, "baseline", "<segment>")->value()};
+    xml_node<> *nodeLayup{requireNode(nodeSegment, "layup", "<segment>")};
     std::string layupName{nodeLayup->value()};
     xml_attribute<> *attrDirection{nodeLayup->first_attribute("direction")};
     std::string layupSide{"left"};
@@ -98,22 +77,13 @@ int readXMLElementComponentLaminate(
 
     Baseline *p_baseline = pmodel->getBaselineByNameCopy(baselineName);
     if (p_baseline == nullptr) {
-      std::cout << "[error] cannot find base line: " << baselineName
-                << std::endl;
+      throw std::runtime_error(
+        "cannot find baseline '" + baselineName + "' in segment '" + segmentName + "'"
+      );
     }
     Layup *p_layup;
-    // for (auto it = pmodel->baselines.begin(); it !=
-    // pmodel->baselines.end();
-    //     ++it) {
-    //   if (it->getName() == baselineName)
-    //     p_baseline = &(*it);
-    // }
     LayerType *p_layertype_temp;
     Material *p_material_temp;
-    // for (auto it = pmodel->layups.begin(); it != pmodel->layups.end();
-    //      ++it) {
-    //   if (it->getName() == layupName) {
-    //     p_layup = &(*it);
     p_layup = pmodel->getLayupByName(layupName);
 
     if (p_layup != nullptr) {
@@ -138,14 +108,11 @@ int readXMLElementComponentLaminate(
       }
     }
     else {
-      // Raise exception
-      std::cout << "[error] cannot find layup: " << layupName << std::endl;
+      throw std::runtime_error(
+        "cannot find layup '" + layupName + "' in segment '" + segmentName + "'"
+      );
     }
     p_layups.push_back(p_layup);
-
-
-
-
     // If there is only one segment and trim both ends, then split
     if (depend_names.size() > 0 && nseg == 1 && i_freeend == -1) {
 
@@ -165,13 +132,11 @@ int readXMLElementComponentLaminate(
       // Specified
       xml_node<> *p_xn_split{nodeSegment->first_node("split")};
       if (p_xn_split) {
-        // std::string split_by{"name"};
         xml_attribute<> *p_xa_by{p_xn_split->first_attribute("by")};
         if (p_xa_by) {
           split_by = p_xa_by->value();
         }
 
-        // PDCELVertex *v_split;
         if (split_by == "name") {
           v_split = pmodel->getPointByName(p_xn_split->value());
         }
@@ -199,10 +164,6 @@ int readXMLElementComponentLaminate(
           p_bsl_2->vertices().push_back(v);
         }
       }
-
-      // p_bsl_1->print(pmessage, 9);
-      // std::cout << std::endl;
-      // p_bsl_2->print(pmessage, 9);
 
       pmodel->addBaseline(p_bsl_1);
       pmodel->addBaseline(p_bsl_2);
@@ -264,23 +225,17 @@ int readXMLElementComponentLaminate(
   }
 
 
-
-
-  //
-  //
   // Read segments defined by a base line and a list of layups.
   // Each layup has attributes of beginning and ending points on
   // the base line.
-  //
   for (auto p_xn_segments = xn_component->first_node("segments"); p_xn_segments;
     p_xn_segments = p_xn_segments->next_sibling("segments")) {
-    // std::cout << "\nreading segments" << std::endl;
-
-    std::string s_bsl_name{p_xn_segments->first_node("baseline")->value()};
+    std::string s_bsl_name{requireNode(p_xn_segments, "baseline", "<segments>")->value()};
     Baseline *p_bsl = pmodel->getBaselineByName(s_bsl_name);
     if (p_bsl == nullptr) {
-      std::cout << "[error] cannot find base line: " << s_bsl_name
-                << std::endl;
+      throw std::runtime_error(
+        "cannot find baseline '" + s_bsl_name + "' in <segments>"
+      );
     }
 
     std::string s_layup_side{"left"};
@@ -301,10 +256,6 @@ int readXMLElementComponentLaminate(
     std::string s_layup_name;
     for (auto p_xn_layup = p_xn_segments->first_node("layup"); p_xn_layup;
       p_xn_layup = p_xn_layup->next_sibling("layup")) {
-      // std::cout << "reading layup" << std::endl;
-
-      // split_sgm = false;
-
       xml_attribute<> *p_xa_begin{p_xn_layup->first_attribute("begin")};
       if (p_xa_begin) {
         u_begin = atof(p_xa_begin->value());
@@ -375,8 +326,6 @@ int readXMLElementComponentLaminate(
           u_end -= 1;
         }
       }
-      // std::cout << "\nu_begin = " << u_begin << ", u_end = " << u_end << std::endl;
-
       if (u_begin < 0 && u_end < 0) {
         v_u_begin.push_back(u_begin + 1);
         v_u_end.push_back(u_end + 1);
@@ -409,7 +358,6 @@ int readXMLElementComponentLaminate(
       if (v_u_sorted.size() == 0) v_u_sorted.push_back(u_begin);
       else {
         for (it = v_u_sorted.begin(); it < v_u_sorted.end(); it++) {
-          // std::cout << "  *it = " << *it << std::endl;
           if (*it == u_begin) break;
           else if (*it > u_begin) {
             v_u_sorted.insert(it, u_begin);
@@ -419,7 +367,6 @@ int readXMLElementComponentLaminate(
         if (it == v_u_sorted.end()) v_u_sorted.push_back(u_begin);
       }
       for (it = v_u_sorted.begin(); it < v_u_sorted.end(); it++) {
-        // std::cout << "  *it = " << *it << std::endl;
         if (*it == u_end) break;
         else if (*it > u_end) {
           v_u_sorted.insert(it, u_end);
@@ -427,13 +374,6 @@ int readXMLElementComponentLaminate(
         }
       }
       if (it == v_u_sorted.end()) v_u_sorted.push_back(u_end);
-      // if (config.debug) {
-      //   std::cout << "\nsorted list of points" << std::endl;
-      //   for (auto u : v_u_sorted) std::cout << " " << u;
-      //   std::cout << std::endl;
-      // }
-
-      // std::string s_layup_name{v_s_layup[k]};
       Layup *p_layup_temp;
       LayerType *p_layertype_temp;
       Material *p_material_temp;
@@ -460,17 +400,21 @@ int readXMLElementComponentLaminate(
         }
       }
       else {
-        // Raise exception
-        std::cout << "[error] cannot find layup: " << s_layup_name << std::endl;
+        throw std::runtime_error(
+          "cannot find layup '" + s_layup_name + "' in <segments>"
+        );
       }
       v_p_layup.push_back(p_layup_temp);
 
     }
 
     if (config.debug) {
-      std::cout << "\nsorted list of points" << std::endl;
-      for (auto u : v_u_sorted) std::cout << " " << u;
-      std::cout << std::endl;
+      std::ostringstream oss;
+      oss << "sorted list of points:";
+      for (std::size_t i = 0; i < v_u_sorted.size(); ++i) {
+        oss << ' ' << v_u_sorted[i];
+      }
+      PLOG(debug) << oss.str();
     }
 
     // int n_sgms = v_p_layup.size();
@@ -518,28 +462,15 @@ int readXMLElementComponentLaminate(
       }
     }
 
-    // std::cout << "\nbefore combine segments" << std::endl;
-    // for (int i = 0; i < n_sgms; i++) {
-    //   std::cout << "\nsegment " << i + 1;
-    //   std::cout << " [" << vv_u[i][0] << ", " << vv_u[i][1] << "]\n";
-    //   for (int j = 0; j < vv_p_layup[i].size(); j++) {
-    //     std::cout << "  " << vv_p_layup[i][j]->getName() << std::endl;
-    //   }
-    //   v_p_layup_combined[i]->print(pmessage, 9);
-    // }
-
     // Combine successive layups and points if layups are the same
     std::stack<int> tmp_index_to_erase;
     for (auto i = 1; i < v_u_sorted.size()-1; i++) {
-      // v_p_layup_combined[i]->print(pmessage, 9);
       if (*(v_p_layup_combined[i]) == *(v_p_layup_combined[i-1])) {
-        // std::cout << "i = " << i << std::endl;
         tmp_index_to_erase.push(i);
       }
     }
 
     while (!tmp_index_to_erase.empty()) {
-      // std::cout << "erase index " << tmp_index_to_erase.top() << std::endl;
       v_u_sorted.erase(
         v_u_sorted.begin() + tmp_index_to_erase.top()
       );
@@ -550,24 +481,7 @@ int readXMLElementComponentLaminate(
     }
 
     n_sgms = v_u_sorted.size() - 1;
-
-    // std::cout << "\nafter combine segments" << std::endl;
-    // for (int i = 0; i < n_sgms; i++) {
-    //   std::cout << "\nsegment " << i + 1;
-    //   std::cout << " [" << vv_u[i][0] << ", " << vv_u[i][1] << "]\n";
-    //   for (int j = 0; j < vv_p_layup[i].size(); j++) {
-    //     std::cout << "  " << vv_p_layup[i][j]->getName() << std::endl;
-    //   }
-    //   v_p_layup_combined[i]->print(pmessage, 9);
-    // }
-
-
-
     // Insert new vertices to the base line
-    // std::cout << "\nbase line before\n";
-    // p_bsl->print(pmessage, 9);
-
-    // double tol = 1e-6;
     std::stack<int> pos_insert;
     std::stack<PDCELVertex *> newv_insert;
     std::vector<int> index_split, index_shift;
@@ -594,10 +508,6 @@ int readXMLElementComponentLaminate(
                       << s_bsl_name << "' at u = " << v_u_sorted[i];
           return -1;
         }
-        // std::cout << "u = " << v_u_sorted[i];
-        // std::cout << ", i_seg = " << i_seg;
-        // std::cout << ", is_new = " << is_new;
-        // std::cout << ", p_v_param = " << p_v_param->point() << std::endl;
         index_split.push_back(i_seg);
         index_shift.push_back(i_shift);
         if (is_new) {
@@ -613,20 +523,11 @@ int readXMLElementComponentLaminate(
       newv_insert.pop();
     }
 
-    // std::cout << "\nbase line after\n";
-    // p_bsl->print(pmessage, 9);
-
-    // std::cout << "\nsplit index before\n";
-    // for (auto i : index_split) std::cout << " " << i;
     for (int i = 0; i < index_split.size(); i++) {
       if (index_split[i] != 0) {
         index_split[i] += index_shift[i];
       }
     }
-    // std::cout << "\nsplit index after\n";
-    // for (auto i : index_split) std::cout << " " << i;
-
-
 
     // Split the base line
     std::vector<Baseline *> v_p_bsl;
@@ -647,18 +548,7 @@ int readXMLElementComponentLaminate(
       v_p_bsl.push_back(tmp_p_bsl);
     }
 
-    // if (config.debug) {
-    // std::cout << "\nbase line divided\n";
-    // for (auto bsl : v_p_bsl) {
-    //   bsl->print(pmessage, 9);
-    //   std::cout << std::endl;
-    // }
-    // }
-
-
-
     // Create segments
-    // std::cout << "\nsegments divided\n";
     for (auto i = 0; i < n_sgms; ++i) {
       Segment::count_tmp++;
       std::string s_sgm_name = "sgm_" + std::to_string(Segment::count_tmp);
@@ -666,34 +556,19 @@ int readXMLElementComponentLaminate(
       Segment *p_sgm = new Segment(
         s_sgm_name, v_p_bsl[i], v_p_layup_combined[i], s_layup_side, 0
       );
-      // p_sgm->setUBegin(v_u_begin[i]);
-      // p_sgm->setUEnd(v_u_end[i]);
       p_sgm->setFreeEnd(i_freeend);
       p_sgm->setMatOrient1(p_component->getMatOrient1());
       p_sgm->setMatOrient2(p_component->getMatOrient2());
 
       p_component->addSegment(p_sgm);
-      // std::cout << p_sgm << std::endl;
     }
 
   }
 
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of layups");
-  //   for (auto lyp : pmodel->layups()) {
-  //     lyp->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
-
-
-  //
   // Read joint style
-  //
   for (auto p_xn_joint = xn_component->first_node("joint"); p_xn_joint;
         p_xn_joint = p_xn_joint->next_sibling("joint")) {
-    const int js_value = atoi(p_xn_joint->first_attribute("style")->value());
+    const int js_value = atoi(requireAttr(p_xn_joint, "style", "<joint>")->value());
     const JointStyle js =
         (js_value == static_cast<int>(JointStyle::smooth))
             ? JointStyle::smooth

@@ -24,7 +24,6 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -81,7 +80,6 @@ unsigned int parseElementShapeValue(const std::string &value) {
 
 int readCrossSection(const std::string &filenameCrossSection,
                      const std::string &filePath, PModel *pmodel) {
-  MESSAGE_SCOPE(g_msg);
   // i_indent++;
 
   (void)0;  // material_id and layertype_id removed (unused)
@@ -89,13 +87,10 @@ int readCrossSection(const std::string &filenameCrossSection,
   xml_document<> xmlDocCrossSection;
   std::ifstream fileCrossSection{filenameCrossSection};
   if (!fileCrossSection.is_open()) {
-    // std::cout << markError << " Unable to open file: " << filenameCrossSection
-    //           << std::endl;
-        g_msg->error("unable to open file: " + filenameCrossSection);
+    PLOG(error) << "unable to open file: " << filenameCrossSection;
     return 1;
   } else {
-    // printInfo(i_indent, "reading main input file: " + filenameCrossSection);
-        g_msg->print("reading main input file: " + filenameCrossSection);
+    PLOG(info) << "reading main input file: " << filenameCrossSection;
   }
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(fileCrossSection)),
@@ -105,11 +100,9 @@ int readCrossSection(const std::string &filenameCrossSection,
   try {
     xmlDocCrossSection.parse<0>(&buffer[0]);
   } catch (parse_error &e) {
-    std::cout << markError
-              << " Unable to parse the file: " << filenameCrossSection
-              << std::endl;
-    std::cerr << e.what() << std::endl;
-    // std::cout << e.where() << std::endl;
+    throw std::runtime_error(
+      "XML parse error in '" + filenameCrossSection + "': " + e.what()
+    );
   }
 
   xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
@@ -128,16 +121,13 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_sg->first_attribute("type")) {
     cs_type = p_xn_sg->first_attribute("type")->value();
   }
-  // std::cout << "cs_type = " << cs_type << std::endl;
-
-  // if (debug) {
-  //   std::cout << markInfo << " Find Cross Section: " << csName << std::endl;
-  // }
-    PLOG(debug) << "find cross-section: " + csName;
+  PLOG(debug) << "find cross-section: " + csName;
 
   // CrossSection cs{csName};
   CrossSection *cs = new CrossSection(csName);
 
+  // format: optional; 0 = layups in a separate include file,
+  //         1 (default) = layups inline in the main file
   double d_fmt{1};
   xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
   if (p_xa_fmt) {
@@ -146,7 +136,6 @@ int readCrossSection(const std::string &filenameCrossSection,
       d_fmt = std::stod(ss);
     }
   }
-  // std::cout << "format = " << d_fmt << std::endl;
 
   // -----------------------------------------------------------------
   // Read settings
@@ -165,20 +154,22 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   // -----------------------------------------------------------------
   // Read analysis
+  // All fields in <analysis> are optional; defaults represent a linear,
+  // classical, undamped, isothermal, straight 1-D beam with no obliqueness.
     PLOG(debug) << "reading analysis...";
 
-  int model_dim = 1; // default 1D beam model
-  int model = 0; // default classical model
-  int flag_damping = 0;
-  int flag_thermal = 0;
+  int model_dim = 1;    // optional: 1D beam (default) or 2D plate
+  int model = 0;        // optional: 0 = classical, 1 = refined
+  int flag_damping = 0; // optional: 0 = no damping
+  int flag_thermal = 0; // optional: 0 = isothermal
   int flag_curvature = 0;
   int flag_oblique = 0;
   int flag_trapeze = 0;
   int flag_vlasov = 0;
-  double k1 = 0.0;
-  double k2 = 0.0;
-  double k3 = 0.0;
-  double cos11 = 1.0;
+  double k1 = 0.0;      // optional: initial twist (rad/m)
+  double k2 = 0.0;      // optional: initial curvature k2
+  double k3 = 0.0;      // optional: initial curvature k3
+  double cos11 = 1.0;   // optional: oblique direction cosine (default: normal)
   double cos21 = 0.0;
 
   xml_node<> *p_xn_analysis{p_xn_sg->first_node("analysis")};
@@ -316,31 +307,19 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Read general
     PLOG(debug) << "reading general...";
 
-  // if (debug)
-  //   std::cout << "\n"
-  //             << markInfo << " Read Cross Section General"
-  //             << "\n\n";
   xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
   if (!nodeGeneral) {
     throw std::runtime_error("Missing required XML element <general>");
   }
 
-  // Point2 origin{0, 0};
-  // SVector3 translate{0, 0, 0};
-  // std::vector<double> translate{0, 0};
   double dx{0}, dy{0}, dz{0};
   xml_node<> *nodeTranslate{nodeGeneral->first_node("translate")};
   if (nodeTranslate) {
     std::stringstream ss{nodeTranslate->value()};
     if (ss.str()[0] != '\0') {
       ss >> dy >> dz;
-      // origin.setPoint(-x, -y);
-      // translate[1] = x;
-      // translate[2] = y;
     }
   }
-  // cs->setOrigin(origin);
-  // cs->setTranslate(translate);
 
   double sfactor{1.0};
   xml_node<> *nodeScale{nodeGeneral->first_node("scale")};
@@ -349,8 +328,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (sscale[0] != '\0')
       sfactor = std::stod(sscale.c_str());
   }
-  // cs->setScale(scale);
-
   double rangle{0.0};
   xml_node<> *nodeRotate{nodeGeneral->first_node("rotate")};
   if (nodeRotate) {
@@ -358,20 +335,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (srotate[0] != '\0')
       rangle = std::stod(srotate.c_str());
   }
-  // Matrix2 rotatem{getRotationMatrix(rotate)};
-  // cs->setRotate(rotate);
-  // cs->setRotateMatrix(rotatem);
-
-  // Global transformation of all points
-  // 1. Translate
-  // 2. Scale
-  // 3. Rotate
-  // for (auto v : pmodel->vertices()) {
-  //   v->translate(dx, dy, dz);
-  //   v->scale(sfactor);
-  //   v->rotate(rangle);
-  // }
-
   double meshsize{0.0};
   xml_node<> *nodeMeshsize{nodeGeneral->first_node("mesh_size")};
   if (nodeMeshsize) {
@@ -379,10 +342,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     if (smeshsize[0] != '\0')
       meshsize = std::stod(smeshsize.c_str());
   }
-  // else Use default mesh size, the smallest layer thickness
-  // This is set after reading in all segments
-  // cs->setMeshsize(meshsize);
-
   int elementtype = 2;
   xml_node<> *nodeElementType{nodeGeneral->first_node("element_type")};
   if (nodeElementType) {
@@ -394,10 +353,7 @@ int readCrossSection(const std::string &filenameCrossSection,
         elementtype = 2;
       }
     }
-    // elementtype = nodeElementType->value();
   }
-  // cs->setElementtype(elementtype);
-  // pmessage->print(9, "elementtype = " + std::to_string(elementtype));
   pmodel->setElementType(elementtype);
 
   unsigned int elementshape = 3;
@@ -486,9 +442,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     std::string ss{p_xn_itf->value()};
     if (ss[0] != '\0') {
       track_interface = std::stoi(ss.c_str());
-      // std::cout << "track_interface = " << track_interface << std::endl;
       pmodel->setInterfaceOutput(track_interface);
-      // std::cout << "_itf_output = " << pmodel->interfaceOutput() << std::endl;
     }
   }
 
@@ -533,11 +487,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       if (cs_type == "general") {
         std::string filenameBaselines{p_xn_include_bsl->value()};
         filenameBaselines = filePath + filenameBaselines + ".xml";
-        // if (debug) {
-        //   std::cout << markInfo << " Include Baselines File: " << filenameBaselines
-        //             << std::endl;
-        // }
-                PLOG(debug) << "reading base line file: " + filenameBaselines;
+        PLOG(debug) << "reading base line file: " + filenameBaselines;
 
         std::ifstream fileBaselines;
         openFile(fileBaselines, filenameBaselines);
@@ -550,135 +500,22 @@ int readCrossSection(const std::string &filenameCrossSection,
           xmlDocBaselines.parse<0>(&buffer_bsl[0]);
         }
         catch (parse_error &e) {
-          // std::cout << markError << " Unable to parse the file: " << filenameBaselines
-          //           << std::endl;
-                    g_msg->error("unable to parse the file: " + filenameBaselines);
-          std::cerr << e.what() << std::endl;
-          // std::cout << e.where() << std::endl;
+          throw std::runtime_error(
+            "XML parse error in '" + filenameBaselines + "': " + e.what()
+          );
         }
-        // print(std::cout, xmlDocBaselines, 0);
-        // xml_node<> *nodeBaselines{xmlDocBaselines.first_node("baselines")};
         nodeBaselines = xmlDocBaselines.first_node("baselines");
 
         readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle);
 
       }
 
-      // Airfoil type cross-section
+      // Airfoil type cross-section (removed)
       else if (cs_type == "airfoil") {
-
-        xml_attribute<> *baselineType{p_xn_include_bsl->first_attribute("type")};
-
-        // Based on topology library
-        if (baselineType) {
-          std::string baselineTypeString{baselineType->value()};
-          if (baselineTypeString != "airfoil"){
-              std::cout << markError << " Undefined baseline type: " << baselineTypeString
-                        << std::endl;
-              return 1;
-          }
-
-          // Read topology information
-          // std::cout << "\nreading topology...\n";
-          // Box: two straight webs
-          // I: one straight webs
-          xml_node<> *nodeTopology{p_xn_sg->first_node("topology")};
-          std::vector<std::pair<double, double>> websArray;
-          if (nodeTopology) {
-            xml_node<> *nodeLEWeb{nodeTopology->first_node("leading_web")};
-            xml_node<> *nodeTEWeb{nodeTopology->first_node("trailling_web")};
-            xml_node<> *nodeMidWeb{nodeTopology->first_node("mid_web")};
-
-            xml_attribute<> *p_xa_fillLE = nodeLEWeb->first_attribute("fill");
-            xml_attribute<> *p_xa_curvedLE = nodeLEWeb->first_attribute("curved");
-            xml_attribute<> *p_xa_fillTE = nodeTEWeb->first_attribute("fill");
-            xml_attribute<> *p_xa_curvedTE = nodeTEWeb->first_attribute("curved");
-
-            (void)p_xa_fillLE;
-            (void)p_xa_curvedLE;
-            (void)p_xa_fillTE;
-            (void)p_xa_curvedTE;
-
-            auto requireNode = [](xml_node<> *parent, const char *tag) -> xml_node<> * {
-              xml_node<> *n = parent->first_node(tag);
-              if (!n) {
-                throw std::runtime_error(std::string("Missing required XML element <") + tag + ">");
-              }
-              return n;
-            };
-            double xtLE, xbLE, xtTE, xbTE;
-            xtLE = atof(requireNode(nodeLEWeb,  "pos_top")->value());
-            xbLE = atof(requireNode(nodeLEWeb,  "pos_bot")->value());
-            xtTE = atof(requireNode(nodeTEWeb,  "pos_top")->value());
-            xbTE = atof(requireNode(nodeTEWeb,  "pos_bot")->value());
-            double ytLE,ybLE,xmLE,angLE;
-            ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
-            ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
-            xmLE = (0 - ybLE) / (ytLE - ybLE) * (xtLE - xbLE) + xbLE;
-            angLE = atan2(ytLE - ybLE, xtLE - xbLE) * 180 / PI;
-            PDCELVertex *pvLEmid = new PDCELVertex{"Pweb_le", 0, xmLE , 0};
-            addBaselineByPointAndAngle(pmodel, "web_le", pvLEmid, angLE);
-            websArray.push_back(std::make_pair(xmLE, angLE));
-
-            double ytTE,ybTE,xmTE,angTE;
-            ytTE = getWebEnd(p_xn_include_bsl, filePath, xtTE);
-            ybTE = getWebEnd(p_xn_include_bsl, filePath, xbTE, false);
-            xmTE = (0 - ybTE) / (ytTE - ybTE) * (xtTE - xbTE) + xbTE;
-            angTE = atan2(ytTE - ybTE, xtTE - xbTE) * 180 / PI;
-            PDCELVertex *pvTEmid = new PDCELVertex{"Pweb_te", 0, xmTE , 0};
-            addBaselineByPointAndAngle(pmodel, "web_te", pvTEmid, angTE);
-            websArray.push_back(std::make_pair(xmTE, angTE));        
-
-            if (nodeMidWeb) {
-              double xtM, xbM;
-              xtM = atof(requireNode(nodeMidWeb, "pos_top")->value());
-              xbM = atof(requireNode(nodeMidWeb, "pos_bot")->value());
-
-              double ytM,ybM,xmM,angM;
-              ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);
-              ybM = getWebEnd(p_xn_include_bsl, filePath, xbM, false);
-              xmM = (0 - ybM) / (ytM - ybM) * (xtM - xbM) + xbM;
-              angM = atan2(ytM - ybM, xtM - xbM) * 180 / PI;
-              PDCELVertex *pvMmid = new PDCELVertex{"Pweb_M", 0, xmM , 0};
-              addBaselineByPointAndAngle(pmodel, "web_M", pvMmid, angM);
-              websArray.push_back(std::make_pair(xmM, angM));   
-            }
-          }
-          xml_node<> *nodeSpar{p_xn_sg->first_node("spar")};
-          if (nodeSpar) {
-            xml_attribute<> *p_xa_spar = nodeSpar->first_attribute("type");
-            std::string sparType{p_xa_spar->value()};
-            std::cout << "\nSpar type: " << sparType << std::endl;
-
-            if (sparType == "box") {
-              std::stringstream ss(nodeSpar->value());
-              double x1, angle1, x2, angle2;
-              ss >> x1 >> angle1 >> x2 >> angle2;
-              PDCELVertex *pvMid1 = new PDCELVertex{"Pweb_le", 0, x1 , 0};
-              PDCELVertex *pvMid2 = new PDCELVertex{"Pweb_te", 0, x2 , 0};
-              addBaselineByPointAndAngle(pmodel, "web_le", pvMid1, angle1);
-              addBaselineByPointAndAngle(pmodel, "web_te", pvMid2, angle2);
-              websArray.push_back(std::make_pair(x1, angle1));
-              websArray.push_back(std::make_pair(x2, angle2));
-            }
-            else if (sparType == "I") {
-              std::stringstream ss(nodeSpar->value());
-              double x, angle;
-              ss >> x >> angle;
-              PDCELVertex *pvMid = new PDCELVertex{"Pweb", 0, x , 0};
-              addBaselineByPointAndAngle(pmodel, "web", pvMid, angle);
-              websArray.push_back(std::make_pair(x, angle));
-            }
-            else {
-              std::cout << markError << " Undefined spar type: " << sparType
-                        << std::endl;
-              return 1;
-            }
-          }
-          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle);
-
-        }
-
+        throw std::runtime_error(
+          "cs_type='airfoil' is no longer supported; "
+          "use cs_type='general' with explicit <baselines>"
+        );
       }
 
     }
@@ -694,20 +531,15 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   if (config.debug) {
-    // pmessage->printBlank();
-    // pmessage->print(9, "summary of base lines");
-        PLOG(debug) << " ";
-        PLOG(debug) << "summary of base lines (before transformation)";
+    PLOG(debug) << " ";
+    PLOG(debug) << "summary of base lines (before transformation)";
     for (auto bsl : pmodel->baselines()) {
       bsl->print();
-      // pmessage->printBlank();
-            PLOG(debug) << " ";
+      PLOG(debug) << " ";
     }
   }
 
-  // translate; scale; rotate
-  // std::cout << "\ntransforming...\n";
-    PLOG(debug) << "transforming base geometry";
+  PLOG(debug) << "transforming base geometry";
 
   for (auto v : pmodel->vertices()) {
     v->translate(dx, dy, dz);
@@ -716,14 +548,11 @@ int readCrossSection(const std::string &filenameCrossSection,
   }
 
   if (config.debug) {
-    // pmessage->printBlank();
-    // pmessage->print(9, "summary of base lines");
-        PLOG(debug) << " ";
-        PLOG(debug) << "summary of base lines (after transformation)";
+    PLOG(debug) << " ";
+    PLOG(debug) << "summary of base lines (after transformation)";
     for (auto bsl : pmodel->baselines()) {
       bsl->print();
-      // pmessage->printBlank();
-            PLOG(debug) << " ";
+      PLOG(debug) << " ";
     }
   }
 
@@ -734,18 +563,12 @@ int readCrossSection(const std::string &filenameCrossSection,
     PLOG(debug) << "reading materials...";
 
   std::string fn_material_global = "";
-  // xml_node<> *nodeMaterials{nodeInclude->first_node("material")};
-  // if (nodeMaterials) {
-  //   fn_material_global = filePath + nodeMaterials->value() + ".xml";
-  // } else {
 // Use defualt database
-// std::string s_fullpath;
 #ifdef __linux__
   char buffer2[PATH_MAX];
   ssize_t count = readlink("/proc/self/exe", buffer2, sizeof(buffer2) - 1);
   if (count != -1) {
     buffer2[count] = '\0';
-    // s_fullpath = buffer;
     fn_material_global = dirname(buffer2);
     fn_material_global = fn_material_global + "/";
   }
@@ -753,8 +576,6 @@ int readCrossSection(const std::string &filenameCrossSection,
   char buffer2[MAX_PATH];
   GetModuleFileNameA(NULL, buffer2, sizeof(buffer2));
   std::string s_fullpath{buffer2};
-  // s_fullpath = buffer;
-  // std::cout << s_fullpath << std::endl;
   std::vector<std::string> vs;
   vs = splitFilePath(s_fullpath);
   fn_material_global = vs[0];
@@ -766,7 +587,6 @@ int readCrossSection(const std::string &filenameCrossSection,
     xml_node<> *xn_material{nodeInclude->first_node("material")};
     if (xn_material) {
       fn_material_local = filePath + xn_material->value() + ".xml";
-      // readMaterials(fn_material_local, pmodel);
     }
   }
 
@@ -783,16 +603,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     readMaterials(p_xn_materials, pmodel);
   }
 
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of materials");
-  //   for (auto mtr : pmodel->materials()) {
-  //     mtr->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
-
-    PLOG(debug) << "finished reading materials.";
+  PLOG(debug) << "finished reading materials.";
 
   // -----------------------------------------------------------------
   // Read layups
@@ -804,8 +615,7 @@ int readCrossSection(const std::string &filenameCrossSection,
       xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
       std::string filenameLayups{p_xn_include_lyp->value()};
       filenameLayups = filePath + filenameLayups + ".xml";
-      std::cout << markInfo << " Include Layups File: " << filenameLayups
-                << std::endl;
+      PLOG(info) << "include layups file: " << filenameLayups;
       std::ifstream fileLayups;
       openFile(fileLayups, filenameLayups);
       xml_document<> xmlDocLayups;
@@ -816,9 +626,9 @@ int readCrossSection(const std::string &filenameCrossSection,
       try {
         xmlDocLayups.parse<0>(&buffer_lyp[0]);
       } catch (parse_error &e) {
-        std::cout << markError << " Unable to parse the file: " << filenameLayups
-                  << std::endl;
-        std::cerr << e.what() << std::endl;
+        throw std::runtime_error(
+          "XML parse error in '" + filenameLayups + "': " + e.what()
+        );
       }
       nodeLayups = xmlDocLayups.first_node("layups");
       readLayups(nodeLayups, pmodel);
@@ -834,21 +644,9 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
   }
 
-  // readLayups(filenameLayups, pmodel, pmessage);
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of layups");
-  //   for (auto lyp : pmodel->layups()) {
-  //     lyp->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
-
   // -----------------------------------------------------------------
   // Read components
-  // if (debug)
-  // std::cout << "- reading components" << std::endl;
-    PLOG(debug) << "reading components...";
+  PLOG(debug) << "reading components...";
 
   std::vector<Layup *> p_layups{};  // All layups used in this cross section
   int num_combined_layups = 0;  // Number of combined layups
@@ -857,8 +655,6 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   for (auto xn_component = p_xn_sg->first_node("component");
        xn_component; xn_component = xn_component->next_sibling("component")) {
-    // xml_node<> *nodeSegments{p_xn_sg->first_node("segments")};
-    // for (auto nodeSegment = nodeSegments->first_node("segment"); nodeSegment;
     PComponent *p_component;
 
     p_component = readXMLElementComponent(
@@ -889,24 +685,9 @@ int readCrossSection(const std::string &filenameCrossSection,
   // Arrange the building order of components according to the dependencies
   cs->sortComponents();
 
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of components");
-  //   for (auto cmp : cs->components()) {
-  //     cmp->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
-
-  // if (debug)
-  // std::cout << "- reading components -- done" << std::endl;
-
   // Set default mesh size as the smallest layer thickness
   if (meshsize == 0.0) {
-    if (debug)
-      std::cout << "\n"
-                << markInfo << " Use Default Mesh Size"
-                << "\n\n";
+    PLOG(info) << "use default mesh size";
     Layup *p_layup{};
     for (auto it = p_layups.begin(); it != p_layups.end(); ++it) {
       p_layup = *it;
@@ -920,17 +701,9 @@ int readCrossSection(const std::string &filenameCrossSection,
       }
     }
   }
-  // cs->setMeshsize(meshsize);
   pmodel->setGlobalMeshSize(meshsize);
 
-  // pmodel->crosssections.push_back(cs);
   pmodel->setCrossSection(cs);
-
-  // if (config.debug) {
-  //   pmodel->summary(pmessage);
-  // }
-
-  // i_indent--;
 
   return 0;
 }
