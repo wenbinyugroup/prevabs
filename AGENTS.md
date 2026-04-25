@@ -151,7 +151,6 @@ and drop the XML input file in. No script changes needed — CMakeLists.txt pick
 - Discourage **monolithic** code design.
 - Avoid one giant function/file.
 - When creating new functions, classes, modules, etc., start from simplest possible implementation, and gradually add features. **Do not overengineer**.
-- Always use numpy style docstrings.
 - Use comments to annotate key steps in the code.
 
 - When developing new functions, make use of existing functions as much as possible. Avoid reinventing the wheel.

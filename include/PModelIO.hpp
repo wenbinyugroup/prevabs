@@ -192,7 +192,7 @@ Baseline *findLineByName(const std::string &, const rapidxml::xml_node<> *,
 /** @ingroup io
  * Read the point definitions from a file.
  */
-int readPointsFromFile(const std::string &, PModel *, double);
+void readPointsFromFile(const std::string &, PModel *, double);
 PDCELVertex *readXMLElementPoint(const rapidxml::xml_node<> *,
                                  const rapidxml::xml_node<> *, PModel *);
 PDCELVertex *findPointByName(const std::string &,

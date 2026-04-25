@@ -1,49 +1,24 @@
 #include "PModelIO.hpp"
 
-#include "CrossSection.hpp"
-#include "Material.hpp"
-#include "PComponent.hpp"
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
-#include "geo.hpp"
+#include "PBaseLine.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
-#include "PBaseLine.hpp"
-#include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "geo_types.hpp"
-
 #include "rapidxml/rapidxml.hpp"
-#include "rapidxml/rapidxml_print.hpp"
 
-#include <array>
 #include <cmath>
-#include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iterator>
-#include <limits>
-#include <list>
 #include <sstream>
-#include <stack>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#ifdef __linux__
-#include <libgen.h>
-#include <limits.h>
-#include <unistd.h>
-#elif _WIN32
-#include <tchar.h>
-#include <windows.h>
-#endif
-
-int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
+void readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
                    double scale) {
   std::string line;
   std::ifstream fileBasepoints{filenameBasepoints};
@@ -57,14 +32,17 @@ int readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
     std::string label;
     double x, y;
     ss >> label >> x >> y;
+    if (!ss) {
+      throw std::runtime_error("malformed line in basepoints file: " + line);
+    }
 
     PDCELVertex *pv = new PDCELVertex{label, 0, x * scale, y * scale};
     pmodel->addVertex(pv);
   }
-  fileBasepoints.close();
-
-  return 0;
 }
+
+
+
 
 PDCELVertex *readXMLElementPoint(
   const xml_node<> *p_xn_point, const xml_node<> *p_xn_geo,
@@ -73,13 +51,11 @@ PDCELVertex *readXMLElementPoint(
 
   MESSAGE_SCOPE(g_msg);
 
-  // double tol = 1e-6;
-  
-  PDCELVertex *pv;
+  PDCELVertex *pv = nullptr;
 
   std::string label{requireAttr(p_xn_point, "name", "<point>")->value()};
 
-    PLOG(debug) << "reading point: " + label;
+  PLOG(debug) << "reading point: " + label;
 
   std::string s_constraint{"none"};
   xml_attribute<> *p_xa_constraint{p_xn_point->first_attribute("constraint")};
@@ -104,7 +80,15 @@ PDCELVertex *readXMLElementPoint(
       by = p_xn_point->first_attribute("by")->value();
     }
 
-    double loc = atof(p_xn_point->value());
+    double loc;
+    try {
+      loc = std::stod(p_xn_point->value());
+    } catch (const std::exception &) {
+      throw std::runtime_error(
+        "point '" + label + "': invalid location value '"
+        + std::string(p_xn_point->value()) + "'"
+      );
+    }
 
     std::vector<PDCELVertex *> p_bsl_vertices;
     p_bsl_vertices = p_bsl->vertices();
@@ -114,7 +98,9 @@ PDCELVertex *readXMLElementPoint(
 
     // The number is the non-dimensional curvlinear location
     if (by == "curve") {
-      // TODO:
+      throw std::runtime_error(
+        "point '" + label + "': by='curve' is not implemented"
+      );
     }
 
     // The number is the x2 (y) location
@@ -126,18 +112,13 @@ PDCELVertex *readXMLElementPoint(
         s_which = p_xa_which->value();
       }
 
-      // PDCELVertex *_pv_tmp;
-      bool _is_new = false, _is_new_tmp = false, found = false;
+      bool is_new = false, is_new_tmp = false, found = false;
       int count{0};
-      double _z = 0.0, _z_tmp = 0.0;
-      int _id = 0, _id_tmp = 0;
+      double z = 0.0, z_tmp = 0.0;
+      int id = 0, id_tmp = 0;
 
       // Linear interpolation
       for (int i = 0; i < static_cast<int>(p_bsl_vertices.size()) - 1; i++) {
-
-                // PLOG(debug) << "checking segment: " + std::to_string(i);
-                // PLOG(debug) << "segment: " + std::to_string(p_bsl_vertices[i]->y()) + " to " + std::to_string(p_bsl_vertices[i+1]->y());
-                // PLOG(debug) << "loc: " + std::to_string(loc);
 
         if (
           (p_bsl_vertices[i]->y() <= loc && loc <= p_bsl_vertices[i+1]->y()) ||
@@ -146,77 +127,76 @@ PDCELVertex *readXMLElementPoint(
           found = true;
           count++;
 
-          // Find the new point
-
           // The point is close to the starting point of the segment
           if (fabs(loc - p_bsl_vertices[i]->y()) < TOLERANCE) {
-                        PLOG(debug) << "found point close to the starting point of the segment";
-            // _pv_tmp->setLinkToVertex(p_bsl_vertices[i]);
-            // break;
-            _z_tmp = p_bsl_vertices[i]->z();
-            _id_tmp = i;
-            _is_new_tmp = false;
+            PLOG(debug) << "found point close to the starting point of the segment";
+            z_tmp = p_bsl_vertices[i]->z();
+            id_tmp = i;
+            is_new_tmp = false;
           }
 
           // The point is close to the ending point of the segment
           else if (fabs(loc - p_bsl_vertices[i+1]->y()) < TOLERANCE) {
-                        PLOG(debug) << "found point close to the ending point of the segment";
-            // _pv_tmp->setLinkToVertex(p_bsl_vertices[i+1]);
-            // break;
-            _z_tmp = p_bsl_vertices[i+1]->z();
-            _id_tmp = i+1;
-            _is_new_tmp = false;
+            PLOG(debug) << "found point close to the ending point of the segment";
+            z_tmp = p_bsl_vertices[i+1]->z();
+            id_tmp = i+1;
+            is_new_tmp = false;
           }
 
           // The point is in the middle of the segment
           else {
-                        PLOG(debug) << "found point in the middle of the segment";
+            PLOG(debug) << "found point in the middle of the segment";
             double dy, dz;
             dy = p_bsl_vertices[i+1]->y() - p_bsl_vertices[i]->y();
             dz = p_bsl_vertices[i+1]->z() - p_bsl_vertices[i]->z();
-            _z_tmp = dz / dy * (loc - p_bsl_vertices[i]->y()) + p_bsl_vertices[i]->z();
-            // _pv_tmp->setPosition(0, loc, loc2);
-            _id_tmp = i+1;
-            _is_new_tmp = true;
+            z_tmp = dz / dy * (loc - p_bsl_vertices[i]->y()) + p_bsl_vertices[i]->z();
+            id_tmp = i+1;
+            is_new_tmp = true;
           }
 
-          // debug message
-                    PLOG(debug) << "_z_tmp = " + std::to_string(_z_tmp);
-                    PLOG(debug) << "_id_tmp = " + std::to_string(_id_tmp);
-                    PLOG(debug) << "_is_new_tmp = " + std::to_string(_is_new_tmp);
+          PLOG(debug) << "z_tmp = " + std::to_string(z_tmp);
+          PLOG(debug) << "id_tmp = " + std::to_string(id_tmp);
+          PLOG(debug) << "is_new_tmp = " + std::to_string(is_new_tmp);
 
-          // If found more than one point
+          // If found more than one point, keep the one matching 'which'
           if (count > 1) {
-            // Compare z
-            if (s_which == "top" && _z_tmp > _z || s_which == "bottom" && _z_tmp < _z) {
-              _z = _z_tmp;
-              _id = _id_tmp;
-              _is_new = _is_new_tmp;
+            if ((s_which == "top" && z_tmp > z) || (s_which == "bottom" && z_tmp < z)) {
+              z = z_tmp;
+              id = id_tmp;
+              is_new = is_new_tmp;
             }
           }
           else {
-            _z = _z_tmp;
-            _id = _id_tmp;
-            _is_new = _is_new_tmp;
+            z = z_tmp;
+            id = id_tmp;
+            is_new = is_new_tmp;
           }
         }
       }
 
       if (found) {
-        if (_is_new) {
-          pv->setPosition(0, loc, _z);
+        if (is_new) {
+          pv->setPosition(0, loc, z);
           // Insert the new point into the line
-          p_bsl->insertPVertex(_id, pv);
+          p_bsl->insertPVertex(id, pv);
         }
         else {
-          pmodel->vertexData(pv).link_to = p_bsl_vertices[_id];
+          pmodel->vertexData(pv).link_to = p_bsl_vertices[id];
         }
+      }
+      else {
+        throw std::runtime_error(
+          "point '" + label + "': x2=" + std::to_string(loc)
+          + " not found on baseline '" + bsl_name + "'"
+        );
       }
     }
 
     // The number is the x3 (z) location
     else if (by == "x3" || by == "z") {
-      // TODO:
+      throw std::runtime_error(
+        "point '" + label + "': by='x3'/'z' is not implemented"
+      );
     }
 
   }
@@ -244,6 +224,9 @@ PDCELVertex *readXMLElementPoint(
   return pv;
 }
 
+
+
+
 PDCELVertex *findPointByName(
   const std::string &name, const xml_node<> *p_xn_geo, PModel *pmodel
   ) {
@@ -264,6 +247,7 @@ PDCELVertex *findPointByName(
     // Also consider points in <basepoints> (deprecated, will be removed)
     xml_node<> *p_xn_basepoints = p_xn_geo->first_node("basepoints");
     if (p_xn_basepoints) {
+      PLOG(warning) << "<basepoints> is deprecated; move points to <geo> directly";
       for (auto p_xn_bpp = p_xn_basepoints->first_node("point"); p_xn_bpp;
           p_xn_bpp = p_xn_bpp->next_sibling("point")) {
         if (requireAttr(p_xn_bpp, "name", "<point>")->value() == name) {

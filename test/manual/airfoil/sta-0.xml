@@ -1,0 +1,133 @@
+<cross_section name="tx-100-st0" format="1">
+
+  <!--
+    Unit system: SI
+      length:   m
+      mass:     kg
+      density:  kg/m^3
+      pressure: Pa
+  -->
+
+  <include>
+    <material>materials</material>
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <scale>0.387</scale>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <!--
+        direction="-1": data is CW — starts at TE, goes along HP (bottom, y<0) to LE,
+        then along LP (top, y>0) back to TE.
+        header="2": skip the two XML tag lines at the top of the NuMAD-format file.
+      -->
+      <points data="file" format="1" direction="-1">CXTX_0400_110.dat</points>
+      <!-- <flip>1</flip> -->
+      <reverse>1</reverse>
+    </line>
+
+    <!-- ============================================================
+         Delineation points from TX100_v1.0.json
+         NuMAD convention: negative coord = HP (bottom) surface,
+                           positive coord = LP (top) surface.
+         PreVABS x2 = 1 - |NuMAD_coord|  (0 at TE, 1 at LE)
+    ============================================================ -->
+
+    <!-- HP (bottom) surface: TE → LE, x2 increasing -->
+    <!-- <point name="p1" on="ln_af" by="x2" which="bottom">0.000000</point> -->
+    <point name="p2" on="ln_af" by="x2" which="bottom">0.030000</point> <!-- NuMAD -0.97 -->
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.400000</point> <!-- NuMAD -0.6 -->
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.980000</point> <!-- NuMAD -0.02 -->
+
+    <!-- LP (top) surface: LE → TE, x2 decreasing -->
+    <!-- <point name="p5" on="ln_af" by="x2" which="top">0.000000</point> -->
+    <point name="p6" on="ln_af" by="x2" which="top">0.030000</point> <!-- NuMAD 0.97 -->
+    <point name="p7" on="ln_af" by="x2" which="top">0.300000</point> <!-- NuMAD 0.7 -->
+    <point name="p8" on="ln_af" by="x2" which="top">0.980000</point> <!-- NuMAD 0.02 -->
+
+    <!-- HP sub-line baselines (TE → LE along bottom surface) -->
+    <line name="l_hp1"><points>ple:p2</points></line>
+    <line name="l_hp2"><points>p2:p3</points></line>
+    <line name="l_hp3"><points>p3:p4</points></line>
+
+    <!-- LE -->
+    <line name="l_lp4"><points>p4:p8</points></line>
+
+    <!-- LP sub-line baselines (LE → TE along top surface) -->
+    <line name="l_lp5"><points>p8:p7</points></line>
+    <line name="l_lp6"><points>p7:p6</points></line>
+    <line name="l_lp7"><points>p6:ple</points></line>
+
+  </baselines>
+
+  <layups>
+    <layup name="TX_Root_238" method="layer list">
+        <layer lamina="Gel_Coat">0</layer>
+        <layer lamina="075oz_Mat">0</layer>
+        <layer lamina="DBM1708_1">0</layer>
+        <layer lamina="C520_2">0</layer>
+        <layer lamina="C260_1">0</layer>
+        <layer lamina="DBM1208_2">0</layer>
+        <layer lamina="C260_2">0</layer>
+        <layer lamina="C520_3">0</layer>
+        <layer lamina="DBM1208_2">0</layer>
+        <layer lamina="C520_5">0</layer>
+        <layer lamina="DBM1208_2">0</layer>
+        <layer lamina="C520_4">0</layer>
+        <layer lamina="DBM1708_1">0</layer>
+    </layup>
+  </layups>
+
+  <!--
+    Single skin component covering the full airfoil surface.
+    direction="left" (default) grows each laminate toward the airfoil interior:
+      HP surface traversal goes TE→LE (+x2), "left" = +x3 = inward ✓
+      LP surface traversal goes LE→TE (-x2), "left" = -x3 = inward ✓
+  -->
+  <component name="skin">
+
+    <!-- HP surface segments -->
+    <segments>
+      <baseline>l_hp1</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+    <segments>
+      <baseline>l_hp2</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+    <segments>
+      <baseline>l_hp3</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+
+    <segments>
+      <baseline>l_lp4</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+
+    <!-- LP surface segments -->
+    <segments>
+      <baseline>l_lp5</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+    <segments>
+      <baseline>l_lp6</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+    <segments>
+      <baseline>l_lp7</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+
+  </component>
+
+</cross_section>
