@@ -342,12 +342,10 @@ void PModel::homogenize() {
     }
   }
   catch (std::exception &exception) {
-    g_msg->error(exception.what());
-    return;
+    throw std::runtime_error(
+      std::string("homogenization failed: ") + exception.what()
+    );
   }
-
-
-  return;
 }
 
 

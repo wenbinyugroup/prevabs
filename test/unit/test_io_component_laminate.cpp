@@ -82,6 +82,38 @@ int readLaminateComponentXml(
   );
 }
 
+// Variant that passes a non-empty depend_names to reach the split_by code path.
+int readLaminateComponentXmlDependent(
+  const std::string &xml,
+  PComponent &component,
+  PModel &model,
+  CrossSection &cross_section,
+  const std::vector<std::string> &depend_names_in
+) {
+  Message message;
+  g_msg = &message;
+
+  std::vector<char> buffer;
+  rapidxml::xml_document<> doc;
+  parseXmlDocument(xml, buffer, doc);
+
+  std::vector<std::vector<std::string>> dependents_all;
+  std::vector<std::string> depend_names{depend_names_in};
+  std::vector<Layup *> layups;
+  int num_combined_layups = 0;
+
+  return readXMLElementComponentLaminate(
+    &component,
+    doc.first_node("component"),
+    dependents_all,
+    depend_names,
+    layups,
+    num_combined_layups,
+    &cross_section,
+    &model
+  );
+}
+
 std::vector<std::string> getSegmentNames(PComponent &component) {
   std::vector<std::string> names;
   const std::vector<Segment *> segments = component.segments();
@@ -266,4 +298,68 @@ TEST_CASE("readXMLElementComponentLaminate: <segments name> becomes stable prefi
 
   CHECK(getSegmentNames(component)
         == std::vector<std::string>{"skin_1", "skin_2"});
+}
+
+// ---------------------------------------------------------------------------
+// split_by error paths (reached only when a dependent component exists)
+// ---------------------------------------------------------------------------
+
+TEST_CASE("readXMLElementComponentLaminate: unknown <split by=...> throws",
+          "[io][error][component][laminate]") {
+  CrossSection::used_material_index = 0;
+  CrossSection::used_layertype_index = 0;
+  Segment::count_tmp = 0;
+
+  PModel model;
+  makeStraightBaseline(model, "bsl");
+  makeSingleLayerLayup(model, "lay1");
+
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readLaminateComponentXmlDependent(
+      "<component name=\"comp1\">"
+        "<segment name=\"seg_a\">"
+          "<baseline>bsl</baseline>"
+          "<layup>lay1</layup>"
+          "<split by=\"pixel\">0.5</split>"
+        "</segment>"
+      "</component>",
+      component, model, cross_section,
+      {"comp0"}
+    ),
+    Catch::Matchers::ContainsSubstring("pixel")
+      && Catch::Matchers::ContainsSubstring("seg_a")
+  );
+}
+
+TEST_CASE("readXMLElementComponentLaminate: <split by=name> with missing point throws",
+          "[io][error][component][laminate]") {
+  CrossSection::used_material_index = 0;
+  CrossSection::used_layertype_index = 0;
+  Segment::count_tmp = 0;
+
+  PModel model;
+  makeStraightBaseline(model, "bsl");
+  makeSingleLayerLayup(model, "lay1");
+
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readLaminateComponentXmlDependent(
+      "<component name=\"comp1\">"
+        "<segment name=\"seg_b\">"
+          "<baseline>bsl</baseline>"
+          "<layup>lay1</layup>"
+          "<split by=\"name\">ghost_pt</split>"
+        "</segment>"
+      "</component>",
+      component, model, cross_section,
+      {"comp0"}
+    ),
+    Catch::Matchers::ContainsSubstring("ghost_pt")
+      && Catch::Matchers::ContainsSubstring("seg_b")
+  );
 }

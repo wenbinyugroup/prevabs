@@ -50,6 +50,9 @@ set(TEST_DCEL_SOURCES
   test_io_component_laminate.cpp
   test_io_material.cpp
   test_io_p6_helpers.cpp
+  test_main_pipeline.cpp
+  test_io_baseline.cpp
+  test_io_basepoint.cpp
   ${SRC_GEO}/DCELSweepLine.cpp
   ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp

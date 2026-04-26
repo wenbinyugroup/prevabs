@@ -150,6 +150,12 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
       readLineTypeAirfoil(line, p_xn_line, p_xn_geo, pmodel, 1e-12);
     }
 
+    else {
+      throw std::runtime_error(
+        "baseline '" + baselineName + "': unknown type '" + baselineType + "'"
+      );
+    }
+
   }
 
   else if (method == "join") {
@@ -187,6 +193,14 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
       // Then for each substring, split it by colon ':'
       std::vector<std::string> vBeginEnd;
       vBeginEnd = splitString(s, ':');
+
+      if (vBeginEnd.size() > 2) {
+        throw std::runtime_error(
+          "baseline '" + line->getName()
+          + "': malformed point expression '" + s
+          + "' (too many ':' separators)"
+        );
+      }
 
       // A single point
       if (vBeginEnd.size() == 1) {
@@ -325,7 +339,12 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
     line->setRefVertex(pvMid);
   }
 
-  return;
+  else {
+    throw std::runtime_error(
+      "baseline '" + line->getName()
+      + "' (straight): missing definition — use <points> or <point>+<angle>"
+    );
+  }
 }
 
 void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
@@ -394,6 +413,13 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
         + "' in baseline '" + line->getName() + "'"
       );
     }
+  }
+
+  else {
+    throw std::runtime_error(
+      "baseline '" + line->getName()
+      + "' (circle): missing definition — use <center>+<radius> or <center>+<point>"
+    );
   }
 
   int direction = 1;
@@ -636,6 +662,14 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     arc = PGeoArc{pv_center, pv_start, angle, direction};
 
     pmodel->addVertex(arc.end());
+  }
+
+  else {
+    throw std::runtime_error(
+      "baseline '" + line->getName()
+      + "' (arc): unrecognized configuration"
+      " — provide <center>+<start>+<end>[+<angle>], or <start>+<end>+<radius>"
+    );
   }
 
   if (discreteBy == "number")

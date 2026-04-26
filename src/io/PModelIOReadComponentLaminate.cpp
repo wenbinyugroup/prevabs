@@ -189,9 +189,21 @@ int readXMLElementComponentLaminate(
 
         if (split_by == "name") {
           v_split = pmodel->getPointByName(p_xn_split->value());
+          if (!v_split) {
+            throw std::runtime_error(
+              "cannot find split point '" + std::string(p_xn_split->value())
+              + "' in segment '" + segmentName + "'"
+            );
+          }
         }
         else if (split_by == "id") {
           v_split = p_baseline->vertices()[atoi(p_xn_split->value()) - 1];
+        }
+        else {
+          throw std::runtime_error(
+            "<split by='" + split_by + "'> in segment '" + segmentName
+            + "': unrecognized 'by' value; use 'name' or 'id'"
+          );
         }
       }
 

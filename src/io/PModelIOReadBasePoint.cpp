@@ -199,6 +199,12 @@ PDCELVertex *readXMLElementPoint(
       );
     }
 
+    else {
+      throw std::runtime_error(
+        "point '" + label + "': unrecognized 'by' attribute value '" + by + "'"
+      );
+    }
+
   }
 
   // Point defined using explicit coordinates
@@ -211,11 +217,26 @@ PDCELVertex *readXMLElementPoint(
     } else if (s_constraint == "middle") {
       std::string pn1, pn2;
       ss >> pn1 >> pn2;
-      PDCELVertex *pv1, *pv2;
-      pv1 = pmodel->getPointByName(pn1);
-      pv2 = pmodel->getPointByName(pn2);
+      PDCELVertex *pv1 = pmodel->getPointByName(pn1);
+      if (!pv1) {
+        throw std::runtime_error(
+          "point '" + label
+          + "' (constraint=middle): cannot find reference point '" + pn1 + "'"
+        );
+      }
+      PDCELVertex *pv2 = pmodel->getPointByName(pn2);
+      if (!pv2) {
+        throw std::runtime_error(
+          "point '" + label
+          + "' (constraint=middle): cannot find reference point '" + pn2 + "'"
+        );
+      }
       x2 = (pv1->y() + pv2->y()) / 2;
       x3 = (pv1->z() + pv2->z()) / 2;
+    } else {
+      throw std::runtime_error(
+        "point '" + label + "': unrecognized constraint '" + s_constraint + "'"
+      );
     }
     pv = new PDCELVertex{label, 0, x2, x3};
 

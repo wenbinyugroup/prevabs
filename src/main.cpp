@@ -230,65 +230,75 @@ int main(int argc, char **argv) {
   g_msg = pmessage.get();
 
   auto start_s = std::chrono::steady_clock::now();
-
   pmessage->printTitle();
 
   auto pmodel_uptr = std::make_unique<PModel>(config.file_base_name);
-  pmodel_uptr->initialize();
+  bool initialized = false;
 
-  std::string s_dt_start = getCurrentDateTimeString();
-  PLOG(info) << pmessage->message("prevabs start (" + s_dt_start + ")");
+  // Single catch-all: any unhandled exception in any pipeline stage is
+  // reported here before cleanup, preventing silent exit or second-crash
+  // from downstream stages using a partially-built model.
+  try {
+    pmodel_uptr->initialize();
+    initialized = true;
 
+    std::string s_dt_start = getCurrentDateTimeString();
+    PLOG(info) << pmessage->message("prevabs start (" + s_dt_start + ")");
 
-  if (config.isHomo()) {
-
-    pmodel_uptr->homogenize();
-
-  } else if (config.isRecovery()) {
-    try {
+    if (config.isHomo()) {
+      pmodel_uptr->homogenize();
+    } else if (config.isRecovery()) {
       pmessage->printBlank();
       pmodel_uptr->dehomogenize();
       pmessage->printBlank();
     }
-    catch (std::exception &exception) {
-      pmessage->print(2, exception.what());
-      return 1;
+
+    if (config.execute) {
+      pmodel_uptr->run();
     }
+
+    if (config.plot) {
+      pmodel_uptr->plot();
+    }
+
+    pmodel_uptr->finalize();
+    initialized = false;
+
+    std::string s_dt_finish = getCurrentDateTimeString();
+    auto stop_s = std::chrono::steady_clock::now();
+    double tt = std::chrono::duration<double>(stop_s - start_s).count();
+    std::ostringstream ss;
+    ss << "total running time: " << tt << " sec";
+
+    pmessage->printBlank();
+    pmessage->printDivider(40, '=');
+    pmessage->printBlank();
+    PLOG(info) << pmessage->message("prevabs finished (" + s_dt_finish + ")");
+    PLOG(info) << ss.str();
+    pmessage->printBlank();
+    pmessage->printDivider(40, '=');
+    pmessage->printBlank();
+    pmessage->closeFile();
+    return 0;
   }
-
-
-  // =========
-  // EXECUTION
-  // =========
-
-  if (config.execute) {
-    pmodel_uptr->run();
+  catch (const std::exception &e) {
+    const std::string msg = e.what();
+    if (g_msg) { g_msg->error(msg); }
+    PLOG(error) << msg;
+    if (initialized) {
+      try { pmodel_uptr->finalize(); } catch (...) {}
+    }
+    pmessage->closeFile();
+    return 1;
   }
-
-  if (config.plot) {
-    pmodel_uptr->plot();
+  catch (...) {
+    const std::string msg = "unknown fatal error";
+    if (g_msg) { g_msg->error(msg); }
+    PLOG(error) << msg;
+    if (initialized) {
+      try { pmodel_uptr->finalize(); } catch (...) {}
+    }
+    pmessage->closeFile();
+    return 1;
   }
-
-  pmodel_uptr->finalize();
-
-
-  std::string s_dt_finish = getCurrentDateTimeString();
-
-  auto stop_s = std::chrono::steady_clock::now();
-  double tt = std::chrono::duration<double>(stop_s - start_s).count();
-  std::ostringstream ss;
-  ss << "total running time: " << tt << " sec";
-
-  pmessage->printBlank();
-  pmessage->printDivider(40, '=');
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("prevabs finished (" + s_dt_finish + ")");
-  PLOG(info) << ss.str();
-  pmessage->printBlank();
-  pmessage->printDivider(40, '=');
-  pmessage->printBlank();
-
-  pmessage->closeFile();
-
-  return 0;
 }
