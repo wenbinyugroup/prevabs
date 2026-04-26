@@ -3,6 +3,8 @@
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+#include <chrono>
 #include <sstream>
 #include <vector>
 #include <memory>
@@ -99,7 +101,16 @@ void initLog() {
       "prevabs", sinks.begin(), sinks.end());
 
   logger->set_level(toSpdlogLevel(config.app.log_level));
-  logger->flush_on(spdlog::level::trace);
+  // Flush immediately on warn/error so critical messages are never lost.
+  // Below-warn levels (debug/trace) are buffered and flushed periodically
+  // to prevent per-entry disk IO from dominating long traversals.
+  logger->flush_on(spdlog::level::warn);
 
   spdlog::register_logger(logger);
+
+  // In debug mode, flush at most once per second so debug/trace messages
+  // still land on disk quickly without triggering a flush on every entry.
+  if (config.app.log_level <= LOG_LEVEL_DEBUG) {
+    spdlog::flush_every(std::chrono::seconds(1));
+  }
 }

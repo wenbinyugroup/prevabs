@@ -5,6 +5,9 @@
 // Global variables normally defined in src/main.cpp are provided here.
 
 #include "catch_amalgamated.hpp"
+#include <spdlog/sinks/base_sink.h>
+#include <mutex>
+#include <vector>
 
 // ------------------------------------------------------------------
 // Global variable definitions (normally in src/main.cpp).
@@ -1164,4 +1167,59 @@ TEST_CASE("PDCELFace::getOuterHalfEdgeWithSource throws on broken cycle",
   CHECK_THROWS_WITH(
       face.getOuterHalfEdgeWithSource(&vtarget),
       ContainsSubstring("DCEL loop walk exceeded"));
+}
+
+// ==================================================================
+// Debug-log frequency limit — walkLoopWithLimit emits at most one
+// PLOG(debug) per kDCELDebugLogInterval steps.
+// ==================================================================
+
+// Sink that counts debug-level messages received.
+struct CountingDebugSink : public spdlog::sinks::base_sink<std::mutex> {
+  size_t debug_count = 0;
+protected:
+  void sink_it_(const spdlog::details::log_msg &msg) override {
+    if (msg.level == spdlog::level::debug) ++debug_count;
+  }
+  void flush_() override {}
+};
+
+TEST_CASE("walkLoopWithLimit: debug logs bounded by kDCELDebugLogInterval",
+          "[dcel][error]") {
+  // Install a debug-level counting logger, replacing the default warn logger.
+  auto sink = std::make_shared<CountingDebugSink>();
+  spdlog::drop("prevabs");
+  {
+    auto logger = std::make_shared<spdlog::logger>("prevabs", sink);
+    logger->set_level(spdlog::level::debug);
+    spdlog::register_logger(logger);
+  }
+
+  // Build a 300-step closed cycle.
+  const int N = 300;
+  PDCELVertex v;
+  std::vector<PDCELHalfEdge> chain(N), twins(N);
+  for (int i = 0; i < N; ++i) {
+    chain[i].setSource(&v);
+    twins[i].setSource(&v);
+    chain[i].setTwin(&twins[i]);
+    twins[i].setTwin(&chain[i]);
+    chain[i].setNext(&chain[(i + 1) % N]);
+  }
+
+  walkLoopWithLimit(&chain[0], [](PDCELHalfEdge *) {});
+
+  // Restore the warn-level logger used by all other tests.
+  spdlog::drop("prevabs");
+  {
+    auto orig_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto logger = std::make_shared<spdlog::logger>("prevabs", orig_sink);
+    logger->set_level(spdlog::level::warn);
+    spdlog::register_logger(logger);
+  }
+
+  // Expected: ceil(N / kDCELDebugLogInterval) log calls, not one per step.
+  size_t max_expected = static_cast<size_t>(N / kDCELDebugLogInterval + 1);
+  CHECK(sink->debug_count <= max_expected);
+  CHECK(sink->debug_count < static_cast<size_t>(N));
 }

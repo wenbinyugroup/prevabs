@@ -4,12 +4,17 @@
 // never returns to the start half-edge.
 
 #include "PDCELHalfEdge.hpp"
+#include "plog.hpp"
 #include <stdexcept>
 #include <string>
 
 // Hard cap for DCEL half-edge loop traversals.  Large enough for any normal
 // cross-section mesh; tight enough to terminate quickly on a broken cycle.
 static const int kDCELLoopHardCap = 65536;
+
+// Emit at most one PLOG(debug) per this many iterations to prevent log bloat
+// during long (but valid) traversals in debug mode.
+static const int kDCELDebugLogInterval = 128;
 
 // Traverse do { op(he); he = he->next(); } while (he != start) safely.
 // Throws std::runtime_error containing "DCEL loop walk exceeded" if more
@@ -25,6 +30,10 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
       throw std::runtime_error(
           std::string("DCEL loop walk exceeded ") + std::to_string(max_iter) +
           " iterations starting at " + start->printString());
+    }
+    // Rate-limited: one debug log per kDCELDebugLogInterval steps.
+    if (iter % kDCELDebugLogInterval == 0) {
+      PLOG(debug) << "walkLoopWithLimit: step " << iter;
     }
     ++iter;
     op(he);
