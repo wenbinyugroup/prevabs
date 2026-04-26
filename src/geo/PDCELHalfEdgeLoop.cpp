@@ -1,6 +1,7 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "plog.hpp"
 
@@ -28,14 +29,10 @@ void PDCELHalfEdgeLoop::log() {
   // }
   PLOG(debug) << "face: " << (_face ? "(face)" : "nullptr");
 
-  PDCELHalfEdge *he = _incident_edge;
-  // std::cout << "half edges:" << std::endl;
   PLOG(debug) << "half edges:";
-  do {
-    // he->print2();
+  walkLoopWithLimit(_incident_edge, [](PDCELHalfEdge *he) {
     PLOG(debug) << he->printString();
-    he = he->next();
-  } while (he != _incident_edge);
+  });
 }
 
 
@@ -61,12 +58,10 @@ void PDCELHalfEdgeLoop::print() {
     std::cout << "nullptr" << std::endl;
   }
 
-  PDCELHalfEdge *he = _incident_edge;
   std::cout << "half edges:" << std::endl;
-  do {
+  walkLoopWithLimit(_incident_edge, [](PDCELHalfEdge *he) {
     he->print2();
-    he = he->next();
-  } while (he != _incident_edge);
+  });
 
   std::cout << std::endl;
 }

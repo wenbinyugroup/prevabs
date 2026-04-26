@@ -28,6 +28,8 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
 #include "PGeoClasses.hpp"
 #include "globalVariables.hpp"
 
+#include "PDCELUtils.hpp"
+
 #include <memory>
 #include <set>
 #include <unordered_map>

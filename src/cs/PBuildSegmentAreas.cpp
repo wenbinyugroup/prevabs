@@ -20,6 +20,7 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -145,7 +146,14 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
   }
 
   g_msg->increaseIndent();
+  int _iter = 0;
   do {
+    if (++_iter > 65536) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded 65536 iterations"
+          " in findLayerIntersectionOnFace at " +
+          he_base->printString());
+    }
         PLOG(debug) << "";
         PLOG(debug) << "he_tmp: " + he_tmp->printString();
 

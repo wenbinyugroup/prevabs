@@ -47,6 +47,7 @@ struct LoggerSetup {
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "PBaseLine.hpp"
 #include "PComponent.hpp"
@@ -1096,4 +1097,71 @@ TEST_CASE("addHalfEdgeLoop: loop is created and incident edge set",
   CHECK(he12->loop() == hel);
   CHECK(he23->loop() == hel);
   CHECK(he31->loop() == hel);
+}
+
+// ==================================================================
+// Loop guard tests — walkLoopWithLimit and inline DCEL guards
+// ==================================================================
+
+// Helper: build a minimal 3-half-edge closed cycle with twins so that
+// printString() is safe.  Returns the three forward half-edges.
+static void makeClosedTriangle(
+    PDCELVertex &v,
+    PDCELHalfEdge &he0, PDCELHalfEdge &he1, PDCELHalfEdge &he2,
+    PDCELHalfEdge &t0,  PDCELHalfEdge &t1,  PDCELHalfEdge &t2)
+{
+  // All sources and twin-sources point to the same dummy vertex — enough for
+  // printString() to not dereference nullptr.
+  he0.setSource(&v); t0.setSource(&v); he0.setTwin(&t0); t0.setTwin(&he0);
+  he1.setSource(&v); t1.setSource(&v); he1.setTwin(&t1); t1.setTwin(&he1);
+  he2.setSource(&v); t2.setSource(&v); he2.setTwin(&t2); t2.setTwin(&he2);
+  // Closed cycle: he0 -> he1 -> he2 -> he0
+  he0.setNext(&he1); he1.setNext(&he2); he2.setNext(&he0);
+}
+
+TEST_CASE("walkLoopWithLimit: valid 3-edge cycle visits all edges", "[dcel][error]") {
+  PDCELVertex v;
+  PDCELHalfEdge he0, he1, he2, t0, t1, t2;
+  makeClosedTriangle(v, he0, he1, he2, t0, t1, t2);
+
+  int count = 0;
+  walkLoopWithLimit(&he0, [&count](PDCELHalfEdge *) { ++count; });
+  REQUIRE(count == 3);
+}
+
+TEST_CASE("walkLoopWithLimit: broken cycle (revisits middle) throws", "[dcel][error]") {
+  using Catch::Matchers::ContainsSubstring;
+
+  PDCELVertex v;
+  PDCELHalfEdge he0, he1, he2, t0, t1, t2;
+  // Set up sources and twins so printString() is safe.
+  he0.setSource(&v); t0.setSource(&v); he0.setTwin(&t0); t0.setTwin(&he0);
+  he1.setSource(&v); t1.setSource(&v); he1.setTwin(&t1); t1.setTwin(&he1);
+  he2.setSource(&v); t2.setSource(&v); he2.setTwin(&t2); t2.setTwin(&he2);
+  // Broken cycle: he0 -> he1 -> he2 -> he1 (never returns to he0).
+  he0.setNext(&he1); he1.setNext(&he2); he2.setNext(&he1);
+
+  // Use a small limit so the test completes quickly.
+  CHECK_THROWS_WITH(
+      walkLoopWithLimit(&he0, [](PDCELHalfEdge *) {}, 10),
+      ContainsSubstring("DCEL loop walk exceeded"));
+}
+
+TEST_CASE("PDCELFace::getOuterHalfEdgeWithSource throws on broken cycle",
+          "[dcel][error]") {
+  using Catch::Matchers::ContainsSubstring;
+
+  PDCELVertex v, vtarget;
+  PDCELHalfEdge he0, he1, he2, t0, t1, t2;
+  he0.setSource(&v); t0.setSource(&v); he0.setTwin(&t0); t0.setTwin(&he0);
+  he1.setSource(&v); t1.setSource(&v); he1.setTwin(&t1); t1.setTwin(&he1);
+  he2.setSource(&v); t2.setSource(&v); he2.setTwin(&t2); t2.setTwin(&he2);
+  // Broken cycle: he0 -> he1 -> he2 -> he1 (never returns to he0).
+  he0.setNext(&he1); he1.setNext(&he2); he2.setNext(&he1);
+
+  PDCELFace face(&he0);
+  // vtarget is not in the chain, so the loop would run until the guard fires.
+  CHECK_THROWS_WITH(
+      face.getOuterHalfEdgeWithSource(&vtarget),
+      ContainsSubstring("DCEL loop walk exceeded"));
 }

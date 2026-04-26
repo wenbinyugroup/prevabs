@@ -1,6 +1,7 @@
 #include "PDCELVertex.hpp"
 
 #include "PDCELHalfEdge.hpp"
+#include "PDCELUtils.hpp"
 #include "globalConstants.hpp"
 #include "utilities.hpp"
 
@@ -54,9 +55,15 @@ bool operator>=(PDCELVertex &v1, PDCELVertex &v2) {
 
 void PDCELVertex::printAllLeavingHalfEdges(const int &direction) {
   PDCELHalfEdge *he = _incident_edge;
+  int _iter = 0;
   do {
     if (he == nullptr) {
       break;
+    }
+    if (++_iter > kDCELLoopHardCap) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+          " iterations in printAllLeavingHalfEdges at " + printString());
     }
     he->print2();
     if (direction > 0) {

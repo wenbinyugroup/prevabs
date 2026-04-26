@@ -613,10 +613,7 @@ PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
 void PDCEL::removeHalfEdgeLoop(PDCELHalfEdgeLoop *hel) {
   PDCELHalfEdge *he = hel->incidentEdge();
   if (he != nullptr) {
-    do {
-      he->resetLoop();
-      he = he->next();
-    } while (he != hel->incidentEdge());
+    walkLoopWithLimit(he, [](PDCELHalfEdge *h) { h->resetLoop(); });
   }
 
   _halfedge_loops.remove(hel);
@@ -747,7 +744,14 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
   PDCELVertex *v_tmp, *v1 = nullptr, *v2 = nullptr;
   std::list<PDCELVertex *> vlist1, vlist2;
 
+  int _iter = 0;
   do {
+    if (++_iter > kDCELLoopHardCap) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+          " iterations in findCurvesIntersection at " +
+          hel->incidentEdge()->printString());
+    }
     lsi = hei->toLineSegment();
 
     not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, TOLERANCE);
@@ -867,11 +871,9 @@ PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
   PDCELFace *fnew = new PDCELFace();
 
   fnew->setOuterComponent(hel->incidentEdge());
-  PDCELHalfEdge *hei = hel->incidentEdge();
-  do {
+  walkLoopWithLimit(hel->incidentEdge(), [fnew](PDCELHalfEdge *hei) {
     hei->setIncidentFace(fnew);
-    hei = hei->next();
-  } while (hei != hel->incidentEdge());
+  });
 
   _faces.push_back(fnew);
 
@@ -986,7 +988,14 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
   other_faces.unique();
   for (auto of : other_faces) {
     PDCELHalfEdge *out_he = of->outer(), *out_he_next;
+    int _iter = 0;
     do {
+      if (++_iter > kDCELLoopHardCap) {
+        throw std::runtime_error(
+            "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+            " iterations in addFace (other_faces) at " +
+            of->outer()->printString());
+      }
       out_he_next = out_he->next();
       if ((out_he->twin()->face() == fnew) &&
           (out_he_next->twin()->face() == f)) {
@@ -1091,7 +1100,13 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
       return;
     }
     hei = hei->prev()->twin();
+    int _iter = 0;
     do {
+      if (++_iter > kDCELLoopHardCap) {
+        throw std::runtime_error(
+            "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+            " iterations in updateEdgeNeighbors at vertex " + v->name());
+      }
       if (hei->angle() < cycle_list.back()->angle()) {
         list_num = 2;
       }

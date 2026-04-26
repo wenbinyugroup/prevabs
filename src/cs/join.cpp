@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <stdexcept>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -400,7 +401,12 @@ public:
         } else {
           // The offset curve was trimmed inward at the head; drop entries
           // whose offset index is below the new start and re-index.
+          int _iter_1 = 0;
           while (true) {
+            if (++_iter_1 > 4096) {
+              throw std::runtime_error(
+                  "adjustStyle1: loop exceeded 4096 iterations (end=0)");
+            }
             const int id_offset_tmp = _pairs.front().offset;
             if (id_offset_tmp > (ls_i - 1)) {
               break;
@@ -428,7 +434,12 @@ public:
         } else {
           // The offset curve was trimmed inward at the tail; pop entries
           // beyond the new end and append entries to reach all base vertices.
+          int _iter_2 = 0;
           while (true) {
+            if (++_iter_2 > 4096) {
+              throw std::runtime_error(
+                  "adjustStyle1: loop exceeded 4096 iterations (end=1)");
+            }
             const int id_offset_tmp = _pairs.back().offset;
             if (id_offset_tmp < ls_i) {
               break;
@@ -643,7 +654,12 @@ static bool findOffsetCurvesIntersection(
   ls1_out = nullptr;
   ls2_out = nullptr;
 
+  int _iter_scan = 0;
   while (true) {
+    if (++_iter_scan > 4096) {
+      throw std::runtime_error(
+          "findOffsetCurvesIntersection: loop exceeded 4096 iterations");
+    }
     ls1_out = nullptr;
     ls2_out = nullptr;
 

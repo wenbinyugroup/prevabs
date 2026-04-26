@@ -19,6 +19,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <utility>
@@ -274,8 +275,14 @@ void PModel::createGmshFaces() {
       // Add outer loop
             PLOG(debug) << "  adding outer loop";
       PDCELHalfEdge *he = f->outer();
+      int _iter_outer = 0;
       do {
-
+        if (++_iter_outer > 65536) {
+          throw std::runtime_error(
+              "DCEL loop walk exceeded 65536 iterations"
+              " in createGmshFaces (outer loop) at " +
+              f->outer()->printString());
+        }
         auto it_he = _gmsh_edge_tags.find(he);
         int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
         if (_tag == 0) {
@@ -299,7 +306,14 @@ void PModel::createGmshFaces() {
 
         _ge_tags.clear();
         he = hei;
+        int _iter_inner = 0;
         do {
+          if (++_iter_inner > 65536) {
+            throw std::runtime_error(
+                "DCEL loop walk exceeded 65536 iterations"
+                " in createGmshFaces (inner loop) at " +
+                hei->printString());
+          }
           auto it_he = _gmsh_edge_tags.find(he);
           int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
           if (_tag == 0) {

@@ -4,6 +4,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 #include <sstream>
+#include <stdexcept>
 #include <string>
 // Route homog2d warnings to the prevabs debug logger instead of stderr.
 // Must be defined before homog2d.hpp is processed.
@@ -374,7 +375,14 @@ PDCELHalfEdge *findCurveLoopIntersection(
   }
 
   // Iterate through all line segments of the half edge loop
+  int _iter = 0;
   do {
+    if (++_iter > 65536) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded 65536 iterations"
+          " in findCurveLoopIntersection at " +
+          hel->incidentEdge()->printString());
+    }
         PLOG(debug) << "----------";
 
     tmp_ls.clear();

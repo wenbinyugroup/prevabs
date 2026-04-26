@@ -96,8 +96,8 @@
     <material>balsa</material>
     <thickness>0.003125</thickness>
   </lamina>
-  <lamina name="la_foam">
+  <!-- <lamina name="la_foam">
     <material>foam</material>
     <thickness></thickness>
-  </lamina>
+  </lamina> -->
 </materials>

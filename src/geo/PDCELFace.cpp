@@ -3,6 +3,7 @@
 #include "Material.hpp"
 #include "PArea.hpp"
 #include "PDCELHalfEdge.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "plog.hpp"
 #include "utilities.hpp"
@@ -52,19 +53,15 @@ void PDCELFace::print() {
     PLOG(debug) << "unbounded face.";
   } else {
     PLOG(debug) << "outer boundary: ";
-    he = _outer;
-    do {
+    walkLoopWithLimit(_outer, [](PDCELHalfEdge *he) {
       PLOG(debug) << he->printString();
-      he = he->next();
-    } while (he != _outer);
+    });
 
     for (auto _inner : _inners) {
       PLOG(debug) << "inner boundary: ";
-      he = _inner;
-      do {
+      walkLoopWithLimit(_inner, [](PDCELHalfEdge *he) {
         PLOG(debug) << he->printString();
-        he = he->next();
-      } while (he != _inner);
+      });
     }
   }
 
@@ -77,7 +74,14 @@ void PDCELFace::print() {
 
 PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithSource(PDCELVertex *v) {
   PDCELHalfEdge *he = _outer;
+  int _iter = 0;
   do {
+    if (++_iter > kDCELLoopHardCap) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+          " iterations in getOuterHalfEdgeWithSource at " +
+          _outer->printString());
+    }
     if (he->source() == v) {
       return he;
     }
@@ -89,7 +93,14 @@ PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithSource(PDCELVertex *v) {
 
 PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithTarget(PDCELVertex *v) {
   PDCELHalfEdge *he = _outer;
+  int _iter = 0;
   do {
+    if (++_iter > kDCELLoopHardCap) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+          " iterations in getOuterHalfEdgeWithTarget at " +
+          _outer->printString());
+    }
     if (he->source() == v) {
       return he->prev();
     }
@@ -102,7 +113,14 @@ PDCELHalfEdge *PDCELFace::getOuterHalfEdgeWithTarget(PDCELVertex *v) {
 PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithSource(PDCELVertex *v) {
   for (auto inner : _inners) {
     PDCELHalfEdge *he = inner;
+    int _iter = 0;
     do {
+      if (++_iter > kDCELLoopHardCap) {
+        throw std::runtime_error(
+            "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+            " iterations in getInnerHalfEdgeWithSource at " +
+            inner->printString());
+      }
       if (he->source() == v) {
         return he;
       }
@@ -116,7 +134,14 @@ PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithSource(PDCELVertex *v) {
 PDCELHalfEdge *PDCELFace::getInnerHalfEdgeWithTarget(PDCELVertex *v) {
   for (auto inner : _inners) {
     PDCELHalfEdge *he = inner;
+    int _iter = 0;
     do {
+      if (++_iter > kDCELLoopHardCap) {
+        throw std::runtime_error(
+            "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+            " iterations in getInnerHalfEdgeWithTarget at " +
+            inner->printString());
+      }
       if (he->source() == v) {
         return he->prev();
       }
