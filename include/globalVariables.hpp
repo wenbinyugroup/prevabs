@@ -29,6 +29,9 @@ struct AppConfig {
   double geo_tol        = 1e-9;           // geometric edge-length tolerance
   int    log_level      = LOG_LEVEL_INFO;  // 0=trace…5=fatal (globalConstants.hpp)
   int    gmsh_verbosity = 2;              // 0=silent,1=errors,2=warnings,3=info,5=debug
+  // External solver timeout in seconds. 0 = no timeout (default).
+  // Set via prevabs.json to enable; CLI is unchanged.
+  int    solver_timeout_s = 0;
 };
 
 // ---------------------------------------------------------------------------

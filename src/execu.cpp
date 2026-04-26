@@ -1,4 +1,5 @@
 #include "execu.hpp"
+#include "execu_utils.hpp"
 #include "plog.hpp"
 #include "PModel.hpp"
 #include "utilities.hpp"
@@ -103,11 +104,12 @@ static void runCmd(
 
   if (!foundExt) {
     DWORD err = GetLastError();
-    std::cerr << "ERROR: Cannot find executable '" << cmd_name
-              << "' in PATH (tried .exe, .bat, .cmd).\n"
-              << "  Make sure it is installed and its directory is on PATH.\n"
-              << "  System error " << err << ": " << winErrorStr(err) << "\n"
-              << "  Command: " << display << std::endl;
+    std::string msg = "cannot find executable '" + cmd_name +
+      "' in PATH (tried .exe, .bat, .cmd). System error " +
+      std::to_string(err) + ": " + winErrorStr(err) +
+      ". Command: " + display;
+    std::cerr << "ERROR: " << msg << std::endl;
+    PLOG(error) << msg;
     return;
   }
 
@@ -165,13 +167,30 @@ static void runCmd(
 
   if (!ok) {
     DWORD err = GetLastError();
-    std::cerr << "ERROR: Failed to launch '" << std::string(exeFullPath) << "'.\n"
-              << "  Command: " << display << "\n"
-              << "  System error " << err << ": " << winErrorStr(err) << std::endl;
+    std::string msg = "failed to launch '" + std::string(exeFullPath) +
+      "'. Command: " + display +
+      ". System error " + std::to_string(err) + ": " + winErrorStr(err);
+    std::cerr << "ERROR: " << msg << std::endl;
+    PLOG(error) << msg;
     return;
   }
 
-  WaitForSingleObject(pi.hProcess, INFINITE);
+  // Wait with optional timeout (0 = no timeout).
+  int timeout_s = config.app.solver_timeout_s;
+  DWORD wait_ms = (timeout_s > 0) ? static_cast<DWORD>(timeout_s) * 1000 : INFINITE;
+  WaitResult wr = waitWithTimeout(pi.hProcess, wait_ms);
+
+  if (wr == WaitResult::TimedOut) {
+    TerminateProcess(pi.hProcess, 1);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    std::string msg = "solver timed out after " + std::to_string(timeout_s) +
+      "s: " + display;
+    std::cerr << "ERROR: " << msg << std::endl;
+    PLOG(error) << msg;
+    if (g_msg) { g_msg->error(msg); }
+    return;
+  }
 
   DWORD exitCode = 0;
   GetExitCodeProcess(pi.hProcess, &exitCode);
@@ -179,8 +198,10 @@ static void runCmd(
   CloseHandle(pi.hThread);
 
   if (exitCode != 0) {
-    std::cerr << "ERROR: Process exited with code " << exitCode
-              << ": " << display << std::endl;
+    std::string msg = "process exited with code " + std::to_string(exitCode) +
+      ": " + display;
+    std::cerr << "ERROR: " << msg << std::endl;
+    PLOG(error) << msg;
   } else {
         g_msg->print("command completed successfully.");
   }
@@ -208,14 +229,49 @@ static void runCmd(
     _exit(127);
   }
 
-  // Parent: wait for child.
+  // Parent: wait for child, with optional timeout.
   int status = 0;
-  waitpid(pid, &status, 0);
+  int timeout_s = config.app.solver_timeout_s;
+  bool timed_out = false;
+
+  if (timeout_s <= 0) {
+    waitpid(pid, &status, 0);
+  } else {
+    // Poll every 200ms until the process exits or the timeout elapses.
+    const int poll_us = 200000;
+    int elapsed_us = 0;
+    const int limit_us = timeout_s * 1000000;
+    while (true) {
+      int w = waitpid(pid, &status, WNOHANG);
+      if (w != 0) { break; }
+      if (elapsed_us >= limit_us) {
+        kill(pid, SIGTERM);
+        usleep(500000);
+        kill(pid, SIGKILL);
+        waitpid(pid, &status, 0);
+        timed_out = true;
+        break;
+      }
+      usleep(poll_us);
+      elapsed_us += poll_us;
+    }
+  }
+
+  if (timed_out) {
+    std::string msg = "solver timed out after " + std::to_string(timeout_s) +
+      "s: " + display;
+    std::cerr << "ERROR: " << msg << std::endl;
+    PLOG(error) << msg;
+    if (g_msg) { g_msg->error(msg); }
+    return;
+  }
 
   int exitCode = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
   if (exitCode != 0) {
-    std::cerr << "ERROR: Process exited with code " << exitCode
-              << ": " << display << std::endl;
+    std::string msg = "process exited with code " + std::to_string(exitCode) +
+      ": " + display;
+    std::cerr << "ERROR: " << msg << std::endl;
+    PLOG(error) << msg;
   } else {
         g_msg->print("command completed successfully.");
   }

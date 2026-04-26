@@ -54,6 +54,7 @@ set(TEST_DCEL_SOURCES
   test_io_baseline.cpp
   test_io_basepoint.cpp
   test_parse_helpers.cpp
+  test_execu_timeout.cpp
   ${SRC_GEO}/DCELSweepLine.cpp
   ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp
@@ -93,6 +94,7 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/cs/PFilling.cpp
   ${SRC_ROOT}/cs/PSegment.cpp
   ${SRC_ROOT}/cs/join.cpp
+  ${SRC_ROOT}/execu_utils.cpp
 )
 
 add_executable(test_dcel ${TEST_DCEL_SOURCES})

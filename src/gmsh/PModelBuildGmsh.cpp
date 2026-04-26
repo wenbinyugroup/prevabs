@@ -549,7 +549,17 @@ void PModel::buildGmsh() {
   // unsigned int mesh_algo = 6;
   // GmshSetOption("Mesh", "Algorithm", mesh_algo);
   // _gmodel->mesh(2);
-  gmsh::model::mesh::generate(2);
+  try {
+    gmsh::model::mesh::generate(2);
+  } catch (const std::exception &e) {
+    std::vector<std::pair<int, int>> ents;
+    gmsh::model::getEntities(ents, 2);
+    throw std::runtime_error(
+      std::string("gmsh mesh generation failed: ") + e.what() +
+      " (faces=" + std::to_string(ents.size()) +
+      ", global_mesh_size=" + std::to_string(_global_mesh_size) + ")"
+    );
+  }
   // pmessage->print(1, "element type: " + std::to_string(_element_type));
   if (_element_type == 2) {
     // _gmodel->setOrderN(2, 0, 0);
