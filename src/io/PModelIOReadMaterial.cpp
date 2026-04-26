@@ -173,11 +173,16 @@ int parseFailureCriterion(
 }  // namespace
 
 int readMaterialsFile(
-  const std::string &fn_material_global, PModel *pmodel
+  const std::string &fn_material_global, PModel *pmodel, bool required
   ) {
   xml_document<> xmlDocMaterials;
   std::ifstream fileMaterials{fn_material_global};
   if (!fileMaterials.is_open()) {
+    if (required) {
+      throw std::runtime_error(
+        "cannot open material file '" + fn_material_global + "'"
+      );
+    }
     PLOG(warning) << "unable to open file: " << fn_material_global;
     return 1;
   } else {

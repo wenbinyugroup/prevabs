@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 namespace {
 
@@ -310,5 +311,29 @@ TEST_CASE("readLayups: layer cannot define lamina and layup together",
       "cannot define both 'lamina' and 'layup'"
     )
       && Catch::Matchers::ContainsSubstring("<layer> in <layup name='lay'>")
+  );
+}
+
+// ==================================================================
+// readMaterialsFile: required flag distinguishes explicit vs. auto path
+// ==================================================================
+
+TEST_CASE("readMaterialsFile: missing auto-detected path is only a warning",
+          "[io][material][error]") {
+  PModel model;
+  // required=false (default): missing file returns 1 without throwing.
+  int rc = readMaterialsFile("/no/such/path/MaterialDB.xml", &model);
+  CHECK(rc == 1);
+}
+
+TEST_CASE("readMaterialsFile: missing explicitly-provided path throws",
+          "[io][material][error]") {
+  using Catch::Matchers::ContainsSubstring;
+  PModel model;
+  // required=true: missing file must throw with the path in the message.
+  CHECK_THROWS_WITH(
+    readMaterialsFile("/no/such/path/UserMaterials.xml", &model, true),
+    ContainsSubstring("cannot open material file")
+      && ContainsSubstring("UserMaterials.xml")
   );
 }

@@ -428,7 +428,8 @@ void readMaterialsSection(
   }
 
   if (!fn_material_global.empty()) readMaterialsFile(fn_material_global, pmodel);
-  if (!fn_material_local.empty()) readMaterialsFile(fn_material_local, pmodel);
+  // Local material path is explicitly provided via <include><material>; missing = error.
+  if (!fn_material_local.empty()) readMaterialsFile(fn_material_local, pmodel, true);
 
   rapidxml::xml_node<> *p_xn_materials{xn_sg->first_node("materials")};
   if (p_xn_materials) readMaterials(p_xn_materials, pmodel);

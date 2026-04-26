@@ -201,7 +201,9 @@ PDCELVertex *findPointByName(const std::string &,
 /** @ingroup io
  * Read the material definitions from a file.
  */
-int readMaterialsFile(const std::string &, PModel *);
+// required=true: throw if the file cannot be opened (explicit user reference).
+// required=false (default): log a warning and continue (auto-detected path).
+int readMaterialsFile(const std::string &, PModel *, bool required = false);
 int readMaterials(const rapidxml::xml_node<> *, PModel *);
 Material *readXMLElementMaterial(const rapidxml::xml_node<> *,
                                  const rapidxml::xml_node<> *,

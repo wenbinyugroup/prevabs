@@ -104,8 +104,14 @@ int readXMLElementComponentLaminate(
   std::size_t unnamed_segments_block_counter = 0;
 
   if (xn_component->first_node("location")) {
-    p_component->setRefVertex(pmodel->getPointByName(
-      xn_component->first_node("location")->value()));
+    std::string loc_name = xn_component->first_node("location")->value();
+    PDCELVertex *p_loc = pmodel->getPointByName(loc_name);
+    if (!p_loc) {
+      throw std::runtime_error(
+        "cannot find location point '" + loc_name + "' in component"
+      );
+    }
+    p_component->setRefVertex(p_loc);
   }
 
   // Count the total number of segments

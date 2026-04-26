@@ -363,3 +363,155 @@ TEST_CASE("readXMLElementComponentLaminate: <split by=name> with missing point t
       && Catch::Matchers::ContainsSubstring("seg_b")
   );
 }
+
+TEST_CASE("readXMLElementComponentLaminate: unknown <location> point throws",
+          "[io][component][laminate][error]") {
+  using Catch::Matchers::ContainsSubstring;
+
+  PModel model;
+  makeStraightBaseline(model, "bsl");
+  makeSingleLayerLayup(model, "lay1");
+
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readLaminateComponentXml(
+      "<component name=\"c1\">"
+        "<location>no_such_point</location>"
+        "<segment name=\"s1\">"
+          "<baseline>bsl</baseline>"
+          "<layup>lay1</layup>"
+        "</segment>"
+      "</component>",
+      component, model, cross_section
+    ),
+    ContainsSubstring("cannot find") && ContainsSubstring("no_such_point")
+  );
+}
+
+// ==================================================================
+// Filling component lookup-null checks (readXMLElementComponentFilling)
+// ==================================================================
+
+namespace {
+
+Material *makeIsotropicMaterial(PModel &model, const std::string &name) {
+  Material *m = new Material(name);
+  m->setType("isotropic");
+  model.addMaterial(m);
+  LayerType *lt = new LayerType(0, m, 0.0);
+  model.addLayerType(lt);
+  return m;
+}
+
+int readFillingComponentXml(
+  const std::string &xml,
+  PComponent &component,
+  PModel &model,
+  CrossSection &cross_section
+) {
+  Message message;
+  g_msg = &message;
+
+  std::vector<char> buffer;
+  rapidxml::xml_document<> doc;
+  parseXmlDocument(xml, buffer, doc);
+
+  return readXMLElementComponentFilling(
+    &component,
+    doc.first_node("component"),
+    &cross_section,
+    &model
+  );
+}
+
+}  // namespace
+
+TEST_CASE("readXMLElementComponentFilling: unknown material throws",
+          "[io][component][fill][error]") {
+  using Catch::Matchers::ContainsSubstring;
+  CrossSection::used_material_index = 0;
+  CrossSection::used_layertype_index = 0;
+
+  PModel model;
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readFillingComponentXml(
+      "<component type=\"fill\"><material>ghost_mat</material></component>",
+      component, model, cross_section
+    ),
+    ContainsSubstring("cannot find") && ContainsSubstring("ghost_mat")
+  );
+}
+
+TEST_CASE("readXMLElementComponentFilling: unknown <location> point throws",
+          "[io][component][fill][error]") {
+  using Catch::Matchers::ContainsSubstring;
+  CrossSection::used_material_index = 0;
+  CrossSection::used_layertype_index = 0;
+
+  PModel model;
+  makeIsotropicMaterial(model, "mat1");
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readFillingComponentXml(
+      "<component type=\"fill\">"
+        "<material>mat1</material>"
+        "<location>no_such_pt</location>"
+      "</component>",
+      component, model, cross_section
+    ),
+    ContainsSubstring("cannot find") && ContainsSubstring("no_such_pt")
+  );
+}
+
+TEST_CASE("readXMLElementComponentFilling: unknown <baseline> throws",
+          "[io][component][fill][error]") {
+  using Catch::Matchers::ContainsSubstring;
+  CrossSection::used_material_index = 0;
+  CrossSection::used_layertype_index = 0;
+
+  PModel model;
+  makeIsotropicMaterial(model, "mat1");
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readFillingComponentXml(
+      "<component type=\"fill\">"
+        "<material>mat1</material>"
+        "<baseline>ghost_bsl</baseline>"
+      "</component>",
+      component, model, cross_section
+    ),
+    ContainsSubstring("cannot find") && ContainsSubstring("ghost_bsl")
+  );
+}
+
+TEST_CASE("readXMLElementComponentFilling: unknown <mesh_size at=...> point throws",
+          "[io][component][fill][error]") {
+  using Catch::Matchers::ContainsSubstring;
+  CrossSection::used_material_index = 0;
+  CrossSection::used_layertype_index = 0;
+
+  PModel model;
+  makeIsotropicMaterial(model, "mat1");
+  PComponent component;
+  CrossSection cross_section("cs");
+
+  CHECK_THROWS_WITH(
+    readFillingComponentXml(
+      "<component type=\"fill\">"
+        "<material>mat1</material>"
+        "<mesh_size at=\"ghost_pt\">0.1</mesh_size>"
+      "</component>",
+      component, model, cross_section
+    ),
+    ContainsSubstring("cannot find") && ContainsSubstring("ghost_pt")
+  );
+}

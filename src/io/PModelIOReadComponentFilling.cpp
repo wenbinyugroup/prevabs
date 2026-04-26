@@ -85,8 +85,14 @@ int readXMLElementComponentFilling(
 
   //
   if (xn_component->first_node("location")) {
-    p_component->setFillLocation(pmodel->getPointByName(
-        xn_component->first_node("location")->value()));
+    std::string loc_name = xn_component->first_node("location")->value();
+    PDCELVertex *p_loc = pmodel->getPointByName(loc_name);
+    if (!p_loc) {
+      throw std::runtime_error(
+        "cannot find location point '" + loc_name + "' in filling component"
+      );
+    }
+    p_component->setFillLocation(p_loc);
   }
 
   for (auto p_xn_baseline = xn_component->first_node("baseline");
@@ -98,6 +104,11 @@ int readXMLElementComponentFilling(
         splitString(p_xn_baseline->value(), ',');
     for (auto name : bl_names) {
       Baseline *bl = pmodel->getBaselineByNameCopy(name);
+      if (!bl) {
+        throw std::runtime_error(
+          "cannot find baseline '" + name + "' in filling component"
+        );
+      }
       blg.push_back(bl);
     }
     if (p_xn_baseline->first_attribute("fillside")) {
@@ -124,7 +135,13 @@ int readXMLElementComponentFilling(
     point_names =
         splitString(requireAttr(p_xn_meshsize, "at", "<mesh_size>")->value(), ',');
     for (auto n : point_names) {
-      p_component->addEmbeddedVertex(pmodel->getPointByName(n));
+      PDCELVertex *pv = pmodel->getPointByName(n);
+      if (!pv) {
+        throw std::runtime_error(
+          "cannot find point '" + n + "' in <mesh_size at=...>"
+        );
+      }
+      p_component->addEmbeddedVertex(pv);
     }
 
   }
