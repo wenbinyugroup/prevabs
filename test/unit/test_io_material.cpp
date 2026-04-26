@@ -249,7 +249,7 @@ TEST_CASE("readLayups: lamina without material fails before layer creation",
 }
 
 TEST_CASE("readMaterials: null materials node is rejected",
-          "[io][material][hygiene]") {
+          "[io][material][hygiene][error]") {
   Message message;
   g_msg = &message;
 
@@ -263,7 +263,7 @@ TEST_CASE("readMaterials: null materials node is rejected",
 }
 
 TEST_CASE("readLayups: layer without lamina or layup attribute fails clearly",
-          "[io][material][layup][hygiene]") {
+          "[io][material][layup][hygiene][error]") {
   Message message;
   g_msg = &message;
 
@@ -289,7 +289,7 @@ TEST_CASE("readLayups: layer without lamina or layup attribute fails clearly",
 }
 
 TEST_CASE("readLayups: layer cannot define lamina and layup together",
-          "[io][material][layup][hygiene]") {
+          "[io][material][layup][hygiene][error]") {
   Message message;
   g_msg = &message;
 

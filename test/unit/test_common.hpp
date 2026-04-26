@@ -1,10 +1,33 @@
 #pragma once
-// Shared POD types and geometry helpers for unit tests.
-// Self-contained: no project headers, no Gmsh dependency.
+// Shared helpers and geometry types for unit tests.
+// No Gmsh dependency; rapidxml is included for the XML parsing helper.
+
+#include "rapidxml/rapidxml.hpp"
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include <vector>
+
+// ---------------------------------------------------------------------------
+// XML parsing helper
+//
+// Bundles the mutable buffer and the document together so the buffer lifetime
+// always exceeds the document's lifetime.  Use like:
+//
+//   ParsedXml px("<foo><bar/></foo>");
+//   auto *root = px.doc.first_node("foo");
+// ---------------------------------------------------------------------------
+struct ParsedXml {
+  std::vector<char> buf;
+  rapidxml::xml_document<> doc;
+
+  explicit ParsedXml(const std::string &xml) {
+    buf.assign(xml.begin(), xml.end());
+    buf.push_back('\0');
+    doc.parse<0>(buf.data());
+  }
+};
 
 
 // ===================================================================
