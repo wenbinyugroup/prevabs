@@ -1,0 +1,77 @@
+<cross_section name="tx-100-st0" format="1">
+
+  <!--
+    Unit system: SI
+      length:   m
+      mass:     kg
+      density:  kg/m^3
+      pressure: Pa
+  -->
+
+  <include>
+    <material>materials</material>
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <scale>0.387</scale>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" direction="-1">CXTX_0400_110.dat</points>
+      <!-- <flip>1</flip> -->
+      <reverse>1</reverse>
+    </line>
+
+    <point name="p6" on="ln_af" by="x2" which="top">0.030000</point>
+    <point name="p7" on="ln_af" by="x2" which="top">0.300000</point>
+    <point name="p8" on="ln_af" by="x2" which="top">0.980000</point>
+
+    <line name="l_lp5">
+      <points>p8:p7</points>
+    </line>
+    <line name="l_lp6">
+      <points>p7:p6</points>
+    </line>
+
+  </baselines>
+
+  <layups>
+    <layup name="TX_Root_238" method="layer list">
+      <layer lamina="Gel_Coat">0</layer>
+      <layer lamina="075oz_Mat">0</layer>
+      <layer lamina="DBM1708_1">0</layer>
+      <layer lamina="C520_2">0</layer>
+      <layer lamina="C260_1">0</layer>
+      <layer lamina="DBM1208_2">0</layer>
+      <layer lamina="C260_2">0</layer>
+      <layer lamina="C520_3">0</layer>
+      <layer lamina="DBM1208_2">0</layer>
+      <layer lamina="C520_5">0</layer>
+      <layer lamina="DBM1208_2">0</layer>
+      <layer lamina="C520_4">0</layer>
+      <layer lamina="DBM1708_1">0</layer>
+    </layup>
+  </layups>
+
+  <component name="skin">
+
+    <segments>
+      <baseline>l_lp5</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+    <segments>
+      <baseline>l_lp6</baseline>
+      <layup>TX_Root_238</layup>
+    </segments>
+
+  </component>
+
+</cross_section>

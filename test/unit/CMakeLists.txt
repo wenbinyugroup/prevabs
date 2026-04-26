@@ -45,6 +45,8 @@ target_compile_definitions(test_geo PRIVATE
 set(TEST_DCEL_SOURCES
   catch_amalgamated.cpp
   test_dcel.cpp
+  test_io_airfoil.cpp
+  test_io_point_on_airfoil.cpp
   test_io_component_laminate.cpp
   test_io_material.cpp
   test_io_p6_helpers.cpp
@@ -68,6 +70,9 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/overloadOperator.cpp
   ${SRC_ROOT}/GeometryRepository.cpp
   ${SRC_ROOT}/MaterialRepository.cpp
+  ${SRC_ROOT}/io/PModelIOReadAirfoil.cpp
+  ${SRC_ROOT}/io/PModelIOReadBaseLine.cpp
+  ${SRC_ROOT}/io/PModelIOReadBasePoint.cpp
   ${SRC_ROOT}/io/PModelIOReadComponent.cpp
   ${SRC_ROOT}/io/PModelIOReadComponentFilling.cpp
   ${SRC_ROOT}/io/PModelIOReadComponentLaminate.cpp

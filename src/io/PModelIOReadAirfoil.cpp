@@ -639,9 +639,9 @@ int readLineTypeAirfoil(
 
   // Apply direction and post-processing transforms only after geometry
   // creation so Selig and Lednicer share the same downstream pipeline.
-  if (options.direction < 0) {
-    line->reverse();
-  }
+  // if (options.direction < 0) {
+  //   line->reverse();
+  // }
   if (options.flip.enabled) {
     applyAirfoilFlip(line, options.flip);
   }

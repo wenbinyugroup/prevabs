@@ -75,6 +75,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/io/PModelIO.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIODehomo.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIOPlot.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadAirfoil.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadBaseLine.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadBasePoint.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponent.cpp
