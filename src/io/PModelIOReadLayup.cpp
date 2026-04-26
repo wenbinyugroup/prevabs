@@ -96,9 +96,11 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
             std::vector<std::string> vAngleStack;
             vAngleStack = splitString(angleStack, ':');
 
-            angle = atof(vAngleStack[0].c_str());
+            angle = parseRequiredDouble(vAngleStack[0],
+              "<layer> angle in layup '" + layupName + "'");
             if (vAngleStack.size() > 1)
-              stack = atoi(vAngleStack[1].c_str());
+              stack = parseRequiredInt(vAngleStack[1],
+                "<layer> stack in layup '" + layupName + "'");
             else
               stack = 1;
           }

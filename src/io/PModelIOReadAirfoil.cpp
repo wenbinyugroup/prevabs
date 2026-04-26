@@ -53,62 +53,6 @@ std::string airfoilContext(const Baseline *line) {
 
 
 
-int parseRequiredIntValue(
-  const std::string &raw_value, const std::string &context
-) {
-  const std::string value = trim(raw_value);
-  if (value.empty()) {
-    throw std::runtime_error("Missing integer value in " + context);
-  }
-
-  std::size_t pos = 0;
-  int parsed = 0;
-  try {
-    parsed = std::stoi(value, &pos);
-  } catch (const std::exception &) {
-    throw std::runtime_error(
-      "Invalid integer value '" + value + "' in " + context
-    );
-  }
-
-  if (pos != value.size()) {
-    throw std::runtime_error(
-      "Invalid integer value '" + value + "' in " + context
-    );
-  }
-
-  return parsed;
-}
-
-
-
-
-double parseRequiredDoubleValue(
-  const std::string &raw_value, const std::string &context
-) {
-  const std::string value = trim(raw_value);
-  if (value.empty()) {
-    throw std::runtime_error("Missing numeric value in " + context);
-  }
-
-  std::size_t pos = 0;
-  double parsed = 0.0;
-  try {
-    parsed = std::stod(value, &pos);
-  } catch (const std::exception &) {
-    throw std::runtime_error(
-      "Invalid numeric value '" + value + "' in " + context
-    );
-  }
-
-  if (pos != value.size()) {
-    throw std::runtime_error(
-      "Invalid numeric value '" + value + "' in " + context
-    );
-  }
-
-  return parsed;
-}
 
 
 
@@ -192,7 +136,7 @@ AirfoilFlipOptions parseAirfoilFlipOptions(
 
   rapidxml::xml_attribute<> *p_xa_loc = p_xn_flip->first_attribute("loc");
   if (p_xa_loc) {
-    options.loc = parseRequiredDoubleValue(
+    options.loc = parseRequiredDouble(
       p_xa_loc->value(), context + "/<flip>@loc"
     );
   }
@@ -583,7 +527,7 @@ int readLineTypeAirfoil(
 
   rapidxml::xml_attribute<> *p_xa_header = p_xn_pts->first_attribute("header");
   if (p_xa_header && trim(p_xa_header->value()).size() > 0) {
-    options.head_rows = parseRequiredIntValue(
+    options.head_rows = parseRequiredInt(
       p_xa_header->value(), context + "/<points>@header"
     );
     if (options.head_rows < 0) {

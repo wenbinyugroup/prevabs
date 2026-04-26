@@ -86,8 +86,9 @@ void resolveCoordParam(
   if (!attr) return;
   std::string value{attr->value()};
   int pos = static_cast<int>(value.find(":"));
-  double coord = std::stod(value.substr(0, pos));  // substr(0,-1) == whole str
-  int count = (pos >= 0) ? std::stoi(value.substr(pos + 1)) : 1;
+  const std::string ctx = std::string("<layup ") + attr->name() + "=...>";
+  double coord = parseRequiredDouble(value.substr(0, pos), ctx);
+  int count = (pos >= 0) ? parseRequiredInt(value.substr(pos + 1), ctx) : 1;
   u = findPolylineParamByCoordinate(vertices, coord, tol, count, axis);
 }
 
@@ -197,7 +198,9 @@ int readXMLElementComponentLaminate(
           }
         }
         else if (split_by == "id") {
-          v_split = p_baseline->vertices()[atoi(p_xn_split->value()) - 1];
+          v_split = p_baseline->vertices()[
+            parseRequiredInt(p_xn_split->value(),
+              "<split by='id'> in segment '" + segmentName + "'") - 1];
         }
         else {
           throw std::runtime_error(
@@ -322,7 +325,8 @@ int readXMLElementComponentLaminate(
     for (auto p_xn_layup = p_xn_segments->first_node("layup"); p_xn_layup;
       p_xn_layup = p_xn_layup->next_sibling("layup")) {
       xml_attribute<> *p_xa_begin{p_xn_layup->first_attribute("begin")};
-      if (p_xa_begin) u_begin = atof(p_xa_begin->value());
+      if (p_xa_begin)
+        u_begin = parseRequiredDouble(p_xa_begin->value(), "<layup begin=...>");
 
       // x2/x3 coordinate attributes override the normalized begin/end value
       resolveCoordParam(p_xn_layup->first_attribute("begin_x2"),
@@ -331,7 +335,8 @@ int readXMLElementComponentLaminate(
                         p_bsl->vertices(), PolylineAxis::X3, tol, u_begin);
 
       xml_attribute<> *p_xa_end{p_xn_layup->first_attribute("end")};
-      if (p_xa_end) u_end = atof(p_xa_end->value());
+      if (p_xa_end)
+        u_end = parseRequiredDouble(p_xa_end->value(), "<layup end=...>");
 
       resolveCoordParam(p_xn_layup->first_attribute("end_x2"),
                         p_bsl->vertices(), PolylineAxis::X2, tol, u_end);
@@ -577,7 +582,8 @@ int readXMLElementComponentLaminate(
   // Read joint style
   for (auto p_xn_joint = xn_component->first_node("joint"); p_xn_joint;
         p_xn_joint = p_xn_joint->next_sibling("joint")) {
-    const int js_value = atoi(requireAttr(p_xn_joint, "style", "<joint>")->value());
+    const int js_value = parseRequiredInt(
+      requireAttr(p_xn_joint, "style", "<joint>")->value(), "<joint style=...>");
     const JointStyle js =
         (js_value == static_cast<int>(JointStyle::smooth))
             ? JointStyle::smooth

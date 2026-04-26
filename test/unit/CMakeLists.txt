@@ -53,6 +53,7 @@ set(TEST_DCEL_SOURCES
   test_main_pipeline.cpp
   test_io_baseline.cpp
   test_io_basepoint.cpp
+  test_parse_helpers.cpp
   ${SRC_GEO}/DCELSweepLine.cpp
   ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp

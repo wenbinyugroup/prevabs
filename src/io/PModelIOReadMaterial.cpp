@@ -255,32 +255,33 @@ Strength readXMLElementStrength(const xml_node<> *p_xn_strength) {
 
     std::string tag = p_xn_sp->name();
 
+    const std::string ctx = "<strength>/<" + tag + ">";
     if ((tag == "t1") || (tag == "xt") || (tag == "x")) {
-      strength.t1 = atof(p_xn_sp->value());
+      strength.t1 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "t2") || (tag == "yt") || (tag == "y")) {
-      strength.t2 = atof(p_xn_sp->value());
+      strength.t2 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "t3") || (tag == "zt") || (tag == "z")) {
-      strength.t3 = atof(p_xn_sp->value());
+      strength.t3 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "c1") || (tag == "xc")) {
-      strength.c1 = atof(p_xn_sp->value());
+      strength.c1 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "c2") || (tag == "yc")) {
-      strength.c2 = atof(p_xn_sp->value());
+      strength.c2 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "c3") || (tag == "zc")) {
-      strength.c3 = atof(p_xn_sp->value());
+      strength.c3 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "s23") || (tag == "r")) {
-      strength.s23 = atof(p_xn_sp->value());
+      strength.s23 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "s13") || (tag == "t")) {
-      strength.s13 = atof(p_xn_sp->value());
+      strength.s13 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
     else if ((tag == "s12") || (tag == "s")) {
-      strength.s12 = atof(p_xn_sp->value());
+      strength.s12 = parseRequiredDouble(p_xn_sp->value(), ctx);
     }
 
   }
@@ -323,7 +324,8 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   xml_node<> *nodeDensity{p_xn_material->first_node("density")};
   if (nodeDensity) {
     if (nodeDensity->value()[0] != '\0')
-      materialDensity = atof(nodeDensity->value());
+      materialDensity = parseRequiredDouble(nodeDensity->value(),
+        "<density> in <material name='" + materialName + "'>");
   }
   m->setDensity(materialDensity);
 
@@ -338,11 +340,13 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
     if (materialType == "isotropic") {
       xml_node<> *p_xn_e = nodeElastic->first_node("e");
       if (p_xn_e) {
-        materialElastic[0] = atof(p_xn_e->value());
+        materialElastic[0] = parseRequiredDouble(p_xn_e->value(),
+          "<elastic>/<e> in <material name='" + materialName + "'>");
       }
       xml_node<> *p_xn_nu = nodeElastic->first_node("nu");
       if (p_xn_nu) {
-        materialElastic[1] = atof(p_xn_nu->value());
+        materialElastic[1] = parseRequiredDouble(p_xn_nu->value(),
+          "<elastic>/<nu> in <material name='" + materialName + "'>");
       }
     }
     
@@ -350,10 +354,10 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       materialElastic.clear();
       const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       double e1, e2, e3, g12, g13, g23, nu12, nu13, nu23;
-      e1   = atof(requireNode(nodeElastic, "e1",   ectx)->value());
-      e2   = atof(requireNode(nodeElastic, "e2",   ectx)->value());
-      nu12 = atof(requireNode(nodeElastic, "nu12", ectx)->value());
-      g12  = atof(requireNode(nodeElastic, "g12",  ectx)->value());
+      e1   = parseRequiredDouble(requireNode(nodeElastic, "e1",   ectx)->value(), ectx + "/<e1>");
+      e2   = parseRequiredDouble(requireNode(nodeElastic, "e2",   ectx)->value(), ectx + "/<e2>");
+      nu12 = parseRequiredDouble(requireNode(nodeElastic, "nu12", ectx)->value(), ectx + "/<nu12>");
+      g12  = parseRequiredDouble(requireNode(nodeElastic, "g12",  ectx)->value(), ectx + "/<g12>");
 
       // Optional transverse-isotropic properties — keep the legacy defaults:
       //   e3   defaults to e2   (E3 = E2)
@@ -365,21 +369,21 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
       xml_node<> *p_xn_e3 = nodeElastic->first_node("e3");
       if (p_xn_e3) {
-        e3 = atof(p_xn_e3->value());
+        e3 = parseRequiredDouble(p_xn_e3->value(), ectx + "/<e3>");
       } else {
         e3 = e2;  // transverse isotropy: E3 = E2
       }
 
       xml_node<> *p_xn_nu13 = nodeElastic->first_node("nu13");
       if (p_xn_nu13) {
-        nu13 = atof(p_xn_nu13->value());
+        nu13 = parseRequiredDouble(p_xn_nu13->value(), ectx + "/<nu13>");
       } else {
         nu13 = nu12;  // transverse isotropy: nu13 = nu12
       }
 
       xml_node<> *p_xn_nu23 = nodeElastic->first_node("nu23");
       if (p_xn_nu23) {
-        nu23 = atof(p_xn_nu23->value());
+        nu23 = parseRequiredDouble(p_xn_nu23->value(), ectx + "/<nu23>");
       } else {
         nu23 = 0.3;  // arbitrary fallback — not physically derived
         PLOG(warning) << "material '" + materialName
@@ -389,14 +393,14 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
       xml_node<> *p_xn_g13 = nodeElastic->first_node("g13");
       if (p_xn_g13) {
-        g13 = atof(p_xn_g13->value());
+        g13 = parseRequiredDouble(p_xn_g13->value(), ectx + "/<g13>");
       } else {
         g13 = g12;  // transverse isotropy: G13 = G12
       }
 
       xml_node<> *p_xn_g23 = nodeElastic->first_node("g23");
       if (p_xn_g23) {
-        g23 = atof(p_xn_g23->value());
+        g23 = parseRequiredDouble(p_xn_g23->value(), ectx + "/<g23>");
       } else {
         g23 = e3 / (2.0 * (1 + nu23));  // isotropic 2-3 plane: G23 = E3/(2*(1+nu23))
       }
@@ -408,7 +412,9 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       materialElastic.clear();
       const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       for (std::string label : elasticLabelOrtho) {
-        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
+        double value{parseRequiredDouble(
+          requireNode(nodeElastic, label.c_str(), ectx)->value(),
+          ectx + "/<" + label + ">")};
         materialElastic.push_back(value);
       }
     }
@@ -417,7 +423,9 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
       materialElastic.clear();
       const std::string ectx = "<elastic> in <material name='" + materialName + "'>";
       for (std::string label : elasticLabelAniso) {
-        double value{atof(requireNode(nodeElastic, label.c_str(), ectx)->value())};
+        double value{parseRequiredDouble(
+          requireNode(nodeElastic, label.c_str(), ectx)->value(),
+          ectx + "/<" + label + ">")};
         materialElastic.push_back(value);
       }
     }
@@ -435,7 +443,8 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
     const std::string ctectx = "<cte> in <material name='" + materialName + "'>";
     if (materialType == "isotropic") {
-      double _a = atof(requireNode(p_xn_cte, "a", ctectx)->value());
+      double _a = parseRequiredDouble(
+        requireNode(p_xn_cte, "a", ctectx)->value(), ctectx + "/<a>");
       cte.push_back(_a);
     }
 
@@ -443,7 +452,9 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
           || materialType == "orthotropic"
           || materialType == "engineering") {
       for (auto _name : TAG_NAME_CTE_ORTHO) {
-        double _value{atof(requireNode(p_xn_cte, _name.c_str(), ctectx)->value())};
+        double _value{parseRequiredDouble(
+          requireNode(p_xn_cte, _name.c_str(), ctectx)->value(),
+          ctectx + "/<" + _name + ">")};
         cte.push_back(_value);
       }
     }
@@ -454,7 +465,8 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 
   xml_node<> *p_xn_sh = p_xn_material->first_node("specific_heat");
   if (p_xn_sh) {
-    double _sh = atof(p_xn_sh->value());
+    double _sh = parseRequiredDouble(p_xn_sh->value(),
+      "<specific_heat> in <material name='" + materialName + "'>");
     m->setSpecificHeat(_sh);
   }
 
@@ -474,7 +486,8 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   double cl = 0.0; // characteristic length
   xml_node<> *p_xn_cl = p_xn_material->first_node("characteristic_length");
   if (p_xn_cl) {
-    cl = atof(p_xn_cl->value());
+    cl = parseRequiredDouble(p_xn_cl->value(),
+      "<characteristic_length> in <material name='" + materialName + "'>");
   }
   m->setCharacteristicLength(cl);
 
@@ -516,7 +529,9 @@ Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /
   ensureLayerType(p_laminaMaterial, 0.0, pmodel, ctx);
 
   double laminaThickness{};
-  laminaThickness = atof(requireNode(p_xn_lamina, "thickness", ctx)->value());
+  laminaThickness = parseRequiredDouble(
+    requireNode(p_xn_lamina, "thickness", ctx)->value(),
+    "<thickness> in <lamina name='" + laminaName + "'>");
 
   l = pmodel->getLaminaByName(laminaName);
 

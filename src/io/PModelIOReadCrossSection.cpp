@@ -67,7 +67,8 @@ int readOptionalIntNode(
   rapidxml::xml_node<> *n = parent->first_node(name);
   if (n) {
     std::string s{n->value()};
-    if (s[0] != '\0') return std::stoi(s.c_str());
+    if (s[0] != '\0')
+      return parseRequiredInt(s, std::string("<") + name + ">");
   }
   return default_val;
 }
@@ -78,7 +79,8 @@ double readOptionalDoubleNode(
   rapidxml::xml_node<> *n = parent->first_node(name);
   if (n) {
     std::string s{n->value()};
-    if (s[0] != '\0') return std::stod(s.c_str());
+    if (s[0] != '\0')
+      return parseRequiredDouble(s, std::string("<") + name + ">");
   }
   return default_val;
 }
@@ -102,7 +104,14 @@ void readSettingsSection(const rapidxml::xml_node<> *xn_settings) {
   rapidxml::xml_node<> *p_xn_tolerance{xn_settings->first_node("tolerance")};
   if (p_xn_tolerance) {
     std::string ss{p_xn_tolerance->value()};
-    if (ss[0] != '\0') config.app.geo_tol = atof(ss.c_str());
+    if (ss[0] != '\0') {
+      config.app.geo_tol = parseRequiredDouble(ss, "<settings>/<tolerance>");
+      if (config.app.geo_tol <= 0.0) {
+        throw std::runtime_error(
+          "<settings>/<tolerance> must be positive, got '" + ss + "'"
+        );
+      }
+    }
   }
 }
 
@@ -182,6 +191,11 @@ GeneralResult readGeneralSection(
   gen.sfactor  = readOptionalDoubleNode(xn_general, "scale",     gen.sfactor);
   gen.rangle   = readOptionalDoubleNode(xn_general, "rotate",    gen.rangle);
   gen.meshsize = readOptionalDoubleNode(xn_general, "mesh_size", gen.meshsize);
+  if (gen.meshsize < 0.0) {
+    throw std::runtime_error(
+      "<general>/<mesh_size> must be positive, got a negative value"
+    );
+  }
 
   int elementtype = 2;
   rapidxml::xml_node<> *nodeElementType{xn_general->first_node("element_type")};
@@ -249,7 +263,14 @@ GeneralResult readGeneralSection(
   rapidxml::xml_node<> *p_xn_tol{xn_general->first_node("tolerance")};
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
-    if (stol[0] != '\0') config.app.tol = atof(stol.c_str());
+    if (stol[0] != '\0') {
+      config.app.tol = parseRequiredDouble(stol, "<general>/<tolerance>");
+      if (config.app.tol <= 0.0) {
+        throw std::runtime_error(
+          "<general>/<tolerance> must be positive, got '" + stol + "'"
+        );
+      }
+    }
   }
   std::stringstream ss_tol;
   ss_tol << config.app.tol;

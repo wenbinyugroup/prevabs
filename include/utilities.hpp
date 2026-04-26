@@ -94,6 +94,9 @@ struct MessageScope {
 
 int convertSizeTToInt(size_t value);
 
+int parseRequiredInt(const std::string &raw, const std::string &context);
+double parseRequiredDouble(const std::string &raw, const std::string &context);
+
 void printInfo(int, std::string);
 void printWarning(int, std::string);
 void printError(int, std::string);

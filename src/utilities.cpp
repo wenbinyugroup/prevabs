@@ -414,6 +414,55 @@ double rad2deg(double radian) { return radian * 180.0 / PI; }
 //     return LEFT_TURN;
 // }
 
+int parseRequiredInt(const std::string &raw, const std::string &context) {
+  const std::string value = trim(raw);
+  if (value.empty()) {
+    throw std::runtime_error("Missing integer value in " + context);
+  }
+  std::size_t pos = 0;
+  int parsed = 0;
+  try {
+    parsed = std::stoi(value, &pos);
+  } catch (const std::exception &) {
+    throw std::runtime_error(
+      "Invalid integer value '" + value + "' in " + context
+    );
+  }
+  if (pos != value.size()) {
+    throw std::runtime_error(
+      "Invalid integer value '" + value + "' in " + context
+    );
+  }
+  return parsed;
+}
+
+double parseRequiredDouble(const std::string &raw, const std::string &context) {
+  const std::string value = trim(raw);
+  if (value.empty()) {
+    throw std::runtime_error("Missing numeric value in " + context);
+  }
+  std::size_t pos = 0;
+  double parsed = 0.0;
+  try {
+    parsed = std::stod(value, &pos);
+  } catch (const std::exception &) {
+    throw std::runtime_error(
+      "Invalid numeric value '" + value + "' in " + context
+    );
+  }
+  if (pos != value.size()) {
+    throw std::runtime_error(
+      "Invalid numeric value '" + value + "' in " + context
+    );
+  }
+  if (!std::isfinite(parsed)) {
+    throw std::runtime_error(
+      "Invalid numeric value '" + value + "' in " + context
+    );
+  }
+  return parsed;
+}
+
 STensor3 getRotationMatrix(double angle, int direction, GeoConst unit) {
   STensor3 rm;
 

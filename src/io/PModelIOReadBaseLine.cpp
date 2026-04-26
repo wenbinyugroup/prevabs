@@ -49,7 +49,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
       xml_attribute<> *p_xa_scaling{p_xn_bpi->first_attribute("scale")};
       if (p_xa_scaling) {
         s_pscale = p_xa_scaling->value();
-        pscale = atof(s_pscale.c_str());
+        pscale = parseRequiredDouble(s_pscale, "<include scale>");
       }
 
       std::string filenameBasepoints{p_xn_bpi->value()};
@@ -311,7 +311,8 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
       loc = np->first_attribute("loc")->value();
     }
 
-    double angle{atof(na->value())};
+    double angle{parseRequiredDouble(na->value(),
+      "<angle> in straight baseline '" + line->getName() + "'")};
 
     PDCELVertex *pvMid, *pvStart, *pvEnd;
     // pvMid = pmodel->getPointByName(basepointLabel);
@@ -363,10 +364,26 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
     xml_attribute<> *ab{nt->first_attribute("by")};
     if (ab)
       discreteBy = ab->value();
-    if (discreteBy == "number")
-      discreteNumber = atoi(v.c_str());
-    else if (discreteBy == "angle")
-      discreteAngle = atof(v.c_str());
+    if (discreteBy == "number") {
+      discreteNumber = parseRequiredInt(v,
+        "<discrete by='number'> in circle baseline '" + line->getName() + "'");
+      if (discreteNumber <= 0) {
+        throw std::runtime_error(
+          "<discrete by='number'> must be positive in circle baseline '"
+          + line->getName() + "', got " + v
+        );
+      }
+    }
+    else if (discreteBy == "angle") {
+      discreteAngle = parseRequiredDouble(v,
+        "<discrete by='angle'> in circle baseline '" + line->getName() + "'");
+      if (discreteAngle <= 0.0) {
+        throw std::runtime_error(
+          "<discrete by='angle'> must be positive in circle baseline '"
+          + line->getName() + "', got " + v
+        );
+      }
+    }
   }
 
   PDCELVertex *pCenter = nullptr;
@@ -375,7 +392,8 @@ void readLineTypeCircle(Baseline *line, const xml_node<> *p_xn_line, const xml_n
   // CASE 1: Given center and radius
   if (nc && nr) {
     std::string centerLabel{nc->value()};
-    double radius{atof(nr->value())};
+    double radius{parseRequiredDouble(nr->value(),
+      "<radius> in circle baseline '" + line->getName() + "'")};
 
     // pCenter = pmodel->getPointByName(centerLabel);
     pCenter = findPointByName(centerLabel, p_xn_geo, pmodel);
@@ -461,10 +479,26 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
     xml_attribute<> *ab{nt->first_attribute("by")};
     if (ab)
       discreteBy = ab->value();
-    if (discreteBy == "number")
-      discreteNumber = atoi(v.c_str());
-    else if (discreteBy == "angle")
-      discreteAngle = atof(v.c_str());
+    if (discreteBy == "number") {
+      discreteNumber = parseRequiredInt(v,
+        "<discrete by='number'> in arc baseline '" + line->getName() + "'");
+      if (discreteNumber <= 0) {
+        throw std::runtime_error(
+          "<discrete by='number'> must be positive in arc baseline '"
+          + line->getName() + "', got " + v
+        );
+      }
+    }
+    else if (discreteBy == "angle") {
+      discreteAngle = parseRequiredDouble(v,
+        "<discrete by='angle'> in arc baseline '" + line->getName() + "'");
+      if (discreteAngle <= 0.0) {
+        throw std::runtime_error(
+          "<discrete by='angle'> must be positive in arc baseline '"
+          + line->getName() + "', got " + v
+        );
+      }
+    }
   }
 
   int direction = 1;
@@ -504,12 +538,14 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
 
     if (p_xn_radius) {
       std::string r_str{p_xn_radius->value()};
-      r = atof(r_str.c_str());
+      r = parseRequiredDouble(r_str,
+        "<radius> in arc baseline '" + line->getName() + "'");
       k = 1.0 / r;
     }
     else if (p_xn_curv) {
       std::string k_str{p_xn_curv->value()};
-      k = atof(k_str.c_str());
+      k = parseRequiredDouble(k_str,
+        "<curvature> in arc baseline '" + line->getName() + "'");
       if (k != 0) {
         r = 1.0 / fabs(k);
       }
@@ -596,7 +632,8 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
       );
     }
 
-    double angle{atof(na->value())};
+    double angle{parseRequiredDouble(na->value(),
+      "<angle> in arc baseline '" + line->getName() + "'")};
     arc = PGeoArc{pv_center, pv_start, pv_end, angle, direction};
   }
 
@@ -658,7 +695,8 @@ void readLineTypeArc(Baseline *line, const xml_node<> *p_xn_line, const xml_node
       );
     }
 
-    double angle{atof(na->value())};
+    double angle{parseRequiredDouble(na->value(),
+      "<angle> in arc baseline '" + line->getName() + "'")};
     arc = PGeoArc{pv_center, pv_start, angle, direction};
 
     pmodel->addVertex(arc.end());
