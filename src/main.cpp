@@ -161,7 +161,8 @@ void processConfigVariables() {
   config.file_name_msh = config.file_directory + config.file_base_name + ".msh";
   config.file_name_opt = config.file_directory + config.file_base_name + ".opt";
   config.file_name_vsc = config.file_directory + config.file_base_name + ".sg";
-  config.file_name_log = config.file_directory + config.file_base_name + ".log";
+  config.file_name_log     = config.file_directory + config.file_base_name + ".log";
+  config.file_name_log_dev = config.file_directory + config.file_base_name + ".debug.log";
 }
 
 

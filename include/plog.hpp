@@ -4,14 +4,9 @@
 #include <string>
 #include <spdlog/spdlog.h>
 
-// Formats one dev-log entry as fixed-column text with message wrapping.
+// Returns "[info]    ", "[warning] ", etc., padded to a fixed width.
 // Declared here, defined in plog.cpp.
-std::string formatLogLine(
-    const std::string& severity,
-    const std::string& message,
-    const std::string& file,
-    const std::string& func,
-    int line);
+std::string paddedSeverityBracket(spdlog::level::level_enum level);
 
 // Stream-wrapper that collects << output and logs on destruction.
 // Usage: PLOG(info) << "msg " << var;
@@ -30,27 +25,10 @@ struct PLogStream {
   ~PLogStream() {
     auto logger = spdlog::get("prevabs");
     if (!logger) return;
-
-    // Map spdlog level to prevabs severity name
-    std::string sev;
-    switch (level_) {
-      case spdlog::level::trace:    sev = "trace";   break;
-      case spdlog::level::debug:    sev = "debug";   break;
-      case spdlog::level::info:     sev = "info";    break;
-      case spdlog::level::warn:     sev = "warning"; break;
-      case spdlog::level::err:      sev = "error";   break;
-      case spdlog::level::critical: sev = "fatal";   break;
-      default:                      sev = "?";       break;
-    }
-
-    // Strip directory from __FILE__
-    std::string fname(file_);
-    auto pos = fname.find_last_of("/\\");
-    if (pos != std::string::npos) fname = fname.substr(pos + 1);
-
-    std::string formatted =
-        formatLogLine(sev, oss_.str(), fname, func_, line_);
-    logger->log(level_, "{}", formatted);
+    std::string padded = paddedSeverityBracket(level_);
+    logger->log(
+        spdlog::source_loc{file_, line_, func_},
+        level_, "{} {}", padded, oss_.str());
   }
 
   template <typename T>

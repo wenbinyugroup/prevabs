@@ -48,6 +48,7 @@ struct PConfig {
   std::string file_name_lss_msh = "";
   std::string file_name_lss_opt = "";
   std::string file_name_log     = "";
+  std::string file_name_log_dev = "";
   std::string file_name_deb     = "";
 
   // --- Tool selection ---
