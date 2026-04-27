@@ -472,10 +472,12 @@ int PModel::writeGmshOpt(const std::string &fn_base) {
   fprintf(file, "General.ScaleY = %d;\n", 2);
   fprintf(file, "General.ScaleZ = %d;\n", 2);
   fprintf(file, "General.Trackball = %d;\n", 0);
+  fprintf(file, "Geometry.Points = %d;\n", 0);
   fprintf(file, "Geometry.LineWidth = %d;\n", 1);
 
   // Mesh settings
   fprintf(file, "Mesh.ColorCarousel = %d;\n", 2);
+  fprintf(file, "Mesh.SurfaceEdges = %d;\n", 0);
   // fprintf(file, "Mesh.RemeshParametrization = %d;\n", 0);
 
   if (config.isHomo()) {

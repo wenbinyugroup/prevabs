@@ -24,7 +24,7 @@
       <!-- <reverse>1</reverse> -->
     </line>
     
-    <point name="p1" on="ln_af" by="x2" which="bottom">0.000000</point>
+    <!-- <point name="p1" on="ln_af" by="x2" which="bottom">0.000000</point> -->
      
     <point name="p2" on="ln_af" by="x2" which="bottom">0.089258</point>
      
@@ -36,9 +36,9 @@
      
     <point name="p6" on="ln_af" by="x2" which="bottom">0.951216</point>
      
-    <point name="p7" on="ln_af" by="x2" which="top">1.000000</point>
+    <!-- <point name="p7" on="ln_af" by="x2" which="top">1.000000</point> -->
      
-    <point name="p8" on="ln_af" by="x2" which="top">0.000000</point>
+    <!-- <point name="p8" on="ln_af" by="x2" which="top">0.000000</point> -->
      
     <point name="p9" on="ln_af" by="x2" which="top">0.084786</point>
      
@@ -53,7 +53,7 @@
     <point name="p14" on="ln_af" by="x2" which="top">0.933635</point>
      
     <line name="l_hp1">
-      <points>p1:p2</points>
+      <points>ln_af_te:p2</points>
     </line>
     
     <line name="l_hp2">
@@ -73,46 +73,46 @@
     </line>
     
     <line name="l_hp6">
-      <points>p6:p7</points>
+      <points>p6:ln_af_le</points>
     </line>
     
     <line name="l_lp8">
-      <points>p8:p9</points>
+      <points>p9:ln_af_te</points>
     </line>
     
     <line name="l_lp9">
-      <points>p9:p10</points>
+      <points>p10:p9</points>
     </line>
     
     <line name="l_lp10">
-      <points>p10:p11</points>
+      <points>p11:p10</points>
     </line>
     
     <line name="l_lp11">
-      <points>p11:p12</points>
+      <points>p12:p11</points>
     </line>
     
     <line name="l_lp12">
-      <points>p12:p13</points>
+      <points>p13:p12</points>
     </line>
     
     <line name="l_lp13">
-      <points>p13:p14</points>
+      <points>p14:p13</points>
     </line>
     
     <line name="l_lp14">
-      <points>p14:p7</points>
+      <points>ln_af_le:p14</points>
     </line>
     
   </baselines>
   
   <component name="skin">
 
-    <segment>
+    <!-- <segment>
       <baseline>ln_af</baseline>
       <layup>coat</layup>
-    </segment>
-<!--     
+    </segment> -->
+    
     <segments>
       
       <baseline>l_hp1</baseline>
@@ -208,7 +208,15 @@
       <layup>TX_Balsa_Upper</layup>
       
     </segments>
-     -->
+
+    <segments>
+      
+      <baseline>l_lp14</baseline>
+      
+      <layup>TX_Upper_Strip</layup>
+      
+    </segments>
+    
   </component>
 
 </cross_section>

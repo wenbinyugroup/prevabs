@@ -6,6 +6,10 @@
 
 <layups>
 
+    <layup name="coat">
+        <layer lamina="Gel_Coat">0</layer>
+    </layup>
+
     <layup name="TX_Balsa_Lower" method="layer list">
         <layer lamina="Gel_Coat">0</layer>
         <layer lamina="075oz_Mat">0</layer>
