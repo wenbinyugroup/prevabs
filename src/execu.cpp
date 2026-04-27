@@ -47,7 +47,7 @@ static void runCmd(
   for (const auto &a : args) {
     display += " \"" + a + "\"";
   }
-    g_msg->print("running: " + display);
+    PLOG(info) << "running: " + display;
 
 #ifdef _WIN32
   // Build the command line string that CreateProcess expects.
@@ -188,7 +188,6 @@ static void runCmd(
       "s: " + display;
     std::cerr << "ERROR: " << msg << std::endl;
     PLOG(error) << msg;
-    if (g_msg) { g_msg->error(msg); }
     return;
   }
 
@@ -203,7 +202,7 @@ static void runCmd(
     std::cerr << "ERROR: " << msg << std::endl;
     PLOG(error) << msg;
   } else {
-        g_msg->print("command completed successfully.");
+        PLOG(info) << "command completed successfully.";
   }
 
 #else
@@ -262,7 +261,6 @@ static void runCmd(
       "s: " + display;
     std::cerr << "ERROR: " << msg << std::endl;
     PLOG(error) << msg;
-    if (g_msg) { g_msg->error(msg); }
     return;
   }
 
@@ -273,7 +271,7 @@ static void runCmd(
     std::cerr << "ERROR: " << msg << std::endl;
     PLOG(error) << msg;
   } else {
-        g_msg->print("command completed successfully.");
+        PLOG(info) << "command completed successfully.";
   }
 #endif
 }

@@ -92,7 +92,6 @@ void PComponent::print() {
 }
 
 void PComponent::print(int /*i_type*/, int /*i_indent*/) {
-  MESSAGE_SCOPE(g_msg);
     PLOG(debug) << "name: " + _name;
     PLOG(debug) << "order: " + std::to_string(_order);
     PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
@@ -149,9 +148,8 @@ void PComponent::addDependent(PComponent *component) {
 void PComponent::build(const BuilderConfig &bcfg) {
 
   // i_indent++;
-  MESSAGE_SCOPE(g_msg);
 
-    g_msg->print("building component: " + _name);
+    PLOG(info) << "building component: " + _name;
 
   // Laminate type component
   if (_type == ComponentType::laminate) {
@@ -182,7 +180,6 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
-  MESSAGE_SCOPE(g_msg);
 
   if (_type == ComponentType::fill) {
     PLOG(debug) << "buildDetails: skipping filling component '" << _name
@@ -196,13 +193,11 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
     return;
   }
 
-      g_msg->print("building component details: " + _name);
+      PLOG(info) << "building component details: " + _name;
 
   for (auto sgm : _laminate.segments) {
 
     sgm->buildAreas(bcfg);
-
-    if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(g_msg);
 
   }
 }

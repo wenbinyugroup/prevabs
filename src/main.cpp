@@ -6,6 +6,7 @@
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "version.h"
 
 #include "CLI11.hpp"
 
@@ -27,13 +28,10 @@
 // ---------------------------------------------------------------------------
 // Global definitions (declared extern in globalVariables.hpp)
 // ---------------------------------------------------------------------------
-int i_indent = 0;
-
 bool debug = false;
 bool scientific_format = false;
 PConfig config;
 RuntimeState runtime;
-Message* g_msg = nullptr;
 
 
 // ---------------------------------------------------------------------------
@@ -213,6 +211,8 @@ int main(int argc, char **argv) {
       config.app.log_level = LOG_LEVEL_DEBUG;
 
     initLog();
+    PLOG(info) << "PreVABS " VERSION_STRING
+                  " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")";
   }
   catch (const CLI::ParseError &e) {
     return app.exit(e);
@@ -225,12 +225,7 @@ int main(int argc, char **argv) {
 
   // -----------------------------------------------------------------
 
-  auto pmessage = std::make_unique<Message>(config.file_name_log);
-  pmessage->openFile();
-  g_msg = pmessage.get();
-
   auto start_s = std::chrono::steady_clock::now();
-  pmessage->printTitle();
 
   auto pmodel_uptr = std::make_unique<PModel>(config.file_base_name);
   bool initialized = false;
@@ -243,14 +238,12 @@ int main(int argc, char **argv) {
     initialized = true;
 
     std::string s_dt_start = getCurrentDateTimeString();
-    PLOG(info) << pmessage->message("prevabs start (" + s_dt_start + ")");
+    PLOG(info) << "prevabs start (" + s_dt_start + ")";
 
     if (config.isHomo()) {
       pmodel_uptr->homogenize();
     } else if (config.isRecovery()) {
-      pmessage->printBlank();
       pmodel_uptr->dehomogenize();
-      pmessage->printBlank();
     }
 
     if (config.execute) {
@@ -270,35 +263,24 @@ int main(int argc, char **argv) {
     std::ostringstream ss;
     ss << "total running time: " << tt << " sec";
 
-    pmessage->printBlank();
-    pmessage->printDivider(40, '=');
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("prevabs finished (" + s_dt_finish + ")");
+    PLOG(info) << "prevabs finished (" + s_dt_finish + ")";
     PLOG(info) << ss.str();
-    pmessage->printBlank();
-    pmessage->printDivider(40, '=');
-    pmessage->printBlank();
-    pmessage->closeFile();
     return 0;
   }
   catch (const std::exception &e) {
     const std::string msg = e.what();
-    if (g_msg) { g_msg->error(msg); }
     PLOG(error) << msg;
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
-    pmessage->closeFile();
     return 1;
   }
   catch (...) {
     const std::string msg = "unknown fatal error";
-    if (g_msg) { g_msg->error(msg); }
     PLOG(error) << msg;
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
-    pmessage->closeFile();
     return 1;
   }
 }

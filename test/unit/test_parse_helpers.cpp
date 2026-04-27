@@ -126,8 +126,6 @@ void parseXmlDocument(
 }
 
 void readCircleXml(const std::string &xml, Baseline &line, PModel &model) {
-  Message message;
-  g_msg = &message;
 
   const std::string wrapped = "<geo>" + xml + "</geo>";
   std::vector<char> buffer;
@@ -140,8 +138,6 @@ void readCircleXml(const std::string &xml, Baseline &line, PModel &model) {
 }
 
 void readArcXml(const std::string &xml, Baseline &line, PModel &model) {
-  Message message;
-  g_msg = &message;
 
   const std::string wrapped = "<geo>" + xml + "</geo>";
   std::vector<char> buffer;

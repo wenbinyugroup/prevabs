@@ -18,8 +18,6 @@ void parseXmlDocument(
 );
 
 int parseFailureCriterionFromMaterialXml(const std::string &xml) {
-  Message message;
-  g_msg = &message;
 
   std::vector<char> buffer(xml.begin(), xml.end());
   buffer.push_back('\0');
@@ -39,8 +37,6 @@ Material *parseMaterialFromXml(
   std::vector<char> &buffer,
   rapidxml::xml_document<> &doc
 ) {
-  Message message;
-  g_msg = &message;
 
   parseXmlDocument(xml, buffer, doc);
   return readXMLElementMaterial(doc.first_node("material"), nullptr, &model);
@@ -161,8 +157,6 @@ TEST_CASE("readXMLElementMaterial: transversely isotropic maps to orthotropic in
 
 TEST_CASE("readXMLElementMaterial: reused material gets a default layer type",
           "[io][material][layertype]") {
-  Message message;
-  g_msg = &message;
 
   PModel model;
   Material *material = new Material("mat_reuse");
@@ -184,8 +178,6 @@ TEST_CASE("readXMLElementMaterial: reused material gets a default layer type",
 
 TEST_CASE("readLayups: layup reading repairs missing layer types on reused materials",
           "[io][material][layertype][layup]") {
-  Message message;
-  g_msg = &message;
 
   PModel model;
   Material *material = new Material("mat");
@@ -223,8 +215,6 @@ TEST_CASE("readLayups: layup reading repairs missing layer types on reused mater
 
 TEST_CASE("readLayups: lamina without material fails before layer creation",
           "[io][material][layertype][layup]") {
-  Message message;
-  g_msg = &message;
 
   PModel model;
   Lamina *lamina = new Lamina("lam", nullptr, 0.25);
@@ -250,8 +240,6 @@ TEST_CASE("readLayups: lamina without material fails before layer creation",
 
 TEST_CASE("readMaterials: null materials node is rejected",
           "[io][material][hygiene][error]") {
-  Message message;
-  g_msg = &message;
 
   PModel model;
   CHECK_THROWS_WITH(
@@ -264,8 +252,6 @@ TEST_CASE("readMaterials: null materials node is rejected",
 
 TEST_CASE("readLayups: layer without lamina or layup attribute fails clearly",
           "[io][material][layup][hygiene][error]") {
-  Message message;
-  g_msg = &message;
 
   PModel model;
   std::vector<char> buffer;
@@ -290,8 +276,6 @@ TEST_CASE("readLayups: layer without lamina or layup attribute fails clearly",
 
 TEST_CASE("readLayups: layer cannot define lamina and layup together",
           "[io][material][layup][hygiene][error]") {
-  Message message;
-  g_msg = &message;
 
   PModel model;
   std::vector<char> buffer;

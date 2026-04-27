@@ -3,22 +3,15 @@
 #include "globalConstants.hpp"
 
 #include <cstdio>
-#include <functional>
 #include <string>
 
 class PDCEL;
 class LayerType;
 class Material;
-class Message;
 class PModel;
 
 extern bool debug;
-extern int i_indent;
 extern bool scientific_format;
-
-// Global logger — set once in main() after Message is constructed.
-// Use instead of passing Message* through every function signature.
-extern Message* g_msg;
 
 // ---------------------------------------------------------------------------
 // AppConfig — persistent, user-tunable settings.
@@ -131,6 +124,5 @@ struct BuilderConfig {
   double       geo_tol;
   PDCEL*           dcel      = nullptr;
   IMaterialLookup* materials = nullptr;
-  std::function<void(Message*)> plotDebug;
   PModel*          model     = nullptr;
 };

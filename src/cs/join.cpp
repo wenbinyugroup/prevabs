@@ -856,7 +856,6 @@ static bool joinStyle2(
 //   Phase 4 – intersect the offset curve with those loops; trim the offset curve.
 //   Phase 5 – update the BaseOffsetMap to reflect the trimmed curves.
 void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
 
   PLOG(debug) << "making segment end: " + s->getName() + " "
               + std::to_string(e);
@@ -1024,7 +1023,6 @@ void PComponent::joinSegments(
   Segment *s1, Segment *s2, int e1, int e2,
   PDCELVertex *v, JointStyle style, const BuilderConfig &bcfg
   ) {
-  MESSAGE_SCOPE(g_msg);
 
   PLOG(debug) <<
     "joining segments ends: "

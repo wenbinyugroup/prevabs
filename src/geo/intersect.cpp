@@ -351,7 +351,6 @@ PDCELHalfEdge *findCurveLoopIntersection(
   const std::vector<PDCELVertex *> &vertices, PDCELHalfEdgeLoop *hel,
   int end, int &ls_i, double &u1, double &u2, const double &tol
   ) {
-  MESSAGE_SCOPE(g_msg);
 
     PLOG(debug) << "in function: findCurveLoopIntersection";
 
@@ -852,7 +851,6 @@ double getIntersectionLocation(
   int &ls_i, int &j
 ) {
   // Find the intersection location that is the closest to the expected end
-  MESSAGE_SCOPE(g_msg);
 
   //   // PLOG(debug) << "in function: getIntersectionLocation";
 
@@ -1080,7 +1078,6 @@ PDCELVertex *getIntersectionVertex(
   return ip;
 
 }
-
 
 
 

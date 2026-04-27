@@ -59,8 +59,6 @@ TEST_CASE("parseFormatVersionValue: rejects non-integer versions",
 
 TEST_CASE("readXMLElementComponent: invalid cycle boolean is rejected",
           "[io][p6][component]") {
-  Message message;
-  g_msg = &message;
 
   std::vector<char> buffer;
   rapidxml::xml_document<> doc;

@@ -28,8 +28,6 @@ PDCELVertex *readPointXml(
   const std::string &point_xml,
   PModel &model
 ) {
-  Message message;
-  g_msg = &message;
 
   // Wrap in <geo> so p_xn_geo is a valid parent context
   const std::string wrapped = "<geo>" + point_xml + "</geo>";

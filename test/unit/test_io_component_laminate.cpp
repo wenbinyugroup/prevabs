@@ -58,8 +58,6 @@ int readLaminateComponentXml(
   PModel &model,
   CrossSection &cross_section
 ) {
-  Message message;
-  g_msg = &message;
 
   std::vector<char> buffer;
   rapidxml::xml_document<> doc;
@@ -90,8 +88,6 @@ int readLaminateComponentXmlDependent(
   CrossSection &cross_section,
   const std::vector<std::string> &depend_names_in
 ) {
-  Message message;
-  g_msg = &message;
 
   std::vector<char> buffer;
   rapidxml::xml_document<> doc;
@@ -411,8 +407,6 @@ int readFillingComponentXml(
   PModel &model,
   CrossSection &cross_section
 ) {
-  Message message;
-  g_msg = &message;
 
   std::vector<char> buffer;
   rapidxml::xml_document<> doc;

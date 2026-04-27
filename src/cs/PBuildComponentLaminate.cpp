@@ -34,7 +34,6 @@ static JointStyle resolveJointStyle(
 } // namespace
 
 void PComponent::buildLaminate(const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
   LaminateState &laminate = _laminate;
   Segment *first_segment =
       laminate.segments.empty() ? nullptr : laminate.segments.front();
@@ -185,8 +184,6 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
     }
 
     seg->build(bcfg);
-
-    if (bcfg.debug && bcfg.plotDebug) bcfg.plotDebug(g_msg);
 
   }
 

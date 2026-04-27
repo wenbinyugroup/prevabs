@@ -145,7 +145,6 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
     he_tmp = he_tmp->prev();
   }
 
-  g_msg->increaseIndent();
   int _iter = 0;
   do {
     if (++_iter > 65536) {
@@ -162,7 +161,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
     // existing endpoint, producing a zero-length half-edge.
     if (he_tmp->source()->point().distance(he_tmp->target()->point())
         < TOLERANCE) {
-            g_msg->warn("degenerate edge, skipping");
+      PLOG(warning) << "degenerate edge, skipping";
     }
     else {
       bool not_parallel = calcLineIntersection2D(
@@ -208,7 +207,6 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
     he_tmp = go_prev ? he_tmp->prev() : he_tmp->next();
 
   } while (he_tmp != he_base);
-  g_msg->decreaseIndent();
 
   return v_layer;
 }
@@ -228,7 +226,6 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
   double cumu_thk = 0;
   const int offset_dir = layupSide();
 
-  g_msg->increaseIndent();
   for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
         PLOG(debug) << "layer " + std::to_string(i + 1);
 
@@ -245,7 +242,7 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
     deleteDetachedLineSegment(ls_offset);
 
     if (v_layer == nullptr) {
-            g_msg->error("cannot find intersection");
+      PLOG(error) << "cannot find intersection";
       break;
     }
 
@@ -253,7 +250,6 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
     layer_vertices.push_back(v_layer);
     v_layer_prev = v_layer;
   }
-  g_msg->decreaseIndent();
 
   return layer_vertices;
 }
@@ -269,7 +265,6 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
 
     PLOG(debug) << 
       "1. creating the beginning bound of the first area";
-  g_msg->increaseIndent();
 
   std::vector<PDCELVertex *> prev_bound_vertices;
 
@@ -326,7 +321,6 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
     }
   }
 
-  g_msg->decreaseIndent();
   return prev_bound_vertices;
 }
 
@@ -340,7 +334,6 @@ void Segment::createIntermediateAreas(
     int &count, const BuilderConfig &bcfg) {
 
     PLOG(debug) << "2. creating areas";
-  g_msg->increaseIndent();
 
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
         PLOG(debug) << "area " + std::to_string(k);
@@ -397,7 +390,6 @@ void Segment::createIntermediateAreas(
     prev_bound_vertices = area->nextBoundVertices();
   }
 
-  g_msg->decreaseIndent();
 }
 
 
@@ -410,7 +402,6 @@ void Segment::buildLastArea(
     int count, const BuilderConfig &bcfg) {
 
     PLOG(debug) << "3. creating the last area";
-  g_msg->increaseIndent();
 
   PArea *area = new PArea(this);
   count++;
@@ -484,7 +475,6 @@ void Segment::buildLastArea(
     }
   }
 
-  g_msg->decreaseIndent();
   _areas.emplace_back(area);
 }
 
@@ -492,7 +482,6 @@ void Segment::buildLastArea(
 
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
   if (!requireExactState(LifecycleState::ShellBuilt, "buildAreas")) {
     return;
   }

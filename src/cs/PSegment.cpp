@@ -347,7 +347,6 @@ void Segment::printBaseOffsetLink() {
 }
 
 void Segment::printBaseOffsetPairs() {
-  MESSAGE_SCOPE(g_msg);
   if (!requireOffsetCurve("printBaseOffsetPairs")) {
     return;
   }
@@ -408,7 +407,6 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
 }
 
 void Segment::offsetCurveBase() {
-  MESSAGE_SCOPE(g_msg);
   if (!requireBaseDefinition("offsetCurveBase")) {
     return;
   }
@@ -466,7 +464,6 @@ void Segment::offsetCurveBase() {
 }
 
 void Segment::build(const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
   if (!requireExactState(LifecycleState::OffsetReady, "build")) {
     return;
   }

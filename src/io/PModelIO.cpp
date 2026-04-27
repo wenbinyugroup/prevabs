@@ -42,7 +42,6 @@
 int readInputMain(const std::string &filenameCrossSection,
                   const std::string &filePath, PModel *pmodel) {
 
-  MESSAGE_SCOPE(g_msg);
 
   readCrossSection(filenameCrossSection, filePath, pmodel);
   if (config.isRecovery()) {
@@ -80,4 +79,3 @@ int writeFace(FILE *file, PDCELFace *face) {
   }
   return 0;
 }
-

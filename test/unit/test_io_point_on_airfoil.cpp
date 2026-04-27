@@ -25,8 +25,6 @@ std::string pointOnAirfoilDataDir() {
 }
 
 int readPointOnAirfoilBaselines(PModel &model) {
-  Message message;
-  g_msg = &message;
 
   config.file_directory = pointOnAirfoilDataDir();
 

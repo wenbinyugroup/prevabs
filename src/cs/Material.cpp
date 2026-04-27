@@ -21,7 +21,6 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
 }
 
 void Material::print(int i_type, int /*i_indent*/) {
-  MESSAGE_SCOPE(g_msg);
   std::string msg;
     PLOG(debug) << "name: " + _name;
     PLOG(debug) << "density = " + std::to_string(_density);
@@ -293,7 +292,6 @@ void Material::completeStrengthProperties() {
 
 
 void Material::writeStrengthProperties(FILE *file) {
-  MESSAGE_SCOPE(g_msg);
 
   std::string type = _type;
   if (getSymmetryType() == "transversely isotropic") {
@@ -450,7 +448,6 @@ void Layer::setLayerType(LayerType *p_layertype) { p_llayertype = p_layertype; }
 
 // ===================================================================
 void Layup::print() {
-  MESSAGE_SCOPE(g_msg);
 
   std::string msg;
     PLOG(debug) << "name: " + lname;

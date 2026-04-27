@@ -105,7 +105,6 @@ void PModel::setObliques(double cos11, double cos21) {
 
 
 void PModel::summary() {
-  MESSAGE_SCOPE(g_msg);
 
   // std::cout << std::fixed;
   if (scientific_format) {
@@ -127,7 +126,6 @@ void PModel::summary() {
   //           << "Y" << std::endl;
   // for (auto bp : basepoints)
   //   std::cout << bp << std::endl;
-  g_msg->printBlank();
     PLOG(debug) << "summary of base points";
   for (auto bp : _geo_repo.vertices()) {
     std::stringstream ss;
@@ -146,11 +144,9 @@ void PModel::summary() {
   //   std::cout << std::setw(16) << bl->getName() << std::setw(16)
   //             << bl->getType() << std::setw(16) << bl->getNumberOfBasepoints()
   //             << std::endl;
-  g_msg->printBlank();
     PLOG(debug) << "summary of base lines";
   for (auto bsl : _geo_repo.baselines()) {
     bsl->print();
-    g_msg->printBlank();
   }
 
   // std::cout << doubleLine80 << std::endl;
@@ -187,21 +183,17 @@ void PModel::summary() {
               << l->getPlies().size() << std::setw(16) << l->getThickness()
               << std::endl;
 
-  g_msg->printBlank();
     PLOG(debug) << "summary of layups";
   for (auto lyp : _mat_repo.layups()) {
     lyp->print();
-    g_msg->printBlank();
   }
 
   // std::cout << doubleLine80 << std::endl;
     PLOG(debug) << doubleLine80;
 
-  g_msg->printBlank();
     PLOG(debug) << "summary of components";
   for (auto cmp : _cross_section->components()) {
     cmp->print();
-    g_msg->printBlank();
   }
 }
 
@@ -215,8 +207,7 @@ void PModel::build() {
 
   BuilderConfig bcfg{
     config.debug, config.tool, config.app.tol, config.app.geo_tol,
-    _dcel, this,
-    [this](Message* msg) { this->plotGeoDebug(); }
+    _dcel, this
   };
   bcfg.model = this;
   _face_data[_dcel->faces().front()].name = "background";
@@ -230,7 +221,6 @@ void PModel::build() {
 
   // _dcel->vertextree()->printInOrder();
 
-  g_msg->printBlank();
   _dcel->fixGeometry(bcfg);
 }
 
@@ -278,44 +268,37 @@ void PModel::plotGeoDebug(bool create_gmsh_geo) {
 
 void PModel::homogenize() {
 
-  MESSAGE_SCOPE(g_msg);
 
   try {
     // ================
     // READ INPUT FILES
 
-    g_msg->printBlank();
-        g_msg->print("reading input files");
+        PLOG(info) << "reading input files";
 
     readInputMain(config.main_input, config.file_directory, this);
     // pmodel->summary(g_msg);
 
-        g_msg->print("reading input files -- done");
-    g_msg->printBlank();
+        PLOG(info) << "reading input files -- done";
 
 
     // ==============
     // BUILD GEOMETRY
 
-    g_msg->printBlank();
-        g_msg->print("building the shape");
+        PLOG(info) << "building the shape";
 
     build();
 
-        g_msg->print("building the shape -- done");
-    g_msg->printBlank();
+        PLOG(info) << "building the shape -- done";
 
 
     // ================
     // MODELING IN GMSH
 
-    g_msg->printBlank();
-        g_msg->print("modeling in Gmsh");
+        PLOG(info) << "modeling in Gmsh";
 
     buildGmsh();
 
-        g_msg->print("modeling in Gmsh -- done");
-    g_msg->printBlank();
+        PLOG(info) << "modeling in Gmsh -- done";
 
 
     // ===================
@@ -323,8 +306,7 @@ void PModel::homogenize() {
 
     // if (config.analysis_tool != 3) {
     if (!config.integrated_solver) {
-      g_msg->printBlank();
-            g_msg->print("writing outputs");
+            PLOG(info) << "writing outputs";
 
       if (config.plot) {
         writeGmsh(config.file_directory + config.file_base_name);
@@ -337,8 +319,7 @@ void PModel::homogenize() {
         writeSupp();
       }
 
-            g_msg->print("writing outputs -- done");
-      g_msg->printBlank();
+            PLOG(info) << "writing outputs -- done";
     }
   }
   catch (std::exception &exception) {
@@ -357,8 +338,7 @@ void PModel::homogenize() {
 
 
 void PModel::dehomogenize() {
-  MESSAGE_SCOPE(g_msg);
-    g_msg->print("dehomogenizing...");
+    PLOG(info) << "dehomogenizing...";
 
   // Read cs xml file
   readInputMain(config.main_input, config.file_directory, this);
@@ -387,13 +367,9 @@ void PModel::dehomogenize() {
 
 
 void PModel::run() {
-  MESSAGE_SCOPE(g_msg);
 
-  g_msg->printBlank();
-    g_msg->print("running " + config.tool_name + " for " + config.msg_analysis);
-  g_msg->printBlank();
-  g_msg->print(" [" + config.tool_name + " Messages] ");
-  g_msg->printBlank();
+    PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis;
+  PLOG(info) << " [" + config.tool_name + " Messages] ";
 
 
   std::vector<std::string> cmd_args;
@@ -433,11 +409,8 @@ void PModel::run() {
   }
 
 
-  g_msg->printBlank();
-  g_msg->print(" [" + config.tool_name + " Messages End] ");
-  g_msg->printBlank();
-    g_msg->print("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-  g_msg->printBlank();
+  PLOG(info) << " [" + config.tool_name + " Messages End] ";
+    PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis + " -- done";
 
   return;
 }
@@ -451,7 +424,6 @@ void PModel::run() {
 
 
 void PModel::plot() {
-  MESSAGE_SCOPE(g_msg);
   if (config.isRecovery()) {
     plotDehomo();
     // pmessage->printBlank();
@@ -471,8 +443,7 @@ void PModel::plot() {
   }
 
 
-  g_msg->printBlank();
-    g_msg->print("running Gmsh for visualization");
+    PLOG(info) << "running Gmsh for visualization";
 
   // Load the opt file (view options) and open the FLTK GUI via the Gmsh API.
   // This avoids requiring a separate `gmsh` executable on PATH.

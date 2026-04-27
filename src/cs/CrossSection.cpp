@@ -167,11 +167,10 @@ void CrossSection::addComponent(PComponent *component) {
 void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
 void CrossSection::build(const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
-    g_msg->print("building the cross section, step 1");
+    PLOG(info) << "building the cross section, step 1";
 
   for (auto cmp : _components) {
 
@@ -197,8 +196,6 @@ void CrossSection::build(const BuilderConfig &bcfg) {
     // _pmodel->dcel()->print_dcel();
 
     // Create Gmsh model and write Gmsh files for debugging
-
-    if (bcfg.plotDebug) bcfg.plotDebug(g_msg);
   }
 
   // for (auto cmp : _components) {
@@ -207,13 +204,11 @@ void CrossSection::build(const BuilderConfig &bcfg) {
   //   }
   // }
 
-  // g_msg->printBlank();
-  // g_msg->print(9, "current dcel");
+  // PLOG(info) << 9, "current dcel";
   // _pmodel->dcel()->print_dcel();
 
   // Build details (mainly slice layers for each segment)
-  g_msg->printBlank();
-    g_msg->print("building the cross section, step 2");
+    PLOG(info) << "building the cross section, step 2";
 
   for (auto cmp : _components) {
     cmp->buildDetails(bcfg);

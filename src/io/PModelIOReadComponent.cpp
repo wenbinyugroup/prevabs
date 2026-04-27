@@ -28,7 +28,6 @@ PComponent *readXMLElementComponent(
   CrossSection *cs, PModel *pmodel
   ) {
 
-  MESSAGE_SCOPE(g_msg);
 
   PComponent *p_component = new PComponent();
 

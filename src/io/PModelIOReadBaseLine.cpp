@@ -104,7 +104,6 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
 }
 
 Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn_geo, PModel *pmodel) {
-  MESSAGE_SCOPE(g_msg);
 
   std::string baselineName{
     requireAttr(p_xn_line, "name", "<line>/<baseline>")->value()
@@ -783,4 +782,3 @@ Baseline *findLineByName(
   return p_line;
 
 }
-

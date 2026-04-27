@@ -295,7 +295,6 @@ Strength readXMLElementStrength(const xml_node<> *p_xn_strength) {
 }
 
 Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node<> * /*p_xn_mdb*/, PModel *pmodel) {
-  MESSAGE_SCOPE(g_msg);
 
   Material *m;
 
@@ -512,7 +511,6 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
 }
 
 Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /*p_xn_mdb*/, PModel *pmodel) {
-  MESSAGE_SCOPE(g_msg);
 
   Lamina *l;
 

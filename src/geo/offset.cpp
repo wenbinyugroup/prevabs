@@ -231,10 +231,9 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
  */
 int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
            PDCELVertex *v1_off, PDCELVertex *v2_off) {
-  MESSAGE_SCOPE(g_msg);
 
   if (!v1_off || !v2_off) {
-        g_msg->error("offset: null output vertex pointer");
+    PLOG(error) << "offset: null output vertex pointer";
     return 0;
   }
 
@@ -285,15 +284,13 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
     BaseOffsetMap &junction_map
   ) {
 
-  MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
   junction_map.clear();
 
   if (size < 3) {
-        g_msg->error(
-      "computeOffsetJunctions: base must have at least 3 vertices (got "
-      + std::to_string(size) + "); returning empty junction list");
+    PLOG(error) << "computeOffsetJunctions: base must have at least 3 vertices (got "
+      + std::to_string(size) + "); returning empty junction list";
     return {};
   }
 
@@ -505,17 +502,15 @@ static void groupValidSegments(
     std::vector<std::vector<PDCELVertex *>> &lines_group,
     std::vector<BaseOffsetMap> &maps_group) {
 
-  MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
 
   // Enforce size consistency: vertices_tmp and junction_map must match base.
   if (vertices_tmp.size() != size || junction_map.size() != size) {
-        g_msg->error(
-      "groupValidSegments: size mismatch — base=" + std::to_string(size)
+    PLOG(error) << "groupValidSegments: size mismatch — base=" + std::to_string(size)
       + ", vertices_tmp=" + std::to_string(vertices_tmp.size())
       + ", junction_map=" + std::to_string(junction_map.size())
-      + "; skipping grouping");
+      + "; skipping grouping";
     return;
   }
 
@@ -619,7 +614,6 @@ static void trimSubLinePair(
     BaseOffsetMap &map_head
   ) {
 
-  MESSAGE_SCOPE(g_msg);
 
   if (config.debug) {
     std::ostringstream oss;
@@ -640,8 +634,7 @@ static void trimSubLinePair(
   );
 
   if (isect_segs_tail.empty()) {
-        g_msg->warn(
-      "no intersection found between consecutive offset sub-lines; joining at endpoints");
+    PLOG(warning) << "no intersection found between consecutive offset sub-lines; joining at endpoints";
     return;
   }
 
@@ -666,8 +659,7 @@ static void trimSubLinePair(
   );
 
   if (isect_idx < 0 || isect_idx >= static_cast<int>(isect_segs_head.size())) {
-        g_msg->warn(
-      "intersection index out of range; skipping trim for this sub-line pair");
+    PLOG(warning) << "intersection index out of range; skipping trim for this sub-line pair";
     return;
   }
 
@@ -699,8 +691,7 @@ static void trimSubLinePair(
   );
 
   if (!junction) {
-        g_msg->error(
-      "getIntersectionVertex returned null; skipping trim for this sub-line pair");
+    PLOG(error) << "getIntersectionVertex returned null; skipping trim for this sub-line pair";
     return;
   }
 
@@ -777,7 +768,6 @@ static void trimSubLineSelfIntersections(
     std::vector<PDCELVertex *> &line,
     BaseOffsetMap &map
   ) {
-  MESSAGE_SCOPE(g_msg);
 
   bool found = true;
   while (found) {
@@ -860,7 +850,6 @@ static void trimSubLineSelfIntersections(
 static void trimJoinedCurveSelfIntersections(
     std::vector<PDCELVertex *> &offset_vertices,
     BaseOffsetMap &id_pairs) {
-  MESSAGE_SCOPE(g_msg);
 
   bool found = true;
   while (found) {
@@ -971,15 +960,13 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<PDCELVertex *> &offset_vertices,
            BaseOffsetMap &id_pairs) {
 
-  MESSAGE_SCOPE(g_msg);
 
   std::size_t size = base.size();
 
   // Precondition: at least 2 vertices are required to form a segment.
   if (size < 2) {
-        g_msg->error(
-      "offset (multi-vertex): base must have at least 2 vertices (got "
-      + std::to_string(size) + "); returning empty result");
+    PLOG(error) << "offset (multi-vertex): base must have at least 2 vertices (got "
+      + std::to_string(size) + "); returning empty result";
     return 0;
   }
 
@@ -1063,8 +1050,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // Guard: if all segments were invalid (folded-back or degenerate), there is
   // nothing to offset.
   if (lines_group.empty()) {
-        g_msg->warn(
-      "offset (multi-vertex): all offset segments are invalid; returning empty result");
+    PLOG(warning) << "offset (multi-vertex): all offset segments are invalid; returning empty result";
     return 0;
   }
 
@@ -1173,8 +1159,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       }
 
       if (isect_segs_back.empty()) {
-                g_msg->warn(
-          "offset (multi-vertex): no self-intersection found; skipping head-tail trim");
+        PLOG(warning) << "offset (multi-vertex): no self-intersection found; skipping head-tail trim";
       } else {
         // Pick the intersection closest to the tail end of the back sub-line.
         //   which_end=1  — select the intersection nearest the tail (end) of the curve.
@@ -1195,9 +1180,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
         }
 
         if (isect_idx < 0 || isect_idx >= static_cast<int>(isect_segs_front.size())) {
-                    g_msg->warn(
-            "offset (multi-vertex): self-intersection index out of range; "
-            "skipping head-tail trim");
+          PLOG(warning) << "offset (multi-vertex): self-intersection index out of range; "
+            "skipping head-tail trim";
         } else {
           // Retrieve the matching intersection data on the front sub-line side.
           int    seg_idx_front = isect_segs_front[isect_idx];
@@ -1233,9 +1217,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
           }
 
           if (!junction) {
-                        g_msg->error(
-              "offset (multi-vertex): getIntersectionVertex returned null; "
-              "skipping self-intersection trim");
+            PLOG(error) << "offset (multi-vertex): getIntersectionVertex returned null; "
+              "skipping self-intersection trim";
           } else {
             // Extract the sub-sequence from the first to the second occurrence of
             // junction (the self-intersection forms a loop; keep the loop portion).
@@ -1243,9 +1226,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
             auto it_begin = std::find(lg0.begin(), lg0.end(), junction);
 
             if (it_begin == lg0.end()) {
-                            g_msg->warn(
-                "offset (multi-vertex): junction vertex not found in single "
-                "sub-line; skipping trim");
+              PLOG(warning) << "offset (multi-vertex): junction vertex not found in single "
+                "sub-line; skipping trim";
             } else {
               auto it_end = std::find(std::next(it_begin), lg0.end(), junction);
               if (it_end != lg0.end()) {

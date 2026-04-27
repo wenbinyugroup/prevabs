@@ -44,7 +44,6 @@
 #endif
 
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
-  MESSAGE_SCOPE(g_msg);
 
   PLOG(debug) << "in function: readLayups";
 

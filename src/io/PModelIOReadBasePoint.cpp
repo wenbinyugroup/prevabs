@@ -49,7 +49,6 @@ PDCELVertex *readXMLElementPoint(
   PModel *pmodel
   ) {
 
-  MESSAGE_SCOPE(g_msg);
 
   PDCELVertex *pv = nullptr;
 

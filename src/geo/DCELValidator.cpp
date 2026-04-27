@@ -113,8 +113,7 @@ bool validateDCEL(const PDCEL &dcel) {
 }
 
 void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
-  MESSAGE_SCOPE(g_msg);
-    g_msg->print("fixing geometry");
+    PLOG(info) << "fixing geometry";
 
   std::unordered_set<PDCELHalfEdge *> small_edges;
   for (PDCELHalfEdge *he : dcel.halfedges()) {

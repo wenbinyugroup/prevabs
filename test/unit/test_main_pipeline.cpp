@@ -33,8 +33,6 @@ void readLaminateXml(
   PModel &model,
   CrossSection &cs
 ) {
-  Message message;
-  g_msg = &message;
 
   std::vector<char> buffer;
   rapidxml::xml_document<> doc;

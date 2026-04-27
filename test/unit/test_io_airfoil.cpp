@@ -31,8 +31,6 @@ void readAirfoilLineXml(
   Baseline &line,
   const std::string &line_extras = ""
 ) {
-  Message message;
-  g_msg = &message;
 
   const std::string xml =
     "<line name=\"" + line.getName() + "\" type=\"airfoil\">"

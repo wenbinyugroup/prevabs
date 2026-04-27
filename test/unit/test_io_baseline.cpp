@@ -28,8 +28,6 @@ void parseXmlDocument(
 // p_xn_geo is set to the first_node of a wrapper <geo> element so that
 // findPointByName has a sibling context to search.
 Baseline *readLineXml(const std::string &xml, PModel &model) {
-  Message message;
-  g_msg = &message;
 
   // Wrap in <geo> so the geo-context pointer is valid
   const std::string wrapped = "<geo>" + xml + "</geo>";
@@ -44,8 +42,6 @@ Baseline *readLineXml(const std::string &xml, PModel &model) {
 
 // Call readLineTypeStraight directly.
 void readStraightXml(const std::string &xml, Baseline &line, PModel &model) {
-  Message message;
-  g_msg = &message;
 
   const std::string wrapped = "<geo>" + xml + "</geo>";
   std::vector<char> buffer;
@@ -59,8 +55,6 @@ void readStraightXml(const std::string &xml, Baseline &line, PModel &model) {
 
 // Call readLineTypeCircle directly.
 void readCircleXml(const std::string &xml, Baseline &line, PModel &model) {
-  Message message;
-  g_msg = &message;
 
   const std::string wrapped = "<geo>" + xml + "</geo>";
   std::vector<char> buffer;
@@ -74,8 +68,6 @@ void readCircleXml(const std::string &xml, Baseline &line, PModel &model) {
 
 // Call readLineTypeArc directly.
 void readArcXml(const std::string &xml, Baseline &line, PModel &model) {
-  Message message;
-  g_msg = &message;
 
   const std::string wrapped = "<geo>" + xml + "</geo>";
   std::vector<char> buffer;

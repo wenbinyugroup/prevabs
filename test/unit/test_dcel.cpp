@@ -17,14 +17,9 @@
 #include "utilities.hpp"
 
 bool         debug             = false;
-int          i_indent          = 0;
 bool         scientific_format = false;
 PConfig      config;
 RuntimeState runtime;
-// g_msg is used only by fixGeometry / intersect / offset (not tested here).
-// PLOG() silently drops messages when no "prevabs" spdlog logger is registered,
-// so it is safe to leave g_msg nullptr for these tests.
-Message*     g_msg             = nullptr;
 
 // Register a stderr logger so validate() warnings are visible during tests.
 #include "plog.hpp"
@@ -109,7 +104,6 @@ static PDCELFace *findFaceByName(PDCEL &dcel, PModel &model,
 }
 
 struct FillComponentFixture {
-  Message msg;
   PDCEL dcel;
   PModel model;
   Material material;
@@ -119,7 +113,6 @@ struct FillComponentFixture {
   FillComponentFixture()
       : material("fill_mat"),
         fill_layertype(1, &material, 0.0) {
-    g_msg = &msg;
 
     dcel.initialize();
     addRectangularSection();
@@ -163,7 +156,6 @@ struct FillComponentFixture {
 };
 
 struct LaminateComponentFixture {
-  Message msg;
   PDCEL dcel;
   PModel model;
   Material material;
@@ -177,7 +169,6 @@ struct LaminateComponentFixture {
         lamina("lam", &material, 1.0),
         layertype(1, &material, 0.0),
         layup("layup") {
-    g_msg = &msg;
 
     dcel.initialize();
     model.addMaterial(&material);
@@ -472,8 +463,6 @@ TEST_CASE("addEdge: creates two half-edges with correct twin relationship",
 
 TEST_CASE("buildAreas: last area uses final pair instead of area count",
           "[dcel][segment][areas]") {
-  Message msg;
-  g_msg = &msg;
 
   Material material("mat");
   Lamina lamina("lam", &material, 1.0);
@@ -605,8 +594,6 @@ TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset lo
 
 TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
           "[dcel][segment][areas][head][tail]") {
-  Message msg;
-  g_msg = &msg;
 
   Material material("mat");
   Lamina lamina("lam", &material, 1.0);
@@ -665,8 +652,6 @@ TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
 
 TEST_CASE("buildAreas: right-side open segment builds head and tail layer faces",
           "[dcel][segment][areas][head][tail]") {
-  Message msg;
-  g_msg = &msg;
 
   Material material("mat");
   Lamina lamina("lam", &material, 1.0);

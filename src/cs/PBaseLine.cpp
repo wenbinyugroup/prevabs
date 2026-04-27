@@ -26,7 +26,6 @@ Baseline::Baseline(Baseline *bl) {
 }
 
 void Baseline::print() {
-  MESSAGE_SCOPE(g_msg);
 
   std::string msg;
   // pmessage->print(i_type, "name: " + blname);
@@ -116,4 +115,3 @@ void Baseline::join(Baseline *curve, int end, bool reverse) {
     _pvertices.swap(temp);
   }
 }
-
