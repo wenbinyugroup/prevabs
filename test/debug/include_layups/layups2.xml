@@ -1,0 +1,8 @@
+<layups>
+
+    <!-- overrides 'coat' from layups.xml to verify last-import-wins behavior -->
+    <layup name="coat">
+        <layer lamina="Gel_Coat">45</layer>
+    </layup>
+
+</layups>

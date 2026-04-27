@@ -444,57 +444,42 @@ void readLayupsSection(
   const rapidxml::xml_node<> *xn_sg,
   const rapidxml::xml_node<> *xn_include,
   const std::string &filePath,
-  int format_version,
   PModel *pmodel
 ) {
   PLOG(debug) << "reading layups...";
 
-  if (format_version == 0) {
-    if (!xn_include) {
-      throw std::runtime_error(
-        "Format version 0 requires an <include> section with <layup>"
-      );
-    }
-    rapidxml::xml_node<> *p_xn_include_lyp{xn_include->first_node("layup")};
-    if (!p_xn_include_lyp) {
-      throw std::runtime_error(
-        "Missing required XML element <include>/<layup> for format version 0"
-      );
-    }
-    std::string filenameLayups{
-      filePath + p_xn_include_lyp->value() + ".xml"
-    };
-    PLOG(info) << "include layups file: " << filenameLayups;
-    std::ifstream fileLayups;
-    openFile(fileLayups, filenameLayups);
-    rapidxml::xml_document<> xmlDocLayups;
-    std::vector<char> buffer_lyp{
-      (std::istreambuf_iterator<char>(fileLayups)),
-      std::istreambuf_iterator<char>()
-    };
-    buffer_lyp.push_back('\0');
-    try {
-      xmlDocLayups.parse<0>(&buffer_lyp[0]);
-    } catch (rapidxml::parse_error &e) {
-      throw std::runtime_error(
-        "XML parse error in '" + filenameLayups + "': " + e.what()
-      );
-    }
-    rapidxml::xml_node<> *nodeLayups = xmlDocLayups.first_node("layups");
-    readLayups(nodeLayups, pmodel);
-    PLOG(debug) << "finished reading layups.";
-  } else if (format_version == 1) {
-    rapidxml::xml_node<> *nodeLayups = xn_sg->first_node("layups");
-    if (nodeLayups) {
+  if (xn_include) {
+    for (auto *p_xn_include_lyp = xn_include->first_node("layup");
+         p_xn_include_lyp;
+         p_xn_include_lyp = p_xn_include_lyp->next_sibling("layup")) {
+      std::string filenameLayups{
+        filePath + p_xn_include_lyp->value() + ".xml"
+      };
+      PLOG(info) << "include layups file: " << filenameLayups;
+      std::ifstream fileLayups;
+      openFile(fileLayups, filenameLayups);
+      rapidxml::xml_document<> xmlDocLayups;
+      std::vector<char> buffer_lyp{
+        (std::istreambuf_iterator<char>(fileLayups)),
+        std::istreambuf_iterator<char>()
+      };
+      buffer_lyp.push_back('\0');
+      try {
+        xmlDocLayups.parse<0>(&buffer_lyp[0]);
+      } catch (rapidxml::parse_error &e) {
+        throw std::runtime_error(
+          "XML parse error in '" + filenameLayups + "': " + e.what()
+        );
+      }
+      rapidxml::xml_node<> *nodeLayups = xmlDocLayups.first_node("layups");
       readLayups(nodeLayups, pmodel);
-      PLOG(debug) << "finished reading layups.";
     }
-  } else {
-    throw std::runtime_error(
-      "Unsupported format version '" + std::to_string(format_version)
-      + "' on root element"
-    );
   }
+
+  rapidxml::xml_node<> *nodeLayups = xn_sg->first_node("layups");
+  if (nodeLayups) readLayups(nodeLayups, pmodel);
+
+  PLOG(debug) << "finished reading layups.";
 }
 
 
@@ -605,7 +590,7 @@ int readCrossSection(const std::string &filenameCrossSection,
 
   readGeometrySection(p_xn_sg, xn_include, filePath, cs_type, gen, pmodel);
   readMaterialsSection(p_xn_sg, xn_include, filePath, pmodel);
-  readLayupsSection(p_xn_sg, xn_include, filePath, format_version, pmodel);
+  readLayupsSection(p_xn_sg, xn_include, filePath, pmodel);
 
   std::vector<Layup *> p_layups{};
   int num_combined_layups = 0;
