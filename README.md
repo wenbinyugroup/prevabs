@@ -110,12 +110,12 @@ The executable will be at `build_msvc\Release\prevabs.exe` (Windows path).
 
 2. The default compiler is GCC. To use a different compiler, edit the
    `-DCMAKE_C_COMPILER` / `-DCMAKE_CXX_COMPILER` options in
-   `tools/build_all_linux_64.sh`.
+   `tools/build_linux_64.sh`.
 
 3. Run the build script:
 
    ```bash
-   ./tools/build_all_linux_64.sh
+   ./tools/build_linux_64.sh
    ```
 
 4. Add the output directories to your environment:

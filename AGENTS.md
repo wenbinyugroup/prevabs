@@ -54,7 +54,7 @@ The executable will be at `build_msvc\Release\prevabs.exe` (Windows path).
 
 ```bash
 # Using the provided script
-./tools/build_all_linux_64.sh
+./tools/build_linux_64.sh
 
 # Or manual CMake build
 mkdir build && cd build

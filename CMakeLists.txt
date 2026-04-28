@@ -7,7 +7,7 @@ project( prevabs C CXX )
 
 set( PROJECTNAME "prevabs" )
 
-set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD 17 )
 
 set( PREVABS_VERSION_MAJOR 1 )
 set( PREVABS_VERSION_MINOR 6 )
@@ -105,9 +105,9 @@ endif()
 add_executable( ${PROJECTNAME} ${SOURCES} )
 
 if(MSVC)
-  target_compile_options(${PROJECTNAME} PRIVATE /W4)
+  target_compile_options(${PROJECTNAME} PRIVATE /W0)
 else()
-  target_compile_options(${PROJECTNAME} PRIVATE -Wall -Wextra)
+  target_compile_options(${PROJECTNAME} PRIVATE -w)
 endif()
 
 # target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_SOURCE_DIR}/include )

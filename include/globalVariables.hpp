@@ -127,4 +127,9 @@ struct BuilderConfig {
   PDCEL*           dcel      = nullptr;
   IMaterialLookup* materials = nullptr;
   PModel*          model     = nullptr;
+
+  BuilderConfig() = default;
+  BuilderConfig(bool d, AnalysisTool t, double to, double gt, PDCEL* dcel_ptr,
+                PModel* m)
+      : debug(d), tool(t), tol(to), geo_tol(gt), dcel(dcel_ptr), model(m) {}
 };
