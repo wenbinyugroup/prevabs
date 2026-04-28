@@ -75,6 +75,9 @@ void addParserArguments(CLI::App &app) {
   // Output / visualisation options
   app.add_flag("-v,--visualize", config.plot,
     "Visualize meshed cross section or contour plots")->default_val(false);
+  app.add_flag("--nopopup", config.no_popup,
+    "Do not open the Gmsh GUI window (same as gmsh -nopopup); "
+    "geo/msh files are still written when -v is given")->default_val(false);
   app.add_option("--gmsh-verbosity", config.app.gmsh_verbosity,
     "Gmsh log verbosity (0=silent, 1=errors, 2=warnings, 3=info, 5=debug)"
   )->default_val(2)->check(CLI::IsMember({0, 1, 2, 3, 5}));

@@ -450,7 +450,9 @@ void PModel::plot() {
   if (!config.file_name_opt.empty()) {
     gmsh::merge(config.file_name_opt);
   }
-  gmsh::fltk::run();
+  if (!config.no_popup) {
+    gmsh::fltk::run();
+  }
 
   return;
 }

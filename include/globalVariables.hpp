@@ -60,9 +60,10 @@ struct PConfig {
   AnalysisMode mode = AnalysisMode::Homogenization;
 
   // --- Execution / output ---
-  bool execute = false;
-  bool plot    = false;
-  bool debug   = false;
+  bool execute   = false;
+  bool plot      = false;
+  bool no_popup  = false;   // suppress Gmsh FLTK window when -v is used
+  bool debug     = false;
 
   // --- Persistent numeric/output settings (may be overridden by config file) ---
   AppConfig app;
