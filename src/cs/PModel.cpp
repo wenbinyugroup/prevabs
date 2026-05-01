@@ -445,9 +445,18 @@ void PModel::plot() {
 
     PLOG(info) << "running Gmsh for visualization";
 
+  // Recovery/failure plotting writes a standalone .msh file. Load it into the
+  // current Gmsh session before applying the .opt view settings.
+  if ((config.isRecovery() || config.isFailure()) &&
+      !config.file_name_msh.empty()) {
+    PLOG(info) << "loading gmsh .msh file: " + config.file_name_msh;
+    gmsh::open(config.file_name_msh);
+  }
+
   // Load the opt file (view options) and open the FLTK GUI via the Gmsh API.
   // This avoids requiring a separate `gmsh` executable on PATH.
   if (!config.file_name_opt.empty()) {
+    PLOG(info) << "loading gmsh .opt file: " + config.file_name_opt;
     gmsh::merge(config.file_name_opt);
   }
   if (!config.no_popup) {
