@@ -34,9 +34,10 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx_design',
-    # 'sphinx_gallery.gen_gallery',
+    # 'sphinx_gallery',
     'sphinx-prompt',
     'sphinx_copybutton',
+    'myst_parser'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
