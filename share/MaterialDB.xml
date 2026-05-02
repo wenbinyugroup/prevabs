@@ -23,7 +23,7 @@
   </material>
   <lamina name="la_foam">
     <material>foam</material>
-    <thickness></thickness>
+    <thickness>1</thickness>
   </lamina>
 
 

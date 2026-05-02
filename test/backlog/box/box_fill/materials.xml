@@ -1,5 +1,12 @@
 <materials>
-  <material name="mtr_lamina" type="lamina">
+  <material name="foam" type="isotropic">
+    <density>160</density>
+    <elastic>
+      <e>72.400E+09</e>
+      <nu>0.3</nu>
+    </elastic>
+  </material>
+  <material name="mtr_lamina" type="transversely isotropic">
     <density>1</density>
     <elastic>
       <e1>1</e1>

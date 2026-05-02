@@ -4,7 +4,7 @@
     <!-- <baseline>baselines</baseline> -->
     <!-- <material>db_material</material> -->
     <material>materials</material>
-    <layup>layups</layup>
+    <!-- <layup>layups</layup> -->
   </include>
   <analysis>
     <model>1</model>
@@ -45,7 +45,7 @@
       <radius>0.1</radius>
     </baseline>
   </baselines>
-  <layups>
+  <!-- <layups>
     <layup name="layup1">
       <layer lamina="la_mtr_lamina_0.02">90:1</layer>
       <layer lamina="la_iso5_2_003">0</layer>
@@ -65,7 +65,7 @@
     <layup name="layup_web_2">
       <layer lamina="la_iso5_1_002">0:3</layer>
     </layup>
-  </layups>
+  </layups> -->
 
   <component name="fill_circle" type="fill">
     <baseline>bl2</baseline>

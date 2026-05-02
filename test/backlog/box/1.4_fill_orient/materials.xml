@@ -1,5 +1,5 @@
 <materials>
-  <material name="mtr_lamina" type="lamina">
+  <material name="mtr_lamina" type="transversely isotropic">
     <density>1</density>
     <elastic>
       <e1>1</e1>
@@ -40,6 +40,21 @@
       <nu12>0.28</nu12>
       <nu13>0.28</nu13>
       <nu23>0.28</nu23>
+    </elastic>
+  </material>
+
+  <material name="iso5_2" type="orthotropic">
+    <density>1.83E+03</density>
+    <elastic>
+      <e1>1.03E+10</e1>
+      <e2>1.03E+10</e2>
+      <e3>1.03E+10</e3>
+      <g12>8.00E+09</g12>
+      <g13>8.00E+09</g13>
+      <g23>8.00E+09</g23>
+      <nu12>0.30</nu12>
+      <nu13>0.30</nu13>
+      <nu23>0.30</nu23>
     </elastic>
   </material>
 
