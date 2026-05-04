@@ -1,5 +1,13 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Baseline;
+class Material;
+class PDCELVertex;
+class PGeoArc;
+class PModel;
+
 #include "declarations.hpp"
 #include "PComponent.hpp"
 #include "PDCELVertex.hpp"
@@ -8,7 +16,7 @@
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh_mod/STensor3.h"
+#include "geo_types.hpp"
 #include "rapidxml/rapidxml.hpp"
 
 #include <fstream>
@@ -19,51 +27,10 @@
 
 using namespace rapidxml;
 
-class PGeoArc;
-
-class Message {
-private:
-  std::string m_s_file_name;
-  int m_i_indent;
-  int m_i_indent_inc;
-  bool m_b_to_screen;
-
-public:
-  std::ofstream m_ofs;
-
-  Message() : m_i_indent(0), m_i_indent_inc(2), m_b_to_screen(true) {}
-  Message(std::string file_name) : m_s_file_name(file_name), m_i_indent(0), m_i_indent_inc(2), m_b_to_screen(true) {}
-
-  std::string getFileName() { return m_s_file_name; }
-  int getIndentInc() { return m_i_indent_inc; }
-  bool isToScreen() { return m_b_to_screen; }
-
-  // void setFileName(std::string);
-  void setIndentInc(int);
-  void setToScreen(bool);
-
-  int openFile();
-  int closeFile();
-
-  void increaseIndent();
-  void decreaseIndent();
-
-  std::string message(const std::string &);
-
-  void printPrompt(int, int = 0);
-  int print(int, std::string);
-  int print(int, std::stringstream &);
-  void printBlank(int = 1);
-  void printDivider(int, char);
-  void printTitle();
-  // int printInfo(std::string);
-  // int printError(std::string);
-  // int printDebug(std::string);
-};
-
-
 int convertSizeTToInt(size_t value);
 
+int parseRequiredInt(const std::string &raw, const std::string &context);
+double parseRequiredDouble(const std::string &raw, const std::string &context);
 
 void printInfo(int, std::string);
 void printWarning(int, std::string);
@@ -101,13 +68,13 @@ std::string lowerString(const std::string &);
 std::string upperString(const std::string &);
 std::string removeChar(std::string, char = ' ');
 std::string trim(const std::string &);
+std::vector<std::string> splitFilePath(const std::string &filepath);
 
 std::vector<double> getDxyFromAngle(double, char = 'x', double = 1.0,
                                     bool = false);
 void discretizeArcN(const PGeoArc &, int, Baseline *, PModel *);
 void discretizeArcA(const PGeoArc &, double, Baseline *, PModel *);
 // Basepoint *getBasepointByName(std::string, std::vector<Basepoint> &);
-PDCELVertex *getPVertexByName(std::string, std::vector<PDCELVertex *> &);
 Baseline *getBaselineByName(std::string, std::vector<Baseline> &);
 Material *getMaterialByName(std::string, std::vector<Material> &);
 std::vector<double> decodeStackSequence(std::string);

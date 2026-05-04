@@ -1,0 +1,81 @@
+<cross_section name="box">
+    <include>
+        <material>materials</material>
+    </include>
+
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.01</mesh_size>
+        <element_shape>quad</element_shape>
+        <element_type>linear</element_type>
+    </general>
+    <baselines>
+        <point name="bl">-0.5 -0.2</point>
+        <point name="tl">-0.5 0.2</point>
+        <point name="tr">0.5 0.2</point>
+        <point name="br">0.5 -0.2</point>
+        <point name="ml">-0.5 0.0</point>
+        <point name="mr">0.5 0.0</point>
+        <point name="web">0.1 0.0</point>
+        <baseline name="bsl_top">
+            <points>tl,tr</points>
+        </baseline>
+        <baseline name="bsl_bottom">
+            <points>br,bl</points>
+        </baseline>
+        <baseline name="bsl_left">
+            <!-- <points>bl,tl</points> -->
+            <point>ml</point>
+            <angle>90</angle>
+        </baseline>
+        <baseline name="bsl_right">
+            <!-- <points>tr,br</points> -->
+            <point>mr</point>
+            <angle>90</angle>
+        </baseline>
+    </baselines>
+
+    <layups>
+        <layup name="layup1">
+            <layer lamina="la_iso5_1_002">90:2</layer>
+            <layer lamina="la_iso5_2_003">0</layer>
+        </layup>
+        <layup name="layup2">
+            <layer lamina="la_iso5_3_0025">0:3</layer>
+            <layer lamina="la_iso5_4_005">90</layer>
+        </layup>
+        <layup name="layup3">
+            <layer lamina="la_iso5_5_001">90</layer>
+            <layer lamina="la_iso5_1_002">0</layer>
+            <layer lamina="la_iso5_5_001">90</layer>
+        </layup>
+    </layups>
+
+    <component name="wall_top">
+        <segment>
+            <baseline>bsl_top</baseline>
+            <layup>layup1</layup>
+        </segment>
+    </component>
+    <component name="wall_bottom">
+        <segment>
+            <baseline>bsl_bottom</baseline>
+            <layup>layup2</layup>
+        </segment>
+    </component>
+    <component name="wall_left" depend="wall_top,wall_bottom">
+        <segment>
+            <baseline>bsl_left</baseline>
+            <layup direction="right">layup3</layup>
+        </segment>
+    </component>
+    <component name="wall_right" depend="wall_top,wall_bottom">
+        <segment>
+            <baseline>bsl_right</baseline>
+            <layup direction="left">layup3</layup>
+        </segment>
+    </component>
+
+</cross_section>

@@ -1,13 +1,11 @@
 #include "PDCELVertex.hpp"
 
 #include "PDCELHalfEdge.hpp"
+#include "PDCELUtils.hpp"
 #include "globalConstants.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
-#include "gmsh_mod/SVector3.h"
-// #include "gmsh/GVertex.h"
+#include "geo_types.hpp"
 
 #include <sstream>
 #include <iostream>
@@ -19,23 +17,14 @@ std::string PDCELVertex::printString() {
   return ss.str();
 }
 
-
-
-
 std::ostream &operator<<(std::ostream &out, PDCELVertex *v) {
   out << v->printString();
   return out;
 }
 
-
-
-
 void PDCELVertex::print() {
   std::cout << printString();
 }
-
-
-
 
 void PDCELVertex::printWithAddress() {
   printf("( %f , %f , %f ) | address: %p\n", _point[0], _point[1], _point[2], (void *)this);
@@ -66,9 +55,15 @@ bool operator>=(PDCELVertex &v1, PDCELVertex &v2) {
 
 void PDCELVertex::printAllLeavingHalfEdges(const int &direction) {
   PDCELHalfEdge *he = _incident_edge;
+  int _iter = 0;
   do {
     if (he == nullptr) {
       break;
+    }
+    if (++_iter > kDCELLoopHardCap) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded " + std::to_string(kDCELLoopHardCap) +
+          " iterations in printAllLeavingHalfEdges at " + printString());
     }
     he->print2();
     if (direction > 0) {
@@ -154,9 +149,6 @@ void PDCELVertex::setPosition(double x, double y, double z) {
 void PDCELVertex::setPoint(SPoint3 &p) { _point = p; }
 
 void PDCELVertex::setIncidentEdge(PDCELHalfEdge *he) { _incident_edge = he; }
-
-// void PDCELVertex::setGVertex(GVertex *gv) { _gvertex = gv; }
-// void PDCELVertex::setGVertexTag(int tag) { _gvertex_tag = tag; }
 
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2) {
   return v1->point() < v2->point();

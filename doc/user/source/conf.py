@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 #
 # v4d documentation build configuration file, created by
 # sphinx-quickstart on Tue May 30 13:54:05 2017.
@@ -52,12 +53,50 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx_design',
-    # 'sphinx_gallery.gen_gallery',
+    # 'sphinx_gallery',
     'sphinx-prompt',
     'sphinx_copybutton',
     # 'sphinxcontrib.bibtex',
     'myst_parser',
 ]
+
+
+def loadMystSubstitutions(filename):
+    substitutions = {}
+    path = os.path.join(os.path.dirname(__file__), filename)
+    with open(path, 'r') as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if (not line or line.startswith('#') or
+                    not line.startswith('|')):
+                continue
+            if '| Key ' in line or '| --- ' in line:
+                continue
+            parts = [part.strip() for part in line.split('|')[1:-1]]
+            if len(parts) < 2:
+                continue
+            key = parts[0].strip('`')
+            value = parts[1]
+            substitutions[key] = value
+    return substitutions
+
+myst_enable_extensions = [
+    "amsmath",
+    "attrs_inline",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
+    "replacements",
+    "smartquotes",
+    "strikethrough",
+    "substitution",
+    "tasklist",
+]
+
+myst_substitutions = loadMystSubstitutions('myst_substitutions.md')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -65,6 +104,7 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
+# Allow both reStructuredText and MyST Markdown sources.
 source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',

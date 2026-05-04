@@ -1,46 +1,56 @@
 #include "PComponent.hpp"
 
-#include "Material.hpp"
 #include "PDCEL.hpp"
 #include "PGeoClasses.hpp"
-#include "PSegment.hpp"
+#include "PModel.hpp"
+#include "curve.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
-#include "globalVariables.hpp"
-#include "PBaseLine.hpp"
-#include "overloadOperator.hpp"
-#include "utilities.hpp"
 #include "plog.hpp"
 
-#include <algorithm>
 #include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <list>
-#include <sstream>
-#include <string>
 
+namespace {
 
-void PComponent::buildFilling(Message *pmessage) {
+static PDCELHalfEdgeLoop *findOutermostLoop(
+    PDCELHalfEdgeLoop *loop, PDCEL *dcel)
+{
+  while (dcel->adjacentLoop(loop) != nullptr) {
+    loop = dcel->adjacentLoop(loop);
+  }
+  return loop;
+}
 
-  if (!_fill_baseline_groups.empty()) {
+} // namespace
+
+void PComponent::buildFilling(const BuilderConfig &bcfg) {
+  FillingState &filling = _filling;
+  PDCELHalfEdgeLoop *hel_out = nullptr;
+
+  if (!filling.baseline_groups.empty()) {
 
     std::list<Baseline *> bl_closed;
     std::list<Baseline *> bl_open;
 
     // Join baselines
-    Baseline *bl;
-    for (auto blg : _fill_baseline_groups) {
-      bl = joinCurves(blg);
-
-      if (_fill_ref_baseline == blg.front()) {
-        _fill_ref_baseline = bl;
+    Baseline *bl_joined;
+    for (auto blg : filling.baseline_groups) {
+      bl_joined = joinCurves(blg);
+      if (bl_joined == nullptr) {
+        PLOG(error) << "buildFilling: failed to join a filling baseline group"
+                    << " for component '" << _name << "'";
+        return;
       }
 
-      if (bl->vertices().front() == bl->vertices().back()) {
-        bl_closed.push_back(bl);
+      if (filling.ref_baseline == blg.front()) {
+        filling.ref_baseline = bl_joined;
+      }
+
+      if (bl_joined->vertices().front() == bl_joined->vertices().back()) {
+        bl_closed.push_back(bl_joined);
       } else {
-        bl_open.push_back(bl);
+        bl_open.push_back(bl_joined);
       }
     }
 
@@ -51,21 +61,25 @@ void PComponent::buildFilling(Message *pmessage) {
 
     // Trim/Extend ends for each open baseline
     for (auto bl : bl_open) {
-      double u1_head, u2_head, u1_tail, u2_tail, u1_tmp, u2_tmp;
+      double u1_head, u2_head = 0.0, u1_tail, u2_tail = 0.0, u1_tmp, u2_tmp;
       int ls_i_head = -1, ls_i_tmp;
-      std::size_t ls_i_tail = bl->vertices().size();
+      int ls_i_tail = static_cast<int>(bl->vertices().size());
       u1_head = -INF;
       u1_tail = INF;
 
       std::vector<PDCELVertex *> tmp_vertices;
-      PDCELHalfEdge *he_tool_head, *he_tool_tail, *he;
+      PDCELHalfEdge *he_tool_head = nullptr, *he_tool_tail = nullptr, *he;
       PDCELHalfEdgeLoop *hel_tool_head, *hel_tool_tail;
 
-      for (auto hel : _pmodel->dcel()->halfedgeloops()) {
-        if (!hel->keep()) {
-          // he = findCurvesIntersection(bl, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
+      for (auto hel : bcfg.dcel->halfedgeloops()) {
+        if (!bcfg.dcel->isLoopKept(hel)) {
+          // Assumption: open filling baselines are trimmed/extended only from
+          // the leading segment at the head and the trailing segment at the
+          // tail. This does not search the full polyline for the earliest
+          // intersection; if internal vertices matter, this algorithm must be
+          // upgraded to use the whole baseline rather than just the end span.
           tmp_vertices = {bl->vertices()[0], bl->vertices()[1]};
-          he = findCurvesIntersection(tmp_vertices, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          he = findCurveLoopIntersection(tmp_vertices, hel, 0, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
           if (he != nullptr) {
             if (
               (ls_i_tmp == 0 && u1_tmp < 0 && u1_tmp > u1_head)  // before the first vertex
@@ -79,10 +93,11 @@ void PComponent::buildFilling(Message *pmessage) {
             }
           }
 
-          // he = findCurvesIntersection(bl, hel, 1, ls_i, u1_tmp, u2_tmp, TOLERANCE);
+          // Same limitation for the tail search: only the last baseline span
+          // participates in the intersection test.
           tmp_vertices.clear();
           tmp_vertices = {bl->vertices()[bl->vertices().size() - 2], bl->vertices()[bl->vertices().size() - 1]};
-          he = findCurvesIntersection(tmp_vertices, hel, 1, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE, pmessage);
+          he = findCurveLoopIntersection(tmp_vertices, hel, 1, ls_i_tmp, u1_tmp, u2_tmp, TOLERANCE);
           if (he != nullptr) {
             if (
               ((ls_i_tmp == tmp_vertices.size() - 1) && u1_tmp > 1 && u1_tmp < u1_tail)  // after the first vertex
@@ -103,18 +118,31 @@ void PComponent::buildFilling(Message *pmessage) {
       // std::cout << "        u1_tail = " << u1_tail << std::endl;
       // std::cout << "        he_tool_tail = " << he_tool_tail << std::endl;
 
+      if (he_tool_head == nullptr) {
+        PLOG(error) << "buildFilling: failed to find a head intersection"
+                    << " for open filling baseline in component '"
+                    << _name << "'";
+        return;
+      }
+
+      if (he_tool_tail == nullptr) {
+        PLOG(error) << "buildFilling: failed to find a tail intersection"
+                    << " for open filling baseline in component '"
+                    << _name << "'";
+        return;
+      }
+
       PDCELVertex *vnew;
-      PGeoLineSegment *ls;
 
       if (u2_head == 0) {
         vnew = he_tool_head->source();
       } else if (u2_head == 1) {
         vnew = he_tool_head->target();
       } else {
-        ls = new PGeoLineSegment(he_tool_head->source(),
-                                  he_tool_head->target());
-        vnew = ls->getParametricVertex(u2_head);
-        _pmodel->dcel()->splitEdge(he_tool_head, vnew);
+        PGeoLineSegment ls(he_tool_head->source(),
+                           he_tool_head->target());
+        vnew = ls.getParametricVertex(u2_head);
+        vnew = bcfg.dcel->splitEdge(he_tool_head, vnew);
       }
       bl->vertices()[0] = vnew;
 
@@ -123,10 +151,10 @@ void PComponent::buildFilling(Message *pmessage) {
       } else if (u2_tail == 1) {
         vnew = he_tool_tail->target();
       } else {
-        ls = new PGeoLineSegment(he_tool_tail->source(),
-                                  he_tool_tail->target());
-        vnew = ls->getParametricVertex(u2_tail);
-        _pmodel->dcel()->splitEdge(he_tool_tail, vnew);
+        PGeoLineSegment ls(he_tool_tail->source(),
+                           he_tool_tail->target());
+        vnew = ls.getParametricVertex(u2_tail);
+        vnew = bcfg.dcel->splitEdge(he_tool_tail, vnew);
       }
       bl->vertices()[bl->vertices().size() - 1] = vnew;
 
@@ -141,88 +169,98 @@ void PComponent::buildFilling(Message *pmessage) {
       //   v->printWithAddress();
       // }
 
-      _pmodel->dcel()->addEdgesFromCurve(bl);
+      bcfg.dcel->addEdgesFromCurve(bl->vertices());
     }
 
     for (auto bl : bl_closed) {
-      _pmodel->dcel()->addEdgesFromCurve(bl);
+      bcfg.dcel->addEdgesFromCurve(bl->vertices());
     }
 
-    _pmodel->dcel()->removeTempLoops();
-    _pmodel->dcel()->createTempLoops();
-    _pmodel->dcel()->linkHalfEdgeLoops();
+    bcfg.dcel->removeTempLoops();
+    bcfg.dcel->createTempLoops();
+    bcfg.dcel->linkHalfEdgeLoops();
 
-    // _pmodel->dcel()->print_dcel();
+    // bcfg.dcel->print_dcel();
   }
-
-
-
-
-  PDCELHalfEdgeLoop *hel_out;
-  if (_fill_location != nullptr) {
+  if (filling.location != nullptr) {
     // The filling area is defined by a point The half edge loop
     // has been already created
 
     // Find the half edge loop enclosing the point
-    _pmodel->dcel()->addVertex(_fill_location);
-    hel_out = _pmodel->dcel()->findEnclosingLoop(_fill_location);
+    bcfg.dcel->addVertex(filling.location);
+    hel_out = bcfg.dcel->findEnclosingLoop(filling.location);
     // std::cout << "[debug] half edge loop hel_out:" << std::endl;
     // hel_out->print();
-    _pmodel->dcel()->removeVertex(_fill_location);
+    bcfg.dcel->removeVertex(filling.location);
+
+    if (hel_out == nullptr) {
+      PLOG(error) << "buildFilling: failed to find an enclosing loop"
+                  << " for fill location in component '" << _name << "'";
+      return;
+    }
   }
 
   else {
     // The filling area is defined by the side of some baseline
     PDCELHalfEdge *he;
-    he = _pmodel->dcel()->findHalfEdge(_fill_ref_baseline->vertices()[0],
-                                        _fill_ref_baseline->vertices()[1]);
+    he = bcfg.dcel->findHalfEdgeBetween(filling.ref_baseline->vertices()[0],
+                                        filling.ref_baseline->vertices()[1]);
+
+    if (he == nullptr) {
+      PLOG(error) << "buildFilling: failed to find the reference half edge"
+                  << " for component '" << _name << "'";
+      return;
+    }
 
     // std::cout << "        half edge he:" << he << std::endl;
 
-    if (_fill_side == -1) {
+    if (filling.side == FillSide::right) {
       he = he->twin();
     }
 
     // Find the outer boundary
-    hel_out = he->loop();
-    while (hel_out->adjacentLoop() != nullptr) {
-      hel_out = hel_out->adjacentLoop();
-    }
+    hel_out = findOutermostLoop(he->loop(), bcfg.dcel);
   }
 
 
 
 
   // Keep the loop and create a new face
-  if (hel_out == _pmodel->dcel()->halfedgeloops().front()) {
-    // The location is outside the shape
-    // Raise the exception
+  if (hel_out == bcfg.dcel->halfedgeloops().front()) {
+    PLOG(error) << "buildFilling: fill location is outside the shape"
+                << " for component '" << _name << "'";
+    return;
   }
   else {
-    _fill_face = _pmodel->dcel()->addFace(hel_out);
-    _fill_face->setName(_name + "_fill_face");
-    _fill_face->setMaterial(_fill_material);
-    hel_out->setKeep(true);
-    hel_out->setFace(_fill_face);
+    filling.face = bcfg.dcel->addFace(hel_out);
+    if (filling.face == nullptr) {
+      PLOG(error) << "buildFilling: failed to create fill face"
+                  << " for component '" << _name << "'";
+      return;
+    }
+    if (filling.layertype == nullptr) {
+      PLOG(error) << "buildFilling: missing fill layer type"
+                  << " for component '" << _name << "'";
+      return;
+    }
+    bcfg.model->faceData(filling.face).name = _name + "_fill_face";
+    filling.face->setMaterial(filling.material);
+    bcfg.dcel->setLoopKept(hel_out, true);
+    hel_out->setFace(filling.face);
 
-    LayerType *lt = _pmodel->getLayerTypeByMaterialAngle(_fill_material, _fill_theta3);
-    _fill_face->setLayerType(lt);
-    _fill_face->setTheta1(_fill_theta1);
+    filling.face->setLayerType(filling.layertype);
+    filling.face->setTheta1(filling.theta1);
 
     // Update all corresponding inner boundaries, if there are any
-    _pmodel->dcel()->linkHalfEdgeLoops();
-    for (auto heli : _pmodel->dcel()->halfedgeloops()) {
-      if (!heli->keep()) {
+    bcfg.dcel->linkHalfEdgeLoops();
+    for (auto heli : bcfg.dcel->halfedgeloops()) {
+      if (!bcfg.dcel->isLoopKept(heli)) {
         // heli->print();
-        PDCELHalfEdgeLoop *helj = heli;
-        while (helj->adjacentLoop() != nullptr) {
-          // helj->print();
-          helj = helj->adjacentLoop();
-        }
+        PDCELHalfEdgeLoop *helj = findOutermostLoop(heli, bcfg.dcel);
         if (helj == hel_out) {
-          heli->setKeep(true);
-          heli->setFace(_fill_face);
-          _fill_face->addInnerComponent(heli->incidentEdge());
+          bcfg.dcel->setLoopKept(heli, true);
+          heli->setFace(filling.face);
+          filling.face->addInnerComponent(heli->incidentEdge());
         }
       }
     }
@@ -232,12 +270,12 @@ void PComponent::buildFilling(Message *pmessage) {
 
 
 
-  // Set local mesh size
+  // Set local mesh size and embedded vertices in the property map.
   if (_mesh_size != -1) {
-    // std::cout << _mesh_size << std::endl;
-    _fill_face->setMeshSize(_mesh_size);
+    PDCELFaceData &fd = bcfg.model->faceData(filling.face);
+    fd.mesh_size = _mesh_size;
     for (auto v : _embedded_vertices) {
-      _fill_face->addEmbeddedVertex(v);
+      fd.embedded_vertices.push_back(v);
     }
   }
 

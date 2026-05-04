@@ -1,0 +1,118 @@
+[
+    {
+        "name": "ex_airfoil",
+        "inputs": [
+            "mh104.xml",
+            "mh104.dat",
+            "materials.xml"
+        ],
+        "outputs": [
+            "mh104.png"
+        ]
+    },
+    {
+        "name": "ex_airfoil_cspar",
+        "inputs": [
+            "cs_main.xml",
+            "sc1095.dat",
+            "material_database_us_ft.xml"
+        ],
+        "outputs": [
+            "cs_main.png"
+        ]
+    },
+    {
+        "name": "ex_airfoil_dspar",
+        "inputs": [
+            "cs_main.xml",
+            "sc1095.dat",
+            "material_database_us_ft.xml"
+        ],
+        "outputs": [
+            "cs_main.png"
+        ]
+    },
+    {
+        "name": "ex_airfoil_r",
+        "inputs": [
+            "mh104.xml",
+            "mh104.dat",
+            "materials.xml",
+            "mh104.sg",
+            "mh104.sg.K",
+            "mh104.sg.opt",
+            "mh104.sg.ech"
+        ],
+        "outputs": []
+    },
+    {
+        "name": "ex_box",
+        "inputs": [
+            "box_cus.xml"
+        ],
+        "outputs": [
+            "box_cus.png"
+        ]
+    },
+    {
+        "name": "ex_channel",
+        "inputs": [
+            "channel.xml"
+        ],
+        "outputs": [
+            "channel.png"
+        ]
+    },
+    {
+        "name": "ex_ibeam",
+        "inputs": [
+            "i_web.xml",
+            "materials.xml"
+        ],
+        "outputs": [
+            "i_web.png"
+        ]
+    },
+    {
+        "name": "ex_pipe",
+        "inputs": [
+            "pipe.xml"
+        ],
+        "outputs": [
+            "pipe.png"
+        ]
+    },
+    {
+        "name": "ex_tube",
+        "inputs": [
+            "tube.xml"
+        ],
+        "outputs": [
+            "tube.png"
+        ]
+    },
+    {
+        "name": "ex_uh60a",
+        "inputs": [
+            "uh60a_section.xml",
+            "sc1095.dat",
+            "uh60a_material.xml"
+        ],
+        "outputs": [
+            "uh60a_section.png"
+        ]
+    },
+    {
+        "name": "ex_uh60a_f",
+        "inputs": [
+            "uh60a.xml",
+            "sc1095.dat",
+            "material_database.xml",
+            "uh60a.sg",
+            "uh60a.sg.K",
+            "uh60a.sg.opt",
+            "uh60a.sg.ech"
+        ],
+        "outputs": []
+    }
+]

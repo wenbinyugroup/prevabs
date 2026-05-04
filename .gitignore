@@ -1,15 +1,32 @@
 # Ignore the following folders
+.vscode/
+.vs/
 bin/
 *binary*/
 build*/
 _build/
 share/doc/prevabs/_build/*
 evals/
-.vscode/
-.vs/
+local/
+
+settings.local.json
 
 # Ignore the following files
 ~$*
+*~
+/*\#*
+
+*.log
+*.msh
+*.geo
+*.geo_unrolled
+*.debug
+
+*_vabs*.dat
+*.sc
+*.sg
+*.glb
+
 *.pos
 *.K
 *.ech
@@ -20,19 +37,10 @@ evals/
 *.v20
 *.v21
 *.v22
-*.msh
-*.geo
-*.stackdump
-*_vabs*.dat
-*.sc
-*.sg
-*.glb
+
 *.snm
 *.fi
-*.o
-*.exe
-*~
-/*\#*
+
 *.U
 *.E
 *.EM
@@ -44,6 +52,11 @@ evals/
 *.SMN
 *.ELE
 
+*.stackdump
+*.o
+*.exe
+
+
 # Ignore specific files
 test.exe
-
+dcel.txt

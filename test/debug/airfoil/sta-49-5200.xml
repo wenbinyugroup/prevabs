@@ -1,0 +1,112 @@
+<cross_section name="sta-49-5200">
+
+  <include>
+    <material>materials</material>
+    <layup>layups</layup>
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>-0.68  0</translate>
+    <scale>0.582</scale>
+    <rotate>-4</rotate>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" direction="-1">CXTX_5200_110.dat</points>
+      <flip>1</flip>
+    </line>
+
+    <point name="p2" on="ln_af" by="x2" which="bottom">0.020000</point>
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.112137</point>
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.626900</point>
+    <point name="p5" on="ln_af" by="x2" which="bottom">0.916606</point>
+
+    <point name="p7" on="ln_af" by="x2" which="top">0.910358</point>
+    <point name="p8" on="ln_af" by="x2" which="top">0.854625</point>
+    <point name="p9" on="ln_af" by="x2" which="top">0.608300</point>
+    <point name="p10" on="ln_af" by="x2" which="top">0.107923</point>
+    <point name="p11" on="ln_af" by="x2" which="top">0.020000</point>
+
+    <line name="l_hp2">
+      <points>p2:p3</points>
+    </line>
+
+    <line name="l_hp3_hp4">
+      <points>p3:p5</points>
+    </line>
+
+    <line name="l_hp5_lp6">
+      <points>p5:p7</points>
+    </line>
+
+    <line name="l_lp7">
+      <points>p7:p8</points>
+    </line>
+
+    <line name="l_lp8_lp9">
+      <points>p8:p10</points>
+    </line>
+
+    <line name="l_lp10">
+      <points>p10:p11</points>
+    </line>
+
+    <line name="l_lp11_hp1">
+      <points>p11:p2</points>
+    </line>
+
+  </baselines>
+
+  <component name="skin">
+<!-- 
+    <segments>
+      <baseline>ln_af</baseline>
+      <layup>coat</layup>
+    </segments> -->
+
+    <segments>
+      <baseline>l_hp2</baseline>
+      <layup>TX_Upper</layup>
+    </segments>
+
+    <!-- <segments>
+      <baseline>l_hp3_hp4</baseline>
+      <layup>TX_Balsa_Upper</layup>
+    </segments> -->
+
+    <!-- <segments>
+      <baseline>l_hp5_lp6</baseline>
+      <layup>TX_Upper_Strip</layup>
+    </segments> -->
+
+    <!-- <segments>
+      <baseline>l_lp7</baseline>
+      <layup>TX_Balsa_Upper_Strip</layup>
+    </segments> -->
+
+    <!-- <segments>
+      <baseline>l_lp8_lp9</baseline>
+      <layup>TX_Balsa_Upper</layup>
+    </segments> -->
+
+    <segments>
+      <baseline>l_lp10</baseline>
+      <layup>TX_Upper</layup>
+    </segments>
+
+    <!-- <segments>
+      <baseline>l_lp11_hp1</baseline>
+      <layup>TX_Upper_Joint_1x</layup>
+    </segments> -->
+
+  </component>
+
+</cross_section>

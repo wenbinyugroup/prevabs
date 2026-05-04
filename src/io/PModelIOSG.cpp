@@ -1,6 +1,7 @@
 #include "PModelIO.hpp"
 
 #include "CrossSection.hpp"
+#include "ISGWriter.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"
 #include "PDCEL.hpp"
@@ -16,12 +17,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-// #include "gmsh/GModel.h"
-// #include "gmsh/MTriangle.h"
-// #include "gmsh/MVertex.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -29,7 +26,6 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -48,14 +44,49 @@
 #include <windows.h>
 #endif
 
-int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
+// =============================================================
+// Concrete ISGWriter implementations
+// =============================================================
 
-  pmessage->increaseIndent();
+class VABSWriter : public ISGWriter {
+public:
+  void writeSettings(FILE* file, PModel* model, const WriterConfig& wcfg) override {
+    writeSettingsVABS(file, model, wcfg);
+  }
+  void writeMaterials(FILE* file, PModel* model) override {
+    writeMaterialsVABS(file, model);
+  }
+  void writeExtra(FILE* file, PModel* model) override {
+    // VABS has no format-specific trailer.
+    (void)file; (void)model;
+  }
+};
 
-  PLOG(info) << pmessage->message("writing sg file: " + fn);
+class SwiftCompWriter : public ISGWriter {
+public:
+  void writeSettings(FILE* file, PModel* model, const WriterConfig& wcfg) override {
+    writeSettingsSC(file, model, wcfg);
+  }
+  void writeMaterials(FILE* file, PModel* model) override {
+    writeMaterialsSC(file, model);
+  }
+  void writeExtra(FILE* file, PModel* model) override {
+    // SwiftComp requires omega (periodic dimension length/area/volume).
+    fprintf(file, "%16e\n", model->getOmega());
+  }
+};
 
-  std::vector<int> inums;
-  std::vector<double> dnums;
+std::unique_ptr<ISGWriter> makeSGWriter(AnalysisTool tool) {
+  if (tool == AnalysisTool::SwiftComp) {
+    return std::unique_ptr<ISGWriter>(new SwiftCompWriter());
+  }
+  return std::unique_ptr<ISGWriter>(new VABSWriter());
+}
+
+// =============================================================
+
+int PModel::writeSG(std::string fn, const WriterConfig &wcfg) {
+  PLOG(info) << "writing sg file: " << fn;
 
   size_t nnode = 0;
   size_t nelem = 0;
@@ -64,7 +95,7 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   // ------------------------------
   std::vector<size_t> node_tags;
   std::vector<double> node_coords;
-  getNodes(node_tags, node_coords, pmessage);
+  getNodes(node_tags, node_coords);
   nnode = node_tags.size();
 
   std::vector<std::vector<int>> face_elem_types;
@@ -73,13 +104,13 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   std::vector<double> face_local_orients;
 
   for (auto f : _dcel->faces()) {
-    if (f->gfaceTag() != 0) {
+    auto it_ft = _gmsh_face_tags.find(f);
+    if (it_ft != _gmsh_face_tags.end()) {
       std::vector<int> elem_types;
       std::vector<std::vector<size_t>> elem_type_tags, elem_type_node_tags;
 
       getElements(
-        elem_types, elem_type_tags, elem_type_node_tags, 2, f->gfaceTag(),
-        pmessage
+        elem_types, elem_type_tags, elem_type_node_tags, 2, it_ft->second
       );
 
       // Count element numbers
@@ -99,63 +130,36 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
   setNumNodes(nnode);
   setNumElements(nelem);
 
-
   // Write the SG file
   // ------------------------------
   FILE *fsg;
   fsg = fopen(fn.c_str(), "w");
 
+  auto writer = makeSGWriter(wcfg.tool);
+
   // Write the analysis settings
-  // ------------------------------
-  if (config.analysis_tool == 1) {
-    // VABS
-    writeSettingsVABS(fsg, this);
-  } else if (config.analysis_tool == 2) {
-    // SwiftComp
-    writeSettingsSC(fsg, this);
-  }
+  writer->writeSettings(fsg, this, wcfg);
 
   // Write nodes and elements
-  // ------------------------------
-  // writeNodes(fsg, this);
-  writeNodes(fsg, node_tags, node_coords, pmessage);
-
+  writeNodes(fsg, node_tags, node_coords);
   writeElements(
     fsg,
     face_elem_types, face_elem_tags, face_elem_node_tags,
-    face_prop_tags, face_local_orients,
-    pmessage);
-
-  // if (config.analysis_tool == 1) {
-  //   // writeElementsVABS(fsg, this);
-  //   writeElementsVABS(fsg, pmessage);
-  // } else if (config.analysis_tool == 2) {
-  //   // writeElementsSC(fsg, this);
-  //   writeElementsSC(fsg, pmessage);
-  // }
+    face_prop_tags, face_local_orients);
 
   // Write layer types and materials
-  // ------------------------------
-  if (config.analysis_tool == 1) {
-    writeMaterialsVABS(fsg, this);
-  } else if (config.analysis_tool == 2) {
-    writeMaterialsSC(fsg, this);
-  }
+  writer->writeMaterials(fsg, this);
 
-  // Omega for SwiftComp only
-  // ------------------------------
-  if (config.analysis_tool == 2) {
-    fprintf(fsg, "%16e\n", _omega);
-  }
+  // Write any format-specific trailing data (e.g. omega for SwiftComp)
+  writer->writeExtra(fsg, this);
 
   fclose(fsg);
-
 
   // ------------------------------
   // Write a supplementary file
   // to store the mapping between the material id and name
   std::string fn_mid2name = fn + ".mat";
-  PLOG(info) << pmessage->message("writing material id-name file: " + fn_mid2name);
+  PLOG(info) << "writing material id-name file: " << fn_mid2name;
 
   FILE *fsg_mat;
   fsg_mat = fopen(fn_mid2name.c_str(), "w");
@@ -167,43 +171,26 @@ int PModel::writeSG(std::string fn, int fmt, Message *pmessage) {
 
   fclose(fsg_mat);
 
-
-  pmessage->decreaseIndent();
-
   return 1;
 }
 
-
-
-
-
-
-
-
-
-int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
-
-
+int readSG(const std::string & /*fn*/, PModel *pmodel, const WriterConfig &wcfg) {
   PMesh *mesh = new PMesh();
 
   std::ifstream ifs;
-  ifs.open(config.file_name_vsc);
+  ifs.open(wcfg.file_name_vsc);
   if (ifs.fail())
-    throw std::runtime_error("Unable to find the file: " + config.file_name_vsc);
-  // printInfo(i_indent, "reading VABS input data: " + config.file_name_vsc);
-  
-  if (config.analysis_tool == 1)
-    PLOG(info) << pmessage->message("reading VABS input data: " + config.file_name_vsc);
-  else if (config.analysis_tool == 2)
-    PLOG(info) << pmessage->message("reading SwiftComp input data: " + config.file_name_vsc);
-
+    throw std::runtime_error("Unable to find the file: " + wcfg.file_name_vsc);
+  if (wcfg.tool == AnalysisTool::VABS)
+    PLOG(info) << "reading VABS input data: " << wcfg.file_name_vsc;
+  else if (wcfg.tool == AnalysisTool::SwiftComp)
+    PLOG(info) << "reading SwiftComp input data: " << wcfg.file_name_vsc;
 
   int nnode{0}, nelem{0}, nsg;
   int ln(1); // line counter
-  int num_head_lines;
-  if (config.analysis_tool == 1) num_head_lines = 4;
-  else if (config.analysis_tool == 2) num_head_lines = 5;
+  int num_head_lines = 0;
+  if (wcfg.tool == AnalysisTool::VABS) num_head_lines = 4;
+  else if (wcfg.tool == AnalysisTool::SwiftComp) num_head_lines = 5;
 
   while (ifs) {
     std::string line;
@@ -214,13 +201,12 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
     if (line.empty())
       continue;
 
-
     if (ln == num_head_lines) {
       // read out number of nodes and number of elements
       std::stringstream ss;
       ss << line;
-      if (config.analysis_tool == 1) ss >> nnode >> nelem;
-      else if (config.analysis_tool == 2) ss >> nsg >> nnode >> nelem;
+      if (wcfg.tool == AnalysisTool::VABS) ss >> nnode >> nelem;
+      else if (wcfg.tool == AnalysisTool::SwiftComp) ss >> nsg >> nnode >> nelem;
     }
 
     // read the node block
@@ -250,7 +236,7 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
       PElement *element = new PElement(ei);
       // element->setTypeId(2);
 
-      if (config.analysis_tool == 2) {
+      if (wcfg.tool == AnalysisTool::SwiftComp) {
         // For swiftcomp, read the layer type id after the element id
         int prop_id;
         ss >> prop_id;
@@ -275,7 +261,6 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
       mesh->addElement(element);
     }
 
-
     ln++;
     // if (doonce)
     //   break;
@@ -283,27 +268,15 @@ int readSG(const std::string &fn, PModel *pmodel, Message *pmessage) {
 
   ifs.close();
 
-
   pmodel->setMesh(mesh);
-
-
-  pmessage->decreaseIndent();
 
   return 0;
 }
 
-
-
-
-
-
-
-
-
 // Write in VABS format
 // ===================================================================
 
-void writeSettingsVABS(FILE *file, PModel *model) {
+void writeSettingsVABS(FILE *file, PModel *model, const WriterConfig & /*wcfg*/) {
   std::vector<std::size_t> inums;
 
   // inums = {1, model->cs()->getNumOfUsedLayerTypes()};
@@ -313,7 +286,6 @@ void writeSettingsVABS(FILE *file, PModel *model) {
   fprintf(file, "\n");
 
   inums.clear();
-  unsigned int recover = config.dehomo ? 1 : 0;
   // inums = {model->analysisModel(), recover, model->analysisThermal()};
   inums.push_back(model->analysisModel());
   // inums.push_back(recover);
@@ -354,14 +326,6 @@ void writeSettingsVABS(FILE *file, PModel *model) {
   fprintf(file, "\n");
 }
 
-
-
-
-
-
-
-
-
 // void writeNodes(FILE *file, PModel *pmodel) {
 //   std::vector<GEntity *> gentities;
 //   pmodel->gmodel()->getEntities(gentities);
@@ -392,14 +356,6 @@ void writeSettingsVABS(FILE *file, PModel *model) {
 //   fprintf(file, "\n");
 // }
 
-
-
-
-
-
-
-
-
 // template <class T> void writeElementVABS(FILE *file, PModel *pmodel, T *elem) {
 //   std::vector<int> inums(9, 0);
 
@@ -425,14 +381,6 @@ void writeSettingsVABS(FILE *file, PModel *model) {
 //   writeNumbers(file, "%8d", inums);
 
 // }
-
-
-
-
-
-
-
-
 
 // void writeElementsVABS(FILE *file, PModel *pmodel) {
 //   // Write connectivity for each element
@@ -461,17 +409,7 @@ void writeSettingsVABS(FILE *file, PModel *model) {
 //   fprintf(file, "\n");
 // }
 
-
-
-
-
-
-
-
-
 void writeMaterialVABS(FILE *file, Material *m) {
-  // std::cout << "writing material " << m->getName() << std::endl;
-  // m->printMaterial();
   fprintf(file, "%8d", m->id());
 
   if (m->getType() == "isotropic") {
@@ -503,21 +441,14 @@ void writeMaterialVABS(FILE *file, Material *m) {
   fprintf(file, "%16e\n", m->getDensity());
 }
 
-
-
-
-
-
-
-
-
 void writeMaterialStrength(FILE *file, Material *m) {
   Strength sp = m->getStrength();
-  std::string type = sp._type;
+  std::string type = m->getType();
   int fc = m->getFailureCriterion();
 
-  if (type == "lamina") {
+  if (m->getSymmetryType() == "transversely isotropic") {
     m->completeStrengthProperties();
+    sp = m->getStrength();
     type = "orthotropic";
   }
 
@@ -559,14 +490,6 @@ void writeMaterialStrength(FILE *file, Material *m) {
   }
 }
 
-
-
-
-
-
-
-
-
 void writeMaterialsVABS(FILE *file, PModel *model) {
   for (auto lt : model->cs()->getUsedLayerTypes()) {
     fprintf(file, "%8d%8d%16e\n", lt->id(), lt->material()->id(), lt->angle());
@@ -579,18 +502,10 @@ void writeMaterialsVABS(FILE *file, PModel *model) {
   fprintf(file, "\n");
 }
 
-
-
-
-
-
-
-
-
 // Write in SwiftComp format
 // ===================================================================
 
-void writeSettingsSC(FILE *file, PModel *model) {
+void writeSettingsSC(FILE *file, PModel *model, const WriterConfig &wcfg) {
   std::vector<std::size_t> inums;
 
   if (model->analysisModelDim() == 1) {
@@ -617,7 +532,6 @@ void writeSettingsSC(FILE *file, PModel *model) {
     // Plate/shell model
   }
 
-
   // Line 1
   // unsigned int ianalysis = 0;
   // if (model->analysisThermal() == 1) {
@@ -630,7 +544,7 @@ void writeSettingsSC(FILE *file, PModel *model) {
   unsigned int iforce_flag = 0;
   unsigned int isteer_flag = 0;
   inums = {ianalysis, ielem_flag, itrans_flag, itemp_flag};
-  if (config.tool_ver == "2.2") {
+  if (wcfg.tool_ver == "2.2") {
     inums.push_back(iforce_flag);
     inums.push_back(isteer_flag);
   }
@@ -661,14 +575,6 @@ void writeSettingsSC(FILE *file, PModel *model) {
   fprintf(file, "\n");
 }
 
-
-
-
-
-
-
-
-
 // template <class T> void writeElementSC(FILE *file, PModel *model, T *elem, int mid) {
 //   std::vector<int> inums(9, 0);
 //   fprintf(file, "%8d%8d", model->gmodel()->getMeshElementIndex(elem), mid);
@@ -681,14 +587,6 @@ void writeSettingsSC(FILE *file, PModel *model) {
 //   }
 //   writeNumbers(file, "%8d", inums);
 // }
-
-
-
-
-
-
-
-
 
 // void writeElementsSC(FILE *file, PModel *model) {
 //   // Write connectivity for each element
@@ -719,14 +617,6 @@ void writeSettingsSC(FILE *file, PModel *model) {
 //   }
 //   fprintf(file, "\n");
 // }
-
-
-
-
-
-
-
-
 
 void writeMaterialSC(FILE *file, Material *m, unsigned int physics) {
   int intemp = 1;
@@ -787,14 +677,6 @@ void writeMaterialSC(FILE *file, Material *m, unsigned int physics) {
   }
 
 }
-
-
-
-
-
-
-
-
 
 void writeMaterialsSC(FILE *file, PModel *model) {
   for (auto lt : model->cs()->getUsedLayerTypes()) {

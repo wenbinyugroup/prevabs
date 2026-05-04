@@ -1,0 +1,333 @@
+<?xml version="1.0"?>
+<cross_section name="tx-100-st38" format="1">
+
+  <include>
+
+    <material>materials</material>
+
+  </include>
+
+  <analysis>
+
+    <model>1</model>
+
+  </analysis>
+
+  <general>
+
+    <scale>0.731</scale>
+
+    <mesh_size>0.001</mesh_size>
+
+    <element_type>linear</element_type>
+
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+
+      <points data="file" format="1" direction="-1">CXTX_4000_110.dat</points>
+
+      <reverse>1</reverse>
+
+    </line>
+
+    <!-- <point name="p1" on="ln_af" by="x2" which="bottom">0.000000</point> -->
+
+    <point name="p2" on="ln_af" by="x2" which="bottom">0.089258</point>
+
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.642800</point>
+
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.655500</point>
+
+    <point name="p5" on="ln_af" by="x2" which="bottom">0.704600</point>
+
+    <point name="p6" on="ln_af" by="x2" which="bottom">0.951216</point>
+
+    <!-- <point name="p7" on="ln_af" by="x2" which="top">1.000000</point> -->
+
+    <!-- <point name="p8" on="ln_af" by="x2" which="top">0.000000</point> -->
+
+    <point name="p9" on="ln_af" by="x2" which="top">0.084786</point>
+
+    <point name="p10" on="ln_af" by="x2" which="top">0.617000</point>
+
+    <point name="p11" on="ln_af" by="x2" which="top">0.655500</point>
+
+    <point name="p12" on="ln_af" by="x2" which="top">0.704600</point>
+
+    <point name="p13" on="ln_af" by="x2" which="top">0.890219</point>
+
+    <point name="p14" on="ln_af" by="x2" which="top">0.933635</point>
+
+    <line name="l_hp1">
+      <points>ple:p2</points>
+    </line>
+
+    <line name="l_hp2">
+      <points>p2:p3</points>
+    </line>
+
+    <line name="l_hp3">
+      <points>p3:p4</points>
+    </line>
+
+    <line name="l_hp4">
+      <points>p4:p5</points>
+    </line>
+
+    <line name="l_hp5">
+      <points>p5:p6</points>
+    </line>
+
+    <line name="l_hp6">
+      <points>p6:pte</points>
+    </line>
+
+    <line name="l_lp8">
+      <points>p9:ple</points>
+    </line>
+
+    <line name="l_lp9">
+      <points>p10:p9</points>
+    </line>
+
+    <line name="l_lp10">
+      <points>p11:p10</points>
+    </line>
+
+    <line name="l_lp11">
+      <points>p12:p11</points>
+    </line>
+
+    <line name="l_lp12">
+      <points>p13:p12</points>
+    </line>
+
+    <line name="l_lp13">
+      <points>p14:p13</points>
+    </line>
+
+    <line name="l_lp14">
+      <points>pte:p14</points>
+    </line>
+
+  </baselines>
+
+  <component name="skin">
+
+    <segments>
+
+      <baseline>l_hp1</baseline>
+
+      <layup>TX_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_hp2</baseline>
+
+      <layup>TX_Balsa_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_hp3</baseline>
+
+      <layup>TX_Balsa_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_hp4</baseline>
+
+      <layup>TX_Spar_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_hp5</baseline>
+
+      <layup>TX_Balsa_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_hp6</baseline>
+
+      <layup>TX_Upper_Strip</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp8</baseline>
+
+      <layup>TX_Upper_Strip</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp9</baseline>
+
+      <layup>TX_Balsa_Upper_Strip</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp10</baseline>
+
+      <layup>TX_Balsa_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp11</baseline>
+
+      <layup>TX_Spar_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp12</baseline>
+
+      <layup>TX_Balsa_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp13</baseline>
+
+      <layup>TX_Balsa_Upper</layup>
+
+    </segments>
+
+    <segments>
+
+      <baseline>l_lp14</baseline>
+
+      <layup>TX_Upper_Strip</layup>
+
+    </segments>
+
+  </component>
+
+  <layups>
+    <layup name="TX_Balsa_Upper" method="layer list">
+
+      <layer lamina="Gel_Coat">0</layer>
+
+      <layer lamina="075oz_Mat">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+      <layer lamina="Balsa_1">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+    </layup>
+    <layup name="TX_Balsa_Upper_Strip" method="layer list">
+
+      <layer lamina="Gel_Coat">0</layer>
+
+      <layer lamina="075oz_Mat">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+      <layer lamina="DBM1708_1">0</layer>
+
+      <layer lamina="Balsa_1">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+    </layup>
+    <layup name="TX_Spar_Upper" method="layer list">
+
+      <layer lamina="Gel_Coat">0</layer>
+
+      <layer lamina="075oz_Mat">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+      <layer lamina="C520_2">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+    </layup>
+    <layup name="TX_Upper" method="layer list">
+
+      <layer lamina="Gel_Coat">0</layer>
+
+      <layer lamina="075oz_Mat">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+    </layup>
+    <layup name="TX_Upper_Strip" method="layer list">
+
+      <layer lamina="Gel_Coat">0</layer>
+
+      <layer lamina="075oz_Mat">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+      <layer lamina="DBM1708_3">0</layer>
+
+      <layer lamina="C520_1">115</layer>
+
+      <layer lamina="Seartex_Carbon_Triax">70</layer>
+
+      <layer lamina="C520_1">25</layer>
+
+    </layup>
+  </layups>
+</cross_section>

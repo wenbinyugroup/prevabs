@@ -1,5 +1,9 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+// class Message;
+
 #include "declarations.hpp"
 #include "utilities.hpp"
 
@@ -45,7 +49,8 @@ private:
   int mid;
   std::string _name;
 
-  std::string _type; // isotropic, orthotropic, anisotropic
+  std::string _type;  // internal solver type: isotropic, orthotropic, anisotropic
+  std::string _symmetry_type;  // declared input symmetry type
 
   double _density{1.0};
   std::vector<double> _elastic;
@@ -70,29 +75,33 @@ public:
   }
   Material(std::string name, std::string type, double density,
            std::vector<double> elastic)
-      : _name(name), _type(type), _density(density), _elastic(elastic) {
+      : _name(name), _type(type), _symmetry_type(type),
+        _density(density), _elastic(elastic) {
     mid = 0;
     mstrength = {};
   }
   Material(int id, std::string name, std::string type, double density,
            std::vector<double> elastic)
-      : mid(id), _name(name), _type(type), _density(density),
-        _elastic(elastic) {
+      : mid(id), _name(name), _type(type), _symmetry_type(type),
+        _density(density), _elastic(elastic) {
     mstrength = {};
   }
   Material(int id, std::string name, std::string type, double density,
            std::vector<double> elastic, int fcriterion, double charalength,
            std::vector<double> strength)
-      : mid(id), _name(name), _type(type), _density(density), _elastic(elastic),
-        mfcriterion(fcriterion), mcharalength(charalength),
-        mstrength(strength) {}
+      : mid(id), _name(name), _type(type), _symmetry_type(type),
+        _density(density), _elastic(elastic), mfcriterion(fcriterion),
+        mcharalength(charalength), mstrength(strength) {}
 
-  void print(Message *, int, int = 0);
+  void print(int, int = 0);
   void printMaterial(); // Print details
 
   int id() { return mid; }
   std::string getName() { return _name; }
   std::string getType() { return _type; }
+  std::string getSymmetryType() const {
+    return _symmetry_type.empty() ? _type : _symmetry_type;
+  }
   double getDensity() const { return _density; }
   std::vector<double> getElastic() { return _elastic; }
   std::vector<double> getCte() { return _cte; }
@@ -105,6 +114,7 @@ public:
   void setId(int);
   void setName(std::string name) { _name = name; }
   void setType(std::string type) { _type = type; }
+  void setSymmetryType(std::string type) { _symmetry_type = type; }
   void setDensity(double density) { _density = density; }
   void setElastic(std::vector<double> elastic) { _elastic = elastic; }
   void setCte(std::vector<double> cte) { _cte = cte; }
@@ -116,7 +126,7 @@ public:
 
   void completeStrengthProperties();
 
-  void writeStrengthProperties(FILE *, Message *);
+  void writeStrengthProperties(FILE *);
 };
 
 
@@ -216,7 +226,7 @@ public:
       : p_llamina(p_lamina), langle(angle), lstack(stack),
         p_llayertype(p_layertype) {}
 
-  void print(int, Message *, int, int = 0);
+  void print(int, int, int = 0);
   void printLayer(int);
 
   Lamina *getLamina() { return p_llamina; }
@@ -287,7 +297,7 @@ public:
         double thickness = 0.0)
       : lname(name), llayers(layers), lplies(plies), lthickness(thickness) {}
 
-  void print(Message *, int, int = 0);
+  void print();
   void printLayup();
 
   std::string getName() const { return lname; }

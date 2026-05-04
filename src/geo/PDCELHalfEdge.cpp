@@ -5,28 +5,15 @@
 #include "PDCELFace.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
-#include "gmsh_mod/SVector3.h"
-// #include "gmsh/GEdge.h"
-
+#include "geo_types.hpp"
 #include <cmath>
 #include <cstdio>
 #include <iostream>
-
-
-
 
 std::ostream &operator<<(std::ostream &out, PDCELHalfEdge *he) {
   out << he->_source << " -> " << he->_twin->_source << " sign: " << he->_sign;
   return out;
 }
-
-
-
-
-
-
-
-
 
 std::string PDCELHalfEdge::printString() {
   std::stringstream ss;
@@ -44,7 +31,7 @@ std::string PDCELHalfEdge::printString() {
   //     ss << "temp";
   //   }
   // }
-  ss << " | loop: " << (_loop ? (_loop->keep() ? "keep" : "temp") : "nullptr");
+  ss << " | loop: " << (_loop ? "set" : "nullptr");
 
   // ss << " | face: ";
   // if (_face == nullptr) {
@@ -52,18 +39,10 @@ std::string PDCELHalfEdge::printString() {
   // } else {
   //   ss << _face->name();
   // }
-  ss << " | face: " << (_face ? _face->name() : "nullptr");
+  ss << " | face: " << (_face ? "(face)" : "nullptr");
   
   return ss.str();
 }
-
-
-
-
-
-
-
-
 
 std::string PDCELHalfEdge::printBrief() {
   std::stringstream ss;
@@ -73,26 +52,10 @@ std::string PDCELHalfEdge::printBrief() {
   return ss.str();
 }
 
-
-
-
-
-
-
-
-
 void PDCELHalfEdge::print() {
   std::cout << _source << " -> " << _twin->_source
             << " sign: " << _sign << std::endl;
 }
-
-
-
-
-
-
-
-
 
 void PDCELHalfEdge::print2() {
   std::cout << _source->point2() << " -> " << _twin->_source->point2();
@@ -105,18 +68,14 @@ void PDCELHalfEdge::print2() {
   if (_loop == nullptr) {
     std::cout << "nullptr";
   } else {
-    if (_loop->keep()) {
-      std::cout << "keep";
-    } else {
-      std::cout << "temp";
-    }
+    std::cout << "set";
   }
 
   std::cout << " | face: ";
   if (_face == nullptr) {
     std::cout << "nullptr";
   } else {
-    std::cout << _face->name();
+    std::cout << "(face)";
   }
 
   // std::cout << " | address: ";
@@ -124,14 +83,6 @@ void PDCELHalfEdge::print2() {
 
   std::cout << std::endl;
 }
-
-
-
-
-
-
-
-
 
 bool PDCELHalfEdge::isFinite() {
   return (_source->isFinite() && _twin->source()->isFinite());
@@ -151,5 +102,5 @@ double PDCELHalfEdge::angle() {
 
 void PDCELHalfEdge::setLoop(PDCELHalfEdgeLoop *hel) {
   _loop = hel;
-  hel->updateVertexEdge(this);
+  if (hel) hel->updateIncidentEdge(this);
 }

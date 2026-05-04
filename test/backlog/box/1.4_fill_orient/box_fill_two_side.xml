@@ -1,0 +1,103 @@
+<cross_section name="box">
+  <include>
+    <!-- <baseline>baselines</baseline> -->
+    <!-- <material>db_material</material> -->
+    <material>materials</material>
+    <!-- <layup>layups</layup> -->
+  </include>
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.01</mesh_size>
+    <element_type>2</element_type>
+  </general>
+
+  <baselines>
+
+    <point name="o">0  0</point>
+    <point name="o1">-0.01  0</point>
+    <point name="o2">0.01  0</point>
+    <point name="lb">-0.5 -0.5</point>
+    <point name="lt">-0.5  0.5</point>
+    <point name="rt">0.5  0.5</point>
+    <point name="rb">0.5 -0.5</point>
+    <point name="pf1">-0.25 0.25</point>
+    <point name="pf2">0.25 0.25</point>
+
+    <baseline name="bsl_all">
+      <points>rt,lt,lb,rb,rt</points>
+    </baseline>
+
+    <baseline name="bsl_web">
+      <point>o</point>
+      <angle>60</angle>
+    </baseline>
+    <baseline name="bsl_web1">
+      <point>o1</point>
+      <angle>60</angle>
+    </baseline>
+    <baseline name="bsl_web2">
+      <point>o2</point>
+      <angle>60</angle>
+    </baseline>
+
+  </baselines>
+
+
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_mtr_lamina_0.01">0:2</layer>
+      <layer lamina="la_mtr_lamina_0.01">90:2</layer>
+    </layup>
+    <layup name="layup2">
+      <layer lamina="la_mtr_lamina_0.01">0:2</layer>
+      <!-- <layer lamina="la_mtr_lamina_0.01">90:2</layer> -->
+    </layup>
+
+  </layups>
+
+
+
+  <component name="main">
+    <segment>
+      <baseline>bsl_all</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <!-- <component name="web" depend="main">
+    <segment>
+      <baseline>bsl_web</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component> -->
+
+  <component name="fill_left" type="fill" depend="main">
+    <baseline>bsl_web1</baseline>
+    <location>pf1</location>
+    <material>iso5_1</material>
+  </component>
+  <component name="fill_right" type="fill" depend="main">
+    <baseline>bsl_web2</baseline>
+    <location>pf2</location>
+    <material>iso5_2</material>
+  </component>
+  <!-- <component name="fill" type="fill" depend="main,web">
+    <location>pf1</location>
+    <material>iso5_1</material>
+  </component> -->
+  <!-- <component name="fill" type="fill" depend="main">
+    <baseline fillside="left">bsl_web</baseline>
+    <location>o</location>
+    <material>iso5_1</material>
+  </component> -->
+
+
+</cross_section>

@@ -82,7 +82,7 @@ Elastic properties
       </elastic>
     </material>
 
-    <material name="lam1" type="lamina">
+    <material name="lam1" type="transversely isotropic">
       <elastic>
         <e1>...</e1>
         <e2>...</e2>
@@ -134,7 +134,9 @@ Elastic properties
   </materials>
 
 
-For the ``lamina`` type material, the code will internally convert it to the ``orthotropic`` type, by assigning the rest five constants in the following way:
+For the ``transversely isotropic`` type material, the code will internally
+convert it to the ``orthotropic`` type, by assigning the remaining five
+constants in the following way:
 
 - e3 = e2
 - nu13 = nu12
@@ -142,14 +144,18 @@ For the ``lamina`` type material, the code will internally convert it to the ``o
 - g13 = g12
 - g23 = e2 / ( 2 * (1 + nu23) )
 
+The XML element ``<lamina>`` remains the material-thickness definition used by
+layups. Only the material symmetry keyword changed; ``type="lamina"`` is no
+longer valid for ``<material>``.
+
 
 **Specification**
 
 - If *type="isotropic"* - 2 constants: 'e' and 'nu'.
-- If *type="lamina"* - 4 constants: 'e1', 'e2', 'nu12' and 'g12'.
+- If *type="transversely isotropic"* - 4 constants: 'e1', 'e2', 'nu12' and 'g12'.
 - If *type="orthotropic"* - 9 constants: 'e1', 'e2', 'e3', 'g12', 'g13', 'g23', 'nu12', 'nu13' and 'nu23'.
 - If *type="anisotropic"* - 21 constants: 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c22', 'c23', 'c24', 'c25', 'c26', 'c33', 'c34', 'c35', 'c36', 'c44', 'c45', 'c46', 'c55', 'c56' and 'c66'. These constants are defined in Equation :eq:`hookeslaw`.
-- If *type="lamina"* - 4 constants: 'e1', 'e2', 'g12' and 'nu12'. Internally, this type of material will be converted to the 'orthotropic' material. The default values for the rest components are: 'e3=e2', 'nu13=nu12', 'nu23=0.3', 'g13=g12' and 'g23=e3/(2*(1+nu23))'. These default values can be overwritten by custom values.
+- If *type="transversely isotropic"* - 4 constants: 'e1', 'e2', 'g12' and 'nu12'. Internally, this type of material will be converted to the 'orthotropic' material. The default values for the rest components are: 'e3=e2', 'nu13=nu12', 'nu23=0.3', 'g13=g12' and 'g23=e3/(2*(1+nu23))'. These default values can be overwritten by custom values.
 
 .. math::
   :label: hookeslaw
@@ -239,7 +245,7 @@ For isotropic materials, the following five failure criteria are available, foll
 
   - 1 strength (:math:`X`).
 
-For other type materials (lamina, orthotropic, anisotropic), the following five failure criteria are available:
+For other type materials (transversely isotropic, orthotropic, anisotropic), the following five failure criteria are available:
 
 1. **Max stress**. Strength constants (9):
 
@@ -306,7 +312,7 @@ More details can be found in the VABS users manual.
     - ``4`` or ``max shear strain``
     - ``5`` or ``mises``
 
-  - If *type="lamina"* or *type="orthotropic"* or *type="anisotropic"*, choose one of the following:
+  - If *type="transversely isotropic"* or *type="orthotropic"* or *type="anisotropic"*, choose one of the following:
 
     - ``1`` or ``max stress``
     - ``2`` or ``max strain``

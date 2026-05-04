@@ -13,15 +13,18 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
+
+int CrossSection::used_material_index = 0;
+int CrossSection::used_layertype_index = 0;
 
 CrossSection::CrossSection(std::string name) {
   csname = name;
@@ -32,63 +35,9 @@ CrossSection::CrossSection(std::string name) {
   // csrotatem = STensor3{1.0};
   // csmeshsize = 1.0;
   // cselementtype = "linear";
-  cssegments = {};
   // csconnections = {};
   // csfillings = {};
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CrossSection::CrossSection(std::string name, PModel *pmodel) {
-  _pmodel = pmodel;
-  csname = name;
-  // cstype = "general";
-  csorigin = SPoint3{0.0, 0.0, 0.0};
-  // csscale = 1.0;
-  // csrotate = 0.0;
-  // csrotatem = STensor3{1.0};
-  // csmeshsize = 1.0;
-  // cselementtype = "linear";
-  cssegments = {};
-  // csconnections = {};
-  // csfillings = {};
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void CrossSection::printCrossSection() {
   std::cout << doubleLine80 << std::endl;
@@ -153,25 +102,6 @@ void CrossSection::printCrossSection() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 LayerType *CrossSection::getUsedLayerTypeByMaterialAngle(Material *m, double angle) {
   for (auto lt : csusedlayertypes) {
     if (lt->material() == m && lt->angle() == angle) {
@@ -182,24 +112,6 @@ LayerType *CrossSection::getUsedLayerTypeByMaterialAngle(Material *m, double ang
   return nullptr;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 LayerType *CrossSection::getUsedLayerTypeByMaterialNameAngle(std::string name, double angle) {
   for (auto lt : csusedlayertypes) {
     if (lt->material()->getName() == name && lt->angle() == angle) {
@@ -209,25 +121,6 @@ LayerType *CrossSection::getUsedLayerTypeByMaterialNameAngle(std::string name, d
 
   return nullptr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void CrossSection::setOrigin(SPoint3 origin) { csorigin = origin; }
 
@@ -255,8 +148,8 @@ void CrossSection::addUsedLayerType(LayerType *p_layertype) {
   csusedlayertypes.push_back(p_layertype);
 }
 
-void CrossSection::addSegment(Segment segment) {
-  cssegments.push_back(segment);
+void CrossSection::addSegment(Segment &&segment) {
+  cssegments.push_back(std::move(segment));
 }
 
 // void CrossSection::addConnection(Connection connection) {
@@ -273,85 +166,54 @@ void CrossSection::addComponent(PComponent *component) {
 
 void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void CrossSection::build(Message *pmessage) {
-  // i_indent++;
-  pmessage->increaseIndent();
+void CrossSection::build(const BuilderConfig &bcfg) {
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
-  PLOG(info) << pmessage->message("building the cross section, step 1");
-
+    PLOG(info) << "building the cross section, step 1";
 
   for (auto cmp : _components) {
 
-    cmp->build(pmessage);
+    cmp->build(bcfg);
 
     // _pmodel->dcel()->print_dcel();
     // for (auto sgm : cmp->segments()) {
-    //   sgm->curveBase()->print(pmessage, 9);
+    //   sgm->curveBase()->print(g_msg, 9);
     // }
 
     // Remove all half edge loops, excluding segments face boundaries
-    _pmodel->dcel()->removeTempLoops();
+    bcfg.dcel->removeTempLoops();
 
     // Create new half edge loops, excluding segments face boundaries
-    _pmodel->dcel()->createTempLoops();
+    bcfg.dcel->createTempLoops();
 
     // For each inner loop, find and connect to the nearest loop
     // _pmodel->dcel()->linkHalfEdgeLoops();
   }
 
-  if (config.debug) {
+  if (bcfg.debug) {
     // Print DCEL
     // _pmodel->dcel()->print_dcel();
 
-
     // Create Gmsh model and write Gmsh files for debugging
-
-    _pmodel->plotGeoDebug(pmessage);
   }
 
   // for (auto cmp : _components) {
   //   for (auto sgm : cmp->segments()) {
-  //     sgm->curveBase()->print(pmessage, 9);
+  //     sgm->curveBase()->print(g_msg, 9);
   //   }
   // }
 
-  // pmessage->printBlank();
-  // pmessage->print(9, "current dcel");
+  // PLOG(info) << 9, "current dcel";
   // _pmodel->dcel()->print_dcel();
 
   // Build details (mainly slice layers for each segment)
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("building the cross section, step 2");
-
+    PLOG(info) << "building the cross section, step 2";
 
   for (auto cmp : _components) {
-    cmp->buildDetails(pmessage);
+    cmp->buildDetails(bcfg);
   }
 
-
   // _pmodel->dcel()->print_dcel();
-  // i_indent--;
-  pmessage->decreaseIndent();
 
 }

@@ -1,5 +1,18 @@
 # Change log
 
+## Version 2.0
+
+- 2.0.0 (2026/05)
+  - **Logging**: Replaced Boost dependency with spdlog; migrated all messages to structured `plog` system; split user-facing and developer log streams; added write guard for log initialization.
+  - **CLI**: Added `--nopopup` argument to suppress Gmsh popup windows.
+  - **Geometry**: Refactored core geometry classes (`PDCELVertex`, baseline, segment, offset, join); rewrote DCEL (doubly connected edge list) module; refactored build-segment-area and join-segments logic.
+  - **IO**: Refactored input/output module; added exception handling and loop guard for malformed input; fixed parsing of multiple numbers separated by multiple spaces; fixed parsing of `p1`, `p2`, `p3` fields; fixed lamina material concept definitions; fixed layups include block.
+  - **Elements**: Added support for quadrilateral element type.
+  - **Bug fixes**: Fixed point placement on airfoil line; fixed 2-cell construction for box cross-sections; fixed MH104 cross-section build; fixed `i_web` component build; fixed build-component logic; fixed geo/offset/intersect calculations; fixed build warnings.
+  - **Build**: Added Ninja generator support; added Linux bash script for integration tests; fixed Linux build scripts; added Python environment for documentation.
+  - **Testing**: Added Catch2 unit tests for geometry and IO modules; updated and expanded integration test cases.
+  - **License**: Added license file.
+
 ## Version 1.6
 
 - 1.6.0 (2024/11)

@@ -1,6 +1,7 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "plog.hpp"
 
@@ -20,47 +21,18 @@ void PDCELHalfEdgeLoop::log() {
 
 
   // ss.str("");
-  // ss << "keep: ";
-  // if (_keep) {
-  //   ss << "yes" << std::endl;
-  // } else {
-  //   ss << "no" << std::endl;
-  // }
-  PLOG(debug) << "keep: " << (_keep ? "yes" : "no");
-
-
-  // ss.str("");
   // ss << "face: ";
   // if (_face != nullptr) {
   //   ss << _face->name() << std::endl;
   // } else {
   //   ss << "nullptr" << std::endl;
   // }
-  PLOG(debug) << "face: " << (_face ? _face->name() : "nullptr");
+  PLOG(debug) << "face: " << (_face ? "(face)" : "nullptr");
 
-
-  PDCELHalfEdge *he = _incident_edge;
-  // std::cout << "half edges:" << std::endl;
   PLOG(debug) << "half edges:";
-  do {
-    // he->print2();
+  walkLoopWithLimit(_incident_edge, [](PDCELHalfEdge *he) {
     PLOG(debug) << he->printString();
-    he = he->next();
-  } while (he != _incident_edge);
-  // std::cout << std::endl;
-
-
-  // ss.str("");
-  // ss << "adjacent loop:";
-  // if (_adjacent_loop == nullptr) {
-  //   ss << " nullptr" << std::endl;
-  // }
-  // else {
-  //   _adjacent_loop->incidentEdge()->print();
-  // }
-  PLOG(debug) << "adjacent loop:" << (_adjacent_loop ? _adjacent_loop->incidentEdge()->printBrief() : "nullptr");
-
-  // std::cout << std::endl;
+  });
 }
 
 
@@ -79,35 +51,17 @@ void PDCELHalfEdgeLoop::print() {
     std::cout << "inner" << std::endl;
   }
 
-  std::cout << "keep: ";
-  if (_keep) {
-    std::cout << "yes" << std::endl;
-  } else {
-    std::cout << "no" << std::endl;
-  }
-
   std::cout << "face: ";
   if (_face != nullptr) {
-    std::cout << _face->name() << std::endl;
+    std::cout << "(face)" << std::endl;
   } else {
     std::cout << "nullptr" << std::endl;
   }
 
-  PDCELHalfEdge *he = _incident_edge;
   std::cout << "half edges:" << std::endl;
-  do {
+  walkLoopWithLimit(_incident_edge, [](PDCELHalfEdge *he) {
     he->print2();
-    he = he->next();
-  } while (he != _incident_edge);
-  // std::cout << std::endl;
-
-  std::cout << "adjacent loop:";
-  if (_adjacent_loop == nullptr) {
-    std::cout << " nullptr" << std::endl;
-  }
-  else {
-    _adjacent_loop->incidentEdge()->print();
-  }
+  });
 
   std::cout << std::endl;
 }
@@ -155,10 +109,13 @@ void PDCELHalfEdgeLoop::setFace(PDCELFace *f) {
 
 
 
-void PDCELHalfEdgeLoop::updateVertexEdge(PDCELHalfEdge *he) {
+PDCELVertex *PDCELHalfEdgeLoop::bottomLeftVertex() {
+  return _incident_edge ? _incident_edge->source() : nullptr;
+}
+
+void PDCELHalfEdgeLoop::updateIncidentEdge(PDCELHalfEdge *he) {
   if (_incident_edge == nullptr ||
-      he->source()->point() < _bottom_left_vertex->point()) {
+      he->source()->point() < _incident_edge->source()->point()) {
     _incident_edge = he;
-    _bottom_left_vertex = he->source();
   }
 }

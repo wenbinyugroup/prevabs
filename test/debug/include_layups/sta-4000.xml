@@ -1,0 +1,222 @@
+<cross_section name="tx-100-st38">
+  
+  <include>
+    <material>materials</material>
+    <layup>layups</layup>
+    <layup>layups2</layup>
+  </include>
+  
+  <analysis>
+    <model>1</model>
+  </analysis>
+  
+  <general>
+    <scale>0.731</scale>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" direction="-1">CXTX_4000_110.dat</points>
+      <flip>1</flip>
+      <!-- <reverse>1</reverse> -->
+    </line>
+    
+    <!-- <point name="p1" on="ln_af" by="x2" which="bottom">0.000000</point> -->
+     
+    <point name="p2" on="ln_af" by="x2" which="bottom">0.089258</point>
+     
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.642800</point>
+     
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.655500</point>
+     
+    <point name="p5" on="ln_af" by="x2" which="bottom">0.704600</point>
+     
+    <point name="p6" on="ln_af" by="x2" which="bottom">0.951216</point>
+     
+    <!-- <point name="p7" on="ln_af" by="x2" which="top">1.000000</point> -->
+     
+    <!-- <point name="p8" on="ln_af" by="x2" which="top">0.000000</point> -->
+     
+    <point name="p9" on="ln_af" by="x2" which="top">0.084786</point>
+     
+    <point name="p10" on="ln_af" by="x2" which="top">0.617000</point>
+     
+    <point name="p11" on="ln_af" by="x2" which="top">0.655500</point>
+     
+    <point name="p12" on="ln_af" by="x2" which="top">0.704600</point>
+     
+    <point name="p13" on="ln_af" by="x2" which="top">0.890219</point>
+     
+    <point name="p14" on="ln_af" by="x2" which="top">0.933635</point>
+     
+    <line name="l_hp1">
+      <points>ln_af_te:p2</points>
+    </line>
+    
+    <line name="l_hp2">
+      <points>p2:p3</points>
+    </line>
+    
+    <line name="l_hp3">
+      <points>p3:p4</points>
+    </line>
+    
+    <line name="l_hp4">
+      <points>p4:p5</points>
+    </line>
+    
+    <line name="l_hp5">
+      <points>p5:p6</points>
+    </line>
+    
+    <line name="l_hp6">
+      <points>p6:ln_af_le</points>
+    </line>
+    
+    <line name="l_lp8">
+      <points>p9:ln_af_te</points>
+    </line>
+    
+    <line name="l_lp9">
+      <points>p10:p9</points>
+    </line>
+    
+    <line name="l_lp10">
+      <points>p11:p10</points>
+    </line>
+    
+    <line name="l_lp11">
+      <points>p12:p11</points>
+    </line>
+    
+    <line name="l_lp12">
+      <points>p13:p12</points>
+    </line>
+    
+    <line name="l_lp13">
+      <points>p14:p13</points>
+    </line>
+    
+    <line name="l_lp14">
+      <points>ln_af_le:p14</points>
+    </line>
+    
+  </baselines>
+  
+  <component name="skin">
+
+    <!-- <segment>
+      <baseline>ln_af</baseline>
+      <layup>coat</layup>
+    </segment> -->
+    
+    <segments>
+      
+      <baseline>l_hp1</baseline>
+      
+      <layup>TX_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_hp2</baseline>
+      
+      <layup>TX_Balsa_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_hp3</baseline>
+      
+      <layup>TX_Balsa_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_hp4</baseline>
+      
+      <layup>TX_Spar_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_hp5</baseline>
+      
+      <layup>TX_Balsa_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_hp6</baseline>
+      
+      <layup>TX_Upper_Strip</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_lp8</baseline>
+      
+      <layup>TX_Upper_Strip</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_lp9</baseline>
+      
+      <layup>TX_Balsa_Upper_Strip</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_lp10</baseline>
+      
+      <layup>TX_Balsa_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_lp11</baseline>
+      
+      <layup>TX_Spar_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_lp12</baseline>
+      
+      <layup>TX_Balsa_Upper</layup>
+      
+    </segments>
+    
+    <segments>
+      
+      <baseline>l_lp13</baseline>
+      
+      <layup>TX_Balsa_Upper</layup>
+      
+    </segments>
+
+    <segments>
+      
+      <baseline>l_lp14</baseline>
+      
+      <layup>TX_Upper_Strip</layup>
+      
+    </segments>
+    
+  </component>
+
+</cross_section>

@@ -11,15 +11,7 @@
 #include "plog.hpp"
 
 #include <gmsh.h>
-// #include "gmsh/GEdge.h"
-// #include "gmsh/GEdgeLoop.h"
-// #include "gmsh/GEntity.h"
-// #include "gmsh/GFace.h"
-// #include "gmsh/GModel.h"
-// #include "gmsh/GVertex.h"
-// #include "gmsh/Gmsh.h"
-// #include "gmsh/MElement.h"
-// #include "gmsh/MTriangle.h"
+
 
 #include <cstdio>
 #include <fstream>
@@ -31,6 +23,12 @@ PModel::PModel(std::string name) {
   _name = name;
   _global_mesh_size = 1.0;
   _element_type = 1;
+  _element_shape = 3;
+  _transfinite_auto = true;
+  _transfinite_corner_angle = PI;
+  _transfinite_recombine = true;
+  _recombine = true;
+  _recombine_angle = 45.0;
 }
 
 
@@ -40,14 +38,19 @@ PModel::PModel(std::string name) {
 void PModel::initialize() {
 
   if (config.debug) {
-    config.fdeb = fopen((config.file_directory + config.file_base_name + ".debug").c_str(), "w");
+    runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
+    if (!runtime.fdeb) {
+      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb << std::endl;
+      config.debug = false;
+    }
   }
 
   gmsh::initialize();
-  // GmshInitialize(0, 0);
-  // printInfo(1, "Gmsh initialized");
 
-  // gmsh::logger::stop();
+  // Control Gmsh's own console output (meshing progress, info lines, etc.).
+  // Level: 0=silent, 1=errors, 2=warnings, 3=info (default), 5=debug.
+  // Controlled via --gmsh-verbosity; defaults to 2 (warnings).
+  gmsh::option::setNumber("General.Verbosity", config.app.gmsh_verbosity);
 
 }
 
@@ -60,155 +63,12 @@ void PModel::finalize() {
   gmsh::finalize();
   // GmshFinalize();
 
-  if (config.debug) {
-    fclose(config.fdeb);
+  if (config.debug && runtime.fdeb) {
+    fclose(runtime.fdeb);
+    runtime.fdeb = nullptr;
   }
 
 }
-
-
-
-
-
-PDCELVertex *PModel::getPointByName(std::string name) {
-  for (auto p : _vertices) {
-    if (p->name() == name) {
-      return p;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-Baseline *PModel::getBaselineByName(std::string name) {
-  for (auto l : _baselines) {
-    if (l->getName() == name) {
-      return l;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-Baseline *PModel::getBaselineByNameCopy(std::string name) {
-  Baseline *bl;
-  for (auto l : _baselines) {
-    if (l->getName() == name) {
-      bl = new Baseline(l);
-      return bl;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-Material *PModel::getMaterialByName(std::string name) {
-  for (auto m : _materials) {
-    if (m->getName() == name) {
-      return m;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-Lamina *PModel::getLaminaByName(std::string name) {
-  for (auto l : _laminas) {
-    if (l->getName() == name) {
-      return l;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-LayerType *PModel::getLayerTypeByMaterialAngle(Material *m, double angle) {
-  for (auto lt : _layertypes) {
-    if (lt->material() == m && lt->angle() == angle) {
-      return lt;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-LayerType *PModel::getLayerTypeByMaterialNameAngle(std::string name, double angle) {
-  for (auto lt : _layertypes) {
-    if (lt->material()->getName() == name && lt->angle() == angle) {
-      return lt;
-    }
-  }
-  return nullptr;
-}
-
-
-
-
-
-Layup *PModel::getLayupByName(std::string name) {
-  for (auto l : _layups) {
-    if (l->getName() == name) {
-      return l;
-    }
-  }
-  return nullptr;
-}
-
-// std::vector<int> &PModel::getIntParamsForGmsh() {
-//   std::vector<int> i_params(13, 0);
-
-//   i_params[0] = config.analysis_tool;
-//   i_params[1] = _element_type;
-//   i_params[2] = _cross_section->getUsedMaterials().size();
-//   i_params[3] = _cross_section->getUsedLayerTypes().size();
-
-//   if (config.analysis_tool == 1) {
-//     // VABS
-//     if (_analysis_thermal != 0) {
-//       i_params[4] = 3;
-//     }
-//     i_params[5] = _analysis_model;
-//     i_params[6] = _analysis_trapeze;
-//     i_params[7] = _analysis_vlasov;
-//     i_params[8] = _analysis_curvature;
-//     i_params[9] = _analysis_oblique;
-//   } else {
-//     // SwiftComp
-//     i_params[5] = _analysis_model;
-//   }
-
-//   return i_params;
-// }
-
-// std::vector<double> &PModel::getDoubleParamsForGmsh() {
-//   std::vector<double> d_params(5, 0.0);
-
-//   d_params[0] = _analysis_curvatures[0];
-//   d_params[1] = _analysis_curvatures[1];
-//   d_params[2] = _analysis_curvatures[2];
-//   d_params[3] = _analysis_obliques[0];
-//   d_params[4] = _analysis_obliques[1];
-
-//   return d_params;
-// }
 
 
 
@@ -233,39 +93,32 @@ void PModel::setObliques(double cos11, double cos21) {
 
 
 
-void PModel::addLayerType(Material *m, double a) {
-  LayerType *lt = new LayerType(0, m, a);
-  _layertypes.push_back(lt);
-}
+// addLayerType — implemented inline in PModel.hpp, delegating to MaterialRepository.
 
 
 
 
 
-void PModel::addLayerType(std::string name, double a) {
-  Material *m = getMaterialByName(name);
-  LayerType *lt = new LayerType(0, m, a);
-  _layertypes.push_back(lt);
-}
 
 
 
 
 
-void PModel::summary(Message *pmessage) {
+void PModel::summary() {
+
   // std::cout << std::fixed;
   if (scientific_format) {
     std::cout << std::scientific;
   }
 
   // std::cout << doubleLine80 << std::endl << std::endl;
-  pmessage->print(9, doubleLine80);
+    PLOG(debug) << doubleLine80;
 
   // std::cout << markInfo << " SUMMARY" << std::endl << std::endl;
-  pmessage->print(9, "SUMMARY");
+    PLOG(debug) << "SUMMARY";
 
   // std::cout << doubleLine80 << std::endl;
-  pmessage->print(9, doubleLine80);
+    PLOG(debug) << doubleLine80;
 
   // std::cout << "BASEPOINTS" << std::setw(8) << basepoints.size() <<
   // std::endl; std::cout << singleLine80 << std::endl; std::cout <<
@@ -273,16 +126,15 @@ void PModel::summary(Message *pmessage) {
   //           << "Y" << std::endl;
   // for (auto bp : basepoints)
   //   std::cout << bp << std::endl;
-  pmessage->printBlank();
-  pmessage->print(9, "summary of base points");
-  for (auto bp : _vertices) {
+    PLOG(debug) << "summary of base points";
+  for (auto bp : _geo_repo.vertices()) {
     std::stringstream ss;
     ss << bp;
-    pmessage->print(9, ss);
+        PLOG(debug) << ss.str();
   }
 
   // std::cout << doubleLine80 << std::endl;
-  pmessage->print(9, doubleLine80);
+    PLOG(debug) << doubleLine80;
 
   // std::cout << "BASELINES" << std::setw(8) << _baselines.size() << std::endl;
   // std::cout << singleLine80 << std::endl;
@@ -292,62 +144,56 @@ void PModel::summary(Message *pmessage) {
   //   std::cout << std::setw(16) << bl->getName() << std::setw(16)
   //             << bl->getType() << std::setw(16) << bl->getNumberOfBasepoints()
   //             << std::endl;
-  pmessage->printBlank();
-  pmessage->print(9, "summary of base lines");
-  for (auto bsl : _baselines) {
-    bsl->print(pmessage);
-    pmessage->printBlank();
+    PLOG(debug) << "summary of base lines";
+  for (auto bsl : _geo_repo.baselines()) {
+    bsl->print();
   }
 
   // std::cout << doubleLine80 << std::endl;
-  pmessage->print(9, doubleLine80);
+    PLOG(debug) << doubleLine80;
 
-  std::cout << "MATERIALS" << std::setw(8) << _materials.size() << std::endl;
+  std::cout << "MATERIALS" << std::setw(8) << _mat_repo.numMaterials() << std::endl;
   std::cout << singleLine80 << std::endl;
   std::cout << std::setw(16) << "ID" << std::setw(16) << "Name" << std::setw(32)
             << "Type" << std::setw(16) << "Density" << std::endl;
-  for (auto m : _materials)
+  for (auto m : _mat_repo.materials())
     std::cout << std::setw(16) << m->id() << std::setw(16) << m->getName()
               << std::setw(32) << m->getType() << std::setw(16)
               << m->getDensity() << std::endl;
 
   // std::cout << doubleLine80 << std::endl;
-  pmessage->print(9, doubleLine80);
+    PLOG(debug) << doubleLine80;
 
-  std::cout << "LAYER TYPES" << std::setw(8) << _layertypes.size() << std::endl;
+  std::cout << "LAYER TYPES" << std::setw(8) << _mat_repo.numLayerTypes() << std::endl;
   std::cout << singleLine80 << std::endl;
   std::cout << std::setw(16) << "ID" << std::setw(16) << "Material ID"
             << std::setw(16) << "Angle" << std::setw(16) << "Material Name"
             << std::endl;
-  for (auto plt : _layertypes)
+  for (auto plt : _mat_repo.layertypes())
     std::cout << plt << std::endl;
 
   std::cout << doubleLine80 << std::endl;
 
-  std::cout << "LAYUPS" << std::setw(8) << _layups.size() << std::endl;
+  std::cout << "LAYUPS" << std::setw(8) << _mat_repo.layups().size() << std::endl;
   std::cout << singleLine80 << std::endl;
   std::cout << std::setw(32) << "Name" << std::setw(16) << "# Plies"
             << std::setw(16) << "Thickness" << std::endl;
-  for (auto l : _layups)
+  for (auto l : _mat_repo.layups())
     std::cout << std::setw(32) << l->getName() << std::setw(16)
               << l->getPlies().size() << std::setw(16) << l->getThickness()
               << std::endl;
 
-  pmessage->printBlank();
-  pmessage->print(9, "summary of layups");
-  for (auto lyp : _layups) {
-    lyp->print(pmessage, 9);
-    pmessage->printBlank();
+    PLOG(debug) << "summary of layups";
+  for (auto lyp : _mat_repo.layups()) {
+    lyp->print();
   }
 
   // std::cout << doubleLine80 << std::endl;
-  pmessage->print(9, doubleLine80);
+    PLOG(debug) << doubleLine80;
 
-  pmessage->printBlank();
-  pmessage->print(9, "summary of components");
+    PLOG(debug) << "summary of components";
   for (auto cmp : _cross_section->components()) {
-    cmp->print(pmessage, 9);
-    pmessage->printBlank();
+    cmp->print();
   }
 }
 
@@ -355,453 +201,104 @@ void PModel::summary(Message *pmessage) {
 
 
 
-void PModel::build(Message *pmessage) {
+void PModel::build() {
   _dcel = new PDCEL();
   _dcel->initialize();
+
+  BuilderConfig bcfg{
+    config.debug, config.tool, config.app.tol, config.app.geo_tol,
+    _dcel, this
+  };
+  bcfg.model = this;
+  _face_data[_dcel->faces().front()].name = "background";
 
   // for (auto cs : crosssections) {
   //   cs->build();
   // }
-  _cross_section->build(pmessage);
+  _cross_section->build(bcfg);
 
   // _dcel->print_dcel();
 
   // _dcel->vertextree()->printInOrder();
 
-  pmessage->printBlank();
-  _dcel->fixGeometry(pmessage);
+  _dcel->fixGeometry(bcfg);
 }
 
 
 
 
-
-
-
-
-
-// void PModel::initGmshModel(Message *pmessage) {
-//   _gmodel = new GModel();
-//   _gmodel->setFactory("Gmsh");
-
-//   return;
-// }
-
-
-
-
-
-
-
-
-
-// void PModel::createGmshVertices(Message *pmessage) {
-//   PLOG(info) << pmessage->message("creating gmsh vertices");
-//   GVertex *gv;
-//   for (auto v : _dcel->vertices()) {
-//     if (v->gbuild()) {
-//       gv = _gmodel->addVertex(v->x(), v->y(), v->z(), _global_mesh_size);
-//       v->setGVertex(gv);
-//     }
-//   }
-
-//   return;
-// }
-
-
-
-
-
-
-
-
-
-// void PModel::createGmshEdges(Message *pmessage) {
-//   PLOG(info) << pmessage->message("creating gmsh edges");
-//   GEdge *ge;
-//   // GEdgeSigned *ges;
-//   for (auto he : _dcel->halfedges()) {
-//     if (he->source()->gbuild() && he->target()->gbuild()) {
-//       ge = he->twin()->gedge();
-
-//       if (ge == nullptr) {
-//         // New GEdge for the pair of half edges
-//         // std::cout << "new gedge: " << he << std::endl;
-//         if (he->sign() > 0) {
-//           ge = _gmodel->addLine(he->source()->gvertex(),
-//                                 he->target()->gvertex());
-//         } else {
-//           ge = _gmodel->addLine(he->twin()->source()->gvertex(),
-//                                 he->twin()->target()->gvertex());
-//         }
-//       }
-//       // ges = new GEdgeSigned(he->sign(), ge);
-//       he->setGEdge(ge);
-//     }
-//   }
-// }
-
-
-
-
-
-
-
-
-
-// void PModel::createGmshFaces(Message *pmessage) {
-//   PLOG(info) << pmessage->message("creating gmsh faces");
-
-//   GVertex *gv;
-//   GEdge *ge;
-//   GFace *gf;
-
-//   for (auto f : _dcel->faces()) {
-
-//     if (f->gbuild() && f->outer() != nullptr) {
-
-//       std::vector<GEdge *> geloop;
-//       std::vector<std::vector<GEdge *>> geloops;
-//       std::vector<GEdgeSigned> gesloop;
-//       std::vector<std::vector<GEdgeSigned>> gesloops;
-
-
-//       // Add outer loop
-//       PDCELHalfEdge *he = f->outer();
-//       do {
-
-//         gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
-//         he = he->next();
-
-//       } while (he != f->outer());
-//       gesloops.push_back(gesloop);
-
-
-//       // Add inner loops
-//       for (auto hei : f->inners()) {
-
-//         gesloop.clear();
-//         he = hei;
-//         do {
-//           gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
-//           he = he->next();
-//         }
-//         while (he != hei);
-//         gesloops.push_back(gesloop);
-
-//       }
-
-//       gf = _gmodel->addPlanarFace(gesloops);
-//       f->setGFace(gf);
-
-
-//       // Set physical entity id
-//       gf->addPhysicalEntity(f->layertype()->id());
-
-
-//       // Set local mesh size
-//       if (f->getMeshSize() != -1) {
-//         // std::cout << f->getMeshSize() << std::endl;
-//         // PDCELVertex *v = f->getEmbeddedVertex();
-//         std::vector<GVertex *> gvs;
-//         for (auto v : f->getEmbeddedVertices()) {
-//           gv = _gmodel->addVertex(v->x(), v->y(), v->z(), f->getMeshSize());
-//           v->setGVertex(gv);
-//           gvs.push_back(gv);
-//           gf->addEmbeddedVertex(gv);
-//         }
-//         if (gvs.size() > 1) {
-//           for (auto i = 0; i < gvs.size() - 1; i++) {
-//             ge = _gmodel->addLine(gvs[i], gvs[i+1]);
-//             gf->addEmbeddedEdge(ge);
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
-
-
-
-
-
-
-
-
-// void PModel::createGmshGeo(Message *pmessage) {
-
-//   createGmshVertices(pmessage);
-//   createGmshEdges(pmessage);
-//   // createGmshFaces(pmessage);
-
-// }
-
-
-
-
-
-
-
-
-
-void PModel::plotGeoDebug(Message *pmessage, bool create_gmsh_geo) {
-
-  if (create_gmsh_geo) {
-    // initGmshModel(pmessage);
-    createGmshGeo(pmessage);
-  }
+void PModel::plotGeoDebug(bool create_gmsh_geo) {
 
   debug_plot_count++;
-  std::string fn_base = config.file_directory + config.file_base_name + "_debug";
+  std::string fn_base =
+      config.file_directory + config.file_base_name + "_debug";
+  std::string fn_geo =
+      fn_base + "_" + std::to_string(debug_plot_count) + ".geo_unrolled";
 
-  writeGmshGeo(fn_base+"_"+std::to_string(debug_plot_count)+".geo_unrolled", pmessage);
-
-  if (debug_plot_count == 1) {
-    writeGmshOpt(fn_base, pmessage);
+  if (create_gmsh_geo) {
+    createGmshGeo();
+    // Commit pending geo entities so gmsh::write can see them.
+    gmsh::model::geo::synchronize();
+    writeGmshGeo(fn_geo);
+    if (debug_plot_count == 1) {
+      writeGmshOpt(fn_base);
+    }
+    // Remove the current model (clears all accumulated geo entities and resets
+    // the tag counter) then create a fresh one for the next debug snapshot.
+    gmsh::model::remove();
+    gmsh::model::add("");
+  } else {
+    writeGmshGeo(fn_geo);
+    if (debug_plot_count == 1) {
+      writeGmshOpt(fn_base);
+    }
   }
 
-  for (auto v : _dcel->vertices()) {
-    // if (v->gvertex()) v->resetGVertex();
-    if (v->gvertexTag() != 0) v->resetGVertexTag();
-  }
-
-  for (auto he : _dcel->halfedges()) {
-    // if (he->gedge()) he->resetGEdge();
-    if (he->gedgeTag() != 0) he->resetGEdgeTag();
-  }
+  _gmsh_vertex_tags.clear();
+  _gmsh_edge_tags.clear();
+  _gmsh_face_tags.clear();
+  _gmsh_face_embedded_vertex_tags.clear();
+  _gmsh_face_embedded_edge_tags.clear();
+  _gmsh_face_physical_group_tags.clear();
 
 }
 
 
 
 
+void PModel::homogenize() {
 
-
-
-
-
-// void PModel::buildGmsh(Message *pmessage) {
-//   // i_indent++;
-//   pmessage->increaseIndent();
-//   // GmshInitialize(0, 0);
-//   // printInfo(1, "Gmsh initialized");
-
-//   _gmodel = new GModel();
-//   _gmodel->setFactory("Gmsh");
-
-//   // ------------------------------
-//   // Create Gmsh vertices
-
-//   // std::cout << "- creating gmsh vertices" << std::endl;
-//   // printInfo(i_indent, "creating gmsh vertices");
-//   // pmessage->print(1, "creating gmsh vertices");
-//   PLOG(info) << pmessage->message("creating gmsh vertices");
-//   GVertex *gv;
-//   for (auto v : _dcel->vertices()) {
-//     if (v->gbuild()) {
-//       gv = _gmodel->addVertex(v->x(), v->y(), v->z(), _global_mesh_size);
-//       v->setGVertex(gv);
-//     }
-//   }
-
-//   // ------------------------------
-//   // Create Gmsh edges
-
-//   // std::cout << "- creating gmsh edges" << std::endl;
-//   // printInfo(i_indent, "creating gmsh edges");
-//   // pmessage->print(1, "creating gmsh edges");
-//   PLOG(info) << pmessage->message("creating gmsh edges");
-//   GEdge *ge;
-//   // GEdgeSigned *ges;
-//   for (auto he : _dcel->halfedges()) {
-//     if (he->source()->gbuild() && he->target()->gbuild()) {
-//       ge = he->twin()->gedge();
-
-//       if (ge == nullptr) {
-//         // New GEdge for the pair of half edges
-//         // std::cout << "new gedge: " << he << std::endl;
-//         if (he->sign() > 0) {
-//           ge = _gmodel->addLine(he->source()->gvertex(),
-//                                 he->target()->gvertex());
-//         } else {
-//           ge = _gmodel->addLine(he->twin()->source()->gvertex(),
-//                                 he->twin()->target()->gvertex());
-//         }
-//       }
-//       // ges = new GEdgeSigned(he->sign(), ge);
-//       he->setGEdge(ge);
-//     }
-//   }
-
-//   // ------------------------------
-//   // Create Gmsh faces
-
-//   // std::cout << "- creating gmsh faces" << std::endl;
-//   // printInfo(i_indent, "creating gmsh face");
-//   // pmessage->print(1, "creating gmsh face");
-//   PLOG(info) << pmessage->message("creating gmsh face");
-//   GFace *gf;
-//   // int face_count = 0;
-//   bool debug_print = false;
-//   for (auto f : _dcel->faces()) {
-
-//     PLOG(debug) << pmessage->message("");
-//     PLOG(debug) << pmessage->message("  face: " + f->name());
-//     debug_print = false;
-//     if (f->gbuild() && f->outer() != nullptr) {
-//       // if (
-//       //   f->name() == "sgm_18_area_1_layer_1" || f->name() == "sgm_18_area_2_layer_1"
-//       // ) debug_print = true;
-
-//       // face_count++;
-//       // std::cout << "gmsh face: " << face_count << std::endl;
-//       std::vector<GEdge *> geloop;
-//       std::vector<std::vector<GEdge *>> geloops;
-//       std::vector<GEdgeSigned> gesloop;
-//       std::vector<std::vector<GEdgeSigned>> gesloops;
-
-//       // if (debug_print) std::cout << "\n" << f->name() << std::endl;
-
-//       // Add outer loop
-//       PLOG(debug) << pmessage->message("  adding outer loop");
-//       PDCELHalfEdge *he = f->outer();
-//       do {
-//         // if (debug_print) {
-//         //   std::cout << he << std::endl;
-//         // }
-//         gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
-//         he = he->next();
-//       } while (he != f->outer());
-//       gesloops.push_back(gesloop);
-
-//       // Add inner loops
-//       PLOG(debug) << pmessage->message("  adding inner loops");
-//       for (auto hei : f->inners()) {
-//         gesloop.clear();
-//         he = hei;
-//         do {
-//           gesloop.push_back(GEdgeSigned(he->sign(), he->gedge()));
-//           he = he->next();
-//         }
-//         while (he != hei);
-//         gesloops.push_back(gesloop);
-//       }
-
-//       gf = _gmodel->addPlanarFace(gesloops);
-//       f->setGFace(gf);
-
-//       // Set physical entity id
-//       PLOG(debug) << pmessage->message("  adding physical entity");
-//       if (debug_print) {
-//       std::cout << f->layertype() << std::endl;
-//       }
-//       PLOG(debug) << pmessage->message(
-//         "  id: " + std::to_string(f->layertype()->id())
-//         + ", material: " + f->layertype()->material()->getName()
-//         + ", theta_3 = " + std::to_string(f->layertype()->angle())
-//       );
-//       gf->addPhysicalEntity(f->layertype()->id());
-
-//       // Set local mesh size
-//       PLOG(debug) << pmessage->message("  adding local mesh size");
-//       if (f->getMeshSize() != -1) {
-//         // std::cout << f->getMeshSize() << std::endl;
-//         // PDCELVertex *v = f->getEmbeddedVertex();
-//         std::vector<GVertex *> gvs;
-//         for (auto v : f->getEmbeddedVertices()) {
-//           gv = _gmodel->addVertex(v->x(), v->y(), v->z(), f->getMeshSize());
-//           v->setGVertex(gv);
-//           gvs.push_back(gv);
-//           gf->addEmbeddedVertex(gv);
-//         }
-//         if (gvs.size() > 1) {
-//           for (auto i = 0; i < gvs.size() - 1; i++) {
-//             ge = _gmodel->addLine(gvs[i], gvs[i+1]);
-//             gf->addEmbeddedEdge(ge);
-//           }
-//         }
-//       }
-//     }
-//   }
-
-//   if (config.debug) {
-//     // Create Gmsh model and write Gmsh files for debugging
-
-//     plotGeoDebug(pmessage, false);
-
-//     // writeGmshGeo(fn_base+".geo", pmessage);
-//     // writeGmshOpt(fn_base+".opt", pmessage);
-//   }
-
-//   // ------------------------------
-//   // Meshing
-
-//   // std::cout << "- meshing...";
-//   // printInfo(i_indent, "meshing");
-//   // pmessage->print(1, "meshing");
-//   PLOG(info) << pmessage->message("meshing");
-
-//   unsigned int mesh_algo = 6;
-//   GmshSetOption("Mesh", "Algorithm", mesh_algo);
-//   _gmodel->mesh(2);
-//   // pmessage->print(1, "element type: " + std::to_string(_element_type));
-//   if (_element_type == 2) {
-//     _gmodel->setOrderN(2, 0, 0);
-//   }
-//   // std::cout << "done" << std::endl;
-//   // printInfo(i_indent, "meshing -- done");
-
-//   i_indent--;
-//   pmessage->decreaseIndent();
-// }
-
-
-
-
-
-
-
-
-
-void PModel::homogenize(Message *pmessage) {
 
   try {
     // ================
     // READ INPUT FILES
 
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("reading input files");
+        PLOG(info) << "reading input files";
 
-    readInputMain(config.main_input, config.file_directory, this, pmessage);
-    // pmodel->summary(pmessage);
+    readInputMain(config.main_input, config.file_directory, this);
+    // pmodel->summary(g_msg);
 
-    PLOG(info) << pmessage->message("reading input files -- done");
-    pmessage->printBlank();
+        PLOG(info) << "reading input files -- done";
 
 
     // ==============
     // BUILD GEOMETRY
 
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("building the shape");
+        PLOG(info) << "building the shape";
 
-    build(pmessage);
+    build();
 
-    PLOG(info) << pmessage->message("building the shape -- done");
-    pmessage->printBlank();
+        PLOG(info) << "building the shape -- done";
 
 
     // ================
     // MODELING IN GMSH
 
-    pmessage->printBlank();
-    PLOG(info) << pmessage->message("modeling in Gmsh");
+        PLOG(info) << "modeling in Gmsh";
 
-    buildGmsh(pmessage);
+    buildGmsh();
 
-    PLOG(info) << pmessage->message("modeling in Gmsh -- done");
-    pmessage->printBlank();
+        PLOG(info) << "modeling in Gmsh -- done";
 
 
     // ===================
@@ -809,30 +306,27 @@ void PModel::homogenize(Message *pmessage) {
 
     // if (config.analysis_tool != 3) {
     if (!config.integrated_solver) {
-      pmessage->printBlank();
-      PLOG(info) << pmessage->message("writing outputs");
+            PLOG(info) << "writing outputs";
 
       if (config.plot) {
-        writeGmsh(config.file_directory + config.file_base_name, pmessage);
+        writeGmsh(config.file_directory + config.file_base_name);
       }
-      writeSG(config.file_name_vsc, config.analysis_tool, pmessage);
+      WriterConfig wcfg{config.tool, config.isDehomo(), config.tool_ver, config.file_name_vsc};
+      writeSG(config.file_name_vsc, wcfg);
 
       if (_itf_output) {
         // Write supplement files
-        writeSupp(pmessage);
+        writeSupp();
       }
 
-      PLOG(info) << pmessage->message("writing outputs -- done");
-      pmessage->printBlank();
+            PLOG(info) << "writing outputs -- done";
     }
   }
   catch (std::exception &exception) {
-    pmessage->print(2, exception.what());
-    return;
+    throw std::runtime_error(
+      std::string("homogenization failed: ") + exception.what()
+    );
   }
-
-
-  return;
 }
 
 
@@ -843,18 +337,17 @@ void PModel::homogenize(Message *pmessage) {
 
 
 
-void PModel::dehomogenize(Message *pmessage) {
-  pmessage->increaseIndent();
-  PLOG(info) << pmessage->message("dehomogenizing...");
+void PModel::dehomogenize() {
+    PLOG(info) << "dehomogenizing...";
 
   // Read cs xml file
-  readInputMain(config.main_input, config.file_directory, this, pmessage);
+  readInputMain(config.main_input, config.file_directory, this);
 
 
   // Write glb file
   std::string s_file_name_glb;
   s_file_name_glb = config.file_name_vsc + ".glb";
-  writeGLB(s_file_name_glb, pmessage);
+  writeGLB(s_file_name_glb);
 
 
   // Do dehomogenization/failure analysis
@@ -862,8 +355,6 @@ void PModel::dehomogenize(Message *pmessage) {
   //   run(pmessage);
   // }
 
-  pmessage->decreaseIndent();
-
   return;
 }
 
@@ -875,43 +366,32 @@ void PModel::dehomogenize(Message *pmessage) {
 
 
 
-void PModel::run(Message *pmessage) {
-  pmessage->increaseIndent();
+void PModel::run() {
 
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis);
-  pmessage->printBlank();
-  pmessage->print(1, " [" + config.tool_name + " Messages] ");
-  pmessage->printBlank();
+    PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis;
+  PLOG(info) << " [" + config.tool_name + " Messages] ";
 
 
   std::vector<std::string> cmd_args;
 
-  if (config.analysis_tool == 1) {
+  if (config.isVABS()) {
     cmd_args.push_back(config.file_name_vsc);
-    // VABS
-    if (config.integrated_solver) {
-      runIntegratedVABS(config.file_name_vsc, this, pmessage);
-    }
-
-    else {
-      if (config.dehomo) {
-        config.vabs_option = "2";
-        if (config.dehomo_nl) {
-          config.vabs_option = "1";
-        }
+    {
+      if (config.isDehomo()) {
+        config.vabs_option = (config.mode == AnalysisMode::DehomogenizationNL) ? "1" : "2";
       }
-      cmd_args.push_back(config.vabs_option);
-      if (_load_cases.size() > 1) {
-        cmd_args.push_back(std::to_string(_load_cases.size()));
+      if (!config.vabs_option.empty()) {
+        cmd_args.push_back(config.vabs_option);
+      }
+      if (_pp_data.load_cases.size() > 1) {
+        cmd_args.push_back(std::to_string(_pp_data.load_cases.size()));
       }
 
-      runVABS(config.vabs_name, cmd_args, pmessage);
-
+      runVABS(config.vabs_name, cmd_args);
     }
   }
 
-  else if (config.analysis_tool == 2) {
+  else if (config.isSC()) {
     cmd_args.push_back(config.file_name_vsc);
     // SwiftComp
     if (_analysis_model_dim == 1) {
@@ -924,18 +404,13 @@ void PModel::run(Message *pmessage) {
       cmd_args.push_back("3D");
     }
     cmd_args.push_back(config.sc_option);
-    runSC(config.sc_name, cmd_args, pmessage);
+    runSC(config.sc_name, cmd_args);
 
   }
 
 
-  pmessage->printBlank();
-  pmessage->print(1, " [" + config.tool_name + " Messages End] ");
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running " + config.tool_name + " for " + config.msg_analysis + " -- done");
-  pmessage->printBlank();
-
-  pmessage->decreaseIndent();
+  PLOG(info) << " [" + config.tool_name + " Messages End] ";
+    PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis + " -- done";
 
   return;
 }
@@ -948,9 +423,9 @@ void PModel::run(Message *pmessage) {
 
 
 
-void PModel::plot(Message *pmessage) {
-  if (config.dehomo || config.fail_strength || config.fail_index || config.fail_envelope) {
-    plotDehomo(pmessage);
+void PModel::plot() {
+  if (config.isRecovery()) {
+    plotDehomo();
     // pmessage->printBlank();
     // PLOG(info) << pmessage->message("post-processing recover results");
 
@@ -968,10 +443,25 @@ void PModel::plot(Message *pmessage) {
   }
 
 
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("running Gmsh for visualization");
+    PLOG(info) << "running Gmsh for visualization";
 
-  runGmsh(config.file_name_geo, config.file_name_msh, config.file_name_opt, pmessage);
+  // Recovery/failure plotting writes a standalone .msh file. Load it into the
+  // current Gmsh session before applying the .opt view settings.
+  if ((config.isRecovery() || config.isFailure()) &&
+      !config.file_name_msh.empty()) {
+    PLOG(info) << "loading gmsh .msh file: " + config.file_name_msh;
+    gmsh::open(config.file_name_msh);
+  }
+
+  // Load the opt file (view options) and open the FLTK GUI via the Gmsh API.
+  // This avoids requiring a separate `gmsh` executable on PATH.
+  if (!config.file_name_opt.empty()) {
+    PLOG(info) << "loading gmsh .opt file: " + config.file_name_opt;
+    gmsh::merge(config.file_name_opt);
+  }
+  if (!config.no_popup) {
+    gmsh::fltk::run();
+  }
 
   return;
 }

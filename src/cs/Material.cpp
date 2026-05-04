@@ -3,6 +3,7 @@
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
+#include "plog.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -19,28 +20,31 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
   return out;
 }
 
-void Material::print(Message *pmessage, int i_type, int i_indent) {
+void Material::print(int i_type, int /*i_indent*/) {
   std::string msg;
-  pmessage->print(i_type, "name: " + _name);
-  pmessage->print(i_type, "density = " + std::to_string(_density));
-  pmessage->print(i_type, "type: " + _type);
+    PLOG(debug) << "name: " + _name;
+    PLOG(debug) << "density = " + std::to_string(_density);
+    PLOG(debug) << "type: " + _type;
+  if (getSymmetryType() != _type) {
+      PLOG(debug) << "symmetry type: " + getSymmetryType();
+  }
 
   if (_type == "isotropic") {
-    pmessage->print(i_type, "E = " + std::to_string(_elastic[0]));
-    pmessage->print(i_type, "nu = " + std::to_string(_elastic[1]));
+        PLOG(debug) << "E = " + std::to_string(_elastic[0]);
+        PLOG(debug) << "nu = " + std::to_string(_elastic[1]);
   } else if (_type == "orthotropic") {
-    pmessage->print(i_type, "E1 = " + std::to_string(_elastic[0]));
-    pmessage->print(i_type, "E2 = " + std::to_string(_elastic[1]));
-    pmessage->print(i_type, "E3 = " + std::to_string(_elastic[2]));
-    pmessage->print(i_type, "G12 = " + std::to_string(_elastic[3]));
-    pmessage->print(i_type, "G13 = " + std::to_string(_elastic[4]));
-    pmessage->print(i_type, "G23 = " + std::to_string(_elastic[5]));
-    pmessage->print(i_type, "nu12 = " + std::to_string(_elastic[6]));
-    pmessage->print(i_type, "nu13 = " + std::to_string(_elastic[7]));
-    pmessage->print(i_type, "nu23 = " + std::to_string(_elastic[8]));
+        PLOG(debug) << "E1 = " + std::to_string(_elastic[0]);
+        PLOG(debug) << "E2 = " + std::to_string(_elastic[1]);
+        PLOG(debug) << "E3 = " + std::to_string(_elastic[2]);
+        PLOG(debug) << "G12 = " + std::to_string(_elastic[3]);
+        PLOG(debug) << "G13 = " + std::to_string(_elastic[4]);
+        PLOG(debug) << "G23 = " + std::to_string(_elastic[5]);
+        PLOG(debug) << "nu12 = " + std::to_string(_elastic[6]);
+        PLOG(debug) << "nu13 = " + std::to_string(_elastic[7]);
+        PLOG(debug) << "nu23 = " + std::to_string(_elastic[8]);
   } else if (_type == "anisotropic") {
     for (std::size_t i = 0; i < elasticLabelAniso.size(); ++i) {
-      pmessage->print(i_type, upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]));
+            PLOG(debug) << upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]);
     }
   }
 
@@ -98,6 +102,10 @@ void Material::printMaterial() {
   std::cout << std::setw(32) << "Density" << std::setw(32) << _density
             << std::endl;
   std::cout << std::setw(32) << "Type" << std::setw(32) << _type << std::endl;
+  if (getSymmetryType() != _type) {
+    std::cout << std::setw(32) << "Symmetry Type" << std::setw(32)
+              << getSymmetryType() << std::endl;
+  }
   std::cout << std::setw(32) << "Failure Criterion" << std::setw(32)
             << mfcriterion << std::endl;
   std::cout << std::setw(32) << "Characteristic Length" << std::setw(32)
@@ -283,15 +291,11 @@ void Material::completeStrengthProperties() {
 
 
 
-void Material::writeStrengthProperties(FILE *file, Message *pmessage) {
-  // Strength sp = m->getStrength();
-  std::string type = _strength._type;
-  // int fc = m->getFailureCriterion();
-  // std::cout << "type = " << type << std::endl;
+void Material::writeStrengthProperties(FILE *file) {
 
-  completeStrengthProperties();
-  if (type == "lamina") {
-    type = "orthotropic";
+  std::string type = _type;
+  if (getSymmetryType() == "transversely isotropic") {
+    completeStrengthProperties();
   }
 
   fprintf(file, "%8d", mfcriterion);
@@ -299,38 +303,38 @@ void Material::writeStrengthProperties(FILE *file, Message *pmessage) {
   if (type == "isotropic") {
     if ((mfcriterion == 1) || (mfcriterion == 2)) {
       fprintf(file, "%8d\n", 2);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file, "%16e%16e\n", _strength.t1, _strength.c1);
     }
     else if ((mfcriterion == 3) || (mfcriterion == 4)) {
       fprintf(file, "%8d\n", 1);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file, "%16e\n", _strength.s12);
     }
     else if (mfcriterion == 5) {
       fprintf(file, "%8d\n", 1);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file, "%16e\n", _strength.t1);
     }
   }
   else if ((type == "orthotropic") || (type == "anisotropic")) {
     if ((mfcriterion == 1) || (mfcriterion == 2) || (mfcriterion == 4)) {
       fprintf(file, "%8d\n", 9);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file,
         "%16e%16e%16e%16e%16e%16e%16e%16e%16e\n",
         _strength.t1, _strength.t2, _strength.t3, _strength.c1, _strength.c2, _strength.c3, _strength.s23, _strength.s13, _strength.s12);
     }
     else if (mfcriterion == 3) {
       fprintf(file, "%8d\n", 6);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file,
         "%16e%16e%16e%16e%16e%16e\n",
         _strength.t1, _strength.t2, _strength.t3, _strength.s23, _strength.s13, _strength.s12);
     }
     else if (mfcriterion == 5) {
       fprintf(file, "%8d\n", 6);
-      if (config.analysis_tool == 2) fprintf(file, "%16e\n", mcharalength);
+      if (config.isSC()) fprintf(file, "%16e\n", mcharalength);
       fprintf(file,
         "%16e%16e%16e%16e%16e%16e\n",
         _strength.t1, _strength.t2, _strength.c1, _strength.c2, _strength.s23, _strength.s12);
@@ -399,26 +403,6 @@ void LayerType::setAngle(double angle) { langle = angle; }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ===================================================================
-// void Layer::print(int i_number, Message *pmessage, int i_type, int i_indent) {
-//   std::stringstream ss;
-//   ss << std::setw(4) <<
-//   return;
-// }
-
 void Layer::printLayer(int number) {
   // std::string line(32, '=');
   std::cout << singleLine << std::endl;
@@ -463,20 +447,21 @@ void Layer::setLayerType(LayerType *p_layertype) { p_llayertype = p_layertype; }
 
 
 // ===================================================================
-void Layup::print(Message *pmessage, int i_type, int i_indent) {
+void Layup::print() {
+
   std::string msg;
-  pmessage->print(i_type, "name: " + lname);
-  pmessage->print(i_type, "layers:");
+    PLOG(debug) << "name: " + lname;
+    PLOG(debug) << "layers:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(32) << "material"
      << std::setw(16) << "thickness"
      << std::setw(8) << "angle"
      << std::setw(8) << "plies";
-  pmessage->print(i_type, ss.str());
+    PLOG(debug) << ss.str();
   for (int i = 0; i < llayers.size(); i++) {
-    std::stringstream ss;
-    ss << std::setw(4) << (i+1) << llayers[i];
-    pmessage->print(i_type, ss.str());
+    std::stringstream ss_layer;
+    ss_layer << std::setw(4) << (i+1) << llayers[i];
+        PLOG(debug) << ss_layer.str();
   }
 
   return;

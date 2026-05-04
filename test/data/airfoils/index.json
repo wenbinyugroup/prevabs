@@ -1,0 +1,18 @@
+[
+    {
+        "file": "hh02.dat",
+        "format": "lednicer"
+    },
+    {
+        "file": "mh104.dat",
+        "format": "selig"
+    },
+    {
+        "file": "sc1095.dat",
+        "format": "lednicer"
+    },
+    {
+        "file": "vr7.dat",
+        "format": "lednicer"
+    }
+]

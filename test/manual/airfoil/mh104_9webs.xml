@@ -1,0 +1,175 @@
+<!-- 
+ Example: Airfoil (MH-104)
+
+ Unit system:
+ - Length: m
+ - Mass: kg
+ - Density: kg/m^3
+ - Force: N
+ - Pressure: Pa
+-->
+
+<cross_section name="mh104">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <!-- Timoshenko beam model -->
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>-0.25  0</translate>
+    <scale>1.9</scale>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">mh104.dat</points>
+    </line>
+
+    <point name="pt_web1">0.1 0</point>
+    <point name="pt_web2">0.2 0</point>
+    <point name="pt_web3">0.3 0</point>
+    <point name="pt_web4">0.4 0</point>
+    <point name="pt_web5">0.5 0</point>
+    <point name="pt_web6">0.6 0</point>
+    <point name="pt_web7">0.7 0</point>
+    <point name="pt_web8">0.8 0</point>
+    <point name="pt_web9">0.9 0</point>
+
+    <line name="ln_web1">
+      <point>pt_web1</point>
+      <angle>80</angle>
+    </line>
+    <line name="ln_web2">
+      <point>pt_web2</point>
+      <angle>110</angle>
+    </line>
+    <line name="ln_web3">
+      <point>pt_web3</point>
+      <angle>80</angle>
+    </line>
+    <line name="ln_web4">
+      <point>pt_web4</point>
+      <angle>110</angle>
+    </line>
+    <line name="ln_web5">
+      <point>pt_web5</point>
+      <angle>80</angle>
+    </line>
+    <line name="ln_web6">
+      <point>pt_web6</point>
+      <angle>110</angle>
+    </line>
+    <line name="ln_web7">
+      <point>pt_web7</point>
+      <angle>80</angle>
+    </line>
+    <line name="ln_web8">
+      <point>pt_web8</point>
+      <angle>110</angle>
+    </line>
+    <line name="ln_web9">
+      <point>pt_web9</point>
+      <angle>80</angle>
+    </line>
+
+  </baselines>
+
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_gelcoat_0000381">0</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_db_frp_000053">20:18</layer>
+    </layup>
+    <layup name="layup_web">
+      <layer lamina="la_ud_frp_000053">0:38</layer>
+      <layer lamina="la_balsa_0003125">0</layer>
+      <layer lamina="la_ud_frp_000053">0:38</layer>
+    </layup>
+  </layups>
+
+
+  <!-- Surface layup -->
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web1" depend="surface">
+    <segment>
+      <baseline>ln_web1</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web2" depend="surface">
+    <segment>
+      <baseline>ln_web2</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web3" depend="surface">
+    <segment>
+      <baseline>ln_web3</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web4" depend="surface">
+    <segment>
+      <baseline>ln_web4</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web5" depend="surface">
+    <segment>
+      <baseline>ln_web5</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web6" depend="surface">
+    <segment>
+      <baseline>ln_web6</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web7" depend="surface">
+    <segment>
+      <baseline>ln_web7</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web8" depend="surface">
+    <segment>
+      <baseline>ln_web8</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+  <component name="web9" depend="surface">
+    <segment>
+      <baseline>ln_web9</baseline>
+      <layup>layup_web</layup>
+    </segment>
+  </component>
+
+
+</cross_section>

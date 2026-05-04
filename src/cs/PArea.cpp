@@ -3,14 +3,16 @@
 #include "Material.hpp"
 #include "PDCELFace.hpp"
 #include "PGeoClasses.hpp"
+#include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "PSegment.hpp"
 #include "geo.hpp"
 #include "globalVariables.hpp"
+#include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cstdio>
 #include <list>
@@ -18,7 +20,6 @@
 #include <vector>
 
 PArea::PArea() {
-  _pmodel = nullptr;
   _segment = nullptr;
   _base = nullptr;
   _opposite = nullptr;
@@ -28,14 +29,18 @@ PArea::PArea() {
   _line_segment_base = nullptr;
 }
 
-PArea::PArea(PModel *pmodel, Segment *segment) {
-  _pmodel = pmodel;
+PArea::PArea(Segment *segment) {
   _segment = segment;
   _base = nullptr;
   _opposite = nullptr;
   _y2 = SVector3(0, 1, 0);
   _y3 = SVector3(0, 0, 1);
   _face = nullptr;
+  _line_segment_base = nullptr;
+}
+
+PArea::~PArea() {
+  delete _line_segment_base;
   _line_segment_base = nullptr;
 }
 
@@ -105,14 +110,13 @@ void PArea::addNextBoundVertex(PDCELVertex *v) {
 //
 //
 
-void PArea::buildLayers(Message *pmessage) {
-  pmessage->increaseIndent();
+void PArea::buildLayers(const BuilderConfig &bcfg) {
   // std::cout << std::endl;
   // std::cout << "- building layers for area: " << _face->name() << std::endl;
-  // if (config.debug) {
+  // if (bcfg.debug) {
   //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
   // }
-  PLOG(debug) << pmessage->message("building layers for area: " + _face->name());
+    PLOG(debug) << "building layers for area: " + bcfg.model->faceData(_face).name;
 
   // std::cout << "        area face:" << std::endl;
   // _face->print();
@@ -137,7 +141,7 @@ void PArea::buildLayers(Message *pmessage) {
   // PGeoLineSegment *ls_offset, *ls_prev;
   Layer layer;
   // double thk;
-  std::string area_name = _face->name();
+  std::string area_name = bcfg.model->faceData(_face).name;
 
   // std::cout << "        line segment _line_segment_base: " << _line_segment_base << std::endl;
 
@@ -148,20 +152,16 @@ void PArea::buildLayers(Message *pmessage) {
   for (int i = 0; i < _prev_bound_vertices.size(); ++i) {
     // std::cout << std::endl;
     // std::cout << "[debug] layer " << i + 1 << std::endl;
-    if (config.debug) {
+    if (bcfg.debug) {
       // fprintf(config.fdeb, "        layer %d\n", i + 1);
     }
-
-
 
     layer = layup->getLayers()[i];
     // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
 
-
-
     // Split the face
     // fnew = _segment->pmodel()->dcel()->splitFace(_face, ls_offset);
-    fnew = _segment->pmodel()->dcel()->splitFace(_face, _prev_bound_vertices[i], _next_bound_vertices[i]);
+    fnew = bcfg.dcel->splitFace(_face, _prev_bound_vertices[i], _next_bound_vertices[i]);
     // std::cout << "        new faces:" << std::endl;
     // fnew.front()->print();
     // fnew.back()->print();
@@ -176,7 +176,7 @@ void PArea::buildLayers(Message *pmessage) {
 
     // std::cout << "        setting new layer face properties" << std::endl;
     // std::cout << "        name" << std::endl;
-    _faces.back()->setName(area_name + "_layer_" + std::to_string(i + 1));
+    bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(i + 1);
     // std::cout << "        material" << std::endl;
     _faces.back()->setMaterial(layer.getLamina()->getMaterial());
     // std::cout << "        theta3" << std::endl;
@@ -187,7 +187,7 @@ void PArea::buildLayers(Message *pmessage) {
     _faces.back()->setLocaly1(_y1);
     _faces.back()->setLocaly2(_y2);
 
-    if (config.analysis_tool == 1) {
+    if (bcfg.tool == AnalysisTool::VABS) {
       _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
     }
 
@@ -195,7 +195,7 @@ void PArea::buildLayers(Message *pmessage) {
     //   std::cout << "        new layer face:" << std::endl;
     //   _faces.back()->print();
     // }
-    if (config.debug) {
+    if (bcfg.debug) {
       // fprintf(config.fdeb, "        new layer face:\n");
       // writeFace(config.fdeb, _faces.back());
     }
@@ -208,25 +208,23 @@ void PArea::buildLayers(Message *pmessage) {
   layer = layup->getLayers().back();
   // layer = layup->getLayers()[i];
   // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
-  _faces.back()->setName(area_name + "_layer_" + std::to_string(layup->getLayers().size()));
+  bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(layup->getLayers().size());
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());
   _faces.back()->setLocaly1(_y1);
   _faces.back()->setLocaly2(_y2);
-  if (config.analysis_tool == 1) {
+  if (bcfg.tool == AnalysisTool::VABS) {
     _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
   }
   // if (_segment->getName() == "sgm_18") {
   //   std::cout << "        new layer face:" << std::endl;
   //   _faces.back()->print();
   // }
-  if (config.debug) {
+  if (bcfg.debug) {
     // fprintf(config.fdeb, "        new layer face:\n");
     // writeFace(config.fdeb, _faces.back());
   }
-
-  pmessage->decreaseIndent();
 
   return;
 }

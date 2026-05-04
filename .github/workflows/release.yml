@@ -1,0 +1,236 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v2.0.0)'
+        required: true
+      prerelease:
+        description: 'Mark as pre-release'
+        type: boolean
+        default: false
+
+env:
+  GMSH_VERSION: "4.13.1"
+
+# ---------------------------------------------------------------------------
+# Windows (MSVC x64)
+# ---------------------------------------------------------------------------
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Gmsh SDK
+        shell: pwsh
+        run: |
+          $url = "https://gmsh.info/bin/Windows/gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk.zip"
+          Invoke-WebRequest -Uri $url -OutFile gmsh-sdk.zip
+          Expand-Archive gmsh-sdk.zip -DestinationPath .
+          "Gmsh_ROOT=$PWD\gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk" |
+            Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Configure and build
+        shell: pwsh
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64
+          cmake --build build --config Release
+
+      - name: Integration tests
+        shell: pwsh
+        run: |
+          # Configure (no compilation — project(NONE))
+          cmake -S test\integration -B test\integration\build `
+            "-DPREVABS=$PWD\build\Release\prevabs.exe"
+          # Put Gmsh DLL on PATH so the exe can find it at runtime
+          $env:PATH = "$env:Gmsh_ROOT\lib;$env:PATH"
+          ctest --test-dir test\integration\build -C Release --output-on-failure
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag }}"
+          $pkg = "prevabs-${tag}-windows-x64"
+          New-Item -ItemType Directory -Force -Path $pkg | Out-Null
+          Copy-Item "build\Release\prevabs.exe"    "$pkg\"
+          Copy-Item "$env:Gmsh_ROOT\lib\gmsh*.dll" "$pkg\"
+          Copy-Item "share\MaterialDB.xml"         "$pkg\"
+          Compress-Archive -Path $pkg -DestinationPath "${pkg}.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-package
+          path: prevabs-*-windows-x64.zip
+
+# ---------------------------------------------------------------------------
+# Linux – Ubuntu/Debian (x64)
+# ---------------------------------------------------------------------------
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Gmsh SDK
+        run: |
+          wget -q "https://gmsh.info/bin/Linux/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
+          tar xf "gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
+          echo "Gmsh_ROOT=$PWD/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk" >> $GITHUB_ENV
+
+      - name: Configure and build
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,\$ORIGIN"
+          cmake --build build -j$(nproc)
+
+      - name: Integration tests
+        run: |
+          cmake -S test/integration -B test/integration/build \
+            -DPREVABS="$PWD/build/prevabs"
+          # $ORIGIN rpath looks in build/, but libgmsh.so lives in the SDK;
+          # LD_LIBRARY_PATH is searched next and covers it for CI.
+          LD_LIBRARY_PATH="$Gmsh_ROOT/lib" \
+            ctest --test-dir test/integration/build --output-on-failure
+
+      - name: Package
+        run: |
+          TAG="${{ inputs.tag }}"
+          PKG="prevabs-${TAG}-linux-ubuntu-x64"
+          mkdir "$PKG"
+          cp build/prevabs "$PKG/"
+          cp -P "$Gmsh_ROOT"/lib/libgmsh.so* "$PKG/"
+          cp share/MaterialDB.xml "$PKG/"
+          tar czf "${PKG}.tar.gz" "$PKG/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-package
+          path: prevabs-*-linux-ubuntu-x64.tar.gz
+
+# ---------------------------------------------------------------------------
+# Linux – RHEL/CentOS (Rocky Linux 9 container)
+# ---------------------------------------------------------------------------
+  build-rhel:
+    runs-on: ubuntu-latest
+    container: rockylinux:9
+    steps:
+      # git must be installed before actions/checkout
+      - name: Install build tools
+        run: dnf install -y git cmake gcc gcc-c++ make wget
+
+      - uses: actions/checkout@v4
+
+      - name: Download Gmsh SDK
+        run: |
+          wget -q "https://gmsh.info/bin/Linux/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
+          tar xf "gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
+          echo "Gmsh_ROOT=$PWD/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk" >> $GITHUB_ENV
+
+      - name: Configure and build
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,\$ORIGIN"
+          cmake --build build -j$(nproc)
+
+      - name: Integration tests
+        run: |
+          cmake -S test/integration -B test/integration/build \
+            -DPREVABS="$PWD/build/prevabs"
+          LD_LIBRARY_PATH="$Gmsh_ROOT/lib" \
+            ctest --test-dir test/integration/build --output-on-failure
+
+      - name: Package
+        run: |
+          TAG="${{ inputs.tag }}"
+          PKG="prevabs-${TAG}-linux-rhel9-x64"
+          mkdir "$PKG"
+          cp build/prevabs "$PKG/"
+          cp -P "$Gmsh_ROOT"/lib/libgmsh.so* "$PKG/"
+          cp share/MaterialDB.xml "$PKG/"
+          tar czf "${PKG}.tar.gz" "$PKG/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rhel-package
+          path: prevabs-*-linux-rhel9-x64.tar.gz
+
+# ---------------------------------------------------------------------------
+# Examples – packaged from share/examples/files.json (inputs only)
+# ---------------------------------------------------------------------------
+  package-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package examples
+        run: |
+          TAG="${{ inputs.tag }}"
+          PKG="prevabs-${TAG}-examples"
+          python3 - <<'EOF'
+          import json, os, shutil, sys
+
+          pkg = os.environ["PKG"]
+          with open("share/examples/files.json") as f:
+              examples = json.load(f)
+
+          for ex in examples:
+              name = ex["name"]
+              dst  = os.path.join(pkg, name)
+              os.makedirs(dst, exist_ok=True)
+              for fname in ex["inputs"]:
+                  src = os.path.join("share", "examples", name, fname)
+                  if not os.path.exists(src):
+                      print(f"WARNING: missing input file: {src}", file=sys.stderr)
+                      continue
+                  shutil.copy2(src, os.path.join(dst, fname))
+          EOF
+          zip -r "${PKG}.zip" "$PKG/"
+        env:
+          PKG: prevabs-${{ inputs.tag }}-examples
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: examples-package
+          path: prevabs-*-examples.zip
+
+# ---------------------------------------------------------------------------
+# Create GitHub Release
+# ---------------------------------------------------------------------------
+  release:
+    needs: [build-windows, build-ubuntu, build-rhel, package-examples]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts/
+
+      - name: Extract release notes from CHANGELOG
+        run: |
+          awk '/^## Version 2\.0/,/^## Version [0-9]/' CHANGELOG.md \
+            | head -n -1 > release_notes.md
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ inputs.tag }}"
+          PRERELEASE_FLAG=""
+          if [ "${{ inputs.prerelease }}" = "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "$TAG" \
+            --title "PreVABS $TAG" \
+            --notes-file release_notes.md \
+            $PRERELEASE_FLAG \
+            artifacts/*.zip \
+            artifacts/*.tar.gz

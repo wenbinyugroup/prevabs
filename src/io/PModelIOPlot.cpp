@@ -5,9 +5,9 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-void PModel::plotDehomo(Message *pmessage) {
-  pmessage->printBlank();
-  PLOG(info) << pmessage->message("post-processing recover results");
+void PModel::plotDehomo() {
+  PLOG(info) << "";
+  PLOG(info) << "post-processing recover results";
 
 
   std::string fn_base = config.file_directory + config.file_base_name;
@@ -15,22 +15,21 @@ void PModel::plotDehomo(Message *pmessage) {
   // if (config.analysis_tool == 1) {
     // postVABS(pmessage);
   // Read sg input (.sg)
-  readSG(config.file_name_vsc, this, pmessage);
+  WriterConfig wcfg{config.tool, config.isDehomo(), config.tool_ver, config.file_name_vsc};
+  readSG(config.file_name_vsc, this, wcfg);
 
   // Read dehomogenization output
-  readOutputDehomo(config.file_name_vsc, this, pmessage);
+  readOutputDehomo(config.file_name_vsc, this);
 
   // Write Gmsh
-  writeGmsh(fn_base, pmessage);
+  writeGmsh(fn_base);
   // }
   // else if (config.analysis_tool == 2) {
   //   postSCDehomo();
   // }
 
-
-
-  PLOG(info) << pmessage->message("post-processing recover results -- done");
-  pmessage->printBlank();
+  PLOG(info) << "post-processing recover results -- done";
+  PLOG(info) << "";
 
   return;
 }
