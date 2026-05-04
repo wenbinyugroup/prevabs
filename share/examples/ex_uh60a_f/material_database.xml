@@ -103,7 +103,7 @@
   </material>
 
 
-  <material name="AS4 12k/E7K8" type="lamina">
+  <material name="AS4 12k/E7K8" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.145973e-3</density>
     <elastic>
@@ -130,7 +130,7 @@
 
 
   
-  <material name="S2/SP381" type="lamina">
+  <material name="S2/SP381" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.173109e-3</density>
     <elastic>
@@ -159,7 +159,7 @@
 
 
 
-  <material name="T300 15k/976" type="lamina">
+  <material name="T300 15k/976" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.149716e-3</density>
     <elastic>
@@ -187,7 +187,7 @@
   <!--Material: T650-35 12k/976 unidirectional tape   
   Source: Military Composite Materials Handbook. Volume 2. 2002
   Unit: Imperial unit -->
-  <material name="T650-35 12k/976" type="lamina">
+  <material name="T650-35 12k/976" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.148781e-3</density>
     <elastic>
@@ -214,7 +214,7 @@
 
 
 
-  <material name="E-Glass 7781/EA 9396" type="lamina">
+  <material name="E-Glass 7781/EA 9396" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.179660e-3</density>
     <elastic>
@@ -241,7 +241,7 @@
 
 
 
-  <material name="T650-35 3k 976_fabric" type="lamina">
+  <material name="T650-35 3k 976_fabric" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.145973e-3</density>
     <elastic>
@@ -268,7 +268,7 @@
   </lamina>
 
 
-  <material name="T700 24K/E765" type="lamina">
+  <material name="T700 24K/E765" type="transversely isotropic">
 	  <!-- unit: lbf.sec^2/in^4 -->
     <density>0.145037e-3</density>
     <elastic>

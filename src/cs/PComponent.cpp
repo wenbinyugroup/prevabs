@@ -1,62 +1,127 @@
 #include "PComponent.hpp"
 
-#include "Material.hpp"
-#include "PDCEL.hpp"
-#include "PGeoClasses.hpp"
-#include "PSegment.hpp"
-#include "geo.hpp"
-#include "globalConstants.hpp"
-#include "globalVariables.hpp"
-#include "PBaseLine.hpp"
-#include "overloadOperator.hpp"
-#include "utilities.hpp"
 #include "plog.hpp"
+#include "utilities.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <list>
 #include <sstream>
-#include <string>
+#include <unordered_map>
+
+namespace {
+
+enum class OrderVisitState {
+  unvisited,
+  visiting,
+  visited
+};
+
+static std::string formatDependencyCycle(
+    const std::vector<PComponent *> &stack, PComponent *node)
+{
+  std::ostringstream oss;
+  bool found = false;
+  for (auto component : stack) {
+    if (component == node) {
+      found = true;
+    }
+    if (found) {
+      if (oss.tellp() > 0) {
+        oss << " -> ";
+      }
+      oss << component->name();
+    }
+  }
+  if (oss.tellp() > 0) {
+    oss << " -> ";
+  }
+  oss << node->name();
+  return oss.str();
+}
+
+static int resolveComponentOrder(
+    PComponent *component,
+    std::unordered_map<PComponent *, OrderVisitState> &states,
+    std::vector<PComponent *> &stack,
+    bool &has_cycle)
+{
+  const std::unordered_map<PComponent *, OrderVisitState>::const_iterator it =
+      states.find(component);
+  const OrderVisitState state =
+      (it == states.end()) ? OrderVisitState::unvisited : it->second;
+
+  if (state == OrderVisitState::visited) {
+    return component->order();
+  }
+
+  if (state == OrderVisitState::visiting) {
+    PLOG(error) << "order: circular dependency detected: "
+                << formatDependencyCycle(stack, component);
+    has_cycle = true;
+    return 0;
+  }
+
+  states[component] = OrderVisitState::visiting;
+  stack.push_back(component);
+
+  int resolved_order = 1;
+  for (auto dependency : component->dependents()) {
+    resolved_order = std::max(
+        resolved_order,
+        resolveComponentOrder(dependency, states, stack, has_cycle) + 1);
+  }
+
+  stack.pop_back();
+  states[component] = OrderVisitState::visited;
+  if (!has_cycle) {
+    component->setOrder(resolved_order);
+  }
+  return resolved_order;
+}
+
+} // namespace
+
+int PComponent::count_tmp = 0;
 
 void PComponent::print() {
   std::cout << "name: " << _name << " | "
             << "order: " << _order << " | "
-            << "cyclic: " << (_cycle ? "true" : "false") << std::endl;
+            << "cyclic: " << (_laminate.cycle ? "true" : "false")
+            << std::endl;
 }
 
-void PComponent::print(Message *pmessage, int i_type, int i_indent) {
-  pmessage->print(i_type, "name: " + _name);
-  pmessage->print(i_type, "order: " + std::to_string(_order));
-  pmessage->print(i_type, "cyclic: " + std::to_string(_cycle));
-  pmessage->print(i_type, "segments:");
+void PComponent::print(int /*i_type*/, int /*i_indent*/) {
+    PLOG(debug) << "name: " + _name;
+    PLOG(debug) << "order: " + std::to_string(_order);
+    PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
+    PLOG(debug) << "segments:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(16) << "name"
      << std::setw(16) << "base line"
      << std::setw(32) << "layup"
      << std::setw(16) << "side"
      << std::setw(8) << "level";
-  pmessage->print(i_type, ss.str());
-  for (int i = 0; i < _segments.size(); i++) {
-    std::stringstream ss;
-    ss << std::setw(4) << (i+1) << _segments[i];
-    pmessage->print(i_type, ss.str());
+    PLOG(debug) << ss.str();
+  for (int i = 0; i < _laminate.segments.size(); i++) {
+    std::stringstream ss_seg;
+    ss_seg << std::setw(4) << (i+1) << _laminate.segments[i];
+        PLOG(debug) << ss_seg.str();
   }
   return;
 }
 
 int PComponent::order() {
   if (_order == 0) {
-    // Update the order
-    if (_dependencies.empty()) {
-      _order = 1;
-    } else {
-      for (auto dc : _dependencies) {
-        _order = std::max(_order, dc->order());
-      }
-      _order += 1;
+    std::unordered_map<PComponent *, OrderVisitState> states;
+    std::vector<PComponent *> stack;
+    bool has_cycle = false;
+    const int resolved_order =
+        resolveComponentOrder(this, states, stack, has_cycle);
+    if (has_cycle) {
+      return 0;
     }
+    _order = resolved_order;
   }
 
   return _order;
@@ -64,7 +129,7 @@ int PComponent::order() {
 
 void PComponent::setName(std::string name) { _name = name; }
 
-void PComponent::addSegment(Segment *s) { _segments.push_back(s); }
+void PComponent::addSegment(Segment *s) { _laminate.segments.push_back(s); }
 
 void PComponent::setOrder(int order) { _order = order; }
 
@@ -80,30 +145,28 @@ void PComponent::addDependent(PComponent *component) {
 
 
 
-void PComponent::build(Message *pmessage) {
+void PComponent::build(const BuilderConfig &bcfg) {
 
   // i_indent++;
-  pmessage->increaseIndent();
 
-  PLOG(info) << pmessage->message("building component: " + _name);
+    PLOG(info) << "building component: " + _name;
 
   // Laminate type component
-  if (_type == 1) {
+  if (_type == ComponentType::laminate) {
 
-    buildLaminate(pmessage);
+    buildLaminate(bcfg);
 
   }
 
 
   // Fill type component
-  else if (_type == 2) {
+  else if (_type == ComponentType::fill) {
 
-    buildFilling(pmessage);
+    buildFilling(bcfg);
 
   }
 
   // i_indent--;
-  pmessage->decreaseIndent();
 
 }
 
@@ -115,28 +178,28 @@ void PComponent::build(Message *pmessage) {
 
 
 
-void PComponent::buildDetails(Message *pmessage) {
+void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
-  // i_indent++;
-  pmessage->increaseIndent();
 
-  if (_type == 1) {
-
-    PLOG(info) << pmessage->message("building component details: " + _name);
-
-    for (auto sgm : _segments) {
-
-      sgm->buildAreas(pmessage);
-
-      if (config.debug) _pmodel->plotGeoDebug(pmessage);
-
-    }
-
+  if (_type == ComponentType::fill) {
+    PLOG(debug) << "buildDetails: skipping filling component '" << _name
+                << "' because step 2 only builds laminate segment areas.";
+    return;
   }
 
-  // i_indent--;
-  pmessage->decreaseIndent();
+  if (_type != ComponentType::laminate) {
+    PLOG(error) << "buildDetails: unsupported component type for '" << _name
+                << "'";
+    return;
+  }
 
+      PLOG(info) << "building component details: " + _name;
+
+  for (auto sgm : _laminate.segments) {
+
+    sgm->buildAreas(bcfg);
+
+  }
 }
 
 

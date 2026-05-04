@@ -1,6 +1,7 @@
 #include "overloadOperator.hpp"
 
 #include "Material.hpp"
+#include "PFilling.hpp"
 #include "PDCELVertex.hpp"
 #include "PSegment.hpp"
 #include "globalConstants.hpp"
@@ -10,9 +11,7 @@
 // #include "gmsh/SPoint2.h"
 // #include "gmsh/SPoint3.h"
 // #include "gmsh/SVector3.h"
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <iomanip>
@@ -120,7 +119,7 @@ std::ostream &operator<<(std::ostream &out, Segment &s) {
     out << std::scientific;
   }
   out << std::setw(16) << s.getName() << std::setw(16)
-      << s.getBaseline()->getName() << std::setw(32) << s.getLayup()->getName()
+      << s.curveBase()->getName() << std::setw(32) << s.getLayup()->getName()
       << std::setw(16) << s.getLayupside() << std::setw(8) << s.getLevel();
   return out;
 }
@@ -139,15 +138,6 @@ std::ostream &operator<<(std::ostream &out, Filling &f) {
       << f.getMaterial()->getName() << std::setw(16) << f.getFillSide();
   return out;
 }
-
-
-
-
-
-
-
-
-
 
 // ===================================================================
 //                                              Overloading Comparison
@@ -182,7 +172,6 @@ bool operator==(const Layup &l1, const Layup &l2) {
   return true;
 }
 
-
 // bool operator==(const Layup *l1, const Layup *l2) {
 //   std::vector<Layer> l1_layers = l1->getLayers();
 //   std::vector<Layer> l2_layers = l2->getLayers();
@@ -199,14 +188,6 @@ bool operator==(const Layup &l1, const Layup &l2) {
 
 //   return true;
 // }
-
-
-
-
-
-
-
-
 
 // ===================================================================
 //                                              Overloading Arithmetic

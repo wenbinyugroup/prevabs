@@ -6,11 +6,14 @@
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PBaseLine.hpp"
+#include "curve.hpp"
+#include "geo_common.hpp"
+#include "geo_math.hpp"
+#include "polyline.hpp"
 #include "utilities.hpp"
 
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
+
 // #include "gmsh/STensor3.h"
 
 #include <cmath>
@@ -23,10 +26,6 @@ double dist(const P &p1, const P &p2) {
   return sqrt((p2 - p1).normSq());
 }
 
-
-
-
-
 // template <typename P>
 // double calcPolylineLength(const std::vector<P> &ps) {
 //   double len = 0;
@@ -36,93 +35,10 @@ double dist(const P &p1, const P &p2) {
 //   return len;
 // }
 
-
-
 bool isClose(
   const double&, const double&,
   const double&, const double&,
   double, double);
-
-
-
-
-
-double calcPolylineLength(const std::vector<PDCELVertex *>);
-
-
-
-
-
-template <typename P>
-P calcPointFromParam(const P &p1, const P &p2, const double &u, bool &is_new, const double &tol) {
-  // std::cout << "\nfabs(u) = " << fabs(u);
-  // std::cout << ", fabs(u - 1) = " << fabs(u - 1);
-  // std::cout << ", tol = " << tol << std::endl;
-  if (fabs(u) < tol) {
-    is_new = false;
-    return P(p1);
-  } else if (fabs(u - 1) < tol) {
-    is_new = false;
-    return P(p2);
-  } else {
-    is_new = true;
-    return P(p1 + u * (p2 - p1));
-  }
-}
-
-
-
-
-
-// template <typename P>
-// P findParamPointOnPolyline(const std::vector<P> &ps, const double &u, bool &is_new, const double &tol) {
-//   // Calculate the total length
-//   double length = calcPolylineLength(ps);
-//   double ulength = u * length;
-
-//   int nlseg = ps.size() - 1;
-//   double ui = 0, li;
-//   int i;
-//   for (i = 0; i < nlseg; ++i) {
-//     li = dist(ps[i], ps[i+1]);
-//     if (ulength > li) {
-//       ulength -= li;
-//     }
-//     else break;
-//   }
-//   ui = ulength / li;
-//   P newp = calcPointFromParam(ps[i], ps[i+1], ui, is_new, tol);
-//   return newp;
-// }
-
-
-
-
-
-PDCELVertex *findParamPointOnPolyline(
-  const std::vector<PDCELVertex *>,
-  const double &, bool &, int &, const double &
-);
-
-PDCELVertex *findPointOnPolylineByCoordinate(
-  const std::vector<PDCELVertex *> &, const std::string ,
-  const double ,   double ,double &,
-  const int count = 1, const std::string by = "x2"
-); 
-
-PDCELVertex *findPointOnPolylineByCoordinate(
-  const std::vector<PDCELVertex *> &, const std::string,
-  const double , double , 
-  const int count = 1, const std::string by = "x2"
-);
-
-double findPointOnPolylineByCoordinate(
-  const std::vector<PDCELVertex *> &,
-  const double ,   double ,
-  const int count = 1, const std::string by = "x2" 
-);
-
-
 
 bool calcLineIntersection2D(
   const double &, const double &, const double &, const double &,
@@ -155,45 +71,6 @@ bool calcLineIntersection2D(
   PGeoLineSegment *, PGeoLineSegment *,
   double &, double &, const double &);
 
-
-
-
-
-
-
-
-
-
-int getTurningSide(SVector3, SVector3);
-
-double calcDistanceSquared(PDCELVertex *, PDCELVertex *);
-
-/// Connect a list of baselines into a single one
-Baseline *joinCurves(std::list<Baseline *>);
-int joinCurves(Baseline *, std::list<Baseline *>);
-
-/// Trim or extend the end of the curve by the line segment
-/*!
-  \param bl The baseline that will be adjusted
-  \param ls The tool line segment
-  \param end Indicate which end to be adjusted (0: head; 1: tail)
- */
-void adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, int end);
-
-/// Calculate the direction vector given an angle in a plane.
-/*!
-  \param angle The angle in degree of the vector counted from (1, 0)
-  \param plane The plane considered (0(x)/1(y)/2(z))
-  \return The directional vector
- */
-SVector3 getVectorFromAngle(double &angle, const int &plane);
-
-SPoint3 getParametricPoint(const SPoint3 &p1, const SPoint3 &p2, double u);
-
-bool isParallel(PGeoLineSegment *, PGeoLineSegment *);
-bool isCollinear(PGeoLineSegment *, PGeoLineSegment *);
-bool isOverlapped(PGeoLineSegment *, PGeoLineSegment *);
-
 void offsetLineSegment(SPoint3 &, SPoint3 &, SVector3 &, double &);
 PGeoLineSegment *offsetLineSegment(PGeoLineSegment *, int, double);
 PGeoLineSegment *offsetLineSegment(PGeoLineSegment *, SVector3 &);
@@ -209,14 +86,8 @@ Baseline *offsetCurve(Baseline *, int, double);
 //               std::vector<PDCELVertex *> &curve2, PDCELVertex *intersect,
 //               const int &keep1, const int &keep2);
 
-
-
-
 int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
            PDCELVertex *v1_off, PDCELVertex *v2_off);
-
-
-
 
 /** @ingroup geo
  * Offset a list of vertices by a distance.
@@ -225,31 +96,20 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  * @param side Offset side.
  * @param dist Offset distance.
  * @param offset Resulting line (list of vertices).
- * @param link_to_list Links of corresponding vertices.
  */
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
-           std::vector<PDCELVertex *> &offset, std::vector<int> &link_to_list_2,
-           std::vector<std::vector<int>> &id_pairs, Message *pmessage);
+           std::vector<PDCELVertex *> &offset, BaseOffsetMap &id_pairs);
+
+// Validates the BaseOffsetMap staircase invariant.
+bool validateBaseOffsetMap(
+  const BaseOffsetMap &map,
+  std::string *error_message = nullptr);
 
 // int offset2(const std::vector<PDCELVertex *> &base, int side, double dist,
 //            std::vector<PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
 
-
-
-
-SVector3 calcAngleBisectVector(SPoint3 &, SPoint3 &, SPoint3 &);
-SVector3 calcAngleBisectVector(SVector3 &, SVector3 &, std::string,
-                               std::string);
-
-void calcBoundVertices(std::vector<PDCELVertex *> &, SVector3 &, SVector3 &,
-                       Layup *);
-
-void combineVertexLists(std::vector<PDCELVertex *> &,
-                        std::vector<PDCELVertex *> &, std::vector<int> &,
-                        std::vector<int> &, std::vector<PDCELVertex *> &);
-
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect);
+              PDCELVertex *&intersect);
 
 /**
  * @brief Finds the intersection of curves within a given tolerance.
@@ -268,13 +128,13 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * @param pmessage  A pointer to a Message object used for logging.
  * @return          A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
  */
-PDCELHalfEdge *findCurvesIntersection(
-  std::vector<PDCELVertex *>, PDCELHalfEdgeLoop *, int, int &, double &, double &, const double &,
-  Message *);
+PDCELHalfEdge *findCurveLoopIntersection(
+  const std::vector<PDCELVertex *> &, PDCELHalfEdgeLoop *,
+  int, int &, double &, double &, const double &);
 
-Baseline *findCurvesIntersection(
+Baseline *trimCurveAtLineSegment(
   Baseline *, PGeoLineSegment *, int, double &,
-  double &, int &, int &, std::vector<int> &, std::vector<int> &);
+  double &, int &, int &, std::vector<int> &);
 
 int findAllIntersections(
   const std::vector<PDCELVertex *> &c1, const std::vector<PDCELVertex *> &c2,
@@ -300,19 +160,15 @@ int findAllIntersections(
  * @return            A double representing the parametric location of the closest intersection.
  */
 double getIntersectionLocation(
-  std::vector<PDCELVertex *> &c,
+  const std::vector<PDCELVertex *> &c,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
-  int &ls_i, int &j, Message *
+  int &ls_i, int &j
 );
 
 PDCELVertex *getIntersectionVertex(
   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
   int &i1, int &i2, const double &u1, const double &u2,
-  const int &which_end_1, const int &which_end_2,
-  const int &inner_only_1, const int &inner_only_2,
   int &is_new_1, int &is_new_2,
   const double &tol
 );
-
-int trim(std::vector<PDCELVertex *> &c, PDCELVertex *v, const int &remove);

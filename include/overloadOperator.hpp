@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Material.hpp"
+#include "PFilling.hpp"
 #include "PDCELVertex.hpp"
 #include "PSegment.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh_mod/SPoint2.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <iostream>
 

@@ -15,12 +15,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-// #include "gmsh/GModel.h"
-// #include "gmsh/MTriangle.h"
-// #include "gmsh/MVertex.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -47,29 +43,21 @@
 #include <windows.h>
 #endif
 
-int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
+int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
 
-  PLOG(debug) << pmessage->message("in function: readLayups");
-
-  std::vector<Layup> tempLayups;
+  PLOG(debug) << "in function: readLayups";
 
   for (xml_node<> *nodeLayup = nodeLayups->first_node("layup"); nodeLayup;
        nodeLayup = nodeLayup->next_sibling("layup")) {
     std::string layupName{};
-    layupName = nodeLayup->first_attribute("name")->value();
-    // std::cout << "[debug] reading layup: " << layupName << std::endl;
-    PLOG(debug) << pmessage->message("reading layup: " + layupName);
+    layupName = requireAttr(nodeLayup, "name", "<layup>")->value();
+    PLOG(debug) << "reading layup: " + layupName;
 
+    // method: optional; defaults to "layer list" when attribute is absent
     std::string layupMethod{"layer list"};
     xml_attribute<> *attrMethod = nodeLayup->first_attribute("method");
     if (attrMethod)
       layupMethod = lowerString(attrMethod->value());
-
-    // if (debug) {
-    //   std::cout << layupName << std::endl;
-    //   std::cout << layupMethod << std::endl;
-    // }
 
     Layup *layup = new Layup(layupName);
 
@@ -77,10 +65,23 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
       for (xml_node<> *nodeLayer = nodeLayup->first_node("layer"); nodeLayer;
            nodeLayer = nodeLayer->next_sibling("layer")) {
         std::string laminaName{};
-        std::string attrName{};
-        attrName = nodeLayer->first_attribute()->name();
-        if (attrName == "lamina") {
-          laminaName = nodeLayer->first_attribute("lamina")->value();
+        xml_attribute<> *attrLamina = nodeLayer->first_attribute("lamina");
+        xml_attribute<> *attrLayup = nodeLayer->first_attribute("layup");
+        std::string layerContext =
+          "<layer> in <layup name='" + layupName + "'>";
+        if (attrLamina && attrLayup) {
+          throw std::runtime_error(
+            layerContext + " cannot define both 'lamina' and 'layup'"
+          );
+        }
+        if (!attrLamina && !attrLayup) {
+          throw std::runtime_error(
+            "Missing required XML attribute 'lamina' or 'layup' in "
+            + layerContext
+          );
+        }
+        if (attrLamina) {
+          laminaName = attrLamina->value();
 
           std::string angleStack{nodeLayer->value()};
           double angle{};
@@ -94,9 +95,11 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
             std::vector<std::string> vAngleStack;
             vAngleStack = splitString(angleStack, ':');
 
-            angle = atof(vAngleStack[0].c_str());
+            angle = parseRequiredDouble(vAngleStack[0],
+              "<layer> angle in layup '" + layupName + "'");
             if (vAngleStack.size() > 1)
-              stack = atoi(vAngleStack[1].c_str());
+              stack = parseRequiredInt(vAngleStack[1],
+                "<layer> stack in layup '" + layupName + "'");
             else
               stack = 1;
           }
@@ -107,17 +110,23 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
 
           lamina = pmodel->getLaminaByName(laminaName);
           if (lamina == nullptr) {
-            std::cout << "[error] cannot find lamina: " << laminaName
-                      << std::endl;
+            throw std::runtime_error(
+              "cannot find lamina '" + laminaName + "' in layup '" + layupName + "'"
+            );
           }
 
           p_material = lamina->getMaterial();
-
-          p_layertype = pmodel->getLayerTypeByMaterialAngle(p_material, angle);
-          if (p_layertype == nullptr) {
-            p_layertype = new LayerType{0, p_material, angle};
-            pmodel->addLayerType(p_layertype);
+          if (p_material == nullptr) {
+            throw std::runtime_error(
+              "lamina '" + laminaName + "' in layup '" + layupName
+              + "' has no material"
+            );
           }
+
+          p_layertype = ensureLayerType(
+            p_material, angle, pmodel,
+            "<layup name='" + layupName + "'>"
+          );
 
           if (stack > 0) {
             layup->addLayer(lamina, angle, stack, p_layertype);
@@ -126,17 +135,49 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
           for (int i = 1; i <= stack; ++i)
             layup->addPly(lamina->getMaterial(), lamina->getThickness(), angle);
         }
-        else if (attrName == "layup") {
+        else {
           // handle sub-layup
           // must make sure the sub-layup appears before current layup
-          std::string layupName=nodeLayer->first_attribute("layup")->value();
-          Layup *subLayup = pmodel->getLayupByName(layupName);
+          std::string subLayupName{attrLayup->value()};
+          Layup *subLayup = pmodel->getLayupByName(subLayupName);
+          if (subLayup == nullptr) {
+            throw std::runtime_error(
+              "cannot find sub-layup '" + subLayupName
+              + "' in layup '" + layupName + "'"
+            );
+          }
 
           std::vector<Layer> llayers{subLayup->getLayers()};
           std::vector<Ply> lplies{subLayup->getPlies()};
       
           for (auto it=llayers.begin(); it != llayers.end(); it++) {
-            layup->addLayer(it->getLamina(), it->getAngle(), it->getStack(), it->getLayerType());
+            Lamina *subLamina = it->getLamina();
+            if (subLamina == nullptr) {
+              throw std::runtime_error(
+                "sub-layup '" + subLayupName + "' in layup '" + layupName
+                + "' contains a layer without lamina"
+              );
+            }
+
+            Material *subMaterial = subLamina->getMaterial();
+            if (subMaterial == nullptr) {
+              throw std::runtime_error(
+                "sub-layup '" + subLayupName + "' in layup '" + layupName
+                + "' contains a lamina without material"
+              );
+            }
+
+            LayerType *subLayerType = it->getLayerType();
+            if (subLayerType == nullptr) {
+              subLayerType = ensureLayerType(
+                subMaterial, it->getAngle(), pmodel,
+                "<layup name='" + layupName + "'>"
+              );
+            }
+
+            layup->addLayer(
+              subLamina, it->getAngle(), it->getStack(), subLayerType
+            );
           }
 
           for (auto jt=lplies.begin(); jt != lplies.end(); jt++) {
@@ -146,22 +187,29 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
       }
     }
     else if ((layupMethod == "stack sequence") || (layupMethod == "ss")) {
-      std::string laminaName{nodeLayup->first_node("lamina")->value()};
+      const std::string ssctx = "<layup name='" + layupName + "'>";
+      std::string laminaName{requireNode(nodeLayup, "lamina", ssctx)->value()};
       Lamina *lamina = pmodel->getLaminaByName(laminaName);
+      if (lamina == nullptr) {
+        throw std::runtime_error(
+          "cannot find lamina '" + laminaName + "' in layup '" + layupName + "'"
+        );
+      }
 
       LayerType *p_lt = nullptr;
       Material *p_material;
       p_material = lamina->getMaterial();
+      if (p_material == nullptr) {
+        throw std::runtime_error(
+          "lamina '" + laminaName + "' in layup '" + layupName
+          + "' has no material"
+        );
+      }
 
-      std::string layupCode{nodeLayup->first_node("code")->value()};
+      std::string layupCode{requireNode(nodeLayup, "code", ssctx)->value()};
       std::vector<double> anglesList{decodeStackSequence(layupCode)};
       for (auto angle : anglesList) {
-        p_lt = pmodel->getLayerTypeByMaterialAngle(p_material, angle);
-
-        if (p_lt == nullptr) {
-          p_lt = new LayerType{0, p_material, angle};
-          pmodel->addLayerType(p_lt);
-        }
+        p_lt = ensureLayerType(p_material, angle, pmodel, ssctx);
 
         layup->addLayer(lamina, angle, 1, p_lt);
         layup->addPly(lamina->getMaterial(), lamina->getThickness(), angle);
@@ -169,8 +217,6 @@ int readLayups(const xml_node<> *nodeLayups, PModel *pmodel, Message *pmessage) 
     }
     pmodel->addLayup(layup);
   }
-
-  pmessage->decreaseIndent();
 
   return 0;
 }

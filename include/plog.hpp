@@ -1,21 +1,55 @@
 #pragma once
 
-#include <boost/log/trivial.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
+#include <sstream>
+#include <string>
+#include <spdlog/spdlog.h>
 
-namespace logging = boost::log;
-namespace sinks = boost::log::sinks;
-namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace attrs = boost::log::attributes;
-namespace keywords = boost::log::keywords;
+// Returns "[info]    ", "[warning] ", etc., padded to a fixed width.
+// Declared here, defined in plog.cpp.
+std::string paddedSeverityBracket(spdlog::level::level_enum level);
 
-#define PLOG(severity) BOOST_LOG_SEV(plogger::get(), logging::trivial::severity)
+// Stream-wrapper that collects << output and logs on destruction.
+// Usage: PLOG(info) << "msg " << var;
+// Severity names match boost::log::trivial: trace, debug, info, warning, error, fatal
+struct PLogStream {
+  spdlog::level::level_enum level_;
+  const char*               file_;
+  int                       line_;
+  const char*               func_;
+  std::ostringstream        oss_;
 
-// #define LOGFILE "test.log"
+  PLogStream(spdlog::level::level_enum lvl,
+             const char* file, int line, const char* func)
+    : level_(lvl), file_(file), line_(line), func_(func) {}
 
-typedef src::severity_logger_mt< logging::trivial::severity_level > plogger_mt;
+  ~PLogStream() {
+    auto logger = spdlog::get("prevabs");
+    if (!logger) return;
+    std::string padded = paddedSeverityBracket(level_);
+    logger->log(
+        spdlog::source_loc{file_, line_, func_},
+        level_, "{} {}", padded, oss_.str());
+  }
 
-BOOST_LOG_GLOBAL_LOGGER(plogger, plogger_mt)
+  template <typename T>
+  PLogStream& operator<<(const T& val) {
+    oss_ << val;
+    return *this;
+  }
+};
+
+// Map boost::log::trivial severity names to spdlog levels.
+// "warning" -> warn, "fatal" -> critical
+#define _PLOG_LEVEL_trace    spdlog::level::trace
+#define _PLOG_LEVEL_debug    spdlog::level::debug
+#define _PLOG_LEVEL_info     spdlog::level::info
+#define _PLOG_LEVEL_warning  spdlog::level::warn
+#define _PLOG_LEVEL_error    spdlog::level::err
+#define _PLOG_LEVEL_fatal    spdlog::level::critical
+
+#define PLOG(severity) \
+  PLogStream(_PLOG_LEVEL_##severity, \
+             __FILE__, __LINE__, static_cast<const char*>(__func__))
+
+// Call once after config is populated (sets up file + console sinks).
+void initLog();

@@ -1,124 +1,85 @@
 #include "plog.hpp"
 #include "globalVariables.hpp"
-#include <fstream>
-#include <ostream>
 
-#include <boost/log/core.hpp>
-#include <boost/log/attributes.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/expressions/formatters/date_time.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/sinks/sync_frontend.hpp>
-#include <boost/log/sinks/text_ostream_backend.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/support/date_time.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/core/null_deleter.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-// #include <boost/log/sources/logger.hpp>
-// #include <boost/log/sources/record_ostream.hpp>
-// #include <boost/log/utility/setup.hpp>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+#include <chrono>
+#include <memory>
+#include <vector>
 
-namespace logging = boost::log;
-namespace sinks = boost::log::sinks;
-namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace attrs = boost::log::attributes;
-namespace keywords = boost::log::keywords;
-
-
-BOOST_LOG_ATTRIBUTE_KEYWORD(line_id, "LineID", unsigned int)
-BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime)
-BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", logging::trivial::severity_level)
-
-
-BOOST_LOG_GLOBAL_LOGGER_INIT(plogger, plogger_mt) {
-  plogger_mt plogger;
-
-  // Add attributes
-  // logging::add_common_attributes();
-  plogger.add_attribute("LineID", attrs::counter<unsigned int>(1));
-  plogger.add_attribute("TimeStamp", attrs::local_clock());
-
-  // Add a text sink
-  typedef sinks::synchronous_sink<sinks::text_ostream_backend> text_sink;
-  boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
-
-  // Add a log file stream to the sink
-  sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(config.file_name_log));
-  sink->locked_backend()->auto_flush(true);
-
-  // Add a console output stream to the sink
-  sink->locked_backend()->add_stream(boost::shared_ptr<std::ostream>(&std::clog, boost::null_deleter()));
-
-  // Specify the format
-  logging::formatter fmt = expr::stream
-    // << std::setw(7) << std::setfill('0') << line_id << std::setfill(' ') << " | "
-    // << expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S") << " "
-    << "[" << logging::trivial::severity << "]"
-    << " " << expr::message;
-  sink->set_formatter(fmt);
-
-  // Set filter
-  sink->set_filter(severity >= config.log_severity_level);
-
-  // Register the sink
-  logging::core::get()->add_sink(sink);
-
-  // logging::add_console_log(
-  //   std::cout,
-  //   keywords::format = (
-  //     expr::stream << expr::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S")
-  //     << " [" << expr::attr < logging::trivial::severity_level >("Severity") << "]: "
-  //     << expr::message
-  //   )
-  // );
-
-  // logging::add_file_log(
-  //   keywords::file_name = config.file_name_log,
-  //   keywords::format = (
-  //     expr::stream << expr::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S")
-  //     << " [" << expr::attr < logging::trivial::severity_level >("Severity") << "]: "
-  //     << expr::message
-  //   )
-  // );
-
-
-  // logging::core::get()->set_filter(
-  //   logging::trivial::severity >= config.log_severity_level
-  //   // logging::trivial::severity >= logging::trivial::debug
-  //   // logging::trivial::severity >= logging::trivial::info
-  // );
-
-  return plogger;
+// Returns "[info]    ", "[warning] ", "[error]   ", etc., padded to a fixed
+// width so the message column aligns across all severity levels.
+std::string paddedSeverityBracket(spdlog::level::level_enum level) {
+  std::string label;
+  switch (level) {
+    case spdlog::level::trace:    label = "trace";   break;
+    case spdlog::level::debug:    label = "debug";   break;
+    case spdlog::level::info:     label = "info";    break;
+    case spdlog::level::warn:     label = "warning"; break;
+    case spdlog::level::err:      label = "error";   break;
+    case spdlog::level::critical: label = "fatal";   break;
+    default:                      label = "?";       break;
+  }
+  // "[warning]" is 9 chars; pad all brackets to 9 + 1 space = 10 chars total
+  std::string bracket = "[" + label + "]";
+  constexpr int WIDTH = 10;
+  if ((int)bracket.size() < WIDTH)
+    bracket += std::string(WIDTH - bracket.size(), ' ');
+  return bracket;
 }
 
+// Map AppConfig.log_level (int, 0-5) to spdlog level.
+static spdlog::level::level_enum toSpdlogLevel(int level) {
+  switch (level) {
+    case 0:  return spdlog::level::trace;
+    case 1:  return spdlog::level::debug;
+    case 2:  return spdlog::level::info;
+    case 3:  return spdlog::level::warn;
+    case 4:  return spdlog::level::err;
+    default: return spdlog::level::critical;
+  }
+}
 
-// void initLog() {
-//   // Construct the sink
-//   typedef sinks::synchronous_sink< sinks::text_ostream_backend > text_sink;
-//   boost::shared_ptr< text_sink > sink = boost::make_shared< text_sink >();
+void initLog() {
+  spdlog::level::level_enum lvl = toSpdlogLevel(config.app.log_level);
 
-//   // logging::add_file_log(
-//   //   logging::keywords::file_name = "test.log",
-//   //   logging::keywords::format = "[%TimeStamp%]: %Message%"
-//   // );
+  std::vector<spdlog::sink_ptr> sinks;
 
-//   // Add a stream to write log to
-//   sink->locked_backend()->add_stream(
-//     boost::make_shared< std::ofstream >("test.log")
-//   );
+  // Console sink (stderr, colored) — gated by log_level
+  auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+  console_sink->set_pattern("%^%v%$");
+  console_sink->set_level(lvl);
+  sinks.push_back(console_sink);
 
-//   // Register the sink in the logging core
-//   logging::core::get()->add_sink(sink);
+  // User log: always at info or above, no source location
+  if (!config.file_name_log.empty()) {
+    auto user_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+        config.file_name_log, /*truncate=*/true);
+    user_sink->set_pattern("%v");
+    user_sink->set_level(spdlog::level::info);
+    sinks.push_back(user_sink);
+  }
 
-//   // Attributes
-//   logging::add_common_attributes();
+  // Dev log: mirrors log_level, appends source location
+  if (!config.file_name_log_dev.empty()) {
+    auto dev_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+        config.file_name_log_dev, /*truncate=*/true);
+    dev_sink->set_pattern("%v  %s:%!:%#");
+    dev_sink->set_level(lvl);
+    sinks.push_back(dev_sink);
+  }
 
-//   // logging::core::get()->set_filter(
-//   //   logging::trivial::severity >= boost::log::trivial::info
-//   // );
-// }
+  auto logger = std::make_shared<spdlog::logger>(
+      "prevabs", sinks.begin(), sinks.end());
+
+  // Logger passes everything; sinks filter by their own level.
+  logger->set_level(spdlog::level::trace);
+  logger->flush_on(spdlog::level::warn);
+
+  spdlog::register_logger(logger);
+
+  if (config.app.log_level <= LOG_LEVEL_DEBUG) {
+    spdlog::flush_every(std::chrono::seconds(1));
+  }
+}

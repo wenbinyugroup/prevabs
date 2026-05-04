@@ -1,25 +1,46 @@
 #pragma once
 
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
+class Baseline;
+class Message;
+class PDCELVertex;
+class PDCELHalfEdge;
+class PDCELHalfEdgeLoop;
+class PDCELFace;
+class PGeoLineSegment;
+struct BuilderConfig;
+
+#include <list>
+#include <vector>
+
+std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
+    const class PDCEL &dcel, PDCELVertex *v,
+    std::vector<PGeoLineSegment *> &temp_segs);
+PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
+                                       PDCELVertex *v);
+
 #include "declarations.hpp"
-#include "PBaseLine.hpp"
-#include "PBST.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
+#include "globalVariables.hpp"
 
-#include <list>
-#include <vector>
+#include "PDCELUtils.hpp"
 
-class Baseline;
-class PDCELVertex;
-class PDCELHalfEdge;
-class PDCELHalfEdgeLoop;
-class PDCELFace;
-class PAVLTreeVertex;
-class PGeoLineSegment;
+#include <memory>
+#include <set>
+#include <unordered_map>
 
+/// Comparator for PDCELVertex* — orders by geometric position (lexicographic
+/// x, y, z), matching the sort order required by the sweep-line algorithm.
+/// The body of operator() is defined in PDCEL.cpp to avoid requiring the full
+/// PDCELVertex definition in this header (circular include guard issue).
+struct CompareVertexByPoint {
+  bool operator()(PDCELVertex *a, PDCELVertex *b) const;
+};
 
 /** @ingroup geo
  * A doubly connect edge list class.
@@ -32,63 +53,98 @@ private:
 
   std::list<PDCELHalfEdgeLoop *> _halfedge_loops;
 
-  PAVLTreeVertex *_vertex_tree;
+  std::set<PDCELVertex *, CompareVertexByPoint> _vertex_tree;
+
+  /// Segments created internally by addEdge(v1, v2) — owned by PDCEL.
+  std::list<std::unique_ptr<PGeoLineSegment>> _owned_segments;
+
+  /// Half-edges removed from _halfedges but kept live so that ->twin() traversal
+  /// through bounding-box edges continues to work.  Owned by PDCEL.
+  std::vector<std::unique_ptr<PDCELHalfEdge>> _background_halfedges;
+
+  /// Sweep-line keep flag for each half-edge loop (default: false).
+  std::unordered_map<PDCELHalfEdgeLoop *, bool> _loop_keep;
+  /// Sweep-line adjacent-loop link: inner loop → its enclosing outer loop.
+  std::unordered_map<PDCELHalfEdgeLoop *, PDCELHalfEdgeLoop *> _loop_adjacent;
 
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
 
-  /// Find line segments intersecting the verticle sweep line passing the given vertex
-  std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(PDCELVertex *);
-  PGeoLineSegment *findLineSegmentBelowVertex(PDCELVertex *);
+  /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.
+  PDCELVertex *findCoincidentVertex(PDCELVertex *v) const;
+
+  friend std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
+      const PDCEL &dcel, PDCELVertex *v,
+      std::vector<PGeoLineSegment *> &temp_segs);
+  friend PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel,
+                                                PDCELVertex *v);
 
 public:
   PDCEL() = default;
   ~PDCEL();
 
+  PDCEL(const PDCEL &) = delete;
+  PDCEL &operator=(const PDCEL &) = delete;
+
   void initialize();
 
   void print_dcel();
 
-  std::list<PDCELVertex *> &vertices() { return _vertices; }
-  std::list<PDCELHalfEdge *> &halfedges() { return _halfedges; }
-  std::list<PDCELFace *> &faces() { return _faces; }
+  /// Check structural DCEL invariants and log a warning for each violation.
+  /// Returns true if all invariants hold, false if any violation is found.
+  /// Intended for use in debug builds; the cost is O(V + E + F).
+  bool validate();
 
-  std::list<PDCELHalfEdgeLoop *> &halfedgeloops() { return _halfedge_loops; }
+  const std::list<PDCELVertex *> &vertices() const { return _vertices; }
+  const std::list<PDCELHalfEdge *> &halfedges() const { return _halfedges; }
+  const std::list<PDCELFace *> &faces() const { return _faces; }
 
-  PAVLTreeVertex *vertextree() { return _vertex_tree; }
+  const std::list<PDCELHalfEdgeLoop *> &halfedgeloops() const { return _halfedge_loops; }
 
-  void fixGeometry(Message *);
+  void fixGeometry(const BuilderConfig &);
 
   // =================================================================
   // VERTEX
 
-  void addVertex(PDCELVertex *v);
+  /// Add v to the DCEL.  If a geometrically coincident vertex (within GEO_TOL)
+  /// already exists, v is NOT inserted and the existing vertex is returned
+  /// instead.  Otherwise v is inserted and returned.
+  /// The caller MUST use the return value as the canonical vertex — it may
+  /// differ from v when a coincident vertex is found.  If v was heap-allocated
+  /// and the return value differs from v, the caller is responsible for
+  /// deleting v.
+  PDCELVertex *addVertex(PDCELVertex *v);
   void removeVertex(PDCELVertex *v);
 
   // =================================================================
   // HALF EDGE
 
-  /// Find the half edge with source vertex v having incident face f
-  PDCELHalfEdge *findHalfEdge(PDCELVertex *v, PDCELFace *f);
+  /// Find the half-edge with source vertex v whose incident face is f.
+  PDCELHalfEdge *findHalfEdgeInFace(PDCELVertex *v, PDCELFace *f);
 
-  /// Add a new vertex on an existing edge
-  /*!
-    \param v a new vertex.
-    \param e the existing edge.
-  */
-  void splitEdge(PDCELHalfEdge *e, PDCELVertex *v);
+  /// Split an existing edge at v.
+  /// v is resolved to the canonical DCEL vertex (an existing coincident vertex
+  /// may be reused instead of v; if so, v is deleted).
+  /// Returns the canonical split vertex.
+  PDCELVertex *splitEdge(PDCELHalfEdge *e, PDCELVertex *v);
 
   /*!
     \return The half edge from v1 to v2.
    */
   PDCELHalfEdge *addEdge(PDCELVertex *v1, PDCELVertex *v2);
   PDCELHalfEdge *addEdge(PGeoLineSegment *ls);
+  /// Remove an edge and collapse its two endpoints into the source vertex.
+  /// The target vertex is deleted and all half-edges formerly incident on it
+  /// are redirected to the source vertex. Any external pointer to the target
+  /// vertex becomes dangling after this call.
   void removeEdge(PDCELHalfEdge *);
 
-  /// Check if two vertices are already connected by halfedges
-  PDCELHalfEdge *findHalfEdge(PDCELVertex *v1, PDCELVertex *v2);
+  /// Return the half-edge from v1 to v2, or nullptr if none exists.
+  PDCELHalfEdge *findHalfEdgeBetween(PDCELVertex *v1, PDCELVertex *v2);
+  PDCELHalfEdge *findHalfEdgeBetween(PDCELVertex *v1,
+                                     PDCELVertex *v2) const;
 
-  void addEdgesFromCurve(Baseline *);
+  void addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices);
 
   // =================================================================
   // HALF EDGE LOOP
@@ -104,9 +160,15 @@ public:
   int isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2);
 
   PDCELHalfEdgeLoop *addHalfEdgeLoop(PDCELHalfEdge *he);
-  PDCELHalfEdgeLoop *addHalfEdgeLoop(const std::list<PDCELVertex *> &vloop);
   void removeHalfEdgeLoop(PDCELHalfEdgeLoop *);
-  void clearHalfEdgeLoops();
+
+  /// Sweep-line keep flag: true if this loop belongs to a finalized face boundary.
+  bool isLoopKept(PDCELHalfEdgeLoop *hel) const;
+  void setLoopKept(PDCELHalfEdgeLoop *hel, bool kept);
+  /// Sweep-line adjacent-loop link: the enclosing outer loop for an inner loop,
+  /// or nullptr if none has been set.
+  PDCELHalfEdgeLoop *adjacentLoop(PDCELHalfEdgeLoop *hel) const;
+  void setAdjacentLoop(PDCELHalfEdgeLoop *hel, PDCELHalfEdgeLoop *adj);
 
   void removeTempLoops();
   void createTempLoops();
@@ -131,9 +193,11 @@ public:
   PDCELFace *addFace(const std::list<PDCELVertex *> &vloop,
                      PDCELFace *f = nullptr);
 
-  /// Split a bounded face by new edges connecting two vertices
+  /// Split a bounded face by new edges connecting two vertices.
+  /// The original face f is deleted; any external pointer to f becomes
+  /// dangling after this call. Use only the returned faces going forward.
   /*!
-    \param f the bounded face
+    \param f the bounded face (deleted on return)
     \param v1 the first vertex
     \param v2 the second vertex
     \return A list of two new faces. The first one is the incident face of the

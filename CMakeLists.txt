@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 cmake_policy(SET CMP0074 NEW)
 
@@ -7,7 +7,7 @@ project( prevabs C CXX )
 
 set( PROJECTNAME "prevabs" )
 
-set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD 17 )
 
 set( PREVABS_VERSION_MAJOR 1 )
 set( PREVABS_VERSION_MINOR 6 )
@@ -40,36 +40,82 @@ include_directories( ${CMAKE_SOURCE_DIR}/include )
 # include_directories( ${CMAKE_BINARY_DIR}/generated )
 # include_directories( ${CMAKE_SOURCE_DIR}/include/gmsh )
 
-file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+set(SOURCES
+  ${CMAKE_SOURCE_DIR}/src/cs/CrossSection.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/join.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/Material.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PArea.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBaseLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBuildComponentFilling.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBuildComponentLaminate.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PBuildSegmentAreas.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PComponent.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PFilling.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PModel.cpp
+  ${CMAKE_SOURCE_DIR}/src/cs/PSegment.cpp
+  ${CMAKE_SOURCE_DIR}/src/execu.cpp
+  ${CMAKE_SOURCE_DIR}/src/execu_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/DCELSweepLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/DCELValidator.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/curve.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geo_math.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PBST.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCEL.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELFace.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELHalfEdge.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELHalfEdgeLoop.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PDCELVertex.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PGeoClasses.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/PGeoLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/polyline.cpp
+  ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
+  ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
+  ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIO.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIODehomo.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOPlot.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadAirfoil.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadBaseLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadBasePoint.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponent.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponentFilling.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadComponentLaminate.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadCrossSection.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadLayup.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOReadMaterial.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOSG.cpp
+  ${CMAKE_SOURCE_DIR}/src/io/PModelIOSupplement.cpp
+  ${CMAKE_SOURCE_DIR}/src/main.cpp
+  ${CMAKE_SOURCE_DIR}/src/MaterialRepository.cpp
+  ${CMAKE_SOURCE_DIR}/src/overloadOperator.cpp
+  ${CMAKE_SOURCE_DIR}/src/plog.cpp
+  ${CMAKE_SOURCE_DIR}/src/utilities.cpp
+)
 
 
 
 if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
+  add_compile_options(/utf-8)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
 add_executable( ${PROJECTNAME} ${SOURCES} )
+
+if(MSVC)
+  target_compile_options(${PROJECTNAME} PRIVATE /W0)
+else()
+  target_compile_options(${PROJECTNAME} PRIVATE -w)
+endif()
 
 # target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_SOURCE_DIR}/include )
 target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated )
 
 
-# Link Boost libraries
-# --------------------
-if(WIN32 OR CYGWIN)
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-# set(Boost_USE_MULTITHREADED ON)
-# set(Boost_USE_STATIC_RUNTIME OFF)
-# add_definitions( -DBOOST_ALL_DYN_LINK )
-
-find_package( Boost 1.66 COMPONENTS log log_setup system thread REQUIRED )
-message( STATUS "(st) " ${Boost_INCLUDE_DIRS} )
-message( STATUS "(st) " ${Boost_LIBRARY_DIRS} )
-message( STATUS "(st) " ${Boost_LIBRARIES} )
-include_directories( ${Boost_INCLUDE_DIRS} )
-
-target_link_libraries( ${PROJECTNAME} ${Boost_LIBRARIES} )
+# spdlog (header-only, vendored in include/spdlog/)
+# No find_package or link step needed.
 
 
 # Link Gmsh library

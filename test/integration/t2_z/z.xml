@@ -1,0 +1,43 @@
+<cross_section name="z" format="1">
+    <include>
+        <material>materials</material>
+    </include>
+
+    <analysis>
+        <!-- Timoshenko beam model -->
+        <model>1</model>
+    </analysis>
+
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.01</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+    <baselines>
+        <point name="p1">-0.5  0.5</point>
+        <point name="p2"> 0.0  0.5</point>
+        <point name="p3"> 0.0 -0.5</point>
+        <point name="p4"> 0.5 -0.5</point>
+        <line name="l_base">
+            <points>p1,p2,p3,p4</points>
+        </line>
+    </baselines>
+
+    <layups>
+        <layup name="layup1">
+            <layer lamina="la_iso5_1_02">90:2</layer>
+            <layer lamina="la_iso5_2_03">0</layer>
+        </layup>
+    </layups>
+
+    <component>
+        <segment name="sg1">
+            <baseline>l_base</baseline>
+            <layup>layup1</layup>
+        </segment>
+    </component>
+
+</cross_section>

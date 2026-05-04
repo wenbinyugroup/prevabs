@@ -1,0 +1,84 @@
+<cross_section name="i" format="1">
+
+    <include>
+        <!-- <baseline>baselines</baseline> -->
+        <material>materials</material>
+        <!-- <layup>layups</layup> -->
+    </include>
+
+    <analysis>
+        <model>1</model>
+    </analysis>
+
+    <general>
+        <translate>0.0 0.0</translate>
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>
+        <mesh_size>0.02</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+    <baselines>
+
+        <point name="tl">-1 0</point>
+        <point name="tc">0 0</point>
+        <point name="tr">1 0</point>
+        <point name="br">1.5 -3</point>
+        <point name="bc">0 -3</point>
+        <point name="bl">-1.5 -3</point>
+        <point name="web">0.04 -2</point>
+
+        <baseline name="bl_top" type="straight">
+            <points>tl,tc,tr</points>
+        </baseline>
+        <baseline name="bl_bottom" type="straight">
+            <points>bl,bc,br</points>
+        </baseline>
+        <baseline name="bl_left_c" type="straight">
+            <points>tl,tc,bc,bl</points>
+        </baseline>
+        <baseline name="bl_right_c" type="straight">
+            <points>tr,tc,bc,br</points>
+        </baseline>
+    </baselines>
+
+    <layups>
+        <layup name="layup_1">
+            <layer lamina="la_iso5_1_003">90:2</layer>
+            <layer lamina="la_iso5_2_005">0</layer>
+        </layup>
+        <layup name="layup_2">
+            <layer lamina="la_iso5_3_0015">0:3</layer>
+            <layer lamina="la_iso5_4_002">90</layer>
+        </layup>
+        <layup name="layup_web">
+            <layer lamina="la_iso5_5_002">0:4</layer>
+        </layup>
+    </layups>
+
+    <component name="top">
+        <segment>
+            <baseline>bl_top</baseline>
+            <layup>layup_1</layup>
+        </segment>
+    </component>
+    <component name="bottom">
+        <segment>
+            <baseline>bl_bottom</baseline>
+            <layup direction="right">layup_2</layup>
+        </segment>
+    </component>
+    <component name="c_left">
+        <segment>
+            <baseline>bl_left_c</baseline>
+            <layup direction="right">layup_web</layup>
+        </segment>
+    </component>
+    <component name="c_right">
+        <segment>
+            <baseline>bl_right_c</baseline>
+            <layup>layup_web</layup>
+        </segment>
+    </component>
+
+</cross_section>

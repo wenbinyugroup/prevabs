@@ -1,8 +1,0 @@
-2024-08-07 13:35:35 [info] prevabs start
-2024-08-07 13:35:35 [info]   - dehomogenizing...
-2024-08-07 13:35:35 [info]       - reading main input file: .\uh60a.xml
-2024-08-07 13:35:35 [info]         - reading materials file: C:\Users\tian50\program\MaterialDB.xml
-2024-08-07 13:35:35 [info]         - reading materials file: .\material_database.xml
-2024-08-07 13:35:35 [info]       - reading main input data: .\uh60a.xml
-2024-08-07 13:35:35 [info]     - writing glb file: .\uh60a.sg.glb
-2024-08-07 13:35:35 [info]   - running VABS for recover

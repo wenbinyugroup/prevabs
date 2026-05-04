@@ -4,7 +4,7 @@
 // #include "PDCELHalfEdge.hpp"
 // #include "PDCELVertex.hpp"
 
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -59,15 +59,6 @@ bool operator<(const PGeoPoint2 &, const PGeoPoint2 &);
 bool operator>(const PGeoPoint2 &, const PGeoPoint2 &);
 PGeoPoint2 operator+(const PGeoPoint2 &, const PGeoPoint2 &);
 PGeoPoint2 operator-(const PGeoPoint2 &, const PGeoPoint2 &);
-
-
-
-
-
-
-
-
-
 
 class PGeoPoint3 {
 private:
@@ -128,15 +119,6 @@ PGeoPoint3 operator+(const PGeoPoint3 &, const PGeoPoint3 &);
 PGeoPoint3 operator+(const PGeoPoint3 &, const PGeoVector3 &);
 // PGeoPoint3 operator-(const PGeoPoint3 &, const PGeoPoint3 &);
 
-
-
-
-
-
-
-
-
-
 class PGeoVector3 {
 private:
   PGeoPoint3 _p;
@@ -176,15 +158,6 @@ public:
 PGeoVector3 operator-(const PGeoPoint3 &, const PGeoPoint3 &);
 PGeoVector3 operator*(const double &, const PGeoVector3 &);
 
-
-
-
-
-
-
-
-
-
 // ===================================================================
 // class PGeoMatrix2 {
 // private:
@@ -204,15 +177,6 @@ PGeoVector3 operator*(const double &, const PGeoVector3 &);
 
 //   std::vector<double> operator[](int) const;
 // };
-
-
-
-
-
-
-
-
-
 
 // class PGeoLineSegment {
 // private:
@@ -254,27 +218,9 @@ PGeoVector3 operator*(const double &, const PGeoVector3 &);
 //   void setHalfEdge(PDCELHalfEdge *);
 // };
 
-
-
-
-
-
-
-
-
-
 // class PGeoPolyline {
 
 // };
-
-
-
-
-
-
-
-
-
 
 // ===================================================================
 // class PGeoArc {

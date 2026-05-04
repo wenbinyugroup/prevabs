@@ -3,14 +3,14 @@
 #include "declarations.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"
+#include "PFilling.hpp"
 #include "PModel.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
 #include "globalConstants.hpp"
 #include "PBaseLine.hpp"
 
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/STensor3.h"
+#include "geo_types.hpp"
 
 #include <list>
 #include <string>
@@ -18,7 +18,6 @@
 
 class Segment;
 // class Connection;
-class Filling;
 class PModel;
 class PComponent;
 
@@ -29,8 +28,6 @@ class PComponent;
  */
 class CrossSection {
 private:
-  PModel *_pmodel;
-
   // // Analysis
   // int csflag_model; // structural model (0: classical, 1: timoshenko)
   // int csflag_thermal;
@@ -70,7 +67,6 @@ public:
   static int used_layertype_index;
 
   CrossSection(std::string); // assign name, others default
-  CrossSection(std::string, PModel *);
   // CrossSection(std::string name, std::string type, SPoint2 origin,
   //              std::vector<double> translate, double scale, double rotate,
   //              STensor3 rotatem, double meshsize, std::string elementtype,
@@ -84,8 +80,6 @@ public:
   //       csfillings(fillings) {}
 
   void printCrossSection();
-
-  PModel *pmodel() { return _pmodel; }
 
   std::string getName() { return csname; }
 
@@ -105,12 +99,10 @@ public:
   std::vector<LayerType *> getUsedLayerTypes() { return csusedlayertypes; }
   LayerType *getUsedLayerTypeByMaterialAngle(Material *, double);
   LayerType *getUsedLayerTypeByMaterialNameAngle(std::string, double);
-  std::vector<Segment> getSegments() { return cssegments; }
+  const std::vector<Segment> &getSegments() const { return cssegments; }
   // std::vector<Connection> getConnections() { return csconnections; }
   // std::vector<Filling> getFillings() { return csfillings; }
   std::list<PComponent *> components() { return _components; }
-
-  void setPModel(PModel *pmodel) { _pmodel = pmodel; }
 
   void setOrigin(SPoint3);
   // void setTranslate(std::vector<double>);
@@ -123,10 +115,10 @@ public:
   void addUsedMaterial(Material *);
   void addUsedLayerType(LayerType *);
 
-  void addSegment(Segment);
+  void addSegment(Segment &&);
   void addComponent(PComponent *);
 
   void sortComponents();
 
-  void build(Message *);
+  void build(const BuilderConfig &);
 };

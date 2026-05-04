@@ -15,12 +15,8 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-// #include "gmsh/GModel.h"
-// #include "gmsh/MTriangle.h"
-// #include "gmsh/MVertex.h"
-#include "gmsh_mod/SPoint3.h"
-#include "gmsh_mod/SVector3.h"
-#include "gmsh_mod/StringUtils.h"
+#include "geo_types.hpp"
+
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
@@ -28,7 +24,6 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -47,248 +42,124 @@
 #include <windows.h>
 #endif
 
-using namespace rapidxml;
+namespace {
 
-int CrossSection::used_material_index = 0;
-int CrossSection::used_layertype_index = 0;
-int PComponent::count_tmp = 0;
-int Segment::count_tmp = 0;
-
-int readCrossSection(const std::string &filenameCrossSection,
-                     const std::string &filePath, PModel *pmodel, Message *pmessage) {
-  pmessage->increaseIndent();
-  // i_indent++;
-
-  int material_id = 1;  // Material ID
-  int layertype_id = 1; // Layer Type ID
-
-  xml_document<> xmlDocCrossSection;
-  std::ifstream fileCrossSection{filenameCrossSection};
-  if (!fileCrossSection.is_open()) {
-    // std::cout << markError << " Unable to open file: " << filenameCrossSection
-    //           << std::endl;
-    PLOG(error) << pmessage->message("unable to open file: " + filenameCrossSection);
-    return 1;
-  } else {
-    // printInfo(i_indent, "reading main input file: " + filenameCrossSection);
-    PLOG(info) << pmessage->message("reading main input file: " + filenameCrossSection);
+unsigned int parseElementShapeValue(const std::string &value) {
+  const std::string s = lowerString(trim(value));
+  if (s == "3" || s == "tri" || s == "triangle") {
+    return 3;
   }
-
-  std::vector<char> buffer{(std::istreambuf_iterator<char>(fileCrossSection)),
-                           std::istreambuf_iterator<char>()};
-  buffer.push_back('\0');
-
-  try {
-    xmlDocCrossSection.parse<0>(&buffer[0]);
-  } catch (parse_error &e) {
-    std::cout << markError
-              << " Unable to parse the file: " << filenameCrossSection
-              << std::endl;
-    std::cerr << e.what() << std::endl;
-    // std::cout << e.where() << std::endl;
+  if (s == "4" || s == "quad" || s == "quadrilateral") {
+    return 4;
   }
+  throw std::runtime_error(
+    "Invalid <element_shape> value: " + value
+    + " (expected 3/tri/triangle or 4/quad/quadrilateral)"
+  );
+}
 
+// ---------------------------------------------------------------------------
+// XML node value readers — return default when node is absent or empty
 
-  xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
-  if (!p_xn_sg) {
-    p_xn_sg = xmlDocCrossSection.first_node("sg");
+int readOptionalIntNode(
+  const rapidxml::xml_node<> *parent, const char *name, int default_val
+) {
+  rapidxml::xml_node<> *n = parent->first_node(name);
+  if (n) {
+    std::string s{n->value()};
+    if (s[0] != '\0')
+      return parseRequiredInt(s, std::string("<") + name + ">");
   }
+  return default_val;
+}
 
-
-  std::string csName{p_xn_sg->first_attribute("name")->value()};
-  std::string cs_type{"general"};
-  if (p_xn_sg->first_attribute("type")) {
-    cs_type = p_xn_sg->first_attribute("type")->value();
+double readOptionalDoubleNode(
+  const rapidxml::xml_node<> *parent, const char *name, double default_val
+) {
+  rapidxml::xml_node<> *n = parent->first_node(name);
+  if (n) {
+    std::string s{n->value()};
+    if (s[0] != '\0')
+      return parseRequiredDouble(s, std::string("<") + name + ">");
   }
-  // std::cout << "cs_type = " << cs_type << std::endl;
+  return default_val;
+}
 
-  // if (debug) {
-  //   std::cout << markInfo << " Find Cross Section: " << csName << std::endl;
-  // }
-  PLOG(debug) << pmessage->message("find cross-section: " + csName);
+// ---------------------------------------------------------------------------
+// Geometry transform and mesh parameters returned from readGeneralSection
 
-  // CrossSection cs{csName};
-  CrossSection *cs = new CrossSection(csName, pmodel);
+struct GeneralResult {
+  double dx = 0, dy = 0, dz = 0;
+  double sfactor = 1.0;
+  double rangle = 0.0;
+  double meshsize = 0.0;
+};
 
+// ---------------------------------------------------------------------------
+// Section readers — each handles one top-level XML block
 
-  double d_fmt{1};
-  xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
-  if (p_xa_fmt) {
-    std::string ss{p_xa_fmt->value()};
+void readSettingsSection(const rapidxml::xml_node<> *xn_settings) {
+  if (!xn_settings) return;
+  PLOG(debug) << "reading settings...";
+  rapidxml::xml_node<> *p_xn_tolerance{xn_settings->first_node("tolerance")};
+  if (p_xn_tolerance) {
+    std::string ss{p_xn_tolerance->value()};
     if (ss[0] != '\0') {
-      d_fmt = atof(ss.c_str());
-    }
-  }
-  // std::cout << "format = " << d_fmt << std::endl;
-
-
-
-
-
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read settings
-  xml_node<> *p_xn_settings{p_xn_sg->first_node("settings")};
-  if (p_xn_settings) {
-    PLOG(debug) << pmessage->message("reading settings...");
-
-    xml_node<> *p_xn_tolerance{p_xn_settings->first_node("tolerance")};
-    if (p_xn_tolerance) {
-      std::string ss{p_xn_tolerance->value()};
-      if (ss[0] != '\0') {
-        config.geo_tol = atof(ss.c_str());
+      config.app.geo_tol = parseRequiredDouble(ss, "<settings>/<tolerance>");
+      if (config.app.geo_tol <= 0.0) {
+        throw std::runtime_error(
+          "<settings>/<tolerance> must be positive, got '" + ss + "'"
+        );
       }
     }
   }
+}
 
 
 
 
+void readAnalysisSection(
+  const rapidxml::xml_node<> *xn_sg, PModel *pmodel
+) {
+  PLOG(debug) << "reading analysis...";
 
-
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read analysis
-  PLOG(debug) << pmessage->message("reading analysis...");
-
-  int model_dim = 1; // default 1D beam model
-  int model = 0; // default classical model
-  int flag_damping = 0;
-  int flag_thermal = 0;
+  int model_dim   = 1;
+  int model       = 0;
+  int flag_damping  = 0;
+  int flag_thermal  = 0;
   int flag_curvature = 0;
-  int flag_oblique = 0;
-  int flag_trapeze = 0;
-  int flag_vlasov = 0;
-  double k1 = 0.0;
-  double k2 = 0.0;
-  double k3 = 0.0;
-  double cos11 = 1.0;
-  double cos21 = 0.0;
+  int flag_oblique  = 0;
+  int flag_trapeze  = 0;
+  int flag_vlasov   = 0;
+  double k1 = 0.0, k2 = 0.0, k3 = 0.0;
+  double cos11 = 1.0, cos21 = 0.0;
 
-  xml_node<> *p_xn_analysis{p_xn_sg->first_node("analysis")};
+  rapidxml::xml_node<> *p_xn_analysis{xn_sg->first_node("analysis")};
   if (p_xn_analysis) {
+    model_dim    = readOptionalIntNode(p_xn_analysis, "model_dim", model_dim);
+    model        = readOptionalIntNode(p_xn_analysis, "model",     model);
+    flag_damping = readOptionalIntNode(p_xn_analysis, "damping",   flag_damping);
+    flag_thermal = readOptionalIntNode(p_xn_analysis, "thermal",   flag_thermal);
+    flag_trapeze = readOptionalIntNode(p_xn_analysis, "trapeze",   flag_trapeze);
+    flag_vlasov  = readOptionalIntNode(p_xn_analysis, "vlasov",    flag_vlasov);
 
-    xml_node<> *p_xn_model_dim{p_xn_analysis->first_node("model_dim")};
-    if (p_xn_model_dim) {
-      std::string ss{p_xn_model_dim->value()};
-      if (ss[0] != '\0') {
-        model_dim = atoi(ss.c_str());
-      }
-    }
+    k1    = readOptionalDoubleNode(p_xn_analysis, "initial_twist",       k1);
+    k2    = readOptionalDoubleNode(p_xn_analysis, "initial_curvature_2", k2);
+    k3    = readOptionalDoubleNode(p_xn_analysis, "initial_curvature_3", k3);
+    cos11 = readOptionalDoubleNode(p_xn_analysis, "oblique_y1",          cos11);
+    cos21 = readOptionalDoubleNode(p_xn_analysis, "oblique_y2",          cos21);
 
-    xml_node<> *p_xn_model{p_xn_analysis->first_node("model")};
-    if (p_xn_model) {
-      std::string ss{p_xn_model->value()};
-      if (ss[0] != '\0') {
-        model = atoi(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_physics{p_xn_analysis->first_node("physics")};
+    rapidxml::xml_node<> *p_xn_physics{p_xn_analysis->first_node("physics")};
     if (p_xn_physics) {
       std::string ss{p_xn_physics->value()};
-      int _physics = atoi(ss.c_str());
-      pmodel->setAnalysisPhysics(_physics);
+      pmodel->setAnalysisPhysics(std::stoi(ss.c_str()));
     }
-
-    xml_node<> *p_xn_damping{p_xn_analysis->first_node("damping")};
-    if (p_xn_damping) {
-      std::string ss{p_xn_damping->value()};
-      if (ss[0] != '\0') {
-        flag_damping = atoi(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_thermal{p_xn_analysis->first_node("thermal")};
-    if (p_xn_thermal) {
-      std::string ss{p_xn_thermal->value()};
-      if (ss[0] != '\0') {
-        flag_thermal = atoi(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_k1{p_xn_analysis->first_node("initial_twist")};
-    if (p_xn_k1) {
-      std::string ss{p_xn_k1->value()};
-      if (ss[0] != '\0') {
-        k1 = atof(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_k2{p_xn_analysis->first_node("initial_curvature_2")};
-    if (p_xn_k2) {
-      std::string ss{p_xn_k2->value()};
-      if (ss[0] != '\0') {
-        k2 = atof(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_k3{p_xn_analysis->first_node("initial_curvature_3")};
-    if (p_xn_k3) {
-      std::string ss{p_xn_k3->value()};
-      if (ss[0] != '\0') {
-        k3 = atof(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_cos11{p_xn_analysis->first_node("oblique_y1")};
-    if (p_xn_cos11) {
-      std::string ss{p_xn_cos11->value()};
-      if (ss[0] != '\0') {
-        cos11 = atof(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_cos21{p_xn_analysis->first_node("oblique_y2")};
-    if (p_xn_cos21) {
-      std::string ss{p_xn_cos21->value()};
-      if (ss[0] != '\0') {
-        cos21 = atof(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_trapeze{p_xn_analysis->first_node("trapeze")};
-    if (p_xn_trapeze) {
-      std::string ss{p_xn_trapeze->value()};
-      if (ss[0] != '\0') {
-        flag_trapeze = atoi(ss.c_str());
-      }
-    }
-
-    xml_node<> *p_xn_vlasov{p_xn_analysis->first_node("vlasov")};
-    if (p_xn_vlasov) {
-      std::string ss{p_xn_vlasov->value()};
-      if (ss[0] != '\0') {
-        flag_vlasov = atoi(ss.c_str());
-      }
-    }
-
   }
 
-  if (k1 != 0.0 || k2 != 0.0 || k3 != 0.0) {
-    flag_curvature = 1;
-  }
+  if (k1 != 0.0 || k2 != 0.0 || k3 != 0.0) flag_curvature = 1;
+  if (cos11 != 1.0 || cos21 != 0.0) flag_oblique = 1;
 
-  if (cos11 != 1.0 || cos21 != 0.0) {
-    flag_oblique = 1;
-  }
-
-  PLOG(debug) << pmessage->message("finished reading analysis.");
-
-  // cs->setModel(model);
-  // cs->setFlagThermal(flag_thermal);
-  // cs->setFlagCurvature(flag_curvature);
-  // cs->setCurvatures(k1, k2, k3);
-  // cs->setObliques(cos11, cos21);
-  // cs->setFlagOblique(flag_oblique);
-  // cs->setFlagTrapeze(flag_trapeze);
-  // cs->setFlagVlasov(flag_vlasov);
+  PLOG(debug) << "finished reading analysis.";
 
   pmodel->setAnalysisModelDim(model_dim);
   pmodel->setAnalysisModel(model);
@@ -298,565 +169,348 @@ int readCrossSection(const std::string &filenameCrossSection,
   pmodel->setAnalysisOblique(flag_oblique);
   pmodel->setAnalysisTrapeze(flag_trapeze);
   pmodel->setAnalysisVlasov(flag_vlasov);
-
   pmodel->setCurvatures(k1, k2, k3);
   pmodel->setObliques(cos11, cos21);
+}
 
 
 
 
+GeneralResult readGeneralSection(
+  const rapidxml::xml_node<> *xn_general, PModel *pmodel
+) {
+  PLOG(debug) << "reading general...";
+  GeneralResult gen;
 
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read general
-  PLOG(debug) << pmessage->message("reading general...");
-
-  // if (debug)
-  //   std::cout << "\n"
-  //             << markInfo << " Read Cross Section General"
-  //             << "\n\n";
-  xml_node<> *nodeGeneral{p_xn_sg->first_node("general")};
-
-  // Point2 origin{0, 0};
-  // SVector3 translate{0, 0, 0};
-  // std::vector<double> translate{0, 0};
-  double dx{0}, dy{0}, dz{0};
-  xml_node<> *nodeTranslate{nodeGeneral->first_node("translate")};
+  rapidxml::xml_node<> *nodeTranslate{xn_general->first_node("translate")};
   if (nodeTranslate) {
     std::stringstream ss{nodeTranslate->value()};
-    if (ss.str()[0] != '\0') {
-      ss >> dy >> dz;
-      // origin.setPoint(-x, -y);
-      // translate[1] = x;
-      // translate[2] = y;
-    }
+    if (ss.str()[0] != '\0') ss >> gen.dy >> gen.dz;
   }
-  // cs->setOrigin(origin);
-  // cs->setTranslate(translate);
 
-  double sfactor{1.0};
-  xml_node<> *nodeScale{nodeGeneral->first_node("scale")};
-  if (nodeScale) {
-    std::string sscale{nodeScale->value()};
-    if (sscale[0] != '\0')
-      sfactor = atof(sscale.c_str());
+  gen.sfactor  = readOptionalDoubleNode(xn_general, "scale",     gen.sfactor);
+  gen.rangle   = readOptionalDoubleNode(xn_general, "rotate",    gen.rangle);
+  gen.meshsize = readOptionalDoubleNode(xn_general, "mesh_size", gen.meshsize);
+  if (gen.meshsize < 0.0) {
+    throw std::runtime_error(
+      "<general>/<mesh_size> must be positive, got a negative value"
+    );
   }
-  // cs->setScale(scale);
-
-  double rangle{0.0};
-  xml_node<> *nodeRotate{nodeGeneral->first_node("rotate")};
-  if (nodeRotate) {
-    std::string srotate{nodeRotate->value()};
-    if (srotate[0] != '\0')
-      rangle = atof(srotate.c_str());
-  }
-  // Matrix2 rotatem{getRotationMatrix(rotate)};
-  // cs->setRotate(rotate);
-  // cs->setRotateMatrix(rotatem);
-
-  // Global transformation of all points
-  // 1. Translate
-  // 2. Scale
-  // 3. Rotate
-  // for (auto v : pmodel->vertices()) {
-  //   v->translate(dx, dy, dz);
-  //   v->scale(sfactor);
-  //   v->rotate(rangle);
-  // }
-
-  double meshsize{0.0};
-  xml_node<> *nodeMeshsize{nodeGeneral->first_node("mesh_size")};
-  if (nodeMeshsize) {
-    std::string smeshsize{nodeMeshsize->value()};
-    if (smeshsize[0] != '\0')
-      meshsize = atof(smeshsize.c_str());
-  }
-  // else Use default mesh size, the smallest layer thickness
-  // This is set after reading in all segments
-  // cs->setMeshsize(meshsize);
 
   int elementtype = 2;
-  xml_node<> *nodeElementType{nodeGeneral->first_node("element_type")};
-  if (nodeElementType) {
-    if (nodeElementType->value()[0] != '\0') {
-      std::string et{nodeElementType->value()};
-      if (et == "linear" || et == "1") {
-        elementtype = 1;
-      } else if (et == "quadratic" || et == "2") {
-        elementtype = 2;
-      }
-    }
-    // elementtype = nodeElementType->value();
+  rapidxml::xml_node<> *nodeElementType{xn_general->first_node("element_type")};
+  if (nodeElementType && nodeElementType->value()[0] != '\0') {
+    std::string et{nodeElementType->value()};
+    if (et == "linear" || et == "1") elementtype = 1;
+    else if (et == "quadratic" || et == "2") elementtype = 2;
   }
-  // cs->setElementtype(elementtype);
-  // pmessage->print(9, "elementtype = " + std::to_string(elementtype));
   pmodel->setElementType(elementtype);
 
-
-  double omega{1.0};
-  xml_node<> *p_xn_omega{nodeGeneral->first_node("omega")};
-  if (p_xn_omega) {
-    std::string stol{p_xn_omega->value()};
-    if (stol[0] != '\0') {
-      omega = atof(stol.c_str());
-    }
+  rapidxml::xml_node<> *nodeElementShape{xn_general->first_node("element_shape")};
+  if (nodeElementShape) {
+    std::string es{trim(nodeElementShape->value())};
+    if (!es.empty()) pmodel->setElementShape(parseElementShapeValue(es));
   }
+
+  rapidxml::xml_node<> *nodeTransfiniteAuto{
+    xn_general->first_node("transfinite_auto")
+  };
+  if (nodeTransfiniteAuto) {
+    std::string s{trim(nodeTransfiniteAuto->value())};
+    if (!s.empty())
+      pmodel->setTransfiniteAuto(
+        parseXmlBoolValue(s, "<general>/<transfinite_auto>")
+      );
+  }
+
+  rapidxml::xml_node<> *nodeTransfiniteCornerAngle{
+    xn_general->first_node("transfinite_corner_angle")
+  };
+  if (nodeTransfiniteCornerAngle) {
+    std::string s{trim(nodeTransfiniteCornerAngle->value())};
+    if (!s.empty()) pmodel->setTransfiniteCornerAngle(std::stod(s));
+  }
+
+  rapidxml::xml_node<> *nodeTransfiniteRecombine{
+    xn_general->first_node("transfinite_recombine")
+  };
+  if (nodeTransfiniteRecombine) {
+    std::string s{trim(nodeTransfiniteRecombine->value())};
+    if (!s.empty())
+      pmodel->setTransfiniteRecombine(
+        parseXmlBoolValue(s, "<general>/<transfinite_recombine>")
+      );
+  }
+
+  rapidxml::xml_node<> *nodeRecombine{xn_general->first_node("recombine")};
+  if (nodeRecombine) {
+    std::string s{trim(nodeRecombine->value())};
+    if (!s.empty())
+      pmodel->setRecombine(parseXmlBoolValue(s, "<general>/<recombine>"));
+  }
+
+  rapidxml::xml_node<> *nodeRecombineAngle{
+    xn_general->first_node("recombine_angle")
+  };
+  if (nodeRecombineAngle) {
+    std::string s{trim(nodeRecombineAngle->value())};
+    if (!s.empty()) pmodel->setRecombineAngle(std::stod(s));
+  }
+
+  double omega = readOptionalDoubleNode(xn_general, "omega", 1.0);
   pmodel->setOmega(omega);
 
-
-  xml_node<> *p_xn_tol{nodeGeneral->first_node("tolerance")};
+  rapidxml::xml_node<> *p_xn_tol{xn_general->first_node("tolerance")};
   if (p_xn_tol) {
     std::string stol{p_xn_tol->value()};
-    if (stol[0] != '\0')
-      config.tol = atof(stol.c_str());
+    if (stol[0] != '\0') {
+      config.app.tol = parseRequiredDouble(stol, "<general>/<tolerance>");
+      if (config.app.tol <= 0.0) {
+        throw std::runtime_error(
+          "<general>/<tolerance> must be positive, got '" + stol + "'"
+        );
+      }
+    }
   }
   std::stringstream ss_tol;
-  ss_tol << config.tol;
-  PLOG(debug) << pmessage->message("tolerance = " + ss_tol.str());
+  ss_tol << config.app.tol;
+  PLOG(debug) << "tolerance = " + ss_tol.str();
 
-
-  xml_node<> *p_xn_itf;
-
-  bool track_interface;
-  p_xn_itf = nodeGeneral->first_node("track_interface");
+  rapidxml::xml_node<> *p_xn_itf;
+  p_xn_itf = xn_general->first_node("track_interface");
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
-    if (ss[0] != '\0') {
-      track_interface = atoi(ss.c_str());
-      // std::cout << "track_interface = " << track_interface << std::endl;
-      pmodel->setInterfaceOutput(track_interface);
-      // std::cout << "_itf_output = " << pmodel->interfaceOutput() << std::endl;
-    }
+    if (ss[0] != '\0') pmodel->setInterfaceOutput(std::stoi(ss.c_str()));
   }
 
-
-  double itf_t1d_th;
-  p_xn_itf = nodeGeneral->first_node("interface_theta1_diff_threshold");
+  p_xn_itf = xn_general->first_node("interface_theta1_diff_threshold");
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
-    if (ss[0] != '\0') {
-      itf_t1d_th = atoi(ss.c_str());
-      pmodel->setInterfaceTheta1DiffThreshold(itf_t1d_th);
-    }
+    if (ss[0] != '\0') pmodel->setInterfaceTheta1DiffThreshold(std::stod(ss));
   }
 
-
-  double itf_t3d_th;
-  p_xn_itf = nodeGeneral->first_node("interface_theta3_diff_threshold");
+  p_xn_itf = xn_general->first_node("interface_theta3_diff_threshold");
   if (p_xn_itf) {
     std::string ss{p_xn_itf->value()};
-    if (ss[0] != '\0') {
-      itf_t3d_th = atoi(ss.c_str());
-      pmodel->setInterfaceTheta3DiffThreshold(itf_t3d_th);
-    }
+    if (ss[0] != '\0') pmodel->setInterfaceTheta3DiffThreshold(std::stod(ss));
   }
 
-
-  PLOG(debug) << pmessage->message("finished reading general.");
-
-
-
+  PLOG(debug) << "finished reading general.";
+  return gen;
+}
 
 
 
 
+void readGeometrySection(
+  const rapidxml::xml_node<> *xn_sg,
+  const rapidxml::xml_node<> *xn_include,
+  const std::string &filePath,
+  const std::string &cs_type,
+  const GeneralResult &gen,
+  PModel *pmodel
+) {
+  PLOG(debug) << "finding includings...";
+  PLOG(debug) << "reading geometry...";
 
-
-  // -----------------------------------------------------------------
-  // Read include
-  PLOG(debug) << pmessage->message("finding includings...");
-  xml_node<> *nodeInclude{p_xn_sg->first_node("include")};
-  xml_node<> *nodeBaselines;
-
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read geometry (base points and base lines)
-  PLOG(debug) << pmessage->message("reading geometry...");
-
-  // 1: Try to read geometry from a seperated file
-  if (nodeInclude) {
-    xml_node<> *p_xn_include_bsl{nodeInclude->first_node("baseline")};
+  if (xn_include) {
+    rapidxml::xml_node<> *p_xn_include_bsl{xn_include->first_node("baseline")};
     if (p_xn_include_bsl) {
-
-      // General type cross-section
       if (cs_type == "general") {
-        std::string filenameBaselines{p_xn_include_bsl->value()};
-        filenameBaselines = filePath + filenameBaselines + ".xml";
-        // if (debug) {
-        //   std::cout << markInfo << " Include Baselines File: " << filenameBaselines
-        //             << std::endl;
-        // }
-        PLOG(debug) << pmessage->message("reading base line file: " + filenameBaselines);
+        std::string filenameBaselines{
+          filePath + p_xn_include_bsl->value() + ".xml"
+        };
+        PLOG(debug) << "reading base line file: " + filenameBaselines;
 
         std::ifstream fileBaselines;
         openFile(fileBaselines, filenameBaselines);
-        xml_document<> xmlDocBaselines;
-        std::vector<char> buffer_bsl{(std::istreambuf_iterator<char>(fileBaselines)),
-                                std::istreambuf_iterator<char>()};
+        rapidxml::xml_document<> xmlDocBaselines;
+        std::vector<char> buffer_bsl{
+          (std::istreambuf_iterator<char>(fileBaselines)),
+          std::istreambuf_iterator<char>()
+        };
         buffer_bsl.push_back('\0');
 
         try {
           xmlDocBaselines.parse<0>(&buffer_bsl[0]);
+        } catch (rapidxml::parse_error &e) {
+          throw std::runtime_error(
+            "XML parse error in '" + filenameBaselines + "': " + e.what()
+          );
         }
-        catch (parse_error &e) {
-          // std::cout << markError << " Unable to parse the file: " << filenameBaselines
-          //           << std::endl;
-          PLOG(error) << pmessage->message("unable to parse the file: " + filenameBaselines);
-          std::cerr << e.what() << std::endl;
-          // std::cout << e.where() << std::endl;
-        }
-        // print(std::cout, xmlDocBaselines, 0);
-        // xml_node<> *nodeBaselines{xmlDocBaselines.first_node("baselines")};
-        nodeBaselines = xmlDocBaselines.first_node("baselines");
-
-        readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, pmessage);
-
+        rapidxml::xml_node<> *nodeBaselines =
+          xmlDocBaselines.first_node("baselines");
+        readBaselines(
+          nodeBaselines, pmodel, filePath,
+          gen.dx, gen.dy, gen.dz, gen.sfactor, gen.rangle
+        );
+      } else if (cs_type == "airfoil") {
+        throw std::runtime_error(
+          "cs_type='airfoil' is no longer supported; "
+          "use cs_type='general' with explicit <baselines>"
+        );
       }
-
-      // Airfoil type cross-section
-      else if (cs_type == "airfoil") {
-
-        xml_attribute<> *baselineType{p_xn_include_bsl->first_attribute("type")};
-
-        // Based on topology library
-        if (baselineType) {
-          std::string baselineTypeString{baselineType->value()};
-          if (baselineTypeString != "airfoil"){
-              std::cout << markError << " Undefined baseline type: " << baselineTypeString
-                        << std::endl;
-              return 1;
-          }
-
-          // Read topology information
-          // std::cout << "\nreading topology...\n";
-          // Box: two straight webs
-          // I: one straight webs
-          xml_node<> *nodeTopology{p_xn_sg->first_node("topology")};
-          std::vector<std::pair<double, double>> websArray;
-          if (nodeTopology) {
-            xml_node<> *nodeLEWeb{nodeTopology->first_node("leading_web")};
-            xml_node<> *nodeTEWeb{nodeTopology->first_node("trailling_web")};
-            xml_node<> *nodeMidWeb{nodeTopology->first_node("mid_web")};
-
-            xml_attribute<> *p_xa_fillLE = nodeLEWeb->first_attribute("fill");
-            xml_attribute<> *p_xa_curvedLE = nodeLEWeb->first_attribute("curved");
-            xml_attribute<> *p_xa_fillTE = nodeTEWeb->first_attribute("fill");
-            xml_attribute<> *p_xa_curvedTE = nodeTEWeb->first_attribute("curved");
-
-            bool fillLE = p_xa_fillLE ? (strcmp(p_xa_fillLE->value(), "true") == 0) : true;
-            bool curvedLE = p_xa_curvedLE ? (strcmp(p_xa_curvedLE->value(), "true") == 0) : false;
-            bool fillTE = p_xa_fillTE ? (strcmp(p_xa_fillTE->value(), "true") == 0) : true;
-            bool curvedTE = p_xa_curvedTE ? (strcmp(p_xa_curvedTE->value(), "true") == 0) : false;
-
-            double xtLE, xbLE, xtTE, xbTE;
-            xtLE = atof(nodeLEWeb->first_node("pos_top")->value());
-            xbLE = atof(nodeLEWeb->first_node("pos_bot")->value());
-            xtTE = atof(nodeTEWeb->first_node("pos_top")->value());
-            xbTE = atof(nodeTEWeb->first_node("pos_bot")->value());
-
-            const double PI = atan(1) * 4;
-            double ytLE,ybLE,xmLE,angLE;
-            ytLE = getWebEnd(p_xn_include_bsl, filePath, xtLE);
-            ybLE = getWebEnd(p_xn_include_bsl, filePath, xbLE, false);
-            xmLE = (0 - ybLE) / (ytLE - ybLE) * (xtLE - xbLE) + xbLE;
-            angLE = atan2(ytLE - ybLE, xtLE - xbLE) * 180 / PI;
-            PDCELVertex *pvLEmid = new PDCELVertex{"Pweb_le", 0, xmLE , 0};
-            addBaselineByPointAndAngle(pmodel, "web_le", pvLEmid, angLE);
-            websArray.push_back(std::make_pair(xmLE, angLE));
-
-            double ytTE,ybTE,xmTE,angTE;
-            ytTE = getWebEnd(p_xn_include_bsl, filePath, xtTE);
-            ybTE = getWebEnd(p_xn_include_bsl, filePath, xbTE, false);
-            xmTE = (0 - ybTE) / (ytTE - ybTE) * (xtTE - xbTE) + xbTE;
-            angTE = atan2(ytTE - ybTE, xtTE - xbTE) * 180 / PI;
-            PDCELVertex *pvTEmid = new PDCELVertex{"Pweb_te", 0, xmTE , 0};
-            addBaselineByPointAndAngle(pmodel, "web_te", pvTEmid, angTE);
-            websArray.push_back(std::make_pair(xmTE, angTE));        
-
-            if (nodeMidWeb) {
-              double xtM, xbM;
-              xtM = atof(nodeMidWeb->first_node("pos_top")->value());
-              xbM = atof(nodeMidWeb->first_node("pos_bot")->value());
-
-              double ytM,ybM,xmM,angM;
-              ytM = getWebEnd(p_xn_include_bsl, filePath, xtM);
-              ybM = getWebEnd(p_xn_include_bsl, filePath, xbM, false);
-              xmM = (0 - ybM) / (ytM - ybM) * (xtM - xbM) + xbM;
-              angM = atan2(ytM - ybM, xtM - xbM) * 180 / PI;
-              PDCELVertex *pvMmid = new PDCELVertex{"Pweb_M", 0, xmM , 0};
-              addBaselineByPointAndAngle(pmodel, "web_M", pvMmid, angM);
-              websArray.push_back(std::make_pair(xmM, angM));   
-            }
-          }
-          xml_node<> *nodeSpar{p_xn_sg->first_node("spar")};
-          if (nodeSpar) {
-            xml_attribute<> *p_xa_spar = nodeSpar->first_attribute("type");
-            std::string sparType{p_xa_spar->value()};
-            std::cout << "\nSpar type: " << sparType << std::endl;
-
-            if (sparType == "box") {
-              std::stringstream ss(nodeSpar->value());
-              double x1, angle1, x2, angle2;
-              ss >> x1 >> angle1 >> x2 >> angle2;
-              PDCELVertex *pvMid1 = new PDCELVertex{"Pweb_le", 0, x1 , 0};
-              PDCELVertex *pvMid2 = new PDCELVertex{"Pweb_te", 0, x2 , 0};
-              addBaselineByPointAndAngle(pmodel, "web_le", pvMid1, angle1);
-              addBaselineByPointAndAngle(pmodel, "web_te", pvMid2, angle2);
-              websArray.push_back(std::make_pair(x1, angle1));
-              websArray.push_back(std::make_pair(x2, angle2));
-            }
-            else if (sparType == "I") {
-              std::stringstream ss(nodeSpar->value());
-              double x, angle;
-              ss >> x >> angle;
-              PDCELVertex *pvMid = new PDCELVertex{"Pweb", 0, x , 0};
-              addBaselineByPointAndAngle(pmodel, "web", pvMid, angle);
-              websArray.push_back(std::make_pair(x, angle));
-            }
-            else {
-              std::cout << markError << " Undefined spar type: " << sparType
-                        << std::endl;
-              return 1;
-            }
-          }
-          addBaselinesFromAirfoil(p_xn_include_bsl, pmodel, filePath, websArray, dx, dy, dz, sfactor, rangle, pmessage);
-
-        }
-
-
-      }
-
     }
   }
 
-
-
-  // 2: Try to read geometry in the main input file
-  nodeBaselines = p_xn_sg->first_node("baselines");
-
+  rapidxml::xml_node<> *nodeBaselines = xn_sg->first_node("baselines");
   if (nodeBaselines) {
-
-    readBaselines(nodeBaselines, pmodel, filePath, dx, dy, dz, sfactor, rangle, pmessage);
-
+    readBaselines(
+      nodeBaselines, pmodel, filePath,
+      gen.dx, gen.dy, gen.dz, gen.sfactor, gen.rangle
+    );
   }
 
   if (config.debug) {
-    // pmessage->printBlank();
-    // pmessage->print(9, "summary of base lines");
-    PLOG(debug) << pmessage->message(" ");
-    PLOG(debug) << pmessage->message("summary of base lines (before transformation)");
+    PLOG(debug) << " ";
+    PLOG(debug) << "summary of base lines (before transformation)";
     for (auto bsl : pmodel->baselines()) {
-      bsl->print(pmessage);
-      // pmessage->printBlank();
-      PLOG(debug) << pmessage->message(" ");
+      bsl->print();
+      PLOG(debug) << " ";
     }
   }
 
-  // translate; scale; rotate
-  // std::cout << "\ntransforming...\n";
-  PLOG(debug) << pmessage->message("transforming base geometry");
-
+  PLOG(debug) << "transforming base geometry";
   for (auto v : pmodel->vertices()) {
-    v->translate(dx, dy, dz);
-    v->scale(sfactor);
-    v->rotate(rangle);
+    v->translate(gen.dx, gen.dy, gen.dz);
+    v->scale(gen.sfactor);
+    v->rotate(gen.rangle);
   }
 
   if (config.debug) {
-    // pmessage->printBlank();
-    // pmessage->print(9, "summary of base lines");
-    PLOG(debug) << pmessage->message(" ");
-    PLOG(debug) << pmessage->message("summary of base lines (after transformation)");
+    PLOG(debug) << " ";
+    PLOG(debug) << "summary of base lines (after transformation)";
     for (auto bsl : pmodel->baselines()) {
-      bsl->print(pmessage);
-      // pmessage->printBlank();
-      PLOG(debug) << pmessage->message(" ");
+      bsl->print();
+      PLOG(debug) << " ";
     }
   }
 
-  PLOG(debug) << pmessage->message("finished reading geometry.");
+  PLOG(debug) << "finished reading geometry.";
+}
 
 
 
 
-
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read materials (global)
-  PLOG(debug) << pmessage->message("reading materials...");
+void readMaterialsSection(
+  const rapidxml::xml_node<> *xn_sg,
+  const rapidxml::xml_node<> *xn_include,
+  const std::string &filePath,
+  PModel *pmodel
+) {
+  PLOG(debug) << "reading materials...";
 
   std::string fn_material_global = "";
-  // xml_node<> *nodeMaterials{nodeInclude->first_node("material")};
-  // if (nodeMaterials) {
-  //   fn_material_global = filePath + nodeMaterials->value() + ".xml";
-  // } else {
-// Use defualt database
-// std::string s_fullpath;
 #ifdef __linux__
   char buffer2[PATH_MAX];
   ssize_t count = readlink("/proc/self/exe", buffer2, sizeof(buffer2) - 1);
   if (count != -1) {
     buffer2[count] = '\0';
-    // s_fullpath = buffer;
     fn_material_global = dirname(buffer2);
     fn_material_global = fn_material_global + "/";
   }
 #elif _WIN32
   char buffer2[MAX_PATH];
-  GetModuleFileName(NULL, buffer2, sizeof(buffer2));
+  GetModuleFileNameA(NULL, buffer2, sizeof(buffer2));
   std::string s_fullpath{buffer2};
-  // s_fullpath = buffer;
-  // std::cout << s_fullpath << std::endl;
   std::vector<std::string> vs;
-  vs = gmshSplitFileName(s_fullpath);
+  vs = splitFilePath(s_fullpath);
   fn_material_global = vs[0];
 #endif
   fn_material_global = fn_material_global + "MaterialDB.xml";
 
   std::string fn_material_local = "";
-  if (nodeInclude) {
-    xml_node<> *xn_material{nodeInclude->first_node("material")};
+  if (xn_include) {
+    rapidxml::xml_node<> *xn_material{xn_include->first_node("material")};
     if (xn_material) {
       fn_material_local = filePath + xn_material->value() + ".xml";
-      // readMaterials(fn_material_local, pmodel);
     }
   }
 
-  if (fn_material_global != "") {
-    readMaterialsFile(fn_material_global, pmodel, pmessage);
-  }
+  if (!fn_material_global.empty()) readMaterialsFile(fn_material_global, pmodel);
+  // Local material path is explicitly provided via <include><material>; missing = error.
+  if (!fn_material_local.empty()) readMaterialsFile(fn_material_local, pmodel, true);
 
-  if (fn_material_local != "") {
-    readMaterialsFile(fn_material_local, pmodel, pmessage);
-  }
+  rapidxml::xml_node<> *p_xn_materials{xn_sg->first_node("materials")};
+  if (p_xn_materials) readMaterials(p_xn_materials, pmodel);
 
-  xml_node<> *p_xn_materials{p_xn_sg->first_node("materials")};
-  if (p_xn_materials) {
-    readMaterials(p_xn_materials, pmodel, pmessage);
-  }
-
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of materials");
-  //   for (auto mtr : pmodel->materials()) {
-  //     mtr->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
-
-  PLOG(debug) << pmessage->message("finished reading materials.");
+  PLOG(debug) << "finished reading materials.";
+}
 
 
 
 
+void readLayupsSection(
+  const rapidxml::xml_node<> *xn_sg,
+  const rapidxml::xml_node<> *xn_include,
+  const std::string &filePath,
+  PModel *pmodel
+) {
+  PLOG(debug) << "reading layups...";
 
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read layups
-  PLOG(debug) << pmessage->message("reading layups...");
-
-  xml_node<> *nodeLayups;
-  if (d_fmt == 0) {
-    if (nodeInclude) {
-      xml_node<> *p_xn_include_lyp{nodeInclude->first_node("layup")};
-      std::string filenameLayups{p_xn_include_lyp->value()};
-      filenameLayups = filePath + filenameLayups + ".xml";
-      if (debug) {
-        std::cout << markInfo << " Include Layups File: " << filenameLayups
-                  << std::endl;
-      }
+  if (xn_include) {
+    for (auto *p_xn_include_lyp = xn_include->first_node("layup");
+         p_xn_include_lyp;
+         p_xn_include_lyp = p_xn_include_lyp->next_sibling("layup")) {
+      std::string filenameLayups{
+        filePath + p_xn_include_lyp->value() + ".xml"
+      };
+      PLOG(info) << "include layups file: " << filenameLayups;
       std::ifstream fileLayups;
       openFile(fileLayups, filenameLayups);
-      xml_document<> xmlDocLayups;
-      std::vector<char> buffer_lyp{(std::istreambuf_iterator<char>(fileLayups)),
-                              std::istreambuf_iterator<char>()};
+      rapidxml::xml_document<> xmlDocLayups;
+      std::vector<char> buffer_lyp{
+        (std::istreambuf_iterator<char>(fileLayups)),
+        std::istreambuf_iterator<char>()
+      };
       buffer_lyp.push_back('\0');
-
       try {
         xmlDocLayups.parse<0>(&buffer_lyp[0]);
-      } catch (parse_error &e) {
-        std::cout << markError << " Unable to parse the file: " << filenameLayups
-                  << std::endl;
-        std::cerr << e.what() << std::endl;
+      } catch (rapidxml::parse_error &e) {
+        throw std::runtime_error(
+          "XML parse error in '" + filenameLayups + "': " + e.what()
+        );
       }
-      nodeLayups = xmlDocLayups.first_node("layups");
-      readLayups(nodeLayups, pmodel, pmessage);
-      PLOG(debug) << pmessage->message("finished reading layups.");
+      rapidxml::xml_node<> *nodeLayups = xmlDocLayups.first_node("layups");
+      readLayups(nodeLayups, pmodel);
     }
   }
 
-  else if (d_fmt == 1) {
-    nodeLayups = p_xn_sg->first_node("layups");
-    if (nodeLayups) {
-      readLayups(nodeLayups, pmodel, pmessage);
-      PLOG(debug) << pmessage->message("finished reading layups.");
-    }
-  }
+  rapidxml::xml_node<> *nodeLayups = xn_sg->first_node("layups");
+  if (nodeLayups) readLayups(nodeLayups, pmodel);
 
-  // readLayups(filenameLayups, pmodel, pmessage);
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of layups");
-  //   for (auto lyp : pmodel->layups()) {
-  //     lyp->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
+  PLOG(debug) << "finished reading layups.";
+}
 
 
 
 
-
-
-
-
-
-  // -----------------------------------------------------------------
-  // Read components
-  // if (debug)
-  // std::cout << "- reading components" << std::endl;
-  PLOG(debug) << pmessage->message("reading components...");
-
-  std::vector<Layup *> p_layups{};  // All layups used in this cross section
-  int num_combined_layups = 0;  // Number of combined layups
+void readComponentsSection(
+  const rapidxml::xml_node<> *xn_sg,
+  CrossSection *cs,
+  PModel *pmodel,
+  std::vector<Layup *> &p_layups,
+  int &num_combined_layups
+) {
+  PLOG(debug) << "reading components...";
 
   std::vector<std::vector<std::string>> tmp_dependents_all;
 
-  for (auto xn_component = p_xn_sg->first_node("component");
-       xn_component; xn_component = xn_component->next_sibling("component")) {
-    // xml_node<> *nodeSegments{p_xn_sg->first_node("segments")};
-    // for (auto nodeSegment = nodeSegments->first_node("segment"); nodeSegment;
-    PComponent *p_component;
-
-    p_component = readXMLElementComponent(
-      xn_component, tmp_dependents_all, p_layups, num_combined_layups, cs, pmodel, pmessage
+  for (auto xn_component = xn_sg->first_node("component");
+       xn_component;
+       xn_component = xn_component->next_sibling("component")) {
+    PComponent *p_component = readXMLElementComponent(
+      xn_component, tmp_dependents_all, p_layups, num_combined_layups, cs, pmodel
     );
-
     cs->addComponent(p_component);
   }
-  PLOG(debug) << pmessage->message("finished reading components.");
+  PLOG(debug) << "finished reading components.";
 
-
-
-
-
-  // Turn the dependency of component names into pointers
+  // Resolve dependency names to pointers
   for (auto cmp : cs->components()) {
     for (auto depend_list : tmp_dependents_all) {
       if (cmp->name() == depend_list.front()) {
-        for (int cni = 1; cni < depend_list.size(); ++cni) {
+        for (int cni = 1; cni < static_cast<int>(depend_list.size()); ++cni) {
           for (auto cmp_d : cs->components()) {
             if (cmp_d->name() == depend_list[cni]) {
               cmp->addDependent(cmp_d);
@@ -869,52 +523,95 @@ int readCrossSection(const std::string &filenameCrossSection,
     }
   }
 
-  // Arrange the building order of components according to the dependencies
   cs->sortComponents();
+}
 
-  // if (config.debug) {
-  //   pmessage->printBlank();
-  //   pmessage->print(9, "summary of components");
-  //   for (auto cmp : cs->components()) {
-  //     cmp->print(pmessage, 9);
-  //     pmessage->printBlank();
-  //   }
-  // }
+}  // namespace
 
-  // if (debug)
-  // std::cout << "- reading components -- done" << std::endl;
+
+
+
+int readCrossSection(const std::string &filenameCrossSection,
+                     const std::string &filePath, PModel *pmodel) {
+  rapidxml::xml_document<> xmlDocCrossSection;
+  std::ifstream fileCrossSection{filenameCrossSection};
+  if (!fileCrossSection.is_open()) {
+    PLOG(error) << "unable to open file: " << filenameCrossSection;
+    return 1;
+  }
+  PLOG(info) << "reading main input file: " << filenameCrossSection;
+
+  std::vector<char> buffer{(std::istreambuf_iterator<char>(fileCrossSection)),
+                           std::istreambuf_iterator<char>()};
+  buffer.push_back('\0');
+
+  try {
+    xmlDocCrossSection.parse<0>(&buffer[0]);
+  } catch (rapidxml::parse_error &e) {
+    throw std::runtime_error(
+      "XML parse error in '" + filenameCrossSection + "': " + e.what()
+    );
+  }
+
+  rapidxml::xml_node<> *p_xn_sg{xmlDocCrossSection.first_node("cross_section")};
+  if (!p_xn_sg) p_xn_sg = xmlDocCrossSection.first_node("sg");
+  if (!p_xn_sg) {
+    throw std::runtime_error("Missing root XML element <cross_section> or <sg>");
+  }
+
+  std::string csName{requireAttr(p_xn_sg, "name", "root element")->value()};
+  std::string cs_type{"general"};
+  if (p_xn_sg->first_attribute("type")) {
+    cs_type = p_xn_sg->first_attribute("type")->value();
+  }
+  PLOG(debug) << "find cross-section: " + csName;
+
+  CrossSection *cs = new CrossSection(csName);
+
+  int format_version{1};
+  rapidxml::xml_attribute<> *p_xa_fmt{p_xn_sg->first_attribute("format")};
+  if (p_xa_fmt) {
+    std::string ss{p_xa_fmt->value()};
+    if (ss[0] != '\0') {
+      format_version = parseFormatVersionValue(ss, "root attribute 'format'");
+    }
+  }
+
+  rapidxml::xml_node<> *xn_include{p_xn_sg->first_node("include")};
+
+  readSettingsSection(p_xn_sg->first_node("settings"));
+  readAnalysisSection(p_xn_sg, pmodel);
+
+  rapidxml::xml_node<> *xn_general{p_xn_sg->first_node("general")};
+  if (!xn_general) {
+    throw std::runtime_error("Missing required XML element <general>");
+  }
+  GeneralResult gen = readGeneralSection(xn_general, pmodel);
+
+  readGeometrySection(p_xn_sg, xn_include, filePath, cs_type, gen, pmodel);
+  readMaterialsSection(p_xn_sg, xn_include, filePath, pmodel);
+  readLayupsSection(p_xn_sg, xn_include, filePath, pmodel);
+
+  std::vector<Layup *> p_layups{};
+  int num_combined_layups = 0;
+  readComponentsSection(p_xn_sg, cs, pmodel, p_layups, num_combined_layups);
 
   // Set default mesh size as the smallest layer thickness
+  double meshsize = gen.meshsize;
   if (meshsize == 0.0) {
-    if (debug)
-      std::cout << "\n"
-                << markInfo << " Use Default Mesh Size"
-                << "\n\n";
-    Layup *p_layup{};
-    for (auto it = p_layups.begin(); it != p_layups.end(); ++it) {
-      p_layup = *it;
-      std::vector<Layer> layers{};
-      layers = p_layup->getLayers();
-      for (auto it2 = layers.begin(); it2 != layers.end(); ++it2) {
-        double thickness{it2->getLamina()->getThickness()};
-        int stack{it2->getStack()};
+    PLOG(info) << "use default mesh size";
+    for (auto p_layup : p_layups) {
+      for (auto layer : p_layup->getLayers()) {
+        double thickness = layer.getLamina()->getThickness();
+        int stack = layer.getStack();
         if (meshsize > thickness * stack || meshsize == 0.0)
           meshsize = thickness * stack;
       }
     }
   }
-  // cs->setMeshsize(meshsize);
   pmodel->setGlobalMeshSize(meshsize);
 
-  // pmodel->crosssections.push_back(cs);
   pmodel->setCrossSection(cs);
-
-  // if (config.debug) {
-  //   pmodel->summary(pmessage);
-  // }
-
-  // i_indent--;
-  pmessage->decreaseIndent();
 
   return 0;
 }

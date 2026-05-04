@@ -7,11 +7,9 @@
 #include "PDCELVertex.hpp"
 #include "globalConstants.hpp"
 
-// #include "gmsh/GFace.h"
-#include "gmsh_mod/SVector3.h"
+#include "geo_types.hpp"
 
 #include <cmath>
-#include <string>
 #include <vector>
 
 class PDCELHalfEdge;
@@ -20,6 +18,10 @@ class PArea;
 
 /** @ingroup geo
  * A DCEL face class.
+ *
+ * Topology only: _outer, _inners, _is_bounded.
+ * Domain data (name, material, mesh_size, etc.) live in PDCELFaceData,
+ * owned by PModel and accessed via BuilderConfig::model->faceData(f).
  */
 class PDCELFace {
 private:
@@ -30,18 +32,9 @@ private:
   double _theta3, _theta1;
   LayerType *_layertype;
   SVector3 _y1{1, 0, 0}, _y2{0, 1, 0};
-  double _mesh_size = -1;
-  std::vector<PDCELVertex *> _embedded_vertices;
 
-  // Gmsh
-  bool _gbuild;
-  // GFace *_gface;
-  int _gface_tag = 0;
-  std::vector<int> _embedded_gvertex_tags;
-  std::vector<int> _embedded_gedge_tags;
-  int _gmsh_physical_group_tag = 0;
-
-  std::string _name;
+  // True for bounded (real) faces; false for the unbounded background face.
+  bool _is_bounded;
 
 public:
   PDCELFace();
@@ -63,19 +56,7 @@ public:
   SVector3 localy2() { return _y2; }
   double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / PI; }
 
-  double getMeshSize() const { return _mesh_size; }
-  std::vector<PDCELVertex *> getEmbeddedVertices() { return _embedded_vertices; }
-
-  bool gbuild() { return _gbuild; }
-  // GFace *gface() { return _gface; }
-  int gfaceTag() { return _gface_tag; }
-  std::vector<int> getEmbeddedGVertexTags() { return _embedded_gvertex_tags; }
-  std::vector<int> getEmbeddedGEdgeTags() { return _embedded_gedge_tags; }
-  void addEmbeddedGVertexTag(int tag) { _embedded_gvertex_tags.push_back(tag); }
-  void addEmbeddedGEdgeTag(int tag) { _embedded_gedge_tags.push_back(tag); }
-  int gmshPhysicalGroupTag() { return _gmsh_physical_group_tag; }
-
-  std::string name() { return _name; }
+  bool isBounded() { return _is_bounded; }
 
   PDCELHalfEdge *getOuterHalfEdgeWithSource(PDCELVertex *);
   PDCELHalfEdge *getOuterHalfEdgeWithTarget(PDCELVertex *);
@@ -94,14 +75,6 @@ public:
   double calcTheta1Fromy2(SVector3, bool deg = true);
   SVector3 calcy2FromTheta1(double, bool deg = true);
 
-  void setMeshSize(double ms) { _mesh_size = ms; }
-  void addEmbeddedVertex(PDCELVertex *v) { _embedded_vertices.push_back(v); }
-
-  void setGBuild(bool b) { _gbuild = b;}
-  // void setGFace(GFace *gf) { _gface = gf; }
-  void setGFaceTag(int tag) { _gface_tag = tag; }
-  void setGmshPhysicalGroupTag(int tag) { _gmsh_physical_group_tag = tag; }
+  void setBounded(bool b) { _is_bounded = b; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
-
-  void setName(std::string name) { _name = name; }
 };

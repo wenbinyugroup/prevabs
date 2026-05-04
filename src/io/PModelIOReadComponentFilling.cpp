@@ -24,14 +24,16 @@
 
 int readXMLElementComponentFilling(
   PComponent *p_component, const xml_node<> *xn_component,
-  CrossSection *cs, PModel *pmodel, Message *pmessage
+  CrossSection *cs, PModel *pmodel
   ) {
 
   // Read material
-  std::string fmn = xn_component->first_node("material")->value();
+  std::string fmn = requireNode(xn_component, "material", "<component type='filling'>")->value();
   Material *p_mtr_tmp = pmodel->getMaterialByName(fmn);
   if (p_mtr_tmp == nullptr) {
-    std::cout << "[error] cannot find material: " << fmn << std::endl;
+    throw std::runtime_error(
+      "cannot find material '" + fmn + "' in filling component"
+    );
   }
   // p_mtr_tmp->printMaterial();
   p_component->setFillMaterial(p_mtr_tmp);
@@ -72,6 +74,7 @@ int readXMLElementComponentFilling(
     p_lt_tmp->setId(CrossSection::used_layertype_index);
     cs->addUsedLayerType(p_lt_tmp);
   }
+  p_component->setFillLayertype(p_lt_tmp);
   // Check used material
   if (p_mtr_tmp->id() == 0) {
     CrossSection::used_material_index++;
@@ -82,8 +85,14 @@ int readXMLElementComponentFilling(
 
   //
   if (xn_component->first_node("location")) {
-    p_component->setFillLocation(pmodel->getPointByName(
-        xn_component->first_node("location")->value()));
+    std::string loc_name = xn_component->first_node("location")->value();
+    PDCELVertex *p_loc = pmodel->getPointByName(loc_name);
+    if (!p_loc) {
+      throw std::runtime_error(
+        "cannot find location point '" + loc_name + "' in filling component"
+      );
+    }
+    p_component->setFillLocation(p_loc);
   }
 
   for (auto p_xn_baseline = xn_component->first_node("baseline");
@@ -95,15 +104,20 @@ int readXMLElementComponentFilling(
         splitString(p_xn_baseline->value(), ',');
     for (auto name : bl_names) {
       Baseline *bl = pmodel->getBaselineByNameCopy(name);
+      if (!bl) {
+        throw std::runtime_error(
+          "cannot find baseline '" + name + "' in filling component"
+        );
+      }
       blg.push_back(bl);
     }
     if (p_xn_baseline->first_attribute("fillside")) {
       p_component->setFillRefBaseline(blg.front());
       std::string fs = p_xn_baseline->first_attribute("fillside")->value();
       if (fs == "left") {
-        p_component->setFillSide(1);
+        p_component->setFillSide(FillSide::left);
       } else if (fs == "right") {
-        p_component->setFillSide(-1);
+        p_component->setFillSide(FillSide::right);
       }
     }
 
@@ -119,9 +133,15 @@ int readXMLElementComponentFilling(
 
     std::vector<std::string> point_names;
     point_names =
-        splitString(p_xn_meshsize->first_attribute("at")->value(), ',');
+        splitString(requireAttr(p_xn_meshsize, "at", "<mesh_size>")->value(), ',');
     for (auto n : point_names) {
-      p_component->addEmbeddedVertex(pmodel->getPointByName(n));
+      PDCELVertex *pv = pmodel->getPointByName(n);
+      if (!pv) {
+        throw std::runtime_error(
+          "cannot find point '" + n + "' in <mesh_size at=...>"
+        );
+      }
+      p_component->addEmbeddedVertex(pv);
     }
 
   }

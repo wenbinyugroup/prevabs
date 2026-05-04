@@ -16,16 +16,12 @@
 #include <utility>
 
 
-int PModel::writeSupp(Message *pmessage) {
-    pmessage->increaseIndent();
+int PModel::writeSupp() {
+    PLOG(info) << "writing supplement files...";
 
-    PLOG(info) << pmessage->message("writing supplement files...");
-
-    writeInterfacePairs(this, pmessage);
-    writeInterfaceNodes(this, pmessage);
-    writeNodeElements(this, pmessage);
-
-    pmessage->decreaseIndent();
+    writeInterfacePairs(this);
+    writeInterfaceNodes(this);
+    writeNodeElements(this);
 
     return 1;
 }
@@ -33,11 +29,9 @@ int PModel::writeSupp(Message *pmessage) {
 
 
 
-void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
-    pmessage->increaseIndent();
-
+void writeInterfaceNodes(PModel *pmodel) {
     std::string fn = config.file_directory + config.file_base_name + "_interface_nodes.dat";
-    PLOG(info) << pmessage->message("writing interface nodes id to file: " + fn);
+    PLOG(info) << "writing interface nodes id to file: " << fn;
 
     FILE *p_file = fopen(fn.c_str(), "w");
 
@@ -54,9 +48,10 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
             // Nodes on the edge
             std::vector<std::size_t> edge_node_tags;
             std::vector<double> edge_node_coords, edge_node_param_coords;
+            int _edge_tag = pmodel->getGmshEdgeTag(he);
             gmsh::model::mesh::getNodes(
                 edge_node_tags, edge_node_coords, edge_node_param_coords,
-                1, he->gedgeTag(), false, false
+                1, _edge_tag, false, false
             );
 
             // for (std::size_t _ntag : edge_node_tags) {
@@ -118,19 +113,15 @@ void writeInterfaceNodes(PModel *pmodel, Message *pmessage) {
 
     fclose(p_file);
 
-    pmessage->decreaseIndent();
-
     return;
 }
 
 
 
 
-void writeInterfacePairs(PModel *pmodel, Message *pmessage) {
-    pmessage->increaseIndent();
-
+void writeInterfacePairs(PModel *pmodel) {
     std::string fn = config.file_directory + config.file_base_name + "_interface_pairs.dat";
-    PLOG(info) << pmessage->message("writing interface pairs to file: " + fn);
+    PLOG(info) << "writing interface pairs to file: " << fn;
 
     FILE *p_file = fopen(fn.c_str(), "w");
 
@@ -150,18 +141,14 @@ void writeInterfacePairs(PModel *pmodel, Message *pmessage) {
 
     fclose(p_file);
 
-    pmessage->decreaseIndent();
-
     return;
 }
 
 
 
-void writeNodeElements(PModel *pmodel, Message *pmessage) {
-    pmessage->increaseIndent();
-
+void writeNodeElements(PModel *pmodel) {
     std::string fn = config.file_directory + config.file_base_name + "_node_elements.dat";
-    PLOG(info) << pmessage->message("writing node elements to file: " + fn);
+    PLOG(info) << "writing node elements to file: " << fn;
 
     FILE *p_file = fopen(fn.c_str(), "w");
 
@@ -178,8 +165,6 @@ void writeNodeElements(PModel *pmodel, Message *pmessage) {
     }
 
     fclose(p_file);
-
-    pmessage->decreaseIndent();
 
     return;
 }

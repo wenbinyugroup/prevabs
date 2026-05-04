@@ -1,56 +1,84 @@
 #include "globalConstants.hpp"
+#include "globalVariables.hpp"
 #include "geo.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include <sstream>
+#include <stdexcept>
 #include <string>
-// #include "homog2d.hpp"
+// Route homog2d warnings to the prevabs debug logger instead of stderr.
+// Must be defined before homog2d.hpp is processed.
+#define HOMOG2D_LOG_WARNING(a) \
+  do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
+#include "homog2d.hpp"
 
+
+namespace {
+
+bool calcLineIntersectionRaw(
+  const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
+  const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
+  double &u1, double &u2, const double & /*tol*/
+  ) {
+  // tol is kept for API compatibility; parallelism is now detected via
+  // h2d::Line2d::isParallelTo(), which uses an angle-based threshold
+  // (h2d default: 0.001 rad) instead of the former |denominator| <= tol
+  // comparison that was unreliable at tol = 1e-15.
+
+  const double dx1 = l1p2x - l1p1x, dy1 = l1p2y - l1p1y;
+  const double dx2 = l2p2x - l2p1x, dy2 = l2p2y - l2p1y;
+
+  // Guard against degenerate (zero-length) segments, which would cause
+  // h2d::Line2d to throw on coincident-point construction.
+  if (dx1 == 0.0 && dy1 == 0.0) return false;
+  if (dx2 == 0.0 && dy2 == 0.0) return false;
+
+  h2d::Line2d l1(h2d::Point2d(l1p1x, l1p1y), h2d::Point2d(l1p2x, l1p2y));
+  h2d::Line2d l2(h2d::Point2d(l2p1x, l2p1y), h2d::Point2d(l2p2x, l2p2y));
+
+  if (l1.isParallelTo(l2))
+    return false;
+
+  // Intersection point of the two infinite lines.
+  // l1 * l2 (cross-product form) is not reliably found by MSVC via ADL, so
+  // we use the member function which is guaranteed visible.
+  const auto ptInter = l1.intersects(l2).get();
+  const double ix = ptInter.getX();
+  const double iy = ptInter.getY();
+
+  // Recover the parametric parameter along each line segment.
+  // Choose the coordinate axis with the larger span for numerical stability.
+  if (std::fabs(dx1) >= std::fabs(dy1))
+    u1 = (ix - l1p1x) / dx1;
+  else
+    u1 = (iy - l1p1y) / dy1;
+
+  if (std::fabs(dx2) >= std::fabs(dy2))
+    u2 = (ix - l2p1x) / dx2;
+  else
+    u2 = (iy - l2p1y) / dy2;
+
+  return true;
+}
+
+}  // namespace
 
 /**
  * @brief Calculates the intersection of two 2D lines.
  *
- * This function determines whether two lines in 2D space intersect and, if so, 
+ * This function determines whether two lines in 2D space intersect and, if so,
  * calculates the intersection parameters u1 and u2.
- *
- * @param l1p1x The x-coordinate of the first point of the first line.
- * @param l1p1y The y-coordinate of the first point of the first line.
- * @param l1p2x The x-coordinate of the second point of the first line.
- * @param l1p2y The y-coordinate of the second point of the first line.
- * @param l2p1x The x-coordinate of the first point of the second line.
- * @param l2p1y The y-coordinate of the first point of the second line.
- * @param l2p2x The x-coordinate of the second point of the second line.
- * @param l2p2y The y-coordinate of the second point of the second line.
- * @param u1 Reference to a double where the intersection parameter for the first line will be stored.
- * @param u2 Reference to a double where the intersection parameter for the second line will be stored.
- * @param tol The tolerance value used to determine if the lines are parallel.
- * @return true if the lines intersect, false if they are parallel within the given tolerance.
  */
 bool calcLineIntersection2D(
   const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
   double &u1, double &u2, const double &tol
   ) {
-
-  double dnm;
-  dnm = (l1p1x - l1p2x) * (l2p1y - l2p2y) -
-        (l1p1y - l1p2y) * (l2p1x - l2p2x);
-  // std::cout << "dnm = " << dnm << std::endl;
-  if (fabs(dnm) <= tol) {
-    return false;
-  }
-
-  u1 = (l1p1x - l2p1x) * (l2p1y - l2p2y) -
-       (l1p1y - l2p1y) * (l2p1x - l2p2x);
-  u1 = u1 / dnm;
-  // std::cout << "u1 = " << u1 << std::endl;
-
-  u2 = -(l1p1x - l1p2x) * (l1p1y - l2p1y) +
-       (l1p1y - l1p2y) * (l1p1x - l2p1x);
-  u2 = u2 / dnm;
-  // std::cout << "u2 = " << u2 << std::endl;
-
-  return true;
-
+  return calcLineIntersectionRaw(
+    l1p1x, l1p1y, l1p2x, l1p2y,
+    l2p1x, l2p1y, l2p2x, l2p2y,
+    u1, u2, tol
+  );
 }
 
 
@@ -76,7 +104,7 @@ bool calcLineIntersection2D(
   double &u1, double &u2, const double &tol
   ) {
 
-  return calcLineIntersection2D(
+  return calcLineIntersectionRaw(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
     u1, u2, tol
@@ -120,8 +148,11 @@ bool calcLineIntersection2D(
   } else if (plane == 2) {
     d1 = 0;
     d2 = 1;
+  } else {
+    PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
+    return false;
   }
-  return calcLineIntersection2D(
+  return calcLineIntersectionRaw(
     l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
     l2p1[d1], l2p1[d2], l2p2[d1], l2p2[d2],
     u1, u2, tol
@@ -136,7 +167,7 @@ bool calcLineIntersection2D(
   double &u1, double &u2, const double &tol
   ) {
 
-  return calcLineIntersection2D(
+  return calcLineIntersectionRaw(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
     u1, u2, tol
@@ -169,7 +200,7 @@ bool calcLineIntersection2D(
  */
 bool calcLineIntersection2D(
   SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
-  double &u1, double &u2, int &plane, const double &tol
+  double &u1, double &u2, const int &plane, const double &tol
   ) {
 
   int d1, d2;
@@ -182,6 +213,9 @@ bool calcLineIntersection2D(
   } else if (plane == 2) {
     d1 = 0;
     d2 = 1;
+  } else {
+    PLOG(error) << "calcLineIntersection2D: invalid plane index " << plane;
+    return false;
   }
 
   SPoint2 l1p, l1q, l2p, l2q;
@@ -266,8 +300,8 @@ bool calcLineIntersection2D(
  *         - 0 if the segments are parallel and do not intersect.
  */
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *intersect) {
-  int result;
+              PDCELVertex *&intersect) {
+  int result = 0;
   double us, ut;
   bool not_parallel;
 
@@ -313,24 +347,22 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * @param pmessage A pointer to a Message object used for logging and debugging.
  * @return A pointer to the PDCELHalfEdge where the intersection occurs, or nullptr if no intersection is found.
  */
-PDCELHalfEdge *findCurvesIntersection(
-  std::vector<PDCELVertex *> vertices, PDCELHalfEdgeLoop *hel,
-  int end, int &ls_i, double &u1, double &u2, const double &tol,
-  Message *pmessage
+PDCELHalfEdge *findCurveLoopIntersection(
+  const std::vector<PDCELVertex *> &vertices, PDCELHalfEdgeLoop *hel,
+  int end, int &ls_i, double &u1, double &u2, const double &tol
   ) {
-  pmessage->increaseIndent();
 
-  PLOG(debug) << pmessage->message("in function: findCurvesIntersection");
+    PLOG(debug) << "in function: findCurveLoopIntersection";
 
   PDCELHalfEdge *he = nullptr;
 
   std::vector<PDCELVertex *> tmp_ls; // temporary line segment
-  int ls_i_prev;
+  int ls_i_prev = -1;
   PDCELHalfEdge *hei = hel->incidentEdge();
   std::vector<int> c_is, t_is;  // curve indices, tool indices
   std::vector<double> c_us, t_us;  // curve parametric locations, tool parametric locations
   int j0;
-  double tmp_c_u, tmp_t_u;  // temporary parametric locations
+  double tmp_c_u = 0.0, tmp_t_u;  // temporary parametric locations
 
   if (end == 0) {  // find the intersection at the beginning
     u1 = -INF;
@@ -342,17 +374,24 @@ PDCELHalfEdge *findCurvesIntersection(
   }
 
   // Iterate through all line segments of the half edge loop
+  int _iter = 0;
   do {
-    PLOG(debug) << pmessage->message("----------");
+    if (++_iter > 65536) {
+      throw std::runtime_error(
+          "DCEL loop walk exceeded 65536 iterations"
+          " in findCurveLoopIntersection at " +
+          hel->incidentEdge()->printString());
+    }
+        PLOG(debug) << "----------";
 
     tmp_ls.clear();
     tmp_ls.push_back(hei->source());
     tmp_ls.push_back(hei->target());
 
     // std::cout << "tmp_ls: " << tmp_ls[0] << ", " << tmp_ls[1] << std::endl;
-    PLOG(debug) << pmessage->message(
+        PLOG(debug) << 
       "line segment of the half edge loop (tmp_ls): " + tmp_ls[0]->printString() + " -- " + tmp_ls[1]->printString()
-      );
+      ;
 
     c_is.clear();
     t_is.clear();
@@ -365,13 +404,13 @@ PDCELHalfEdge *findCurvesIntersection(
       vertices, tmp_ls, c_is, t_is, c_us, t_us
     );
 
-    PLOG(debug) << pmessage->message("all intersections");
-    PLOG(debug) << pmessage->message("curve index (i) -- param loc (u) | tool index (i) -- param loc (u)");
+        PLOG(debug) << "all intersections";
+        PLOG(debug) << "curve index (i) -- param loc (u) | tool index (i) -- param loc (u)";
 
     for (auto k = 0; k < c_is.size(); k++) {
-      PLOG(debug) << pmessage->message(
+            PLOG(debug) << 
         std::to_string(c_is[k]) + " -- " + std::to_string(c_us[k]) + " | "
-        + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]));
+        + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]);
     }
 
 
@@ -381,37 +420,37 @@ PDCELHalfEdge *findCurvesIntersection(
       // Find the intersection that is the closest to the expected end
       if (end == 0) {
         tmp_c_u = getIntersectionLocation(
-          vertices, c_is, c_us, 1, 0, ls_i, j0, pmessage
+          vertices, c_is, c_us, 1, 0, ls_i, j0
         );
       }
       else if (end == 1) {
         tmp_c_u = getIntersectionLocation(
-          vertices, c_is, c_us, 0, 0, ls_i, j0, pmessage
+          vertices, c_is, c_us, 0, 0, ls_i, j0
         );
       }
       tmp_t_u = t_us[j0];
 
-      PLOG(debug) << pmessage->message("closest intersection to end " + std::to_string(end));
-      PLOG(debug) << pmessage->message("curve segment index (ls_i) = " + std::to_string(ls_i));
-      PLOG(debug) << pmessage->message("prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev));
-      PLOG(debug) << pmessage->message("curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u));
-      PLOG(debug) << pmessage->message("tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u));
-      PLOG(debug) << pmessage->message(
+            PLOG(debug) << "closest intersection to end " + std::to_string(end);
+            PLOG(debug) << "curve segment index (ls_i) = " + std::to_string(ls_i);
+            PLOG(debug) << "prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev);
+            PLOG(debug) << "curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u);
+            PLOG(debug) << "tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u);
+            PLOG(debug) << 
         "curve segment: v11 = " + vertices[ls_i]->printString() + " -> "
         + "v12 = " + vertices[ls_i+1]->printString()
-      );
-      PLOG(debug) << pmessage->message(
+      ;
+            PLOG(debug) << 
         "tool segment: v21 = " + tmp_ls[0]->printString() + " -> "
         + "v22 = " + tmp_ls[1]->printString()
-      );
-      // PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
-      // PLOG(debug) << pmessage->message("number of vertices of the curve = " + std::to_string(vertices.size()));
+      ;
+      //       // PLOG(debug) << "tol = " + std::to_string(tol);
+      //       // PLOG(debug) << "number of vertices of the curve = " + std::to_string(vertices.size());
 
       bool update = false;
 
       // If the intersection is within the tool segment
-      PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
-      PLOG(debug) << pmessage->message("tol = " + std::to_string(tol));
+            PLOG(debug) << "u1 = " + std::to_string(u1);
+            PLOG(debug) << "tol = " + std::to_string(tol);
       if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
 
         // If want the intersection closer to the beginning
@@ -479,16 +518,16 @@ PDCELHalfEdge *findCurvesIntersection(
 
       if (update) {
 
-        PLOG(debug) << pmessage->message("update intersection");
+                PLOG(debug) << "update intersection";
 
         u1 = tmp_c_u;
         u2 = tmp_t_u;
         he = hei;
         ls_i_prev = ls_i;
 
-        PLOG(debug) << pmessage->message("u1 = " + std::to_string(u1));
-        PLOG(debug) << pmessage->message("u2 = " + std::to_string(u2));
-        PLOG(debug) << pmessage->message("end = " + std::to_string(end));
+                PLOG(debug) << "u1 = " + std::to_string(u1);
+                PLOG(debug) << "u2 = " + std::to_string(u2);
+                PLOG(debug) << "end = " + std::to_string(end);
 
       }
 
@@ -500,8 +539,6 @@ PDCELHalfEdge *findCurvesIntersection(
     hei = hei->next();
 
   } while (hei != hel->incidentEdge());
-
-  pmessage->decreaseIndent();
 
   return he;
 }
@@ -534,10 +571,10 @@ PDCELHalfEdge *findCurvesIntersection(
  * @param base_offset_indices_links Reference to a vector of integers representing the base offset indices links.
  * @return Pointer to the new baseline with the adjusted vertices. Returns nullptr if the intersection is not found.
  */
-Baseline *findCurvesIntersection(
+Baseline *trimCurveAtLineSegment(
   Baseline *bl, PGeoLineSegment *ls, int end,
   double &u1, double &u2, int &iold, int &inew,
-  std::vector<int> &link_to_list, std::vector<int> &base_offset_indices_links
+  std::vector<int> &link_to_list
   ) {
   // After adjusting the curve
   // the first kept vertex will be at index iold in the old curve
@@ -597,14 +634,17 @@ Baseline *findCurvesIntersection(
 
     if (not_parallel) {
       if (u1 > 1) {
+        delete lsi;
         continue;
       } else {
         if (fabs(u1) < TOLERANCE) {
           vlist.push_front(v1);
           link_to_list_copy.push_front(link_i1);
           iold--;
+          delete lsi;
           break;
         } else if (fabs(u1 - 1) < TOLERANCE) {
+          delete lsi;
           break;
         } else if (u1 < 0) {
           // In this case, the new curve is extended
@@ -615,6 +655,7 @@ Baseline *findCurvesIntersection(
           // vlist.push_front(v1);
           // iold--;
           v_new = lsi->getParametricVertex(u1);
+          delete lsi;
           vlist.push_front(v_new);
 
           link_to_list_copy.push_front(0);
@@ -622,6 +663,7 @@ Baseline *findCurvesIntersection(
           break;
         } else {
           v_new = lsi->getParametricVertex(u1);
+          delete lsi;
           vlist.push_front(v_new);
           link_to_list_copy.push_front(0);
           inew++;
@@ -629,11 +671,13 @@ Baseline *findCurvesIntersection(
         }
       }
     } else {
+      delete lsi;
       continue;
     }
   }
 
   if (vlist.size() < 2) {
+    delete bl_new;
     return nullptr;
   }
 
@@ -650,9 +694,14 @@ Baseline *findCurvesIntersection(
 
       link_to_list_new.push_back(link_to_list_copy.back());
       link_to_list_copy.pop_back();
-      iold = n - 1 - iold;
-      inew = bl_new->vertices().size() - 1 - inew;
     }
+  }
+
+  // For end==1 the list was traversed in reverse, so convert the accumulated
+  // forward-traversal indices back to the original (non-reversed) frame.
+  if (end == 1) {
+    iold = static_cast<int>(n) - 1 - iold;
+    inew = static_cast<int>(bl_new->vertices().size()) - 1 - inew;
   }
 
   link_to_list.swap(link_to_list_new);
@@ -796,24 +845,30 @@ int findAllIntersections(
  * @return The intersection parameter (u) of the closest intersection.
  */
 double getIntersectionLocation(
-  std::vector<PDCELVertex *> &c,
+  const std::vector<PDCELVertex *> & /*c*/,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
-  int &ls_i, int &j, Message *pmessage
+  int &ls_i, int &j
 ) {
   // Find the intersection location that is the closest to the expected end
-  pmessage->increaseIndent();
 
-  // PLOG(debug) << pmessage->message("in function: getIntersectionLocation");
+  //   // PLOG(debug) << "in function: getIntersectionLocation";
 
-  ls_i = ii[0];
-  double u = uu[0];
-  j = 0;
+  // Initialise with sentinel values; the loop below applies inner_only uniformly
+  // from k=0 so the seed element is also filtered correctly.
+  ls_i = -1;
+  double u = 0.0;
+  j = -1;
 
-  for (auto k = 1; k < ii.size(); k++) {
+  for (auto k = 0; k < (int)ii.size(); k++) {
 
     if ((inner_only && uu[k] >= 0 && uu[k] <= 1) || !inner_only) {
-      if (which_end == 0) {
+      if (j == -1) {
+        // First valid candidate — accept unconditionally.
+        ls_i = ii[k];
+        u = uu[k];
+        j = k;
+      } else if (which_end == 0) {
         // Closer to the beginning side
         if (ii[k] < ls_i) {
           ls_i = ii[k];
@@ -850,14 +905,12 @@ double getIntersectionLocation(
   }
 
 
-  // PLOG(debug) << pmessage->message(
+  //   // PLOG(debug) << 
   //   "ls_i = " + std::to_string(ls_i)
   //   + ", u = " + std::to_string(u)
   //   + ", v1 = " + c[ls_i]->printString()
   //   + ", v2 = " + c[ls_i+1]->printString()
-  // );
-
-  pmessage->decreaseIndent();
+  // ;
 
   return u;
 }
@@ -892,8 +945,6 @@ double getIntersectionLocation(
 PDCELVertex *getIntersectionVertex(
   std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
   int &i1, int &i2, const double &u1, const double &u2,
-  const int &which_end_1, const int &which_end_2,
-  const int &inner_only_1, const int &inner_only_2,
   int &is_new_1, int &is_new_2,
   const double &tol
 ) {
@@ -901,9 +952,6 @@ PDCELVertex *getIntersectionVertex(
 
   // i1s, i2s: indices of line segments having intersection
   // u1s, u2s: non-dimensional location of the intersection on the line segment
-  // which_end_1, which_end_2: choose the intersection closer to beginning (0) or ending (1)
-  // inner_only_1, inner_only_2: whether consider intersections between two ends (1) or not (0)
-
   // std::cout << "\n[debug] function: getIntersectionVertex\n";
 
   PDCELVertex *ip = nullptr; // The intersection vertex
@@ -1030,7 +1078,6 @@ PDCELVertex *getIntersectionVertex(
   return ip;
 
 }
-
 
 
 

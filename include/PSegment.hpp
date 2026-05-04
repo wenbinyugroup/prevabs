@@ -1,125 +1,107 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "Material.hpp"
-#include "PArea.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELVertex.hpp"
-#include "PGeoClasses.hpp"
-#include "PModel.hpp"
-#include "globalConstants.hpp"
-#include "PBaseLine.hpp"
-#include "utilities.hpp"
-
-#include "gmsh_mod/SVector3.h"
-
-#include <iostream>
-#include <list>
-#include <string>
-#include <vector>
-
+// Forward declarations first — before any includes — to break circular
+// dependencies in the include chain.
 class Baseline;
+class LayerType;
+class Layup;
 class PArea;
 class PDCELVertex;
 class PDCELFace;
 class PGeoLineSegment;
-class PModel;
+struct BuilderConfig;
+
+#include "geo_types.hpp"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <vector>
 
 /** @ingroup cs
  * A cross-sectional segment class.
  */
 class Segment {
-private:
-  PModel *_pmodel;
-  std::string _name;
-  Baseline *_curve_base, *_curve_offset;
+public:
+  // Segment lifecycle is strictly ordered:
+  // BaseReady -> OffsetReady -> ShellBuilt -> AreasBuilt.
+  // offsetCurveBase() is idempotent while the segment remains OffsetReady;
+  // build() and buildAreas() are single-use transitions.
+  enum class LifecycleState {
+    BaseReady,
+    OffsetReady,
+    ShellBuilt,
+    AreasBuilt
+  };
 
-  // normalized location of the beginning and ending of the segmnet on the base line
-  double _u_begin{0}, _u_end{1};
+private:
+  std::string _name;
+  Baseline *_curve_base;
+  std::unique_ptr<Baseline> _curve_offset;
 
   Layup *_layup;
-  std::vector<PArea *> _areas;
-  std::string slayupside;
-  int slevel;
+  std::vector<std::unique_ptr<PArea>> _areas;
+  // Layup offset side relative to the directed base curve:
+  // "left" means positive offset from base start -> end,
+  // "right" means negative offset.
+  std::string _layupside;
+  int _level;
   Segment *_prev, *_next;
   SVector3 _prev_bound, _next_bound;
-  bool _closed;
 
+  // Local material-axis selectors used when each PArea assigns face axes.
+  // e1/e2 are interpreted relative to the area geometry created from this
+  // segment:
+  // - "baseline": tangent of the local base-side segment of the area
+  // - "layup":    through-thickness connector from base side to offset side
+  // - "normal":   cross-section normal (the global x1 direction)
   std::string _mat_orient_e1{"normal"};
   std::string _mat_orient_e2{"baseline"};
 
   // excluding vertices on the base curve and offset curve
   std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
   std::vector<int> _prev_bound_indices, _next_bound_indices;
-  std::list<PDCELVertex *> _vertices_outer;
   PDCELFace *_face;
   int _free; // Free end. 0 (head) or 1 (tail)
   PDCELVertex *_head_vertex_offset, *_tail_vertex_offset;
-
-  // Has the size of base curve - 2 (excluding the two ends)
-  std::list<PDCELVertex *> _inner_bounds_end;
-  std::list<PGeoLineSegment *> _inner_bounds;
-  std::list<PGeoLineSegment *> _inner_bounds_tt;
-
-  std::vector<int> _offset_vertices_link_to;
-  std::vector<int> _offset_indices_base_link_to;
-  std::vector<std::vector<int> > _base_offset_indices_pairs;
-
-  // Inner bounding line segments in the following index range (w.r.t base line)
-  // can create the DCEL edge directly, without trimming
-  int _ib_begin, _ib_end;
-
-  // Indicate if each inner bound can be created by direct connecting;
-  std::list<bool> _inner_bounds_dc;
+  BaseOffsetMap _base_offset_indices_pairs;
+  LifecycleState _state{LifecycleState::BaseReady};
 
 public:
   static int count_tmp;
 
   Segment(){};
+  ~Segment();
   Segment(std::string name, Baseline *p_baseline, Layup *p_layup,
           std::string layupside, int level = 1)
-      : _name(name), _curve_base(p_baseline), _curve_offset(nullptr),
-        _layup(p_layup), slayupside(layupside), slevel(level),
+      : _name(name), _curve_base(p_baseline),
+        _layup(p_layup), _layupside(layupside), _level(level),
         _head_vertex_offset(nullptr), _tail_vertex_offset(nullptr) {
     _prev = nullptr;
     _next = nullptr;
     _prev_bound = SVector3(0, 0, 0);
     _next_bound = SVector3(0, 0, 0);
-    _ib_begin = 0;
-    _ib_end = 0;
   }
-  Segment(PModel *pmodel, std::string name, Baseline *p_baseline,
-          Layup *p_layup, std::string layupside, int level = 1)
-      : _pmodel(pmodel), _name(name), _curve_base(p_baseline),
-        _curve_offset(nullptr), _layup(p_layup), slayupside(layupside),
-        slevel(level), _head_vertex_offset(nullptr),
-        _tail_vertex_offset(nullptr) {
-    _prev = nullptr;
-    _next = nullptr;
-    _prev_bound = SVector3(0, 0, 0);
-    _next_bound = SVector3(0, 0, 0);
-    _ib_begin = 0;
-    _ib_end = 0;
-  }
-
+  Segment(const Segment &) = delete;
+  Segment &operator=(const Segment &) = delete;
+  Segment(Segment &&other) noexcept;
+  Segment &operator=(Segment &&other) noexcept;
   friend std::ostream &operator<<(std::ostream &, Segment *);
   void print();
   void printBaseOffsetLink();
-  void printBaseOffsetPairs(Message *);
+  void printBaseOffsetPairs();
 
-  PModel *pmodel() { return _pmodel; }
   std::string getName() { return _name; }
-  Baseline *getBaseline() { return _curve_base; }
   Baseline *curveBase() { return _curve_base; }
-  Baseline *curveOffset() { return _curve_offset; }
-  double getUBegin() const { return _u_begin; }
-  double getUEnd() const { return _u_end; }
+  Baseline *curveOffset() { return _curve_offset.get(); }
   Layup *getLayup() { return _layup; }
-  std::string getLayupside() { return slayupside; }
-  int getLevel() { return slevel; }
+  std::string getLayupside() { return _layupside; }
+  int getLevel() { return _level; }
   int free() { return _free; }
+  // Returns +1 for "left" and -1 for "right" with respect to the directed
+  // base curve. Invalid values assert via requireValidLayupSide().
   int layupSide();
-  bool closed() { return _closed; }
+  bool closed() const;
 
   std::string getMatOrient1() { return _mat_orient_e1; }
   std::string getMatOrient2() { return _mat_orient_e2; }
@@ -143,34 +125,28 @@ public:
   std::vector<PDCELVertex *> &nextBoundVertices() {
     return _next_bound_vertices;
   }
-  int innerBoundIndexBegin() { return _ib_begin; }
-  int innerBoundIndexEnd() { return _ib_end; }
   std::vector<int> &prevBoundIndices() { return _prev_bound_indices; }
   std::vector<int> &nextBoundIndices() { return _next_bound_indices; }
-  std::vector<int> &offsetVerticesLinkToList() { return _offset_vertices_link_to; }
-  std::vector<int> &baseOffsetIndicesLink() { return _offset_indices_base_link_to; }
-  std::vector<std::vector<int>> &baseOffsetIndicesPairs() { return _base_offset_indices_pairs; }
+  BaseOffsetMap &baseOffsetIndicesPairs() { return _base_offset_indices_pairs; }
 
   PDCELFace *face() { return _face; }
 
+  // Material orientation selectors consumed during area construction.
+  // Typical values are:
+  // - e1: "normal" or "baseline"
+  // - e2: "baseline" or "layup"
   void setMatOrient1(std::string orient) { _mat_orient_e1 = orient; }
   void setMatOrient2(std::string orient) { _mat_orient_e2 = orient; }
 
-  void setClosed(bool t) { _closed = t; }
-
   void setCurveBase(Baseline *c) { _curve_base = c; }
-  void setCurveOffset(Baseline *c) { _curve_offset = c; }
+  void setCurveOffset(Baseline *c);
 
-  void setUBegin(double u) { _u_begin = u; }
-  void setUEnd(double u) { _u_end = u; }
-
-  void setPModel(PModel *pmodel) { _pmodel = pmodel; }
   void addArea(PArea *);
 
   void setHeadVertexOffset(PDCELVertex *v) { _head_vertex_offset = v; }
   void setTailVertexOffset(PDCELVertex *v) { _tail_vertex_offset = v; }
 
-  void setLevel(int level) { slevel = level; }
+  void setLevel(int level) { _level = level; }
   void setFreeEnd(int fe) { _free = fe; }
   void setPrevSegment(Segment *seg) { _prev = seg; }
   void setNextSegment(Segment *seg) { _next = seg; }
@@ -180,8 +156,6 @@ public:
   void setNextBound(double x1, double x2, double x3) { _next_bound = SVector3(x1, x2, x3); }
   void setPrevBoundVertices(std::vector<PDCELVertex *>);
   void setNextBoundVertices(std::vector<PDCELVertex *>);
-  void setInnerBoundIndexBegin(int i) { _ib_begin = i; }
-  void setInnerBoundIndexEnd(int i) { _ib_end = i; }
   void setPrevBoundIndices(std::vector<int> indices) {
     _prev_bound_indices = indices;
   }
@@ -191,58 +165,61 @@ public:
 
   void setPDCELFace(PDCELFace *face) { _face = face; }
 
-  void offsetCurveBase(Message *);
+  // Build the offset curve once. Repeated calls before build() are no-ops.
+  void offsetCurveBase();
 
-  void build(Message *);
-  void buildAreas(Message *);
-};
+  void build(const BuilderConfig &);
+  void buildAreas(const BuilderConfig &);
 
-// ===================================================================
-// class Connection {
-// private:
-//   std::string cname;
-//   std::string ctype;
-//   // std::vector<Segment*> p_csegments;
-//   std::vector<std::string> csegments;
-
-// public:
-//   Connection(std::string name, std::string type,
-//              std::vector<std::string> segments)
-//       : cname(name), ctype(type), csegments(segments) {}
-
-//   std::string getName() { return cname; }
-//   std::string getType() { return ctype; }
-//   std::vector<std::string> getSegments() { return csegments; }
-
-//   void setType(std::string);
-//   // void setSegments(std::vector<Segment>);
-// };
-
-// ===================================================================
-class Filling {
 private:
-  std::string fname;
-  Baseline *p_fbaseline;
-  Material *p_fmaterial;
-  LayerType *p_flayertype;
-  std::string ffillside;
+  bool requireBaseDefinition(const char *caller) const;
+  int requireValidLayupSide(const char *caller) const;
+  bool requireOffsetCurve(const char *caller) const;
+  bool requireStateAtLeast(
+      LifecycleState minimum_state, const char *caller) const;
+  bool requireExactState(
+      LifecycleState expected_state, const char *caller) const;
+  bool validateStateInvariants(const char *caller) const;
+  void releaseOwnedResources();
 
-public:
-  Filling() {}
-  Filling(std::string name, Baseline *p_baseline, Material *p_material,
-          std::string fillside)
-      : fname(name), p_fbaseline(p_baseline), p_fmaterial(p_material),
-        ffillside(fillside) {}
-  Filling(std::string name, Baseline *p_baseline, Material *p_material,
-          std::string fillside, LayerType *p_layertype)
-      : fname(name), p_fbaseline(p_baseline), p_fmaterial(p_material),
-        ffillside(fillside), p_flayertype(p_layertype) {}
+  // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
+  // Splits DCEL edges in place. Returns the new intermediate vertices.
+  std::vector<PDCELVertex *> splitBoundByLayup(
+      PDCELVertex *vb, PDCELVertex *vo, const BuilderConfig &bcfg);
 
-  std::string getName() { return fname; }
-  Baseline *getBaseline() { return p_fbaseline; }
-  Material *getMaterial() { return p_fmaterial; }
-  LayerType *getLayerType() { return p_flayertype; }
-  std::string getFillSide() { return ffillside; }
+  // Search face boundary edges from v_prev for the intersection with ls_offset.
+  // go_prev controls traversal direction (true = prev(), false = next()).
+  // stop_vertex is the offset-bound endpoint that terminates this local
+  // traversal (head uses offset.front(), tail uses offset.back()).
+  // May split an edge. Returns the intersection vertex, or nullptr if not found.
+  PDCELVertex *findLayerIntersectionOnFace(
+      PDCELVertex *v_prev, PDCELFace *face,
+      PGeoLineSegment *ls_offset, bool go_prev, PDCELVertex *stop_vertex,
+      const BuilderConfig &bcfg);
 
-  void setLayerType(LayerType *);
+  // Build layer vertices on an open bound by intersecting offset line segments
+  // with the face boundary. v_start is the seed vertex; go_prev controls
+  // traversal direction; stop_vertex selects the current offset-side boundary
+  // endpoint. Returns the new layer vertices.
+  std::vector<PDCELVertex *> buildOpenBoundLayerVertices(
+      PDCELVertex *v_start, PGeoLineSegment *ls_base,
+      bool go_prev, PDCELVertex *stop_vertex, const BuilderConfig &bcfg);
+
+  // Section 1: compute beginning-bound layer vertices.
+  // For closed segments, also fills first_bound_vertices.
+  std::vector<PDCELVertex *> buildBeginningBound(
+      std::vector<PDCELVertex *> &first_bound_vertices,
+      const BuilderConfig &bcfg);
+
+  // Section 2: create all intermediate areas and update prev_bound_vertices
+  // and count.
+  void createIntermediateAreas(
+      std::vector<PDCELVertex *> &prev_bound_vertices,
+      int &count, const BuilderConfig &bcfg);
+
+  // Section 3: create and append the last (or only) area.
+  void buildLastArea(
+      const std::vector<PDCELVertex *> &prev_bound_vertices,
+      const std::vector<PDCELVertex *> &first_bound_vertices,
+      int count, const BuilderConfig &bcfg);
 };

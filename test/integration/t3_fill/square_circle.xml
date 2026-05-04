@@ -1,0 +1,72 @@
+<cross_section name="box">
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <mesh_size>0.02</mesh_size>
+    <element_shape>quad</element_shape>
+    <element_type>2</element_type>
+  </general>
+
+  <baselines>
+
+    <point name="lb">-0.5 -0.5</point>
+    <point name="lt">-0.5 0.5</point>
+    <point name="rt">0.5 0.5</point>
+    <point name="rb">0.5 -0.5</point>
+    <point name="cc">0.0 0.0</point>
+    <point name="cc2">0.2 0.3</point>
+    <point name="pweb2">-0.25 0.0</point>
+    <point name="pweb3">0.25 0.0</point>
+    <!-- <point name="bsp_web_rb">0  0</point> -->
+    <point name="bsp_web_rb" constraint="middle">rt lb</point>
+
+    <baseline name="bl1">
+      <points>lb,lt,rt,rb,lb</points>
+    </baseline>
+
+    <baseline name="bl2" type="circle">
+      <center>cc2</center>
+      <radius>0.1</radius>
+    </baseline>
+
+  </baselines>
+
+  <materials>
+    <material name="foam" type="isotropic">
+      <density>160</density>
+      <elastic>
+        <e>72.400E+09</e>
+        <nu>0.3</nu>
+      </elastic>
+    </material>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>1E+10</e1>
+        <e2>2E+09</e2>
+        <e3>3E+09</e3>
+        <g12>4E+09</g12>
+        <g13>5E+09</g13>
+        <g23>6E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+  </materials>
+
+  <component name="fill_circle" type="fill">
+    <baseline>bl2</baseline>
+    <location>cc2</location>
+    <material>iso5_1</material>
+  </component>
+  <component name="fill_square" type="fill" depend="fill_circle">
+    <baseline>bl1</baseline>
+    <location>cc</location>
+    <material>foam</material>
+  </component>
+
+</cross_section>
