@@ -129,8 +129,12 @@ endif()
 message( STATUS "(st) " ${GMSH_INC} )
 include_directories(${GMSH_INC})
 
+# NO_DEFAULT_PATH disables CMake's <PackageName>_ROOT auto-search
+# (CMP0074), which would otherwise pick lib/gmsh.lib (the C API) on
+# Windows before our explicit lib/cpp17/gmsh.lib (the C++ API).
 find_library(GMSH_LIB gmsh
   PATHS $ENV{Gmsh_ROOT}/lib/cpp17 $ENV{Gmsh_ROOT}/lib
+  NO_DEFAULT_PATH
   REQUIRED)
 if(NOT GMSH_LIB)
   message(FATAL_ERROR "Could not find libgmsh")

@@ -129,7 +129,10 @@ jobs:
       - name: Install build tools
         run: |
           dnf install -y git cmake gcc gcc-c++ make wget \
-            mesa-libGLU-devel
+            mesa-libGLU-devel mesa-libGL-devel \
+            libX11-devel libXrender-devel libXft-devel \
+            libXcursor-devel libXfixes-devel libXinerama-devel \
+            fontconfig-devel
 
       - uses: actions/checkout@v4
 
