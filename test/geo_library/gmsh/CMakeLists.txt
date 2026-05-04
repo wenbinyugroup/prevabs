@@ -15,15 +15,26 @@ endif()
 project(api_examples CXX C)
 
 set(CMAKE_CXX_STANDARD 11)
+set(REPO_ROOT ${CMAKE_SOURCE_DIR}/../../..)
 
-find_library(GMSH_LIB gmsh PATH $ENV{Gmsh_ROOT}/lib)
-if(NOT GMSH_LIB)
-  message(FATAL_ERROR "Could not find libgmsh")
+find_path(GMSH_INC
+  NAMES gmsh.h gmsh.h_cwrap
+  PATHS $ENV{Gmsh_ROOT}/include
+  REQUIRED)
+if(NOT GMSH_INC)
+  message(FATAL_ERROR "Could not find gmsh headers")
 endif()
 
-find_path(GMSH_INC gmsh.h PATH $ENV{Gmsh_ROOT}/include)
-if(NOT GMSH_INC)
-  message(FATAL_ERROR "Could not find gmsh.h")
+if(WIN32 OR CYGWIN OR MINGW)
+  set(GMSH_LIB "$ENV{Gmsh_ROOT}/lib/gmsh.lib")
+  if(NOT EXISTS "${GMSH_LIB}")
+    message(FATAL_ERROR "Could not find gmsh C API lib")
+  endif()
+else()
+  find_library(GMSH_LIB gmsh PATHS $ENV{Gmsh_ROOT}/lib REQUIRED)
+  if(NOT GMSH_LIB)
+    message(FATAL_ERROR "Could not find libgmsh")
+  endif()
 endif()
 
 if(GMSH_LIB MATCHES ".a") # FIXME - generalize this
@@ -41,6 +52,7 @@ if(WIN32 OR CYGWIN)
   list(APPEND EXTRA_LIBS winmm wsock32 ws2_32 psapi)
 endif()
 
+include_directories(${REPO_ROOT}/include)
 include_directories(${GMSH_INC})
 
 include(CTest)

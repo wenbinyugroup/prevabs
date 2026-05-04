@@ -52,10 +52,12 @@ jobs:
         shell: pwsh
         run: |
           $tag = "${{ inputs.tag }}"
+          $gmshApiVersion = ([version]$env:GMSH_VERSION).Major.ToString() + "." +
+            ([version]$env:GMSH_VERSION).Minor.ToString()
           $pkg = "prevabs-${tag}-windows-x64"
           New-Item -ItemType Directory -Force -Path $pkg | Out-Null
           Copy-Item "build\Release\prevabs.exe"          "$pkg\"
-          Copy-Item "$env:Gmsh_ROOT\lib\cpp17\gmsh.dll"  "$pkg\"
+          Copy-Item "$env:Gmsh_ROOT\lib\gmsh-$gmshApiVersion.dll" "$pkg\"
           Copy-Item "share\MaterialDB.xml"               "$pkg\"
           Compress-Archive -Path $pkg -DestinationPath "${pkg}.zip"
 

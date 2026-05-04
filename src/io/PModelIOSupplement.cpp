@@ -8,7 +8,7 @@
 // #include "gmsh/GVertex.h"
 // #include "gmsh/GEdge.h"
 // #include "gmsh/MVertex.h"
-#include <gmsh.h>
+#include "GmshApi.hpp"
 
 #include <fstream>
 #include <string>

@@ -66,7 +66,8 @@ Additional options
 1. **Setup Gmsh**
    - Download the Gmsh SDK from https://gmsh.info/
    - Unzip to a directory
-   - In the `include` folder, rename `gmsh.h` → `gmsh.h_cpp` and `gmsh.h_cwrap` → `gmsh.h`
+   - No SDK header renaming is needed; PreVABS selects `gmsh.h_cwrap`
+     automatically on Windows builds
    - Set environment variable `Gmsh_ROOT` to the Gmsh SDK root directory
 
 2. **Build PreVABS**

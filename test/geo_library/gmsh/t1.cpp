@@ -8,9 +8,9 @@
 
 #include <set>
 
-// The Gmsh C++ API is entirely defined in the `gmsh.h' header (which contains
-// the full documentation of all the functions in the API):
-#include <gmsh.h>
+// The project compatibility header routes Windows builds through gmsh.h_cwrap
+// while keeping the same gmsh:: API in the test code.
+#include "GmshApi.hpp"
 
 int main(int argc, char **argv)
 {

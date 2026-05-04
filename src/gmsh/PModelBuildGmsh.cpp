@@ -5,7 +5,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include <gmsh.h>
+#include "GmshApi.hpp"
 
 // #include "gmsh/GEdge.h"
 // #include "gmsh/GEdgeLoop.h"

@@ -4,7 +4,7 @@
 #include <clipper2/clipper.h>
 #include "clipper2/utils/clipper.svg.h"
 #include "clipper2/utils/clipper.svg.utils.h"
-#include <gmsh.h>
+#include "GmshApi.hpp"
 
 using namespace Clipper2Lib;
 

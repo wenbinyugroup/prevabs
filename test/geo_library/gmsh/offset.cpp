@@ -1,4 +1,4 @@
-#include <gmsh.h>
+#include "GmshApi.hpp"
 #include <vector>
 #include <string>
 #include <iostream>

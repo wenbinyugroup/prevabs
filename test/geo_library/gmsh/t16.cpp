@@ -12,7 +12,7 @@
 
 #include <set>
 #include <iostream>
-#include <gmsh.h>
+#include "GmshApi.hpp"
 
 int main(int argc, char **argv)
 {

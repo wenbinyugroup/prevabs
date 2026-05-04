@@ -6,7 +6,7 @@
 #include "plog.hpp"
 #include "utilities.hpp"
 
-#include <gmsh.h>
+#include "GmshApi.hpp"
 
 #include <fstream>
 #include <iostream>

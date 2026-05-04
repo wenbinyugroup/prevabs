@@ -1,4 +1,4 @@
-#include <gmsh.h>
+#include "GmshApi.hpp"
 #include <cmath>
 #include <map>
 #include <set>

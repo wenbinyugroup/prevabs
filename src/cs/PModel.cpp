@@ -10,7 +10,7 @@
 #include "utilities.hpp"
 #include "plog.hpp"
 
-#include <gmsh.h>
+#include "GmshApi.hpp"
 
 
 #include <cstdio>

@@ -122,22 +122,22 @@ target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated 
 # -----------------
 message( STATUS "(st) " $ENV{Gmsh_ROOT} )
 
-find_path(GMSH_INC gmsh.h PATHS $ENV{Gmsh_ROOT}/include REQUIRED)
+find_path(GMSH_INC
+  NAMES gmsh.h gmsh.h_cwrap
+  PATHS $ENV{Gmsh_ROOT}/include
+  REQUIRED)
 if(NOT GMSH_INC)
   message(FATAL_ERROR "Could not find gmsh.h")
 endif()
 message( STATUS "(st) " ${GMSH_INC} )
 include_directories(${GMSH_INC})
 
-# On Windows the SDK ships two import libraries with the same name:
-#   lib/gmsh.lib      – C API (wrong for us)
-#   lib/cpp17/gmsh.lib – C++ API (correct)
-# find_library cannot reliably prefer the cpp17 one, so we set the
-# path explicitly on Windows and use find_library only on Linux/macOS.
+# On Windows we route the C++ API calls through gmsh.h_cwrap, which targets the
+# C API import library in lib/gmsh.lib and avoids native C++ ABI issues.
 if(WIN32 OR CYGWIN OR MINGW)
-  set(GMSH_LIB "$ENV{Gmsh_ROOT}/lib/cpp17/gmsh.lib")
+  set(GMSH_LIB "$ENV{Gmsh_ROOT}/lib/gmsh.lib")
   if(NOT EXISTS "${GMSH_LIB}")
-    message(FATAL_ERROR "Could not find gmsh C++ lib at ${GMSH_LIB}")
+    message(FATAL_ERROR "Could not find gmsh C API lib at ${GMSH_LIB}")
   endif()
 else()
   find_library(GMSH_LIB gmsh
