@@ -8,7 +8,8 @@ cmake3 \
   -DCMAKE_CXX_STANDARD=17 \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=.. \
-  ..
+  .. \
+  --debug-find
 
 make -j4
 make install
