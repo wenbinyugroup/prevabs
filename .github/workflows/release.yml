@@ -26,8 +26,8 @@ jobs:
       - name: Download Gmsh SDK
         shell: pwsh
         run: |
-          $url = "https://gmsh.info/bin/Windows/gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk.zip"
-          Invoke-WebRequest -Uri $url -OutFile gmsh-sdk.zip
+          $sdkUrl = "https://gmsh.info/bin/Windows/gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk.zip"
+          Invoke-WebRequest -Uri $sdkUrl -OutFile gmsh-sdk.zip
           Expand-Archive gmsh-sdk.zip -DestinationPath .
           "Gmsh_ROOT=$PWD\gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk" |
             Out-File -FilePath $env:GITHUB_ENV -Append
@@ -54,17 +54,40 @@ jobs:
           $tag = "${{ inputs.tag }}"
           $gmshApiVersion = ([version]$env:GMSH_VERSION).Major.ToString() + "." +
             ([version]$env:GMSH_VERSION).Minor.ToString()
-          $pkg = "prevabs-${tag}-windows-x64"
-          New-Item -ItemType Directory -Force -Path $pkg | Out-Null
-          Copy-Item "build\Release\prevabs.exe"          "$pkg\"
-          Copy-Item "$env:Gmsh_ROOT\lib\gmsh-$gmshApiVersion.dll" "$pkg\"
-          Copy-Item "share\MaterialDB.xml"               "$pkg\"
-          Compress-Archive -Path $pkg -DestinationPath "${pkg}.zip"
+          $gmshDll = "$env:Gmsh_ROOT\lib\gmsh-$gmshApiVersion.dll"
+          $gmshLicense = "$env:Gmsh_ROOT\share\doc\gmsh\LICENSE.txt"
+          $gmshCredits = "$env:Gmsh_ROOT\share\doc\gmsh\CREDITS.txt"
+          $projectReadme = "README.md"
+          $projectLicense = "LICENSE"
+          $runtimePkg = "prevabs-${tag}-windows-x64"
+          $fullPkg = "prevabs-${tag}-windows-x64-full"
+
+          function Initialize-Package([string]$pkgDir) {
+            New-Item -ItemType Directory -Force -Path $pkgDir | Out-Null
+            Copy-Item "build\Release\prevabs.exe" "$pkgDir\"
+            Copy-Item $gmshDll "$pkgDir\"
+            Copy-Item "share\MaterialDB.xml" "$pkgDir\"
+            Copy-Item $projectReadme (Join-Path $pkgDir "README.md")
+            Copy-Item $projectLicense (Join-Path $pkgDir "LICENSE")
+            Copy-Item $gmshLicense (Join-Path $pkgDir "LICENSE-gmsh.txt")
+            Copy-Item $gmshCredits (Join-Path $pkgDir "CREDITS-gmsh.txt")
+          }
+
+          Initialize-Package $runtimePkg
+          Compress-Archive -Path $runtimePkg -DestinationPath "${runtimePkg}.zip"
+
+          Initialize-Package $fullPkg
+          New-Item -ItemType Directory -Force -Path "$fullPkg\gmsh" | Out-Null
+          Copy-Item "$env:Gmsh_ROOT\bin\gmsh.exe" "$fullPkg\gmsh\"
+          if (Test-Path "$env:Gmsh_ROOT\bin\onelab.py") {
+            Copy-Item "$env:Gmsh_ROOT\bin\onelab.py" "$fullPkg\gmsh\"
+          }
+          Compress-Archive -Path $fullPkg -DestinationPath "${fullPkg}.zip"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows-package
-          path: prevabs-*-windows-x64.zip
+          name: windows-packages
+          path: prevabs-*-windows-x64*.zip
 
 # ---------------------------------------------------------------------------
 # Linux – Ubuntu/Debian (x64)
@@ -113,6 +136,10 @@ jobs:
           cp build/prevabs "$PKG/"
           cp -P "$Gmsh_ROOT"/lib/libgmsh.so* "$PKG/"
           cp share/MaterialDB.xml "$PKG/"
+          cp README.md "$PKG/"
+          cp LICENSE "$PKG/"
+          cp "$Gmsh_ROOT"/share/doc/gmsh/LICENSE.txt "$PKG/LICENSE-gmsh.txt"
+          cp "$Gmsh_ROOT"/share/doc/gmsh/CREDITS.txt "$PKG/CREDITS-gmsh.txt"
           tar czf "${PKG}.tar.gz" "$PKG/"
 
       - uses: actions/upload-artifact@v4
@@ -166,6 +193,10 @@ jobs:
           cp build/prevabs "$PKG/"
           cp -P "$Gmsh_ROOT"/lib/libgmsh.so* "$PKG/"
           cp share/MaterialDB.xml "$PKG/"
+          cp README.md "$PKG/"
+          cp LICENSE "$PKG/"
+          cp "$Gmsh_ROOT"/share/doc/gmsh/LICENSE.txt "$PKG/LICENSE-gmsh.txt"
+          cp "$Gmsh_ROOT"/share/doc/gmsh/CREDITS.txt "$PKG/CREDITS-gmsh.txt"
           tar czf "${PKG}.tar.gz" "$PKG/"
 
       - uses: actions/upload-artifact@v4
@@ -203,6 +234,8 @@ jobs:
                       continue
                   shutil.copy2(src, os.path.join(dst, fname))
           EOF
+          cp README.md "$PKG/"
+          cp LICENSE "$PKG/"
           zip -r "${PKG}.zip" "$PKG/"
         env:
           PKG: prevabs-${{ inputs.tag }}-examples

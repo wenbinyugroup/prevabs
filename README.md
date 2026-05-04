@@ -3,14 +3,98 @@
 PreVABS is a preprocessing tool for VABS and SwiftComp.
 It helps users to create cross-sections and write input files.
 
+Online documentation: https://wenbinyugroup.github.io/prevabs/
+
 ## Installation
+
+Prebuilt release packages are intended to run without a full source build
+toolchain. The sections below describe what is already bundled and what users
+still need to install manually.
 
 ### Windows
 
-#### Portable (`prevabs-<ver>-windows-portable.zip`)
+#### Runtime package (`prevabs-<ver>-windows-x64.zip`)
+
+Bundled in the package:
+
+- `prevabs.exe`
+- `gmsh-<major>.<minor>.dll`
+- `MaterialDB.xml`
+- `README.md`
+- `LICENSE`
+- `LICENSE-gmsh.txt`
+- `CREDITS-gmsh.txt`
+
+Manual installation still required:
+
+- Microsoft Visual C++ Redistributable for Visual Studio 2022 (x64), if not
+  already installed on the target machine
+- VABS and/or SwiftComp, if you want PreVABS to execute those solvers with
+  `--execute`
+
+Usage:
 
 - Unzip the package
-- Add the root directory to the system environment variable `PATH`
+- Run `prevabs.exe` from the package root, or add that directory to `PATH`
+
+#### Full package (`prevabs-<ver>-windows-x64-full.zip`)
+
+Includes everything in the runtime package, plus:
+
+- `gmsh/gmsh.exe`
+- `gmsh/onelab.py` when present in the SDK
+
+This package is useful when users want the standalone Gmsh application in
+addition to the PreVABS runtime.
+
+### Linux
+
+#### Ubuntu package (`prevabs-<ver>-linux-ubuntu-x64.tar.gz`)
+
+Bundled in the package:
+
+- `prevabs`
+- `libgmsh.so*`
+- `MaterialDB.xml`
+- `README.md`
+- `LICENSE`
+- `LICENSE-gmsh.txt`
+- `CREDITS-gmsh.txt`
+
+Manual installation still required:
+
+- System runtime libraries required by Gmsh/OpenGL/X11 if they are not already
+  present on the machine. On Ubuntu/Debian, these typically include
+  `libglu1-mesa`, `libgl1`, `libx11-6`, `libxrender1`, `libxft2`,
+  `libxcursor1`, `libxfixes3`, `libxinerama1`, and `libfontconfig1`.
+- VABS and/or SwiftComp, if you want PreVABS to execute those solvers with
+  `--execute`
+
+#### RHEL package (`prevabs-<ver>-linux-rhel9-x64.tar.gz`)
+
+Bundled in the package:
+
+- `prevabs`
+- `libgmsh.so*`
+- `MaterialDB.xml`
+- `README.md`
+- `LICENSE`
+- `LICENSE-gmsh.txt`
+- `CREDITS-gmsh.txt`
+
+Manual installation still required:
+
+- System runtime libraries required by Gmsh/OpenGL/X11 if they are not already
+  present on the machine. On RHEL/Rocky 9, these typically include
+  `mesa-libGLU`, `libglvnd-glx`, `libX11`, `libXrender`, `libXft`,
+  `libXcursor`, `libXfixes`, `libXinerama`, and `fontconfig`.
+- VABS and/or SwiftComp, if you want PreVABS to execute those solvers with
+  `--execute`
+
+### Examples package
+
+`prevabs-<ver>-examples.zip` contains only example input files. It does not
+contain the executable or runtime libraries.
 
 ## Usage
 
@@ -126,58 +210,6 @@ The executable will be at `build_msvc\Release\prevabs.exe` (Windows path).
    export LD_LIBRARY_PATH=<PREVABS_DIR>/lib:$LD_LIBRARY_PATH
    ```
 
-## Testing
-
-### Unit tests (Catch2)
-
-**Windows (MSVC) — using the build script:**
-
-```powershell
-# Full clean build and run all tests
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 full -Run
-
-# Incremental rebuild and run
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 fast -Run
-
-# Build only (no run)
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 full
-```
-
-The test executable is at `test\unit\build_msvc\Release\test_geo.exe`.
-
-**Manual cmake (any platform):**
-
-```bash
-cd test/unit
-mkdir build && cd build
-cmake ..
-cmake --build . --config Release
-./Release/test_geo          # run all tests
-./Release/test_geo "[geo]"  # run tagged subset
-```
-
-### Integration tests (Windows)
-
-Requires a built `prevabs.exe` (see [Build from source](#build-from-source)).
-
-```powershell
-# Run all tests
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1
-
-# Run a subset by name prefix (e.g. t1 matches all t1_strip cases)
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 -Filter t1
-
-# Clean generated output files, keep source inputs
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean
-```
-
-Or call CTest directly after the first run has configured the build directory:
-
-```powershell
-ctest --test-dir test\integration\build_msvc --output-on-failure
-ctest --test-dir test\integration\build_msvc -R t1
-```
-
 ## License
 
 This program is free software: you can redistribute it and/or modify
@@ -193,13 +225,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-## Contact
+Release packages also include:
 
-Su Tian
-(sutian@analyswift.com)
+- this project's `LICENSE`
+- the bundled Gmsh license and credits files when Gmsh binaries are included
 
-Haodong Du
-(duhd1993@purdue.edu)
-
-Wenbin Yu
-(wenbinyu@purdue.edu)
