@@ -129,15 +129,24 @@ endif()
 message( STATUS "(st) " ${GMSH_INC} )
 include_directories(${GMSH_INC})
 
-# NO_DEFAULT_PATH disables CMake's <PackageName>_ROOT auto-search
-# (CMP0074), which would otherwise pick lib/gmsh.lib (the C API) on
-# Windows before our explicit lib/cpp17/gmsh.lib (the C++ API).
-find_library(GMSH_LIB gmsh
-  PATHS $ENV{Gmsh_ROOT}/lib/cpp17 $ENV{Gmsh_ROOT}/lib
-  NO_DEFAULT_PATH
-  REQUIRED)
-if(NOT GMSH_LIB)
-  message(FATAL_ERROR "Could not find libgmsh")
+# On Windows the SDK ships two import libraries with the same name:
+#   lib/gmsh.lib      – C API (wrong for us)
+#   lib/cpp17/gmsh.lib – C++ API (correct)
+# find_library cannot reliably prefer the cpp17 one, so we set the
+# path explicitly on Windows and use find_library only on Linux/macOS.
+if(WIN32 OR CYGWIN OR MINGW)
+  set(GMSH_LIB "$ENV{Gmsh_ROOT}/lib/cpp17/gmsh.lib")
+  if(NOT EXISTS "${GMSH_LIB}")
+    message(FATAL_ERROR "Could not find gmsh C++ lib at ${GMSH_LIB}")
+  endif()
+else()
+  find_library(GMSH_LIB gmsh
+    PATHS $ENV{Gmsh_ROOT}/lib
+    NO_DEFAULT_PATH
+    REQUIRED)
+  if(NOT GMSH_LIB)
+    message(FATAL_ERROR "Could not find libgmsh")
+  endif()
 endif()
 message( STATUS "(st) " ${GMSH_LIB} )
 target_link_libraries( ${PROJECTNAME} ${GMSH_LIB} )
