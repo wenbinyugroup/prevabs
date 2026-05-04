@@ -129,7 +129,9 @@ endif()
 message( STATUS "(st) " ${GMSH_INC} )
 include_directories(${GMSH_INC})
 
-find_library(GMSH_LIB gmsh PATHS $ENV{Gmsh_ROOT}/lib REQUIRED)
+find_library(GMSH_LIB gmsh
+  PATHS $ENV{Gmsh_ROOT}/lib/cpp17 $ENV{Gmsh_ROOT}/lib
+  REQUIRED)
 if(NOT GMSH_LIB)
   message(FATAL_ERROR "Could not find libgmsh")
 endif()

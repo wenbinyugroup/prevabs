@@ -54,9 +54,9 @@ jobs:
           $tag = "${{ inputs.tag }}"
           $pkg = "prevabs-${tag}-windows-x64"
           New-Item -ItemType Directory -Force -Path $pkg | Out-Null
-          Copy-Item "build\Release\prevabs.exe"    "$pkg\"
-          Copy-Item "$env:Gmsh_ROOT\lib\gmsh*.dll" "$pkg\"
-          Copy-Item "share\MaterialDB.xml"         "$pkg\"
+          Copy-Item "build\Release\prevabs.exe"          "$pkg\"
+          Copy-Item "$env:Gmsh_ROOT\lib\cpp17\gmsh.dll"  "$pkg\"
+          Copy-Item "share\MaterialDB.xml"               "$pkg\"
           Compress-Archive -Path $pkg -DestinationPath "${pkg}.zip"
 
       - uses: actions/upload-artifact@v4
@@ -71,6 +71,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libglu1-mesa-dev libgl-dev \
+            libx11-dev libxrender-dev libxft-dev \
+            libxcursor-dev libxfixes-dev libxinerama-dev \
+            libfontconfig-dev
 
       - name: Download Gmsh SDK
         run: |
@@ -118,7 +127,9 @@ jobs:
     steps:
       # git must be installed before actions/checkout
       - name: Install build tools
-        run: dnf install -y git cmake gcc gcc-c++ make wget
+        run: |
+          dnf install -y git cmake gcc gcc-c++ make wget \
+            mesa-libGLU-devel
 
       - uses: actions/checkout@v4
 
