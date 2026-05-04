@@ -1,47 +1,29 @@
 (example-box-beam)=
-## Box beam
+# Box beam
 
-### Problem description
+## Overview
 
 ```{figure} /figures/examplebox0.png
 :name: fig_box_draw
 :width: 4in
 :align: center
 
-Cross section of the box beam [YU2012]_.
+Cross section of the box beam.
 ```
 
-This example is a thin-walled box beam whose cross section is depicted in {numref}`fig_box_draw` [YU2012]_.
+This example is a thin-walled box beam cross-section.
 The width $a_2=0.953$ in, height $a_3=0.530$ in, and thickness $t=0.030$ in.
 Each wall has six plies of the same composite material and the same fiber orientation of $15^\circ$.
 Material properties and layup scheme are listed in {ref}`table_box_materials` and {ref}`table_box_layups`.
-Cross-sectional properties are given in {ref}`table_box_result` and compared with those in Ref. [YU2012]_.
-The tiny differences are due to different meshes.
-Complete input files can be found in ``examples\ex_box\``, including ``box.xml`` and ``materials.xml``.
 
-```{figure} /figures/examplebox1.png
-:name: fig_box1
-:width: 6in
-:align: center
-
-*Base point*s, *Base line*s and *Segment*s of the box beam cross section.
-```
-
-```{figure} /figures/examplebox.png
-:name: fig_box
-:width: 6in
-:align: center
-
-Meshed cross section viewed in Gmsh.
-```
 
 ```{csv-table} Material properties
 :name: table_box_materials
 :header-rows: 2
 :align: center
 
-"Name", "Density", |e1|, |e2|, |e3|, |g12|, |g13|, |g23|, |nu12|, |nu13|, |nu23|
-, |den_im|, |mod_im_m|, |mod_im_m|, |mod_im_m|, |mod_im_m|, |mod_im_m|, |mod_im_m|, , ,
+"Name", "Density", "{{ e1 }}", "{{ e2 }}", "{{ e3 }}", "{{ g12 }}", "{{ g13 }}", "{{ g23 }}", "{{ nu12 }}", "{{ nu13 }}", "{{ nu23 }}"
+, "{{ den_im }}", "{{ mod_im_m }}", "{{ mod_im_m }}", "{{ mod_im_m }}", "{{ mod_im_m }}", "{{ mod_im_m }}", "{{ mod_im_m }}", , ,
 "mat_1", 0.0001353, 20.59, 1.42, 1.42, 0.87, 0.87, 0.696, 0.30, 0.30, 0.34
 ```
 
@@ -51,25 +33,47 @@ Meshed cross section viewed in Gmsh.
 :align: center
 
 "Name", "Layer", "Material", "Ply thickness", "Orientation", "Number of plies"
-, , , |len_im|, :math:`\circ`,
+, , , "{{ len_im }}", $\circ$,
 "layup1", 1, "mat_1", 0.05, -15, 6
 ```
 
-### Result
+---
+
+## PreVABS Input and Output
+
+Input files
+
+- [`box_cus.xml`](../../../../../share/examples/ex_box/box_cus.xml)
+
+
+```{figure} ../../../../../share/examples/ex_box/box_cus.png
+:name: fig_box
+:width: 6in
+:align: center
+
+Cross-section viewed in Gmsh.
+```
+
+---
+
+## Analysis Result
+
+Cross-sectional properties are given in {ref}`table_box_result` and compared with those in Ref. [YU2012].
+The tiny differences are due to different meshes.
 
 ```{csv-table} Results
 :name: table_box_result
 :header-rows: 1
 :align: center
 
-"Component", "Value", "Reference [YU2012]_"
-":math:`S_{11}` [|stf0_im|]", ":math:`\phantom{-}1.437 \\times 10^6`", ":math:`\phantom{-}1.437 \\times 10^6`"
-":math:`S_{22}` [|stf0_im|]", ":math:`\phantom{-}9.026 \\times 10^4`", ":math:`\phantom{-}9.027 \\times 10^4`"
-":math:`S_{33}` [|stf0_im|]", ":math:`\phantom{-}3.941 \\times 10^4`", ":math:`\phantom{-}3.943 \\times 10^4`"
-":math:`S_{14}` [|stf1_im|]", ":math:`\phantom{-}1.074 \\times 10^5`", ":math:`\phantom{-}1.074 \\times 10^5`"
-":math:`S_{25}` [|stf1_im|]", ":math:`-5.201 \\times 10^4`", ":math:`-5.201 \\times 10^4`"
-":math:`S_{36}` [|stf1_im|]", ":math:`-5.635 \\times 10^4`", ":math:`-5.635 \\times 10^4`"
-":math:`S_{44}` [|stf2_im|]", ":math:`\phantom{-}1.679 \\times 10^4`", ":math:`\phantom{-}1.679 \\times 10^4`"
-":math:`S_{55}` [|stf2_im|]", ":math:`\phantom{-}6.621 \\times 10^4`", ":math:`\phantom{-}6.621 \\times 10^4`"
-":math:`S_{66}` [|stf2_im|]", ":math:`\phantom{-}1.725 \\times 10^5`", ":math:`\phantom{-}1.725 \\times 10^5`"
+"Component", "Value", "Reference [YU2012]"
+"$S_{11}$ [{{ stf0_im }}]", "$\phantom{-}1.437 \times 10^6$", "$\phantom{-}1.437 \times 10^6$"
+"$S_{22}$ [{{ stf0_im }}]", "$\phantom{-}9.026 \times 10^4$", "$\phantom{-}9.027 \times 10^4$"
+"$S_{33}$ [{{ stf0_im }}]", "$\phantom{-}3.941 \times 10^4$", "$\phantom{-}3.943 \times 10^4$"
+"$S_{14}$ [{{ stf1_im }}]", "$\phantom{-}1.074 \times 10^5$", "$\phantom{-}1.074 \times 10^5$"
+"$S_{25}$ [{{ stf1_im }}]", "$-5.201 \times 10^4$", "$-5.201 \times 10^4$"
+"$S_{36}$ [{{ stf1_im }}]", "$-5.635 \times 10^4$", "$-5.635 \times 10^4$"
+"$S_{44}$ [{{ stf2_im }}]", "$\phantom{-}1.679 \times 10^4$", "$\phantom{-}1.679 \times 10^4$"
+"$S_{55}$ [{{ stf2_im }}]", "$\phantom{-}6.621 \times 10^4$", "$\phantom{-}6.621 \times 10^4$"
+"$S_{66}$ [{{ stf2_im }}]", "$\phantom{-}1.725 \times 10^5$", "$\phantom{-}1.725 \times 10^5$"
 ```
