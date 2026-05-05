@@ -20,6 +20,7 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -33,6 +34,113 @@ void deleteDetachedLineSegment(PGeoLineSegment *segment) {
   delete segment->v1();
   delete segment->v2();
   delete segment;
+}
+
+
+std::string faceLabel(PDCELFace *face, PModel *model) {
+  if (face == nullptr) {
+    return "nullptr";
+  }
+
+  std::ostringstream oss;
+  oss << static_cast<void *>(face);
+  std::string label = "face@" + oss.str();
+  if (model != nullptr) {
+    const std::string &name = model->faceData(face).name;
+    if (!name.empty()) {
+      label += " [" + name + "]";
+    }
+  }
+  return label;
+}
+
+
+
+
+void logVertexEdgeRing(
+    PDCELVertex *vertex, PModel *model, const std::string &prefix) {
+  if (vertex == nullptr) {
+    PLOG(error) << prefix << ": vertex=nullptr";
+    return;
+  }
+
+  PLOG(error) << prefix << ": vertex=" << vertex->printString();
+  if (vertex->edge() == nullptr) {
+    PLOG(error) << prefix << ": edge ring is empty";
+    return;
+  }
+
+  PDCELHalfEdge *start = vertex->edge();
+  PDCELHalfEdge *he = start;
+  int iter = 0;
+  do {
+    if (he == nullptr) {
+      PLOG(error) << prefix << ": encountered nullptr half-edge in ring";
+      return;
+    }
+    if (++iter > kDCELLoopHardCap) {
+      PLOG(error) << prefix
+                  << ": edge ring walk exceeded "
+                  << kDCELLoopHardCap << " steps";
+      return;
+    }
+
+    std::ostringstream line;
+    line << prefix
+         << ": outgoing[" << (iter - 1) << "] "
+         << he->source()->printString()
+         << " -> " << he->target()->printString()
+         << " | face=" << faceLabel(he->face(), model)
+         << " | loop=" << (he->loop() ? "set" : "nullptr");
+    PLOG(error) << line.str();
+
+    if (he->twin() == nullptr) {
+      PLOG(error) << prefix << ": outgoing[" << (iter - 1)
+                  << "] has nullptr twin";
+      return;
+    }
+    he = he->twin()->next();
+  } while (he != nullptr && he != start);
+
+  if (he == nullptr) {
+    PLOG(error) << prefix << ": edge ring terminated at nullptr next";
+  }
+}
+
+
+
+
+void logMissingHalfEdgeInFace(
+    const std::string &caller, const std::string &segment_name,
+    PDCELVertex *vertex, PDCELFace *expected_face,
+    const BuilderConfig &bcfg) {
+  PLOG(error) << caller
+              << ": findHalfEdgeInFace returned nullptr"
+              << " for segment '" << segment_name << "'"
+              << ", vertex=" << (vertex ? vertex->printString() : "nullptr")
+              << ", expected_face="
+              << faceLabel(expected_face, bcfg.model);
+  logVertexEdgeRing(
+      vertex, bcfg.model,
+      caller + ": vertex edge ring for segment '" + segment_name + "'");
+}
+
+
+
+
+void logMissingHalfEdgeBetween(
+    const std::string &caller, const std::string &segment_name,
+    PDCELVertex *source, PDCELVertex *target, const BuilderConfig &bcfg) {
+  PLOG(error) << caller
+              << ": findHalfEdgeBetween returned nullptr"
+              << " for segment '" << segment_name << "'"
+              << ", source="
+              << (source ? source->printString() : "nullptr")
+              << ", target="
+              << (target ? target->printString() : "nullptr");
+  logVertexEdgeRing(
+      source, bcfg.model,
+      caller + ": source edge ring for segment '" + segment_name + "'");
 }
 
 
@@ -109,9 +217,14 @@ std::vector<PDCELVertex *> Segment::splitBoundByLayup(
     v_layer = new PDCELVertex(
         getParametricPoint(vb->point(), vo->point(), norm_thk));
 
-    PDCELVertex *v1_tmp = (i == 0) ? vb : v_layer_prev;
-    PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdgeBetween(v1_tmp, vo);
-    v_layer = bcfg.dcel->splitEdge(he_tmp, v_layer);
+  PDCELVertex *v1_tmp = (i == 0) ? vb : v_layer_prev;
+  PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdgeBetween(v1_tmp, vo);
+  if (he_tmp == nullptr) {
+    logMissingHalfEdgeBetween(
+        "splitBoundByLayup", _name, v1_tmp, vo, bcfg);
+    break;
+  }
+  v_layer = bcfg.dcel->splitEdge(he_tmp, v_layer);
 
     layer_vertices.push_back(v_layer);
     v_layer_prev = v_layer;
@@ -140,6 +253,11 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
       (bcfg.tol > TOLERANCE) ? bcfg.tol : TOLERANCE;
 
   PDCELHalfEdge *he_tmp = bcfg.dcel->findHalfEdgeInFace(v_prev, face);
+  if (he_tmp == nullptr) {
+    logMissingHalfEdgeInFace(
+        "findLayerIntersectionOnFace", _name, v_prev, face, bcfg);
+    return nullptr;
+  }
   PDCELHalfEdge *he_base = he_tmp;
   if (go_prev) {
     he_tmp = he_tmp->prev();

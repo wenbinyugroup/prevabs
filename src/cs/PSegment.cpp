@@ -58,6 +58,98 @@ void deleteUnregisteredVertices(const std::vector<PDCELVertex *> &vertices) {
   }
 }
 
+
+
+
+std::string faceLabel(PDCELFace *face, PModel *model) {
+  if (face == nullptr) {
+    return "nullptr";
+  }
+
+  std::ostringstream oss;
+  oss << static_cast<void *>(face);
+  std::string label = "face@" + oss.str();
+  if (model != nullptr) {
+    const std::string &name = model->faceData(face).name;
+    if (!name.empty()) {
+      label += " [" + name + "]";
+    }
+  }
+  return label;
+}
+
+
+
+
+void logVertexEdgeRing(
+    PDCELVertex *vertex, PModel *model, const std::string &prefix) {
+  if (vertex == nullptr) {
+    PLOG(error) << prefix << ": vertex=nullptr";
+    return;
+  }
+
+  PLOG(error) << prefix << ": vertex=" << vertex->printString();
+  if (vertex->edge() == nullptr) {
+    PLOG(error) << prefix << ": edge ring is empty";
+    return;
+  }
+
+  PDCELHalfEdge *start = vertex->edge();
+  PDCELHalfEdge *he = start;
+  int iter = 0;
+  do {
+    if (he == nullptr) {
+      PLOG(error) << prefix << ": encountered nullptr half-edge in ring";
+      return;
+    }
+    if (++iter > kDCELLoopHardCap) {
+      PLOG(error) << prefix
+                  << ": edge ring walk exceeded "
+                  << kDCELLoopHardCap << " steps";
+      return;
+    }
+
+    std::ostringstream line;
+    line << prefix
+         << ": outgoing[" << (iter - 1) << "] "
+         << he->source()->printString()
+         << " -> " << he->target()->printString()
+         << " | face=" << faceLabel(he->face(), model)
+         << " | loop=" << (he->loop() ? "set" : "nullptr");
+    PLOG(error) << line.str();
+
+    if (he->twin() == nullptr) {
+      PLOG(error) << prefix << ": outgoing[" << (iter - 1)
+                  << "] has nullptr twin";
+      return;
+    }
+    he = he->twin()->next();
+  } while (he != nullptr && he != start);
+
+  if (he == nullptr) {
+    PLOG(error) << prefix << ": edge ring terminated at nullptr next";
+  }
+}
+
+
+
+
+void logMissingHalfEdgeBetween(
+    const std::string &caller, const std::string &segment_name,
+    PDCELVertex *source, PDCELVertex *target, const BuilderConfig &bcfg) {
+  PLOG(error) << "Segment::" << caller
+              << ": findHalfEdgeBetween returned nullptr"
+              << " for segment '" << segment_name << "'"
+              << ", source="
+              << (source ? source->printString() : "nullptr")
+              << ", target="
+              << (target ? target->printString() : "nullptr");
+  logVertexEdgeRing(
+      source, bcfg.model,
+      "Segment::" + caller + ": source edge ring for segment '"
+          + segment_name + "'");
+}
+
 } // namespace
 
 std::ostream &operator<<(std::ostream &out, Segment *s) {
@@ -510,6 +602,12 @@ void Segment::build(const BuilderConfig &bcfg) {
   PDCELHalfEdgeLoop *hel;
   he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[0],
                                           _curve_base->vertices()[1]);
+  if (he == nullptr) {
+    logMissingHalfEdgeBetween(
+        "build", _name, _curve_base->vertices()[0],
+        _curve_base->vertices()[1], bcfg);
+    return;
+  }
   if (requireValidLayupSide("build") < 0) {
     he = he->twin();
   }
