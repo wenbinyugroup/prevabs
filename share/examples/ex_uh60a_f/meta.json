@@ -1,0 +1,28 @@
+{
+  "slug": "example_uh60a_fi",
+  "label": "example-uh60a-fi",
+  "title": "UH-60A (Initial Failure Analysis)",
+  "card_title": "UH-60A (Initial Failure)",
+  "summary": "Failure-index example for the UH-60A rotor-blade section.",
+  "order": 120,
+  "inputs": [
+    "uh60a.xml",
+    "sc1095.dat",
+    "material_database.xml",
+    "uh60a.sg",
+    "uh60a.sg.K",
+    "uh60a.sg.opt",
+    "uh60a.sg.ech"
+  ],
+  "outputs": [
+    "uh60a.sg.fi"
+  ],
+  "doc_images": [
+    "ex-uh60a_fi_fail_2.png",
+    "ex-uh60a_fi_fail_2_zoomin.png"
+  ],
+  "preview": "ex-uh60a_fi_fail_2.png",
+  "preview_caption": "Contour plot of strength ratio.",
+  "preview_width": "6in",
+  "run_command": "prevabs -i uh60a.xml --fi -e -v"
+}

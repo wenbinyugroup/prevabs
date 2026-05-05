@@ -1,0 +1,20 @@
+{
+  "slug": "example_airfoil_cspar",
+  "label": "example-airfoil-cspar",
+  "title": "Airfoil with C-Spar",
+  "card_title": "Airfoil with C-Spar",
+  "summary": "Airfoil example with a C-spar internal structure.",
+  "order": 80,
+  "inputs": [
+    "cs_main.xml",
+    "sc1095.dat",
+    "material_database_us_ft.xml"
+  ],
+  "outputs": [
+    "cs_main.png"
+  ],
+  "doc_images": [],
+  "preview": "cs_main.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "6.5in"
+}

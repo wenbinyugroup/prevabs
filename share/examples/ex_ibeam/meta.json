@@ -1,0 +1,22 @@
+{
+  "slug": "example_ibeam",
+  "label": "example-i-beam",
+  "title": "I-beam",
+  "card_title": "I-beam",
+  "summary": "I-beam example using an external material definition.",
+  "order": 50,
+  "inputs": [
+    "i_web.xml",
+    "materials.xml"
+  ],
+  "outputs": [
+    "i_web.png"
+  ],
+  "doc_images": [
+    "exampleibeam0.png",
+    "exampleibeam1.png"
+  ],
+  "preview": "i_web.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "4in"
+}

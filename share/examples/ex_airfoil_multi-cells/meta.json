@@ -1,0 +1,20 @@
+{
+  "slug": "example_airfoil_multi-cells",
+  "label": "example-airfoil-multi-cells",
+  "title": "Airfoil with Multiple Cells",
+  "card_title": "Airfoil with Multiple Cells",
+  "summary": "MH-104 airfoil example with multiple internal cells.",
+  "order": 130,
+  "inputs": [
+    "mh104_9webs.xml",
+    "mh104.dat",
+    "materials.xml"
+  ],
+  "outputs": [
+    "mh104_9webs.png"
+  ],
+  "doc_images": [],
+  "preview": "mh104_9webs.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "6.5in"
+}

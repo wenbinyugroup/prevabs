@@ -1,0 +1,19 @@
+{
+  "slug": "example_uh60a",
+  "label": "example-uh60a",
+  "title": "UH-60A",
+  "card_title": "UH-60A",
+  "summary": "UH-60A rotor-blade section example for homogenization.",
+  "order": 110,
+  "inputs": [
+    "uh60a_section.xml",
+    "sc1095.dat",
+    "uh60a_material.xml"
+  ],
+  "outputs": [
+    "uh60a_section.png"
+  ],
+  "doc_images": [],
+  "preview": "uh60a_section.png",
+  "preview_caption": "Cross-section viewed in Gmsh."
+}

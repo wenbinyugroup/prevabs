@@ -1,0 +1,20 @@
+{
+  "slug": "example_channel",
+  "label": "example-channel",
+  "title": "Channel",
+  "card_title": "Channel",
+  "summary": "Cross-ply channel example with a generated Gmsh preview.",
+  "order": 10,
+  "inputs": [
+    "channel.xml"
+  ],
+  "outputs": [
+    "channel.png"
+  ],
+  "doc_images": [
+    "ex_channel_0.png"
+  ],
+  "preview": "channel.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "4in"
+}

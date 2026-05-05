@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
+import re
+import shutil
+import json
+from pathlib import Path
 #
 # v4d documentation build configuration file, created by
 # sphinx-quickstart on Tue May 30 13:54:05 2017.
@@ -29,14 +33,173 @@ project = u'PreVABS'
 # copyright = u'2017, xl&st'
 author = u'Su Tian, Haodong Du, Xin Liu and Wenbin Yu'
 
+
+def loadPrevabsVersion():
+    repo_root = Path(__file__).resolve().parents[3]
+    cmake_path = repo_root / 'CMakeLists.txt'
+    cmake_content = cmake_path.read_text(encoding='utf-8')
+
+    version_match = re.search(
+        r'set\s*\(\s*PREVABS_VERSION\s+"([^"]+)"\s*\)',
+        cmake_content
+    )
+    if version_match:
+        return version_match.group(1)
+
+    components = {}
+    for name in ('MAJOR', 'MINOR', 'PATCH'):
+        component_match = re.search(
+            r'set\s*\(\s*PREVABS_VERSION_{0}\s+(\d+)\s*\)'.format(name),
+            cmake_content
+        )
+        if not component_match:
+            raise RuntimeError(
+                'Could not find PREVABS_VERSION_{0} in {1}'.format(
+                    name, cmake_path
+                )
+            )
+        components[name] = component_match.group(1)
+
+    return '{MAJOR}.{MINOR}.{PATCH}'.format(**components)
+
+
+PREVABS_VERSION = loadPrevabsVersion()
+
+STAGED_EXAMPLES_DIR = '_example_assets'
+STAGED_EXAMPLE_INCLUDES_DIR = '_example_includes'
+
+
+def isLocalAssetTarget(target):
+    return (
+        target and
+        '://' not in target and
+        not target.startswith('#') and
+        not target.startswith('/')
+    )
+
+
+def readJson(path):
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def loadStringList(entry, key):
+    value = entry.get(key, [])
+    if not isinstance(value, list):
+        raise ValueError('{0} must be an array in {1}'.format(
+            key,
+            entry.get('name', '<unknown>')
+        ))
+    items = []
+    for raw_item in value:
+        item = str(raw_item).strip()
+        if item:
+            items.append(item)
+    return items
+
+
+def trackedMetaFiles(entry):
+    files = set(['README.md', 'meta.json'])
+    for key in ('inputs', 'outputs', 'doc_images'):
+        files.update(loadStringList(entry, key))
+
+    preview = str(entry.get('preview', '')).strip()
+    if preview:
+        files.add(preview)
+    return files
+
+
+def rewriteExampleReadme(content, example_name):
+    asset_prefix = '../../{0}/{1}/'.format(
+        STAGED_EXAMPLES_DIR,
+        example_name,
+    )
+
+    def rewrite_figure(match):
+        target = match.group(2).strip()
+        if isLocalAssetTarget(target):
+            target = asset_prefix + target
+        return '{0}{1}'.format(match.group(1), target)
+
+    def rewrite_link(match):
+        label = match.group(1)
+        target = match.group(2).strip()
+        if isLocalAssetTarget(target):
+            target = asset_prefix + target
+        return '[{0}]({1})'.format(label, target)
+
+    content = re.sub(
+        r'^(```\{figure\}\s+)(\S+)\s*$',
+        rewrite_figure,
+        content,
+        flags=re.MULTILINE
+    )
+    content = re.sub(
+        r'\[([^\]]+)\]\(([^)]+)\)',
+        rewrite_link,
+        content
+    )
+    return content
+
+
+def stageExampleAssets():
+    repo_root = Path(__file__).resolve().parents[3]
+    source_dir = Path(__file__).resolve().parent
+    examples_src = repo_root / 'share' / 'examples'
+    examples_dst = source_dir / STAGED_EXAMPLES_DIR
+    includes_dst = source_dir / STAGED_EXAMPLE_INCLUDES_DIR
+
+    if examples_dst.exists():
+        shutil.rmtree(str(examples_dst))
+    if includes_dst.exists():
+        shutil.rmtree(str(includes_dst))
+    examples_dst.mkdir(parents=True)
+    includes_dst.mkdir(parents=True)
+
+    for example_dir in sorted(examples_src.iterdir()):
+        if not example_dir.is_dir():
+            continue
+        meta_src = example_dir / 'meta.json'
+        if not meta_src.exists():
+            continue
+
+        meta = readJson(meta_src)
+        if not isinstance(meta, dict):
+            raise ValueError('{0} must contain an object'.format(meta_src))
+        meta['name'] = example_dir.name
+
+        staged_example_dir = examples_dst / example_dir.name
+        staged_example_dir.mkdir(parents=True)
+        for filename in sorted(trackedMetaFiles(meta)):
+            src = example_dir / filename
+            if not src.exists():
+                raise FileNotFoundError(
+                    'Tracked example file not found: {0}'.format(src)
+                )
+            shutil.copy2(str(src), str(staged_example_dir / filename))
+
+        readme_src = example_dir / 'README.md'
+        if readme_src.exists():
+            rewritten = rewriteExampleReadme(
+                readme_src.read_text(encoding='utf-8'),
+                example_dir.name
+            )
+            (includes_dst / '{0}.md'.format(example_dir.name)).write_text(
+                rewritten,
+                encoding='utf-8',
+                newline='\n'
+            )
+
+
+stageExampleAssets()
+
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = u'2.0.0'
+version = PREVABS_VERSION
 # The full version, including alpha/beta/rc tags.
-release = u'2.0.0'
+release = PREVABS_VERSION
 
 
 
@@ -124,7 +287,14 @@ language = 'en'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '_*.rst']
+exclude_patterns = [
+    '_build',
+    'Thumbs.db',
+    '.DS_Store',
+    '_*.rst',
+    '_example_assets',
+    '_example_includes',
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

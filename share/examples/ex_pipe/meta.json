@@ -1,0 +1,21 @@
+{
+  "slug": "example_pipe",
+  "label": "example-pipe",
+  "title": "Pipe",
+  "card_title": "Pipe",
+  "summary": "Pipe cross-section example with straight and arc baselines.",
+  "order": 40,
+  "inputs": [
+    "pipe.xml"
+  ],
+  "outputs": [
+    "pipe.png"
+  ],
+  "doc_images": [
+    "examplepipe0.png",
+    "examplepipe1.png",
+    "examplepipe2.png"
+  ],
+  "preview": "pipe.png",
+  "preview_caption": "Cross-section viewed in Gmsh."
+}

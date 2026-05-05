@@ -1,0 +1,18 @@
+{
+  "slug": "example_box_ii_quad",
+  "label": "example-box-ii-quad",
+  "title": "Box with Quad Mesh",
+  "card_title": "Box with Quad Mesh",
+  "summary": "Box example meshed with quadrilateral elements.",
+  "order": 60,
+  "inputs": [
+    "box_II.xml",
+    "materials.xml"
+  ],
+  "outputs": [
+    "box_II.png"
+  ],
+  "doc_images": [],
+  "preview": "box_II.png",
+  "preview_caption": "Cross-section viewed in Gmsh."
+}

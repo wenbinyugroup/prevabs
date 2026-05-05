@@ -215,7 +215,7 @@ jobs:
           path: prevabs-*-linux-rhel9-x64.tar.gz
 
 # ---------------------------------------------------------------------------
-# Examples – packaged from share/examples/files.json (inputs only)
+# Examples – packaged from per-example meta.json tracked files
 # ---------------------------------------------------------------------------
   package-examples:
     runs-on: ubuntu-latest
@@ -228,21 +228,41 @@ jobs:
           PKG="prevabs-${TAG}-examples"
           python3 - <<'EOF'
           import json, os, shutil, sys
+          from pathlib import Path
 
           pkg = os.environ["PKG"]
-          with open("share/examples/files.json") as f:
-              examples = json.load(f)
+          examples_dir = Path("share") / "examples"
 
-          for ex in examples:
-              name = ex["name"]
-              dst  = os.path.join(pkg, name)
-              os.makedirs(dst, exist_ok=True)
-              for fname in ex["inputs"]:
-                  src = os.path.join("share", "examples", name, fname)
-                  if not os.path.exists(src):
-                      print(f"WARNING: missing input file: {src}", file=sys.stderr)
+          def load_string_list(entry, key):
+              value = entry.get(key, [])
+              if not isinstance(value, list):
+                  raise ValueError(f"{key} must be an array in {entry}")
+              return [str(item).strip() for item in value if str(item).strip()]
+
+          for meta_path in sorted(examples_dir.glob("*/meta.json")):
+              example_dir = meta_path.parent
+              with meta_path.open(encoding="utf-8") as f:
+                  meta = json.load(f)
+
+              tracked = {"README.md", "meta.json"}
+              for key in ("inputs", "outputs", "doc_images"):
+                  tracked.update(load_string_list(meta, key))
+
+              preview = str(meta.get("preview", "")).strip()
+              if preview:
+                  tracked.add(preview)
+
+              dst = Path(pkg) / example_dir.name
+              dst.mkdir(parents=True, exist_ok=True)
+              for name in sorted(tracked):
+                  src = example_dir / name
+                  if not src.exists():
+                      print(
+                          f"WARNING: missing tracked example file: {src}",
+                          file=sys.stderr,
+                      )
                       continue
-                  shutil.copy2(src, os.path.join(dst, fname))
+                  shutil.copy2(src, dst / name)
           EOF
           cp README.md "$PKG/"
           cp LICENSE "$PKG/"

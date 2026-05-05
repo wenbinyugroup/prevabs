@@ -8,6 +8,9 @@ _build/
 share/doc/prevabs/_build/*
 evals/
 local/
+doc/user/source/_example_assets/
+doc/user/source/_example_includes/
+doc/user/source/__pycache__/
 
 settings.local.json
 

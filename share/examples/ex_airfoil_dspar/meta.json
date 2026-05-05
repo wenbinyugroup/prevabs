@@ -1,0 +1,20 @@
+{
+  "slug": "example_airfoil_dspar",
+  "label": "example-airfoil-dspar",
+  "title": "Airfoil with D-Spar",
+  "card_title": "Airfoil with D-Spar",
+  "summary": "Airfoil example with a D-spar internal structure.",
+  "order": 90,
+  "inputs": [
+    "cs_main.xml",
+    "sc1095.dat",
+    "material_database_us_ft.xml"
+  ],
+  "outputs": [
+    "cs_main.png"
+  ],
+  "doc_images": [],
+  "preview": "cs_main.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "6.5in"
+}

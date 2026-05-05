@@ -1,0 +1,26 @@
+{
+  "slug": "example_airfoil",
+  "label": "example-airfoil",
+  "title": "Airfoil (MH-104)",
+  "card_title": "Airfoil (MH-104)",
+  "summary": "Baseline MH-104 airfoil example.",
+  "order": 70,
+  "inputs": [
+    "mh104.xml",
+    "mh104.dat",
+    "materials.xml"
+  ],
+  "outputs": [
+    "mh104.png"
+  ],
+  "doc_images": [
+    "examplemh1040.png",
+    "examplemh1041.png",
+    "examplemh1042.png",
+    "examplemh1043.png",
+    "examplemh104_comparison.png"
+  ],
+  "preview": "mh104.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "6.5in"
+}

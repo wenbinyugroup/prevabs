@@ -1,0 +1,19 @@
+{
+  "slug": "example_box",
+  "label": "example-box-beam",
+  "title": "Box beam",
+  "card_title": "Box beam",
+  "summary": "Closed box-beam example defined directly in the XML input.",
+  "order": 20,
+  "inputs": [
+    "box_cus.xml"
+  ],
+  "outputs": [
+    "box_cus.png"
+  ],
+  "doc_images": [
+    "examplebox0.png"
+  ],
+  "preview": "box_cus.png",
+  "preview_caption": "Cross-section viewed in Gmsh."
+}

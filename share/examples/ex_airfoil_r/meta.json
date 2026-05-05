@@ -1,0 +1,27 @@
+{
+  "slug": "example_airfoil_recover",
+  "label": "example-airfoil-recover",
+  "title": "Airfoil (Recover)",
+  "card_title": "Airfoil (Recover)",
+  "summary": "Dehomogenization workflow built on top of the MH-104 example.",
+  "order": 100,
+  "inputs": [
+    "mh104.xml",
+    "mh104.dat",
+    "materials.xml",
+    "mh104.sg",
+    "mh104.sg.K",
+    "mh104.sg.opt",
+    "mh104.sg.ech"
+  ],
+  "outputs": [
+    "mh104.sg.glb"
+  ],
+  "doc_images": [
+    "examplemh104r.png"
+  ],
+  "preview": "examplemh104r.png",
+  "preview_caption": "Contour plot of recovered nodal stress SN11.",
+  "preview_width": "6in",
+  "run_command": "prevabs -i mh104.xml --dh -e -v"
+}

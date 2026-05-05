@@ -1,0 +1,20 @@
+{
+  "slug": "example_tube",
+  "label": "example-tube",
+  "title": "Circular tube",
+  "card_title": "Circular tube",
+  "summary": "Simple circular tube example with a single layup.",
+  "order": 30,
+  "inputs": [
+    "tube.xml"
+  ],
+  "outputs": [
+    "tube.png"
+  ],
+  "doc_images": [
+    "examplecircle1.png"
+  ],
+  "preview": "tube.png",
+  "preview_caption": "Cross-section viewed in Gmsh.",
+  "preview_width": "4in"
+}
