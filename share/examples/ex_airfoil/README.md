@@ -7,23 +7,20 @@ Baseline MH-104 airfoil example.
 :width: 5.5in
 :align: center
 
-Sketch of a cross section for a typical wind turbine blade [CHEN2010].
+Sketch of a cross-section for a typical wind turbine blade [CHEN2010].
 ```
 
-This example demonstrates the capability of building a cross section
-having an airfoil shape, which is commonly seen on wind turbine blades
-or helicopter rotor blades. This example is also studied in [CHEN2010].
-A sketch of a cross section for a typical wind turbine blade is shown in
-{numref}`fig_mh104_draw`. The airfoil is MH 104
-(http://m-selig.ae.illinois.edu/ads/coord_database.html#M). In this
-example, the chord length $CL=1.9$ m. The origin O is set to the point
-at 1/4 of the chord. Twist angle $\theta$ is $0^\circ$. There are two
-webs, whose right boundaries are at the 20% and 50% location of the
-chord, respectively. Both low pressure and high pressure surfaces have
-four segments. The dividing points between segments are listed in
-{ref}`table_div_pts`. Materials are given in
-{ref}`table_mh104_materials` and layups are given in
-{ref}`table_mh104_layups`.
+This example demonstrates the capability of building a cross-section having an airfoil shape, which is commonly seen on wind turbine blades or helicopter rotor blades.
+This example is also studied in [CHEN2010].
+A sketch of a cross-section for a typical wind turbine blade is shown in {numref}`fig_mh104_draw`.
+The airfoil is [MH 104](https://m-selig.ae.illinois.edu/ads/coord/mh104.dat).
+In this example, the chord length $CL=1.9$ m.
+The origin O is set to the point at 1/4 of the chord.
+Twist angle $\theta$ is $0^\circ$.
+There are two webs, whose right boundaries are at the 16.1% and 51.1% of the chord, respectively.
+Both low pressure and high pressure surfaces have four segments.
+The dividing points between segments are listed in {ref}`table_div_pts`.
+Materials are given in {ref}`table_mh104_materials` and layups are given in {ref}`table_mh104_layups`.
 
 ```{csv-table} Dividing points
 :name: table_div_pts
@@ -86,7 +83,7 @@ four segments. The dividing points between segments are listed in
 :width: 6.5in
 :align: center
 
-*Base point*s of the tube cross section.
+*Base point*s of the tube cross-section.
 ```
 
 ```{figure} examplemh1042.png
@@ -94,7 +91,7 @@ four segments. The dividing points between segments are listed in
 :width: 6.5in
 :align: center
 
-*Base line*s of the tube cross section.
+*Base line*s of the tube cross-section.
 ```
 
 ```{figure} examplemh1043.png
@@ -102,7 +99,7 @@ four segments. The dividing points between segments are listed in
 :width: 6.5in
 :align: center
 
-*Segment*s of the tube cross section.
+*Segment*s of the tube cross-section.
 ```
 
 ---
@@ -126,10 +123,9 @@ prevabs -i mh104.xml --hm
 ## Output
 
 ```{figure} mh104.png
-:width: 4in
 :align: center
 
-Cross section viewed in gmsh.
+Cross-section viewed in gmsh.
 ```
 
 - `mh104.png`
@@ -163,16 +159,12 @@ Cross section viewed in gmsh.
 ```
 
 ```{note}
-The errors between the result and the reference are caused by the
-difference of modeling of the trailing edge. If reduce the trailing edge
-skin to a single thin layer, then the difference between the trailing
-edge shapes is minimized, and the two resulting stiffness matrices are
-basically the same, as shown in {numref}`fig_mh104_comparison`.
+The errors between the result and the reference are caused by the difference of modeling of the trailing edge.
+If reduce the trailing edge skin to a single thin layer, then the difference between the trailing edge shapes is minimized, and the two resulting stiffness matrices are basically the same, as shown in {numref}`fig_mh104_comparison`.
 ```
 
 ```{figure} examplemh104_comparison.png
 :name: fig_mh104_comparison
-:width: 6in
 :align: center
 
 Comparison of stiffness matrices after modifying the trailing edge.

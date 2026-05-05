@@ -366,6 +366,16 @@ html_show_copyright = False
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    'custom.css',
+]
+
+mathjax3_config = {
+    "chtml": {
+        "mtextInheritFont": True
+    }
+}
+
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -398,13 +408,4 @@ latex_documents = [
      author, 'manual'),
 ]
 
-
-# -- Options for extensions ---------------------------------------------
-
-
-myst_enable_extensions = [
-    "colon_fence",
-    "dollarmath",
-    "amsmath"
-]
 
