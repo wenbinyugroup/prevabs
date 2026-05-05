@@ -168,7 +168,8 @@ def render_index(
 
 def write_text(path: Path, text: str) -> None:
     ensure_parent(path)
-    path.write_text(text, encoding="utf-8", newline="\n")
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
 
 
 def main() -> int:

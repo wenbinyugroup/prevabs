@@ -82,6 +82,11 @@ def readJson(path):
     return json.loads(path.read_text(encoding='utf-8'))
 
 
+def writeText(path, content):
+    with path.open('w', encoding='utf-8', newline='\n') as handle:
+        handle.write(content)
+
+
 def loadStringList(entry, key):
     value = entry.get(key, [])
     if not isinstance(value, list):
@@ -183,10 +188,9 @@ def stageExampleAssets():
                 readme_src.read_text(encoding='utf-8'),
                 example_dir.name
             )
-            (includes_dst / '{0}.md'.format(example_dir.name)).write_text(
-                rewritten,
-                encoding='utf-8',
-                newline='\n'
+            writeText(
+                includes_dst / '{0}.md'.format(example_dir.name),
+                rewritten
             )
 
 
