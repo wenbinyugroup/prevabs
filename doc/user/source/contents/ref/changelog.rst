@@ -1,6 +1,88 @@
 Change log
 ==========
 
+**VERSION 2.0**
+
+- 2.0.0 (2026/05)
+
+  - **Logging**: Replaced Boost dependency with spdlog; migrated all
+    messages to a structured ``plog`` system; split user-facing and
+    developer log streams; added a write guard for log initialization.
+  - **CLI**: Added ``--nopopup`` argument to suppress the Gmsh popup
+    window; added ``--gmsh-verbosity`` to control Gmsh log noise; the
+    analysis-mode flags are now long-form (``--hm``, ``--dh``, ``--fi``,
+    ``--fs``, ``--fe``); the solver flags became ``--vabs`` /
+    ``--sc`` and the integrated solver toggle is ``--integrated``.
+  - **Geometry**: Refactored core geometry classes (``PDCELVertex``,
+    baseline, segment, offset, join); rewrote the DCEL (doubly connected
+    edge list) module; refactored build-segment-area and join-segments
+    logic.
+  - **IO**: Refactored input/output module; added exception handling and
+    loop guard for malformed input; fixed parsing of multiple numbers
+    separated by multiple spaces; fixed parsing of ``p1``, ``p2``, ``p3``
+    fields; ``type="lamina"`` is no longer accepted as a material
+    symmetry type — use ``type="transversely isotropic"`` instead;
+    ``<lamina>`` is now used only for material+thickness definitions;
+    fixed the layups include block.
+  - **Elements**: Added support for quadrilateral element type via
+    ``<element_shape>`` and the associated transfinite/recombine
+    controls.
+  - **Bug fixes**: Fixed point placement on airfoil line; fixed 2-cell
+    construction for box cross-sections; fixed MH104 cross-section build;
+    fixed ``i_web`` component build; fixed build-component logic; fixed
+    geo/offset/intersect calculations; fixed build warnings.
+  - **Build**: Added Ninja generator support; added Linux bash script
+    for integration tests; fixed Linux build scripts; added Python
+    environment for documentation.
+  - **Testing**: Added Catch2 unit tests for geometry and IO modules;
+    updated and expanded integration test cases.
+  - **License**: Added license file.
+
+
+**VERSION 1.6**
+
+- 1.6.0 (2024/11)
+
+  - Added a new output file after creating the cross-section to store the
+    mapping between material IDs and names.
+  - Changed the gmsh linking to the shared library from the SDK.
+  - Fixed the issue of being unable to run PreVABS without the VABS dll.
+  - Fixed the issue of not reading airfoil data properly on Linux.
+  - Fixed the issue of not skipping header rows of airfoil data.
+  - Fixed the issue of not being able to run the input without the
+    ``include`` block.
+
+
+**VERSION 1.5**
+
+- 1.5.1 (2022/10/27)
+
+  - Fixed the issue of reading result of failure analysis of the new
+    format with an extra line of load case label.
+  - Added a new tag name for the root XML element: ``sg``.
+  - Added a new input for output model dimension (for SwiftComp only).
+  - Updated the writing function for 3D solid model (for SwiftComp only).
+  - Changed the Gmsh plot option for strength ratios.
+
+- 1.5.0 (2022/06/05)
+
+  - Added a new type of line ``airfoil``, which can accept the file name
+    of a standard airfoil data file.
+  - Added new arguments for points defined on an airfoil line
+    (``which="top"`` / ``which="bottom"``).
+  - Added a new function to remove very short edges and very close
+    vertices.
+  - Added a new input of length tolerance for edge removal.
+  - Added a new input for multiple loading cases for dehomogenization
+    and failure analysis (``<case>`` and ``<include>``).
+  - Added a new method to define an arc using two end points and a
+    radius (or curvature).
+  - Added a new method to define a line by joining multiple lines
+    (``method="join"``).
+  - Set the default line type to ``straight``, which can be omitted now.
+  - Fixed the issue of overlapping/duplicated mesh vertices.
+
+
 **VERSION 1.4**
 
 - 1.4.3 (2022/01/11)
@@ -70,8 +152,8 @@ Change log
 
 **VERSION 1.0** (2019/07/01)
 
-* Added capability to create quadratic triangle elements. In the main input file, under the xml element `<general>`, create a sub element `<element_type>` and set it to `quadratic` or `2`. Default is `linear`.
-* Added a new output file `*.txt` storing all running messages.
+* Added capability to create quadratic triangle elements. In the main input file, under the xml element ``<general>``, create a sub element ``<element_type>`` and set it to ``quadratic`` or ``2``. Default is ``linear``.
+* Added a new output file ``*.txt`` storing all running messages.
 * Changed one of the layup methods tag name from 'explict list' ('el') to 'layer list' ('ll').
 * Fixed the crashing issue caused by zero number of layers.
 * Fixed the bug that sectional loads were read and written to the distributed loads when doing recovery using VABS.
@@ -82,7 +164,7 @@ Change log
 
 * Added xml elements in the main input file for various options of VABS/SwiftComp execution.
 * Added xml elements in the main input file for failure analysis of SwiftComp.
-* Added a `<basepoints>` element in the baseline file. Now for simple shapes, users do not need to use an extra basepoint file, which can still be included for long point list.
+* Added a ``<basepoints>`` element in the baseline file. Now for simple shapes, users do not need to use an extra basepoint file, which can still be included for long point list.
 * Added a material database file along with the executable. Now PreVABS will look for materials in this file by default.
 * Changed Gmsh library to dynamic/shared library.
 
@@ -97,18 +179,17 @@ Change log
 
 * Added the capability to read stacking sequence code.
 * Added the parameter to set the number of straight lines to approximate an arc or circle.
-* Changed the Gmsh input file name to `*.msh`, where `*` is the cross section name.
+* Changed the Gmsh input file name to ``*.msh``, where ``*`` is the cross section name.
 
 
 **VERSION 0.3** (2017/11/27)
 
 * Updated the manual.
 * Changed the default behaviour of the command with input file specified only to preparing VABS input (without running VABS).
-* Changed the element tag `<origin>` to `<translate>`. Now the two numbers in this element moves base points and base lines, instead of the origin.
-* Changed the element tag `<rotation>` to `<rotate>`.
+* Changed the element tag ``<origin>`` to ``<translate>``. Now the two numbers in this element moves base points and base lines, instead of the origin.
+* Changed the element tag ``<rotation>`` to ``<rotate>``.
 * Changed the 'level' of a segment from an element to an attribute, with default 1.
 * Changed the 'layup_direction' of a segment from an element to an attribute of the layup, with default 'right'.
 * Changed the material type 'engineering constants' to 'orthotropic'.
 * Set the default element type as 'quadratic'.
 * Set the default mesh size to the smallest layer thickness.
-

@@ -122,7 +122,7 @@ For this tutorial, all files can have arbitrary file names and be placed at any 
 
 Another option is to use a local file in the working directory with an arbitrary name storing the material properties.
 The requirement of using this local file is to explicitly provide the material file name in the main input file.
-Please check Section: :ref:`section-overall`.
+Please check Section: :ref:`other-input-settings`.
 
 Prepare geometric elements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -183,26 +183,24 @@ The completed input file for geometry is shown in
   :caption: Input file for geometric elements (*baseline.xml*).
 
   <baselines>
-    <basepoints>
-      <point name="p0">0  0</point>
-      <point name="p1">2  1</point>
-      <point name="p2">-2  1</point>
-      <point name="p3">-2  -1</point>
-      <point name="p4">2  -1</point>
-      <point name="p5">1  0</point>
-      <point name="p6">-1  0</point>
-    </basepoints>
-    <baseline name="line1" type="straight">
+    <point name="p0">0  0</point>
+    <point name="p1">2  1</point>
+    <point name="p2">-2  1</point>
+    <point name="p3">-2  -1</point>
+    <point name="p4">2  -1</point>
+    <point name="p5">1  0</point>
+    <point name="p6">-1  0</point>
+    <line name="line1" type="straight">
       <points>p1,p2,p3,p4,p1</points>
-    </baseline>
-    <baseline name="line2" type="straight">
+    </line>
+    <line name="line2" type="straight">
       <point>p5</point>
       <angle>100</angle>
-    </baseline>
-    <baseline name="line3" type="straight">
+    </line>
+    <line name="line3" type="straight">
       <point>p6</point>
       <angle>80</angle>
-    </baseline>
+    </line>
   </baselines>
 
 Prepare materials and layups

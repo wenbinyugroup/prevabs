@@ -36,8 +36,11 @@ Input
 Running
 
 ```
-prevabs -i mh104.xml --dh
+prevabs -i mh104.xml --dh -e -v
 ```
+
+`--dh` writes the global-load auxiliary file used by VABS for recovery, `-e` executes the recovery analysis, and `-v` opens Gmsh to display the recovered fields.
+To only generate the auxiliary file without executing or plotting, drop the `-e -v` flags.
 
 Output
 

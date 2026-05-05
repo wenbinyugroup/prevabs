@@ -11,8 +11,8 @@
 
 ## XML Schema
 
-The XML schema for PreVABS input files is available at :download:`prevabs.xsd <schemas/prevabs.xsd>`. 
-This schema defines the structure and constraints for:
+A starter XML schema for PreVABS input files is shipped at
+[prevabs.xsd](prevabs.xsd). It captures the broad structure of:
 
 - Cross-section definition
 - Material properties
@@ -25,9 +25,12 @@ You can use this schema to validate your input files using any XML validator. Fo
 xmllint --schema prevabs.xsd your_input.xml --noout
 ```
 
-The schema provides validation for:
-
-- Required and optional elements
-- Valid element types and attributes
-- Allowed values for enumerations
-- Proper nesting of elements
+> [!WARNING]
+> The bundled XSD currently lags behind the parser in a few places — for
+> example it does not yet describe `type="airfoil"` lines, the new
+> `<element_shape>`/transfinite controls in `<general>`, the unified
+> recovery `<global>` block, the `transversely isotropic` material symmetry
+> class, or the `method="join"` line composition. The
+> [Input Guide](../guide/index.md) is the authoritative reference; the
+> schema is convenient for catching common mistakes but should not be
+> treated as exhaustive.

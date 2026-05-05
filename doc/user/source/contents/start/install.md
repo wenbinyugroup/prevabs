@@ -1,19 +1,21 @@
 (section-install)=
 # Download and Installation
 
+Download: <https://github.com/wenbinyugroup/prevabs/releases>
+
 ## Prerequisites
 
-Download and install VABS 4.0 (with valid license).
+Download and install VABS (with valid license) if you intend to run VABS analyses.
 In the instructions below, `VABS_DIR` refers to the path to the VABS executable.
 VABS manual can be found and downloaded here {cite}`vabs`.
 
-Download and install Gmsh (http://gmsh.info/) following the official instructions.
-In the instructions below, `GMSH_DIR` refers to the path to the Gmsh executable.
+PreVABS itself does not require Gmsh to be installed separately — its meshing capabilities are provided by the Gmsh library which is bundled with the PreVABS distribution.
+Installing the standalone Gmsh GUI from <https://gmsh.info/> is still recommended if you want to inspect generated `.geo_unrolled` / `.msh` files outside of the PreVABS workflow.
+In the instructions below, `GMSH_DIR` refers to the path to the Gmsh executable (only needed if you install Gmsh separately).
 
 ## Install binary
 
-Download PreVABS binary from [cdmHUB](https://cdmhub.org/resources/1597/supportingdocs).
-Unpack the package to any location.
+Obtain a PreVABS release archive (or build from source — see the project README) and unpack it to any location.
 In the instructions below, `PREVABS_DIR` refers to the path to the PreVABS executable;
 
 Add those paths to executables to the system environment variable `PATH`;

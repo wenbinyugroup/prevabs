@@ -10,45 +10,44 @@ The material aspect includes material properties, lamina thicknesses, layup stac
 The global configuration contains the files included, transformation, meshing options, and analysis settings.
 
 
-To create the cross section, at least four input files are needed.
-Definitions of the geometry, materials and layups are stored in three files separately.
-A top level cross section file stores the definitions of components and global configurations.
-In some cases, a separate file storing base points is needed (such as an airfoil).
-Except the base points file, which has a file extension .dat, all other files use an XML format.
+A complete cross-section model can be defined entirely inside a single top-level XML file.
+Geometry, material and layup definitions can also be stored in separate XML files (or, for airfoil and large point lists, plain `.dat` files) and referenced from the main file via an `<include>` block.
 
-A top level cross section file stores all information that will be discussed in the following sections.
-The input syntax for this main file is:
+The top-level XML element is `<cross_section>` (the legacy alias `<sg>` is also accepted).
+The input syntax is:
+
 ```xml
 <cross_section name="" format="">
   <include>...</include>
   <analysis>...</analysis>
   <general>...</general>
   <baselines>...</baselines>
+  <materials>...</materials>
   <layups>...</layups>
   <component>...</component>
   <component>...</component>
   ...
+  <global>...</global>
 </cross_section>
 ```
 
-Data of geometry and layup can be arranged in two ways, controlled by the attribute `format`:
-
-* If omitted or set to 0, then the code will look for definitions of shapes and layups in separated files, specified in the element `<include>`.
-* If set to 1, then the code will look for the definitions in the current main input file.
+The `format` attribute is retained for backward compatibility.
+In the current version each top-level block (`<baselines>`, `<materials>`, `<layups>`) can be either embedded directly in the main file or referenced through `<include>` independently — the value of `format` no longer controls the location exclusively.
 
 **Specification**
 
-- `<cross_section>`
-  - `name` - Name of the cross-section.
-  - `format` - Format of the input file. See explaination above.
+- `<cross_section>` (or `<sg>`)
+  - `name` - Name of the cross-section. Required.
+  - `format` - Format of the input file (legacy attribute). Optional.
 
-- `<include>` - File names of separately stored data.
+- `<include>` - File names of separately stored data (baselines, materials, layups).
 - `<analysis>` - Configurations of cross-sectional analysis.
-- `<general>` - Overall settings of the cross-section.
-- `<baselines>` - Definitions of geometry and shape.
+- `<general>` - Overall settings of the cross-section. Required.
+- `<baselines>` - Definitions of geometry (points and lines).
+- `<materials>` - Definitions of materials and laminae (when defined inline).
 - `<layups>` - Definitions of layups.
-- `<component>` - Definitions of cross-sectional components.
-- `<recover>` - Inputs for recovery.
+- `<component>` - Definitions of cross-sectional components. At least one is required.
+- `<global>` - Global beam analysis results used for recovery / failure analysis.
 
 
 

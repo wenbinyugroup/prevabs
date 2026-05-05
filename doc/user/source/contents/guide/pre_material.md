@@ -12,7 +12,7 @@ This relationship is illustrated as:
 
 ## Material
 
-Both materials and laminae are stored in one XML file, under the single root element `<materials>`.
+Both materials and laminae are stored in one XML file (or directly in the main cross-section file under a `<materials>` block).
 Each material must have a name and type. Under each `<material>` element, there are a `<density>` element and an `<elastic>` element.
 If failure analysis is wanted, users need to provide extra data including `<strength>` and `<failure_criterion>`.
 
@@ -36,11 +36,18 @@ A template of this file is shown below:
 - `<material>` - Root element for each material.
 
   - `name` - Name of the material.
-  - `type` - Type of the material. Choose one from 'isotropic', 'orthotropic', 'anisotropic' and 'lamina'.
-  - `<density>` - Density of the material. Defualt is 1.0.
+  - `type` - Material symmetry class. Choose one from `isotropic`,
+    `transversely isotropic`, `orthotropic` (alias `engineering`), and
+    `anisotropic`.
+  - `<density>` - Density of the material. Default is 1.0.
   - `<elastic>` - Elastic properties of the material. Specifications are different for different types.
   - `<strength>` - Strength properties of the material. Specifications are different for different types and different failure criterion.
   - `<failure_criterion>` - Failure criterion of the material. Options are different for different types.
+
+> [!NOTE]
+> `type="lamina"` is no longer accepted as a material symmetry type.
+> Use `type="transversely isotropic"` for a material with transverse isotropy (the four engineering constants $E_1$, $E_2$, $\nu_{12}$, $G_{12}$ are required, the rest are derived as described below).
+> The `<lamina>` element is now used **only** to bind a material to a thickness, see the [Lamina](#lamina) section.
 
 
 
@@ -56,12 +63,13 @@ A template of this file is shown below:
     </elastic>
   </material>
 
-  <material name="lam1" type="lamina">
+  <material name="lam1" type="transversely isotropic">
     <elastic>
       <e1>...</e1>
       <e2>...</e2>
       <nu12>...</nu12>
       <g12>...</g12>
+      <!-- e3, nu13, nu23, g13, g23 are optional; defaults are derived -->
     </elastic>
   </material>
 
@@ -108,20 +116,26 @@ A template of this file is shown below:
 </materials>
 ```
 
-For the `lamina` type material, the code will internally convert it to the `orthotropic` type, by assigning the rest five constants in the following way:
+For the `transversely isotropic` material, the code internally fills the
+remaining five orthotropic constants as follows when they are not provided
+explicitly:
 
-- e3 = e2
-- nu13 = nu12
-- nu23 = 0.3
-- g13 = g12
-- g23 = e2 / ( 2 * (1 + nu23) )
+- `e3   = e2`
+- `nu13 = nu12`
+- `nu23 = 0.3` (arbitrary fallback — supply it explicitly for accuracy)
+- `g13  = g12`
+- `g23  = e3 / (2 * (1 + nu23))`
 
 **Specification**
 
-- If `type="isotropic"` - 2 constants: 'e' and 'nu'.
-- If `type="lamina"` - 4 constants: 'e1', 'e2', 'g12' and 'nu12'. Internally, this type of material will be converted to the 'orthotropic' material. The default values for the rest components are: 'e3=e2', 'nu13=nu12', 'nu23=0.3', 'g13=g12' and 'g23=e3/(2*(1+nu23))'. These default values can be overwritten by custom values.
-- If `type="orthotropic"` - 9 constants: 'e1', 'e2', 'e3', 'g12', 'g13', 'g23', 'nu12', 'nu13' and 'nu23'.
-- If `type="anisotropic"` - 21 constants: 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c22', 'c23', 'c24', 'c25', 'c26', 'c33', 'c34', 'c35', 'c36', 'c44', 'c45', 'c46', 'c55', 'c56' and 'c66'. These constants are defined as:
+- If `type="isotropic"` - 2 constants: `e` and `nu`.
+- If `type="transversely isotropic"` - 4 required constants: `e1`, `e2`,
+  `g12`, `nu12`. Internally converted to an orthotropic material. Optional
+  overrides for `e3`, `nu13`, `nu23`, `g13`, `g23` are accepted; defaults
+  are listed above.
+- If `type="orthotropic"` (alias `engineering`) - 9 constants: `e1`, `e2`,
+  `e3`, `g12`, `g13`, `g23`, `nu12`, `nu13`, `nu23`.
+- If `type="anisotropic"` - 21 constants: `c11`, `c12`, `c13`, `c14`, `c15`, `c16`, `c22`, `c23`, `c24`, `c25`, `c26`, `c33`, `c34`, `c35`, `c36`, `c44`, `c45`, `c46`, `c55`, `c56`, `c66`. These constants are defined as:
 
 $$
 \begin{Bmatrix}
@@ -210,7 +224,7 @@ For isotropic materials, the following five failure criteria are available, foll
 
    - 1 strength ($X$).
 
-For other type materials (lamina, orthotropic, anisotropic), the following five failure criteria are available:
+For other type materials (transversely isotropic, orthotropic / engineering, anisotropic), the following five failure criteria are available:
 
 1. **Max stress**. Strength constants (9):
 
@@ -273,7 +287,7 @@ More details can be found in the VABS users manual.
     - `4` or `max shear strain`
     - `5` or `mises`
 
-  - If `type="lamina"` or `type="orthotropic"` or `type="anisotropic"`, choose one of the following:
+  - If `type="transversely isotropic"`, `type="orthotropic"` (or `engineering`), or `type="anisotropic"`, choose one of the following:
 
     - `1` or `max stress`
     - `2` or `max strain`

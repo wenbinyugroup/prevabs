@@ -6,6 +6,13 @@ on:
       tag:
         description: 'Release tag (e.g. v2.0.0)'
         required: true
+      package_scope:
+        description: 'What to publish'
+        type: choice
+        options:
+          - full
+          - examples-only
+        default: full
       prerelease:
         description: 'Mark as pre-release'
         type: boolean
@@ -19,6 +26,7 @@ env:
 # ---------------------------------------------------------------------------
 jobs:
   build-windows:
+    if: ${{ inputs.package_scope == 'full' }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,6 +101,7 @@ jobs:
 # Linux – Ubuntu/Debian (x64)
 # ---------------------------------------------------------------------------
   build-ubuntu:
+    if: ${{ inputs.package_scope == 'full' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -151,6 +160,7 @@ jobs:
 # Linux – RHEL/CentOS (Rocky Linux 9 container)
 # ---------------------------------------------------------------------------
   build-rhel:
+    if: ${{ inputs.package_scope == 'full' }}
     runs-on: ubuntu-latest
     container: rockylinux:9
     steps:
@@ -248,7 +258,8 @@ jobs:
 # ---------------------------------------------------------------------------
 # Create GitHub Release
 # ---------------------------------------------------------------------------
-  release:
+  release-full:
+    if: ${{ inputs.package_scope == 'full' }}
     needs: [build-windows, build-ubuntu, build-rhel, package-examples]
     runs-on: ubuntu-latest
     permissions:
@@ -263,12 +274,80 @@ jobs:
           path: artifacts/
 
       - name: Extract release notes from CHANGELOG
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
-          awk '/^## Version 2\.0/,/^## Version [0-9]/' CHANGELOG.md \
-            | head -n -1 > release_notes.md
+          python3 - <<'EOF'
+          import os
+          import re
+          import sys
+
+          tag = os.environ["TAG"].strip()
+          version = tag[1:] if tag.startswith("v") else tag
+          mm = ".".join(version.split(".")[:2])
+
+          with open("CHANGELOG.md", encoding="utf-8") as f:
+              lines = f.readlines()
+
+          def is_heading(line):
+              return line.startswith("## ")
+
+          def collect(start, stop_pred):
+              out = []
+              for i in range(start, len(lines)):
+                  line = lines[i]
+                  if i > start and stop_pred(line):
+                      break
+                  out.append(line)
+              return "".join(out).strip()
+
+          exact_entry = re.compile(
+              rf"^- {re.escape(version)}(?:\s*\(.*\))?\s*$"
+          )
+          exact_heading = re.compile(
+              rf"^## Version {re.escape(version)}(?:\s*\(.*\))?\s*$"
+          )
+          minor_heading = re.compile(
+              rf"^## Version {re.escape(mm)}(?:\s*\(.*\))?\s*$"
+          )
+          any_entry = re.compile(r"^- \d+\.\d+(?:\.\d+)?(?:\s*\(.*\))?\s*$")
+
+          notes = ""
+
+          for i, line in enumerate(lines):
+              if exact_entry.match(line.strip()):
+                  notes = collect(
+                      i,
+                      lambda s: is_heading(s) or any_entry.match(s.strip())
+                  )
+                  break
+
+          if not notes:
+              for i, line in enumerate(lines):
+                  if exact_heading.match(line.strip()):
+                      notes = collect(i, is_heading)
+                      break
+
+          if not notes:
+              for i, line in enumerate(lines):
+                  if minor_heading.match(line.strip()):
+                      notes = collect(i, is_heading)
+                      break
+
+          if not notes:
+              print(
+                  f"Could not find release notes for tag '{tag}' in "
+                  f"CHANGELOG.md",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          with open("release_notes.md", "w", encoding="utf-8") as f:
+              f.write(notes + "\n")
+          EOF
           cat release_notes.md
 
-      - name: Create GitHub Release
+      - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -277,9 +356,121 @@ jobs:
           if [ "${{ inputs.prerelease }}" = "true" ]; then
             PRERELEASE_FLAG="--prerelease"
           fi
-          gh release create "$TAG" \
-            --title "PreVABS $TAG" \
-            --notes-file release_notes.md \
-            $PRERELEASE_FLAG \
-            artifacts/*.zip \
-            artifacts/*.tar.gz
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" artifacts/*.zip artifacts/*.tar.gz \
+              --clobber
+          else
+            gh release create "$TAG" \
+              --title "PreVABS $TAG" \
+              --notes-file release_notes.md \
+              $PRERELEASE_FLAG \
+              artifacts/*.zip \
+              artifacts/*.tar.gz
+          fi
+
+  release-examples:
+    if: ${{ inputs.package_scope == 'examples-only' }}
+    needs: [package-examples]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download examples artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: examples-package
+          path: artifacts/
+
+      - uses: actions/checkout@v4
+
+      - name: Extract release notes from CHANGELOG
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          python3 - <<'EOF'
+          import os
+          import re
+          import sys
+
+          tag = os.environ["TAG"].strip()
+          version = tag[1:] if tag.startswith("v") else tag
+          mm = ".".join(version.split(".")[:2])
+
+          with open("CHANGELOG.md", encoding="utf-8") as f:
+              lines = f.readlines()
+
+          def is_heading(line):
+              return line.startswith("## ")
+
+          def collect(start, stop_pred):
+              out = []
+              for i in range(start, len(lines)):
+                  line = lines[i]
+                  if i > start and stop_pred(line):
+                      break
+                  out.append(line)
+              return "".join(out).strip()
+
+          exact_entry = re.compile(
+              rf"^- {re.escape(version)}(?:\s*\(.*\))?\s*$"
+          )
+          exact_heading = re.compile(
+              rf"^## Version {re.escape(version)}(?:\s*\(.*\))?\s*$"
+          )
+          minor_heading = re.compile(
+              rf"^## Version {re.escape(mm)}(?:\s*\(.*\))?\s*$"
+          )
+          any_entry = re.compile(r"^- \d+\.\d+(?:\.\d+)?(?:\s*\(.*\))?\s*$")
+
+          notes = ""
+
+          for i, line in enumerate(lines):
+              if exact_entry.match(line.strip()):
+                  notes = collect(
+                      i,
+                      lambda s: is_heading(s) or any_entry.match(s.strip())
+                  )
+                  break
+
+          if not notes:
+              for i, line in enumerate(lines):
+                  if exact_heading.match(line.strip()):
+                      notes = collect(i, is_heading)
+                      break
+
+          if not notes:
+              for i, line in enumerate(lines):
+                  if minor_heading.match(line.strip()):
+                      notes = collect(i, is_heading)
+                      break
+
+          if not notes:
+              print(
+                  f"Could not find release notes for tag '{tag}' in "
+                  f"CHANGELOG.md",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          with open("release_notes.md", "w", encoding="utf-8") as f:
+              f.write(notes + "\n")
+          EOF
+
+      - name: Create or update GitHub Release with examples
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ inputs.tag }}"
+          PRERELEASE_FLAG=""
+          if [ "${{ inputs.prerelease }}" = "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" artifacts/*.zip --clobber
+          else
+            gh release create "$TAG" \
+              --title "PreVABS $TAG" \
+              --notes-file release_notes.md \
+              $PRERELEASE_FLAG \
+              artifacts/*.zip
+          fi
