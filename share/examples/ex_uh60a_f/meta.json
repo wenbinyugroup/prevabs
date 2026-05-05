@@ -15,13 +15,12 @@
     "uh60a.sg.ech"
   ],
   "outputs": [
-    "uh60a.sg.fi"
+    "uh60a_fi.png"
   ],
   "doc_images": [
-    "ex-uh60a_fi_fail_2.png",
-    "ex-uh60a_fi_fail_2_zoomin.png"
+    "uh60a_fi.png"
   ],
-  "preview": "ex-uh60a_fi_fail_2.png",
+  "preview": "uh60a_fi.png",
   "preview_caption": "Contour plot of strength ratio.",
   "preview_width": "6in",
   "run_command": "prevabs -i uh60a.xml --fi -e -v"

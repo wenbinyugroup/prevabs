@@ -32,6 +32,7 @@ example_airfoil_multi-cells
 Channel
 :::
 
+
 :::{grid-item-card}
 :link: example-box-beam
 :link-type: ref
@@ -40,6 +41,7 @@ Channel
 +++
 Box beam
 :::
+
 
 :::{grid-item-card}
 :link: example-tube
@@ -50,6 +52,7 @@ Box beam
 Circular tube
 :::
 
+
 :::{grid-item-card}
 :link: example-pipe
 :link-type: ref
@@ -58,6 +61,7 @@ Circular tube
 +++
 Pipe
 :::
+
 
 :::{grid-item-card}
 :link: example-i-beam
@@ -68,6 +72,7 @@ Pipe
 I-beam
 :::
 
+
 :::{grid-item-card}
 :link: example-box-ii-quad
 :link-type: ref
@@ -76,6 +81,7 @@ I-beam
 +++
 Box with Quad Mesh
 :::
+
 
 :::{grid-item-card}
 :link: example-airfoil
@@ -86,6 +92,7 @@ Box with Quad Mesh
 Airfoil (MH-104)
 :::
 
+
 :::{grid-item-card}
 :link: example-airfoil-cspar
 :link-type: ref
@@ -94,6 +101,7 @@ Airfoil (MH-104)
 +++
 Airfoil with C-Spar
 :::
+
 
 :::{grid-item-card}
 :link: example-airfoil-dspar
@@ -104,14 +112,16 @@ Airfoil with C-Spar
 Airfoil with D-Spar
 :::
 
+
 :::{grid-item-card}
 :link: example-airfoil-recover
 :link-type: ref
-:img-top: ../../_example_assets/ex_airfoil_r/examplemh104r.png
+:img-top: ../../_example_assets/ex_airfoil_r/mh104_s_m.png
 
 +++
 Airfoil (Recover)
 :::
+
 
 :::{grid-item-card}
 :link: example-uh60a
@@ -122,14 +132,16 @@ Airfoil (Recover)
 UH-60A
 :::
 
+
 :::{grid-item-card}
 :link: example-uh60a-fi
 :link-type: ref
-:img-top: ../../_example_assets/ex_uh60a_f/ex-uh60a_fi_fail_2.png
+:img-top: ../../_example_assets/ex_uh60a_f/uh60a_fi.png
 
 +++
 UH-60A (Initial Failure)
 :::
+
 
 :::{grid-item-card}
 :link: example-airfoil-multi-cells
@@ -139,5 +151,6 @@ UH-60A (Initial Failure)
 +++
 Airfoil with Multiple Cells
 :::
+
 
 ::::

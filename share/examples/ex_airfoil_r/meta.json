@@ -15,12 +15,12 @@
     "mh104.sg.ech"
   ],
   "outputs": [
-    "mh104.sg.glb"
+    "mh104_s_m.png"
   ],
   "doc_images": [
-    "examplemh104r.png"
+    "mh104_s_m.png"
   ],
-  "preview": "examplemh104r.png",
+  "preview": "mh104_s_m.png",
   "preview_caption": "Contour plot of recovered nodal stress SN11.",
   "preview_width": "6in",
   "run_command": "prevabs -i mh104.xml --dh -e -v"

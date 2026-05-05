@@ -2,14 +2,10 @@ Dehomogenization workflow built on top of the MH-104 example.
 
 ## Overview
 
-This example continues from the previous one to demonstrate the
-dehomogenization analysis. It is assumed that a 1D beam analysis has
-been finished, and data of global deformations and loads have been added
-to the main input file correctly ({ref}`See the recover section
-<section-recover>`). Suppose that the results in
-{ref}`table_mh104_1dresults` are used and default values are kept for
-others. All files generated from the VABS homogenization analysis are
-kept in the same place as input files.
+This example continues from the previous one to demonstrate the dehomogenization analysis.
+It is assumed that a 1D beam analysis has been finished, and data of global deformations and loads have been added to the main input file correctly ({ref}`See the recover section <section-recover>`).
+Suppose that the results in {ref}`table_mh104_1dresults` are used and default values are kept for others.
+All files generated from the VABS homogenization analysis are kept in the same place as input files.
 
 ```{csv-table} Sectional forces and moments
 :name: table_mh104_1dresults
@@ -27,10 +23,8 @@ Quantity, Value
 
 ## Output note
 
-`--dh` writes the global-load auxiliary file used by VABS for recovery,
-`-e` executes the recovery analysis, and `-v` opens Gmsh to display the
-recovered fields. To only generate the auxiliary file without executing
-or plotting, drop the `-e -v` flags.
+`--dh` writes the global-load auxiliary file used by VABS for recovery, `-e` executes the recovery analysis, and `-v` opens Gmsh to display the recovered fields.
+To only generate the auxiliary file without executing or plotting, drop the `-e -v` flags.
 
 The key additional output is `mh104.sg.glb`.
 
@@ -58,4 +52,15 @@ prevabs -i mh104.xml --dh -e -v
 
 ## Output
 
+```{figure} mh104_s_m.png
+:width: 4in
+:align: center
+
+Cross section viewed in gmsh.
+```
+
 - `mh104.sg.glb`
+- `mh104.sg.U`
+- `mh104.sg.ELE`
+- `mh104_local_case_1.msh`
+- `mh104_local.opt`
