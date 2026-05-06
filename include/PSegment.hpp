@@ -130,6 +130,8 @@ public:
   BaseOffsetMap &baseOffsetIndicesPairs() { return _base_offset_indices_pairs; }
 
   PDCELFace *face() { return _face; }
+  std::size_t areaCount() const { return _areas.size(); }
+  std::size_t layerCount() const;
 
   // Material orientation selectors consumed during area construction.
   // Typical values are:

@@ -131,4 +131,22 @@ void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
            small_edges.begin(); it != small_edges.end(); ++it) {
     dcel.removeEdge(*it);
   }
+
+  std::vector<PDCELVertex *> orphan_vertices;
+  for (PDCELVertex *vertex : dcel.vertices()) {
+    if (vertex->edge() == nullptr) {
+      orphan_vertices.push_back(vertex);
+    }
+  }
+
+  for (PDCELVertex *vertex : orphan_vertices) {
+    dcel.removeVertex(vertex);
+  }
+
+  PLOG(info) << "fixed geometry: removed "
+             << small_edges.size() << " degenerate edges, "
+             << orphan_vertices.size() << " orphan verts; final dcel: "
+             << dcel.vertices().size() << " verts / "
+             << (dcel.halfedges().size() / 2) << " edges / "
+             << dcel.faces().size() << " faces";
 }

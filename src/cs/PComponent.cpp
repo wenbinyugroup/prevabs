@@ -167,6 +167,21 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
   }
 
+  std::size_t component_faces = 0;
+  for (Segment *segment : _laminate.segments) {
+    if (segment->face() != nullptr) {
+      ++component_faces;
+    }
+  }
+  if (_type == ComponentType::fill && _filling.face != nullptr) {
+    component_faces = 1;
+  }
+
+  PLOG(info) << "built component " << _name
+             << ": " << _laminate.segments.size() << " segments, "
+             << component_faces << " faces, "
+             << (bcfg.dcel->halfedges().size() / 2) << " dcel edges";
+
   // i_indent--;
 
 }
@@ -202,6 +217,17 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
     sgm->buildAreas(bcfg);
 
   }
+
+  std::size_t total_areas = 0;
+  std::size_t total_layers = 0;
+  for (Segment *segment : _laminate.segments) {
+    total_areas += segment->areaCount();
+    total_layers += segment->layerCount();
+  }
+
+  PLOG(info) << "built details for " << _name
+             << ": " << total_areas << " areas, "
+             << total_layers << " layers";
 }
 
 

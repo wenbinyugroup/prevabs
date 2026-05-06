@@ -150,6 +150,29 @@ void logMissingHalfEdgeBetween(
           + segment_name + "'");
 }
 
+std::size_t countLoopSteps(PDCELHalfEdge *start) {
+  if (start == nullptr) {
+    return 0;
+  }
+
+  std::size_t count = 0;
+  PDCELHalfEdge *he = start;
+  do {
+    if (he == nullptr) {
+      throw std::runtime_error("countLoopSteps: encountered nullptr half-edge");
+    }
+    if (count >= static_cast<std::size_t>(kDCELLoopHardCap)) {
+      throw std::runtime_error(
+          "countLoopSteps: DCEL loop exceeded "
+          + std::to_string(kDCELLoopHardCap) + " iterations");
+    }
+    ++count;
+    he = he->next();
+  } while (he != start);
+
+  return count;
+}
+
 } // namespace
 
 std::ostream &operator<<(std::ostream &out, Segment *s) {
@@ -498,6 +521,14 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
   _next_bound_vertices = vertices;
 }
 
+std::size_t Segment::layerCount() const {
+  std::size_t count = 0;
+  for (const auto &area : _areas) {
+    count += area->faces().size();
+  }
+  return count;
+}
+
 void Segment::offsetCurveBase() {
   if (!requireBaseDefinition("offsetCurveBase")) {
     return;
@@ -621,4 +652,10 @@ void Segment::build(const BuilderConfig &bcfg) {
   hel->setFace(_face);
   _state = LifecycleState::ShellBuilt;
   validateStateInvariants("build");
+
+  const std::size_t loop_steps = countLoopSteps(hel->incidentEdge());
+  PLOG(info) << "built segment " << _name
+             << ": " << _curve_base->vertices().size() << " base verts, "
+             << _curve_offset->vertices().size() << " offset verts, "
+             << "loop walked " << loop_steps << " steps";
 }
