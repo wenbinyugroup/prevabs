@@ -12,6 +12,7 @@ class PGeoLineSegment;
 struct BuilderConfig;
 
 #include <list>
+#include <string>
 #include <vector>
 
 std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
@@ -100,6 +101,11 @@ public:
   void initialize();
 
   void print_dcel();
+
+  /// Serialize all DCEL entities to a plain-text file for post-mortem analysis.
+  /// Safe to call even when the DCEL is in a partially broken state: only
+  /// stored IDs are printed; no loop walks or deep pointer chains are followed.
+  void dumpToFile(const std::string &filename) const;
 
   /// Check structural DCEL invariants and log a warning for each violation.
   /// Returns true if all invariants hold, false if any violation is found.

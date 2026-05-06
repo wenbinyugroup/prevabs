@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -140,6 +141,98 @@ void PDCEL::print_dcel() {
   for (auto f : _faces) {
     f->print();
   }
+}
+
+void PDCEL::dumpToFile(const std::string &filename) const {
+  std::ofstream f(filename);
+  if (!f.is_open()) {
+    PLOG(warning) << "dumpToFile: could not open " + filename;
+    return;
+  }
+
+  // Safe ID-to-label helpers — return "nullptr" if the pointer is null.
+  auto vid  = [](PDCELVertex      *v) -> std::string {
+    return v ? v->label() : "nullptr";
+  };
+  auto hid  = [](PDCELHalfEdge    *h) -> std::string {
+    return h ? h->label() : "nullptr";
+  };
+  auto lid  = [](PDCELHalfEdgeLoop *l) -> std::string {
+    return l ? l->label() : "nullptr";
+  };
+  auto fid  = [](PDCELFace        *fc) -> std::string {
+    return fc ? fc->label() : "nullptr";
+  };
+
+  f << "=== DCEL CRASH DUMP ===\n\n";
+
+  // Vertices
+  f << "VERTICES (" << _vertices.size() << "):\n";
+  for (PDCELVertex *v : _vertices) {
+    if (!v) { f << "  <null vertex>\n"; continue; }
+    f << "  " << v->label()
+      << " (" << v->x() << ", " << v->y() << ", " << v->z() << ")"
+      << " edge=" << hid(v->edge())
+      << "\n";
+  }
+  f << "\n";
+
+  // Half-edges (active list only; background half-edges are excluded)
+  f << "HALFEDGES (" << _halfedges.size() << "):\n";
+  for (PDCELHalfEdge *he : _halfedges) {
+    if (!he) { f << "  <null halfedge>\n"; continue; }
+    PDCELFace *hf = he->face();
+    std::string face_label = hf ? (hf->label() + "(" + hf->logName() + ")")
+                                : "nullptr";
+    f << "  " << he->label()
+      << " src=" << vid(he->source())
+      << " twin=" << hid(he->twin())
+      << " next=" << hid(he->next())
+      << " prev=" << hid(he->prev())
+      << " loop=" << lid(he->loop())
+      << " face=" << face_label
+      << "\n";
+  }
+  f << "\n";
+
+  // Half-edge loops
+  f << "LOOPS (" << _halfedge_loops.size() << "):\n";
+  for (PDCELHalfEdgeLoop *hel : _halfedge_loops) {
+    if (!hel) { f << "  <null loop>\n"; continue; }
+    bool kept = false;
+    auto it = _loop_keep.find(hel);
+    if (it != _loop_keep.end()) kept = it->second;
+
+    PDCELHalfEdgeLoop *adj = nullptr;
+    auto jt = _loop_adjacent.find(hel);
+    if (jt != _loop_adjacent.end()) adj = jt->second;
+
+    f << "  " << hel->label()
+      << " incident=" << hid(hel->incidentEdge())
+      << " face=" << fid(hel->face())
+      << " kept=" << (kept ? "true" : "false")
+      << " adjacent=" << lid(adj)
+      << "\n";
+  }
+  f << "\n";
+
+  // Faces
+  f << "FACES (" << _faces.size() << "):\n";
+  for (PDCELFace *fc : _faces) {
+    if (!fc) { f << "  <null face>\n"; continue; }
+    f << "  " << fc->label()
+      << " name=" << fc->logName()
+      << " bounded=" << (fc->isBounded() ? "true" : "false")
+      << " outer=" << hid(fc->outer());
+    for (PDCELHalfEdge *ih : fc->inners()) {
+      f << " inner=" << hid(ih);
+    }
+    f << "\n";
+  }
+  f << "\n";
+
+  f.flush();
+  PLOG(info) << "DCEL state dumped to: " + filename;
 }
 
 bool PDCEL::validate() {

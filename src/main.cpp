@@ -402,6 +402,13 @@ int main(int argc, char **argv) {
     logFatalWithProgress(
         spdlog::level::err,
         std::string("fatal exception: ") + e.what());
+    if (pmodel_uptr && pmodel_uptr->dcel()) {
+      try {
+        auto dump_path = config.file_directory + config.file_base_name
+                         + ".dcel_dump.txt";
+        pmodel_uptr->dcel()->dumpToFile(dump_path);
+      } catch (...) {}
+    }
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
@@ -411,6 +418,13 @@ int main(int argc, char **argv) {
   catch (...) {
     logFatalWithProgress(
         spdlog::level::critical, "unhandled exception");
+    if (pmodel_uptr && pmodel_uptr->dcel()) {
+      try {
+        auto dump_path = config.file_directory + config.file_base_name
+                         + ".dcel_dump.txt";
+        pmodel_uptr->dcel()->dumpToFile(dump_path);
+      } catch (...) {}
+    }
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
