@@ -5,6 +5,8 @@
 // Global variables normally defined in src/main.cpp are provided here.
 
 #include "catch_amalgamated.hpp"
+#include <cstdio>
+#include <fstream>
 #include <spdlog/sinks/base_sink.h>
 #include <mutex>
 #include <vector>
@@ -1169,6 +1171,35 @@ TEST_CASE("PDCELHalfEdge::printString includes mirrored face name",
   const std::string s = he12->printString();
   CHECK(s.find(face->label()) != std::string::npos);
   CHECK(s.find("tri_face") != std::string::npos);
+}
+
+TEST_CASE("PDCEL::dumpToFile includes background half-edges",
+          "[dcel][dump]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  REQUIRE_FALSE(dcel.halfedges().empty());
+  PDCELHalfEdge *active = dcel.halfedges().front();
+  REQUIRE(active != nullptr);
+  REQUIRE(active->twin() != nullptr);
+
+  const std::string dump_path =
+      "C:\\tmp\\prevabs_test_dcel_dump_background.txt";
+  dcel.dumpToFile(dump_path);
+
+  std::ifstream ifs(dump_path.c_str());
+  REQUIRE(ifs.is_open());
+
+  const std::string dump_text((std::istreambuf_iterator<char>(ifs)),
+                              std::istreambuf_iterator<char>());
+  ifs.close();
+  std::remove(dump_path.c_str());
+
+  CHECK(dump_text.find("HALFEDGES (8):") != std::string::npos);
+  CHECK(dump_text.find(active->label()) != std::string::npos);
+  CHECK(dump_text.find(active->twin()->label()) != std::string::npos);
+  CHECK(dump_text.find("scope=active") != std::string::npos);
+  CHECK(dump_text.find("scope=background") != std::string::npos);
 }
 
 // ==================================================================

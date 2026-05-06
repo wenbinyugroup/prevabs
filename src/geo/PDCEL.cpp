@@ -177,14 +177,16 @@ void PDCEL::dumpToFile(const std::string &filename) const {
   }
   f << "\n";
 
-  // Half-edges (active list only; background half-edges are excluded)
-  f << "HALFEDGES (" << _halfedges.size() << "):\n";
-  for (PDCELHalfEdge *he : _halfedges) {
-    if (!he) { f << "  <null halfedge>\n"; continue; }
+  auto writeHalfEdgeLine = [&](PDCELHalfEdge *he, const char *scope) {
+    if (!he) {
+      f << "  <null halfedge>\n";
+      return;
+    }
     PDCELFace *hf = he->face();
     std::string face_label = hf ? (hf->label() + "(" + hf->logName() + ")")
                                 : "nullptr";
     f << "  " << he->label()
+      << " scope=" << scope
       << " src=" << vid(he->source())
       << " twin=" << hid(he->twin())
       << " next=" << hid(he->next())
@@ -192,6 +194,18 @@ void PDCEL::dumpToFile(const std::string &filename) const {
       << " loop=" << lid(he->loop())
       << " face=" << face_label
       << "\n";
+  };
+
+  // Half-edges: include both active and background-owned edges so any
+  // twin/next/prev label printed elsewhere in the dump can be resolved.
+  const std::size_t total_halfedges =
+      _halfedges.size() + _background_halfedges.size();
+  f << "HALFEDGES (" << total_halfedges << "):\n";
+  for (PDCELHalfEdge *he : _halfedges) {
+    writeHalfEdgeLine(he, "active");
+  }
+  for (const auto &owned_he : _background_halfedges) {
+    writeHalfEdgeLine(owned_he.get(), "background");
   }
   f << "\n";
 
