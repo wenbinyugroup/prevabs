@@ -108,7 +108,8 @@ target_compile_definitions(test_dcel PRIVATE
   TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 if(MSVC)
-  target_compile_options(test_dcel PRIVATE /W3 /utf-8)
+  target_compile_options(test_dcel PRIVATE /W3 /utf-8 /EHa)
+  target_compile_options(test_geo PRIVATE /W3 /utf-8 /EHa)
 endif()
 
 # ------------------------------------------------------------------

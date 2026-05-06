@@ -600,10 +600,14 @@ void Segment::buildLastArea(
 
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
+  pushProgressContext("buildAreas: " + _name);
+  try {
   if (!requireExactState(LifecycleState::ShellBuilt, "buildAreas")) {
+    popProgressContext();
     return;
   }
   if (!validateStateInvariants("buildAreas")) {
+    popProgressContext();
     return;
   }
 
@@ -623,4 +627,10 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   }
   _state = LifecycleState::AreasBuilt;
   validateStateInvariants("buildAreas");
+  }
+  catch (...) {
+    throw;
+  }
+
+  popProgressContext();
 }

@@ -53,3 +53,12 @@ struct PLogStream {
 
 // Call once after config is populated (sets up file + console sinks).
 void initLog();
+
+// Lightweight runtime progress stack used by top-level fatal handlers.
+// Context frames are pushed manually around major operations and intentionally
+// left on the stack when exceptions unwind, so the top-level catch can report
+// where the failure happened.
+void pushProgressContext(const std::string &context);
+void popProgressContext();
+void clearProgressContext();
+std::string formatProgressContext();

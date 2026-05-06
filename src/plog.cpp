@@ -5,8 +5,36 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 #include <chrono>
+#include <mutex>
 #include <memory>
+#include <sstream>
+#include <string>
 #include <vector>
+
+namespace {
+
+std::mutex &progressContextMutex() {
+  static std::mutex mutex;
+  return mutex;
+}
+
+std::vector<std::string> &progressContextStack() {
+  static std::vector<std::string> stack;
+  return stack;
+}
+
+std::string joinProgressContext(const std::vector<std::string> &stack) {
+  std::ostringstream oss;
+  for (std::size_t i = 0; i < stack.size(); ++i) {
+    if (i > 0) {
+      oss << " > ";
+    }
+    oss << stack[i];
+  }
+  return oss.str();
+}
+
+} // namespace
 
 // Returns "[info]    ", "[warning] ", "[error]   ", etc., padded to a fixed
 // width so the message column aligns across all severity levels.
@@ -82,4 +110,26 @@ void initLog() {
   if (config.app.log_level <= LOG_LEVEL_DEBUG) {
     spdlog::flush_every(std::chrono::seconds(1));
   }
+}
+
+void pushProgressContext(const std::string &context) {
+  std::lock_guard<std::mutex> lock(progressContextMutex());
+  progressContextStack().push_back(context);
+}
+
+void popProgressContext() {
+  std::lock_guard<std::mutex> lock(progressContextMutex());
+  if (!progressContextStack().empty()) {
+    progressContextStack().pop_back();
+  }
+}
+
+void clearProgressContext() {
+  std::lock_guard<std::mutex> lock(progressContextMutex());
+  progressContextStack().clear();
+}
+
+std::string formatProgressContext() {
+  std::lock_guard<std::mutex> lock(progressContextMutex());
+  return joinProgressContext(progressContextStack());
 }

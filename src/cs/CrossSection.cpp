@@ -167,6 +167,8 @@ void CrossSection::addComponent(PComponent *component) {
 void CrossSection::sortComponents() { _components.sort(compareOrder); }
 
 void CrossSection::build(const BuilderConfig &bcfg) {
+  pushProgressContext("cross section build");
+  try {
 
   // Build the overall shape of the cross section
   // Do not consider details inside each component/segment (layers)
@@ -215,5 +217,11 @@ void CrossSection::build(const BuilderConfig &bcfg) {
   }
 
   // _pmodel->dcel()->print_dcel();
+  }
+  catch (...) {
+    throw;
+  }
+
+  popProgressContext();
 
 }

@@ -105,7 +105,7 @@ endif()
 add_executable( ${PROJECTNAME} ${SOURCES} )
 
 if(MSVC)
-  target_compile_options(${PROJECTNAME} PRIVATE /W0)
+  target_compile_options(${PROJECTNAME} PRIVATE /W0 /EHa)
 else()
   target_compile_options(${PROJECTNAME} PRIVATE -w)
 endif()

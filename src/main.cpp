@@ -21,6 +21,7 @@
 #include <vector>
 
 #ifdef _WIN32
+#include <eh.h>
 #include <windows.h>
 #endif
 
@@ -187,6 +188,115 @@ std::string getCurrentDateTimeString() {
   return ss.str();
 }
 
+#ifdef _WIN32
+namespace {
+
+const char *sehCodeLabel(unsigned int code) {
+  switch (code) {
+  case EXCEPTION_ACCESS_VIOLATION:
+    return "access violation";
+  case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+    return "array bounds exceeded";
+  case EXCEPTION_BREAKPOINT:
+    return "breakpoint";
+  case EXCEPTION_DATATYPE_MISALIGNMENT:
+    return "datatype misalignment";
+  case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+    return "floating-point divide by zero";
+  case EXCEPTION_FLT_INVALID_OPERATION:
+    return "floating-point invalid operation";
+  case EXCEPTION_ILLEGAL_INSTRUCTION:
+    return "illegal instruction";
+  case EXCEPTION_IN_PAGE_ERROR:
+    return "in-page error";
+  case EXCEPTION_INT_DIVIDE_BY_ZERO:
+    return "integer divide by zero";
+  case EXCEPTION_PRIV_INSTRUCTION:
+    return "privileged instruction";
+  case EXCEPTION_STACK_OVERFLOW:
+    return "stack overflow";
+  default:
+    return "structured exception";
+  }
+}
+
+void translateStructuredException(
+    unsigned int code, _EXCEPTION_POINTERS *info) {
+  std::ostringstream oss;
+  oss << "SEH exception 0x" << std::hex << std::uppercase << code
+      << " (" << sehCodeLabel(code) << ")";
+
+  if (info != nullptr && info->ExceptionRecord != nullptr) {
+    const EXCEPTION_RECORD *record = info->ExceptionRecord;
+    oss << " at " << record->ExceptionAddress;
+
+    if (code == EXCEPTION_ACCESS_VIOLATION &&
+        record->NumberParameters >= 2) {
+      const ULONG_PTR mode = record->ExceptionInformation[0];
+      const ULONG_PTR address = record->ExceptionInformation[1];
+      oss << " while "
+          << ((mode == 0) ? "reading" : (mode == 1) ? "writing"
+                                                  : "executing")
+          << " address 0x" << std::hex << std::uppercase << address;
+    }
+  }
+
+  throw std::runtime_error(oss.str());
+}
+
+void installStructuredExceptionTranslator() {
+  _set_se_translator(translateStructuredException);
+}
+
+void logFatalWithProgress(
+    spdlog::level::level_enum level, const std::string &message) {
+  auto logger = spdlog::get("prevabs");
+  const std::string progress = formatProgressContext();
+  if (logger == nullptr) {
+    std::cerr << message << std::endl;
+    if (!progress.empty()) {
+      std::cerr << "progress context: " << progress << std::endl;
+    }
+    return;
+  }
+
+  PLogStream(level, __FILE__, __LINE__, __func__) << message;
+  if (!progress.empty()) {
+    PLogStream(level, __FILE__, __LINE__, __func__)
+        << "progress context: " << progress;
+  }
+  logger->flush();
+}
+
+} // namespace
+#else
+namespace {
+
+void installStructuredExceptionTranslator() {}
+
+void logFatalWithProgress(
+    spdlog::level::level_enum level, const std::string &message) {
+  auto logger = spdlog::get("prevabs");
+  const std::string progress = formatProgressContext();
+  if (logger == nullptr) {
+    std::cerr << message << std::endl;
+    if (!progress.empty()) {
+      std::cerr << "progress context: " << progress << std::endl;
+    }
+    return;
+  }
+
+  PLogStream(level, __FILE__, __LINE__, __func__) << message;
+  if (!progress.empty()) {
+    PLogStream(level, __FILE__, __LINE__, __func__)
+        << "progress context: " << progress;
+  }
+  logger->flush();
+}
+
+} // namespace
+#endif
+
 
 // ===================================================================
 int main(int argc, char **argv) {
@@ -215,6 +325,7 @@ int main(int argc, char **argv) {
       config.app.log_level = LOG_LEVEL_DEBUG;
 
     initLog();
+    installStructuredExceptionTranslator();
     PLOG(info) << "PreVABS " VERSION_STRING
                   " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")";
   }
@@ -233,32 +344,45 @@ int main(int argc, char **argv) {
 
   auto pmodel_uptr = std::make_unique<PModel>(config.file_base_name);
   bool initialized = false;
+  clearProgressContext();
 
   // Single catch-all: any unhandled exception in any pipeline stage is
   // reported here before cleanup, preventing silent exit or second-crash
   // from downstream stages using a partially-built model.
   try {
+    pushProgressContext("initialize model");
     pmodel_uptr->initialize();
+    popProgressContext();
     initialized = true;
 
     std::string s_dt_start = getCurrentDateTimeString();
     PLOG(info) << "prevabs start (" + s_dt_start + ")";
 
     if (config.isHomo()) {
+      pushProgressContext("homogenization pipeline");
       pmodel_uptr->homogenize();
+      popProgressContext();
     } else if (config.isRecovery()) {
+      pushProgressContext("dehomogenization pipeline");
       pmodel_uptr->dehomogenize();
+      popProgressContext();
     }
 
     if (config.execute) {
+      pushProgressContext("execute solver");
       pmodel_uptr->run();
+      popProgressContext();
     }
 
     if (config.plot) {
+      pushProgressContext("plot outputs");
       pmodel_uptr->plot();
+      popProgressContext();
     }
 
+    pushProgressContext("finalize model");
     pmodel_uptr->finalize();
+    popProgressContext();
     initialized = false;
 
     std::string s_dt_finish = getCurrentDateTimeString();
@@ -269,22 +393,26 @@ int main(int argc, char **argv) {
 
     PLOG(info) << "prevabs finished (" + s_dt_finish + ")";
     PLOG(info) << ss.str();
+    clearProgressContext();
     return 0;
   }
   catch (const std::exception &e) {
-    const std::string msg = e.what();
-    PLOG(error) << msg;
+    logFatalWithProgress(
+        spdlog::level::err,
+        std::string("fatal exception: ") + e.what());
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
+    clearProgressContext();
     return 1;
   }
   catch (...) {
-    const std::string msg = "unknown fatal error";
-    PLOG(error) << msg;
+    logFatalWithProgress(
+        spdlog::level::critical, "unhandled exception");
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
+    clearProgressContext();
     return 1;
   }
 }
