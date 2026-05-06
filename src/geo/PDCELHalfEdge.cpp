@@ -32,7 +32,7 @@ std::string PDCELHalfEdge::printString() {
 
   ss << " | loop: " << (_loop ? _loop->label() : "nullptr");
 
-  ss << " | face: " << (_face ? _face->label() : "nullptr");
+  ss << " | face: " << (_face ? _face->displayLabel() : "nullptr");
   
   return ss.str();
 }
@@ -71,7 +71,7 @@ void PDCELHalfEdge::print2() {
   if (_face == nullptr) {
     std::cout << "nullptr";
   } else {
-    std::cout << _face->label();
+    std::cout << _face->displayLabel();
   }
 
   // std::cout << " | address: ";

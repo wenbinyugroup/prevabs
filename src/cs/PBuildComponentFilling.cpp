@@ -31,14 +31,8 @@ std::string faceLabel(PDCELFace *face, PModel *model) {
     return "nullptr";
   }
 
-  std::string label = face->label();
-  if (model != nullptr) {
-    const std::string &name = model->faceData(face).name;
-    if (!name.empty()) {
-      label += " [" + name + "]";
-    }
-  }
-  return label;
+  (void)model;
+  return face->displayLabel();
 }
 
 
@@ -350,7 +344,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
                   << " for component '" << _name << "'";
       return;
     }
-    bcfg.model->faceData(filling.face).name = _name + "_fill_face";
+    bcfg.model->setFaceName(filling.face, _name + "_fill_face");
     filling.face->setMaterial(filling.material);
     bcfg.dcel->setLoopKept(hel_out, true);
     hel_out->setFace(filling.face);

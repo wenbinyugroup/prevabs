@@ -73,14 +73,8 @@ std::string faceLabel(PDCELFace *face, PModel *model) {
     return "nullptr";
   }
 
-  std::string label = face->label();
-  if (model != nullptr) {
-    const std::string &name = model->faceData(face).name;
-    if (!name.empty()) {
-      label += " [" + name + "]";
-    }
-  }
-  return label;
+  (void)model;
+  return face->displayLabel();
 }
 
 
@@ -666,7 +660,7 @@ void Segment::build(const BuilderConfig &bcfg) {
   hel = bcfg.dcel->addHalfEdgeLoop(he);
 
   _face = bcfg.dcel->addFace(hel);
-  bcfg.model->faceData(_face).name = _name + "_face";
+  bcfg.model->setFaceName(_face, _name + "_face");
 
   bcfg.dcel->setLoopKept(hel, true);
   hel->setFace(_face);

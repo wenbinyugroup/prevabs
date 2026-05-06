@@ -36,6 +36,8 @@ class PMesh;
 #include <vector>
 #include <utility>
 
+void syncPDCELFaceLogName(PDCELFace *f, const std::string &name);
+
 struct LoadCase {
   int measure{0};  // 0: generalized stress, 1: generalized strain
   std::vector<double> displacement{0, 0, 0};
@@ -247,6 +249,10 @@ public:
   // Face property map accessor.  Returns a reference to the PDCELFaceData
   // for face f, default-constructing an entry if f is not yet present.
   PDCELFaceData&   faceData(PDCELFace* f)     { return _face_data[f]; }
+  void setFaceName(PDCELFace* f, const std::string &name) {
+    _face_data[f].name = name;
+    syncPDCELFaceLogName(f, name);
+  }
   // Vertex property map accessor.  Returns a reference to the PDCELVertexData
   // for vertex v, default-constructing an entry if v is not yet present.
   PDCELVertexData& vertexData(PDCELVertex* v)  { return _vertex_data[v]; }

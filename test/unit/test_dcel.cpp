@@ -1142,6 +1142,35 @@ TEST_CASE("DCEL ids are monotonic and not reused after split/remove",
   CHECK(he_new->twin()->id() != first_twin_id);
 }
 
+TEST_CASE("PDCELHalfEdge::printString includes mirrored face name",
+          "[dcel][id][face-name]") {
+  PDCEL dcel;
+  PModel model;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 0.0, 1.0));
+
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+  PDCELHalfEdge *he23 = dcel.addEdge(v2, v3);
+  PDCELHalfEdge *he31 = dcel.addEdge(v3, v1);
+
+  he12->setNext(he23); he23->setPrev(he12);
+  he23->setNext(he31); he31->setPrev(he23);
+  he31->setNext(he12); he12->setPrev(he31);
+
+  PDCELHalfEdgeLoop *loop = dcel.addHalfEdgeLoop(he12);
+  REQUIRE(loop != nullptr);
+
+  PDCELFace *face = dcel.addFace(loop);
+  REQUIRE(face != nullptr);
+  model.setFaceName(face, "tri_face");
+
+  const std::string s = he12->printString();
+  CHECK(s.find(face->label()) != std::string::npos);
+  CHECK(s.find("tri_face") != std::string::npos);
+}
+
 // ==================================================================
 // Loop guard tests — walkLoopWithLimit and inline DCEL guards
 // ==================================================================

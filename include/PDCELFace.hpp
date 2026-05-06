@@ -28,6 +28,7 @@ class PDCELFace {
 private:
   PDCELHalfEdge *_outer;
   std::vector<PDCELHalfEdge *> _inners;
+  std::string _log_name;
   PArea *_area;
   Material *_material = nullptr;
   double _theta3, _theta1;
@@ -45,6 +46,7 @@ public:
 
   void print();
   std::string label() const;
+  std::string displayLabel() const;
 
   PArea *area() { return _area; }
   PDCELHalfEdge *outer() { return _outer; }
@@ -61,6 +63,7 @@ public:
 
   bool isBounded() { return _is_bounded; }
   unsigned int id() const { return _id; }
+  const std::string &logName() const { return _log_name; }
 
   PDCELHalfEdge *getOuterHalfEdgeWithSource(PDCELVertex *);
   PDCELHalfEdge *getOuterHalfEdgeWithTarget(PDCELVertex *);
@@ -70,6 +73,7 @@ public:
   void setOuterComponent(PDCELHalfEdge *outer) { _outer = outer; }
   void addInnerComponent(PDCELHalfEdge *inner) { _inners.push_back(inner); }
   void setArea(PArea *area) { _area = area; }
+  void setLogName(const std::string &name) { _log_name = name; }
   void setMaterial(Material *material) { _material = material; }
   void setTheta1(double theta1) { _theta1 = theta1; }
   void setTheta3(double theta3) { _theta3 = theta3; }

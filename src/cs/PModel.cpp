@@ -211,7 +211,7 @@ void PModel::build() {
     _dcel, this
   };
   bcfg.model = this;
-  _face_data[_dcel->faces().front()].name = "background";
+  setFaceName(_dcel->faces().front(), "background");
 
   // for (auto cs : crosssections) {
   //   cs->build();

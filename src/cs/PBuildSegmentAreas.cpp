@@ -49,14 +49,8 @@ std::string faceLabel(PDCELFace *face, PModel *model) {
     return "nullptr";
   }
 
-  std::string label = face->label();
-  if (model != nullptr) {
-    const std::string &name = model->faceData(face).name;
-    if (!name.empty()) {
-      label += " [" + name + "]";
-    }
-  }
-  return label;
+  (void)model;
+  return face->displayLabel();
 }
 
 
@@ -505,7 +499,8 @@ void Segment::createIntermediateAreas(
     }
     delete ls_layup;
 
-    bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
+    bcfg.model->setFaceName(
+        area->face(), _name + "_area_" + std::to_string(count));
     area->setPrevBoundVertices(prev_bound_vertices);
 
     for (auto v : splitBoundByLayup(vb_tmp, vo_tmp, bcfg)) {
@@ -553,7 +548,8 @@ void Segment::buildLastArea(
   }
   delete ls_layup;
 
-  bcfg.model->faceData(area->face()).name = _name + "_area_" + std::to_string(count);
+  bcfg.model->setFaceName(
+      area->face(), _name + "_area_" + std::to_string(count));
   area->setPrevBoundVertices(prev_bound_vertices);
 
   if (closed()) {

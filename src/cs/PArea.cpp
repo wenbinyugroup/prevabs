@@ -176,7 +176,8 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
 
     // std::cout << "        setting new layer face properties" << std::endl;
     // std::cout << "        name" << std::endl;
-    bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(i + 1);
+    bcfg.model->setFaceName(
+        _faces.back(), area_name + "_layer_" + std::to_string(i + 1));
     // std::cout << "        material" << std::endl;
     _faces.back()->setMaterial(layer.getLamina()->getMaterial());
     // std::cout << "        theta3" << std::endl;
@@ -208,7 +209,9 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   layer = layup->getLayers().back();
   // layer = layup->getLayers()[i];
   // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
-  bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(layup->getLayers().size());
+  bcfg.model->setFaceName(
+      _faces.back(),
+      area_name + "_layer_" + std::to_string(layup->getLayers().size()));
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());

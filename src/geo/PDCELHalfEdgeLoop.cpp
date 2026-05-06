@@ -18,7 +18,7 @@ void PDCELHalfEdgeLoop::log() {
   PLOG(debug) << label() << " direction: "
               << ((direction() == 1) ? "outer" : "inner");
   PLOG(debug) << label() << " face: "
-              << (_face ? _face->label() : "nullptr");
+              << (_face ? _face->displayLabel() : "nullptr");
   PLOG(debug) << label() << " half edges:";
   walkLoopWithLimit(_incident_edge, [](PDCELHalfEdge *he) {
     PLOG(debug) << he->printString();
@@ -43,7 +43,7 @@ void PDCELHalfEdgeLoop::print() {
 
   std::cout << "face: ";
   if (_face != nullptr) {
-    std::cout << _face->label() << std::endl;
+    std::cout << _face->displayLabel() << std::endl;
   } else {
     std::cout << "nullptr" << std::endl;
   }

@@ -13,6 +13,12 @@
 #include <string>
 #include <vector>
 
+void syncPDCELFaceLogName(PDCELFace *f, const std::string &name) {
+  if (f != nullptr) {
+    f->setLogName(name);
+  }
+}
+
 PDCELFace::PDCELFace() {
   _outer = nullptr;
   _area = nullptr;
@@ -50,6 +56,13 @@ std::string PDCELFace::label() const {
   std::stringstream ss;
   ss << "f#" << _id;
   return ss.str();
+}
+
+std::string PDCELFace::displayLabel() const {
+  if (_log_name.empty()) {
+    return label();
+  }
+  return label() + " [" + _log_name + "]";
 }
 
 void PDCELFace::print() {
