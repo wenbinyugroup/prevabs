@@ -605,6 +605,8 @@ void Segment::buildLastArea(
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
   PLogContext segment_areas_context("segment areas: " + _name);
+  PLogSection segment_areas_section(
+      DebugLevel::join, "segment areas", _name);
   if (!requireExactState(LifecycleState::ShellBuilt, "buildAreas")) {
     logSkippingSegmentAreasAction(
         "buildAreas", _name, "segment is not in ShellBuilt state");
@@ -632,4 +634,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   }
   _state = LifecycleState::AreasBuilt;
   validateStateInvariants("buildAreas");
+  segment_areas_section.setEndDetails(
+      "areas=" + std::to_string(_areas.size())
+      + ", layers=" + std::to_string(layerCount()));
 }

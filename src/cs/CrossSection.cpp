@@ -169,64 +169,81 @@ void CrossSection::sortComponents() { _components.sort(compareOrder); }
 void CrossSection::build(const BuilderConfig &bcfg) {
   PLogContext cross_section_context("cross section build");
 
-  // Build the overall shape of the cross section
-  // Do not consider details inside each component/segment (layers)
+  {
+    PLogSection stage1_section(
+        DebugLevel::phase, "phase", "cross section step 1");
+
+    // Build the overall shape of the cross section
+    // Do not consider details inside each component/segment (layers)
     PLOG(info) << "building the cross section, step 1";
 
-  for (auto cmp : _components) {
+    for (auto cmp : _components) {
 
-    cmp->build(bcfg);
+      cmp->build(bcfg);
 
-    if (bcfg.model != nullptr &&
-        bcfg.model->shouldWriteComponentSnapshots()) {
-      bcfg.model->plotGeoSnapshot("after_" + cmp->name());
+      if (bcfg.model != nullptr &&
+          bcfg.model->shouldWriteComponentSnapshots()) {
+        bcfg.model->plotGeoSnapshot("after_" + cmp->name());
+      }
+
+      // _pmodel->dcel()->print_dcel();
+      // for (auto sgm : cmp->segments()) {
+      //   sgm->curveBase()->print(g_msg, 9);
+      // }
+
+      // Remove all half edge loops, excluding segments face boundaries
+      bcfg.dcel->removeTempLoops();
+
+      // Create new half edge loops, excluding segments face boundaries
+      bcfg.dcel->createTempLoops();
+
+      // For each inner loop, find and connect to the nearest loop
+      // _pmodel->dcel()->linkHalfEdgeLoops();
     }
 
-    // _pmodel->dcel()->print_dcel();
-    // for (auto sgm : cmp->segments()) {
-    //   sgm->curveBase()->print(g_msg, 9);
+    if (bcfg.debug_level >= DebugLevel::phase) {
+      // Print DCEL
+      // _pmodel->dcel()->print_dcel();
+
+      // Create Gmsh model and write Gmsh files for debugging
+    }
+
+    // for (auto cmp : _components) {
+    //   for (auto sgm : cmp->segments()) {
+    //     sgm->curveBase()->print(g_msg, 9);
+    //   }
     // }
 
-    // Remove all half edge loops, excluding segments face boundaries
-    bcfg.dcel->removeTempLoops();
-
-    // Create new half edge loops, excluding segments face boundaries
-    bcfg.dcel->createTempLoops();
-
-    // For each inner loop, find and connect to the nearest loop
-    // _pmodel->dcel()->linkHalfEdgeLoops();
-  }
-
-  if (bcfg.debug_level >= DebugLevel::phase) {
-    // Print DCEL
+    // PLOG(info) << 9, "current dcel";
     // _pmodel->dcel()->print_dcel();
 
-    // Create Gmsh model and write Gmsh files for debugging
+    stage1_section.setEndDetails(
+        "components=" + std::to_string(_components.size())
+        + ", dcel_edges=" + std::to_string(bcfg.dcel->halfedges().size() / 2)
+        + ", loops=" + std::to_string(bcfg.dcel->halfedgeloops().size()));
   }
-
-  // for (auto cmp : _components) {
-  //   for (auto sgm : cmp->segments()) {
-  //     sgm->curveBase()->print(g_msg, 9);
-  //   }
-  // }
-
-  // PLOG(info) << 9, "current dcel";
-  // _pmodel->dcel()->print_dcel();
 
   // Build details (mainly slice layers for each segment)
     PLOG(info) << "building the cross section, step 2";
+  {
+    PLogSection stage2_section(
+        DebugLevel::phase, "phase", "cross section step 2");
 
-  if (bcfg.model != nullptr && bcfg.model->shouldWritePhaseSnapshots()) {
-    bcfg.model->plotGeoSnapshot("before_stage2");
-  }
-
-  for (auto cmp : _components) {
-    cmp->buildDetails(bcfg);
-
-    if (bcfg.model != nullptr &&
-        bcfg.model->shouldWriteComponentSnapshots()) {
-      bcfg.model->plotGeoSnapshot("after_" + cmp->name() + "_details");
+    if (bcfg.model != nullptr && bcfg.model->shouldWritePhaseSnapshots()) {
+      bcfg.model->plotGeoSnapshot("before_stage2");
     }
+
+    for (auto cmp : _components) {
+      cmp->buildDetails(bcfg);
+
+      if (bcfg.model != nullptr &&
+          bcfg.model->shouldWriteComponentSnapshots()) {
+        bcfg.model->plotGeoSnapshot("after_" + cmp->name() + "_details");
+      }
+    }
+    stage2_section.setEndDetails(
+        "components=" + std::to_string(_components.size())
+        + ", dcel_faces=" + std::to_string(bcfg.dcel->faces().size()));
   }
 
   // _pmodel->dcel()->print_dcel();

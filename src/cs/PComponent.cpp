@@ -156,6 +156,8 @@ void PComponent::addDependent(PComponent *component) {
 
 void PComponent::build(const BuilderConfig &bcfg) {
   PLogContext component_context("component: " + _name);
+  PLogSection component_section(
+      DebugLevel::phase, "component", _name);
   if (bcfg.dcel != nullptr) {
     bcfg.dcel->resetSplitLineageCounters();
   }
@@ -199,6 +201,10 @@ void PComponent::build(const BuilderConfig &bcfg) {
              << ": " << _laminate.segments.size() << " segments, "
              << component_faces << " faces, "
              << (bcfg.dcel->halfedges().size() / 2) << " dcel edges";
+  component_section.setEndDetails(
+      "segments=" + std::to_string(_laminate.segments.size())
+      + ", faces=" + std::to_string(component_faces)
+      + ", dcel_edges=" + std::to_string(bcfg.dcel->halfedges().size() / 2));
 
   // i_indent--;
 
@@ -214,6 +220,8 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 void PComponent::buildDetails(const BuilderConfig &bcfg) {
   PLogContext component_details_context("component details: " + _name);
+  PLogSection component_details_section(
+      DebugLevel::phase, "component details", _name);
   if (bcfg.dcel != nullptr) {
     bcfg.dcel->resetSplitLineageCounters();
   }
@@ -251,6 +259,9 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
   PLOG(info) << "built details for " << _name
              << ": " << total_areas << " areas, "
              << total_layers << " layers";
+  component_details_section.setEndDetails(
+      "areas=" + std::to_string(total_areas)
+      + ", layers=" + std::to_string(total_layers));
 }
 
 

@@ -307,50 +307,55 @@ void PModel::homogenize() {
   try {
     PLogContext homogenize_context("homogenize");
 
-
-    // ================
-    // READ INPUT FILES
-    PLogContext read_inputs_context("read input files");
-
+    {
+      // ================
+      // READ INPUT FILES
+      PLogContext read_inputs_context("read input files");
+      PLogSection read_inputs_section(
+          DebugLevel::phase, "phase", "read input files");
         PLOG(info) << "reading input files";
 
-    readInputMain(config.main_input, config.file_directory, this);
-    // pmodel->summary(g_msg);
+      readInputMain(config.main_input, config.file_directory, this);
+      // pmodel->summary(g_msg);
 
-        PLOG(info) << "reading input files -- done";
+      PLOG(info) << "reading input files -- done";
+    }
 
-
-    // ==============
-    // BUILD GEOMETRY
-    read_inputs_context.dismiss();
-    PLogContext build_shape_context("build shape");
-
+    {
+      // ==============
+      // BUILD GEOMETRY
+      PLogContext build_shape_context("build shape");
+      PLogSection build_shape_section(
+          DebugLevel::phase, "phase", "build shape");
         PLOG(info) << "building the shape";
 
-    build();
+      build();
 
-        PLOG(info) << "building the shape -- done";
+      PLOG(info) << "building the shape -- done";
+    }
 
-
-    // ================
-    // MODELING IN GMSH
-    build_shape_context.dismiss();
-    PLogContext gmsh_context("build Gmsh model");
+    {
+      // ================
+      // MODELING IN GMSH
+      PLogContext gmsh_context("build Gmsh model");
+      PLogSection gmsh_section(
+          DebugLevel::phase, "phase", "build Gmsh model");
 
         PLOG(info) << "modeling in Gmsh";
 
-    buildGmsh();
+      buildGmsh();
 
-        PLOG(info) << "modeling in Gmsh -- done";
-
+      PLOG(info) << "modeling in Gmsh -- done";
+    }
 
     // ===================
     // WRITE SG INPUT FILE
 
     // if (config.analysis_tool != 3) {
     if (!config.integrated_solver) {
-      gmsh_context.dismiss();
       PLogContext write_outputs_context("write outputs");
+      PLogSection write_outputs_section(
+          DebugLevel::phase, "phase", "write outputs");
             PLOG(info) << "writing outputs";
 
       if (config.plot) {

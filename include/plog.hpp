@@ -3,6 +3,8 @@
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
 
+#include <chrono>
+#include <exception>
 #include <sstream>
 #include <string>
 #include <spdlog/spdlog.h>
@@ -82,6 +84,57 @@ inline bool shouldLogDebugAt(DebugLevel min_level) {
 
 #define PLOG_DEBUG_AT(level) \
   if (shouldLogDebugAt(DebugLevel::level)) PLOG(debug)
+
+class PLogSection {
+public:
+  PLogSection(
+      DebugLevel min_level,
+      const std::string &event,
+      const std::string &name)
+      : _active(shouldLogDebugAt(min_level)),
+        _event(event),
+        _name(name),
+        _start(std::chrono::steady_clock::now()) {
+    if (_active) {
+      PLOG(debug) << formatBanner("BEGIN");
+    }
+  }
+
+  ~PLogSection() {
+    if (!_active) {
+      return;
+    }
+
+    const bool unwinding = std::uncaught_exception();
+    const auto stop = std::chrono::steady_clock::now();
+    const double ms =
+        std::chrono::duration<double, std::milli>(stop - _start).count();
+
+    std::ostringstream tag;
+    tag.setf(std::ios::fixed, std::ios::floatfield);
+    tag.precision(ms >= 100.0 ? 0 : 1);
+    tag << (unwinding ? "ABORT" : "END")
+        << ", took=" << ms << "ms";
+    if (!_details.empty()) {
+      tag << ", " << _details;
+    }
+
+    PLOG(debug) << formatBanner(tag.str());
+  }
+
+  void setEndDetails(const std::string &details) { _details = details; }
+
+private:
+  std::string formatBanner(const std::string &tag) const {
+    return "=== " + _event + ": " + _name + " [" + tag + "] ===";
+  }
+
+  bool _active;
+  std::string _event;
+  std::string _name;
+  std::string _details;
+  std::chrono::steady_clock::time_point _start;
+};
 
 // Call once after config is populated (sets up file + console sinks).
 void initLog();

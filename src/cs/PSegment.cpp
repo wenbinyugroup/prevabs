@@ -598,6 +598,8 @@ void Segment::offsetCurveBase() {
 
 void Segment::build(const BuilderConfig &bcfg) {
   PLogContext segment_context("segment shell: " + _name);
+  PLogSection segment_section(
+      DebugLevel::join, "segment shell", _name);
   if (!requireExactState(LifecycleState::OffsetReady, "build")) {
     logSkippingSegmentAction(
         "build", _name, "segment is not in OffsetReady state");
@@ -682,4 +684,8 @@ void Segment::build(const BuilderConfig &bcfg) {
              << ": " << _curve_base->vertices().size() << " base verts, "
              << _curve_offset->vertices().size() << " offset verts, "
              << "loop walked " << loop_steps << " steps";
+  segment_section.setEndDetails(
+      "base_verts=" + std::to_string(_curve_base->vertices().size())
+      + ", offset_verts=" + std::to_string(_curve_offset->vertices().size())
+      + ", loop_steps=" + std::to_string(loop_steps));
 }
