@@ -40,7 +40,7 @@ target_compile_definitions(test_geo PRIVATE
 # ------------------------------------------------------------------
 # test_dcel — DCEL topology tests compiled against the real sources.
 # No Gmsh required: only src/geo/, src/plog.cpp, src/utilities.cpp,
-# src/overloadOperator.cpp, and src/cs/PBaseLine.cpp are included.
+# src/overloadOperator.cpp, and the CS/DCEL build sources required by the tests.
 # ------------------------------------------------------------------
 set(TEST_DCEL_SOURCES
   catch_amalgamated.cpp

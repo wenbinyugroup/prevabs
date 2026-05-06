@@ -396,6 +396,35 @@ std::vector<std::string> splitFilePath(const std::string& filepath) {
   return s;
 }
 
+std::string sanitizeFilenameToken(const std::string &token) {
+  std::string sanitized;
+  sanitized.reserve(token.size());
+  bool last_was_underscore = false;
+
+  for (std::size_t i = 0; i < token.size(); ++i) {
+    const unsigned char ch = static_cast<unsigned char>(token[i]);
+    if (std::isalnum(ch)) {
+      sanitized.push_back(static_cast<char>(ch));
+      last_was_underscore = false;
+    } else if (!last_was_underscore) {
+      sanitized.push_back('_');
+      last_was_underscore = true;
+    }
+  }
+
+  while (!sanitized.empty() && sanitized.front() == '_') {
+    sanitized.erase(sanitized.begin());
+  }
+  while (!sanitized.empty() && sanitized.back() == '_') {
+    sanitized.pop_back();
+  }
+
+  if (sanitized.empty()) {
+    return "snapshot";
+  }
+  return sanitized;
+}
+
 std::vector<double> getDxyFromAngle(double angle, char axis, double increment,
                                     bool reverse) {
   double dx = 0.0, dy = 0.0;

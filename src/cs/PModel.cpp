@@ -19,6 +19,15 @@
 #include <iostream>
 #include <string>
 
+namespace {
+
+std::string makeSnapshotFileName(const std::string &snapshot_tag) {
+  return config.file_directory + config.file_base_name + "_debug_"
+      + sanitizeFilenameToken(snapshot_tag) + ".geo_unrolled";
+}
+
+} // namespace
+
 PModel::PModel(std::string name) {
   _name = name;
   _global_mesh_size = 1.0;
@@ -262,6 +271,29 @@ void PModel::plotGeoDebug(bool create_gmsh_geo) {
   _gmsh_face_embedded_edge_tags.clear();
   _gmsh_face_physical_group_tags.clear();
 
+}
+
+void plotGeoSnapshotImpl(
+    PModel *model, const std::string &snapshot_tag, bool create_gmsh_geo) {
+  const std::string fn_geo = makeSnapshotFileName(snapshot_tag);
+  PLOG(info) << "writing debug snapshot: " << fn_geo;
+
+  if (create_gmsh_geo) {
+    model->createGmshGeo();
+    gmsh::model::geo::synchronize();
+    model->writeGmshGeo(fn_geo);
+    gmsh::model::remove();
+    gmsh::model::add("");
+  } else {
+    model->writeGmshGeo(fn_geo);
+  }
+
+  model->_gmsh_vertex_tags.clear();
+  model->_gmsh_edge_tags.clear();
+  model->_gmsh_face_tags.clear();
+  model->_gmsh_face_embedded_vertex_tags.clear();
+  model->_gmsh_face_embedded_edge_tags.clear();
+  model->_gmsh_face_physical_group_tags.clear();
 }
 
 

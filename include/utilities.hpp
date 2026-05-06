@@ -69,6 +69,7 @@ std::string upperString(const std::string &);
 std::string removeChar(std::string, char = ' ');
 std::string trim(const std::string &);
 std::vector<std::string> splitFilePath(const std::string &filepath);
+std::string sanitizeFilenameToken(const std::string &token);
 
 std::vector<double> getDxyFromAngle(double, char = 'x', double = 1.0,
                                     bool = false);

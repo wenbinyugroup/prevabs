@@ -37,6 +37,9 @@ class PMesh;
 #include <utility>
 
 void syncPDCELFaceLogName(PDCELFace *f, const std::string &name);
+class PModel;
+void plotGeoSnapshotImpl(
+    PModel *model, const std::string &snapshot_tag, bool create_gmsh_geo);
 
 struct LoadCase {
   int measure{0};  // 0: generalized stress, 1: generalized strain
@@ -146,6 +149,8 @@ struct PostProcessingData {
  */
 class PModel : public IMaterialLookup {
 private:
+  friend void plotGeoSnapshotImpl(
+      PModel *model, const std::string &snapshot_tag, bool create_gmsh_geo);
   std::string _name;
   // GModel *_gmodel, *_gmodel_debug;
   PDCEL *_dcel;
@@ -524,4 +529,22 @@ public:
   int postVABS();
   int postSCDehomo();
   int postSCFailure();
+
+  void plotGeoSnapshot(
+      const std::string &snapshot_tag, bool create_gmsh_geo = true) {
+#ifdef TEST_DATA_DIR
+    (void)snapshot_tag;
+    (void)create_gmsh_geo;
+#else
+    plotGeoSnapshotImpl(this, snapshot_tag, create_gmsh_geo);
+#endif
+  }
+  bool shouldWritePhaseSnapshots() const {
+    return config.snapshot_mode == SnapshotMode::phase ||
+           config.snapshot_mode == SnapshotMode::all;
+  }
+  bool shouldWriteComponentSnapshots() const {
+    return config.snapshot_mode == SnapshotMode::component ||
+           config.snapshot_mode == SnapshotMode::all;
+  }
 };

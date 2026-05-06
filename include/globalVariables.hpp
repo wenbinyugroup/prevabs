@@ -64,6 +64,7 @@ struct PConfig {
   bool plot      = false;
   bool no_popup  = false;   // suppress Gmsh FLTK window when -v is used
   bool debug     = false;
+  SnapshotMode snapshot_mode = SnapshotMode::never;
 
   // --- Persistent numeric/output settings (may be overridden by config file) ---
   AppConfig app;

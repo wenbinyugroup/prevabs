@@ -177,6 +177,11 @@ void CrossSection::build(const BuilderConfig &bcfg) {
 
     cmp->build(bcfg);
 
+    if (bcfg.model != nullptr &&
+        bcfg.model->shouldWriteComponentSnapshots()) {
+      bcfg.model->plotGeoSnapshot("after_" + cmp->name());
+    }
+
     // _pmodel->dcel()->print_dcel();
     // for (auto sgm : cmp->segments()) {
     //   sgm->curveBase()->print(g_msg, 9);
@@ -211,8 +216,17 @@ void CrossSection::build(const BuilderConfig &bcfg) {
   // Build details (mainly slice layers for each segment)
     PLOG(info) << "building the cross section, step 2";
 
+  if (bcfg.model != nullptr && bcfg.model->shouldWritePhaseSnapshots()) {
+    bcfg.model->plotGeoSnapshot("before_stage2");
+  }
+
   for (auto cmp : _components) {
     cmp->buildDetails(bcfg);
+
+    if (bcfg.model != nullptr &&
+        bcfg.model->shouldWriteComponentSnapshots()) {
+      bcfg.model->plotGeoSnapshot("after_" + cmp->name() + "_details");
+    }
   }
 
   // _pmodel->dcel()->print_dcel();

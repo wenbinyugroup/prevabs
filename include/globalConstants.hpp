@@ -65,6 +65,13 @@ inline bool isFailureMode(AnalysisMode m) {
          m == AnalysisMode::FailureIndex;
 }
 
+enum class SnapshotMode {
+  never,
+  phase,
+  component,
+  all
+};
+
 enum GeoConst {
   DEGREE,
   RADIAN,

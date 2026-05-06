@@ -40,6 +40,7 @@ RuntimeState runtime;
 // ---------------------------------------------------------------------------
 
 void addParserArguments(CLI::App &app) {
+  static std::string snapshot_on = "never";
 
   // Required input
   app.add_option("-i,--input", config.main_input, "Input file")->required();
@@ -85,6 +86,11 @@ void addParserArguments(CLI::App &app) {
 
   // Developer options
   app.add_flag("-d,--debug", config.debug, "Debug mode")->default_val(false);
+  app.add_option(
+      "--snapshot-on", snapshot_on,
+      "Write debug geometry snapshots: never, phase, component, all")
+      ->default_val("never")
+      ->check(CLI::IsMember({"never", "phase", "component", "all"}));
 
   // Post-parse validation callback
   app.callback([&]() {
@@ -108,6 +114,16 @@ void addParserArguments(CLI::App &app) {
       throw CLI::ValidationError(
         "--fs/--failure-strength and --fe/--failure-envelope "
         "are SwiftComp-only; add --sc");
+    }
+
+    if (snapshot_on == "never") {
+      config.snapshot_mode = SnapshotMode::never;
+    } else if (snapshot_on == "phase") {
+      config.snapshot_mode = SnapshotMode::phase;
+    } else if (snapshot_on == "component") {
+      config.snapshot_mode = SnapshotMode::component;
+    } else if (snapshot_on == "all") {
+      config.snapshot_mode = SnapshotMode::all;
     }
   });
 
