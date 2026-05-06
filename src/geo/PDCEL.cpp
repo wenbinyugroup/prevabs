@@ -27,6 +27,34 @@
 
 #include <typeinfo>
 
+namespace {
+
+static const int kRepeatedSplitWarningThreshold = 3;
+static const double kNearDegenerateAngleWarningRad = 1e-3;
+
+double smallestAngleDelta(double a1, double a2) {
+  const double delta = std::fabs(a1 - a2);
+  return std::min(delta, 2.0 * PI - delta);
+}
+
+void warnIfAnglesTooClose(
+    PDCELVertex *vertex, PDCELHalfEdge *he1, PDCELHalfEdge *he2) {
+  if (vertex == nullptr || he1 == nullptr || he2 == nullptr) {
+    return;
+  }
+
+  const double delta = smallestAngleDelta(he1->angle(), he2->angle());
+  if (delta < kNearDegenerateAngleWarningRad) {
+    PLOG(warning) << "updateEdgeNeighbors: near-degenerate outgoing edge angles"
+                  << " at vertex " << vertex->printString()
+                  << " (delta=" << delta << " rad)"
+                  << ", edge1=" << he1->printString()
+                  << ", edge2=" << he2->printString();
+  }
+}
+
+} // namespace
+
 PDCEL::~PDCEL() {
   for (auto v : _vertices)
     delete v;
@@ -262,12 +290,28 @@ PDCELVertex *PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
   PDCELHalfEdgeLoop *hel21 = e21->loop();
   PDCELFace *f12 = e12->face();
   PDCELFace *f21 = e21->face();
+  const unsigned int lineage_id = e12->lineageId();
+
+  if (lineage_id != 0) {
+    const int split_count = ++_split_counts[lineage_id];
+    if (split_count >= kRepeatedSplitWarningThreshold) {
+      PLOG(warning) << "splitEdge: repeated splits on edge lineage #"
+                    << lineage_id << " (" << split_count
+                    << " splits in current phase), edge="
+                    << e12->printString();
+    }
+  }
 
   PDCELHalfEdge *e10 = new PDCELHalfEdge(v1, 1);
   PDCELHalfEdge *e01 = new PDCELHalfEdge(v0, -1);
 
   PDCELHalfEdge *e02 = new PDCELHalfEdge(v0, 1);
   PDCELHalfEdge *e20 = new PDCELHalfEdge(v2, -1);
+
+  e10->setLineageId(lineage_id);
+  e01->setLineageId(lineage_id);
+  e02->setLineageId(lineage_id);
+  e20->setLineageId(lineage_id);
 
   e10->setTwin(e01);
   e01->setTwin(e10);
@@ -359,9 +403,12 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
 
   PDCELHalfEdge *he12 = new PDCELHalfEdge(v1, 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(v2, -1);
+  const unsigned int lineage_id = allocateEdgeLineageId();
 
   he12->setLineSegment(ls);
   he21->setLineSegment(ls);
+  he12->setLineageId(lineage_id);
+  he21->setLineageId(lineage_id);
 
   ls->setHalfEdge(he12);
   ls->setHalfEdge(he21);
@@ -381,6 +428,7 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
 PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
   PDCELHalfEdge *he12 = new PDCELHalfEdge(ls->v1(), 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(ls->v2(), -1);
+  const unsigned int lineage_id = allocateEdgeLineageId();
 
   if (ls->v1()->edge() == nullptr) {
     ls->v1()->setIncidentEdge(he12);
@@ -395,6 +443,8 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
 
   he12->setLineSegment(ls);
   he21->setLineSegment(ls);
+  he12->setLineageId(lineage_id);
+  he21->setLineageId(lineage_id);
 
   he12->setTwin(he21);
   he21->setTwin(he12);
@@ -1080,6 +1130,7 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
   if (v->degree() == 0) {
     v->setIncidentEdge(he);
   } else if (v->degree() == 1) {
+    warnIfAnglesTooClose(v, he, v->edge());
     he->setPrev(v->edge()->twin());
     v->edge()->twin()->setNext(he);
     het->setNext(v->edge());
@@ -1142,6 +1193,11 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
       he12left = cycle_list.front();
     } else {
       he12left = *it;
+    }
+
+    warnIfAnglesTooClose(v, he, he12left);
+    if (he12left->twin() != nullptr && he12left->twin()->next() != nullptr) {
+      warnIfAnglesTooClose(v, he, he12left->twin()->next());
     }
 
     he->setPrev(he12left->twin());

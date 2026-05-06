@@ -147,6 +147,9 @@ void PComponent::addDependent(PComponent *component) {
 
 void PComponent::build(const BuilderConfig &bcfg) {
   PLogContext component_context("component: " + _name);
+  if (bcfg.dcel != nullptr) {
+    bcfg.dcel->resetSplitLineageCounters();
+  }
 
   // i_indent++;
 
@@ -196,6 +199,9 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 void PComponent::buildDetails(const BuilderConfig &bcfg) {
   PLogContext component_details_context("component details: " + _name);
+  if (bcfg.dcel != nullptr) {
+    bcfg.dcel->resetSplitLineageCounters();
+  }
 
 
   if (_type == ComponentType::fill) {

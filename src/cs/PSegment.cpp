@@ -654,6 +654,16 @@ void Segment::build(const BuilderConfig &bcfg) {
   validateStateInvariants("build");
 
   const std::size_t loop_steps = countLoopSteps(hel->incidentEdge());
+  const std::size_t nominal_loop_steps =
+      _curve_base->vertices().size() + _curve_offset->vertices().size();
+  const std::size_t warn_loop_steps =
+      std::max<std::size_t>(nominal_loop_steps * 3, nominal_loop_steps + 12);
+  if (loop_steps > warn_loop_steps) {
+    PLOG(warning) << "segment shell loop walked more steps than expected"
+                  << " for segment '" << _name << "': "
+                  << loop_steps << " steps vs expected <= "
+                  << warn_loop_steps;
+  }
   PLOG(info) << "built segment " << _name
              << ": " << _curve_base->vertices().size() << " base verts, "
              << _curve_offset->vertices().size() << " offset verts, "

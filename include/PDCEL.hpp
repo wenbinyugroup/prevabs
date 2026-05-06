@@ -66,9 +66,12 @@ private:
   std::unordered_map<PDCELHalfEdgeLoop *, bool> _loop_keep;
   /// Sweep-line adjacent-loop link: inner loop → its enclosing outer loop.
   std::unordered_map<PDCELHalfEdgeLoop *, PDCELHalfEdgeLoop *> _loop_adjacent;
+  std::unordered_map<unsigned int, int> _split_counts;
+  unsigned int _next_edge_lineage_id = 1;
 
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
+  unsigned int allocateEdgeLineageId() { return _next_edge_lineage_id++; }
 
   /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.
   PDCELVertex *findCoincidentVertex(PDCELVertex *v) const;
@@ -145,6 +148,7 @@ public:
                                      PDCELVertex *v2) const;
 
   void addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices);
+  void resetSplitLineageCounters() { _split_counts.clear(); }
 
   // =================================================================
   // HALF EDGE LOOP

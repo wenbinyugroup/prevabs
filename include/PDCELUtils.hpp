@@ -5,6 +5,7 @@
 
 #include "PDCELHalfEdge.hpp"
 #include "plog.hpp"
+#include <algorithm>
 #include <stdexcept>
 #include <string>
 
@@ -15,6 +16,7 @@ static const int kDCELLoopHardCap = 65536;
 // Emit at most one PLOG(debug) per this many iterations to prevent log bloat
 // during long (but valid) traversals in debug mode.
 static const int kDCELDebugLogInterval = 128;
+static const int kDCELWarnLoopSteps = 128;
 
 // Traverse do { op(he); he = he->next(); } while (he != start) safely.
 // Throws std::runtime_error containing "DCEL loop walk exceeded" if more
@@ -34,6 +36,11 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
     // Rate-limited: one debug log per kDCELDebugLogInterval steps.
     if (iter % kDCELDebugLogInterval == 0) {
       PLOG(debug) << "walkLoopWithLimit: step " << iter;
+    }
+    if (iter == kDCELWarnLoopSteps) {
+      PLOG(warning) << "walkLoopWithLimit: unusually long loop walk (>= "
+                    << kDCELWarnLoopSteps << " steps) starting at "
+                    << start->printString();
     }
     ++iter;
     op(he);

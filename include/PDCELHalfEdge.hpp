@@ -24,6 +24,7 @@ private:
   PDCELFace *_face = nullptr;
   PGeoLineSegment *_line_segment;
   int _sign;
+  unsigned int _lineage_id = 0;
 
 public:
   PDCELHalfEdge()
@@ -61,6 +62,7 @@ public:
   bool isFinite();
 
   int sign() { return _sign; }
+  unsigned int lineageId() const { return _lineage_id; }
 
   SVector3 toVector();
   PGeoLineSegment *toLineSegment();
@@ -76,6 +78,7 @@ public:
   void setIncidentFace(PDCELFace *face) { _face = face; }
   void setLineSegment(PGeoLineSegment *line_segment) { _line_segment = line_segment; }
   void setSign(int sign) { _sign = sign; }
+  void setLineageId(unsigned int lineage_id) { _lineage_id = lineage_id; }
 
   void clearLineSegment() { _line_segment = nullptr; }
 
