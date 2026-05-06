@@ -1269,22 +1269,29 @@ TEST_CASE("PDCELFace::getOuterHalfEdgeWithSource throws on broken cycle",
 }
 
 // ==================================================================
-// Debug-log frequency limit — walkLoopWithLimit emits at most one
-// PLOG(debug) per kDCELDebugLogInterval steps.
+// walkLoopWithLimit logging — one start debug log plus one warning when
+// the walk exceeds kDCELWarnLoopSteps.
 // ==================================================================
 
-// Sink that counts debug-level messages received.
+// Sink that counts debug/warn messages received.
 struct CountingDebugSink : public spdlog::sinks::base_sink<std::mutex> {
   size_t debug_count = 0;
+  size_t warning_count = 0;
+  std::vector<std::string> messages;
 protected:
   void sink_it_(const spdlog::details::log_msg &msg) override {
     if (msg.level == spdlog::level::debug) ++debug_count;
+    if (msg.level == spdlog::level::warn) ++warning_count;
+    messages.emplace_back(msg.payload.data(), msg.payload.size());
   }
   void flush_() override {}
 };
 
-TEST_CASE("walkLoopWithLimit: debug logs bounded by kDCELDebugLogInterval",
+TEST_CASE("walkLoopWithLimit: logs start once and warns once on long walks",
           "[dcel][error]") {
+  const DebugLevel previous_debug_level = config.debug_level;
+  config.debug_level = DebugLevel::geo;
+
   // Install a debug-level counting logger, replacing the default warn logger.
   auto sink = std::make_shared<CountingDebugSink>();
   spdlog::drop("prevabs");
@@ -1316,9 +1323,24 @@ TEST_CASE("walkLoopWithLimit: debug logs bounded by kDCELDebugLogInterval",
     logger->set_level(spdlog::level::warn);
     spdlog::register_logger(logger);
   }
+  config.debug_level = previous_debug_level;
 
-  // Expected: ceil(N / kDCELDebugLogInterval) log calls, not one per step.
-  size_t max_expected = static_cast<size_t>(N / kDCELDebugLogInterval + 1);
-  CHECK(sink->debug_count <= max_expected);
-  CHECK(sink->debug_count < static_cast<size_t>(N));
+  REQUIRE(sink->debug_count == 1);
+  REQUIRE(sink->warning_count == 1);
+
+  bool saw_start = false;
+  bool saw_warning = false;
+  for (const std::string &message : sink->messages) {
+    if (message.find("walkLoopWithLimit: start") != std::string::npos &&
+        message.find("step=0") != std::string::npos) {
+      saw_start = true;
+    }
+    if (message.find("walkLoopWithLimit: unusually long loop walk") !=
+            std::string::npos &&
+        message.find("current=he#") != std::string::npos) {
+      saw_warning = true;
+    }
+  }
+  CHECK(saw_start);
+  CHECK(saw_warning);
 }

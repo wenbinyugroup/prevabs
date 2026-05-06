@@ -3,6 +3,7 @@
 #include "overloadOperator.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELFace.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo_types.hpp"
@@ -15,6 +16,45 @@ std::string PDCELHalfEdge::label() const {
   std::stringstream ss;
   ss << "he#" << _id;
   return ss.str();
+}
+
+std::string formatLoopWalkHalfEdge(PDCELHalfEdge *he) {
+  if (he == nullptr) {
+    return "nullptr";
+  }
+
+  std::ostringstream ss;
+  ss << he->label() << " ";
+
+  if (he->source() == nullptr) {
+    ss << "nullptr";
+  } else {
+    ss << he->source()->label();
+  }
+
+  ss << " -> ";
+
+  if (he->twin() == nullptr || he->target() == nullptr) {
+    ss << "nullptr";
+  } else {
+    ss << he->target()->label();
+  }
+
+  ss << " | loop: ";
+  if (he->loop() == nullptr) {
+    ss << "nullptr";
+  } else {
+    ss << he->loop()->label();
+  }
+
+  return ss.str();
+}
+
+std::string formatLoopWalkFace(PDCELHalfEdge *he) {
+  if (he == nullptr || he->face() == nullptr) {
+    return "nullptr";
+  }
+  return he->face()->displayLabel();
 }
 
 std::ostream &operator<<(std::ostream &out, PDCELHalfEdge *he) {

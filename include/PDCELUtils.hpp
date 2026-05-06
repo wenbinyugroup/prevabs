@@ -6,6 +6,7 @@
 #include "PDCELHalfEdge.hpp"
 #include "plog.hpp"
 #include <algorithm>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -13,10 +14,10 @@
 // cross-section mesh; tight enough to terminate quickly on a broken cycle.
 static const int kDCELLoopHardCap = 65536;
 
-// Emit at most one PLOG(debug) per this many iterations to prevent log bloat
-// during long (but valid) traversals in debug mode.
-static const int kDCELDebugLogInterval = 128;
 static const int kDCELWarnLoopSteps = 128;
+
+std::string formatLoopWalkHalfEdge(PDCELHalfEdge *he);
+std::string formatLoopWalkFace(PDCELHalfEdge *he);
 
 // Traverse do { op(he); he = he->next(); } while (he != start) safely.
 // Throws std::runtime_error containing "DCEL loop walk exceeded" if more
@@ -29,18 +30,27 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
   int iter = 0;
   do {
     if (iter >= max_iter) {
-      throw std::runtime_error(
-          std::string("DCEL loop walk exceeded ") + std::to_string(max_iter) +
-          " iterations starting at " + start->printString());
+      std::ostringstream oss;
+      oss << "DCEL loop walk exceeded " << max_iter
+          << " iterations"
+          << " | start=" << formatLoopWalkHalfEdge(start)
+          << " | current=" << formatLoopWalkHalfEdge(he)
+          << " | face=" << formatLoopWalkFace(he);
+      throw std::runtime_error(oss.str());
     }
-    // Rate-limited: one debug log per kDCELDebugLogInterval steps.
-    if (iter % kDCELDebugLogInterval == 0) {
-      PLOG_DEBUG_AT(geo) << "walkLoopWithLimit: step " << iter;
+    if (iter == 0) {
+      PLOG_DEBUG_AT(geo) << "walkLoopWithLimit: start"
+                         << " | step=0"
+                         << " | start=" << formatLoopWalkHalfEdge(start)
+                         << " | current=" << formatLoopWalkHalfEdge(he)
+                         << " | face=" << formatLoopWalkFace(he);
     }
     if (iter == kDCELWarnLoopSteps) {
-      PLOG(warning) << "walkLoopWithLimit: unusually long loop walk (>= "
-                    << kDCELWarnLoopSteps << " steps) starting at "
-                    << start->printString();
+      PLOG(warning) << "walkLoopWithLimit: unusually long loop walk"
+                    << " (>= " << kDCELWarnLoopSteps << " steps)"
+                    << " | start=" << formatLoopWalkHalfEdge(start)
+                    << " | current=" << formatLoopWalkHalfEdge(he)
+                    << " | face=" << formatLoopWalkFace(he);
     }
     ++iter;
     op(he);
