@@ -100,7 +100,7 @@ struct GeneralResult {
 
 void readSettingsSection(const rapidxml::xml_node<> *xn_settings) {
   if (!xn_settings) return;
-  PLOG(debug) << "reading settings...";
+  PLOG_DEBUG_AT(geo) << "reading settings...";
   rapidxml::xml_node<> *p_xn_tolerance{xn_settings->first_node("tolerance")};
   if (p_xn_tolerance) {
     std::string ss{p_xn_tolerance->value()};
@@ -121,7 +121,7 @@ void readSettingsSection(const rapidxml::xml_node<> *xn_settings) {
 void readAnalysisSection(
   const rapidxml::xml_node<> *xn_sg, PModel *pmodel
 ) {
-  PLOG(debug) << "reading analysis...";
+  PLOG_DEBUG_AT(geo) << "reading analysis...";
 
   int model_dim   = 1;
   int model       = 0;
@@ -159,7 +159,7 @@ void readAnalysisSection(
   if (k1 != 0.0 || k2 != 0.0 || k3 != 0.0) flag_curvature = 1;
   if (cos11 != 1.0 || cos21 != 0.0) flag_oblique = 1;
 
-  PLOG(debug) << "finished reading analysis.";
+  PLOG_DEBUG_AT(geo) << "finished reading analysis.";
 
   pmodel->setAnalysisModelDim(model_dim);
   pmodel->setAnalysisModel(model);
@@ -179,7 +179,7 @@ void readAnalysisSection(
 GeneralResult readGeneralSection(
   const rapidxml::xml_node<> *xn_general, PModel *pmodel
 ) {
-  PLOG(debug) << "reading general...";
+  PLOG_DEBUG_AT(geo) << "reading general...";
   GeneralResult gen;
 
   rapidxml::xml_node<> *nodeTranslate{xn_general->first_node("translate")};
@@ -274,7 +274,7 @@ GeneralResult readGeneralSection(
   }
   std::stringstream ss_tol;
   ss_tol << config.app.tol;
-  PLOG(debug) << "tolerance = " + ss_tol.str();
+  PLOG_DEBUG_AT(geo) << "tolerance = " + ss_tol.str();
 
   rapidxml::xml_node<> *p_xn_itf;
   p_xn_itf = xn_general->first_node("track_interface");
@@ -295,7 +295,7 @@ GeneralResult readGeneralSection(
     if (ss[0] != '\0') pmodel->setInterfaceTheta3DiffThreshold(std::stod(ss));
   }
 
-  PLOG(debug) << "finished reading general.";
+  PLOG_DEBUG_AT(geo) << "finished reading general.";
   return gen;
 }
 
@@ -310,8 +310,8 @@ void readGeometrySection(
   const GeneralResult &gen,
   PModel *pmodel
 ) {
-  PLOG(debug) << "finding includings...";
-  PLOG(debug) << "reading geometry...";
+  PLOG_DEBUG_AT(geo) << "finding includings...";
+  PLOG_DEBUG_AT(geo) << "reading geometry...";
 
   if (xn_include) {
     rapidxml::xml_node<> *p_xn_include_bsl{xn_include->first_node("baseline")};
@@ -320,7 +320,7 @@ void readGeometrySection(
         std::string filenameBaselines{
           filePath + p_xn_include_bsl->value() + ".xml"
         };
-        PLOG(debug) << "reading base line file: " + filenameBaselines;
+        PLOG_DEBUG_AT(geo) << "reading base line file: " + filenameBaselines;
 
         std::ifstream fileBaselines;
         openFile(fileBaselines, filenameBaselines);
@@ -362,15 +362,15 @@ void readGeometrySection(
   }
 
   if (config.debug_level >= DebugLevel::geo) {
-    PLOG(debug) << " ";
-    PLOG(debug) << "summary of base lines (before transformation)";
+    PLOG_DEBUG_AT(geo) << " ";
+    PLOG_DEBUG_AT(geo) << "summary of base lines (before transformation)";
     for (auto bsl : pmodel->baselines()) {
       bsl->print();
-      PLOG(debug) << " ";
+      PLOG_DEBUG_AT(geo) << " ";
     }
   }
 
-  PLOG(debug) << "transforming base geometry";
+  PLOG_DEBUG_AT(geo) << "transforming base geometry";
   for (auto v : pmodel->vertices()) {
     v->translate(gen.dx, gen.dy, gen.dz);
     v->scale(gen.sfactor);
@@ -378,15 +378,15 @@ void readGeometrySection(
   }
 
   if (config.debug_level >= DebugLevel::geo) {
-    PLOG(debug) << " ";
-    PLOG(debug) << "summary of base lines (after transformation)";
+    PLOG_DEBUG_AT(geo) << " ";
+    PLOG_DEBUG_AT(geo) << "summary of base lines (after transformation)";
     for (auto bsl : pmodel->baselines()) {
       bsl->print();
-      PLOG(debug) << " ";
+      PLOG_DEBUG_AT(geo) << " ";
     }
   }
 
-  PLOG(debug) << "finished reading geometry.";
+  PLOG_DEBUG_AT(geo) << "finished reading geometry.";
 }
 
 
@@ -398,7 +398,7 @@ void readMaterialsSection(
   const std::string &filePath,
   PModel *pmodel
 ) {
-  PLOG(debug) << "reading materials...";
+  PLOG_DEBUG_AT(geo) << "reading materials...";
 
   std::string fn_material_global = "";
 #ifdef __linux__
@@ -434,7 +434,7 @@ void readMaterialsSection(
   rapidxml::xml_node<> *p_xn_materials{xn_sg->first_node("materials")};
   if (p_xn_materials) readMaterials(p_xn_materials, pmodel);
 
-  PLOG(debug) << "finished reading materials.";
+  PLOG_DEBUG_AT(geo) << "finished reading materials.";
 }
 
 
@@ -446,7 +446,7 @@ void readLayupsSection(
   const std::string &filePath,
   PModel *pmodel
 ) {
-  PLOG(debug) << "reading layups...";
+  PLOG_DEBUG_AT(geo) << "reading layups...";
 
   if (xn_include) {
     for (auto *p_xn_include_lyp = xn_include->first_node("layup");
@@ -479,7 +479,7 @@ void readLayupsSection(
   rapidxml::xml_node<> *nodeLayups = xn_sg->first_node("layups");
   if (nodeLayups) readLayups(nodeLayups, pmodel);
 
-  PLOG(debug) << "finished reading layups.";
+  PLOG_DEBUG_AT(geo) << "finished reading layups.";
 }
 
 
@@ -492,7 +492,7 @@ void readComponentsSection(
   std::vector<Layup *> &p_layups,
   int &num_combined_layups
 ) {
-  PLOG(debug) << "reading components...";
+  PLOG_DEBUG_AT(geo) << "reading components...";
 
   std::vector<std::vector<std::string>> tmp_dependents_all;
 
@@ -504,7 +504,7 @@ void readComponentsSection(
     );
     cs->addComponent(p_component);
   }
-  PLOG(debug) << "finished reading components.";
+  PLOG_DEBUG_AT(geo) << "finished reading components.";
 
   // Resolve dependency names to pointers
   for (auto cmp : cs->components()) {
@@ -564,7 +564,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   if (p_xn_sg->first_attribute("type")) {
     cs_type = p_xn_sg->first_attribute("type")->value();
   }
-  PLOG(debug) << "find cross-section: " + csName;
+  PLOG_DEBUG_AT(geo) << "find cross-section: " + csName;
 
   CrossSection *cs = new CrossSection(csName);
 

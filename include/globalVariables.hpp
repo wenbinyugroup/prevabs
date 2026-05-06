@@ -10,7 +10,6 @@ class LayerType;
 class Material;
 class PModel;
 
-extern bool debug;
 extern bool scientific_format;
 
 // ---------------------------------------------------------------------------

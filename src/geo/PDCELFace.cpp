@@ -66,6 +66,9 @@ std::string PDCELFace::displayLabel() const {
 }
 
 void PDCELFace::print() {
+  if (config.debug_level < DebugLevel::geo) {
+    return;
+  }
   PLOG(debug) << label() << (_is_bounded ? " bounded" : " unbounded");
   // Print the outer boundary
   if (_outer == nullptr) {

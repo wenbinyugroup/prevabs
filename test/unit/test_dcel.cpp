@@ -18,7 +18,6 @@
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 
-bool         debug             = false;
 bool         scientific_format = false;
 PConfig      config;
 RuntimeState runtime;

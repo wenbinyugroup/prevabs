@@ -15,7 +15,7 @@
 // Route homog2d warnings to the prevabs debug logger instead of stderr.
 // Must be defined before homog2d.hpp is processed.
 #define HOMOG2D_LOG_WARNING(a) \
-  do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
+  do { std::ostringstream _h2oss; _h2oss << a; PLOG_DEBUG_AT(geo) << _h2oss.str(); } while(0)
 #include "homog2d.hpp"
 
 #include "geo_types.hpp"

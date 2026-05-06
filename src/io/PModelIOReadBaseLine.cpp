@@ -109,7 +109,7 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
     requireAttr(p_xn_line, "name", "<line>/<baseline>")->value()
   };
 
-    PLOG(debug) << "reading line: " + baselineName;
+    PLOG_DEBUG_AT(geo) << "reading line: " + baselineName;
 
   Baseline *line = new Baseline();
 

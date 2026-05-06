@@ -29,7 +29,6 @@
 // ---------------------------------------------------------------------------
 // Global definitions (declared extern in globalVariables.hpp)
 // ---------------------------------------------------------------------------
-bool debug = false;
 bool scientific_format = false;
 PConfig config;
 RuntimeState runtime;

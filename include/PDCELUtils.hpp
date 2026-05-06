@@ -35,7 +35,7 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
     }
     // Rate-limited: one debug log per kDCELDebugLogInterval steps.
     if (iter % kDCELDebugLogInterval == 0) {
-      PLOG(debug) << "walkLoopWithLimit: step " << iter;
+      PLOG_DEBUG_AT(geo) << "walkLoopWithLimit: step " << iter;
     }
     if (iter == kDCELWarnLoopSteps) {
       PLOG(warning) << "walkLoopWithLimit: unusually long loop walk (>= "

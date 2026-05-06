@@ -26,18 +26,17 @@ Baseline::Baseline(Baseline *bl) {
 }
 
 void Baseline::print() {
+  if (config.debug_level < DebugLevel::join) {
+    return;
+  }
 
   std::string msg;
-  // pmessage->print(i_type, "name: " + blname);
-    PLOG(debug) << "name: " + blname;
-  // pmessage->print(i_type, "type: " + bltype);
-    PLOG(debug) << "type: " + bltype;
-  // pmessage->print(i_type, "point: (x, y, z)");
-    PLOG(debug) << "point: (x, y, z)";
+  PLOG(debug) << "name: " + blname;
+  PLOG(debug) << "type: " + bltype;
+  PLOG(debug) << "point: (x, y, z)";
   for (int i = 0; i < _pvertices.size(); i++) {
     msg = std::to_string(i+1) + " [" + _pvertices[i]->name() + "]: " + _pvertices[i]->printString();
-    // pmessage->print(i_type, msg);
-        PLOG(debug) << msg;
+    PLOG(debug) << msg;
   }
 
   return;

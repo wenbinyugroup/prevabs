@@ -45,13 +45,13 @@
 
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
 
-  PLOG(debug) << "in function: readLayups";
+  PLOG_DEBUG_AT(geo) << "in function: readLayups";
 
   for (xml_node<> *nodeLayup = nodeLayups->first_node("layup"); nodeLayup;
        nodeLayup = nodeLayup->next_sibling("layup")) {
     std::string layupName{};
     layupName = requireAttr(nodeLayup, "name", "<layup>")->value();
-    PLOG(debug) << "reading layup: " + layupName;
+    PLOG_DEBUG_AT(geo) << "reading layup: " + layupName;
 
     // method: optional; defaults to "layer list" when attribute is absent
     std::string layupMethod{"layer list"};

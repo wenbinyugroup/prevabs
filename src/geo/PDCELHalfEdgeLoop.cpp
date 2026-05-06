@@ -15,6 +15,9 @@ std::string PDCELHalfEdgeLoop::label() const {
 }
 
 void PDCELHalfEdgeLoop::log() {
+  if (config.debug_level < DebugLevel::geo) {
+    return;
+  }
   PLOG(debug) << label() << " direction: "
               << ((direction() == 1) ? "outer" : "inner");
   PLOG(debug) << label() << " face: "

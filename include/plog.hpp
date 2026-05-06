@@ -1,5 +1,8 @@
 #pragma once
 
+#include "globalConstants.hpp"
+#include "globalVariables.hpp"
+
 #include <sstream>
 #include <string>
 #include <spdlog/spdlog.h>
@@ -72,6 +75,13 @@ private:
 #define PLOG(severity) \
   PLogStream(_PLOG_LEVEL_##severity, \
              __FILE__, __LINE__, static_cast<const char*>(__func__))
+
+inline bool shouldLogDebugAt(DebugLevel min_level) {
+  return config.debug_level >= min_level;
+}
+
+#define PLOG_DEBUG_AT(level) \
+  if (shouldLogDebugAt(DebugLevel::level)) PLOG(debug)
 
 // Call once after config is populated (sets up file + console sinks).
 void initLog();

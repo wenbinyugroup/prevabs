@@ -115,6 +115,9 @@ void PModel::setObliques(double cos11, double cos21) {
 
 
 void PModel::summary() {
+  if (config.debug_level < DebugLevel::summary) {
+    return;
+  }
 
   // std::cout << std::fixed;
   if (scientific_format) {
@@ -122,13 +125,13 @@ void PModel::summary() {
   }
 
   // std::cout << doubleLine80 << std::endl << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   // std::cout << markInfo << " SUMMARY" << std::endl << std::endl;
-    PLOG(debug) << "SUMMARY";
+  PLOG(info) << "SUMMARY";
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   // std::cout << "BASEPOINTS" << std::setw(8) << basepoints.size() <<
   // std::endl; std::cout << singleLine80 << std::endl; std::cout <<
@@ -136,15 +139,15 @@ void PModel::summary() {
   //           << "Y" << std::endl;
   // for (auto bp : basepoints)
   //   std::cout << bp << std::endl;
-    PLOG(debug) << "summary of base points";
+  PLOG(info) << "summary of base points";
   for (auto bp : _geo_repo.vertices()) {
     std::stringstream ss;
     ss << bp;
-        PLOG(debug) << ss.str();
+    PLOG(info) << ss.str();
   }
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   // std::cout << "BASELINES" << std::setw(8) << _baselines.size() << std::endl;
   // std::cout << singleLine80 << std::endl;
@@ -154,13 +157,13 @@ void PModel::summary() {
   //   std::cout << std::setw(16) << bl->getName() << std::setw(16)
   //             << bl->getType() << std::setw(16) << bl->getNumberOfBasepoints()
   //             << std::endl;
-    PLOG(debug) << "summary of base lines";
+  PLOG(info) << "summary of base lines";
   for (auto bsl : _geo_repo.baselines()) {
     bsl->print();
   }
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   std::cout << "MATERIALS" << std::setw(8) << _mat_repo.numMaterials() << std::endl;
   std::cout << singleLine80 << std::endl;
@@ -172,7 +175,7 @@ void PModel::summary() {
               << m->getDensity() << std::endl;
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   std::cout << "LAYER TYPES" << std::setw(8) << _mat_repo.numLayerTypes() << std::endl;
   std::cout << singleLine80 << std::endl;
@@ -193,15 +196,15 @@ void PModel::summary() {
               << l->getPlies().size() << std::setw(16) << l->getThickness()
               << std::endl;
 
-    PLOG(debug) << "summary of layups";
+  PLOG(info) << "summary of layups";
   for (auto lyp : _mat_repo.layups()) {
     lyp->print();
   }
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
-    PLOG(debug) << "summary of components";
+  PLOG(info) << "summary of components";
   for (auto cmp : _cross_section->components()) {
     cmp->print();
   }
