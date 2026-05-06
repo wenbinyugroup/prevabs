@@ -48,6 +48,33 @@ function(register_tests dir_name)
     endforeach()
 endfunction()
 
+function(register_logging_checks dir_name)
+    set(test_dir "${CMAKE_SOURCE_DIR}/${dir_name}")
+    file(GLOB check_files
+        RELATIVE "${test_dir}"
+        "${test_dir}/*.check.txt"
+    )
+
+    foreach(check_file IN LISTS check_files)
+        get_filename_component(case_name "${check_file}" NAME_WE)
+        string(REPLACE ".check" "" case_name "${case_name}")
+        add_test(
+            NAME "${dir_name}/${case_name}.logcheck"
+            COMMAND "${CMAKE_COMMAND}"
+                -DPREVABS:FILEPATH=${PREVABS}
+                -DTEST_DIR:PATH=${test_dir}
+                -DCASE_NAME=${case_name}
+                -P "${CMAKE_SOURCE_DIR}/RunLoggingCase.cmake"
+            WORKING_DIRECTORY "${test_dir}"
+        )
+        set_tests_properties("${dir_name}/${case_name}.logcheck" PROPERTIES
+            TIMEOUT 15
+            LABELS  "${dir_name};logging"
+        )
+        message(STATUS "  registered logcheck: ${dir_name}/${case_name}.logcheck")
+    endforeach()
+endfunction()
+
 # Discover every t* subdirectory and register its tests.
 file(GLOB _dirs
     LIST_DIRECTORIES TRUE
@@ -57,5 +84,6 @@ file(GLOB _dirs
 foreach(_dir IN LISTS _dirs)
     if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${_dir}")
         register_tests("${_dir}")
+        register_logging_checks("${_dir}")
     endif()
 endforeach()

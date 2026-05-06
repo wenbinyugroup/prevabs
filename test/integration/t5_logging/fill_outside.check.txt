@@ -1,0 +1,7 @@
+# Expect a graceful error log, not a crash.
+exit=0
+args=--nopopup
+contains=buildFilling: fill location is outside the shape
+contains=for component 'fill_outside'
+absent=fatal exception:
+absent=unhandled exception
