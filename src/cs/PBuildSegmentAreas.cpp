@@ -30,7 +30,7 @@ namespace {
 void logSkippingSegmentAreasAction(
     const char *caller, const std::string &segment_name,
     const std::string &reason) {
-  PLOG(debug) << "skipping " << caller << " for segment '"
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "skipping " << caller << " for segment '"
               << segment_name << "': " << reason;
 }
 
@@ -270,8 +270,8 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
           " in findLayerIntersectionOnFace at " +
           he_base->printString());
     }
-        PLOG(debug) << "";
-        PLOG(debug) << "he_tmp: " + he_tmp->printString();
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "";
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "he_tmp: " + he_tmp->printString();
 
     // Skip degenerate edges (source and target at the same position).
     // These can be created by splitEdge when the split vertex lands on an
@@ -284,24 +284,24 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
       bool not_parallel = calcLineIntersection2D(
           he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
 
-            PLOG(debug) << "u1_tmp = " << u1_tmp;
-            PLOG(debug) << "u2_tmp = " << u2_tmp;
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "u1_tmp = " << u1_tmp;
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "u2_tmp = " << u2_tmp;
 
       if (not_parallel) {
         if (fabs(u1_tmp) <= endpoint_tol) {
-                    PLOG(debug) << "  case 1: intersect at source";
+                    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "  case 1: intersect at source";
           v_layer = he_tmp->source();
           break;
         }
         else if (fabs(1 - u1_tmp) <= endpoint_tol) {
-                    PLOG(debug) << "  case 2: intersect at target";
+                    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "  case 2: intersect at target";
           v_layer = he_tmp->target();
           break;
         }
         else if (u1_tmp > 0 && u1_tmp < 1) {
-                    PLOG(debug) << "  case 3: intersect current edge";
+                    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "  case 3: intersect current edge";
           v_layer = he_tmp->toLineSegment()->getParametricVertex1(u1_tmp);
-                    PLOG(debug) << "  v_layer: " + v_layer->printString();
+                    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "  v_layer: " + v_layer->printString();
           v_layer = bcfg.dcel->splitEdge(he_tmp, v_layer);
           break;
         }
@@ -312,11 +312,11 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
     // Stop condition: reached the boundary of the offset curve
     if (go_prev && he_tmp->source() == stop_vertex) {
-            PLOG(debug) << "reach the last edge";
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "reach the last edge";
       break;
     }
     if (!go_prev && he_tmp->target() == stop_vertex) {
-            PLOG(debug) << "reach the last edge";
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "reach the last edge";
       break;
     }
 
@@ -325,7 +325,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
   } while (he_tmp != he_base);
 
-  PLOG(debug) << "findLayerIntersectionOnFace: skipping remaining search"
+  if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "findLayerIntersectionOnFace: skipping remaining search"
               << " for segment '" << _name << "' because no face-boundary"
               << " intersection was found before reaching the stop vertex";
   return v_layer;
@@ -347,15 +347,15 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
   const int offset_dir = layupSide();
 
   for (int i = 0; i < _layup->getLayers().size() - 1; ++i) {
-        PLOG(debug) << "layer " + std::to_string(i + 1);
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "layer " + std::to_string(i + 1);
 
     cumu_thk += _layup->getLayers()[i].getLamina()->getThickness() *
                 _layup->getLayers()[i].getStack();
 
-        PLOG(debug) << "cumu_thk = " << cumu_thk;
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "cumu_thk = " << cumu_thk;
 
     PGeoLineSegment *ls_offset = offsetLineSegment(ls_base, offset_dir, cumu_thk);
-        PLOG(debug) << "ls_offset: " + ls_offset->printString();
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "ls_offset: " + ls_offset->printString();
 
     PDCELVertex *v_layer = findLayerIntersectionOnFace(
         v_layer_prev, _face, ls_offset, go_prev, stop_vertex, bcfg);
@@ -366,7 +366,7 @@ std::vector<PDCELVertex *> Segment::buildOpenBoundLayerVertices(
       break;
     }
 
-        PLOG(debug) << "v_layer: " + v_layer->printString();
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "v_layer: " + v_layer->printString();
     layer_vertices.push_back(v_layer);
     v_layer_prev = v_layer;
   }
@@ -383,25 +383,25 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
     std::vector<PDCELVertex *> &first_bound_vertices,
     const BuilderConfig &bcfg) {
 
-    PLOG(debug) << 
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
       "1. creating the beginning bound of the first area";
 
   std::vector<PDCELVertex *> prev_bound_vertices;
 
   if (closed()) {
-        PLOG(debug) << "closed segment";
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "closed segment";
     prev_bound_vertices = splitBoundByLayup(
         _curve_base->vertices()[0], _curve_offset->vertices()[0], bcfg);
     first_bound_vertices = prev_bound_vertices;
   }
   else {
-        PLOG(debug) << "open segment";
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "open segment";
 
     PDCELVertex *vb = _curve_base->vertices()[0];
     PDCELVertex *vo = _curve_offset->vertices()[0];
-        PLOG(debug) << 
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
         "first vertex of the base: " + vb->printString();
-        PLOG(debug) << 
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
         "first vertex of the offset: " + vo->printString();
 
     const bool use_offset_as_base =
@@ -423,9 +423,9 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
       const int dir = -layup_side;
       ls_base = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
       owns_ls_base_vertices = true;
-            PLOG(debug) << "degenerated case";
-            PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
-            PLOG(debug) << " ls_base: " + ls_base->printString();
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "degenerated case";
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << " ls_base: " + ls_base->printString();
       delete ls_tmp;
     }
 
@@ -453,18 +453,18 @@ void Segment::createIntermediateAreas(
     std::vector<PDCELVertex *> &prev_bound_vertices,
     int &count, const BuilderConfig &bcfg) {
 
-    PLOG(debug) << "2. creating areas";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "2. creating areas";
 
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
-        PLOG(debug) << "area " + std::to_string(k);
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "area " + std::to_string(k);
     const int layup_side = layupSide();
 
     int vbi_tmp = _base_offset_indices_pairs[k].base;
     int voi_tmp = _base_offset_indices_pairs[k].offset;
     PDCELVertex *vb_tmp = _curve_base->vertices()[vbi_tmp];
     PDCELVertex *vo_tmp = _curve_offset->vertices()[voi_tmp];
-        PLOG(debug) << "  base vertex: " + vb_tmp->printString();
-        PLOG(debug) << 
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "  base vertex: " + vb_tmp->printString();
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
         "  offset vertex: " + vo_tmp->printString();
 
     PGeoLineSegment *ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
@@ -522,7 +522,7 @@ void Segment::buildLastArea(
     const std::vector<PDCELVertex *> &first_bound_vertices,
     int count, const BuilderConfig &bcfg) {
 
-    PLOG(debug) << "3. creating the last area";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "3. creating the last area";
 
   PArea *area = new PArea(this);
   count++;
@@ -577,9 +577,9 @@ void Segment::buildLastArea(
       const int dir = layup_side;
       ls_base_end = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
       owns_ls_base_end_vertices = true;
-            PLOG(debug) << "degenerated case";
-            PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
-            PLOG(debug) << " ls_base: " + ls_base_end->printString();
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "degenerated case";
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << " ls_tmp: " + ls_tmp->printString();
+            if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << " ls_base: " + ls_base_end->printString();
       delete ls_tmp;
     }
 
@@ -616,7 +616,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
     return;
   }
 
-    PLOG(debug) << "building areas of segment: " + _name;
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building areas of segment: " + _name;
 
   std::vector<PDCELVertex *> first_bound_vertices;
   std::vector<PDCELVertex *> prev_bound_vertices =

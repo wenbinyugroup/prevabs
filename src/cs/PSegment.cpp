@@ -32,7 +32,7 @@ namespace {
 void logSkippingSegmentAction(
     const char *caller, const std::string &segment_name,
     const std::string &reason) {
-  PLOG(debug) << "skipping " << caller << " for segment '"
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "skipping " << caller << " for segment '"
               << segment_name << "': " << reason;
 }
 
@@ -469,9 +469,9 @@ void Segment::printBaseOffsetPairs() {
     return;
   }
 
-    PLOG(debug) << "base vertices -- base_link_to_offset_indices";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "base vertices -- base_link_to_offset_indices";
 
-    PLOG(debug) << "number of pairs: " + std::to_string(_base_offset_indices_pairs.size());
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "number of pairs: " + std::to_string(_base_offset_indices_pairs.size());
 
   for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
     const BaseOffsetPair &pair = _base_offset_indices_pairs[i];
@@ -480,7 +480,7 @@ void Segment::printBaseOffsetPairs() {
       + " -- " + std::to_string(pair.offset) + ": "
       + _curve_offset->vertices()[pair.offset]->printString();
 
-        PLOG(debug) << s;
+        if (config.debug_level >= DebugLevel::join) PLOG(debug) << s;
   }
 
 }
@@ -546,7 +546,7 @@ void Segment::offsetCurveBase() {
           "existing offset-ready state violates invariants");
       return;
     }
-    PLOG(debug) << "offsetCurveBase: reusing existing offset curve for segment '"
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offsetCurveBase: reusing existing offset curve for segment '"
                 << _name << "'";
     return;
   }
@@ -561,7 +561,7 @@ void Segment::offsetCurveBase() {
     return;
   }
 
-  PLOG(debug) << "offsetting the base curve of segment: " + _name;
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offsetting the base curve of segment: " + _name;
 
   if (_curve_offset != nullptr) {
     PLOG(error) << "Segment::offsetCurveBase found stale offset state for segment '"
@@ -588,10 +588,10 @@ void Segment::offsetCurveBase() {
   _state = LifecycleState::OffsetReady;
   validateStateInvariants("offsetCurveBase");
 
-  PLOG(debug) << "base line: "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "base line: "
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
-  PLOG(debug) << "offset line: "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offset line: "
     << _curve_offset->vertices().front()->printString() << " -> "
     << _curve_offset->vertices().back()->printString();
 }
@@ -609,24 +609,24 @@ void Segment::build(const BuilderConfig &bcfg) {
     return;
   }
 
-  if (bcfg.debug) {
-    PLOG(debug) << "building the overall shape of segment: " + _name;
-    PLOG(debug) << "base line: "
+  if (bcfg.debug_level >= DebugLevel::join) {
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building the overall shape of segment: " + _name;
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "base line: "
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
   }
 
   PDCELHalfEdge *he;
 
-    PLOG(debug) << "creating half edges for the base curve";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating half edges for the base curve";
 
   // Log the number of vertices of the base curve
-    PLOG(debug) << "number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size());
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size());
 
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
     // Debug log the two vertices i and i+1
-        PLOG(debug) << "vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1);
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1);
 
     he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[i],
                                             _curve_base->vertices()[i + 1]);
@@ -637,14 +637,14 @@ void Segment::build(const BuilderConfig &bcfg) {
     }
   }
 
-    PLOG(debug) << "creating half edges for the offset curve";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating half edges for the offset curve";
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
     bcfg.dcel->addEdge(_curve_offset->vertices()[i],
                              _curve_offset->vertices()[i + 1]);
   }
 
   // Create half edge loop and face
-    PLOG(debug) << "creating the half edge loop and face";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating the half edge loop and face";
   PDCELHalfEdgeLoop *hel;
   he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[0],
                                           _curve_base->vertices()[1]);

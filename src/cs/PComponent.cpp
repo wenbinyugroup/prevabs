@@ -14,7 +14,7 @@ namespace {
 void logSkippingComponentAction(
     const char *caller, const std::string &component_name,
     const std::string &reason) {
-  PLOG(debug) << "skipping " << caller << " for component '"
+  if (config.debug_level >= DebugLevel::phase) PLOG(debug) << "skipping " << caller << " for component '"
               << component_name << "': " << reason;
 }
 
@@ -92,6 +92,7 @@ static int resolveComponentOrder(
 int PComponent::count_tmp = 0;
 
 void PComponent::print() {
+  if (config.debug_level < DebugLevel::join) return;
   std::cout << "name: " << _name << " | "
             << "order: " << _order << " | "
             << "cyclic: " << (_laminate.cycle ? "true" : "false")
@@ -99,21 +100,22 @@ void PComponent::print() {
 }
 
 void PComponent::print(int /*i_type*/, int /*i_indent*/) {
-    PLOG(debug) << "name: " + _name;
-    PLOG(debug) << "order: " + std::to_string(_order);
-    PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
-    PLOG(debug) << "segments:";
+  if (config.debug_level < DebugLevel::join) return;
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "name: " + _name;
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "order: " + std::to_string(_order);
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "segments:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(16) << "name"
      << std::setw(16) << "base line"
      << std::setw(32) << "layup"
      << std::setw(16) << "side"
      << std::setw(8) << "level";
-    PLOG(debug) << ss.str();
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << ss.str();
   for (int i = 0; i < _laminate.segments.size(); i++) {
     std::stringstream ss_seg;
     ss_seg << std::setw(4) << (i+1) << _laminate.segments[i];
-        PLOG(debug) << ss_seg.str();
+        if (config.debug_level >= DebugLevel::join) PLOG(debug) << ss_seg.str();
   }
   return;
 }
@@ -218,7 +220,7 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
 
 
   if (_type == ComponentType::fill) {
-    PLOG(debug) << "buildDetails: skipping filling component '" << _name
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "buildDetails: skipping filling component '" << _name
                 << "' because step 2 only builds laminate segment areas.";
     return;
   }

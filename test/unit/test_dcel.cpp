@@ -120,7 +120,7 @@ struct FillComponentFixture {
     model.addMaterial(&material);
     model.addLayerType(&fill_layertype);
 
-    bcfg.debug = false;
+    bcfg.debug_level = DebugLevel::off;
     bcfg.tool = AnalysisTool::VABS;
     bcfg.tol = 1e-12;
     bcfg.geo_tol = 1e-9;
@@ -175,7 +175,7 @@ struct LaminateComponentFixture {
     model.addLayerType(&layertype);
     layup.addLayer(&lamina, 0.0, 1, &layertype);
 
-    bcfg.debug = false;
+    bcfg.debug_level = DebugLevel::off;
     bcfg.tool = AnalysisTool::VABS;
     bcfg.tol = 1e-12;
     bcfg.geo_tol = 1e-9;
@@ -505,7 +505,7 @@ TEST_CASE("buildAreas: last area uses final pair instead of area count",
 
   PModel model;
   BuilderConfig bcfg{};
-  bcfg.debug = false;
+  bcfg.debug_level = DebugLevel::off;
   bcfg.tool = AnalysisTool::VABS;
   bcfg.tol = 1e-12;
   bcfg.geo_tol = 1e-9;
@@ -620,7 +620,7 @@ TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
 
   PModel model;
   BuilderConfig bcfg{};
-  bcfg.debug = false;
+  bcfg.debug_level = DebugLevel::off;
   bcfg.tool = AnalysisTool::VABS;
   bcfg.tol = 1e-12;
   bcfg.geo_tol = 1e-9;
@@ -678,7 +678,7 @@ TEST_CASE("buildAreas: right-side open segment builds head and tail layer faces"
 
   PModel model;
   BuilderConfig bcfg{};
-  bcfg.debug = false;
+  bcfg.debug_level = DebugLevel::off;
   bcfg.tool = AnalysisTool::VABS;
   bcfg.tol = 1e-12;
   bcfg.geo_tol = 1e-9;

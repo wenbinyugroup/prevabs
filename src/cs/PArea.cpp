@@ -113,10 +113,10 @@ void PArea::addNextBoundVertex(PDCELVertex *v) {
 void PArea::buildLayers(const BuilderConfig &bcfg) {
   // std::cout << std::endl;
   // std::cout << "- building layers for area: " << _face->name() << std::endl;
-  // if (bcfg.debug) {
+  // if (bcfg.debug_level >= DebugLevel::join) {
   //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
   // }
-    PLOG(debug) << "building layers for area: " + bcfg.model->faceData(_face).name;
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building layers for area: " + bcfg.model->faceData(_face).name;
 
   // std::cout << "        area face:" << std::endl;
   // _face->print();
@@ -152,7 +152,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   for (int i = 0; i < _prev_bound_vertices.size(); ++i) {
     // std::cout << std::endl;
     // std::cout << "[debug] layer " << i + 1 << std::endl;
-    if (bcfg.debug) {
+    if (bcfg.debug_level >= DebugLevel::join) {
       // fprintf(config.fdeb, "        layer %d\n", i + 1);
     }
 
@@ -196,7 +196,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
     //   std::cout << "        new layer face:" << std::endl;
     //   _faces.back()->print();
     // }
-    if (bcfg.debug) {
+    if (bcfg.debug_level >= DebugLevel::join) {
       // fprintf(config.fdeb, "        new layer face:\n");
       // writeFace(config.fdeb, _faces.back());
     }
@@ -224,7 +224,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   //   std::cout << "        new layer face:" << std::endl;
   //   _faces.back()->print();
   // }
-  if (bcfg.debug) {
+  if (bcfg.debug_level >= DebugLevel::join) {
     // fprintf(config.fdeb, "        new layer face:\n");
     // writeFace(config.fdeb, _faces.back());
   }

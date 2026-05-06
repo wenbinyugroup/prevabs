@@ -46,11 +46,12 @@ PModel::PModel(std::string name) {
 
 void PModel::initialize() {
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::phase) {
     runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
     if (!runtime.fdeb) {
-      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb << std::endl;
-      config.debug = false;
+      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb
+                << std::endl;
+      config.debug_level = DebugLevel::off;
     }
   }
 
@@ -72,7 +73,7 @@ void PModel::finalize() {
   gmsh::finalize();
   // GmshFinalize();
 
-  if (config.debug && runtime.fdeb) {
+  if (config.debug_level >= DebugLevel::phase && runtime.fdeb) {
     fclose(runtime.fdeb);
     runtime.fdeb = nullptr;
   }
@@ -216,7 +217,7 @@ void PModel::build() {
   _dcel->initialize();
 
   BuilderConfig bcfg{
-    config.debug, config.tool, config.app.tol, config.app.geo_tol,
+    config.debug_level, config.tool, config.app.tol, config.app.geo_tol,
     _dcel, this
   };
   bcfg.model = this;

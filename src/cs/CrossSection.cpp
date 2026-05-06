@@ -197,7 +197,7 @@ void CrossSection::build(const BuilderConfig &bcfg) {
     // _pmodel->dcel()->linkHalfEdgeLoops();
   }
 
-  if (bcfg.debug) {
+  if (bcfg.debug_level >= DebugLevel::phase) {
     // Print DCEL
     // _pmodel->dcel()->print_dcel();
 

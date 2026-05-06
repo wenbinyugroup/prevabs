@@ -41,6 +41,7 @@ RuntimeState runtime;
 
 void addParserArguments(CLI::App &app) {
   static std::string snapshot_on = "never";
+  static std::string debug_level_str = "";
 
   // Required input
   app.add_option("-i,--input", config.main_input, "Input file")->required();
@@ -85,7 +86,12 @@ void addParserArguments(CLI::App &app) {
   )->default_val(2)->check(CLI::IsMember({0, 1, 2, 3, 5}));
 
   // Developer options
-  app.add_flag("-d,--debug", config.debug, "Debug mode")->default_val(false);
+  app.add_option("-d,--debug", debug_level_str,
+                 "Debug verbosity: summary|phase|join|geo|all; "
+                 "plain -d/--debug defaults to 'join'")
+     ->expected(0, 1)
+     ->default_str("join")  // value used when --debug given with no argument
+     ->check(CLI::IsMember({"", "summary", "phase", "join", "geo", "all"}));
   app.add_option(
       "--snapshot-on", snapshot_on,
       "Write debug geometry snapshots: never, phase, component, all")
@@ -125,6 +131,17 @@ void addParserArguments(CLI::App &app) {
     } else if (snapshot_on == "all") {
       config.snapshot_mode = SnapshotMode::all;
     }
+
+    if (debug_level_str == "summary")
+      config.debug_level = DebugLevel::summary;
+    else if (debug_level_str == "phase")
+      config.debug_level = DebugLevel::phase;
+    else if (debug_level_str == "join")
+      config.debug_level = DebugLevel::join;
+    else if (debug_level_str == "geo")
+      config.debug_level = DebugLevel::geo;
+    else if (debug_level_str == "all")
+      config.debug_level = DebugLevel::all;
   });
 
   // Format help columns
@@ -166,7 +183,7 @@ void processConfigVariables() {
       break;
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::phase) {
     config.app.log_level = LOG_LEVEL_DEBUG;
   }
 
@@ -329,7 +346,7 @@ int main(int argc, char **argv) {
     // Re-apply CLI flags that were explicitly set (they take highest priority)
     if (app["--gmsh-verbosity"]->count())
       config.app.gmsh_verbosity = cli_overrides.gmsh_verbosity;
-    if (config.debug)
+    if (config.debug_level >= DebugLevel::phase)
       config.app.log_level = LOG_LEVEL_DEBUG;
 
     initLog();

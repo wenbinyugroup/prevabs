@@ -425,7 +425,7 @@ int readXMLElementComponentLaminate(
 
     }
 
-    if (config.debug) {
+    if (config.debug_level >= DebugLevel::geo) {
       std::ostringstream oss;
       oss << "sorted list of points:";
       for (std::size_t i = 0; i < v_u_sorted.size(); ++i) {

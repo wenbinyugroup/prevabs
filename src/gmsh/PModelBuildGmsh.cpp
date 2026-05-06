@@ -507,7 +507,7 @@ void PModel::buildGmsh() {
   createGmshPhyscialGroups();
 
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     // Create Gmsh model and write Gmsh files for debugging
 
     plotGeoDebug(false);

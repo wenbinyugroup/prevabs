@@ -361,7 +361,7 @@ void readGeometrySection(
     );
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     PLOG(debug) << " ";
     PLOG(debug) << "summary of base lines (before transformation)";
     for (auto bsl : pmodel->baselines()) {
@@ -377,7 +377,7 @@ void readGeometrySection(
     v->rotate(gen.rangle);
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     PLOG(debug) << " ";
     PLOG(debug) << "summary of base lines (after transformation)";
     for (auto bsl : pmodel->baselines()) {

@@ -72,6 +72,17 @@ enum class SnapshotMode {
   all
 };
 
+/// Debug verbosity levels for --debug.
+/// Each level is a superset of the one above it.
+enum class DebugLevel {
+  off,      ///< No debug output (default)
+  summary,  ///< Summaries + warning + error (info-level, same as off in practice)
+  phase,    ///< + phase entry/exit diagnostics
+  join,     ///< + join/segment algorithm details (current --debug default)
+  geo,      ///< + DCEL geometry operations in offset.cpp (very verbose)
+  all       ///< Alias for geo
+};
+
 enum GeoConst {
   DEGREE,
   RADIAN,
