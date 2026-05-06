@@ -9,6 +9,7 @@
 #include "utilities.hpp"
 
 #include "geo_types.hpp"
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -45,20 +46,25 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
   _is_bounded = build;
 }
 
-void PDCELFace::print() {
+std::string PDCELFace::label() const {
+  std::stringstream ss;
+  ss << "f#" << _id;
+  return ss.str();
+}
 
-  PDCELHalfEdge *he;
+void PDCELFace::print() {
+  PLOG(debug) << label() << (_is_bounded ? " bounded" : " unbounded");
   // Print the outer boundary
   if (_outer == nullptr) {
-    PLOG(debug) << "unbounded face.";
+    PLOG(debug) << label() << ": outer boundary is nullptr";
   } else {
-    PLOG(debug) << "outer boundary: ";
+    PLOG(debug) << label() << ": outer boundary";
     walkLoopWithLimit(_outer, [](PDCELHalfEdge *he) {
       PLOG(debug) << he->printString();
     });
 
     for (auto _inner : _inners) {
-      PLOG(debug) << "inner boundary: ";
+      PLOG(debug) << label() << ": inner boundary";
       walkLoopWithLimit(_inner, [](PDCELHalfEdge *he) {
         PLOG(debug) << he->printString();
       });

@@ -5,6 +5,8 @@
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 
+#include <string>
+
 class PDCELHalfEdge;
 class PDCELFace;
 class PDCELVertex;
@@ -18,6 +20,7 @@ private:
   PDCELHalfEdge *_incident_edge;
   PDCELFace *_face;
   int _direction;
+  unsigned int _id = 0;
 
 public:
   PDCELHalfEdgeLoop()
@@ -25,10 +28,12 @@ public:
 
   void log();
   void print();
+  std::string label() const;
 
   int direction();
   PDCELHalfEdge *incidentEdge() { return _incident_edge; }
   PDCELFace *face() { return _face; }
+  unsigned int id() const { return _id; }
   /// The bottom-left vertex of this loop (source of the incident edge).
   PDCELVertex *bottomLeftVertex();
   // int isOuterOrInnerBoundary();
@@ -38,6 +43,7 @@ public:
   // void setFace(PDCELFace *f) { _face = f; }
   void setFace(PDCELFace *f);
   void setDirection(int direction) { _direction = direction; }
+  void setId(unsigned int id) { _id = id; }
 
   /// Update _incident_edge to track the half-edge with the bottom-left source.
   void updateIncidentEdge(PDCELHalfEdge *);

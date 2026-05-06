@@ -31,9 +31,7 @@ std::string faceLabel(PDCELFace *face, PModel *model) {
     return "nullptr";
   }
 
-  std::ostringstream oss;
-  oss << static_cast<void *>(face);
-  std::string label = "face@" + oss.str();
+  std::string label = face->label();
   if (model != nullptr) {
     const std::string &name = model->faceData(face).name;
     if (!name.empty()) {

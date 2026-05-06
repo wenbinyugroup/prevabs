@@ -6,30 +6,20 @@
 #include "plog.hpp"
 
 #include <iostream>
+#include <sstream>
 
+std::string PDCELHalfEdgeLoop::label() const {
+  std::stringstream ss;
+  ss << "loop#" << _id;
+  return ss.str();
+}
 
 void PDCELHalfEdgeLoop::log() {
-  std::stringstream ss;
-
-  // ss << "direction: ";
-  // if (direction() == 1) {
-  //   ss << "outer" << std::endl;
-  // } else if (direction() == -1) {
-  //   ss << "inner" << std::endl;
-  // }
-  PLOG(debug) << "direction: " << ((direction() == 1) ? "outer" : "inner");
-
-
-  // ss.str("");
-  // ss << "face: ";
-  // if (_face != nullptr) {
-  //   ss << _face->name() << std::endl;
-  // } else {
-  //   ss << "nullptr" << std::endl;
-  // }
-  PLOG(debug) << "face: " << (_face ? "(face)" : "nullptr");
-
-  PLOG(debug) << "half edges:";
+  PLOG(debug) << label() << " direction: "
+              << ((direction() == 1) ? "outer" : "inner");
+  PLOG(debug) << label() << " face: "
+              << (_face ? _face->label() : "nullptr");
+  PLOG(debug) << label() << " half edges:";
   walkLoopWithLimit(_incident_edge, [](PDCELHalfEdge *he) {
     PLOG(debug) << he->printString();
   });
@@ -53,7 +43,7 @@ void PDCELHalfEdgeLoop::print() {
 
   std::cout << "face: ";
   if (_face != nullptr) {
-    std::cout << "(face)" << std::endl;
+    std::cout << _face->label() << std::endl;
   } else {
     std::cout << "nullptr" << std::endl;
   }

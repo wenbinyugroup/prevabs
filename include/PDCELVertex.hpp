@@ -23,6 +23,7 @@ private:
   SPoint3        _point;
   bool           _registered = false; // true once added to a DCEL
   PDCELHalfEdge *_incident_edge = nullptr;
+  unsigned int   _id = 0;
 
 public:
   PDCELVertex() = default;
@@ -44,6 +45,7 @@ public:
   friend std::ostream &operator<<(std::ostream &, PDCELVertex *);
   void print();
   std::string printString();
+  std::string label() const;
   void printWithAddress();
   void printAllLeavingHalfEdges(const int &direction = 1);
 
@@ -68,6 +70,7 @@ public:
   bool isFinite();
 
   bool isRegistered() const { return _registered; }
+  unsigned int id() const { return _id; }
   PDCELHalfEdge *edge() { return _incident_edge; }
   int degree();
   PDCELHalfEdge *getEdgeTo(PDCELVertex *);
@@ -78,6 +81,7 @@ public:
   void setPoint(SPoint3 &);
 
   void setRegistered(bool r) { _registered = r; }
+  void setId(unsigned int id) { _id = id; }
   void setIncidentEdge(PDCELHalfEdge *);
 };
 

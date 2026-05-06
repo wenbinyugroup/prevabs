@@ -10,6 +10,7 @@
 #include "geo_types.hpp"
 
 #include <cmath>
+#include <string>
 #include <vector>
 
 class PDCELHalfEdge;
@@ -35,6 +36,7 @@ private:
 
   // True for bounded (real) faces; false for the unbounded background face.
   bool _is_bounded;
+  unsigned int _id = 0;
 
 public:
   PDCELFace();
@@ -42,6 +44,7 @@ public:
   PDCELFace(PDCELHalfEdge *, bool);
 
   void print();
+  std::string label() const;
 
   PArea *area() { return _area; }
   PDCELHalfEdge *outer() { return _outer; }
@@ -57,6 +60,7 @@ public:
   double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / PI; }
 
   bool isBounded() { return _is_bounded; }
+  unsigned int id() const { return _id; }
 
   PDCELHalfEdge *getOuterHalfEdgeWithSource(PDCELVertex *);
   PDCELHalfEdge *getOuterHalfEdgeWithTarget(PDCELVertex *);
@@ -76,5 +80,6 @@ public:
   SVector3 calcy2FromTheta1(double, bool deg = true);
 
   void setBounded(bool b) { _is_bounded = b; }
+  void setId(unsigned int id) { _id = id; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
 };

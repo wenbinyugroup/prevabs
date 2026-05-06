@@ -67,10 +67,18 @@ private:
   /// Sweep-line adjacent-loop link: inner loop → its enclosing outer loop.
   std::unordered_map<PDCELHalfEdgeLoop *, PDCELHalfEdgeLoop *> _loop_adjacent;
   std::unordered_map<unsigned int, int> _split_counts;
+  unsigned int _next_vertex_id = 1;
+  unsigned int _next_halfedge_id = 1;
+  unsigned int _next_loop_id = 1;
+  unsigned int _next_face_id = 1;
   unsigned int _next_edge_lineage_id = 1;
 
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
+  unsigned int allocateVertexId() { return _next_vertex_id++; }
+  unsigned int allocateHalfEdgeId() { return _next_halfedge_id++; }
+  unsigned int allocateLoopId() { return _next_loop_id++; }
+  unsigned int allocateFaceId() { return _next_face_id++; }
   unsigned int allocateEdgeLineageId() { return _next_edge_lineage_id++; }
 
   /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.

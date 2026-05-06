@@ -70,10 +70,10 @@ PDCEL::~PDCEL() {
 
 void PDCEL::initialize() {
   // Create the infinity large bounding box
-  PDCELVertex *v_tr = new PDCELVertex(0, INF, INF, false);
-  PDCELVertex *v_tl = new PDCELVertex(0, -INF, INF, false);
-  PDCELVertex *v_bl = new PDCELVertex(0, -INF, -INF, false);
-  PDCELVertex *v_br = new PDCELVertex(0, INF, -INF, false);
+  PDCELVertex *v_tr = addVertex(new PDCELVertex(0, INF, INF, false));
+  PDCELVertex *v_tl = addVertex(new PDCELVertex(0, -INF, INF, false));
+  PDCELVertex *v_bl = addVertex(new PDCELVertex(0, -INF, -INF, false));
+  PDCELVertex *v_br = addVertex(new PDCELVertex(0, INF, -INF, false));
 
   PGeoLineSegment *ls_top = new PGeoLineSegment(v_tr, v_tl);
   PGeoLineSegment *ls_left = new PGeoLineSegment(v_tl, v_bl);
@@ -93,6 +93,7 @@ void PDCEL::initialize() {
   PDCELHalfEdgeLoop *hel = addHalfEdgeLoop(he_top);
 
   PDCELFace *f = new PDCELFace(he_top, false); // The unbounded face
+  f->setId(allocateFaceId());
 
   hel->setDirection(1);
   hel->setFace(f);
@@ -103,11 +104,6 @@ void PDCEL::initialize() {
   he_left->setIncidentFace(f);
   he_bottom->setIncidentFace(f);
   he_right->setIncidentFace(f);
-
-  _vertices.push_back(v_tr);
-  _vertices.push_back(v_tl);
-  _vertices.push_back(v_bl);
-  _vertices.push_back(v_br);
 
   _background_halfedges.push_back(std::unique_ptr<PDCELHalfEdge>(he_top->twin()));
   _background_halfedges.push_back(std::unique_ptr<PDCELHalfEdge>(he_left->twin()));
@@ -187,6 +183,7 @@ PDCELVertex *PDCEL::addVertex(PDCELVertex *v) {
   if (PDCELVertex *existing = findCoincidentVertex(v))
     return existing;
 
+  v->setId(allocateVertexId());
   _vertices.push_back(v);
   _vertex_tree.insert(v);
   v->setRegistered(true);
@@ -308,6 +305,11 @@ PDCELVertex *PDCEL::splitEdge(PDCELHalfEdge *e12, PDCELVertex *v0) {
   PDCELHalfEdge *e02 = new PDCELHalfEdge(v0, 1);
   PDCELHalfEdge *e20 = new PDCELHalfEdge(v2, -1);
 
+  e10->setId(allocateHalfEdgeId());
+  e01->setId(allocateHalfEdgeId());
+  e02->setId(allocateHalfEdgeId());
+  e20->setId(allocateHalfEdgeId());
+
   e10->setLineageId(lineage_id);
   e01->setLineageId(lineage_id);
   e02->setLineageId(lineage_id);
@@ -404,6 +406,8 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   PDCELHalfEdge *he12 = new PDCELHalfEdge(v1, 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(v2, -1);
   const unsigned int lineage_id = allocateEdgeLineageId();
+  he12->setId(allocateHalfEdgeId());
+  he21->setId(allocateHalfEdgeId());
 
   he12->setLineSegment(ls);
   he21->setLineSegment(ls);
@@ -429,6 +433,8 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
   PDCELHalfEdge *he12 = new PDCELHalfEdge(ls->v1(), 1);
   PDCELHalfEdge *he21 = new PDCELHalfEdge(ls->v2(), -1);
   const unsigned int lineage_id = allocateEdgeLineageId();
+  he12->setId(allocateHalfEdgeId());
+  he21->setId(allocateHalfEdgeId());
 
   if (ls->v1()->edge() == nullptr) {
     ls->v1()->setIncidentEdge(he12);
@@ -641,6 +647,7 @@ int PDCEL::isOuterOrInnerBoundary(PDCELHalfEdge *he1, PDCELHalfEdge *he2) {
 
 PDCELHalfEdgeLoop *PDCEL::addHalfEdgeLoop(PDCELHalfEdge *he) {
   PDCELHalfEdgeLoop *hel = new PDCELHalfEdgeLoop();
+  hel->setId(allocateLoopId());
 
   PDCELHalfEdge *hei = he;
   std::vector<PDCELHalfEdge *> visited;
@@ -739,6 +746,7 @@ void PDCEL::createTempLoops() {
   for (auto he : _halfedges) {
     if (he->loop() == nullptr) {
       PDCELHalfEdgeLoop *hel = new PDCELHalfEdgeLoop();
+      hel->setId(allocateLoopId());
       PDCELHalfEdge *hei = he;
       std::vector<PDCELHalfEdge *> visited;
       do {
@@ -923,6 +931,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
 
 PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
   PDCELFace *fnew = new PDCELFace();
+  fnew->setId(allocateFaceId());
 
   fnew->setOuterComponent(hel->incidentEdge());
   walkLoopWithLimit(hel->incidentEdge(), [fnew](PDCELHalfEdge *hei) {
@@ -973,6 +982,8 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
     if (is_new) {
       he12 = new PDCELHalfEdge(v1, 1);
       he21 = new PDCELHalfEdge(v2, -1);
+      he12->setId(allocateHalfEdgeId());
+      he21->setId(allocateHalfEdgeId());
       he12->setTwin(he21);
       he21->setTwin(he12);
     } else {
@@ -984,6 +995,7 @@ PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
   // ── Phase 3: topology mutations ───────────────────────────────────────────
   // All allocations succeeded; safe to patch prev/next/face/incidentEdge.
   PDCELFace *fnew = new PDCELFace();
+  fnew->setId(allocateFaceId());
   std::list<PDCELFace *> other_faces;
 
   PDCELHalfEdge *head = nullptr, *he12prev = nullptr, *he21next = nullptr;

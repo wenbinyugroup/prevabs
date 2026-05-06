@@ -8,6 +8,8 @@
 
 #include "geo_types.hpp"
 
+#include <string>
+
 class PDCELFace;
 class PDCELHalfEdgeLoop;
 class PDCELVertex;
@@ -24,6 +26,7 @@ private:
   PDCELFace *_face = nullptr;
   PGeoLineSegment *_line_segment;
   int _sign;
+  unsigned int _id = 0;
   unsigned int _lineage_id = 0;
 
 public:
@@ -47,6 +50,7 @@ public:
   friend std::ostream &operator<<(std::ostream &, PDCELHalfEdge *);
   std::string printString();
   std::string printBrief();
+  std::string label() const;
   void print();
   void print2();
 
@@ -62,6 +66,7 @@ public:
   bool isFinite();
 
   int sign() { return _sign; }
+  unsigned int id() const { return _id; }
   unsigned int lineageId() const { return _lineage_id; }
 
   SVector3 toVector();
@@ -78,6 +83,7 @@ public:
   void setIncidentFace(PDCELFace *face) { _face = face; }
   void setLineSegment(PGeoLineSegment *line_segment) { _line_segment = line_segment; }
   void setSign(int sign) { _sign = sign; }
+  void setId(unsigned int id) { _id = id; }
   void setLineageId(unsigned int lineage_id) { _lineage_id = lineage_id; }
 
   void clearLineSegment() { _line_segment = nullptr; }

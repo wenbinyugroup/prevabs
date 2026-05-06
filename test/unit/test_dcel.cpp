@@ -1087,6 +1087,61 @@ TEST_CASE("addHalfEdgeLoop: loop is created and incident edge set",
   CHECK(he31->loop() == hel);
 }
 
+TEST_CASE("DCEL ids are assigned and exposed in printable labels",
+          "[dcel][id]") {
+  PDCEL dcel;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+
+  REQUIRE(v1->id() > 0);
+  REQUIRE(v2->id() > 0);
+  REQUIRE(he12->id() > 0);
+  REQUIRE(he12->twin()->id() > 0);
+
+  CHECK(v1->label() == "v#" + std::to_string(v1->id()));
+  CHECK(he12->label() == "he#" + std::to_string(he12->id()));
+  CHECK(v1->printString().find(v1->label()) != std::string::npos);
+  CHECK(he12->printString().find(he12->label()) != std::string::npos);
+}
+
+TEST_CASE("DCEL ids are monotonic and not reused after split/remove",
+          "[dcel][id]") {
+  PDCEL dcel;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+  const unsigned int first_edge_id = he12->id();
+  const unsigned int first_twin_id = he12->twin()->id();
+
+  PDCELVertex *vmid = new PDCELVertex(0, 1.0, 0.0);
+  vmid = dcel.splitEdge(he12, vmid);
+  REQUIRE(vmid != nullptr);
+  CHECK(vmid->id() > v2->id());
+
+  unsigned int max_split_edge_id = 0;
+  for (PDCELHalfEdge *he : dcel.halfedges()) {
+    if (he->id() > max_split_edge_id) {
+      max_split_edge_id = he->id();
+    }
+  }
+  CHECK(max_split_edge_id > first_twin_id);
+
+  PDCELHalfEdge *he_v1_mid = dcel.findHalfEdgeBetween(v1, vmid);
+  REQUIRE(he_v1_mid != nullptr);
+  dcel.removeEdge(he_v1_mid);
+
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 3.0, 0.0));
+  PDCELHalfEdge *he_new = dcel.addEdge(v1, v3);
+  REQUIRE(he_new != nullptr);
+  CHECK(he_new->id() > max_split_edge_id);
+  CHECK(he_new->twin()->id() > he_new->id());
+  CHECK(he_new->id() != first_edge_id);
+  CHECK(he_new->twin()->id() != first_twin_id);
+}
+
 // ==================================================================
 // Loop guard tests — walkLoopWithLimit and inline DCEL guards
 // ==================================================================
