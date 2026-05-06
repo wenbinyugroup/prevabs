@@ -202,8 +202,7 @@ void PModel::summary() {
 
 
 void PModel::build() {
-  pushProgressContext("build geometry");
-  try {
+  PLogContext build_context("build geometry");
   _dcel = new PDCEL();
   _dcel->initialize();
 
@@ -224,12 +223,6 @@ void PModel::build() {
   // _dcel->vertextree()->printInOrder();
 
   _dcel->fixGeometry(bcfg);
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }
 
 
@@ -275,13 +268,13 @@ void PModel::plotGeoDebug(bool create_gmsh_geo) {
 
 
 void PModel::homogenize() {
-  pushProgressContext("homogenize");
   try {
+    PLogContext homogenize_context("homogenize");
 
 
     // ================
     // READ INPUT FILES
-    pushProgressContext("read input files");
+    PLogContext read_inputs_context("read input files");
 
         PLOG(info) << "reading input files";
 
@@ -289,31 +282,30 @@ void PModel::homogenize() {
     // pmodel->summary(g_msg);
 
         PLOG(info) << "reading input files -- done";
-    popProgressContext();
 
 
     // ==============
     // BUILD GEOMETRY
-    pushProgressContext("build shape");
+    read_inputs_context.dismiss();
+    PLogContext build_shape_context("build shape");
 
         PLOG(info) << "building the shape";
 
     build();
 
         PLOG(info) << "building the shape -- done";
-    popProgressContext();
 
 
     // ================
     // MODELING IN GMSH
-    pushProgressContext("build Gmsh model");
+    build_shape_context.dismiss();
+    PLogContext gmsh_context("build Gmsh model");
 
         PLOG(info) << "modeling in Gmsh";
 
     buildGmsh();
 
         PLOG(info) << "modeling in Gmsh -- done";
-    popProgressContext();
 
 
     // ===================
@@ -321,7 +313,8 @@ void PModel::homogenize() {
 
     // if (config.analysis_tool != 3) {
     if (!config.integrated_solver) {
-      pushProgressContext("write outputs");
+      gmsh_context.dismiss();
+      PLogContext write_outputs_context("write outputs");
             PLOG(info) << "writing outputs";
 
       if (config.plot) {
@@ -336,7 +329,6 @@ void PModel::homogenize() {
       }
 
             PLOG(info) << "writing outputs -- done";
-      popProgressContext();
     }
   }
   catch (std::exception &exception) {
@@ -344,11 +336,6 @@ void PModel::homogenize() {
       std::string("homogenization failed: ") + exception.what()
     );
   }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }
 
 
@@ -360,8 +347,7 @@ void PModel::homogenize() {
 
 
 void PModel::dehomogenize() {
-  pushProgressContext("dehomogenize");
-  try {
+  PLogContext dehomogenize_context("dehomogenize");
     PLOG(info) << "dehomogenizing...";
 
   // Read cs xml file
@@ -378,12 +364,6 @@ void PModel::dehomogenize() {
   // if (config.execute) {
   //   run(pmessage);
   // }
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }
 
 
@@ -395,8 +375,7 @@ void PModel::dehomogenize() {
 
 
 void PModel::run() {
-  pushProgressContext("run solver");
-  try {
+  PLogContext run_context("run solver");
 
     PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis;
   PLOG(info) << " [" + config.tool_name + " Messages] ";
@@ -441,12 +420,6 @@ void PModel::run() {
 
   PLOG(info) << " [" + config.tool_name + " Messages End] ";
     PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis + " -- done";
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }
 
 
@@ -458,8 +431,7 @@ void PModel::run() {
 
 
 void PModel::plot() {
-  pushProgressContext("plot results");
-  try {
+  PLogContext plot_context("plot results");
   if (config.isRecovery()) {
     plotDehomo();
     // pmessage->printBlank();
@@ -498,12 +470,6 @@ void PModel::plot() {
   if (!config.no_popup) {
     gmsh::fltk::run();
   }
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }
 
 

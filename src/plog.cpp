@@ -23,6 +23,11 @@ std::vector<std::string> &progressContextStack() {
   return stack;
 }
 
+std::string &lastExceptionProgressContext() {
+  static std::string context;
+  return context;
+}
+
 std::string joinProgressContext(const std::vector<std::string> &stack) {
   std::ostringstream oss;
   for (std::size_t i = 0; i < stack.size(); ++i) {
@@ -127,9 +132,44 @@ void popProgressContext() {
 void clearProgressContext() {
   std::lock_guard<std::mutex> lock(progressContextMutex());
   progressContextStack().clear();
+  lastExceptionProgressContext().clear();
 }
 
 std::string formatProgressContext() {
   std::lock_guard<std::mutex> lock(progressContextMutex());
-  return joinProgressContext(progressContextStack());
+  if (!progressContextStack().empty()) {
+    return joinProgressContext(progressContextStack());
+  }
+  return lastExceptionProgressContext();
+}
+
+PLogContext::PLogContext(const std::string &context)
+    : _active(true) {
+  pushProgressContext(context);
+}
+
+PLogContext::~PLogContext() {
+  if (!_active) {
+    return;
+  }
+
+  const bool unwinding = std::uncaught_exception();
+  if (unwinding) {
+    std::lock_guard<std::mutex> lock(progressContextMutex());
+    lastExceptionProgressContext() = joinProgressContext(progressContextStack());
+    if (!progressContextStack().empty()) {
+      progressContextStack().pop_back();
+    }
+    return;
+  }
+
+  popProgressContext();
+}
+
+void PLogContext::dismiss() {
+  if (!_active) {
+    return;
+  }
+  popProgressContext();
+  _active = false;
 }

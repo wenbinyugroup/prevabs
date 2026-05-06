@@ -251,8 +251,8 @@ void installStructuredExceptionTranslator() {
 void logFatalWithProgress(
     spdlog::level::level_enum level, const std::string &message) {
   auto logger = spdlog::get("prevabs");
-  const std::string progress = formatProgressContext();
   if (logger == nullptr) {
+    const std::string progress = formatProgressContext();
     std::cerr << message << std::endl;
     if (!progress.empty()) {
       std::cerr << "progress context: " << progress << std::endl;
@@ -261,10 +261,6 @@ void logFatalWithProgress(
   }
 
   PLogStream(level, __FILE__, __LINE__, __func__) << message;
-  if (!progress.empty()) {
-    PLogStream(level, __FILE__, __LINE__, __func__)
-        << "progress context: " << progress;
-  }
   logger->flush();
 }
 
@@ -277,8 +273,8 @@ void installStructuredExceptionTranslator() {}
 void logFatalWithProgress(
     spdlog::level::level_enum level, const std::string &message) {
   auto logger = spdlog::get("prevabs");
-  const std::string progress = formatProgressContext();
   if (logger == nullptr) {
+    const std::string progress = formatProgressContext();
     std::cerr << message << std::endl;
     if (!progress.empty()) {
       std::cerr << "progress context: " << progress << std::endl;
@@ -287,10 +283,6 @@ void logFatalWithProgress(
   }
 
   PLogStream(level, __FILE__, __LINE__, __func__) << message;
-  if (!progress.empty()) {
-    PLogStream(level, __FILE__, __LINE__, __func__)
-        << "progress context: " << progress;
-  }
   logger->flush();
 }
 
@@ -350,39 +342,33 @@ int main(int argc, char **argv) {
   // reported here before cleanup, preventing silent exit or second-crash
   // from downstream stages using a partially-built model.
   try {
-    pushProgressContext("initialize model");
+    PLogContext initialize_context("initialize model");
     pmodel_uptr->initialize();
-    popProgressContext();
     initialized = true;
 
     std::string s_dt_start = getCurrentDateTimeString();
     PLOG(info) << "prevabs start (" + s_dt_start + ")";
 
     if (config.isHomo()) {
-      pushProgressContext("homogenization pipeline");
+      PLogContext homogenize_context("homogenization pipeline");
       pmodel_uptr->homogenize();
-      popProgressContext();
     } else if (config.isRecovery()) {
-      pushProgressContext("dehomogenization pipeline");
+      PLogContext dehomogenize_context("dehomogenization pipeline");
       pmodel_uptr->dehomogenize();
-      popProgressContext();
     }
 
     if (config.execute) {
-      pushProgressContext("execute solver");
+      PLogContext execute_context("execute solver");
       pmodel_uptr->run();
-      popProgressContext();
     }
 
     if (config.plot) {
-      pushProgressContext("plot outputs");
+      PLogContext plot_context("plot outputs");
       pmodel_uptr->plot();
-      popProgressContext();
     }
 
-    pushProgressContext("finalize model");
+    PLogContext finalize_context("finalize model");
     pmodel_uptr->finalize();
-    popProgressContext();
     initialized = false;
 
     std::string s_dt_finish = getCurrentDateTimeString();

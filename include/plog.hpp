@@ -7,6 +7,7 @@
 // Returns "[info]    ", "[warning] ", etc., padded to a fixed width.
 // Declared here, defined in plog.cpp.
 std::string paddedSeverityBracket(spdlog::level::level_enum level);
+std::string formatProgressContext();
 
 // Stream-wrapper that collects << output and logs on destruction.
 // Usage: PLOG(info) << "msg " << var;
@@ -26,9 +27,16 @@ struct PLogStream {
     auto logger = spdlog::get("prevabs");
     if (!logger) return;
     std::string padded = paddedSeverityBracket(level_);
-    logger->log(
-        spdlog::source_loc{file_, line_, func_},
-        level_, "{} {}", padded, oss_.str());
+    const std::string context = formatProgressContext();
+    if (context.empty()) {
+      logger->log(
+          spdlog::source_loc{file_, line_, func_},
+          level_, "{} {}", padded, oss_.str());
+    } else {
+      logger->log(
+          spdlog::source_loc{file_, line_, func_},
+          level_, "{} [{}] {}", padded, context, oss_.str());
+    }
   }
 
   template <typename T>
@@ -36,6 +44,20 @@ struct PLogStream {
     oss_ << val;
     return *this;
   }
+};
+
+class PLogContext {
+public:
+  explicit PLogContext(const std::string &context);
+  ~PLogContext();
+
+  PLogContext(const PLogContext &) = delete;
+  PLogContext &operator=(const PLogContext &) = delete;
+
+  void dismiss();
+
+private:
+  bool _active;
 };
 
 // Map boost::log::trivial severity names to spdlog levels.
@@ -55,10 +77,8 @@ struct PLogStream {
 void initLog();
 
 // Lightweight runtime progress stack used by top-level fatal handlers.
-// Context frames are pushed manually around major operations and intentionally
-// left on the stack when exceptions unwind, so the top-level catch can report
-// where the failure happened.
+// PLogContext is the preferred scoped API. The raw push/pop helpers remain
+// available for legacy call sites and tests.
 void pushProgressContext(const std::string &context);
 void popProgressContext();
 void clearProgressContext();
-std::string formatProgressContext();

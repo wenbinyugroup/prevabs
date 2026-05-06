@@ -556,14 +556,11 @@ void Segment::offsetCurveBase() {
 }
 
 void Segment::build(const BuilderConfig &bcfg) {
-  pushProgressContext("build segment shell: " + _name);
-  try {
+  PLogContext segment_context("segment shell: " + _name);
   if (!requireExactState(LifecycleState::OffsetReady, "build")) {
-    popProgressContext();
     return;
   }
   if (!validateStateInvariants("build")) {
-    popProgressContext();
     return;
   }
 
@@ -610,7 +607,6 @@ void Segment::build(const BuilderConfig &bcfg) {
     logMissingHalfEdgeBetween(
         "build", _name, _curve_base->vertices()[0],
         _curve_base->vertices()[1], bcfg);
-    popProgressContext();
     return;
   }
   if (requireValidLayupSide("build") < 0) {
@@ -625,10 +621,4 @@ void Segment::build(const BuilderConfig &bcfg) {
   hel->setFace(_face);
   _state = LifecycleState::ShellBuilt;
   validateStateInvariants("build");
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }

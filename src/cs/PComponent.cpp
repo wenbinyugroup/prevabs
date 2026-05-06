@@ -146,13 +146,11 @@ void PComponent::addDependent(PComponent *component) {
 
 
 void PComponent::build(const BuilderConfig &bcfg) {
-  const std::string progress = "building component: " + _name;
-  pushProgressContext(progress);
-  try {
+  PLogContext component_context("component: " + _name);
 
   // i_indent++;
 
-    PLOG(info) << progress;
+    PLOG(info) << "building component: " + _name;
 
   // Laminate type component
   if (_type == ComponentType::laminate) {
@@ -170,12 +168,6 @@ void PComponent::build(const BuilderConfig &bcfg) {
   }
 
   // i_indent--;
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 
 }
 
@@ -188,38 +180,28 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 
 void PComponent::buildDetails(const BuilderConfig &bcfg) {
-  const std::string progress = "building component details: " + _name;
-  pushProgressContext(progress);
-  try {
+  PLogContext component_details_context("component details: " + _name);
 
 
   if (_type == ComponentType::fill) {
     PLOG(debug) << "buildDetails: skipping filling component '" << _name
                 << "' because step 2 only builds laminate segment areas.";
-    popProgressContext();
     return;
   }
 
   if (_type != ComponentType::laminate) {
     PLOG(error) << "buildDetails: unsupported component type for '" << _name
                 << "'";
-    popProgressContext();
     return;
   }
 
-      PLOG(info) << progress;
+      PLOG(info) << "building component details: " + _name;
 
   for (auto sgm : _laminate.segments) {
 
     sgm->buildAreas(bcfg);
 
   }
-  }
-  catch (...) {
-    throw;
-  }
-
-  popProgressContext();
 }
 
 
