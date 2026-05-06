@@ -670,6 +670,8 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
       he->source()->setIncidentEdge(he->twin()->next());
     } else if (he->prev()) {
       he->source()->setIncidentEdge(he->prev()->twin());
+    } else {
+      he->source()->setIncidentEdge(nullptr);
     }
   }
 
@@ -678,12 +680,18 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
       he2->source()->setIncidentEdge(he2->twin()->next());
     } else if (he2->prev()) {
       he2->source()->setIncidentEdge(he2->prev()->twin());
+    } else {
+      he2->source()->setIncidentEdge(nullptr);
     }
   }
 
   // Merge source and target vertices
   PDCELVertex *vs = he->source();
   PDCELVertex *vt = he->target();
+  PDCELHalfEdge *vs_replacement = nullptr;
+  if (vt->edge() != nullptr && vt->edge() != he2) {
+    vs_replacement = vt->edge();
+  }
   PDCELHalfEdge *_he_tmp = vt->edge();
   if (_he_tmp != nullptr) {
     do {
@@ -695,6 +703,9 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
 
   // All edges formerly incident on vt have been redirected to vs.
   // Clear vt's incident edge so removeVertex's precondition passes.
+  if (vs->edge() == he || vs->edge() == he2) {
+    vs->setIncidentEdge(vs_replacement);
+  }
   vt->setIncidentEdge(nullptr);
   removeVertex(vt);
 

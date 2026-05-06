@@ -1107,7 +1107,7 @@ TEST_CASE("DCEL ids are assigned and exposed in printable labels",
   CHECK(he12->printString().find(he12->label()) != std::string::npos);
 }
 
-TEST_CASE("DCEL ids are monotonic and not reused after split/remove",
+TEST_CASE("DCEL vertex and half-edge ids grow monotonically across splitEdge",
           "[dcel][id]") {
   PDCEL dcel;
 
@@ -1116,11 +1116,12 @@ TEST_CASE("DCEL ids are monotonic and not reused after split/remove",
   PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
   const unsigned int first_edge_id = he12->id();
   const unsigned int first_twin_id = he12->twin()->id();
+  const unsigned int first_vertex_id = v2->id();
 
   PDCELVertex *vmid = new PDCELVertex(0, 1.0, 0.0);
   vmid = dcel.splitEdge(he12, vmid);
   REQUIRE(vmid != nullptr);
-  CHECK(vmid->id() > v2->id());
+  CHECK(vmid->id() > first_vertex_id);
 
   unsigned int max_split_edge_id = 0;
   for (PDCELHalfEdge *he : dcel.halfedges()) {
@@ -1129,15 +1130,48 @@ TEST_CASE("DCEL ids are monotonic and not reused after split/remove",
     }
   }
   CHECK(max_split_edge_id > first_twin_id);
+  CHECK(vmid->id() != v1->id());
+  CHECK(vmid->id() != v2->id());
 
-  PDCELHalfEdge *he_v1_mid = dcel.findHalfEdgeBetween(v1, vmid);
-  REQUIRE(he_v1_mid != nullptr);
-  dcel.removeEdge(he_v1_mid);
+  PDCELHalfEdge *he_mid_v2 = dcel.findHalfEdgeBetween(vmid, v2);
+  REQUIRE(he_mid_v2 != nullptr);
+
+  PDCELVertex *vquarter = new PDCELVertex(0, 1.5, 0.0);
+  vquarter = dcel.splitEdge(he_mid_v2, vquarter);
+  REQUIRE(vquarter != nullptr);
+  CHECK(vquarter->id() > vmid->id());
+
+  unsigned int max_second_split_edge_id = 0;
+  for (PDCELHalfEdge *he : dcel.halfedges()) {
+    if (he->id() > max_second_split_edge_id) {
+      max_second_split_edge_id = he->id();
+    }
+  }
+  CHECK(max_second_split_edge_id > max_split_edge_id);
+  CHECK(max_second_split_edge_id != first_edge_id);
+  CHECK(max_second_split_edge_id != first_twin_id);
+}
+
+TEST_CASE("DCEL half-edge ids are not reused after removeEdge",
+          "[dcel][id]") {
+  PDCEL dcel;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+  REQUIRE(he12 != nullptr);
+
+  const unsigned int first_edge_id = he12->id();
+  const unsigned int first_twin_id = he12->twin()->id();
+
+  dcel.removeEdge(he12);
+  CHECK(dcel.halfedges().empty());
+  CHECK(dcel.vertices().size() == 1);
 
   PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 3.0, 0.0));
   PDCELHalfEdge *he_new = dcel.addEdge(v1, v3);
   REQUIRE(he_new != nullptr);
-  CHECK(he_new->id() > max_split_edge_id);
+  CHECK(he_new->id() > first_twin_id);
   CHECK(he_new->twin()->id() > he_new->id());
   CHECK(he_new->id() != first_edge_id);
   CHECK(he_new->twin()->id() != first_twin_id);
