@@ -613,7 +613,11 @@ PDCELHalfEdge *PDCEL::findHalfEdgeBetween(PDCELVertex *v1,
 }
 
 void PDCEL::addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices) {
-  if (vertices.size() < 2) return;
+  if (vertices.size() < 2) {
+    PLOG(debug) << "addEdgesFromCurve: skipping because the curve has fewer"
+                << " than two vertices (" << vertices.size() << ")";
+    return;
+  }
   for (std::size_t i = 0; i < vertices.size() - 1; ++i) {
     addEdge(vertices[i], vertices[i + 1]);
   }
@@ -932,6 +936,8 @@ PDCELFace *PDCEL::addFace(PDCELHalfEdgeLoop *hel) {
 
 PDCELFace *PDCEL::addFace(const std::list<PDCELVertex *> &vloop, PDCELFace *f) {
   if (vloop.size() < 2) {
+    PLOG(debug) << "addFace(vloop): skipping because the vertex loop has"
+                << " fewer than two vertices (" << vloop.size() << ")";
     return nullptr;
   }
 

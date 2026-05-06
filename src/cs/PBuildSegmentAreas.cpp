@@ -27,6 +27,13 @@
 
 namespace {
 
+void logSkippingSegmentAreasAction(
+    const char *caller, const std::string &segment_name,
+    const std::string &reason) {
+  PLOG(debug) << "skipping " << caller << " for segment '"
+              << segment_name << "': " << reason;
+}
+
 void deleteDetachedLineSegment(PGeoLineSegment *segment) {
   if (segment == nullptr) {
     return;
@@ -326,6 +333,9 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
 
   } while (he_tmp != he_base);
 
+  PLOG(debug) << "findLayerIntersectionOnFace: skipping remaining search"
+              << " for segment '" << _name << "' because no face-boundary"
+              << " intersection was found before reaching the stop vertex";
   return v_layer;
 }
 
@@ -602,9 +612,13 @@ void Segment::buildLastArea(
 void Segment::buildAreas(const BuilderConfig &bcfg) {
   PLogContext segment_areas_context("segment areas: " + _name);
   if (!requireExactState(LifecycleState::ShellBuilt, "buildAreas")) {
+    logSkippingSegmentAreasAction(
+        "buildAreas", _name, "segment is not in ShellBuilt state");
     return;
   }
   if (!validateStateInvariants("buildAreas")) {
+    logSkippingSegmentAreasAction(
+        "buildAreas", _name, "lifecycle invariants validation failed");
     return;
   }
 

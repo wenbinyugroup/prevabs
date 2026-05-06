@@ -29,6 +29,13 @@ int Segment::count_tmp = 0;
 
 namespace {
 
+void logSkippingSegmentAction(
+    const char *caller, const std::string &segment_name,
+    const std::string &reason) {
+  PLOG(debug) << "skipping " << caller << " for segment '"
+              << segment_name << "': " << reason;
+}
+
 const char *toString(Segment::LifecycleState state) {
   switch (state) {
   case Segment::LifecycleState::BaseReady:
@@ -433,6 +440,8 @@ void Segment::print() {
 
 void Segment::printBaseOffsetLink() {
   if (!requireOffsetCurve("printBaseOffsetLink")) {
+    logSkippingSegmentAction(
+        "printBaseOffsetLink", _name, "offset curve is not ready");
     return;
   }
 
@@ -463,6 +472,8 @@ void Segment::printBaseOffsetLink() {
 
 void Segment::printBaseOffsetPairs() {
   if (!requireOffsetCurve("printBaseOffsetPairs")) {
+    logSkippingSegmentAction(
+        "printBaseOffsetPairs", _name, "offset curve is not ready");
     return;
   }
 
@@ -531,11 +542,16 @@ std::size_t Segment::layerCount() const {
 
 void Segment::offsetCurveBase() {
   if (!requireBaseDefinition("offsetCurveBase")) {
+    logSkippingSegmentAction(
+        "offsetCurveBase", _name, "base definition is incomplete");
     return;
   }
 
   if (_state == LifecycleState::OffsetReady) {
     if (!validateStateInvariants("offsetCurveBase")) {
+      logSkippingSegmentAction(
+          "offsetCurveBase", _name,
+          "existing offset-ready state violates invariants");
       return;
     }
     PLOG(debug) << "offsetCurveBase: reusing existing offset curve for segment '"
@@ -565,6 +581,8 @@ void Segment::offsetCurveBase() {
 
   const int side = requireValidLayupSide("offsetCurveBase");
   if (side == 0) {
+    logSkippingSegmentAction(
+        "offsetCurveBase", _name, "layup side is invalid");
     return;
   }
 
@@ -589,9 +607,13 @@ void Segment::offsetCurveBase() {
 void Segment::build(const BuilderConfig &bcfg) {
   PLogContext segment_context("segment shell: " + _name);
   if (!requireExactState(LifecycleState::OffsetReady, "build")) {
+    logSkippingSegmentAction(
+        "build", _name, "segment is not in OffsetReady state");
     return;
   }
   if (!validateStateInvariants("build")) {
+    logSkippingSegmentAction(
+        "build", _name, "lifecycle invariants validation failed");
     return;
   }
 

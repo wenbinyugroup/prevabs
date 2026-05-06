@@ -11,6 +11,13 @@
 
 namespace {
 
+void logSkippingComponentAction(
+    const char *caller, const std::string &component_name,
+    const std::string &reason) {
+  PLOG(debug) << "skipping " << caller << " for component '"
+              << component_name << "': " << reason;
+}
+
 enum class OrderVisitState {
   unvisited,
   visiting,
@@ -169,6 +176,12 @@ void PComponent::build(const BuilderConfig &bcfg) {
     buildFilling(bcfg);
 
   }
+  else {
+    PLOG(error) << "build: unsupported component type for '" << _name << "'";
+    logSkippingComponentAction(
+        "build", _name, "component type is unsupported");
+    return;
+  }
 
   std::size_t component_faces = 0;
   for (Segment *segment : _laminate.segments) {
@@ -213,6 +226,8 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
   if (_type != ComponentType::laminate) {
     PLOG(error) << "buildDetails: unsupported component type for '" << _name
                 << "'";
+    logSkippingComponentAction(
+        "buildDetails", _name, "component type is unsupported");
     return;
   }
 
