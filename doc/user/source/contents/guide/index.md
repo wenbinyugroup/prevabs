@@ -56,11 +56,12 @@ In the current version each top-level block (`<baselines>`, `<materials>`, `<lay
 :maxdepth: 2
 :caption: Subtopics
 
-pre_coordinate.md
-pre_shape.md
-pre_material.md
-pre_component.md
-pre_recover.md
-pre_overall.md
+coordinate.md
+shape.md
+material.md
+layup.md
+component.md
+recover.md
+overall.md
 ```
 

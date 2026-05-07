@@ -10,15 +10,15 @@ As stated in the VABS manual, the following data are required to carry out the r
 - distributed forces and moments, and their first three derivatives with
   respect to $x_1$.
 
-> [!NOTE]
-> The current version of PreVABS only performs recovery for Euler-Bernoulli model and Timoshenko model.
-> If you want to perform recovery for other models such as the Vlasov model, please refer to the VABS manual to modify the input file yourself.
+```{note} Note
+The current version of PreVABS only performs recovery for Euler-Bernoulli model and Timoshenko model.
+If you want to perform recovery for other models such as the Vlasov model, please refer to the VABS manual to modify the input file yourself.
+```
 
 These data are included in a `<global>` element added to the `<cross_section>` (or `<sg>`) element in the main input file.
 The same syntax is used for both VABS and SwiftComp recovery; switching solvers is done via the `--vabs` / `--sc` command-line flags.
 
 The nine entries in the direction cosine matrix are flattened into a single array in the `<rotations>` element.
-This matrix is defined in {eq}`eq_direction_cosine`.
 Note that displacements and rotations are needed only for recovering 3D displacements.
 Numbers in the template below are default values.
 Once this file is updated correctly, the recover analysis can be carried out via the command-line options described in [How to Run PreVABS](../start/run.md).

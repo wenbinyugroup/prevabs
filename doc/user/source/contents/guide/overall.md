@@ -1,4 +1,4 @@
-(other-input-settings)=
+(input-other-settings)=
 # Other input settings
 
 There are three groups of these settings.
@@ -31,6 +31,8 @@ If there are materials and laminae with the same names, data in the local materi
 - `<material>` - Name of the included local material file.
 - `<layup>` - Name of the included layup file. Multiple `<layup>` elements can be listed to merge several layup files.
 
+---
+
 ## Analysis options
 
 The second part contains settings for the analysis in VABS.
@@ -57,7 +59,7 @@ The second part contains settings for the analysis in VABS.
 - `<physics>` - Optional physics setting forwarded to the analysis backend.
 
 
-
+---
 
 ## Global shape and mesh settings
 
