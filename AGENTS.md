@@ -210,5 +210,4 @@ test/
 ### Issue Tracking
 
 - When fixing an issue, document the issue and the fix in a markdown file in folder `local`.
-- Name the file `local/issue-YYYYMMDD-<issue-summary>.md`.
-- Use a short summary of the issue as the file name.
+- Name the file `local/issue-<yyyymmdd>-<short-summary>.md`.

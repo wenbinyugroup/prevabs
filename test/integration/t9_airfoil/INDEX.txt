@@ -3,6 +3,8 @@ main
 - main_cs_set1.xml
 - param_layup.xml
 - mh104_9webs.xml
+- airfoil_skin_only.xml
+- airfoil_skin_only_normalized.xml
 
 support
 - materials.xml
@@ -11,3 +13,4 @@ support
 - mh104.dat
 - sc1095.dat
 - hh02.dat
+- ua79sff.dat
