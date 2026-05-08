@@ -52,7 +52,9 @@ struct LoggerSetup {
 #include "Material.hpp"
 #include "PSegment.hpp"
 #include "PModel.hpp"
+#include "geo.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <list>
 
@@ -551,6 +553,46 @@ TEST_CASE("offsetCurveBase: repeated pre-build calls reuse the same offset curve
   CHECK(segment.curveOffset() == first_offset);
   CHECK(segment.curveOffset()->vertices().size() == offset_vertex_count);
   CHECK(segment.baseOffsetIndicesPairs().size() == pair_count);
+}
+
+TEST_CASE("getIntersectionVertex: aliased curves shift the second insertion",
+          "[dcel][geo][intersect]") {
+  PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0, 2.0, 2.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0, 0.0, 2.0);
+  PDCELVertex *v3 = new PDCELVertex(0.0, 2.0, 0.0);
+  PDCELVertex *v4 = new PDCELVertex(0.0, 4.0, 0.0);
+
+  std::vector<PDCELVertex *> curve = {v0, v1, v2, v3, v4};
+  int i1 = 0;
+  int i2 = 2;
+  int is_new_1 = 0;
+  int is_new_2 = 0;
+
+  PDCELVertex *ip = getIntersectionVertex(
+      curve, curve, i1, i2, 0.5, 0.5, is_new_1, is_new_2, 1e-9);
+
+  REQUIRE(ip != nullptr);
+  CHECK(is_new_1 == 1);
+  CHECK(is_new_2 == 1);
+  CHECK(i1 == 1);
+  CHECK(i2 == 4);
+  REQUIRE(curve.size() == 7);
+  CHECK(curve[0] == v0);
+  CHECK(curve[1] == ip);
+  CHECK(curve[2] == v1);
+  CHECK(curve[3] == v2);
+  CHECK(curve[4] == ip);
+  CHECK(curve[5] == v3);
+  CHECK(curve[6] == v4);
+  CHECK(std::count(curve.begin(), curve.end(), ip) == 2);
+
+  delete ip;
+  delete v0;
+  delete v1;
+  delete v2;
+  delete v3;
+  delete v4;
 }
 
 TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset loop",

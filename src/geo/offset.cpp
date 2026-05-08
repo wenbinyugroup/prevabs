@@ -769,6 +769,12 @@ static void trimSubLineSelfIntersections(
     BaseOffsetMap &map
   ) {
 
+  if (line.size() != map.size()) {
+    PLOG(error) << "trimSubLineSelfIntersections: line/map size mismatch before trim ("
+                << line.size() << " vs " << map.size() << ")";
+    return;
+  }
+
   bool found = true;
   while (found) {
     found = false;
@@ -815,6 +821,12 @@ static void trimSubLineSelfIntersections(
         for (int k = j + 1; k < static_cast<int>(map.size()); ++k)
           new_map.push_back(map[k]);
         map = std::move(new_map);
+
+        if (line.size() != map.size()) {
+          PLOG(error) << "trimSubLineSelfIntersections: line/map size mismatch after trim ("
+                      << line.size() << " vs " << map.size() << ")";
+          return;
+        }
 
         found = true;
       }
@@ -1138,14 +1150,35 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // NOTE: maps_group staircase invariant may be violated after this step —
   // assertValidBaseOffsetMap is intentionally NOT called here.  The final
   // id_pairs staircase is restored by Step 5's forward-fill.
+  //
+  // After P0.1, step 4 rebuilds the closed single-sub-line path atomically
+  // and step 5 overwrites per-sub-line offset indices before validating the
+  // final staircase, so step 3.5 can safely run again to remove local loops
+  // earlier in the pipeline.
   // -------------------------------------------------------------------------
-  // if (config.debug) {
-  //   PLOG(debug) <<
-  //       "offset (multi-vertex): step 3.5 — trim sub-line self-intersections";
-  // }
-  // for (int line_i = 0; line_i < static_cast<int>(lines_group.size()); ++line_i) {
-  //   trimSubLineSelfIntersections(lines_group[line_i], maps_group[line_i]);
-  // }
+  if (config.debug) {
+    PLOG(debug) <<
+        "offset (multi-vertex): step 3.5 — trim sub-line self-intersections";
+  }
+  const bool base_is_closed = (base.front() == base.back());
+  for (int line_i = 0; line_i < static_cast<int>(lines_group.size()); ++line_i) {
+    if (base_is_closed && lines_group.size() == 1) {
+      if (config.debug) {
+        PLOG(debug) <<
+            "offset (multi-vertex): step 3.5 — skipping closed single-sub-line; "
+            "step 4 will resolve closure/self-intersection";
+      }
+      break;
+    }
+    trimSubLineSelfIntersections(lines_group[line_i], maps_group[line_i]);
+    if (lines_group[line_i].size() != maps_group[line_i].size()) {
+      PLOG(error) << "offset step 3.5: line/map size mismatch in group "
+                  << line_i << " ("
+                  << lines_group[line_i].size() << " vs "
+                  << maps_group[line_i].size() << ")";
+      return 0;
+    }
+  }
 
   // -------------------------------------------------------------------------
   // Step 4: Handle closed-curve head-tail trimming.
