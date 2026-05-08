@@ -47,7 +47,6 @@ set(TEST_DCEL_SOURCES
   test_dcel.cpp
   test_io_airfoil.cpp
   test_io_airfoil_user_le_te.cpp
-  test_io_point_on_airfoil.cpp
   test_io_component_laminate.cpp
   test_io_material.cpp
   test_io_p6_helpers.cpp
