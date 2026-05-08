@@ -14,6 +14,7 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 
 #include "geo_types.hpp"
 
@@ -539,7 +540,7 @@ int readCrossSection(const std::string &filenameCrossSection,
     PLOG(error) << "unable to open file: " << filenameCrossSection;
     return 1;
   }
-  PLOG(info) << "reading main input file: " << filenameCrossSection;
+  PUI_INFO << "reading main input file: " << filenameCrossSection;
 
   std::vector<char> buffer{(std::istreambuf_iterator<char>(fileCrossSection)),
                            std::istreambuf_iterator<char>()};

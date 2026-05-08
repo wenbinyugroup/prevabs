@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(prevabs_unit_tests)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(REPO_ROOT ${CMAKE_SOURCE_DIR}/../..)
@@ -18,6 +18,15 @@ configure_file(
 )
 set(SRC_GEO  ${REPO_ROOT}/src/geo)
 set(SRC_ROOT ${REPO_ROOT}/src)
+
+# ------------------------------------------------------------------
+# cpp-terminal (used by pui, linked by test_dcel and test_pui)
+# ------------------------------------------------------------------
+set(CPPTERMINAL_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CPPTERMINAL_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+set(CPPTERMINAL_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(CPPTERMINAL_ENABLE_DOCS    OFF CACHE BOOL "" FORCE)
+add_subdirectory(${REPO_ROOT}/extern/cpp-terminal cpp-terminal-build)
 
 # ------------------------------------------------------------------
 # test_geo — self-contained geometry algorithm tests (no project deps)
@@ -70,6 +79,7 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/PBST.cpp
   ${SRC_GEO}/polyline.cpp
   ${SRC_ROOT}/plog.cpp
+  ${SRC_ROOT}/pui.cpp
   ${SRC_ROOT}/utilities.cpp
   ${SRC_ROOT}/overloadOperator.cpp
   ${SRC_ROOT}/GeometryRepository.cpp
@@ -106,9 +116,32 @@ target_include_directories(test_dcel PRIVATE
 target_compile_definitions(test_dcel PRIVATE
   TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
+target_link_libraries(test_dcel PRIVATE cpp-terminal::cpp-terminal)
+
 if(MSVC)
   target_compile_options(test_dcel PRIVATE /W3 /utf-8 /EHa)
   target_compile_options(test_geo PRIVATE /W3 /utf-8 /EHa)
+endif()
+
+# ------------------------------------------------------------------
+# test_pui — pui module test, links cpp-terminal submodule.
+# ------------------------------------------------------------------
+set(TEST_PUI_SOURCES
+  catch_amalgamated.cpp
+  test_pui.cpp
+  ${SRC_ROOT}/pui.cpp
+)
+
+add_executable(test_pui ${TEST_PUI_SOURCES})
+
+target_include_directories(test_pui PRIVATE
+  ${CMAKE_SOURCE_DIR}
+  ${REPO_ROOT}/include)
+
+target_link_libraries(test_pui PRIVATE cpp-terminal::cpp-terminal)
+
+if(MSVC)
+  target_compile_options(test_pui PRIVATE /W3 /utf-8 /EHa)
 endif()
 
 # ------------------------------------------------------------------
@@ -117,3 +150,4 @@ endif()
 enable_testing()
 add_test(NAME geo_tests  COMMAND test_geo)
 add_test(NAME dcel_tests COMMAND test_dcel)
+add_test(NAME pui_tests  COMMAND test_pui)

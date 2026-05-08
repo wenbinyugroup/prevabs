@@ -7,6 +7,7 @@
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 
 #include <cmath>
 #include <list>
@@ -328,6 +329,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
   // Keep the loop and create a new face
   if (hel_out == bcfg.dcel->halfedgeloops().front()) {
+    PUI_ERROR << "buildFilling: fill location is outside the shape"
+              << " for component '" << _name << "'";
     PLOG(error) << "buildFilling: fill location is outside the shape"
                 << " for component '" << _name << "'";
     return;

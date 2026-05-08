@@ -79,20 +79,18 @@ void initLog() {
 
   std::vector<spdlog::sink_ptr> sinks;
 
-  // Console sink (stderr, colored) — gated by log_level
+  // Console sink (stderr, colored). User-facing output is now pui's job;
+  // spdlog only surfaces warn+ on the console unless the developer raises
+  // the log_level via --debug, in which case the requested level applies.
   auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
   console_sink->set_pattern("%^%v%$");
-  console_sink->set_level(lvl);
+  spdlog::level::level_enum console_lvl =
+      (lvl <= spdlog::level::debug) ? lvl : spdlog::level::warn;
+  console_sink->set_level(console_lvl);
   sinks.push_back(console_sink);
 
-  // User log: always at info or above, no source location
-  if (!config.file_name_log.empty()) {
-    auto user_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-        config.file_name_log, /*truncate=*/true);
-    user_sink->set_pattern("%v");
-    user_sink->set_level(spdlog::level::info);
-    sinks.push_back(user_sink);
-  }
+  // The user log file (*.log) is owned by pui; spdlog only writes to
+  // *.debug.log via the dev sink below.
 
   // Dev log: mirrors log_level, appends source location
   if (!config.file_name_log_dev.empty()) {

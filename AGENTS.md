@@ -203,9 +203,27 @@ test/
 
 ### Logging
 
-- Use `PLOG` from `plog.hpp` for structured logging
-- Severity levels: `info`, `warning`, `error`
-- Log to both console and file
+- Use `PLOG` from `plog.hpp` for **developer/debug** output: internal state,
+  geometry details, source-location traces. Goes to `*.debug.log` and (when
+  `--debug phase`+ is set) the console.
+- Severity levels: `trace`, `debug`, `info`, `warning`, `error`, `fatal`
+- For routine internal step logging prefer `PLOG(debug)` over `PLOG(info)` —
+  `info` level should be reserved for messages a user would also benefit from.
+
+### User UI
+
+- Use `pui::*` from `pui.hpp` for **user-facing** terminal output: stage
+  progress, success markers, user-level warnings/errors, banners.
+- Functions: `pui::info` (`==>`), `pui::success` (`OK`), `pui::warn` (`!!`),
+  `pui::error` (`xx`), `pui::title` (bold banner).
+- Stream form: `PUI_INFO << "loading " << n << " points";`
+- Output goes to stdout (with ANSI color when stdout is a TTY) and is
+  mirrored to the user log file `*.log` without color codes.
+- Rule of thumb:
+  - "user wants to know what the program is doing" → `pui::info`
+  - "developer wants to know internal state" → `PLOG(debug)`
+- Do NOT call `pui::*` in tight loops or for fine-grained internal events;
+  use `PLOG(debug)` instead.
 
 ### Issue Tracking
 

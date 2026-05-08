@@ -6,6 +6,7 @@
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 #include "version.h"
 
 #include "CLI11.hpp"
@@ -349,9 +350,10 @@ int main(int argc, char **argv) {
       config.app.log_level = LOG_LEVEL_DEBUG;
 
     initLog();
+    pui::init(config.file_name_log);
     installStructuredExceptionTranslator();
-    PLOG(info) << "PreVABS " VERSION_STRING
-                  " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")";
+    pui::title(std::string("PreVABS ") + VERSION_STRING +
+               " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")");
   }
   catch (const CLI::ParseError &e) {
     return app.exit(e);
@@ -379,7 +381,7 @@ int main(int argc, char **argv) {
     initialized = true;
 
     std::string s_dt_start = getCurrentDateTimeString();
-    PLOG(info) << "prevabs start (" + s_dt_start + ")";
+    pui::info("prevabs start (" + s_dt_start + ")");
 
     if (config.isHomo()) {
       PLogContext homogenize_context("homogenization pipeline");
@@ -409,15 +411,15 @@ int main(int argc, char **argv) {
     std::ostringstream ss;
     ss << "total running time: " << tt << " sec";
 
-    PLOG(info) << "prevabs finished (" + s_dt_finish + ")";
-    PLOG(info) << ss.str();
+    pui::success("prevabs finished (" + s_dt_finish + ")");
+    pui::info(ss.str());
     clearProgressContext();
     return 0;
   }
   catch (const std::exception &e) {
-    logFatalWithProgress(
-        spdlog::level::err,
-        std::string("fatal exception: ") + e.what());
+    const std::string fatal_msg = std::string("fatal exception: ") + e.what();
+    pui::error(fatal_msg);
+    logFatalWithProgress(spdlog::level::err, fatal_msg);
     if (pmodel_uptr && pmodel_uptr->dcel()) {
       try {
         auto dump_path = config.file_directory + config.file_base_name
@@ -432,6 +434,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   catch (...) {
+    pui::error("unhandled exception");
     logFatalWithProgress(
         spdlog::level::critical, "unhandled exception");
     if (pmodel_uptr && pmodel_uptr->dcel()) {
