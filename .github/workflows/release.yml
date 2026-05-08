@@ -306,7 +306,6 @@ jobs:
           python3 - <<'EOF'
           import os
           import re
-          import sys
 
           tag = os.environ["TAG"].strip()
           version = tag[1:] if tag.startswith("v") else tag
@@ -362,14 +361,14 @@ jobs:
 
           if not notes:
               print(
-                  f"Could not find release notes for tag '{tag}' in "
-                  f"CHANGELOG.md",
-                  file=sys.stderr,
+                  f"WARNING: could not find release notes for tag "
+                  f"'{tag}' in CHANGELOG.md; continuing with empty "
+                  f"release notes."
               )
-              sys.exit(1)
 
           with open("release_notes.md", "w", encoding="utf-8") as f:
-              f.write(notes + "\n")
+              if notes:
+                  f.write(notes + "\n")
           EOF
           cat release_notes.md
 
@@ -416,7 +415,6 @@ jobs:
           python3 - <<'EOF'
           import os
           import re
-          import sys
 
           tag = os.environ["TAG"].strip()
           version = tag[1:] if tag.startswith("v") else tag
@@ -472,14 +470,14 @@ jobs:
 
           if not notes:
               print(
-                  f"Could not find release notes for tag '{tag}' in "
-                  f"CHANGELOG.md",
-                  file=sys.stderr,
+                  f"WARNING: could not find release notes for tag "
+                  f"'{tag}' in CHANGELOG.md; continuing with empty "
+                  f"release notes."
               )
-              sys.exit(1)
 
           with open("release_notes.md", "w", encoding="utf-8") as f:
-              f.write(notes + "\n")
+              if notes:
+                  f.write(notes + "\n")
           EOF
 
       - name: Create or update GitHub Release with examples
