@@ -52,7 +52,9 @@ struct LoggerSetup {
 #include "Material.hpp"
 #include "PSegment.hpp"
 #include "PModel.hpp"
+#include "geo.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <list>
 
@@ -551,6 +553,113 @@ TEST_CASE("offsetCurveBase: repeated pre-build calls reuse the same offset curve
   CHECK(segment.curveOffset() == first_offset);
   CHECK(segment.curveOffset()->vertices().size() == offset_vertex_count);
   CHECK(segment.baseOffsetIndicesPairs().size() == pair_count);
+}
+
+TEST_CASE("getIntersectionVertex: aliased curves shift the second insertion",
+          "[dcel][geo][intersect]") {
+  PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0, 2.0, 2.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0, 0.0, 2.0);
+  PDCELVertex *v3 = new PDCELVertex(0.0, 2.0, 0.0);
+  PDCELVertex *v4 = new PDCELVertex(0.0, 4.0, 0.0);
+
+  std::vector<PDCELVertex *> curve = {v0, v1, v2, v3, v4};
+  int i1 = 0;
+  int i2 = 2;
+  int is_new_1 = 0;
+  int is_new_2 = 0;
+
+  PDCELVertex *ip = getIntersectionVertex(
+      curve, curve, i1, i2, 0.5, 0.5, is_new_1, is_new_2, 1e-9);
+
+  REQUIRE(ip != nullptr);
+  CHECK(is_new_1 == 1);
+  CHECK(is_new_2 == 1);
+  CHECK(i1 == 1);
+  CHECK(i2 == 4);
+  REQUIRE(curve.size() == 7);
+  CHECK(curve[0] == v0);
+  CHECK(curve[1] == ip);
+  CHECK(curve[2] == v1);
+  CHECK(curve[3] == v2);
+  CHECK(curve[4] == ip);
+  CHECK(curve[5] == v3);
+  CHECK(curve[6] == v4);
+  CHECK(std::count(curve.begin(), curve.end(), ip) == 2);
+
+  delete ip;
+  delete v0;
+  delete v1;
+  delete v2;
+  delete v3;
+  delete v4;
+}
+
+TEST_CASE("offset: acute cusp applies miter limit surrogate",
+          "[dcel][geo][offset]") {
+  PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0, 1.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0, 0.1, 0.05);
+  std::vector<PDCELVertex *> base = {v0, v1, v2};
+
+  const int side = 1;
+  const double dist = 0.1;
+  PDCELVertex prev_start, prev_end, cur_start, cur_end;
+  REQUIRE(offset(v0, v1, side, dist, &prev_start, &prev_end) == 1);
+  REQUIRE(offset(v1, v2, side, dist, &cur_start, &cur_end) == 1);
+
+  double u_prev = 0.0;
+  double u_cur = 0.0;
+  REQUIRE(calcLineIntersection2D(
+      &prev_start, &prev_end, &cur_start, &cur_end,
+      u_prev, u_cur, TOLERANCE));
+  const SPoint3 raw_miter =
+      getParametricPoint(prev_start.point(), prev_end.point(), u_prev);
+  const double raw_miter_dist = raw_miter.distance(v1->point());
+  REQUIRE(raw_miter_dist > 2.0 * dist);
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  REQUIRE(offset(base, side, dist, offset_vertices, id_pairs) == 1);
+  REQUIRE(offset_vertices.size() == 3);
+  REQUIRE(validateBaseOffsetMap(id_pairs));
+
+  const double limited_dist =
+      offset_vertices[1]->point().distance(v1->point());
+  CHECK(limited_dist <= 2.0 * dist + 1e-9);
+
+  const SPoint3 bevel_mid =
+      getParametricPoint(prev_end.point(), cur_start.point(), 0.5);
+  CHECK(offset_vertices[1]->point().distance(bevel_mid) <= 1e-9);
+
+  for (PDCELVertex *vertex : offset_vertices) {
+    delete vertex;
+  }
+  delete v0;
+  delete v1;
+  delete v2;
+}
+
+TEST_CASE("Baseline::findMinimumInteriorAngle detects closed cusp",
+          "[dcel][baseline][cusp]") {
+  Baseline base("cusp", "line");
+  PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0, 1.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0, 0.1, 0.05);
+  base.addPVertex(v0);
+  base.addPVertex(v1);
+  base.addPVertex(v2);
+  base.addPVertex(v0);
+
+  double min_angle_rad = 0.0;
+  int vertex_index = -1;
+  REQUIRE(base.findMinimumInteriorAngle(min_angle_rad, vertex_index));
+  CHECK(vertex_index == 1);
+  CHECK(min_angle_rad < 10.0 * PI / 180.0);
+
+  delete v0;
+  delete v1;
+  delete v2;
 }
 
 TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset loop",
@@ -1168,6 +1277,65 @@ protected:
   }
   void flush_() override {}
 };
+
+struct CapturingInfoSink : public spdlog::sinks::base_sink<std::mutex> {
+  std::vector<std::string> messages;
+protected:
+  void sink_it_(const spdlog::details::log_msg &msg) override {
+    if (msg.level == spdlog::level::info) {
+      messages.emplace_back(msg.payload.data(), msg.payload.size());
+    }
+  }
+  void flush_() override {}
+};
+
+TEST_CASE("offsetCurveBase logs cusp-like closed baseline hint",
+          "[dcel][segment][offset][cusp]") {
+  auto sink = std::make_shared<CapturingInfoSink>();
+  spdlog::drop("prevabs");
+  {
+    auto logger = std::make_shared<spdlog::logger>("prevabs", sink);
+    logger->set_level(spdlog::level::info);
+    spdlog::register_logger(logger);
+  }
+
+  Material material("mat");
+  Lamina lamina("lam", &material, 0.1);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("cusp", "line");
+  PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0, 1.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0, 0.1, 0.05);
+  base.addPVertex(v0);
+  base.addPVertex(v1);
+  base.addPVertex(v2);
+  base.addPVertex(v0);
+
+  Segment segment("seg", &base, &layup, "left", 1);
+  segment.offsetCurveBase();
+  REQUIRE(segment.curveOffset() != nullptr);
+
+  bool saw_cusp_log = false;
+  for (const std::string &message : sink->messages) {
+    if (message.find("cusp-like minimum interior angle") != std::string::npos
+        && message.find("segment 'seg'") != std::string::npos) {
+      saw_cusp_log = true;
+      break;
+    }
+  }
+  CHECK(saw_cusp_log);
+
+  spdlog::drop("prevabs");
+  {
+    auto orig_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto logger = std::make_shared<spdlog::logger>("prevabs", orig_sink);
+    logger->set_level(spdlog::level::warn);
+    spdlog::register_logger(logger);
+  }
+}
 
 TEST_CASE("walkLoopWithLimit: debug logs bounded by kDCELDebugLogInterval",
           "[dcel][error]") {

@@ -62,6 +62,46 @@ SVector3 Baseline::getTangentVectorEnd() {
     );
 }
 
+bool Baseline::findMinimumInteriorAngle(
+    double &min_angle_rad, int &vertex_index) const {
+  if (_pvertices.size() < 4 || _pvertices.front() != _pvertices.back()) {
+    return false;
+  }
+
+  const int unique_count = static_cast<int>(_pvertices.size()) - 1;
+  bool found = false;
+  min_angle_rad = 0.0;
+  vertex_index = -1;
+
+  for (int i = 0; i < unique_count; ++i) {
+    const int prev_i = (i == 0) ? (unique_count - 1) : (i - 1);
+    const int next_i = (i + 1) % unique_count;
+
+    PDCELVertex *prev = _pvertices[prev_i];
+    PDCELVertex *curr = _pvertices[i];
+    PDCELVertex *next = _pvertices[next_i];
+    if (prev == nullptr || curr == nullptr || next == nullptr) {
+      continue;
+    }
+
+    const SVector3 vin(curr->point(), prev->point());
+    const SVector3 vout(curr->point(), next->point());
+    if (vin.normSq() <= TOLERANCE * TOLERANCE
+        || vout.normSq() <= TOLERANCE * TOLERANCE) {
+      continue;
+    }
+
+    const double theta = angle(vin, vout);
+    if (!found || theta < min_angle_rad) {
+      found = true;
+      min_angle_rad = theta;
+      vertex_index = i;
+    }
+  }
+
+  return found;
+}
+
 int Baseline::topology() {
   if (_pvertices.front() == _pvertices.back()) {
     return 0;

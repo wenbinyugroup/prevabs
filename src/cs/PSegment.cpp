@@ -29,6 +29,8 @@ int Segment::count_tmp = 0;
 
 namespace {
 
+constexpr double kClosedBaselineCuspAngleThresholdDeg = 15.0;
+
 const char *toString(Segment::LifecycleState state) {
   switch (state) {
   case Segment::LifecycleState::BaseReady:
@@ -56,6 +58,39 @@ void deleteUnregisteredVertices(const std::vector<PDCELVertex *> &vertices) {
       delete vertex;
     }
   }
+}
+
+void logClosedBaselineCuspIfAny(
+    Baseline *baseline,
+    const std::string &segment_name,
+    double total_thickness) {
+  if (baseline == nullptr || !baseline->isClosed()) {
+    return;
+  }
+
+  double min_angle_rad = 0.0;
+  int cusp_vertex_index = -1;
+  if (!baseline->findMinimumInteriorAngle(min_angle_rad, cusp_vertex_index)) {
+    return;
+  }
+
+  const double min_angle_deg = min_angle_rad * 180.0 / PI;
+  if (min_angle_deg >= kClosedBaselineCuspAngleThresholdDeg) {
+    return;
+  }
+
+  PDCELVertex *cusp_vertex = baseline->vertices()[cusp_vertex_index];
+  std::ostringstream oss;
+  oss << "closed baseline '" << baseline->getName()
+      << "' for segment '" << segment_name
+      << "' has cusp-like minimum interior angle "
+      << min_angle_deg << " deg at vertex " << cusp_vertex_index;
+  if (cusp_vertex != nullptr) {
+    oss << " " << cusp_vertex->printString();
+  }
+  oss << "; offset thickness " << total_thickness
+      << " will run with cusp-sensitive handling";
+  PLOG(info) << oss.str();
 }
 
 } // namespace
@@ -444,6 +479,9 @@ void Segment::offsetCurveBase() {
   if (side == 0) {
     return;
   }
+
+  logClosedBaselineCuspIfAny(
+      _curve_base, _name, _layup->getTotalThickness());
 
   _curve_offset.reset(new Baseline());
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),

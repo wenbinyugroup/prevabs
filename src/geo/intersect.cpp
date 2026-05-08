@@ -1047,6 +1047,12 @@ PDCELVertex *getIntersectionVertex(
   // Insert the intersection vertex (if needed)
   if (insert1) {
     c1.insert(c1.begin()+i1, ip);
+    if (&c1 == &c2 && i2 >= i1) {
+      // When both curves alias the same vector, the first insertion shifts
+      // every later position by one. Keep the second insertion/index aligned
+      // with the original segment location.
+      i2 += 1;
+    }
   }
   else {
     c1[i1] = ip;

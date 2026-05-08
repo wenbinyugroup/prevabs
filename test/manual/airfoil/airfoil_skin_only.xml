@@ -1,0 +1,50 @@
+<cross_section name="airfoil_skin_only">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <!-- Timoshenko beam model -->
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>-0.25  0</translate>
+    <scale>2</scale>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">ua79sff.dat</points>
+      <leading_edge name="ple">0.650000 -0.018400</leading_edge>
+      <trailing_edge>1.000000  0.000000</trailing_edge>
+    </line>
+
+  </baselines>
+
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_gelcoat_0000381">0</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_db_frp_000053">20:9</layer>
+    </layup>
+  </layups>
+
+
+  <!-- Surface layup -->
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>
