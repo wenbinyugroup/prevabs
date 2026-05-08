@@ -78,6 +78,12 @@ public:
    */
   bool isClosed() const { return _pvertices.front() == _pvertices.back(); }
 
+  // For a closed polyline, find the minimum interior angle among the unique
+  // vertices (the duplicated closure vertex is ignored). Returns false when
+  // the baseline is open, too short, or degenerate at every vertex.
+  bool findMinimumInteriorAngle(
+      double &min_angle_rad, int &vertex_index) const;
+
   SVector3 getTangentVectorBegin();
   SVector3 getTangentVectorEnd();
 

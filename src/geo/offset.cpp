@@ -69,6 +69,8 @@ bool validateBaseOffsetMap(
 
 namespace {
 
+constexpr double kOffsetMiterLimitFactor = 2.0;
+
 void assertValidBaseOffsetMap(
     const BaseOffsetMap &map, const std::string &caller) {
   std::string error_message;
@@ -77,6 +79,96 @@ void assertValidBaseOffsetMap(
     PLOG(error) << caller + ": invalid BaseOffsetMap: " + error_message;
   }
   assert(valid && "BaseOffsetMap staircase invariant violated");
+}
+
+PDCELVertex *createSingleVertexBevelSurrogate(
+    PDCELVertex *prev_end,
+    PDCELVertex *cur_start,
+    std::vector<PDCELVertex *> *local_allocs) {
+  const double mid_y =
+      0.5 * (prev_end->point2()[0] + cur_start->point2()[0]);
+  const double mid_z =
+      0.5 * (prev_end->point2()[1] + cur_start->point2()[1]);
+
+  if (isClose(
+          mid_y, mid_z,
+          prev_end->point2()[0], prev_end->point2()[1],
+          ABS_TOL, REL_TOL)) {
+    return prev_end;
+  }
+  if (isClose(
+          mid_y, mid_z,
+          cur_start->point2()[0], cur_start->point2()[1],
+          ABS_TOL, REL_TOL)) {
+    return cur_start;
+  }
+
+  PDCELVertex *bevel_mid = new PDCELVertex(0, mid_y, mid_z);
+  if (local_allocs != nullptr) {
+    local_allocs->push_back(bevel_mid);
+  }
+  return bevel_mid;
+}
+
+PDCELVertex *buildLimitedMiterJunction(
+    PDCELVertex *base_vertex,
+    PDCELVertex *prev_start,
+    PDCELVertex *prev_end,
+    PDCELVertex *cur_start,
+    PDCELVertex *cur_end,
+    const h2d::Point2d &isect_pt,
+    double dist,
+    std::vector<PDCELVertex *> *local_allocs,
+    bool *used_miter_limit = nullptr) {
+  if (used_miter_limit != nullptr) {
+    *used_miter_limit = false;
+  }
+
+  if (isClose(
+          isect_pt.getX(), isect_pt.getY(),
+          prev_start->point2()[0], prev_start->point2()[1],
+          ABS_TOL, REL_TOL)) {
+    return prev_start;
+  }
+  if (isClose(
+          isect_pt.getX(), isect_pt.getY(),
+          prev_end->point2()[0], prev_end->point2()[1],
+          ABS_TOL, REL_TOL)) {
+    return prev_end;
+  }
+  if (isClose(
+          isect_pt.getX(), isect_pt.getY(),
+          cur_start->point2()[0], cur_start->point2()[1],
+          ABS_TOL, REL_TOL)) {
+    return cur_start;
+  }
+  if (isClose(
+          isect_pt.getX(), isect_pt.getY(),
+          cur_end->point2()[0], cur_end->point2()[1],
+          ABS_TOL, REL_TOL)) {
+    return cur_end;
+  }
+
+  const double abs_dist = std::fabs(dist);
+  if (abs_dist > 0.0) {
+    const double dy = isect_pt.getX() - base_vertex->point2()[0];
+    const double dz = isect_pt.getY() - base_vertex->point2()[1];
+    const double miter_dist = std::sqrt(dy * dy + dz * dz);
+    const double miter_limit = kOffsetMiterLimitFactor * abs_dist;
+    if (miter_dist > miter_limit + TOLERANCE) {
+      if (used_miter_limit != nullptr) {
+        *used_miter_limit = true;
+      }
+      return createSingleVertexBevelSurrogate(
+          prev_end, cur_start, local_allocs);
+    }
+  }
+
+  PDCELVertex *v_junction = new PDCELVertex(0, isect_pt.getX(), isect_pt.getY());
+  if (local_allocs != nullptr) {
+    local_allocs->push_back(v_junction);
+  }
+  return v_junction;
 }
 
 } // namespace
@@ -399,25 +491,23 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
                     PLOG(debug) << oss.str();
         }
 
-        // If the intersection coincides (within tolerance) with an already-
-        // allocated endpoint, reuse that vertex to avoid creating a duplicate.
-        // Otherwise allocate a new vertex at the exact intersection point.
-        if (isClose(isect_pt.getX(), isect_pt.getY(), prev_p1.getX(), prev_p1.getY(), ABS_TOL, REL_TOL)) {
-          junctions.push_back(prev_start);
-          if (config.debug) {
-                        PLOG(debug) << "  snapped to prev_start (within tolerance)";
-          }
-        } else if (isClose(isect_pt.getX(), isect_pt.getY(), prev_p2.getX(), prev_p2.getY(), ABS_TOL, REL_TOL)) {
-          junctions.push_back(prev_end);
-          if (config.debug) {
-                        PLOG(debug) << "  snapped to prev_end (within tolerance)";
-          }
-        } else {
-          PDCELVertex *v_junction = new PDCELVertex(0, isect_pt.getX(), isect_pt.getY());
-          local_allocs.push_back(v_junction);
-          junctions.push_back(v_junction);
-          if (config.debug) {
-                        PLOG(debug) << "  new junction vertex allocated at intersection point";
+        bool used_miter_limit = false;
+        PDCELVertex *v_junction = buildLimitedMiterJunction(
+            base[i], prev_start, prev_end, cur_start, cur_end,
+            isect_pt, dist, &local_allocs, &used_miter_limit);
+        junctions.push_back(v_junction);
+
+        if (config.debug) {
+          if (used_miter_limit) {
+            std::ostringstream oss;
+            oss << "  miter limit exceeded at base[" << i << "]"
+                << ": dist="
+                << base[i]->point().distance(v_junction->point())
+                << " > " << (kOffsetMiterLimitFactor * std::fabs(dist))
+                << "; using single-vertex bevel surrogate";
+            PLOG(debug) << oss.str();
+          } else {
+            PLOG(debug) << "  using miter intersection junction";
           }
         }
       } else {
@@ -1309,14 +1399,23 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
               segN_a, segN_b, seg0_a, seg0_b, u_n, u_0, TOLERANCE);
           PDCELVertex *closure;
           if (not_parallel) {
-            closure = new PDCELVertex(getParametricPoint(
-                segN_a->point(), segN_b->point(), u_n));
+            const SPoint3 closure_pt = getParametricPoint(
+                segN_a->point(), segN_b->point(), u_n);
+            const h2d::Point2d closure_h2d(closure_pt.y(), closure_pt.z());
+            bool used_miter_limit = false;
+            closure = buildLimitedMiterJunction(
+                base.front(), segN_a, segN_b, seg0_a, seg0_b,
+                closure_h2d, dist, nullptr, &used_miter_limit);
             if (config.debug) {
-              PLOG(debug) <<
-                "offset (multi-vertex): closure miter at "
-                + closure->printString()
-                + " (u_n=" + std::to_string(u_n)
-                + ", u_0=" + std::to_string(u_0) + ")";
+              std::ostringstream oss;
+              oss << "offset (multi-vertex): closure "
+                  << (used_miter_limit
+                          ? "bevel surrogate"
+                          : "miter")
+                  << " at " << closure->printString()
+                  << " (u_n=" << u_n
+                  << ", u_0=" << u_0 << ")";
+              PLOG(debug) << oss.str();
             }
           } else {
             closure = lines_group[0].front();
