@@ -1,5 +1,11 @@
 #pragma once
 
+#include "globalConstants.hpp"
+#include "globalVariables.hpp"
+
+#include <chrono>
+#include <exception>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <spdlog/spdlog.h>
@@ -7,6 +13,12 @@
 // Returns "[info]    ", "[warning] ", etc., padded to a fixed width.
 // Declared here, defined in plog.cpp.
 std::string paddedSeverityBracket(spdlog::level::level_enum level);
+std::string formatProgressContext();
+bool hasPrevabsLogger();
+void flushPrevabsLoggers();
+void logPrevabsMessage(spdlog::level::level_enum level,
+                       const char* file, int line, const char* func,
+                       const std::string &message);
 
 // Stream-wrapper that collects << output and logs on destruction.
 // Usage: PLOG(info) << "msg " << var;
@@ -23,12 +35,8 @@ struct PLogStream {
     : level_(lvl), file_(file), line_(line), func_(func) {}
 
   ~PLogStream() {
-    auto logger = spdlog::get("prevabs");
-    if (!logger) return;
-    std::string padded = paddedSeverityBracket(level_);
-    logger->log(
-        spdlog::source_loc{file_, line_, func_},
-        level_, "{} {}", padded, oss_.str());
+    if (!hasPrevabsLogger()) return;
+    logPrevabsMessage(level_, file_, line_, func_, oss_.str());
   }
 
   template <typename T>
@@ -36,6 +44,20 @@ struct PLogStream {
     oss_ << val;
     return *this;
   }
+};
+
+class PLogContext {
+public:
+  explicit PLogContext(const std::string &context);
+  ~PLogContext();
+
+  PLogContext(const PLogContext &) = delete;
+  PLogContext &operator=(const PLogContext &) = delete;
+
+  void dismiss();
+
+private:
+  bool _active;
 };
 
 // Map boost::log::trivial severity names to spdlog levels.
@@ -51,5 +73,70 @@ struct PLogStream {
   PLogStream(_PLOG_LEVEL_##severity, \
              __FILE__, __LINE__, static_cast<const char*>(__func__))
 
+inline bool shouldLogDebugAt(DebugLevel min_level) {
+  return config.debug_level >= min_level;
+}
+
+#define PLOG_DEBUG_AT(level) \
+  if (shouldLogDebugAt(DebugLevel::level)) PLOG(debug)
+
+class PLogSection {
+public:
+  PLogSection(
+      DebugLevel min_level,
+      const std::string &event,
+      const std::string &name)
+      : _active(shouldLogDebugAt(min_level)),
+        _event(event),
+        _name(name),
+        _start(std::chrono::steady_clock::now()) {
+    if (_active) {
+      PLOG(debug) << formatBanner("BEGIN");
+    }
+  }
+
+  ~PLogSection() {
+    if (!_active) {
+      return;
+    }
+
+    const bool unwinding = std::uncaught_exception();
+    const auto stop = std::chrono::steady_clock::now();
+    const double ms =
+        std::chrono::duration<double, std::milli>(stop - _start).count();
+
+    std::ostringstream tag;
+    tag.setf(std::ios::fixed, std::ios::floatfield);
+    tag.precision(ms >= 100.0 ? 0 : 1);
+    tag << (unwinding ? "ABORT" : "END")
+        << ", took=" << ms << "ms";
+    if (!_details.empty()) {
+      tag << ", " << _details;
+    }
+
+    PLOG(debug) << formatBanner(tag.str());
+  }
+
+  void setEndDetails(const std::string &details) { _details = details; }
+
+private:
+  std::string formatBanner(const std::string &tag) const {
+    return "=== " + _event + ": " + _name + " [" + tag + "] ===";
+  }
+
+  bool _active;
+  std::string _event;
+  std::string _name;
+  std::string _details;
+  std::chrono::steady_clock::time_point _start;
+};
+
 // Call once after config is populated (sets up file + console sinks).
 void initLog();
+
+// Lightweight runtime progress stack used by top-level fatal handlers.
+// PLogContext is the preferred scoped API. The raw push/pop helpers remain
+// available for legacy call sites and tests.
+void pushProgressContext(const std::string &context);
+void popProgressContext();
+void clearProgressContext();

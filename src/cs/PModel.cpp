@@ -19,6 +19,15 @@
 #include <iostream>
 #include <string>
 
+namespace {
+
+std::string makeSnapshotFileName(const std::string &snapshot_tag) {
+  return config.file_directory + config.file_base_name + "_debug_"
+      + sanitizeFilenameToken(snapshot_tag) + ".geo_unrolled";
+}
+
+} // namespace
+
 PModel::PModel(std::string name) {
   _name = name;
   _global_mesh_size = 1.0;
@@ -37,11 +46,12 @@ PModel::PModel(std::string name) {
 
 void PModel::initialize() {
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::phase) {
     runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
     if (!runtime.fdeb) {
-      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb << std::endl;
-      config.debug = false;
+      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb
+                << std::endl;
+      config.debug_level = DebugLevel::off;
     }
   }
 
@@ -63,7 +73,7 @@ void PModel::finalize() {
   gmsh::finalize();
   // GmshFinalize();
 
-  if (config.debug && runtime.fdeb) {
+  if (config.debug_level >= DebugLevel::phase && runtime.fdeb) {
     fclose(runtime.fdeb);
     runtime.fdeb = nullptr;
   }
@@ -105,6 +115,9 @@ void PModel::setObliques(double cos11, double cos21) {
 
 
 void PModel::summary() {
+  if (config.debug_level < DebugLevel::summary) {
+    return;
+  }
 
   // std::cout << std::fixed;
   if (scientific_format) {
@@ -112,13 +125,13 @@ void PModel::summary() {
   }
 
   // std::cout << doubleLine80 << std::endl << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   // std::cout << markInfo << " SUMMARY" << std::endl << std::endl;
-    PLOG(debug) << "SUMMARY";
+  PLOG(info) << "SUMMARY";
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   // std::cout << "BASEPOINTS" << std::setw(8) << basepoints.size() <<
   // std::endl; std::cout << singleLine80 << std::endl; std::cout <<
@@ -126,15 +139,15 @@ void PModel::summary() {
   //           << "Y" << std::endl;
   // for (auto bp : basepoints)
   //   std::cout << bp << std::endl;
-    PLOG(debug) << "summary of base points";
+  PLOG(info) << "summary of base points";
   for (auto bp : _geo_repo.vertices()) {
     std::stringstream ss;
     ss << bp;
-        PLOG(debug) << ss.str();
+    PLOG(info) << ss.str();
   }
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   // std::cout << "BASELINES" << std::setw(8) << _baselines.size() << std::endl;
   // std::cout << singleLine80 << std::endl;
@@ -144,13 +157,13 @@ void PModel::summary() {
   //   std::cout << std::setw(16) << bl->getName() << std::setw(16)
   //             << bl->getType() << std::setw(16) << bl->getNumberOfBasepoints()
   //             << std::endl;
-    PLOG(debug) << "summary of base lines";
+  PLOG(info) << "summary of base lines";
   for (auto bsl : _geo_repo.baselines()) {
     bsl->print();
   }
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   std::cout << "MATERIALS" << std::setw(8) << _mat_repo.numMaterials() << std::endl;
   std::cout << singleLine80 << std::endl;
@@ -162,7 +175,7 @@ void PModel::summary() {
               << m->getDensity() << std::endl;
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
   std::cout << "LAYER TYPES" << std::setw(8) << _mat_repo.numLayerTypes() << std::endl;
   std::cout << singleLine80 << std::endl;
@@ -183,15 +196,15 @@ void PModel::summary() {
               << l->getPlies().size() << std::setw(16) << l->getThickness()
               << std::endl;
 
-    PLOG(debug) << "summary of layups";
+  PLOG(info) << "summary of layups";
   for (auto lyp : _mat_repo.layups()) {
     lyp->print();
   }
 
   // std::cout << doubleLine80 << std::endl;
-    PLOG(debug) << doubleLine80;
+  PLOG(info) << doubleLine80;
 
-    PLOG(debug) << "summary of components";
+  PLOG(info) << "summary of components";
   for (auto cmp : _cross_section->components()) {
     cmp->print();
   }
@@ -202,15 +215,16 @@ void PModel::summary() {
 
 
 void PModel::build() {
+  PLogContext build_context("build geometry");
   _dcel = new PDCEL();
   _dcel->initialize();
 
   BuilderConfig bcfg{
-    config.debug, config.tool, config.app.tol, config.app.geo_tol,
+    config.debug_level, config.tool, config.app.tol, config.app.geo_tol,
     _dcel, this
   };
   bcfg.model = this;
-  _face_data[_dcel->faces().front()].name = "background";
+  setFaceName(_dcel->faces().front(), "background");
 
   // for (auto cs : crosssections) {
   //   cs->build();
@@ -263,49 +277,85 @@ void PModel::plotGeoDebug(bool create_gmsh_geo) {
 
 }
 
+void plotGeoSnapshotImpl(
+    PModel *model, const std::string &snapshot_tag, bool create_gmsh_geo) {
+  const std::string fn_geo = makeSnapshotFileName(snapshot_tag);
+  PLOG(info) << "writing debug snapshot: " << fn_geo;
+
+  if (create_gmsh_geo) {
+    model->createGmshGeo();
+    gmsh::model::geo::synchronize();
+    model->writeGmshGeo(fn_geo);
+    gmsh::model::remove();
+    gmsh::model::add("");
+  } else {
+    model->writeGmshGeo(fn_geo);
+  }
+
+  model->_gmsh_vertex_tags.clear();
+  model->_gmsh_edge_tags.clear();
+  model->_gmsh_face_tags.clear();
+  model->_gmsh_face_embedded_vertex_tags.clear();
+  model->_gmsh_face_embedded_edge_tags.clear();
+  model->_gmsh_face_physical_group_tags.clear();
+}
+
 
 
 
 void PModel::homogenize() {
-
-
   try {
-    // ================
-    // READ INPUT FILES
+    PLogContext homogenize_context("homogenize");
 
+    {
+      // ================
+      // READ INPUT FILES
+      PLogContext read_inputs_context("read input files");
+      PLogSection read_inputs_section(
+          DebugLevel::phase, "phase", "read input files");
         PLOG(info) << "reading input files";
 
-    readInputMain(config.main_input, config.file_directory, this);
-    // pmodel->summary(g_msg);
+      readInputMain(config.main_input, config.file_directory, this);
+      // pmodel->summary(g_msg);
 
-        PLOG(info) << "reading input files -- done";
+      PLOG(info) << "reading input files -- done";
+    }
 
-
-    // ==============
-    // BUILD GEOMETRY
-
+    {
+      // ==============
+      // BUILD GEOMETRY
+      PLogContext build_shape_context("build shape");
+      PLogSection build_shape_section(
+          DebugLevel::phase, "phase", "build shape");
         PLOG(info) << "building the shape";
 
-    build();
+      build();
 
-        PLOG(info) << "building the shape -- done";
+      PLOG(info) << "building the shape -- done";
+    }
 
-
-    // ================
-    // MODELING IN GMSH
+    {
+      // ================
+      // MODELING IN GMSH
+      PLogContext gmsh_context("build Gmsh model");
+      PLogSection gmsh_section(
+          DebugLevel::phase, "phase", "build Gmsh model");
 
         PLOG(info) << "modeling in Gmsh";
 
-    buildGmsh();
+      buildGmsh();
 
-        PLOG(info) << "modeling in Gmsh -- done";
-
+      PLOG(info) << "modeling in Gmsh -- done";
+    }
 
     // ===================
     // WRITE SG INPUT FILE
 
     // if (config.analysis_tool != 3) {
     if (!config.integrated_solver) {
+      PLogContext write_outputs_context("write outputs");
+      PLogSection write_outputs_section(
+          DebugLevel::phase, "phase", "write outputs");
             PLOG(info) << "writing outputs";
 
       if (config.plot) {
@@ -338,6 +388,7 @@ void PModel::homogenize() {
 
 
 void PModel::dehomogenize() {
+  PLogContext dehomogenize_context("dehomogenize");
     PLOG(info) << "dehomogenizing...";
 
   // Read cs xml file
@@ -354,8 +405,6 @@ void PModel::dehomogenize() {
   // if (config.execute) {
   //   run(pmessage);
   // }
-
-  return;
 }
 
 
@@ -367,6 +416,7 @@ void PModel::dehomogenize() {
 
 
 void PModel::run() {
+  PLogContext run_context("run solver");
 
     PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis;
   PLOG(info) << " [" + config.tool_name + " Messages] ";
@@ -411,8 +461,6 @@ void PModel::run() {
 
   PLOG(info) << " [" + config.tool_name + " Messages End] ";
     PLOG(info) << "running " + config.tool_name + " for " + config.msg_analysis + " -- done";
-
-  return;
 }
 
 
@@ -423,7 +471,8 @@ void PModel::run() {
 
 
 
-void PModel::plot() {
+void PModel::plot(const std::function<void()> &before_gui) {
+  PLogContext plot_context("plot results");
   if (config.isRecovery()) {
     plotDehomo();
     // pmessage->printBlank();
@@ -460,10 +509,11 @@ void PModel::plot() {
     gmsh::merge(config.file_name_opt);
   }
   if (!config.no_popup) {
+    if (before_gui) {
+      before_gui();
+    }
     gmsh::fltk::run();
   }
-
-  return;
 }
 
 

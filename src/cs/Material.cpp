@@ -21,30 +21,34 @@ std::ostream &operator<<(std::ostream &out, LayerType *lt) {
 }
 
 void Material::print(int i_type, int /*i_indent*/) {
+  if (config.debug_level < DebugLevel::join) {
+    return;
+  }
   std::string msg;
-    PLOG(debug) << "name: " + _name;
-    PLOG(debug) << "density = " + std::to_string(_density);
-    PLOG(debug) << "type: " + _type;
+  PLOG(debug) << "name: " + _name;
+  PLOG(debug) << "density = " + std::to_string(_density);
+  PLOG(debug) << "type: " + _type;
   if (getSymmetryType() != _type) {
-      PLOG(debug) << "symmetry type: " + getSymmetryType();
+    PLOG(debug) << "symmetry type: " + getSymmetryType();
   }
 
   if (_type == "isotropic") {
-        PLOG(debug) << "E = " + std::to_string(_elastic[0]);
-        PLOG(debug) << "nu = " + std::to_string(_elastic[1]);
+    PLOG(debug) << "E = " + std::to_string(_elastic[0]);
+    PLOG(debug) << "nu = " + std::to_string(_elastic[1]);
   } else if (_type == "orthotropic") {
-        PLOG(debug) << "E1 = " + std::to_string(_elastic[0]);
-        PLOG(debug) << "E2 = " + std::to_string(_elastic[1]);
-        PLOG(debug) << "E3 = " + std::to_string(_elastic[2]);
-        PLOG(debug) << "G12 = " + std::to_string(_elastic[3]);
-        PLOG(debug) << "G13 = " + std::to_string(_elastic[4]);
-        PLOG(debug) << "G23 = " + std::to_string(_elastic[5]);
-        PLOG(debug) << "nu12 = " + std::to_string(_elastic[6]);
-        PLOG(debug) << "nu13 = " + std::to_string(_elastic[7]);
-        PLOG(debug) << "nu23 = " + std::to_string(_elastic[8]);
+    PLOG(debug) << "E1 = " + std::to_string(_elastic[0]);
+    PLOG(debug) << "E2 = " + std::to_string(_elastic[1]);
+    PLOG(debug) << "E3 = " + std::to_string(_elastic[2]);
+    PLOG(debug) << "G12 = " + std::to_string(_elastic[3]);
+    PLOG(debug) << "G13 = " + std::to_string(_elastic[4]);
+    PLOG(debug) << "G23 = " + std::to_string(_elastic[5]);
+    PLOG(debug) << "nu12 = " + std::to_string(_elastic[6]);
+    PLOG(debug) << "nu13 = " + std::to_string(_elastic[7]);
+    PLOG(debug) << "nu23 = " + std::to_string(_elastic[8]);
   } else if (_type == "anisotropic") {
     for (std::size_t i = 0; i < elasticLabelAniso.size(); ++i) {
-            PLOG(debug) << upperString(elasticLabelAniso[i]) + std::to_string(_elastic[i]);
+      PLOG(debug) << upperString(elasticLabelAniso[i])
+                  + std::to_string(_elastic[i]);
     }
   }
 
@@ -448,20 +452,23 @@ void Layer::setLayerType(LayerType *p_layertype) { p_llayertype = p_layertype; }
 
 // ===================================================================
 void Layup::print() {
+  if (config.debug_level < DebugLevel::join) {
+    return;
+  }
 
   std::string msg;
-    PLOG(debug) << "name: " + lname;
-    PLOG(debug) << "layers:";
+  PLOG(debug) << "name: " + lname;
+  PLOG(debug) << "layers:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(32) << "material"
      << std::setw(16) << "thickness"
      << std::setw(8) << "angle"
      << std::setw(8) << "plies";
-    PLOG(debug) << ss.str();
+  PLOG(debug) << ss.str();
   for (int i = 0; i < llayers.size(); i++) {
     std::stringstream ss_layer;
     ss_layer << std::setw(4) << (i+1) << llayers[i];
-        PLOG(debug) << ss_layer.str();
+    PLOG(debug) << ss_layer.str();
   }
 
   return;

@@ -522,8 +522,8 @@ static PDCELVertex *intersectAndTrimOffsetWithBound(
   trimCurveAtVertex(seg->curveOffset()->vertices(), v_new,
                     end == 0 ? CurveEnd::Begin : CurveEnd::End);
 
-  PLOG(debug) << "  ls_i = " + std::to_string(ls_i);
-  PLOG(debug) << "  intersection vertex for " + seg->getName()
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i = " + std::to_string(ls_i);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  intersection vertex for " + seg->getName()
               + ": " + v_new->printString();
   return v_new;
 }
@@ -547,14 +547,14 @@ static void joinStyle1(
     PDCELVertex *&v1_new, PDCELVertex *&v2_new,
     std::vector<PDCELVertex *> &bound_vertices)
 {
-  PLOG(debug) << "  joinStyle1: computing angle bisector at " + v->printString();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  joinStyle1: computing angle bisector at " + v->printString();
 
   SVector3 t1 = e1 == 0 ? s1->getBeginTangent() : s1->getEndTangent();
   SVector3 t2 = e2 == 0 ? s2->getBeginTangent() : s2->getEndTangent();
   SVector3 b = calcAngleBisectVector(
       t1, t2, s1->getLayupside(), s2->getLayupside());
 
-  PLOG(debug) << "  bisector direction: ("
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  bisector direction: ("
               + std::to_string(b.x()) + ", "
               + std::to_string(b.y()) + ", "
               + std::to_string(b.z()) + ")";
@@ -574,7 +574,7 @@ static void joinStyle1(
   double ls_bu1 = 0.0, ls_bu2 = 0.0;
   int is_new_1 = 0, is_new_2 = 0;
 
-  PLOG(debug) << "  intersecting offset of " + s1->getName() + " with bound";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  intersecting offset of " + s1->getName() + " with bound";
   v1_new = intersectAndTrimOffsetWithBound(
       s1, e1, tmp_bound_1, ls_i1, ls_bu1, is_new_1);
   BaseOffsetMapEditor(s1->baseOffsetIndicesPairs(), "joinStyle1 s1")
@@ -583,7 +583,7 @@ static void joinStyle1(
           s1->curveOffset()->vertices().size(),
           s1->curveBase()->vertices().size());
 
-  PLOG(debug) << "  intersecting offset of " + s2->getName() + " with bound";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  intersecting offset of " + s2->getName() + " with bound";
   v2_new = intersectAndTrimOffsetWithBound(
       s2, e2, tmp_bound_2, ls_i2, ls_bu2, is_new_2);
   BaseOffsetMapEditor(s2->baseOffsetIndicesPairs(), "joinStyle1 s2")
@@ -595,7 +595,7 @@ static void joinStyle1(
   // Determine the order of bound vertices based on their position (ls_bu)
   // along the bisector.  If they coincide, unify them to a single vertex.
   if (fabs(ls_bu1 - ls_bu2) < TOLERANCE) {
-    PLOG(debug) << "  both offsets hit the same bound point → unifying vertices";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  both offsets hit the same bound point → unifying vertices";
     v2_new = v1_new;
     bound_vertices.push_back(v1_new);
 
@@ -606,7 +606,7 @@ static void joinStyle1(
           s2->curveOffset()->vertices().size() - 1] = v1_new;
     }
   } else {
-    PLOG(debug) << "  ls_bu1 = " + std::to_string(ls_bu1)
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_bu1 = " + std::to_string(ls_bu1)
                 + ", ls_bu2 = " + std::to_string(ls_bu2);
     if (ls_bu1 < ls_bu2) {
       bound_vertices.push_back(v1_new);
@@ -813,17 +813,17 @@ static bool joinStyle2(
   std::vector<LineSegmentPtr> lss1;
   std::vector<LineSegmentPtr> lss2;
 
-  PLOG(debug) << "  joinStyle2: searching for offset curve intersection";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  joinStyle2: searching for offset curve intersection";
 
   bool found = findOffsetCurvesIntersection(
       s1, s2, e1, e2, lss1, lss2, ls1, ls2, u1_tmp, u2_tmp, i1, i2);
 
   if (!found) {
-    PLOG(debug) << "style 2: no intersection found between offset curves, skipping join.";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "style 2: no intersection found between offset curves, skipping join.";
     return false;
   }
 
-  PLOG(debug) << "  offset intersection found: u1=" + std::to_string(u1_tmp)
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  offset intersection found: u1=" + std::to_string(u1_tmp)
               + " u2=" + std::to_string(u2_tmp)
               + " i1=" + std::to_string(i1)
               + " i2=" + std::to_string(i2);
@@ -831,7 +831,7 @@ static bool joinStyle2(
   PDCELVertex *v_intersect =
       resolveIntersectionParams(ls1, u1_tmp, u2_tmp, i1, i2);
 
-  PLOG(debug) << "  intersection vertex: " + v_intersect->printString();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  intersection vertex: " + v_intersect->printString();
 
   buildTrimmedOffsetBaselines(s1, s2, e1, e2, v_intersect, i1, i2);
 
@@ -857,20 +857,20 @@ static bool joinStyle2(
 //   Phase 5 – update the BaseOffsetMap to reflect the trimmed curves.
 void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
 
-  PLOG(debug) << "making segment end: " + s->getName() + " "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "making segment end: " + s->getName() + " "
               + std::to_string(e);
-  PLOG(debug) << "number of dependencies: "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "number of dependencies: "
               + std::to_string(_dependencies.size());
 
   // Phase 0: shortcuts.
-  PLOG(debug) << "the end to be done (e): " + std::to_string(e);
-  PLOG(debug) << "free end of the segment (s->free()): "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "the end to be done (e): " + std::to_string(e);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "free end of the segment (s->free()): "
               + std::to_string(s->free());
   if (_dependencies.empty() || e == s->free()) {
     if (_dependencies.empty()) {
-      PLOG(debug) << "making segment end because of no dependency.";
+      if (config.debug_level >= DebugLevel::join) PLOG(debug) << "making segment end because of no dependency.";
     } else {
-      PLOG(debug) << "making segment end because of free end set although "
+      if (config.debug_level >= DebugLevel::join) PLOG(debug) << "making segment end because of free end set although "
                      "with dependency.";
     }
     createSegmentFreeEnd(s, e, bcfg);
@@ -888,24 +888,24 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
       _laminate.ref_vertex = _laminate.segments[0]->curveBase()->vertices()[i];
     }
   }
-  PLOG(debug) << "ref vertex: " + _laminate.ref_vertex->printString();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "ref vertex: " + _laminate.ref_vertex->printString();
 
   // Phase 2: collect boundary loops from every already-built dependency segment.
-  PLOG(debug) << "step 2: collect boundary loops from dependency components";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "step 2: collect boundary loops from dependency components";
   std::vector<PDCELHalfEdgeLoop *> hels =
       collectCandidateLoops(_dependencies);
 
-  if (bcfg.debug) {
+  if (bcfg.debug_level >= DebugLevel::join) {
     std::cout << "\nhels:\n";
-    PLOG(debug) << "found half edge loops";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "found half edge loops";
     for (auto hel : hels) {
       hel->log();
     }
   }
 
   // Phase 3: intersect base curve with collected DCEL loops.
-  PLOG(debug) << "step 3: calculate intersections";
-  PLOG(debug) << "step 3.1: for the base curve";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "step 3: calculate intersections";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "step 3.1: for the base curve";
 
   double u1 = 0.0, u2 = 0.0;
   int ls_i_prev = 0;
@@ -914,13 +914,13 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
       static_cast<int>(s->curveBase()->vertices().size()) - 2,
       u1, u2, ls_i_prev, TOLERANCE);
 
-  PLOG(debug) << "  u1 = " + std::to_string(u1);
-  PLOG(debug) << "  u2 = " + std::to_string(u2);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  u1 = " + std::to_string(u1);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  u2 = " + std::to_string(u2);
 
   if (fabs(u1) == INF) {
     // No intersection found: the segment does not actually touch any
     // dependency component at this end → treat as a free end.
-    PLOG(debug) << "making segment end because of not touching any other "
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "making segment end because of not touching any other "
                    "components although with dependency.";
     createSegmentFreeEnd(s, e, bcfg);
     return;
@@ -928,12 +928,12 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
 
   // Obtain or create the base-curve intersection vertex on the DCEL edge.
   PDCELVertex *v_base = getOrSplitVertex(he_tool, u2, TOLERANCE, bcfg.dcel);
-  PLOG(debug) << "  v_new = " << v_base->printString();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  v_new = " << v_base->printString();
 
   // Convert segment index → vertex index.
   // Add 1 at the tail end or when u1 exactly hits the far endpoint of ls_i_prev.
   int ls_i_base = ls_i_prev + ((fabs(1.0 - u1) <= TOLERANCE || e == 1) ? 1 : 0);
-  PLOG(debug) << "  ls_i = " + std::to_string(ls_i_base);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i = " + std::to_string(ls_i_base);
 
   // Trim base curve to the intersection vertex.
   if (e == 0) {
@@ -950,28 +950,28 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
   }
 
   // Phase 4: intersect offset curve with collected DCEL loops.
-  PLOG(debug) << "step 3.2: for the offset curve";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "step 3.2: for the offset curve";
 
   he_tool = findBestIntersection(
       s->curveOffset()->vertices(), hels, e,
       static_cast<int>(s->curveOffset()->vertices().size()) - 2,
       u1, u2, ls_i_prev, TOLERANCE);
 
-  PLOG(debug) << "  u1 = " + std::to_string(u1);
-  PLOG(debug) << "  u2 = " + std::to_string(u2);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  u1 = " + std::to_string(u1);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  u2 = " + std::to_string(u2);
 
   if (fabs(u1) == INF) {
-    PLOG(debug) << "offset curve: no intersection found, using free end.";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offset curve: no intersection found, using free end.";
     createSegmentFreeEnd(s, e, bcfg);
     return;
   }
 
   PDCELVertex *v_offset = getOrSplitVertex(he_tool, u2, TOLERANCE, bcfg.dcel);
-  PLOG(debug) << "  v_new = " << v_offset->printString();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  v_new = " << v_offset->printString();
 
   // Convert segment index → vertex index (same rule as for the base curve).
   int ls_i_offset = ls_i_prev + ((fabs(1.0 - u1) <= TOLERANCE || e == 1) ? 1 : 0);
-  PLOG(debug) << "  ls_i = " + std::to_string(ls_i_offset);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i = " + std::to_string(ls_i_offset);
 
   // Trim offset curve and record the new offset endpoint.
   if (e == 0) {
@@ -990,12 +990,12 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
   }
 
   // Phase 5: update the base-offset index map to reflect the trimmed curves.
-  PLOG(debug) << "adjust base-offset linking indices";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "adjust base-offset linking indices";
   int nv_base = static_cast<int>(s->curveBase()->vertices().size());
   int nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
-  PLOG(debug) << "  nv_base = " + std::to_string(nv_base);
-  PLOG(debug) << "  nv_offset = " + std::to_string(nv_offset);
-  PLOG(debug) << "  ls_i_base = " + std::to_string(ls_i_base)
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  nv_base = " + std::to_string(nv_base);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  nv_offset = " + std::to_string(nv_offset);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i_base = " + std::to_string(ls_i_base)
               + ", ls_i_offset = " + std::to_string(ls_i_offset);
 
   if (e == 0) {
@@ -1024,14 +1024,14 @@ void PComponent::joinSegments(
   PDCELVertex *v, JointStyle style, const BuilderConfig &bcfg
   ) {
 
-  PLOG(debug) <<
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) <<
     "joining segments ends: "
     + s1->getName() + " " + std::to_string(e1) + ", "
     + s2->getName() + " " + std::to_string(e2)
   ;
-  PLOG(debug) << "  joint style: "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  joint style: "
               + std::string(style == JointStyle::step ? "step" : "smooth");
-  PLOG(debug) << "  joint base vertex: " + v->printString();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  joint base vertex: " + v->printString();
 
   PDCELVertex *v1_new = nullptr, *v2_new = nullptr;
   // bound_vertices accumulates the vertices along the joint boundary: it
@@ -1056,16 +1056,16 @@ void PComponent::joinSegments(
   else if (e2 == 1) s2->setTailVertexOffset(v2_new);
 
   // Add DCEL edges along the bound (from base vertex to offset vertex/es).
-  PLOG(debug) << "  adding " + std::to_string(bound_vertices.size() - 1)
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  adding " + std::to_string(bound_vertices.size() - 1)
               + " bound edge(s) to DCEL";
   for (int i = 0; i < static_cast<int>(bound_vertices.size()) - 1; ++i) {
     bcfg.dcel->addEdge(bound_vertices[i], bound_vertices[i + 1]);
   }
 
-  PLOG(debug) << "  base -- offset index pairs of segment: " + s1->getName();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  base -- offset index pairs of segment: " + s1->getName();
   for (auto i = 0; i < s1->baseOffsetIndicesPairs().size(); i++) {
     const BaseOffsetPair &pair = s1->baseOffsetIndicesPairs()[i];
-    PLOG(debug) <<
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) <<
       "  " + std::to_string(pair.base) + " : "
       + s1->curveBase()->vertices()[pair.base]->printString()
       + " -- " + std::to_string(pair.offset) + " : "
@@ -1073,10 +1073,10 @@ void PComponent::joinSegments(
     ;
   }
 
-  PLOG(debug) << "  base -- offset index pairs of segment: " + s2->getName();
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  base -- offset index pairs of segment: " + s2->getName();
   for (auto i = 0; i < s2->baseOffsetIndicesPairs().size(); i++) {
     const BaseOffsetPair &pair = s2->baseOffsetIndicesPairs()[i];
-    PLOG(debug) <<
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) <<
       "  " + std::to_string(pair.base) + " : "
       + s2->curveBase()->vertices()[pair.base]->printString()
       + " -- " + std::to_string(pair.offset) + " : "
@@ -1100,11 +1100,11 @@ void PComponent::joinSegments(
 // After any trimming, a single DCEL edge is added from the base endpoint to
 // the offset endpoint to close the laminate cross-section at this end.
 void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bcfg) {
-  PLOG(debug) << "createSegmentFreeEnd: " + s->getName() + " end=" + std::to_string(e);
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "createSegmentFreeEnd: " + s->getName() + " end=" + std::to_string(e);
 
   // Trim head
   if (e == 0 && s->prevBound().normSq() != 0) {
-    PLOG(debug) << "  trimming offset head against prevBound";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  trimming offset head against prevBound";
 
     SPoint3 sp0{s->curveBase()->vertices().front()->point()};
     SVector3 sv1{s->prevBound()};
@@ -1135,14 +1135,14 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
       s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2,
       is_new_1, is_new_2, TOLERANCE
     );
-    PLOG(debug) << "  head trim intersection point: " + ip->printString();
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  head trim intersection point: " + ip->printString();
 
     trimCurveAtVertex(s->curveOffset()->vertices(), ip, CurveEnd::Begin);
 
     // ls_i1 is the segment index; subtract 1 to get the vertex index of the
     // segment start, which becomes the new offset head index.
     int ls_i_offset = ls_i1 - 1;
-    PLOG(debug) << "  ls_i_offset = " + std::to_string(ls_i_offset);
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i_offset = " + std::to_string(ls_i_offset);
     BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "createSegmentFreeEnd head")
         .trimHead(0, ls_i_offset, false);
 
@@ -1150,7 +1150,7 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
   // Trim tail
   else if (e == 1 && s->nextBound().normSq() != 0) {
-    PLOG(debug) << "  trimming offset tail against nextBound";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  trimming offset tail against nextBound";
 
     SPoint3 sp0{s->curveBase()->vertices().back()->point()};
     SVector3 sv1{s->nextBound()};
@@ -1181,20 +1181,20 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
       s->curveOffset()->vertices(), b, ls_i1, ls_i2, u1, u2,
       is_new_1, is_new_2, TOLERANCE
     );
-    PLOG(debug) << "  tail trim intersection point: " + ip->printString();
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  tail trim intersection point: " + ip->printString();
 
     trimCurveAtVertex(s->curveOffset()->vertices(), ip, CurveEnd::End);
 
-    PLOG(debug) << "curve base:";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "curve base:";
     s->curveBase()->print();
-    PLOG(debug) << "curve offset (after tail trim):";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "curve offset (after tail trim):";
     s->curveOffset()->print();
 
     int ls_i_base = static_cast<int>(s->curveBase()->vertices().size());
     int ls_i_offset = ls_i1;
     int _tmp_nv_offset = static_cast<int>(s->curveOffset()->vertices().size());
 
-    PLOG(debug) << "  ls_i_base = " + std::to_string(ls_i_base)
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i_base = " + std::to_string(ls_i_base)
                 + ", ls_i_offset = " + std::to_string(ls_i_offset)
                 + ", nv_offset = " + std::to_string(_tmp_nv_offset);
 
@@ -1207,21 +1207,21 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
 
   }
 
-  PLOG(debug) << "curve base:";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "curve base:";
   s->curveBase()->print();
-  PLOG(debug) << "curve offset:";
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "curve offset:";
   s->curveOffset()->print();
   s->printBaseOffsetPairs();
 
   // Add the closing DCEL edge between the base endpoint and the offset endpoint.
   if (e == 0) {
-    PLOG(debug) << "  adding head edge: base.front() -- offset.front()";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  adding head edge: base.front() -- offset.front()";
     bcfg.dcel->addEdge(s->curveBase()->vertices().front(),
                              s->curveOffset()->vertices().front());
     s->setHeadVertexOffset(s->curveOffset()->vertices().front());
   }
   else if (e == 1) {
-    PLOG(debug) << "  adding tail edge: base.back() -- offset.back()";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  adding tail edge: base.back() -- offset.back()";
     bcfg.dcel->addEdge(s->curveBase()->vertices().back(),
                              s->curveOffset()->vertices().back());
     s->setTailVertexOffset(s->curveOffset()->vertices().back());

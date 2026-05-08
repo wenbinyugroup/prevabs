@@ -10,7 +10,6 @@ class LayerType;
 class Material;
 class PModel;
 
-extern bool debug;
 extern bool scientific_format;
 
 // ---------------------------------------------------------------------------
@@ -63,7 +62,8 @@ struct PConfig {
   bool execute   = false;
   bool plot      = false;
   bool no_popup  = false;   // suppress Gmsh FLTK window when -v is used
-  bool debug     = false;
+  DebugLevel debug_level = DebugLevel::off;
+  SnapshotMode snapshot_mode = SnapshotMode::never;
 
   // --- Persistent numeric/output settings (may be overridden by config file) ---
   AppConfig app;
@@ -120,7 +120,7 @@ struct IMaterialLookup {
 };
 
 struct BuilderConfig {
-  bool         debug;
+  DebugLevel   debug_level = DebugLevel::off;
   AnalysisTool tool;
   double       tol;
   double       geo_tol;
@@ -129,7 +129,8 @@ struct BuilderConfig {
   PModel*          model     = nullptr;
 
   BuilderConfig() = default;
-  BuilderConfig(bool d, AnalysisTool t, double to, double gt, PDCEL* dcel_ptr,
-                PModel* m)
-      : debug(d), tool(t), tol(to), geo_tol(gt), dcel(dcel_ptr), model(m) {}
+  BuilderConfig(DebugLevel d, AnalysisTool t, double to, double gt,
+                PDCEL* dcel_ptr, PModel* m)
+      : debug_level(d), tool(t), tol(to), geo_tol(gt),
+        dcel(dcel_ptr), model(m) {}
 };

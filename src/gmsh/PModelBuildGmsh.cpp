@@ -40,12 +40,12 @@ void PModel::createGmshVertices() {
       _gv_tag = gmsh::model::geo::addPoint(
         v->x(), v->y(), v->z(), _global_mesh_size);
       _gmsh_vertex_tags[v] = _gv_tag;
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo) <<
         "  vertex " + v->printString()
         + " -> gmsh tag " + std::to_string(_gv_tag);
     }
     else {
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo) <<
         "  vertex " + v->printString() + " skipped (not finite)";
     }
 
@@ -190,7 +190,7 @@ void PModel::createGmshEdges() {
         if (he->sign() > 0) {
           int src_tag = _gmsh_vertex_tags[he->source()];
           int tgt_tag = _gmsh_vertex_tags[he->target()];
-                    PLOG(debug) << 
+                    PLOG_DEBUG_AT(geo) <<
             "  he " + he->printString()
             + " | src_tag=" + std::to_string(src_tag)
             + " tgt_tag=" + std::to_string(tgt_tag);
@@ -206,7 +206,7 @@ void PModel::createGmshEdges() {
         else {
           int src_tag = _gmsh_vertex_tags[he->twin()->source()];
           int tgt_tag = _gmsh_vertex_tags[he->twin()->target()];
-                    PLOG(debug) << 
+                    PLOG_DEBUG_AT(geo) <<
             "  he(twin) " + he->twin()->printString()
             + " | src_tag=" + std::to_string(src_tag)
             + " tgt_tag=" + std::to_string(tgt_tag);
@@ -231,7 +231,7 @@ void PModel::createGmshEdges() {
       _gmsh_edge_tags[he] = _ge_tag;
     }
     else {
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo) <<
         "  he " + he->printString() + " skipped (not finite)";
     }
   }
@@ -255,8 +255,8 @@ void PModel::createGmshFaces() {
 
   for (auto f : _dcel->faces()) {
 
-        PLOG(debug) << "";
-        PLOG(debug) << "  face: " + _face_data[f].name;
+        PLOG_DEBUG_AT(geo) << "";
+        PLOG_DEBUG_AT(geo) << "  face: " + _face_data[f].name;
 
     if (f->isBounded() && f->outer() != nullptr) {
 
@@ -268,7 +268,7 @@ void PModel::createGmshFaces() {
 
 
       // Add outer loop
-            PLOG(debug) << "  adding outer loop";
+            PLOG_DEBUG_AT(geo) << "  adding outer loop";
       PDCELHalfEdge *he = f->outer();
       int _iter_outer = 0;
       do {
@@ -296,7 +296,7 @@ void PModel::createGmshFaces() {
 
 
       // Add inner loops
-            PLOG(debug) << "  adding inner loops";
+            PLOG_DEBUG_AT(geo) << "  adding inner loops";
       for (auto hei : f->inners()) {
 
         _ge_tags.clear();
@@ -329,7 +329,7 @@ void PModel::createGmshFaces() {
 
 
       // Create embedded entities and set local mesh sizes
-            PLOG(debug) << "  adding local mesh size";
+            PLOG_DEBUG_AT(geo) << "  adding local mesh size";
       if (_face_data[f].mesh_size != -1) {
         int _gv_tag_prev = 0;
         int _gv_tag_curr = 0;
@@ -364,11 +364,11 @@ void PModel::createGmshFaces() {
 
 void PModel::createGmshEmbeddedEntities() {
 
-    PLOG(debug) << "  adding embedded entities";
+    PLOG_DEBUG_AT(geo) << "  adding embedded entities";
   for (auto f : _dcel->faces()) {
 
-        PLOG(debug) << "";
-        PLOG(debug) << "  face: " + _face_data[f].name;
+        PLOG_DEBUG_AT(geo) << "";
+        PLOG_DEBUG_AT(geo) << "  face: " + _face_data[f].name;
 
     auto it_ev = _gmsh_face_embedded_vertex_tags.find(f);
     if (it_ev != _gmsh_face_embedded_vertex_tags.end() && !it_ev->second.empty()) {
@@ -401,12 +401,12 @@ void PModel::createGmshPhyscialGroups() {
 
   for (auto f : _dcel->faces()) {
 
-        PLOG(debug) << "";
-        PLOG(debug) << "  face: " + _face_data[f].name;
+        PLOG_DEBUG_AT(geo) << "";
+        PLOG_DEBUG_AT(geo) << "  face: " + _face_data[f].name;
 
     if (f->isBounded() && f->outer() != nullptr) {
 
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo) <<
         "  id: " + std::to_string(f->layertype()->id())
         + ", material: " + f->layertype()->material()->getName()
         + ", theta_3 = " + std::to_string(f->layertype()->angle())
@@ -507,7 +507,7 @@ void PModel::buildGmsh() {
   createGmshPhyscialGroups();
 
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     // Create Gmsh model and write Gmsh files for debugging
 
     plotGeoDebug(false);

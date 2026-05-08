@@ -9,7 +9,7 @@
 // Route homog2d warnings to the prevabs debug logger instead of stderr.
 // Must be defined before homog2d.hpp is processed.
 #define HOMOG2D_LOG_WARNING(a) \
-  do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
+  do { std::ostringstream _h2oss; _h2oss << a; PLOG_DEBUG_AT(geo) << _h2oss.str(); } while(0)
 #include "homog2d.hpp"
 
 
@@ -352,7 +352,7 @@ PDCELHalfEdge *findCurveLoopIntersection(
   int end, int &ls_i, double &u1, double &u2, const double &tol
   ) {
 
-    PLOG(debug) << "in function: findCurveLoopIntersection";
+    PLOG_DEBUG_AT(geo) << "in function: findCurveLoopIntersection";
 
   PDCELHalfEdge *he = nullptr;
 
@@ -382,14 +382,14 @@ PDCELHalfEdge *findCurveLoopIntersection(
           " in findCurveLoopIntersection at " +
           hel->incidentEdge()->printString());
     }
-        PLOG(debug) << "----------";
+        PLOG_DEBUG_AT(geo) << "----------";
 
     tmp_ls.clear();
     tmp_ls.push_back(hei->source());
     tmp_ls.push_back(hei->target());
 
     // std::cout << "tmp_ls: " << tmp_ls[0] << ", " << tmp_ls[1] << std::endl;
-        PLOG(debug) << 
+        PLOG_DEBUG_AT(geo) <<
       "line segment of the half edge loop (tmp_ls): " + tmp_ls[0]->printString() + " -- " + tmp_ls[1]->printString()
       ;
 
@@ -404,11 +404,12 @@ PDCELHalfEdge *findCurveLoopIntersection(
       vertices, tmp_ls, c_is, t_is, c_us, t_us
     );
 
-        PLOG(debug) << "all intersections";
-        PLOG(debug) << "curve index (i) -- param loc (u) | tool index (i) -- param loc (u)";
+        PLOG_DEBUG_AT(geo) << "all intersections";
+        PLOG_DEBUG_AT(geo)
+          << "curve index (i) -- param loc (u) | tool index (i) -- param loc (u)";
 
     for (auto k = 0; k < c_is.size(); k++) {
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo) <<
         std::to_string(c_is[k]) + " -- " + std::to_string(c_us[k]) + " | "
         + std::to_string(t_is[k]) + " -- " + std::to_string(t_us[k]);
     }
@@ -430,16 +431,22 @@ PDCELHalfEdge *findCurveLoopIntersection(
       }
       tmp_t_u = t_us[j0];
 
-            PLOG(debug) << "closest intersection to end " + std::to_string(end);
-            PLOG(debug) << "curve segment index (ls_i) = " + std::to_string(ls_i);
-            PLOG(debug) << "prev curve segment index (ls_i_prev) = " + std::to_string(ls_i_prev);
-            PLOG(debug) << "curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u);
-            PLOG(debug) << "tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u);
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo)
+              << "closest intersection to end " + std::to_string(end);
+            PLOG_DEBUG_AT(geo)
+              << "curve segment index (ls_i) = " + std::to_string(ls_i);
+            PLOG_DEBUG_AT(geo)
+              << "prev curve segment index (ls_i_prev) = "
+              + std::to_string(ls_i_prev);
+            PLOG_DEBUG_AT(geo)
+              << "curve param loc (tmp_c_u) = " + std::to_string(tmp_c_u);
+            PLOG_DEBUG_AT(geo)
+              << "tool param loc (tmp_t_u) = " + std::to_string(tmp_t_u);
+            PLOG_DEBUG_AT(geo) <<
         "curve segment: v11 = " + vertices[ls_i]->printString() + " -> "
         + "v12 = " + vertices[ls_i+1]->printString()
       ;
-            PLOG(debug) << 
+            PLOG_DEBUG_AT(geo) <<
         "tool segment: v21 = " + tmp_ls[0]->printString() + " -> "
         + "v22 = " + tmp_ls[1]->printString()
       ;
@@ -449,8 +456,8 @@ PDCELHalfEdge *findCurveLoopIntersection(
       bool update = false;
 
       // If the intersection is within the tool segment
-            PLOG(debug) << "u1 = " + std::to_string(u1);
-            PLOG(debug) << "tol = " + std::to_string(tol);
+            PLOG_DEBUG_AT(geo) << "u1 = " + std::to_string(u1);
+            PLOG_DEBUG_AT(geo) << "tol = " + std::to_string(tol);
       if (fabs(tmp_t_u) <= tol || (tmp_t_u > 0 && tmp_t_u < 1) || fabs(1 - tmp_t_u) <= tol) {
 
         // If want the intersection closer to the beginning
@@ -518,16 +525,16 @@ PDCELHalfEdge *findCurveLoopIntersection(
 
       if (update) {
 
-                PLOG(debug) << "update intersection";
+                PLOG_DEBUG_AT(geo) << "update intersection";
 
         u1 = tmp_c_u;
         u2 = tmp_t_u;
         he = hei;
         ls_i_prev = ls_i;
 
-                PLOG(debug) << "u1 = " + std::to_string(u1);
-                PLOG(debug) << "u2 = " + std::to_string(u2);
-                PLOG(debug) << "end = " + std::to_string(end);
+                PLOG_DEBUG_AT(geo) << "u1 = " + std::to_string(u1);
+                PLOG_DEBUG_AT(geo) << "u2 = " + std::to_string(u2);
+                PLOG_DEBUG_AT(geo) << "end = " + std::to_string(end);
 
       }
 

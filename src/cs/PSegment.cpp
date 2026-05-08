@@ -31,6 +31,13 @@ namespace {
 
 constexpr double kClosedBaselineCuspAngleThresholdDeg = 15.0;
 
+void logSkippingSegmentAction(
+    const char *caller, const std::string &segment_name,
+    const std::string &reason) {
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "skipping " << caller << " for segment '"
+              << segment_name << "': " << reason;
+}
+
 const char *toString(Segment::LifecycleState state) {
   switch (state) {
   case Segment::LifecycleState::BaseReady:
@@ -91,6 +98,112 @@ void logClosedBaselineCuspIfAny(
   oss << "; offset thickness " << total_thickness
       << " will run with cusp-sensitive handling";
   PLOG(info) << oss.str();
+}
+
+
+
+std::string faceLabel(PDCELFace *face, PModel *model) {
+  if (face == nullptr) {
+    return "nullptr";
+  }
+
+  (void)model;
+  return face->displayLabel();
+}
+
+
+
+
+void logVertexEdgeRing(
+    PDCELVertex *vertex, PModel *model, const std::string &prefix) {
+  if (vertex == nullptr) {
+    PLOG(error) << prefix << ": vertex=nullptr";
+    return;
+  }
+
+  PLOG(error) << prefix << ": vertex=" << vertex->printString();
+  if (vertex->edge() == nullptr) {
+    PLOG(error) << prefix << ": edge ring is empty";
+    return;
+  }
+
+  PDCELHalfEdge *start = vertex->edge();
+  PDCELHalfEdge *he = start;
+  int iter = 0;
+  do {
+    if (he == nullptr) {
+      PLOG(error) << prefix << ": encountered nullptr half-edge in ring";
+      return;
+    }
+    if (++iter > kDCELLoopHardCap) {
+      PLOG(error) << prefix
+                  << ": edge ring walk exceeded "
+                  << kDCELLoopHardCap << " steps";
+      return;
+    }
+
+    std::ostringstream line;
+    line << prefix
+         << ": outgoing[" << (iter - 1) << "] "
+         << he->source()->printString()
+         << " -> " << he->target()->printString()
+         << " | face=" << faceLabel(he->face(), model)
+         << " | loop=" << (he->loop() ? "set" : "nullptr");
+    PLOG(error) << line.str();
+
+    if (he->twin() == nullptr) {
+      PLOG(error) << prefix << ": outgoing[" << (iter - 1)
+                  << "] has nullptr twin";
+      return;
+    }
+    he = he->twin()->next();
+  } while (he != nullptr && he != start);
+
+  if (he == nullptr) {
+    PLOG(error) << prefix << ": edge ring terminated at nullptr next";
+  }
+}
+
+
+
+
+void logMissingHalfEdgeBetween(
+    const std::string &caller, const std::string &segment_name,
+    PDCELVertex *source, PDCELVertex *target, const BuilderConfig &bcfg) {
+  PLOG(error) << "Segment::" << caller
+              << ": findHalfEdgeBetween returned nullptr"
+              << " for segment '" << segment_name << "'"
+              << ", source="
+              << (source ? source->printString() : "nullptr")
+              << ", target="
+              << (target ? target->printString() : "nullptr");
+  logVertexEdgeRing(
+      source, bcfg.model,
+      "Segment::" + caller + ": source edge ring for segment '"
+          + segment_name + "'");
+}
+
+std::size_t countLoopSteps(PDCELHalfEdge *start) {
+  if (start == nullptr) {
+    return 0;
+  }
+
+  std::size_t count = 0;
+  PDCELHalfEdge *he = start;
+  do {
+    if (he == nullptr) {
+      throw std::runtime_error("countLoopSteps: encountered nullptr half-edge");
+    }
+    if (count >= static_cast<std::size_t>(kDCELLoopHardCap)) {
+      throw std::runtime_error(
+          "countLoopSteps: DCEL loop exceeded "
+          + std::to_string(kDCELLoopHardCap) + " iterations");
+    }
+    ++count;
+    he = he->next();
+  } while (he != start);
+
+  return count;
 }
 
 } // namespace
@@ -353,6 +466,8 @@ void Segment::print() {
 
 void Segment::printBaseOffsetLink() {
   if (!requireOffsetCurve("printBaseOffsetLink")) {
+    logSkippingSegmentAction(
+        "printBaseOffsetLink", _name, "offset curve is not ready");
     return;
   }
 
@@ -383,12 +498,14 @@ void Segment::printBaseOffsetLink() {
 
 void Segment::printBaseOffsetPairs() {
   if (!requireOffsetCurve("printBaseOffsetPairs")) {
+    logSkippingSegmentAction(
+        "printBaseOffsetPairs", _name, "offset curve is not ready");
     return;
   }
 
-    PLOG(debug) << "base vertices -- base_link_to_offset_indices";
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "base vertices -- base_link_to_offset_indices";
 
-    PLOG(debug) << "number of pairs: " + std::to_string(_base_offset_indices_pairs.size());
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "number of pairs: " + std::to_string(_base_offset_indices_pairs.size());
 
   for (auto i = 0; i < _base_offset_indices_pairs.size(); i++) {
     const BaseOffsetPair &pair = _base_offset_indices_pairs[i];
@@ -397,7 +514,7 @@ void Segment::printBaseOffsetPairs() {
       + " -- " + std::to_string(pair.offset) + ": "
       + _curve_offset->vertices()[pair.offset]->printString();
 
-        PLOG(debug) << s;
+        if (config.debug_level >= DebugLevel::join) PLOG(debug) << s;
   }
 
 }
@@ -441,16 +558,29 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
   _next_bound_vertices = vertices;
 }
 
+std::size_t Segment::layerCount() const {
+  std::size_t count = 0;
+  for (const auto &area : _areas) {
+    count += area->faces().size();
+  }
+  return count;
+}
+
 void Segment::offsetCurveBase() {
   if (!requireBaseDefinition("offsetCurveBase")) {
+    logSkippingSegmentAction(
+        "offsetCurveBase", _name, "base definition is incomplete");
     return;
   }
 
   if (_state == LifecycleState::OffsetReady) {
     if (!validateStateInvariants("offsetCurveBase")) {
+      logSkippingSegmentAction(
+          "offsetCurveBase", _name,
+          "existing offset-ready state violates invariants");
       return;
     }
-    PLOG(debug) << "offsetCurveBase: reusing existing offset curve for segment '"
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offsetCurveBase: reusing existing offset curve for segment '"
                 << _name << "'";
     return;
   }
@@ -465,7 +595,7 @@ void Segment::offsetCurveBase() {
     return;
   }
 
-  PLOG(debug) << "offsetting the base curve of segment: " + _name;
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offsetting the base curve of segment: " + _name;
 
   if (_curve_offset != nullptr) {
     PLOG(error) << "Segment::offsetCurveBase found stale offset state for segment '"
@@ -477,6 +607,8 @@ void Segment::offsetCurveBase() {
 
   const int side = requireValidLayupSide("offsetCurveBase");
   if (side == 0) {
+    logSkippingSegmentAction(
+        "offsetCurveBase", _name, "layup side is invalid");
     return;
   }
 
@@ -493,40 +625,47 @@ void Segment::offsetCurveBase() {
   _state = LifecycleState::OffsetReady;
   validateStateInvariants("offsetCurveBase");
 
-  PLOG(debug) << "base line: "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "base line: "
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
-  PLOG(debug) << "offset line: "
+  if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offset line: "
     << _curve_offset->vertices().front()->printString() << " -> "
     << _curve_offset->vertices().back()->printString();
 }
 
 void Segment::build(const BuilderConfig &bcfg) {
+  PLogContext segment_context("segment shell: " + _name);
+  PLogSection segment_section(
+      DebugLevel::join, "segment shell", _name);
   if (!requireExactState(LifecycleState::OffsetReady, "build")) {
+    logSkippingSegmentAction(
+        "build", _name, "segment is not in OffsetReady state");
     return;
   }
   if (!validateStateInvariants("build")) {
+    logSkippingSegmentAction(
+        "build", _name, "lifecycle invariants validation failed");
     return;
   }
 
-  if (bcfg.debug) {
-    PLOG(debug) << "building the overall shape of segment: " + _name;
-    PLOG(debug) << "base line: "
+  if (bcfg.debug_level >= DebugLevel::join) {
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building the overall shape of segment: " + _name;
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "base line: "
     << _curve_base->vertices().front()->printString() << " -> "
     << _curve_base->vertices().back()->printString();
   }
 
   PDCELHalfEdge *he;
 
-    PLOG(debug) << "creating half edges for the base curve";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating half edges for the base curve";
 
   // Log the number of vertices of the base curve
-    PLOG(debug) << "number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size());
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "number of vertices of the base curve: " + std::to_string(_curve_base->vertices().size());
 
   for (auto i = 0; i < _curve_base->vertices().size() - 1; ++i) {
 
     // Debug log the two vertices i and i+1
-        PLOG(debug) << "vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1);
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "vertices: " + std::to_string(i) + " -- " + std::to_string(i + 1);
 
     he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[i],
                                             _curve_base->vertices()[i + 1]);
@@ -537,27 +676,53 @@ void Segment::build(const BuilderConfig &bcfg) {
     }
   }
 
-    PLOG(debug) << "creating half edges for the offset curve";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating half edges for the offset curve";
   for (int i = 0; i < _curve_offset->vertices().size() - 1; ++i) {
     bcfg.dcel->addEdge(_curve_offset->vertices()[i],
                              _curve_offset->vertices()[i + 1]);
   }
 
   // Create half edge loop and face
-    PLOG(debug) << "creating the half edge loop and face";
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating the half edge loop and face";
   PDCELHalfEdgeLoop *hel;
   he = bcfg.dcel->findHalfEdgeBetween(_curve_base->vertices()[0],
                                           _curve_base->vertices()[1]);
+  if (he == nullptr) {
+    logMissingHalfEdgeBetween(
+        "build", _name, _curve_base->vertices()[0],
+        _curve_base->vertices()[1], bcfg);
+    return;
+  }
   if (requireValidLayupSide("build") < 0) {
     he = he->twin();
   }
   hel = bcfg.dcel->addHalfEdgeLoop(he);
 
   _face = bcfg.dcel->addFace(hel);
-  bcfg.model->faceData(_face).name = _name + "_face";
+  bcfg.model->setFaceName(_face, _name + "_face");
 
   bcfg.dcel->setLoopKept(hel, true);
   hel->setFace(_face);
   _state = LifecycleState::ShellBuilt;
   validateStateInvariants("build");
+
+  const std::size_t loop_steps = countLoopSteps(hel->incidentEdge());
+  const std::size_t nominal_loop_steps =
+      _curve_base->vertices().size() + _curve_offset->vertices().size();
+  const std::size_t warn_loop_steps =
+      std::max<std::size_t>(nominal_loop_steps * 3, nominal_loop_steps + 12);
+  if (loop_steps > warn_loop_steps) {
+    PLOG(warning) << "segment shell loop walked more steps than expected"
+                  << " for segment '" << _name << "': "
+                  << loop_steps << " steps vs expected <= "
+                  << warn_loop_steps;
+  }
+  PLOG(info) << "built segment " << _name
+             << ": " << _curve_base->vertices().size() << " base verts, "
+             << _curve_offset->vertices().size() << " offset verts, "
+             << "loop walked " << loop_steps << " steps";
+  segment_section.setEndDetails(
+      "base_verts=" + std::to_string(_curve_base->vertices().size())
+      + ", offset_verts=" + std::to_string(_curve_offset->vertices().size())
+      + ", loop_steps=" + std::to_string(loop_steps));
 }

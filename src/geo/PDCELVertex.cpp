@@ -10,10 +10,17 @@
 #include <sstream>
 #include <iostream>
 
+std::string PDCELVertex::label() const {
+  std::stringstream ss;
+  ss << "v#" << _id;
+  return ss.str();
+}
+
 std::string PDCELVertex::printString() {
   std::stringstream ss;
-  ss << "( " << _point.x() << " , " << _point.y() << " , " << _point.z()
-      << " )";
+  ss << label()
+     << "( " << _point.x() << " , " << _point.y() << " , " << _point.z()
+     << " )";
   return ss.str();
 }
 
@@ -27,7 +34,8 @@ void PDCELVertex::print() {
 }
 
 void PDCELVertex::printWithAddress() {
-  printf("( %f , %f , %f ) | address: %p\n", _point[0], _point[1], _point[2], (void *)this);
+  printf("%s( %f , %f , %f ) | address: %p\n", label().c_str(),
+         _point[0], _point[1], _point[2], (void *)this);
 }
 
 bool operator==(PDCELVertex &v1, PDCELVertex &v2) {

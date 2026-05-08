@@ -3,43 +3,76 @@
 #include "overloadOperator.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELFace.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo_types.hpp"
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <sstream>
+
+std::string PDCELHalfEdge::label() const {
+  std::stringstream ss;
+  ss << "he#" << _id;
+  return ss.str();
+}
+
+std::string formatLoopWalkHalfEdge(PDCELHalfEdge *he) {
+  if (he == nullptr) {
+    return "nullptr";
+  }
+
+  std::ostringstream ss;
+  ss << he->label() << " ";
+
+  if (he->source() == nullptr) {
+    ss << "nullptr";
+  } else {
+    ss << he->source()->label();
+  }
+
+  ss << " -> ";
+
+  if (he->twin() == nullptr || he->target() == nullptr) {
+    ss << "nullptr";
+  } else {
+    ss << he->target()->label();
+  }
+
+  ss << " | loop: ";
+  if (he->loop() == nullptr) {
+    ss << "nullptr";
+  } else {
+    ss << he->loop()->label();
+  }
+
+  return ss.str();
+}
+
+std::string formatLoopWalkFace(PDCELHalfEdge *he) {
+  if (he == nullptr || he->face() == nullptr) {
+    return "nullptr";
+  }
+  return he->face()->displayLabel();
+}
 
 std::ostream &operator<<(std::ostream &out, PDCELHalfEdge *he) {
-  out << he->_source << " -> " << he->_twin->_source << " sign: " << he->_sign;
+  out << he->label() << " "
+      << he->_source << " -> " << he->_twin->_source
+      << " sign: " << he->_sign;
   return out;
 }
 
 std::string PDCELHalfEdge::printString() {
   std::stringstream ss;
 
-  // ss << _source->point2() << " -> " << _twin->_source->point2();
-  ss << _source << " -> " << _twin->_source;
+  ss << label() << " "
+     << _source << " -> " << _twin->_source;
 
-  // ss << " | loop: ";
-  // if (_loop == nullptr) {
-  //   ss << "nullptr";
-  // } else {
-  //   if (_loop->keep()) {
-  //     ss << "keep";
-  //   } else {
-  //     ss << "temp";
-  //   }
-  // }
-  ss << " | loop: " << (_loop ? "set" : "nullptr");
+  ss << " | loop: " << (_loop ? _loop->label() : "nullptr");
 
-  // ss << " | face: ";
-  // if (_face == nullptr) {
-  //   ss << "nullptr";
-  // } else {
-  //   ss << _face->name();
-  // }
-  ss << " | face: " << (_face ? "(face)" : "nullptr");
+  ss << " | face: " << (_face ? _face->displayLabel() : "nullptr");
   
   return ss.str();
 }
@@ -47,18 +80,21 @@ std::string PDCELHalfEdge::printString() {
 std::string PDCELHalfEdge::printBrief() {
   std::stringstream ss;
 
-  ss << _source << " -> " << _twin->_source << " sign: " << _sign;
+  ss << label() << " "
+     << _source << " -> " << _twin->_source << " sign: " << _sign;
 
   return ss.str();
 }
 
 void PDCELHalfEdge::print() {
-  std::cout << _source << " -> " << _twin->_source
+  std::cout << label() << " "
+            << _source << " -> " << _twin->_source
             << " sign: " << _sign << std::endl;
 }
 
 void PDCELHalfEdge::print2() {
-  std::cout << _source->point2() << " -> " << _twin->_source->point2();
+  std::cout << label() << " "
+            << _source->point2() << " -> " << _twin->_source->point2();
 
   // std::cout << " | sign: " << _sign;
   
@@ -68,14 +104,14 @@ void PDCELHalfEdge::print2() {
   if (_loop == nullptr) {
     std::cout << "nullptr";
   } else {
-    std::cout << "set";
+    std::cout << _loop->label();
   }
 
   std::cout << " | face: ";
   if (_face == nullptr) {
     std::cout << "nullptr";
   } else {
-    std::cout << "(face)";
+    std::cout << _face->displayLabel();
   }
 
   // std::cout << " | address: ";

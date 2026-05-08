@@ -7,9 +7,11 @@
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 
 #include <cmath>
 #include <list>
+#include <sstream>
 
 namespace {
 
@@ -20,6 +22,106 @@ static PDCELHalfEdgeLoop *findOutermostLoop(
     loop = dcel->adjacentLoop(loop);
   }
   return loop;
+}
+
+
+
+
+std::string faceLabel(PDCELFace *face, PModel *model) {
+  if (face == nullptr) {
+    return "nullptr";
+  }
+
+  (void)model;
+  return face->displayLabel();
+}
+
+
+
+
+void logVertexEdgeRing(
+    PDCELVertex *vertex, PModel *model, const std::string &prefix) {
+  if (vertex == nullptr) {
+    PLOG(error) << prefix << ": vertex=nullptr";
+    return;
+  }
+
+  PLOG(error) << prefix << ": vertex=" << vertex->printString();
+  if (vertex->edge() == nullptr) {
+    PLOG(error) << prefix << ": edge ring is empty";
+    return;
+  }
+
+  PDCELHalfEdge *start = vertex->edge();
+  PDCELHalfEdge *he = start;
+  int iter = 0;
+  do {
+    if (he == nullptr) {
+      PLOG(error) << prefix << ": encountered nullptr half-edge in ring";
+      return;
+    }
+    if (++iter > kDCELLoopHardCap) {
+      PLOG(error) << prefix
+                  << ": edge ring walk exceeded "
+                  << kDCELLoopHardCap << " steps";
+      return;
+    }
+
+    std::ostringstream line;
+    line << prefix
+         << ": outgoing[" << (iter - 1) << "] "
+         << he->source()->printString()
+         << " -> " << he->target()->printString()
+         << " | face=" << faceLabel(he->face(), model)
+         << " | loop=" << (he->loop() ? "set" : "nullptr");
+    PLOG(error) << line.str();
+
+    if (he->twin() == nullptr) {
+      PLOG(error) << prefix << ": outgoing[" << (iter - 1)
+                  << "] has nullptr twin";
+      return;
+    }
+    he = he->twin()->next();
+  } while (he != nullptr && he != start);
+
+  if (he == nullptr) {
+    PLOG(error) << prefix << ": edge ring terminated at nullptr next";
+  }
+}
+
+
+
+
+void logMissingEnclosingLoop(
+    const std::string &component_name, PDCELVertex *location,
+    const BuilderConfig &bcfg) {
+  PLOG(error) << "buildFilling: findEnclosingLoop returned nullptr"
+              << " for component '" << component_name << "'"
+              << ", fill location="
+              << (location ? location->printString() : "nullptr")
+              << ", loop_count="
+              << bcfg.dcel->halfedgeloops().size();
+  logVertexEdgeRing(
+      location, bcfg.model,
+      "buildFilling: fill-location edge ring for component '" + component_name
+          + "'");
+}
+
+
+
+
+void logMissingHalfEdgeBetween(
+    const std::string &component_name, PDCELVertex *source,
+    PDCELVertex *target, const BuilderConfig &bcfg) {
+  PLOG(error) << "buildFilling: findHalfEdgeBetween returned nullptr"
+              << " for component '" << component_name << "'"
+              << ", source="
+              << (source ? source->printString() : "nullptr")
+              << ", target="
+              << (target ? target->printString() : "nullptr");
+  logVertexEdgeRing(
+      source, bcfg.model,
+      "buildFilling: source edge ring for component '" + component_name + "'");
 }
 
 } // namespace
@@ -194,8 +296,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
     bcfg.dcel->removeVertex(filling.location);
 
     if (hel_out == nullptr) {
-      PLOG(error) << "buildFilling: failed to find an enclosing loop"
-                  << " for fill location in component '" << _name << "'";
+      logMissingEnclosingLoop(_name, filling.location, bcfg);
       return;
     }
   }
@@ -207,8 +308,9 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
                                         filling.ref_baseline->vertices()[1]);
 
     if (he == nullptr) {
-      PLOG(error) << "buildFilling: failed to find the reference half edge"
-                  << " for component '" << _name << "'";
+      logMissingHalfEdgeBetween(
+          _name, filling.ref_baseline->vertices()[0],
+          filling.ref_baseline->vertices()[1], bcfg);
       return;
     }
 
@@ -227,6 +329,8 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
 
   // Keep the loop and create a new face
   if (hel_out == bcfg.dcel->halfedgeloops().front()) {
+    PUI_ERROR << "buildFilling: fill location is outside the shape"
+              << " for component '" << _name << "'";
     PLOG(error) << "buildFilling: fill location is outside the shape"
                 << " for component '" << _name << "'";
     return;
@@ -243,7 +347,7 @@ void PComponent::buildFilling(const BuilderConfig &bcfg) {
                   << " for component '" << _name << "'";
       return;
     }
-    bcfg.model->faceData(filling.face).name = _name + "_fill_face";
+    bcfg.model->setFaceName(filling.face, _name + "_fill_face");
     filling.face->setMaterial(filling.material);
     bcfg.dcel->setLoopKept(hel_out, true);
     hel_out->setFace(filling.face);

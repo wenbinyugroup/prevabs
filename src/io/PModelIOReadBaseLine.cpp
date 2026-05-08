@@ -93,7 +93,7 @@ int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
         continue;
       }
       pmodel->addBaseline(p_line);
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         p_line->print();
       }
     }
@@ -109,7 +109,7 @@ Baseline *readXMLElementLine(const xml_node<> *p_xn_line, const xml_node<> *p_xn
     requireAttr(p_xn_line, "name", "<line>/<baseline>")->value()
   };
 
-    PLOG(debug) << "reading line: " + baselineName;
+    PLOG_DEBUG_AT(geo) << "reading line: " + baselineName;
 
   Baseline *line = new Baseline();
 
@@ -732,7 +732,7 @@ int readLineByJoin(
                   << "' not found for baseline '" << line->getName() << "'";
       return -1;
     }
-    if (config.debug) {
+    if (config.debug_level >= DebugLevel::geo) {
       subline->print();
     }
     sublines.push_back(subline);

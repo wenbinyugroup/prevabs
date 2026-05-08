@@ -5,6 +5,8 @@
 // Global variables normally defined in src/main.cpp are provided here.
 
 #include "catch_amalgamated.hpp"
+#include <cstdio>
+#include <fstream>
 #include <spdlog/sinks/base_sink.h>
 #include <mutex>
 #include <vector>
@@ -16,7 +18,6 @@
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 
-bool         debug             = false;
 bool         scientific_format = false;
 PConfig      config;
 RuntimeState runtime;
@@ -122,7 +123,7 @@ struct FillComponentFixture {
     model.addMaterial(&material);
     model.addLayerType(&fill_layertype);
 
-    bcfg.debug = false;
+    bcfg.debug_level = DebugLevel::off;
     bcfg.tool = AnalysisTool::VABS;
     bcfg.tol = 1e-12;
     bcfg.geo_tol = 1e-9;
@@ -177,7 +178,7 @@ struct LaminateComponentFixture {
     model.addLayerType(&layertype);
     layup.addLayer(&lamina, 0.0, 1, &layertype);
 
-    bcfg.debug = false;
+    bcfg.debug_level = DebugLevel::off;
     bcfg.tool = AnalysisTool::VABS;
     bcfg.tol = 1e-12;
     bcfg.geo_tol = 1e-9;
@@ -507,7 +508,7 @@ TEST_CASE("buildAreas: last area uses final pair instead of area count",
 
   PModel model;
   BuilderConfig bcfg{};
-  bcfg.debug = false;
+  bcfg.debug_level = DebugLevel::off;
   bcfg.tool = AnalysisTool::VABS;
   bcfg.tol = 1e-12;
   bcfg.geo_tol = 1e-9;
@@ -729,7 +730,7 @@ TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
 
   PModel model;
   BuilderConfig bcfg{};
-  bcfg.debug = false;
+  bcfg.debug_level = DebugLevel::off;
   bcfg.tool = AnalysisTool::VABS;
   bcfg.tol = 1e-12;
   bcfg.geo_tol = 1e-9;
@@ -787,7 +788,7 @@ TEST_CASE("buildAreas: right-side open segment builds head and tail layer faces"
 
   PModel model;
   BuilderConfig bcfg{};
-  bcfg.debug = false;
+  bcfg.debug_level = DebugLevel::off;
   bcfg.tool = AnalysisTool::VABS;
   bcfg.tol = 1e-12;
   bcfg.geo_tol = 1e-9;
@@ -1196,6 +1197,153 @@ TEST_CASE("addHalfEdgeLoop: loop is created and incident edge set",
   CHECK(he31->loop() == hel);
 }
 
+TEST_CASE("DCEL ids are assigned and exposed in printable labels",
+          "[dcel][id]") {
+  PDCEL dcel;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+
+  REQUIRE(v1->id() > 0);
+  REQUIRE(v2->id() > 0);
+  REQUIRE(he12->id() > 0);
+  REQUIRE(he12->twin()->id() > 0);
+
+  CHECK(v1->label() == "v#" + std::to_string(v1->id()));
+  CHECK(he12->label() == "he#" + std::to_string(he12->id()));
+  CHECK(v1->printString().find(v1->label()) != std::string::npos);
+  CHECK(he12->printString().find(he12->label()) != std::string::npos);
+}
+
+TEST_CASE("DCEL vertex and half-edge ids grow monotonically across splitEdge",
+          "[dcel][id]") {
+  PDCEL dcel;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+  const unsigned int first_edge_id = he12->id();
+  const unsigned int first_twin_id = he12->twin()->id();
+  const unsigned int first_vertex_id = v2->id();
+
+  PDCELVertex *vmid = new PDCELVertex(0, 1.0, 0.0);
+  vmid = dcel.splitEdge(he12, vmid);
+  REQUIRE(vmid != nullptr);
+  CHECK(vmid->id() > first_vertex_id);
+
+  unsigned int max_split_edge_id = 0;
+  for (PDCELHalfEdge *he : dcel.halfedges()) {
+    if (he->id() > max_split_edge_id) {
+      max_split_edge_id = he->id();
+    }
+  }
+  CHECK(max_split_edge_id > first_twin_id);
+  CHECK(vmid->id() != v1->id());
+  CHECK(vmid->id() != v2->id());
+
+  PDCELHalfEdge *he_mid_v2 = dcel.findHalfEdgeBetween(vmid, v2);
+  REQUIRE(he_mid_v2 != nullptr);
+
+  PDCELVertex *vquarter = new PDCELVertex(0, 1.5, 0.0);
+  vquarter = dcel.splitEdge(he_mid_v2, vquarter);
+  REQUIRE(vquarter != nullptr);
+  CHECK(vquarter->id() > vmid->id());
+
+  unsigned int max_second_split_edge_id = 0;
+  for (PDCELHalfEdge *he : dcel.halfedges()) {
+    if (he->id() > max_second_split_edge_id) {
+      max_second_split_edge_id = he->id();
+    }
+  }
+  CHECK(max_second_split_edge_id > max_split_edge_id);
+  CHECK(max_second_split_edge_id != first_edge_id);
+  CHECK(max_second_split_edge_id != first_twin_id);
+}
+
+TEST_CASE("DCEL half-edge ids are not reused after removeEdge",
+          "[dcel][id]") {
+  PDCEL dcel;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+  REQUIRE(he12 != nullptr);
+
+  const unsigned int first_edge_id = he12->id();
+  const unsigned int first_twin_id = he12->twin()->id();
+
+  dcel.removeEdge(he12);
+  CHECK(dcel.halfedges().empty());
+  CHECK(dcel.vertices().size() == 1);
+
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 3.0, 0.0));
+  PDCELHalfEdge *he_new = dcel.addEdge(v1, v3);
+  REQUIRE(he_new != nullptr);
+  CHECK(he_new->id() > first_twin_id);
+  CHECK(he_new->twin()->id() > he_new->id());
+  CHECK(he_new->id() != first_edge_id);
+  CHECK(he_new->twin()->id() != first_twin_id);
+}
+
+TEST_CASE("PDCELHalfEdge::printString includes mirrored face name",
+          "[dcel][id][face-name]") {
+  PDCEL dcel;
+  PModel model;
+
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 0.0, 1.0));
+
+  PDCELHalfEdge *he12 = dcel.addEdge(v1, v2);
+  PDCELHalfEdge *he23 = dcel.addEdge(v2, v3);
+  PDCELHalfEdge *he31 = dcel.addEdge(v3, v1);
+
+  he12->setNext(he23); he23->setPrev(he12);
+  he23->setNext(he31); he31->setPrev(he23);
+  he31->setNext(he12); he12->setPrev(he31);
+
+  PDCELHalfEdgeLoop *loop = dcel.addHalfEdgeLoop(he12);
+  REQUIRE(loop != nullptr);
+
+  PDCELFace *face = dcel.addFace(loop);
+  REQUIRE(face != nullptr);
+  model.setFaceName(face, "tri_face");
+
+  const std::string s = he12->printString();
+  CHECK(s.find(face->label()) != std::string::npos);
+  CHECK(s.find("tri_face") != std::string::npos);
+}
+
+TEST_CASE("PDCEL::dumpToFile includes background half-edges",
+          "[dcel][dump]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  REQUIRE_FALSE(dcel.halfedges().empty());
+  PDCELHalfEdge *active = dcel.halfedges().front();
+  REQUIRE(active != nullptr);
+  REQUIRE(active->twin() != nullptr);
+
+  const std::string dump_path =
+      "C:\\tmp\\prevabs_test_dcel_dump_background.txt";
+  dcel.dumpToFile(dump_path);
+
+  std::ifstream ifs(dump_path.c_str());
+  REQUIRE(ifs.is_open());
+
+  const std::string dump_text((std::istreambuf_iterator<char>(ifs)),
+                              std::istreambuf_iterator<char>());
+  ifs.close();
+  std::remove(dump_path.c_str());
+
+  CHECK(dump_text.find("HALFEDGES (8):") != std::string::npos);
+  CHECK(dump_text.find(active->label()) != std::string::npos);
+  CHECK(dump_text.find(active->twin()->label()) != std::string::npos);
+  CHECK(dump_text.find("scope=active") != std::string::npos);
+  CHECK(dump_text.find("scope=background") != std::string::npos);
+}
+
 // ==================================================================
 // Loop guard tests — walkLoopWithLimit and inline DCEL guards
 // ==================================================================
@@ -1264,16 +1412,20 @@ TEST_CASE("PDCELFace::getOuterHalfEdgeWithSource throws on broken cycle",
 }
 
 // ==================================================================
-// Debug-log frequency limit — walkLoopWithLimit emits at most one
-// PLOG(debug) per kDCELDebugLogInterval steps.
+// walkLoopWithLimit logging — one start debug log plus one warning when
+// the walk exceeds kDCELWarnLoopSteps.
 // ==================================================================
 
-// Sink that counts debug-level messages received.
+// Sink that counts debug/warn messages received.
 struct CountingDebugSink : public spdlog::sinks::base_sink<std::mutex> {
   size_t debug_count = 0;
+  size_t warning_count = 0;
+  std::vector<std::string> messages;
 protected:
   void sink_it_(const spdlog::details::log_msg &msg) override {
     if (msg.level == spdlog::level::debug) ++debug_count;
+    if (msg.level == spdlog::level::warn) ++warning_count;
+    messages.emplace_back(msg.payload.data(), msg.payload.size());
   }
   void flush_() override {}
 };
@@ -1337,8 +1489,11 @@ TEST_CASE("offsetCurveBase logs cusp-like closed baseline hint",
   }
 }
 
-TEST_CASE("walkLoopWithLimit: debug logs bounded by kDCELDebugLogInterval",
+TEST_CASE("walkLoopWithLimit: logs start once and warns once on long walks",
           "[dcel][error]") {
+  const DebugLevel previous_debug_level = config.debug_level;
+  config.debug_level = DebugLevel::geo;
+
   // Install a debug-level counting logger, replacing the default warn logger.
   auto sink = std::make_shared<CountingDebugSink>();
   spdlog::drop("prevabs");
@@ -1370,9 +1525,24 @@ TEST_CASE("walkLoopWithLimit: debug logs bounded by kDCELDebugLogInterval",
     logger->set_level(spdlog::level::warn);
     spdlog::register_logger(logger);
   }
+  config.debug_level = previous_debug_level;
 
-  // Expected: ceil(N / kDCELDebugLogInterval) log calls, not one per step.
-  size_t max_expected = static_cast<size_t>(N / kDCELDebugLogInterval + 1);
-  CHECK(sink->debug_count <= max_expected);
-  CHECK(sink->debug_count < static_cast<size_t>(N));
+  REQUIRE(sink->debug_count == 1);
+  REQUIRE(sink->warning_count == 1);
+
+  bool saw_start = false;
+  bool saw_warning = false;
+  for (const std::string &message : sink->messages) {
+    if (message.find("walkLoopWithLimit: start") != std::string::npos &&
+        message.find("step=0") != std::string::npos) {
+      saw_start = true;
+    }
+    if (message.find("walkLoopWithLimit: unusually long loop walk") !=
+            std::string::npos &&
+        message.find("current=he#") != std::string::npos) {
+      saw_warning = true;
+    }
+  }
+  CHECK(saw_start);
+  CHECK(saw_warning);
 }

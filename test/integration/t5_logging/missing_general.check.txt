@@ -1,0 +1,6 @@
+# Expect the top-level catch to log the exception instead of dying silently.
+exit=1
+args=--nopopup
+contains=fatal exception: homogenization failed: Missing required XML element <general>
+contains=reading main input file:
+absent=unhandled exception

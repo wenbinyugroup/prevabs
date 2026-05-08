@@ -91,6 +91,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/MaterialRepository.cpp
   ${CMAKE_SOURCE_DIR}/src/overloadOperator.cpp
   ${CMAKE_SOURCE_DIR}/src/plog.cpp
+  ${CMAKE_SOURCE_DIR}/src/pui.cpp
   ${CMAKE_SOURCE_DIR}/src/utilities.cpp
 )
 
@@ -105,7 +106,7 @@ endif()
 add_executable( ${PROJECTNAME} ${SOURCES} )
 
 if(MSVC)
-  target_compile_options(${PROJECTNAME} PRIVATE /W0)
+  target_compile_options(${PROJECTNAME} PRIVATE /W0 /EHa)
 else()
   target_compile_options(${PROJECTNAME} PRIVATE -w)
 endif()
@@ -116,6 +117,15 @@ target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated 
 
 # spdlog (header-only, vendored in include/spdlog/)
 # No find_package or link step needed.
+
+
+# cpp-terminal (git submodule in extern/cpp-terminal, pinned to a8eb933)
+set(CPPTERMINAL_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CPPTERMINAL_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+set(CPPTERMINAL_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(CPPTERMINAL_ENABLE_DOCS    OFF CACHE BOOL "" FORCE)
+add_subdirectory(extern/cpp-terminal)
+target_link_libraries(${PROJECTNAME} cpp-terminal::cpp-terminal)
 
 
 # Link Gmsh library

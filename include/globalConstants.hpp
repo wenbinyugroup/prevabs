@@ -14,7 +14,7 @@
 //   VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
 // };
 
-const std::string vabs_version = "4.0";
+const std::string vabs_version = "4.1";
 const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
@@ -64,6 +64,24 @@ inline bool isFailureMode(AnalysisMode m) {
          m == AnalysisMode::FailureEnvelope  ||
          m == AnalysisMode::FailureIndex;
 }
+
+enum class SnapshotMode {
+  never,
+  phase,
+  component,
+  all
+};
+
+/// Debug verbosity levels for --debug.
+/// Each level is a superset of the one above it.
+enum class DebugLevel {
+  off,      ///< No debug output (default)
+  summary,  ///< Summaries + warning + error (info-level, same as off in practice)
+  phase,    ///< + phase entry/exit diagnostics
+  join,     ///< + join/segment algorithm details (current --debug default)
+  geo,      ///< + DCEL geometry operations in offset.cpp (very verbose)
+  all       ///< Alias for geo
+};
 
 enum GeoConst {
   DEGREE,

@@ -168,7 +168,7 @@ void PModel::writeElementsVABS(
   //   elem_types, elem_tags, elem_node_tags, -1, -1);
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
-        PLOG(debug) << "  face " + std::to_string(_face_i);
+        PLOG_DEBUG_AT(geo) << "  face " + std::to_string(_face_i);
 
     // For each element type of the face
     for (auto _elem_type_i = 0; _elem_type_i < face_elem_types[_face_i].size(); ++_elem_type_i) {
@@ -213,7 +213,7 @@ void PModel::writeElementsVABS(
   std::vector<double> dnums;
 
   for (auto _face_i = 0; _face_i < face_elem_types.size(); ++_face_i) {
-        PLOG(debug) << "  face " + std::to_string(_face_i);
+        PLOG_DEBUG_AT(geo) << "  face " + std::to_string(_face_i);
 
     auto face_prop_tag = face_prop_tags[_face_i];
     auto face_local_orient = face_local_orients[_face_i];

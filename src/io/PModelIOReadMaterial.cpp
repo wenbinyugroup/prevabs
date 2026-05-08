@@ -301,7 +301,7 @@ Material *readXMLElementMaterial(const xml_node<> *p_xn_material, const xml_node
   std::string materialName{};
   materialName = requireAttr(p_xn_material, "name", "<material>")->value();
 
-    PLOG(debug) << "reading material: " + materialName;
+    PLOG_DEBUG_AT(geo) << "reading material: " + materialName;
 
   // Check if the material with the name exists
   m = pmodel->getMaterialByName(materialName);
@@ -517,7 +517,7 @@ Lamina *readXMLElementLamina(const xml_node<> *p_xn_lamina, const xml_node<> * /
   std::string laminaName{};
   laminaName = requireAttr(p_xn_lamina, "name", "<lamina>")->value();
 
-    PLOG(debug) << "reading lamina: " + laminaName;
+    PLOG_DEBUG_AT(geo) << "reading lamina: " + laminaName;
 
   const std::string ctx = "<lamina name='" + laminaName + "'>";
   std::string lm{};

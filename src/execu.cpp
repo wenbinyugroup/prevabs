@@ -1,6 +1,7 @@
 #include "execu.hpp"
 #include "execu_utils.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 #include "PModel.hpp"
 #include "utilities.hpp"
 #include "globalVariables.hpp"
@@ -47,7 +48,7 @@ static void runCmd(
   for (const auto &a : args) {
     display += " \"" + a + "\"";
   }
-    PLOG(info) << "running: " + display;
+    pui::info("running: " + display);
 
 #ifdef _WIN32
   // Build the command line string that CreateProcess expects.
@@ -108,7 +109,7 @@ static void runCmd(
       "' in PATH (tried .exe, .bat, .cmd). System error " +
       std::to_string(err) + ": " + winErrorStr(err) +
       ". Command: " + display;
-    std::cerr << "ERROR: " << msg << std::endl;
+    pui::error(msg);
     PLOG(error) << msg;
     return;
   }
@@ -170,7 +171,7 @@ static void runCmd(
     std::string msg = "failed to launch '" + std::string(exeFullPath) +
       "'. Command: " + display +
       ". System error " + std::to_string(err) + ": " + winErrorStr(err);
-    std::cerr << "ERROR: " << msg << std::endl;
+    pui::error(msg);
     PLOG(error) << msg;
     return;
   }
@@ -186,7 +187,7 @@ static void runCmd(
     CloseHandle(pi.hThread);
     std::string msg = "solver timed out after " + std::to_string(timeout_s) +
       "s: " + display;
-    std::cerr << "ERROR: " << msg << std::endl;
+    pui::error(msg);
     PLOG(error) << msg;
     return;
   }
@@ -199,10 +200,10 @@ static void runCmd(
   if (exitCode != 0) {
     std::string msg = "process exited with code " + std::to_string(exitCode) +
       ": " + display;
-    std::cerr << "ERROR: " << msg << std::endl;
+    pui::error(msg);
     PLOG(error) << msg;
   } else {
-        PLOG(info) << "command completed successfully.";
+    pui::success("command completed successfully");
   }
 
 #else
@@ -216,7 +217,7 @@ static void runCmd(
 
   pid_t pid = fork();
   if (pid < 0) {
-    std::cerr << "ERROR: fork() failed for: " << display << std::endl;
+    pui::error("fork() failed for: " + display);
     return;
   }
 
@@ -259,7 +260,7 @@ static void runCmd(
   if (timed_out) {
     std::string msg = "solver timed out after " + std::to_string(timeout_s) +
       "s: " + display;
-    std::cerr << "ERROR: " << msg << std::endl;
+    pui::error(msg);
     PLOG(error) << msg;
     return;
   }
@@ -268,10 +269,10 @@ static void runCmd(
   if (exitCode != 0) {
     std::string msg = "process exited with code " + std::to_string(exitCode) +
       ": " + display;
-    std::cerr << "ERROR: " << msg << std::endl;
+    pui::error(msg);
     PLOG(error) << msg;
   } else {
-        PLOG(info) << "command completed successfully.";
+    pui::success("command completed successfully");
   }
 #endif
 }

@@ -9,8 +9,15 @@
 #include "utilities.hpp"
 
 #include "geo_types.hpp"
+#include <sstream>
 #include <string>
 #include <vector>
+
+void syncPDCELFaceLogName(PDCELFace *f, const std::string &name) {
+  if (f != nullptr) {
+    f->setLogName(name);
+  }
+}
 
 PDCELFace::PDCELFace() {
   _outer = nullptr;
@@ -45,20 +52,35 @@ PDCELFace::PDCELFace(PDCELHalfEdge *outer, bool build) {
   _is_bounded = build;
 }
 
-void PDCELFace::print() {
+std::string PDCELFace::label() const {
+  std::stringstream ss;
+  ss << "f#" << _id;
+  return ss.str();
+}
 
-  PDCELHalfEdge *he;
+std::string PDCELFace::displayLabel() const {
+  if (_log_name.empty()) {
+    return label();
+  }
+  return label() + " [" + _log_name + "]";
+}
+
+void PDCELFace::print() {
+  if (config.debug_level < DebugLevel::geo) {
+    return;
+  }
+  PLOG(debug) << label() << (_is_bounded ? " bounded" : " unbounded");
   // Print the outer boundary
   if (_outer == nullptr) {
-    PLOG(debug) << "unbounded face.";
+    PLOG(debug) << label() << ": outer boundary is nullptr";
   } else {
-    PLOG(debug) << "outer boundary: ";
+    PLOG(debug) << label() << ": outer boundary";
     walkLoopWithLimit(_outer, [](PDCELHalfEdge *he) {
       PLOG(debug) << he->printString();
     });
 
     for (auto _inner : _inners) {
-      PLOG(debug) << "inner boundary: ";
+      PLOG(debug) << label() << ": inner boundary";
       walkLoopWithLimit(_inner, [](PDCELHalfEdge *he) {
         PLOG(debug) << he->printString();
       });

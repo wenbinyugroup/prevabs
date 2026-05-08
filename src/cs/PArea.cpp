@@ -113,10 +113,10 @@ void PArea::addNextBoundVertex(PDCELVertex *v) {
 void PArea::buildLayers(const BuilderConfig &bcfg) {
   // std::cout << std::endl;
   // std::cout << "- building layers for area: " << _face->name() << std::endl;
-  // if (bcfg.debug) {
+  // if (bcfg.debug_level >= DebugLevel::join) {
   //   // fprintf(config.fdeb, "- building area layers: %s\n", _face->name().c_str());
   // }
-    PLOG(debug) << "building layers for area: " + bcfg.model->faceData(_face).name;
+    if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building layers for area: " + bcfg.model->faceData(_face).name;
 
   // std::cout << "        area face:" << std::endl;
   // _face->print();
@@ -152,7 +152,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   for (int i = 0; i < _prev_bound_vertices.size(); ++i) {
     // std::cout << std::endl;
     // std::cout << "[debug] layer " << i + 1 << std::endl;
-    if (bcfg.debug) {
+    if (bcfg.debug_level >= DebugLevel::join) {
       // fprintf(config.fdeb, "        layer %d\n", i + 1);
     }
 
@@ -176,7 +176,8 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
 
     // std::cout << "        setting new layer face properties" << std::endl;
     // std::cout << "        name" << std::endl;
-    bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(i + 1);
+    bcfg.model->setFaceName(
+        _faces.back(), area_name + "_layer_" + std::to_string(i + 1));
     // std::cout << "        material" << std::endl;
     _faces.back()->setMaterial(layer.getLamina()->getMaterial());
     // std::cout << "        theta3" << std::endl;
@@ -195,7 +196,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
     //   std::cout << "        new layer face:" << std::endl;
     //   _faces.back()->print();
     // }
-    if (bcfg.debug) {
+    if (bcfg.debug_level >= DebugLevel::join) {
       // fprintf(config.fdeb, "        new layer face:\n");
       // writeFace(config.fdeb, _faces.back());
     }
@@ -208,7 +209,9 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   layer = layup->getLayers().back();
   // layer = layup->getLayers()[i];
   // std::cout << "        layer type: " << layer.getLayerType() << std::endl;
-  bcfg.model->faceData(_faces.back()).name = area_name + "_layer_" + std::to_string(layup->getLayers().size());
+  bcfg.model->setFaceName(
+      _faces.back(),
+      area_name + "_layer_" + std::to_string(layup->getLayers().size()));
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());
@@ -221,7 +224,7 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   //   std::cout << "        new layer face:" << std::endl;
   //   _faces.back()->print();
   // }
-  if (bcfg.debug) {
+  if (bcfg.debug_level >= DebugLevel::join) {
     // fprintf(config.fdeb, "        new layer face:\n");
     // writeFace(config.fdeb, _faces.back());
   }

@@ -54,7 +54,7 @@ PDCELVertex *readXMLElementPoint(
 
   std::string label{requireAttr(p_xn_point, "name", "<point>")->value()};
 
-  PLOG(debug) << "reading point: " + label;
+  PLOG_DEBUG_AT(geo) << "reading point: " + label;
 
   std::string s_constraint{"none"};
   xml_attribute<> *p_xa_constraint{p_xn_point->first_attribute("constraint")};
@@ -128,7 +128,8 @@ PDCELVertex *readXMLElementPoint(
 
           // The point is close to the starting point of the segment
           if (fabs(loc - p_bsl_vertices[i]->y()) < TOLERANCE) {
-            PLOG(debug) << "found point close to the starting point of the segment";
+            PLOG_DEBUG_AT(geo)
+              << "found point close to the starting point of the segment";
             z_tmp = p_bsl_vertices[i]->z();
             id_tmp = i;
             is_new_tmp = false;
@@ -136,7 +137,8 @@ PDCELVertex *readXMLElementPoint(
 
           // The point is close to the ending point of the segment
           else if (fabs(loc - p_bsl_vertices[i+1]->y()) < TOLERANCE) {
-            PLOG(debug) << "found point close to the ending point of the segment";
+            PLOG_DEBUG_AT(geo)
+              << "found point close to the ending point of the segment";
             z_tmp = p_bsl_vertices[i+1]->z();
             id_tmp = i+1;
             is_new_tmp = false;
@@ -144,7 +146,8 @@ PDCELVertex *readXMLElementPoint(
 
           // The point is in the middle of the segment
           else {
-            PLOG(debug) << "found point in the middle of the segment";
+            PLOG_DEBUG_AT(geo)
+              << "found point in the middle of the segment";
             double dy, dz;
             dy = p_bsl_vertices[i+1]->y() - p_bsl_vertices[i]->y();
             dz = p_bsl_vertices[i+1]->z() - p_bsl_vertices[i]->z();
@@ -153,9 +156,9 @@ PDCELVertex *readXMLElementPoint(
             is_new_tmp = true;
           }
 
-          PLOG(debug) << "z_tmp = " + std::to_string(z_tmp);
-          PLOG(debug) << "id_tmp = " + std::to_string(id_tmp);
-          PLOG(debug) << "is_new_tmp = " + std::to_string(is_new_tmp);
+          PLOG_DEBUG_AT(geo) << "z_tmp = " + std::to_string(z_tmp);
+          PLOG_DEBUG_AT(geo) << "id_tmp = " + std::to_string(id_tmp);
+          PLOG_DEBUG_AT(geo) << "is_new_tmp = " + std::to_string(is_new_tmp);
 
           // If found more than one point, keep the one matching 'which'
           if (count > 1) {

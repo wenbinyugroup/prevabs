@@ -11,6 +11,13 @@
 
 namespace {
 
+void logSkippingComponentAction(
+    const char *caller, const std::string &component_name,
+    const std::string &reason) {
+  if (config.debug_level >= DebugLevel::phase) PLOG(debug) << "skipping " << caller << " for component '"
+              << component_name << "': " << reason;
+}
+
 enum class OrderVisitState {
   unvisited,
   visiting,
@@ -85,6 +92,7 @@ static int resolveComponentOrder(
 int PComponent::count_tmp = 0;
 
 void PComponent::print() {
+  if (config.debug_level < DebugLevel::join) return;
   std::cout << "name: " << _name << " | "
             << "order: " << _order << " | "
             << "cyclic: " << (_laminate.cycle ? "true" : "false")
@@ -92,21 +100,22 @@ void PComponent::print() {
 }
 
 void PComponent::print(int /*i_type*/, int /*i_indent*/) {
-    PLOG(debug) << "name: " + _name;
-    PLOG(debug) << "order: " + std::to_string(_order);
-    PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
-    PLOG(debug) << "segments:";
+  if (config.debug_level < DebugLevel::join) return;
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "name: " + _name;
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "order: " + std::to_string(_order);
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "cyclic: " + std::to_string(_laminate.cycle);
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "segments:";
   std::stringstream ss;
   ss << std::setw(4) << "no." << std::setw(16) << "name"
      << std::setw(16) << "base line"
      << std::setw(32) << "layup"
      << std::setw(16) << "side"
      << std::setw(8) << "level";
-    PLOG(debug) << ss.str();
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << ss.str();
   for (int i = 0; i < _laminate.segments.size(); i++) {
     std::stringstream ss_seg;
     ss_seg << std::setw(4) << (i+1) << _laminate.segments[i];
-        PLOG(debug) << ss_seg.str();
+        if (config.debug_level >= DebugLevel::join) PLOG(debug) << ss_seg.str();
   }
   return;
 }
@@ -146,6 +155,12 @@ void PComponent::addDependent(PComponent *component) {
 
 
 void PComponent::build(const BuilderConfig &bcfg) {
+  PLogContext component_context("component: " + _name);
+  PLogSection component_section(
+      DebugLevel::phase, "component", _name);
+  if (bcfg.dcel != nullptr) {
+    bcfg.dcel->resetSplitLineageCounters();
+  }
 
   // i_indent++;
 
@@ -165,6 +180,31 @@ void PComponent::build(const BuilderConfig &bcfg) {
     buildFilling(bcfg);
 
   }
+  else {
+    PLOG(error) << "build: unsupported component type for '" << _name << "'";
+    logSkippingComponentAction(
+        "build", _name, "component type is unsupported");
+    return;
+  }
+
+  std::size_t component_faces = 0;
+  for (Segment *segment : _laminate.segments) {
+    if (segment->face() != nullptr) {
+      ++component_faces;
+    }
+  }
+  if (_type == ComponentType::fill && _filling.face != nullptr) {
+    component_faces = 1;
+  }
+
+  PLOG(info) << "built component " << _name
+             << ": " << _laminate.segments.size() << " segments, "
+             << component_faces << " faces, "
+             << (bcfg.dcel->halfedges().size() / 2) << " dcel edges";
+  component_section.setEndDetails(
+      "segments=" + std::to_string(_laminate.segments.size())
+      + ", faces=" + std::to_string(component_faces)
+      + ", dcel_edges=" + std::to_string(bcfg.dcel->halfedges().size() / 2));
 
   // i_indent--;
 
@@ -179,10 +219,16 @@ void PComponent::build(const BuilderConfig &bcfg) {
 
 
 void PComponent::buildDetails(const BuilderConfig &bcfg) {
+  PLogContext component_details_context("component details: " + _name);
+  PLogSection component_details_section(
+      DebugLevel::phase, "component details", _name);
+  if (bcfg.dcel != nullptr) {
+    bcfg.dcel->resetSplitLineageCounters();
+  }
 
 
   if (_type == ComponentType::fill) {
-    PLOG(debug) << "buildDetails: skipping filling component '" << _name
+    if (config.debug_level >= DebugLevel::join) PLOG(debug) << "buildDetails: skipping filling component '" << _name
                 << "' because step 2 only builds laminate segment areas.";
     return;
   }
@@ -190,6 +236,8 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
   if (_type != ComponentType::laminate) {
     PLOG(error) << "buildDetails: unsupported component type for '" << _name
                 << "'";
+    logSkippingComponentAction(
+        "buildDetails", _name, "component type is unsupported");
     return;
   }
 
@@ -200,6 +248,20 @@ void PComponent::buildDetails(const BuilderConfig &bcfg) {
     sgm->buildAreas(bcfg);
 
   }
+
+  std::size_t total_areas = 0;
+  std::size_t total_layers = 0;
+  for (Segment *segment : _laminate.segments) {
+    total_areas += segment->areaCount();
+    total_layers += segment->layerCount();
+  }
+
+  PLOG(info) << "built details for " << _name
+             << ": " << total_areas << " areas, "
+             << total_layers << " layers";
+  component_details_section.setEndDetails(
+      "areas=" + std::to_string(total_areas)
+      + ", layers=" + std::to_string(total_layers));
 }
 
 

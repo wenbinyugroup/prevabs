@@ -15,7 +15,7 @@
 // Route homog2d warnings to the prevabs debug logger instead of stderr.
 // Must be defined before homog2d.hpp is processed.
 #define HOMOG2D_LOG_WARNING(a) \
-  do { std::ostringstream _h2oss; _h2oss << a; PLOG(debug) << _h2oss.str(); } while(0)
+  do { std::ostringstream _h2oss; _h2oss << a; PLOG_DEBUG_AT(geo) << _h2oss.str(); } while(0)
 #include "homog2d.hpp"
 
 #include "geo_types.hpp"
@@ -386,7 +386,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
     return {};
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "computeOffsetJunctions: " << size << " base vertices"
         << ", side=" << side << ", dist=" << dist;
@@ -417,7 +417,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
 
   // Iterate over each consecutive pair of base vertices (i.e. each segment).
   for (int i = 0; i < static_cast<int>(size) - 1; ++i) {
-    if (config.debug) {
+    if (config.debug_level >= DebugLevel::geo) {
       std::ostringstream oss;
       oss << "segment [" << i << "]: base " << base[i] << " -> " << base[i + 1];
             PLOG(debug) << oss.str();
@@ -432,7 +432,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
 
     offset(base[i], base[i + 1], side, dist, cur_start, cur_end);
 
-    if (config.debug) {
+    if (config.debug_level >= DebugLevel::geo) {
       std::ostringstream oss;
       oss << "  offset result: cur_start=" << cur_start << ", cur_end=" << cur_end;
             PLOG(debug) << oss.str();
@@ -447,7 +447,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
       // First segment: no previous segment to intersect with, so the junction
       // is simply the start endpoint of this offset segment.
       junctions.push_back(cur_start);
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
                 PLOG(debug) << "  first segment: junction = cur_start (no prev segment)";
       }
     } else {
@@ -462,7 +462,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
       h2d::Point2d cur_p1(cur_start->point2()[0], cur_start->point2()[1]);
       h2d::Point2d cur_p2(cur_end->point2()[0], cur_end->point2()[1]);
 
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         std::ostringstream oss;
         oss << "  find intersection:\n"
             << "        prev_start = " << prev_start << ", prev_end = " << prev_end << "\n"
@@ -485,7 +485,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
         // Non-parallel segments: use the intersection point as the junction vertex.
         auto isect_pt = isect.get();
 
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
           std::ostringstream oss;
           oss << "  intersection found: " << isect_pt;
                     PLOG(debug) << oss.str();
@@ -497,7 +497,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
             isect_pt, dist, &local_allocs, &used_miter_limit);
         junctions.push_back(v_junction);
 
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
           if (used_miter_limit) {
             std::ostringstream oss;
             oss << "  miter limit exceeded at base[" << i << "]"
@@ -516,12 +516,12 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
         // exists; for collinear (overlapping) segments, prev_end is the shared
         // endpoint and is the geometrically correct junction in both cases.
         junctions.push_back(prev_end);
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
                     PLOG(debug) << "  segments parallel/collinear: fell back to prev_end";
         }
       }
 
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         std::ostringstream oss;
         oss << "  junction[" << junctions.size() - 1 << "] = " << junctions.back();
                 PLOG(debug) << oss.str();
@@ -534,7 +534,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
       junctions.push_back(cur_end);
       junction_map.push_back(
           BaseOffsetPair(i + 1, static_cast<int>(junctions.size()) - 1));
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         std::ostringstream oss;
         oss << "  last segment: appended tail junction[" << junctions.size() - 1
             << "] = " << cur_end;
@@ -560,7 +560,7 @@ static std::vector<PDCELVertex *> computeOffsetJunctions(
     }
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "computeOffsetJunctions: returning " << junctions.size() << " junction vertices";
         PLOG(debug) << oss.str();
@@ -609,7 +609,7 @@ static void groupValidSegments(
   lines_group.clear();
   maps_group.clear();
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "groupValidSegments: " << size << " base vertices, "
         << static_cast<int>(size) - 1 << " segment(s) to check";
@@ -637,7 +637,7 @@ static void groupValidSegments(
     const bool degenerate  = (vec_off.normSq() < TOLERANCE * TOLERANCE);
     cur_valid = !folded_back && !degenerate;
 
-    if (config.debug) {
+    if (config.debug_level >= DebugLevel::geo) {
       std::ostringstream oss;
       oss << "  segment [" << j << "]: "
           << (cur_valid    ? "valid"
@@ -651,7 +651,7 @@ static void groupValidSegments(
         // This segment starts a new run of valid segments — open a new sub-line.
         lines_group.push_back(std::vector<PDCELVertex *>{vertices_tmp[j]});
         maps_group.push_back(BaseOffsetMap{junction_map[j]});
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
           std::ostringstream oss;
           oss << "    opened sub-line " << lines_group.size() - 1
               << " at junction vertex " << j;
@@ -664,7 +664,7 @@ static void groupValidSegments(
     } else if (prev_valid) {
       // This segment is invalid and the previous one was valid — the run just
       // ended; the current sub-line is now complete.
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         std::ostringstream oss;
         oss << "    closed sub-line " << lines_group.size() - 1
             << " before segment " << j;
@@ -675,7 +675,7 @@ static void groupValidSegments(
     prev_valid = cur_valid;
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "groupValidSegments: produced " << lines_group.size() << " sub-line(s)";
         PLOG(debug) << oss.str();
@@ -705,7 +705,7 @@ static void trimSubLinePair(
   ) {
 
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "trimSubLinePair:"
         << " tail_line=" << tail_line.size() << " vertices"
@@ -728,7 +728,7 @@ static void trimSubLinePair(
     return;
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "  found " << isect_segs_tail.size() << " intersection(s)";
         PLOG(debug) << oss.str();
@@ -757,7 +757,7 @@ static void trimSubLinePair(
   int    seg_idx_head = isect_segs_head[isect_idx];
   double u_head       = params_head[isect_idx];
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "  selected intersection:"
         << " tail seg=" << seg_idx_tail << " u=" << u_tail
@@ -785,7 +785,7 @@ static void trimSubLinePair(
     return;
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "  junction vertex: " << junction
         << " (is_new_tail=" << is_new_tail
@@ -802,7 +802,7 @@ static void trimSubLinePair(
   trimCurveAtVertex(tail_line, junction, CurveEnd::End);
   trimCurveAtVertex(head_line, junction, CurveEnd::Begin);
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "  after trim:"
         << " tail_line=" << tail_line.size() << " vertices"
@@ -822,7 +822,7 @@ static void trimSubLinePair(
     map_head.erase(map_head.begin(), map_head.begin() + (seg_idx_head - 1));
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     std::ostringstream oss;
     oss << "  after map adjust:"
         << " map_tail=" << map_tail.size() << " entries"
@@ -885,7 +885,7 @@ static void trimSubLineSelfIntersections(
         PDCELVertex *xx = new PDCELVertex(
             getParametricPoint(line[i]->point(), line[i + 1]->point(), u1));
 
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
           std::ostringstream oss;
           oss << "trimSubLineSelfIntersections: loop between seg "
               << i << " and seg " << j
@@ -989,7 +989,7 @@ static void trimJoinedCurveSelfIntersections(
                 offset_vertices[i]->point(),
                 offset_vertices[i + 1]->point(), u1));
 
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
           std::ostringstream oss;
           oss << "trimJoinedCurveSelfIntersections: loop between seg "
               << i << " and seg " << j
@@ -1076,7 +1076,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   offset_vertices.clear();
   id_pairs.clear();
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
       "offset (multi-vertex): size=" + std::to_string(size)
       + " side=" + std::to_string(side)
@@ -1142,7 +1142,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // -------------------------------------------------------------------------
   // Step 1: Compute offset junction vertices.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) << 
       "offset (multi-vertex): step 1 — compute junction vertices";
   }
@@ -1155,7 +1155,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // -------------------------------------------------------------------------
   // Step 2: Group valid offset segments into sub-lines.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) << 
       "offset (multi-vertex): step 2 — group valid segments";
   }
@@ -1193,7 +1193,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     return 0;
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) << 
       "offset (multi-vertex): " + std::to_string(lines_group.size())
       + " sub-line(s) after grouping";
@@ -1206,14 +1206,14 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // maps_group are the authoritative post-trim state.  No separate
   // "trimmed" copy is maintained — Step 5 reads lines_group directly.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) << 
       "offset (multi-vertex): step 3 — trim adjacent sub-line pairs";
   }
 
   if (lines_group.size() > 1) {
     for (int line_i = 0; line_i < static_cast<int>(lines_group.size()) - 1; ++line_i) {
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
                 PLOG(debug) << 
           "offset (multi-vertex): trimming sub-line pair "
           + std::to_string(line_i) + "/" + std::to_string(line_i + 1);
@@ -1246,14 +1246,14 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // final staircase, so step 3.5 can safely run again to remove local loops
   // earlier in the pipeline.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     PLOG(debug) <<
         "offset (multi-vertex): step 3.5 — trim sub-line self-intersections";
   }
   const bool base_is_closed = (base.front() == base.back());
   for (int line_i = 0; line_i < static_cast<int>(lines_group.size()); ++line_i) {
     if (base_is_closed && lines_group.size() == 1) {
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
             "offset (multi-vertex): step 3.5 — skipping closed single-sub-line; "
             "step 4 will resolve closure/self-intersection";
@@ -1273,7 +1273,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // -------------------------------------------------------------------------
   // Step 4: Handle closed-curve head-tail trimming.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
       "offset (multi-vertex): step 4 — closed-curve head-tail trim";
   }
@@ -1282,7 +1282,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     if (lines_group.size() > 1) {
       // Multiple sub-lines: trim the tail of the last sub-line against the
       // head of the first sub-line.
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
                 PLOG(debug) << 
           "offset (multi-vertex): closed curve, multiple sub-lines — trimming tail/head pair";
       }
@@ -1302,7 +1302,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
       // covering most base vertices) and discard the small loop near the
       // cusp, while keeping `lines_group[0]` and `maps_group[0]` in sync so
       // step 5 can build a valid staircase.
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
           "offset (multi-vertex): closed curve, single sub-line — self-intersection trim";
       }
@@ -1358,7 +1358,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
         }
       }
 
-      if (config.debug) {
+      if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
           "offset (multi-vertex): self-intersection: found "
           + std::to_string(isect_segs_back.size())
@@ -1381,7 +1381,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
         // through the closure).  This mirrors what computeOffsetJunctions
         // does at every interior corner.  Fallback to line[0] if the two
         // segments are parallel/collinear.
-        if (config.debug) {
+        if (config.debug_level >= DebugLevel::geo) {
           PLOG(debug) <<
             "offset (multi-vertex): no real self-intersection among "
             + std::to_string(isect_segs_back.size())
@@ -1406,7 +1406,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
             closure = buildLimitedMiterJunction(
                 base.front(), segN_a, segN_b, seg0_a, seg0_b,
                 closure_h2d, dist, nullptr, &used_miter_limit);
-            if (config.debug) {
+            if (config.debug_level >= DebugLevel::geo) {
               std::ostringstream oss;
               oss << "offset (multi-vertex): closure "
                   << (used_miter_limit
@@ -1419,7 +1419,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
             }
           } else {
             closure = lines_group[0].front();
-            if (config.debug) {
+            if (config.debug_level >= DebugLevel::geo) {
               PLOG(debug) <<
                 "offset (multi-vertex): closure segments parallel; "
                 "reusing front vertex";
@@ -1429,7 +1429,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
           lines_group[0].back()  = closure;
         }
       } else {
-          if (config.debug) {
+          if (config.debug_level >= DebugLevel::geo) {
             PLOG(debug) <<
               "offset (multi-vertex): self-intersection picked: front_seg="
               + std::to_string(seg_idx_front) + " u=" + std::to_string(u_front)
@@ -1505,7 +1505,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
               maps_group[0],
               "offset step 4 self-intersection rebuild");
 
-          if (config.debug) {
+          if (config.debug_level >= DebugLevel::geo) {
             PLOG(debug) <<
               "offset (multi-vertex): single sub-line rebuilt to "
               + std::to_string(lines_group[0].size())
@@ -1531,7 +1531,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // the index that the next push_back will assign.  No push_back must be inserted
   // between the pre-assignment and the push_back that fills it.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) << 
       "offset (multi-vertex): step 5 — build output mappings";
   }
@@ -1581,14 +1581,14 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // backward loop invisible to Step 3.5 (which operates per-sub-line).
   // This step detects and removes any such cross-sub-line crossing.
   // -------------------------------------------------------------------------
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
     PLOG(debug) <<
         "offset (multi-vertex): step 5.5 — trim joined-curve self-intersections";
   }
   trimJoinedCurveSelfIntersections(offset_vertices, id_pairs);
   assertValidBaseOffsetMap(id_pairs, "offset step 5.5");
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) << "base vertices -- base_link_to_offset_indices";
     for (auto i = 0; i < static_cast<int>(id_pairs.size()); i++) {
             PLOG(debug) << 

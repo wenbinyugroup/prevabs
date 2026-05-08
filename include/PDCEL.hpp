@@ -12,6 +12,7 @@ class PGeoLineSegment;
 struct BuilderConfig;
 
 #include <list>
+#include <string>
 #include <vector>
 
 std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
@@ -66,9 +67,20 @@ private:
   std::unordered_map<PDCELHalfEdgeLoop *, bool> _loop_keep;
   /// Sweep-line adjacent-loop link: inner loop → its enclosing outer loop.
   std::unordered_map<PDCELHalfEdgeLoop *, PDCELHalfEdgeLoop *> _loop_adjacent;
+  std::unordered_map<unsigned int, int> _split_counts;
+  unsigned int _next_vertex_id = 1;
+  unsigned int _next_halfedge_id = 1;
+  unsigned int _next_loop_id = 1;
+  unsigned int _next_face_id = 1;
+  unsigned int _next_edge_lineage_id = 1;
 
   // Helper functions
   void updateEdgeNeighbors(PDCELHalfEdge *);
+  unsigned int allocateVertexId() { return _next_vertex_id++; }
+  unsigned int allocateHalfEdgeId() { return _next_halfedge_id++; }
+  unsigned int allocateLoopId() { return _next_loop_id++; }
+  unsigned int allocateFaceId() { return _next_face_id++; }
+  unsigned int allocateEdgeLineageId() { return _next_edge_lineage_id++; }
 
   /// Return the first vertex in _vertex_tree within GEO_TOL of v, or nullptr.
   PDCELVertex *findCoincidentVertex(PDCELVertex *v) const;
@@ -89,6 +101,11 @@ public:
   void initialize();
 
   void print_dcel();
+
+  /// Serialize all DCEL entities to a plain-text file for post-mortem analysis.
+  /// Safe to call even when the DCEL is in a partially broken state: only
+  /// stored IDs are printed; no loop walks or deep pointer chains are followed.
+  void dumpToFile(const std::string &filename) const;
 
   /// Check structural DCEL invariants and log a warning for each violation.
   /// Returns true if all invariants hold, false if any violation is found.
@@ -145,6 +162,7 @@ public:
                                      PDCELVertex *v2) const;
 
   void addEdgesFromCurve(const std::vector<PDCELVertex *> &vertices);
+  void resetSplitLineageCounters() { _split_counts.clear(); }
 
   // =================================================================
   // HALF EDGE LOOP

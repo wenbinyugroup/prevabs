@@ -6,6 +6,7 @@
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 #include "version.h"
 
 #include "CLI11.hpp"
@@ -21,6 +22,7 @@
 #include <vector>
 
 #ifdef _WIN32
+#include <eh.h>
 #include <windows.h>
 #endif
 
@@ -28,7 +30,6 @@
 // ---------------------------------------------------------------------------
 // Global definitions (declared extern in globalVariables.hpp)
 // ---------------------------------------------------------------------------
-bool debug = false;
 bool scientific_format = false;
 PConfig config;
 RuntimeState runtime;
@@ -38,7 +39,55 @@ RuntimeState runtime;
 // CLI setup
 // ---------------------------------------------------------------------------
 
+// Adds blank lines between option groups and wraps long descriptions.
+class GroupedFormatter : public CLI::Formatter {
+  static constexpr std::size_t kTotalWidth = 80;
+
+  // Word-wraps text to at most `width` characters per line.
+  static std::string wordWrap(const std::string &text, std::size_t width) {
+    if (text.size() <= width) return text;
+    std::string result;
+    std::istringstream iss(text);
+    std::string word;
+    std::size_t line_len = 0;
+    while (iss >> word) {
+      if (line_len > 0) {
+        if (line_len + 1 + word.size() > width) {
+          result += '\n';
+          line_len = 0;
+        } else {
+          result += ' ';
+          ++line_len;
+        }
+      }
+      result += word;
+      line_len += word.size();
+    }
+    return result;
+  }
+
+public:
+  std::string make_expanded(const CLI::App *sub) const override {
+    return "\n" + CLI::Formatter::make_expanded(sub);
+  }
+
+  std::string make_option(const CLI::Option *opt, bool is_positional) const override {
+    std::stringstream out;
+    std::size_t col = get_column_width();
+    std::size_t desc_width = kTotalWidth > col ? kTotalWidth - col : 40u;
+    CLI::detail::format_help(
+        out,
+        make_option_name(opt, is_positional) + make_option_opts(opt),
+        wordWrap(make_option_desc(opt), desc_width),
+        col);
+    return out.str();
+  }
+};
+
 void addParserArguments(CLI::App &app) {
+  app.formatter(std::make_shared<GroupedFormatter>());
+  static std::string snapshot_on = "never";
+  static std::string debug_level_str = "";
 
   // Required input
   app.add_option("-i,--input", config.main_input, "Input file")->required();
@@ -66,24 +115,37 @@ void addParserArguments(CLI::App &app) {
   mode_group->require_option(1);  // exactly one mode must be given
 
   // Solver / execution options
-  app.add_option("--ver", config.tool_ver, "Tool version (e.g. 3.0)");
-  app.add_flag("--integrated", config.integrated_solver,
+  auto *exec_group = app.add_option_group("Execution options");
+  exec_group->add_option("--ver", config.tool_ver, "Tool version (e.g. 3.0)");
+  exec_group->add_flag("--integrated", config.integrated_solver,
     "Use integrated solver (implies --execute)")->default_val(false);
-  app.add_flag("-e,--execute", config.execute,
+  exec_group->add_flag("-e,--execute", config.execute,
     "Execute VABS/SwiftComp after generating input")->default_val(false);
 
   // Output / visualisation options
-  app.add_flag("-v,--visualize", config.plot,
+  auto *out_group = app.add_option_group("Output options");
+  out_group->add_flag("-v,--visualize", config.plot,
     "Visualize meshed cross section or contour plots")->default_val(false);
-  app.add_flag("--nopopup", config.no_popup,
+  out_group->add_flag("--nopopup", config.no_popup,
     "Do not open the Gmsh GUI window (same as gmsh -nopopup); "
     "geo/msh files are still written when -v is given")->default_val(false);
-  app.add_option("--gmsh-verbosity", config.app.gmsh_verbosity,
+  out_group->add_option("--gmsh-verbosity", config.app.gmsh_verbosity,
     "Gmsh log verbosity (0=silent, 1=errors, 2=warnings, 3=info, 5=debug)"
   )->default_val(2)->check(CLI::IsMember({0, 1, 2, 3, 5}));
 
   // Developer options
-  app.add_flag("-d,--debug", config.debug, "Debug mode")->default_val(false);
+  auto *dev_group = app.add_option_group("Developer options");
+  dev_group->add_option("-d,--debug", debug_level_str,
+                 "Debug verbosity: summary|phase|join|geo|all; "
+                 "plain -d/--debug defaults to 'join'")
+     ->expected(0, 1)
+     ->default_str("join")  // value used when --debug given with no argument
+     ->check(CLI::IsMember({"", "summary", "phase", "join", "geo", "all"}));
+  dev_group->add_option(
+      "--snapshot-on", snapshot_on,
+      "Write debug geometry snapshots: never, phase, component, all")
+      ->default_val("never")
+      ->check(CLI::IsMember({"never", "phase", "component", "all"}));
 
   // Post-parse validation callback
   app.callback([&]() {
@@ -108,10 +170,31 @@ void addParserArguments(CLI::App &app) {
         "--fs/--failure-strength and --fe/--failure-envelope "
         "are SwiftComp-only; add --sc");
     }
+
+    if (snapshot_on == "never") {
+      config.snapshot_mode = SnapshotMode::never;
+    } else if (snapshot_on == "phase") {
+      config.snapshot_mode = SnapshotMode::phase;
+    } else if (snapshot_on == "component") {
+      config.snapshot_mode = SnapshotMode::component;
+    } else if (snapshot_on == "all") {
+      config.snapshot_mode = SnapshotMode::all;
+    }
+
+    if (debug_level_str == "summary")
+      config.debug_level = DebugLevel::summary;
+    else if (debug_level_str == "phase")
+      config.debug_level = DebugLevel::phase;
+    else if (debug_level_str == "join")
+      config.debug_level = DebugLevel::join;
+    else if (debug_level_str == "geo")
+      config.debug_level = DebugLevel::geo;
+    else if (debug_level_str == "all")
+      config.debug_level = DebugLevel::all;
   });
 
   // Format help columns
-  app.get_formatter()->column_width(50);
+  app.get_formatter()->column_width(30);
 }
 
 
@@ -149,7 +232,7 @@ void processConfigVariables() {
       break;
   }
 
-  if (config.debug) {
+  if (config.debug_level >= DebugLevel::phase) {
     config.app.log_level = LOG_LEVEL_DEBUG;
   }
 
@@ -187,6 +270,117 @@ std::string getCurrentDateTimeString() {
   return ss.str();
 }
 
+void emitRunCompletion(
+    const std::chrono::steady_clock::time_point &start_s) {
+  std::string s_dt_finish = getCurrentDateTimeString();
+  auto stop_s = std::chrono::steady_clock::now();
+  double tt = std::chrono::duration<double>(stop_s - start_s).count();
+  std::ostringstream ss;
+  ss << "total running time: " << tt << " sec";
+
+  pui::success("prevabs finished (" + s_dt_finish + ")");
+  pui::info(ss.str());
+}
+
+#ifdef _WIN32
+namespace {
+
+const char *sehCodeLabel(unsigned int code) {
+  switch (code) {
+  case EXCEPTION_ACCESS_VIOLATION:
+    return "access violation";
+  case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+    return "array bounds exceeded";
+  case EXCEPTION_BREAKPOINT:
+    return "breakpoint";
+  case EXCEPTION_DATATYPE_MISALIGNMENT:
+    return "datatype misalignment";
+  case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+    return "floating-point divide by zero";
+  case EXCEPTION_FLT_INVALID_OPERATION:
+    return "floating-point invalid operation";
+  case EXCEPTION_ILLEGAL_INSTRUCTION:
+    return "illegal instruction";
+  case EXCEPTION_IN_PAGE_ERROR:
+    return "in-page error";
+  case EXCEPTION_INT_DIVIDE_BY_ZERO:
+    return "integer divide by zero";
+  case EXCEPTION_PRIV_INSTRUCTION:
+    return "privileged instruction";
+  case EXCEPTION_STACK_OVERFLOW:
+    return "stack overflow";
+  default:
+    return "structured exception";
+  }
+}
+
+void translateStructuredException(
+    unsigned int code, _EXCEPTION_POINTERS *info) {
+  std::ostringstream oss;
+  oss << "SEH exception 0x" << std::hex << std::uppercase << code
+      << " (" << sehCodeLabel(code) << ")";
+
+  if (info != nullptr && info->ExceptionRecord != nullptr) {
+    const EXCEPTION_RECORD *record = info->ExceptionRecord;
+    oss << " at " << record->ExceptionAddress;
+
+    if (code == EXCEPTION_ACCESS_VIOLATION &&
+        record->NumberParameters >= 2) {
+      const ULONG_PTR mode = record->ExceptionInformation[0];
+      const ULONG_PTR address = record->ExceptionInformation[1];
+      oss << " while "
+          << ((mode == 0) ? "reading" : (mode == 1) ? "writing"
+                                                  : "executing")
+          << " address 0x" << std::hex << std::uppercase << address;
+    }
+  }
+
+  throw std::runtime_error(oss.str());
+}
+
+void installStructuredExceptionTranslator() {
+  _set_se_translator(translateStructuredException);
+}
+
+void logFatalWithProgress(
+    spdlog::level::level_enum level, const std::string &message) {
+  if (!hasPrevabsLogger()) {
+    const std::string progress = formatProgressContext();
+    std::cerr << message << std::endl;
+    if (!progress.empty()) {
+      std::cerr << "progress context: " << progress << std::endl;
+    }
+    return;
+  }
+
+  PLogStream(level, __FILE__, __LINE__, __func__) << message;
+  flushPrevabsLoggers();
+}
+
+} // namespace
+#else
+namespace {
+
+void installStructuredExceptionTranslator() {}
+
+void logFatalWithProgress(
+    spdlog::level::level_enum level, const std::string &message) {
+  if (!hasPrevabsLogger()) {
+    const std::string progress = formatProgressContext();
+    std::cerr << message << std::endl;
+    if (!progress.empty()) {
+      std::cerr << "progress context: " << progress << std::endl;
+    }
+    return;
+  }
+
+  PLogStream(level, __FILE__, __LINE__, __func__) << message;
+  flushPrevabsLoggers();
+}
+
+} // namespace
+#endif
+
 
 // ===================================================================
 int main(int argc, char **argv) {
@@ -211,12 +405,15 @@ int main(int argc, char **argv) {
     // Re-apply CLI flags that were explicitly set (they take highest priority)
     if (app["--gmsh-verbosity"]->count())
       config.app.gmsh_verbosity = cli_overrides.gmsh_verbosity;
-    if (config.debug)
+    if (config.debug_level >= DebugLevel::phase)
       config.app.log_level = LOG_LEVEL_DEBUG;
 
     initLog();
-    PLOG(info) << "PreVABS " VERSION_STRING
-                  " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")";
+    pui::init(config.file_name_log);
+    installStructuredExceptionTranslator();
+    // pui::title(std::string("PreVABS ") + VERSION_STRING +
+    //            " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")");
+    pui::title(std::string("PreVABS ") + VERSION_STRING);
   }
   catch (const CLI::ParseError &e) {
     return app.exit(e);
@@ -233,58 +430,84 @@ int main(int argc, char **argv) {
 
   auto pmodel_uptr = std::make_unique<PModel>(config.file_base_name);
   bool initialized = false;
+  bool completion_reported = false;
+  clearProgressContext();
 
   // Single catch-all: any unhandled exception in any pipeline stage is
   // reported here before cleanup, preventing silent exit or second-crash
   // from downstream stages using a partially-built model.
   try {
+    PLogContext initialize_context("initialize model");
     pmodel_uptr->initialize();
     initialized = true;
 
     std::string s_dt_start = getCurrentDateTimeString();
-    PLOG(info) << "prevabs start (" + s_dt_start + ")";
+    pui::info("prevabs start (" + s_dt_start + ")");
 
     if (config.isHomo()) {
+      PLogContext homogenize_context("homogenization pipeline");
       pmodel_uptr->homogenize();
     } else if (config.isRecovery()) {
+      PLogContext dehomogenize_context("dehomogenization pipeline");
       pmodel_uptr->dehomogenize();
     }
 
     if (config.execute) {
+      PLogContext execute_context("execute solver");
       pmodel_uptr->run();
     }
 
     if (config.plot) {
-      pmodel_uptr->plot();
+      PLogContext plot_context("plot outputs");
+      pmodel_uptr->plot([&]() {
+        emitRunCompletion(start_s);
+        completion_reported = true;
+        pui::info("launching Gmsh GUI; close the window to let prevabs exit");
+      });
     }
 
+    PLogContext finalize_context("finalize model");
     pmodel_uptr->finalize();
     initialized = false;
 
-    std::string s_dt_finish = getCurrentDateTimeString();
-    auto stop_s = std::chrono::steady_clock::now();
-    double tt = std::chrono::duration<double>(stop_s - start_s).count();
-    std::ostringstream ss;
-    ss << "total running time: " << tt << " sec";
-
-    PLOG(info) << "prevabs finished (" + s_dt_finish + ")";
-    PLOG(info) << ss.str();
+    if (!completion_reported) {
+      emitRunCompletion(start_s);
+    }
+    clearProgressContext();
     return 0;
   }
   catch (const std::exception &e) {
-    const std::string msg = e.what();
-    PLOG(error) << msg;
+    const std::string fatal_msg = std::string("fatal exception: ") + e.what();
+    pui::error(fatal_msg);
+    logFatalWithProgress(spdlog::level::err, fatal_msg);
+    if (pmodel_uptr && pmodel_uptr->dcel()) {
+      try {
+        auto dump_path = config.file_directory + config.file_base_name
+                         + ".dcel_dump.txt";
+        pmodel_uptr->dcel()->dumpToFile(dump_path);
+      } catch (...) {}
+    }
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
+    clearProgressContext();
     return 1;
   }
   catch (...) {
-    const std::string msg = "unknown fatal error";
-    PLOG(error) << msg;
+    pui::error("unhandled exception");
+    logFatalWithProgress(
+        spdlog::level::critical, "unhandled exception");
+    if (pmodel_uptr && pmodel_uptr->dcel()) {
+      try {
+        auto dump_path = config.file_directory + config.file_base_name
+                         + ".dcel_dump.txt";
+        pmodel_uptr->dcel()->dumpToFile(dump_path);
+      } catch (...) {}
+    }
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
+    clearProgressContext();
     return 1;
   }
 }
