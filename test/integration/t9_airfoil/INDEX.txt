@@ -5,6 +5,7 @@ main
 - mh104_9webs.xml
 - airfoil_skin_only.xml
 - airfoil_skin_only_normalized.xml
+- uh60a_arc_leading_web.xml
 
 support
 - materials.xml

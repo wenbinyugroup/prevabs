@@ -13,29 +13,22 @@
   </general>
 
 
-
   <baselines>
-    <basepoints>
-      <include>sc1095</include>
-    </basepoints>
-  
-    <baseline name="bsl_lps" type="straight">
-      <points>1:71</points>
-    </baseline>
-    <baseline name="bsl_hps" type="straight">
-      <points>72:141,1</points>
-    </baseline>
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" direction="-1" header="0">sc1095.dat</points>
+      <flip>1</flip>
+    </line>
 
-    <point name="p1" on="bsl_lps" by="x2">-0.15</point>
-    <point name="p2" on="bsl_lps" by="x2">-0.35</point>
-    <point name="p3" on="bsl_hps" by="x2">-0.35</point>
-    <point name="p4" on="bsl_hps" by="x2">-0.15</point>
+    <point name="p1" on="ln_af" by="x2" which="top">0.85</point>
+    <point name="p2" on="ln_af" by="x2" which="top">0.65</point>
+    <point name="p3" on="ln_af" by="x2" which="bottom">0.65</point>
+    <point name="p4" on="ln_af" by="x2" which="bottom">0.85</point>
 
-    <point name="p5" on="bsl_lps" by="x2">-0.02</point>
-    <point name="p6" on="bsl_hps" by="x2">-0.02</point>
+    <point name="p5" on="ln_af" by="x2" which="top">0.98</point>
+    <point name="p6" on="ln_af" by="x2" which="bottom">0.98</point>
 
-    <point name="p7" on="bsl_lps" by="x2">-0.8</point>
-    <point name="p8" on="bsl_hps" by="x2">-0.8</point>
+    <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
+    <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
 
     <baseline name="bsl_spar_top" type="straight">
       <points>p1:p2</points>
@@ -54,7 +47,7 @@
       <points>p5:p1</points>
     </baseline>
     <baseline name="bsl_le" type="straight">
-      <points>p6:141,1:p5</points>
+      <points>p6:p5</points>
     </baseline>
     <baseline name="bsl_le_bottom" type="straight">
       <points>p4:p6</points>
@@ -64,42 +57,36 @@
       <points>p2:p7</points>
     </baseline>
     <baseline name="bsl_te" type="straight">
-      <points>p7:71,72:p8</points>
+      <points>p7:p8</points>
     </baseline>
     <baseline name="bsl_te_bottom" type="straight">
       <points>p8:p3</points>
     </baseline>
 
-    <point name="pnsmc">-0.02987681956 0</point>
+    <point name="pnsmc">0.97 0</point>
     <baseline name="bsl_nsm" type="circle">
       <center>pnsmc</center>
       <radius>0.007470339379</radius>
       <discrete by="angle">9</discrete>
     </baseline>
 
-    <point name="pfle1">-0.04234715894 0</point>
-    <point name="pfle2">-0.1 0</point>
-    <point name="pfte1">-0.4041743769 0</point>
-    <point name="pfte2">-0.9 0</point>
+    <point name="pfle1">0.96 0</point>
+    <point name="pfle2">0.9 0</point>
+    <point name="pfte1">0.6 0</point>
+    <point name="pfte2">0.1 0</point>
 
 
-    <point name="plwc">-0.18  0.007</point>
+    <point name="plwc">0.82 0.007</point>
     <baseline name="bsl_spar_web_le_c" type="arc">
-      <center>plwc</center>
+      <!-- <center>plwc</center> -->
       <start>p4</start>
       <end>p1</end>
+      <curvature>20</curvature>
       <direction>ccw</direction>
       <!-- <discrete by="number">30</discrete> -->
     </baseline>
 
   </baselines>
-
-
-
-
-
-
-
 
 
   <layups>
@@ -126,13 +113,6 @@
     </layup>
 
   </layups>
-
-
-
-
-
-
-
 
 
   <component name="spar">
@@ -222,7 +202,6 @@
     <theta3>0</theta3>
     <mesh_size at="pfte1,pfte2">0.3</mesh_size>
   </component>
-
 
 
 </cross_section>

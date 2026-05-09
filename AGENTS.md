@@ -6,7 +6,7 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 
 - **Language**: C++11
 - **Build System**: CMake (minimum 3.14)
-- **Dependencies**: Gmsh SDK
+- **Dependencies**: Gmsh SDK, git submodule `extern/cpp-terminal`
 - **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (unit, single-header v3.x), CTest (integration)
 
 ## First Principles
@@ -15,7 +15,32 @@ Use first-principles thinking. Do not assume that I always clearly understand wh
 
 ---
 
-## Build Commands
+## Build and Dependencies
+
+### Source Dependency Bootstrap
+
+PreVABS vendors `cpp-terminal` as the git submodule
+`extern/cpp-terminal`. The top-level `CMakeLists.txt` builds it with
+`add_subdirectory(extern/cpp-terminal)` and links
+`cpp-terminal::cpp-terminal`, so there is no separate manual install step for
+this dependency.
+
+Before building from source, ensure submodules are present:
+
+```bash
+# Fresh clone
+git clone --recursive <repo-url>
+
+# Existing clone
+git submodule update --init --recursive
+
+# Refresh only cpp-terminal
+git submodule update --init --recursive extern/cpp-terminal
+```
+
+After pulling new commits from the main repository, rerun
+`git submodule update --init --recursive` so `extern/cpp-terminal` matches the
+submodule commit pinned by PreVABS.
 
 ### Windows (MSVC)
 
