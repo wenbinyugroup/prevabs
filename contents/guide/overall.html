@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Other input settings &#8212; PreVABS ${PREVABS_VERSION_MAJOR}.${PREVABS_VERSION_MINOR}.${PREVABS_VERSION_PATCH} documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=b45277e4" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../../_static/documentation_options.js?v=989ad32a"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"chtml": {"mtextInheritFont": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contents/guide/overall';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tutorial" href="../tutorial.html" />
+    <link rel="prev" title="Specifications for recovery" href="recover.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="${PREVABS_VERSION_MAJOR}.${PREVABS_VERSION_MINOR}.${PREVABS_VERSION_PATCH}" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">Documentation is under construction.</div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PreVABS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../start/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Input Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ref/index.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../start/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Input Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ref/index.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Subtopics</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="coordinate.html">Coordinate systems</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="shape.html">Geometry and shapes</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="shape-point.html">Base points</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="shape-line.html">Base lines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="shape-line-polyline.html">Straight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shape-line-arc.html">Arc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shape-line-airfoil.html">Airfoil</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="material.html">Material</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="material-elastic.html">Elastic properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="material-strength.html">Strength properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="material-failure-criterion.html">Failure criterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lamina.html">Lamina</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="layup.html">Layup</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="layup-layerlist.html">Explicit list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layup-stackseq.html">Stacking sequence code</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="component.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="component-laminate.html">Laminate-type component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="component-fill.html">Fill-type component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="component-dependency.html">Components dependency</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="recover.html">Specifications for recovery</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Other input settings</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Input Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Other input settings</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="other-input-settings">
+<span id="input-other-settings"></span><h1>Other input settings<a class="headerlink" href="#other-input-settings" title="Link to this heading">#</a></h1>
+<p>There are three groups of these settings.</p>
+<section id="included-files">
+<h2>Included files<a class="headerlink" href="#included-files" title="Link to this heading">#</a></h2>
+<p>This part contains file names for base lines, materials (local) and layups as shown in <a class="reference internal" href="#code-include"><span class="std std-ref">Input syntax for the included files.</span></a>.
+The <code class="docutils literal notranslate"><span class="pre">&lt;material&gt;</span></code> sub-element is optional.
+If this is included, PreVABS will read extra materials from this local file, besides the global material database (<code class="docutils literal notranslate"><span class="pre">MaterialDB.xml</span></code>).
+If there are materials and laminae with the same names, data in the local material file will overwrite those in the global database.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code> in the <code class="docutils literal notranslate"><span class="pre">&lt;include&gt;</span></code> element is the relative path to the main input file;</p></li>
+<li><p>File extensions <code class="docutils literal notranslate"><span class="pre">.xml</span></code> can be omitted.</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="code-include">
+<div class="code-block-caption"><span class="caption-number">Listing 4 </span><span class="caption-text">Input syntax for the included files.</span><a class="headerlink" href="#code-include" title="Link to this code">#</a></div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;include&gt;</span>
+<span class="linenos">2</span><span class="w">  </span><span class="nt">&lt;baseline&gt;</span><span class="w"> </span>path/baseline_file_name<span class="w"> </span><span class="nt">&lt;/baseline&gt;</span>
+<span class="linenos">3</span><span class="w">  </span><span class="nt">&lt;material&gt;</span><span class="w"> </span>path/material_file_name<span class="w"> </span><span class="nt">&lt;/material&gt;</span>
+<span class="linenos">4</span><span class="w">  </span><span class="nt">&lt;layup&gt;</span><span class="w"> </span>path/layup_file_name<span class="w"> </span><span class="nt">&lt;/layup&gt;</span>
+<span class="linenos">5</span><span class="nt">&lt;/include&gt;</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Specification</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;baseline&gt;</span></code> - Name of the included base line file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;material&gt;</span></code> - Name of the included local material file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;layup&gt;</span></code> - Name of the included layup file. Multiple <code class="docutils literal notranslate"><span class="pre">&lt;layup&gt;</span></code> elements can be listed to merge several layup files.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="analysis-options">
+<h2>Analysis options<a class="headerlink" href="#analysis-options" title="Link to this heading">#</a></h2>
+<p>The second part contains settings for the analysis in VABS.
+<code class="docutils literal notranslate"><span class="pre">&lt;model&gt;</span></code> can be 0 for classical beam model, or 1 for refined (Timoshenko) model.</p>
+<div class="literal-block-wrapper docutils container" id="code-analysis">
+<div class="code-block-caption"><span class="caption-number">Listing 5 </span><span class="caption-text">A template for the analysis options in a main input file.</span><a class="headerlink" href="#code-analysis" title="Link to this code">#</a></div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;analysis&gt;</span>
+<span class="linenos">2</span><span class="w">  </span><span class="nt">&lt;model&gt;</span><span class="w"> </span>1<span class="w"> </span><span class="nt">&lt;/model&gt;</span>
+<span class="linenos">3</span><span class="nt">&lt;/analysis&gt;</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Specification</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;model_dim&gt;</span></code> - Dimension of the structural model. <code class="docutils literal notranslate"><span class="pre">1</span></code> (default) for beam.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;model&gt;</span></code> - Beam model. Choose one from <code class="docutils literal notranslate"><span class="pre">0</span></code> (classical) and <code class="docutils literal notranslate"><span class="pre">1</span></code> (refined / Timoshenko).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;damping&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;thermal&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;trapeze&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;vlasov&gt;</span></code> - Optional integer flags passed through to the solver. Default <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;initial_twist&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;initial_curvature_2&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;initial_curvature_3&gt;</span></code> - Optional initial twist / curvature components. Setting any of them to a non-zero value enables the curvature flag.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;oblique_y1&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;oblique_y2&gt;</span></code> - Optional direction-cosine components
+enabling the oblique flag when they differ from <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;physics&gt;</span></code> - Optional physics setting forwarded to the analysis backend.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="global-shape-and-mesh-settings">
+<h2>Global shape and mesh settings<a class="headerlink" href="#global-shape-and-mesh-settings" title="Link to this heading">#</a></h2>
+<p>The last part contains optional global geometry and meshing settings, which are all stored in a <code class="docutils literal notranslate"><span class="pre">&lt;general&gt;</span></code> sub-element.</p>
+<p>User can set the global transformations of the cross section.
+The three transformation operations have been discussed in <a class="reference internal" href="coordinate.html#coordinate-systems"><span class="std std-ref">Coordinate systems</span></a>.</p>
+<ul class="simple">
+<li><p>The order of transformation operation is: translating, scaling, and rotating;</p></li>
+<li><p>All operations are performed on the cross section, not the frame;</p></li>
+<li><p>The scaling operation will only scale the shape (base lines), and have
+no effect on the thicknesses of laminae;</p></li>
+<li><p>The rotating angle starts from the positive half of the <span class="math notranslate nohighlight">\(x_2\)</span> axis,
+and increases positively counter-clockwise (right-hand rule).</p></li>
+</ul>
+<p>There are two basic meshing options, the global mesh size <code class="docutils literal notranslate"><span class="pre">&lt;mesh_size&gt;</span></code> and the polynomial order <code class="docutils literal notranslate"><span class="pre">&lt;element_type&gt;</span></code>.
+In addition, the mesh element shape can be switched between triangles and quadrilaterals via <code class="docutils literal notranslate"><span class="pre">&lt;element_shape&gt;</span></code>, and a number of optional Gmsh transfinite/recombination controls are available.</p>
+<ul class="simple">
+<li><p>If not setting, the global meshing size will be the minimum layer thickness by default;</p></li>
+<li><p>Two options for the element type are linear and quadratic.</p></li>
+<li><p>Two options for the element shape are triangle and quadrilateral.</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="code-general">
+<div class="code-block-caption"><span class="caption-number">Listing 6 </span><span class="caption-text">A template for the global shape and mesh settings in a main input file.</span><a class="headerlink" href="#code-general" title="Link to this code">#</a></div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;general&gt;</span>
+<span class="linenos">2</span><span class="w">  </span><span class="nt">&lt;translate&gt;</span><span class="w"> </span>e2<span class="w">  </span>e3<span class="w"> </span><span class="nt">&lt;/translate&gt;</span>
+<span class="linenos">3</span><span class="w">  </span><span class="nt">&lt;scale&gt;</span><span class="w"> </span>scaling_factor<span class="w"> </span><span class="nt">&lt;/scale&gt;</span>
+<span class="linenos">4</span><span class="w">  </span><span class="nt">&lt;rotate&gt;</span><span class="w"> </span>angle<span class="w"> </span><span class="nt">&lt;/rotate&gt;</span>
+<span class="linenos">5</span><span class="w">  </span><span class="nt">&lt;mesh_size&gt;</span><span class="w"> </span>a<span class="w"> </span><span class="nt">&lt;/mesh_size&gt;</span>
+<span class="linenos">6</span><span class="w">  </span><span class="nt">&lt;element_type&gt;</span><span class="w"> </span>quadratic<span class="w"> </span><span class="nt">&lt;/element_type&gt;</span>
+<span class="linenos">7</span><span class="w">  </span><span class="nt">&lt;element_shape&gt;</span><span class="w"> </span>3<span class="w"> </span><span class="nt">&lt;/element_shape&gt;</span>
+<span class="linenos">8</span><span class="w">  </span><span class="nt">&lt;tolerance&gt;</span><span class="w"> </span>1e-12<span class="w"> </span><span class="nt">&lt;/tolerance&gt;</span>
+<span class="linenos">9</span><span class="nt">&lt;/general&gt;</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Specification</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;translate&gt;</span></code> - Horizontal and vertical translation of the cross-section. The origin will be moved to (-e2, -e3).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;scale&gt;</span></code> - Scaling factor of the cross-section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;rotate&gt;</span></code> - Rotation angle of the cross-section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;mesh_size&gt;</span></code> - Global mesh size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;element_type&gt;</span></code> - Order of elements. <code class="docutils literal notranslate"><span class="pre">linear</span></code> (or <code class="docutils literal notranslate"><span class="pre">1</span></code>) or <code class="docutils literal notranslate"><span class="pre">quadratic</span></code> (or <code class="docutils literal notranslate"><span class="pre">2</span></code>, default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;element_shape&gt;</span></code> - Shape of mesh elements. <code class="docutils literal notranslate"><span class="pre">3</span></code>, <code class="docutils literal notranslate"><span class="pre">tri</span></code>, or <code class="docutils literal notranslate"><span class="pre">triangle</span></code> (default) for triangles; <code class="docutils literal notranslate"><span class="pre">4</span></code>, <code class="docutils literal notranslate"><span class="pre">quad</span></code>, or <code class="docutils literal notranslate"><span class="pre">quadrilateral</span></code> for quadrilaterals.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;tolerance&gt;</span></code> - Tolerance used in geometric computation. Optional. Default value is 1e-12.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;omega&gt;</span></code> - Optional global scaling factor passed to the solver. Default <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p></li>
+</ul>
+<p>When <code class="docutils literal notranslate"><span class="pre">&lt;element_shape&gt;</span></code> selects quadrilaterals, the following Gmsh-driven controls become available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;transfinite_auto&gt;</span></code> - <code class="docutils literal notranslate"><span class="pre">1</span></code>/<code class="docutils literal notranslate"><span class="pre">true</span></code> to enable Gmsh’s automatic transfinite meshing of structured regions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;transfinite_corner_angle&gt;</span></code> - Angle threshold (radians) used by the transfinite-auto algorithm to decide which corners to fix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;transfinite_recombine&gt;</span></code> - <code class="docutils literal notranslate"><span class="pre">1</span></code>/<code class="docutils literal notranslate"><span class="pre">true</span></code> to recombine triangles into quads after transfinite meshing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;recombine&gt;</span></code> - <code class="docutils literal notranslate"><span class="pre">1</span></code>/<code class="docutils literal notranslate"><span class="pre">true</span></code> to enable Gmsh’s general recombine pass.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;recombine_angle&gt;</span></code> - Angle threshold (degrees) used by the recombine algorithm.</p></li>
+</ul>
+<p>Interface tracking between layers is also configurable here:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;track_interface&gt;</span></code> - Integer flag to write per-interface marker output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;interface_theta1_diff_threshold&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;interface_theta3_diff_threshold&gt;</span></code> - Angle thresholds (degrees) used to decide whether two adjacent layers share an interface for tracking.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="recover.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Specifications for recovery</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../tutorial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorial</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#included-files">Included files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-options">Analysis options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-shape-and-mesh-settings">Global shape and mesh settings</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/contents/guide/overall.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
