@@ -1,0 +1,49 @@
+<materials>
+
+    <!--
+        Typical aerospace aluminum alloy representative values using AA 2024-T3:
+        E = 71.0 GPa, nu = 0.33 from MakeItFrom:
+        https://www.makeitfrom.com/material-properties/2024-T3-Aluminum/
+        density = 2780 kg/m^3 from MatWeb:
+        https://www.matweb.com/search/datasheet.aspx?MatGUID=57483b4d782940faaf12964a1821fb61
+    -->
+    <material name="al_alloy" type="isotropic">
+        <density>2.780e3</density>
+        <elastic>
+            <e>71.0e9</e>
+            <nu>3.30e-1</nu>
+        </elastic>
+    </material>
+
+    <!--
+        Typical unidirectional glass/epoxy lamina values from Engineering Database
+        (CMH-17 / MIL-HDBK-17 referenced dataset), material system:
+        E GLASS EPOXY TAPE, RTD mean
+        https://engdatabase.com/data/composite-material-properties/eglassepoxytape
+    -->
+    <material name="glass_epoxy_ud" type="transversely isotropic">
+        <density>1.993e3</density>
+        <elastic>
+            <e1>38.61e9</e1>
+            <e2>8.274e9</e2>
+            <nu12>2.60e-1</nu12>
+            <g12>4.137e9</g12>
+        </elastic>
+    </material>
+
+    <!--
+        Typical unidirectional carbon/epoxy lamina values from Engineering Database
+        (CMH-17 / MIL-HDBK-17 referenced dataset), material system:
+        AS4 3501-6 Tape, RTD mean
+        https://engdatabase.com/data/composite-material-properties/as43501-6tape
+    -->
+    <material name="carbon_epoxy_ud" type="transversely isotropic">
+        <density>1.578e3</density>
+        <elastic>
+            <e1>140.0e9</e1>
+            <e2>10.00e9</e2>
+            <nu12>2.70e-1</nu12>
+            <g12>7.033e9</g12>
+        </elastic>
+    </material>
+</materials>

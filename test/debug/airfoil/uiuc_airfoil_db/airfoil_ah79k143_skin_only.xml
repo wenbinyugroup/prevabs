@@ -1,0 +1,76 @@
+<cross_section name="airfoil_skin_only">
+
+  <analysis>
+    <!-- Timoshenko beam model -->
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>1</scale>
+    <mesh_size>0.01</mesh_size>
+    <element_shape>tri</element_shape>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">ah79k143.dat</points>
+      <leading_edge>0.000000 0.000000</leading_edge>
+      <trailing_edge>1.000000 0.000000</trailing_edge>
+    </line>
+
+    <point name="pt_te_top" on="ln_af" by="x2" which="top">0.9</point>
+    <point name="pt_te_bottom" on="ln_af" by="x2" which="bottom">0.9</point>
+
+    <line name="ln_af_trim_te">
+      <points>pt_te_top:pt_te_bottom,pt_te_top</points>
+    </line>
+
+    <line name="ln_af_te">
+      <points>pt_te_bottom:pt_te_top</points>
+    </line>
+
+    <point name="pt_te_fill">0.95  0.0057513317658018735</point>
+
+  </baselines>
+
+  <materials>
+    <material name="al_alloy" type="isotropic">
+      <density>2.780e3</density>
+      <elastic>
+        <e>71.0e9</e>
+        <nu>3.30e-1</nu>
+      </elastic>
+    </material>
+    <lamina name="ply">
+      <material>al_alloy</material>
+      <thickness>0.01</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="ply">0</layer>
+    </layup>
+  </layups>
+
+
+  <!-- Surface layup -->
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af_trim_te</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="te_fill" type="fill" dependd="surface">
+    <baseline>ln_af_te</baseline>
+    <location>pt_te_fill</location>
+    <material>al_alloy</material>
+  </component>
+
+
+</cross_section>

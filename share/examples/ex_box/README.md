@@ -32,7 +32,7 @@ Material properties and layup scheme are listed in {ref}`table_box_materials` an
 
 "Name", "Layer", "Material", "Ply thickness", "Orientation", "Number of plies"
 , , , "{{ len_im }}", $\circ$,
-"layup1", 1, "mat_1", 0.05, -15, 6
+"layup1", 1, "mat_1", 0.05, 15, 6
 ```
 
 ---
