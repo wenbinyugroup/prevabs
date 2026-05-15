@@ -219,8 +219,9 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
     _faces.back()->setTheta3(layer.getAngle());
     // std::cout << "        layer type" << std::endl;
     _faces.back()->setLayerType(layer.getLayerType());
-    // std::cout << "        local y2" << std::endl;
-    _faces.back()->setLocaly1(_y1);
+    // Through-thickness `_y2` is propagated for the "layup" mat-orient
+    // selector. The "baseline" selector is handled later in
+    // applyFrameFromBaseCurve, which overrides per-face y1/y2/theta1.
     _faces.back()->setLocaly2(_y2);
 
     if (bcfg.tool == AnalysisTool::VABS) {
@@ -250,7 +251,8 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
   _faces.back()->setMaterial(layer.getLamina()->getMaterial());
   _faces.back()->setTheta3(layer.getAngle());
   _faces.back()->setLayerType(layer.getLayerType());
-  _faces.back()->setLocaly1(_y1);
+  // See loop above: only y2 is propagated; y1/theta1 for the "baseline"
+  // selector are set by applyFrameFromBaseCurve.
   _faces.back()->setLocaly2(_y2);
   if (bcfg.tool == AnalysisTool::VABS) {
     _faces.back()->setTheta1(_faces.back()->calcTheta1Fromy2(_y2));
@@ -266,8 +268,10 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
 
   // Phase B (plan-20260514-decouple-local-frame-from-map.md):
   // recompute per-face local frame from the base curve via nearest-segment
-  // lookup. Replaces the implicit "every face shares the area's _y1/_y2"
-  // assumption when the segment's mat-orient selector is "baseline".
+  // lookup. Replaces the historic "frame derived from BaseOffsetMap via
+  // area->_line_segment_base" link when the mat-orient selector is
+  // "baseline". The "layup" selector keeps using the through-thickness
+  // vector set on the area above.
   applyFrameFromBaseCurve(bcfg);
 
   return;
