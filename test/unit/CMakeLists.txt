@@ -74,6 +74,7 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/PGeoClasses.cpp
   ${SRC_GEO}/PGeoLine.cpp
   ${SRC_GEO}/curve.cpp
+  ${SRC_GEO}/CurveFrameLookup.cpp
   ${SRC_GEO}/geo_math.cpp
   ${SRC_GEO}/intersect.cpp
   ${SRC_GEO}/offset.cpp
@@ -125,6 +126,29 @@ if(MSVC)
 endif()
 
 # ------------------------------------------------------------------
+# test_curve_frame_lookup — standalone test for the polyline nearest-segment
+# query introduced in plan-20260514-decouple-local-frame-from-map.md (Phase A).
+# Only depends on header-only geo_types.hpp + linalg.h, so no project libs.
+# ------------------------------------------------------------------
+set(TEST_CFL_SOURCES
+  catch_amalgamated.cpp
+  test_curve_frame_lookup.cpp
+  ${SRC_GEO}/CurveFrameLookup.cpp
+)
+
+add_executable(test_curve_frame_lookup ${TEST_CFL_SOURCES})
+
+target_include_directories(test_curve_frame_lookup PRIVATE
+  ${CMAKE_SOURCE_DIR}
+  ${REPO_ROOT}/include)
+
+if(MSVC)
+  target_compile_options(test_curve_frame_lookup PRIVATE /W3 /utf-8 /EHa)
+  # M_PI etc. are not in <cmath> under MSVC without _USE_MATH_DEFINES.
+  target_compile_definitions(test_curve_frame_lookup PRIVATE _USE_MATH_DEFINES)
+endif()
+
+# ------------------------------------------------------------------
 # test_pui — pui module test, links cpp-terminal submodule.
 # ------------------------------------------------------------------
 set(TEST_PUI_SOURCES
@@ -149,6 +173,7 @@ endif()
 # CTest registration
 # ------------------------------------------------------------------
 enable_testing()
-add_test(NAME geo_tests  COMMAND test_geo)
-add_test(NAME dcel_tests COMMAND test_dcel)
-add_test(NAME pui_tests  COMMAND test_pui)
+add_test(NAME geo_tests                COMMAND test_geo)
+add_test(NAME dcel_tests               COMMAND test_dcel)
+add_test(NAME pui_tests                COMMAND test_pui)
+add_test(NAME curve_frame_lookup_tests COMMAND test_curve_frame_lookup)

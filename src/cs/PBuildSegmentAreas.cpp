@@ -467,8 +467,6 @@ void Segment::createIntermediateAreas(
         if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
         "  offset vertex: " + vo_tmp->printString();
 
-    PGeoLineSegment *ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
-
     std::list<PDCELFace *> new_faces =
         bcfg.dcel->splitFace(_face, vb_tmp, vo_tmp);
 
@@ -486,18 +484,18 @@ void Segment::createIntermediateAreas(
     PGeoLineSegment *ls_base = buildAreaBaseSegmentFromPair(
         _curve_base, _curve_offset.get(), _base_offset_indices_pairs, k);
 
+    // Kept for debug prints; PArea owns the segment via its destructor.
     area->setLineSegmentBase(ls_base);
 
-    if (_mat_orient_e1 == "baseline") {
-      area->setLocaly1(ls_base->toVector());
-    }
-    if (_mat_orient_e2 == "baseline") {
-      area->setLocaly2(ls_base->toVector());
-    }
-    else if (_mat_orient_e2 == "layup") {
+    // e1/e2 == "baseline" are now resolved per-face in
+    // PArea::applyFrameFromBaseCurve (Phase B of
+    // plan-20260514-decouple-local-frame-from-map.md). Only the "layup"
+    // selector still pulls the through-thickness vector here.
+    if (_mat_orient_e2 == "layup") {
+      PGeoLineSegment *ls_layup = new PGeoLineSegment(vb_tmp, vo_tmp);
       area->setLocaly2(ls_layup->toVector());
+      delete ls_layup;
     }
-    delete ls_layup;
 
     bcfg.model->setFaceName(
         area->face(), _name + "_area_" + std::to_string(count));
@@ -531,22 +529,20 @@ void Segment::buildLastArea(
   const std::size_t last_pair_index = _base_offset_indices_pairs.size() - 1;
   PGeoLineSegment *ls_base = buildAreaBaseSegmentFromPair(
       _curve_base, _curve_offset.get(), _base_offset_indices_pairs, last_pair_index);
+  // Kept for debug prints; PArea owns the segment via its destructor.
   area->setLineSegmentBase(ls_base);
 
-  PGeoLineSegment *ls_layup = new PGeoLineSegment(
-      _curve_base->vertices().back(),
-      _curve_offset->vertices().back());
-
-  if (_mat_orient_e1 == "baseline") {
-    area->setLocaly1(ls_base->toVector());
-  }
-  if (_mat_orient_e2 == "baseline") {
-    area->setLocaly2(ls_base->toVector());
-  }
-  else if (_mat_orient_e2 == "layup") {
+  // e1/e2 == "baseline" are now resolved per-face in
+  // PArea::applyFrameFromBaseCurve (Phase B of
+  // plan-20260514-decouple-local-frame-from-map.md). Only the "layup"
+  // selector still pulls the through-thickness vector here.
+  if (_mat_orient_e2 == "layup") {
+    PGeoLineSegment *ls_layup = new PGeoLineSegment(
+        _curve_base->vertices().back(),
+        _curve_offset->vertices().back());
     area->setLocaly2(ls_layup->toVector());
+    delete ls_layup;
   }
-  delete ls_layup;
 
   bcfg.model->setFaceName(
       area->face(), _name + "_area_" + std::to_string(count));

@@ -1,7 +1,11 @@
 #include "PArea.hpp"
 
+#include "CurveFrameLookup.hpp"
 #include "Material.hpp"
+#include "PBaseLine.hpp"
 #include "PDCELFace.hpp"
+#include "PDCELHalfEdge.hpp"
+#include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
@@ -18,6 +22,37 @@
 #include <list>
 #include <string>
 #include <vector>
+
+namespace {
+
+// Average of the source vertices along the face's outer boundary loop,
+// projected onto the cross-section yz plane (cf. PreVABS convention).
+// Returns false when the loop is degenerate (no vertices traversed).
+bool computeFaceCentroid2D(PDCELFace *face, SPoint2 &out) {
+  if (!face) return false;
+  PDCELHalfEdge *start = face->outer();
+  if (!start) return false;
+
+  double sy = 0.0, sz = 0.0;
+  int n = 0;
+  PDCELHalfEdge *he = start;
+  do {
+    PDCELVertex *v = he->source();
+    if (v) {
+      sy += v->y();
+      sz += v->z();
+      ++n;
+    }
+    he = he->next();
+    if (!he) return false;
+  } while (he != start);
+
+  if (n == 0) return false;
+  out = SPoint2(sy / n, sz / n);
+  return true;
+}
+
+}  // namespace
 
 PArea::PArea() {
   _segment = nullptr;
@@ -229,5 +264,59 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
     // writeFace(config.fdeb, _faces.back());
   }
 
+  // Phase B (plan-20260514-decouple-local-frame-from-map.md):
+  // recompute per-face local frame from the base curve via nearest-segment
+  // lookup. Replaces the implicit "every face shares the area's _y1/_y2"
+  // assumption when the segment's mat-orient selector is "baseline".
+  applyFrameFromBaseCurve(bcfg);
+
   return;
+}
+
+void PArea::applyFrameFromBaseCurve(const BuilderConfig &bcfg) {
+  if (!_segment) return;
+
+  const std::string &e1 = _segment->getMatOrient1();
+  const std::string &e2 = _segment->getMatOrient2();
+  const bool e1_baseline = (e1 == "baseline");
+  const bool e2_baseline = (e2 == "baseline");
+  if (!e1_baseline && !e2_baseline) return;
+
+  Baseline *base = _segment->curveBase();
+  if (!base || base->vertices().size() < 2) return;
+
+  // Build a 2-D polyline from the base curve in the yz cross-section plane.
+  const auto &verts = base->vertices();
+  std::vector<SPoint2> poly;
+  poly.reserve(verts.size());
+  for (auto *v : verts) {
+    poly.emplace_back(v->y(), v->z());
+  }
+  const bool closed = base->isClosed();
+  // For a closed Baseline the front and back entries are the same vertex;
+  // drop the duplicate so CurveFrameLookup's implicit closing segment
+  // (when constructed with closed=true) is non-degenerate.
+  if (closed && poly.size() > 1
+      && poly.front().x() == poly.back().x()
+      && poly.front().y() == poly.back().y()) {
+    poly.pop_back();
+  }
+  if (poly.size() < 2) return;
+
+  CurveFrameLookup lookup(poly, closed);
+
+  for (auto *face : _faces) {
+    SPoint2 c;
+    if (!computeFaceCentroid2D(face, c)) continue;
+    const SVector3 t = lookup.yAxisAt(c);
+    if (e1_baseline) {
+      face->setLocaly1(t);
+    }
+    if (e2_baseline) {
+      face->setLocaly2(t);
+      if (bcfg.tool == AnalysisTool::VABS) {
+        face->setTheta1(face->calcTheta1Fromy2(t));
+      }
+    }
+  }
 }

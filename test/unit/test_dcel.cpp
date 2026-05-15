@@ -464,9 +464,17 @@ TEST_CASE("addEdge: creates two half-edges with correct twin relationship",
   CHECK(he->twin()->twin() == he);
 }
 
-TEST_CASE("buildAreas: last area uses final pair instead of area count",
+TEST_CASE("buildAreas: last-area frame queries base curve, not the offset",
           "[dcel][segment][areas]") {
 
+  // Pre-Phase-B (plan-20260514-decouple-local-frame-from-map.md) the last
+  // area's y1 was taken from `buildAreaBaseSegmentFromPair`, which at a
+  // degenerate staircase step (base index repeating) pulled the segment
+  // from the *offset* curve.  That gave a non-normalised vector along the
+  // offset's local direction.  Phase B replaces that path: face frames are
+  // now queried per-face from the base curve via CurveFrameLookup, so the
+  // assertion here is the unit tangent of the base polyline at the face
+  // centroid — irrespective of any degenerate offset pair.
   Material material("mat");
   Lamina lamina("lam", &material, 1.0);
   LayerType layertype(1, &material, 0.0);
@@ -523,9 +531,11 @@ TEST_CASE("buildAreas: last area uses final pair instead of area count",
       dcel, model, "seg_area_3_layer_1");
   REQUIRE(last_layer_face != nullptr);
 
+  // Base curve is collinear along +y, so the nearest-segment unit tangent
+  // at any centroid is (0, 1, 0).
   const SVector3 y1 = last_layer_face->localy1();
   CHECK(y1[0] == Catch::Approx(0.0));
-  CHECK(y1[1] == Catch::Approx(0.5));
+  CHECK(y1[1] == Catch::Approx(1.0));
   CHECK(y1[2] == Catch::Approx(0.0));
 }
 

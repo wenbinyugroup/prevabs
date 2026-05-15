@@ -77,4 +77,12 @@ public:
   void setLineSegmentBase(PGeoLineSegment *ls) { _line_segment_base = ls; }
 
   void buildLayers(const BuilderConfig &);
+
+  // After buildLayers() has populated _faces, override each face's local
+  // y1/y2 (and theta1) using a nearest-segment query on the segment's base
+  // curve. Only fires when the segment's mat-orient selector for that axis
+  // is "baseline"; other selectors keep the area-level fallback set above.
+  // This is the Phase B integration point of
+  // plan-20260514-decouple-local-frame-from-map.md.
+  void applyFrameFromBaseCurve(const BuilderConfig &);
 };

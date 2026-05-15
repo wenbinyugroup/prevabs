@@ -115,7 +115,7 @@ switch ($Mode) {
 
 if ($Run -and $Mode -ne 'clean') {
     # Multi-config generators (VS) put executables in Release\; single-config at root.
-    foreach ($name in @("test_geo", "test_dcel", "test_pui")) {
+    foreach ($name in @("test_geo", "test_dcel", "test_pui", "test_curve_frame_lookup")) {
         $exeRelease = Join-Path $buildDir "Release\$name.exe"
         $exeRoot    = Join-Path $buildDir "$name.exe"
         $exe = if (Test-Path $exeRelease) { $exeRelease } else { $exeRoot }
