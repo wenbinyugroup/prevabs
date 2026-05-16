@@ -62,6 +62,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/geo_math.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PBST.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PDCEL.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PDCELFace.cpp
