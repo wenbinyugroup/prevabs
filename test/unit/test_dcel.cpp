@@ -712,6 +712,166 @@ TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset lo
   CHECK(offset->vertices()[3]->point().z() == Catch::Approx(-0.42).margin(tol));
 }
 
+TEST_CASE("offset: closed pseudo-airfoil offset uses Clipper2 backend and "
+          "produces a valid staircase",
+          "[dcel][geo][offset][clipper2][airfoil][e2e]") {
+  // 10-vertex CCW airfoil-like contour with TE cusp at (1, 0).
+  // (mirrors test_offset_clipper2 pseudoAirfoilCCW())
+  auto make_v = [](double y, double z) {
+    return new PDCELVertex(0.0, y, z);
+  };
+  PDCELVertex *te = make_v(1.00,  0.00);
+  PDCELVertex *t1 = make_v(0.90,  0.025);
+  PDCELVertex *t2 = make_v(0.70,  0.05);
+  PDCELVertex *t3 = make_v(0.40,  0.05);
+  PDCELVertex *t4 = make_v(0.10,  0.03);
+  PDCELVertex *le = make_v(0.00,  0.00);
+  PDCELVertex *b1 = make_v(0.10, -0.03);
+  PDCELVertex *b2 = make_v(0.40, -0.05);
+  PDCELVertex *b3 = make_v(0.70, -0.05);
+  PDCELVertex *b4 = make_v(0.90, -0.025);
+  // Closed convention: front == back (same pointer).
+  std::vector<PDCELVertex *> base = {
+      te, t1, t2, t3, t4, le, b1, b2, b3, b4, te};
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  // side = +1 (PreVABS inward) + small dist → should go through the
+  // Clipper2 closed branch (not the legacy 5-stage pipeline) and
+  // produce a clean staircase with no TE drops.
+  REQUIRE(offset(base, /*side*/ 1, /*dist*/ 0.005,
+                 offset_vertices, id_pairs) == 1);
+  REQUIRE(!offset_vertices.empty());
+  // Closed convention: offset_vertices.front() == .back() (same pointer).
+  CHECK(offset_vertices.front() == offset_vertices.back());
+  REQUIRE(validateBaseOffsetMap(id_pairs));
+
+  // The staircase must start at (0, 0) and span all 11 base entries
+  // (10 distinct + trailing dup). With clean small-dist offset, the
+  // last entry sits at base index 10 (= N_base_distinct).
+  CHECK(id_pairs.front().base   == 0);
+  CHECK(id_pairs.front().offset == 0);
+  CHECK(id_pairs.back().base    == 10);
+
+  // Offset polygon should be strictly inside the base bounding box.
+  for (PDCELVertex *v : offset_vertices) {
+    CHECK(v->point().y() >= -0.05);
+    CHECK(v->point().y() <=  1.0);
+    CHECK(v->point().z() >= -0.05);
+    CHECK(v->point().z() <=  0.05);
+  }
+
+  // Free offset vertices (skip dup).
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_vertices) {
+    if (freed.insert(v).second) delete v;
+  }
+  delete te;
+  delete t1;
+  delete t2;
+  delete t3;
+  delete t4;
+  delete le;
+  delete b1;
+  delete b2;
+  delete b3;
+  delete b4;
+}
+
+TEST_CASE("offset: closed pseudo-airfoil thick offset drops TE region "
+          "but staircase stays valid",
+          "[dcel][geo][offset][clipper2][airfoil][thin][e2e]") {
+  // Same airfoil as above, thicker offset → Stage C reverse-match
+  // bridge must record dropped base ranges near the TE cusp and the
+  // resulting id_pairs must still pass validateBaseOffsetMap.
+  auto make_v = [](double y, double z) {
+    return new PDCELVertex(0.0, y, z);
+  };
+  PDCELVertex *te = make_v(1.00,  0.00);
+  PDCELVertex *t1 = make_v(0.90,  0.025);
+  PDCELVertex *t2 = make_v(0.70,  0.05);
+  PDCELVertex *t3 = make_v(0.40,  0.05);
+  PDCELVertex *t4 = make_v(0.10,  0.03);
+  PDCELVertex *le = make_v(0.00,  0.00);
+  PDCELVertex *b1 = make_v(0.10, -0.03);
+  PDCELVertex *b2 = make_v(0.40, -0.05);
+  PDCELVertex *b3 = make_v(0.70, -0.05);
+  PDCELVertex *b4 = make_v(0.90, -0.025);
+  std::vector<PDCELVertex *> base = {
+      te, t1, t2, t3, t4, le, b1, b2, b3, b4, te};
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  REQUIRE(offset(base, 1, 0.04, offset_vertices, id_pairs) == 1);
+  REQUIRE(validateBaseOffsetMap(id_pairs));
+
+  // First entry pinned at (0, 0). Even though the TE base[0] sits
+  // inside Clipper2's eaten region for dist=0.04, anchorClosed in the
+  // Stage C bridge ensures the staircase starts at base 0.
+  CHECK(id_pairs.front().base   == 0);
+  CHECK(id_pairs.front().offset == 0);
+  // Last entry closes the loop at N_distinct = 10.
+  CHECK(id_pairs.back().base == 10);
+
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_vertices) {
+    if (freed.insert(v).second) delete v;
+  }
+  delete te;
+  delete t1;
+  delete t2;
+  delete t3;
+  delete t4;
+  delete le;
+  delete b1;
+  delete b2;
+  delete b3;
+  delete b4;
+}
+
+TEST_CASE("offset: closed inward offset fails when dist exceeds half-thickness",
+          "[dcel][geo][offset][clipper2][precheck]") {
+  // Thin slab: 1.0 wide, 0.04 tall. Half-thickness ≈ 0.02 everywhere.
+  // An inward offset of 0.10 (≫ half-thickness 0.02) eats the polygon
+  // entirely — Clipper2 returns no offset polygon, the backend logs
+  // an error, and offset() returns 0 with cleared outputs. Stage E's
+  // precheck additionally emits a PLOG(warning) summary; the user-
+  // facing "skin dropped" signal comes from Stage C.
+  PDCELVertex *v0 = new PDCELVertex(0.0,  0.0,   0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0,  1.0,   0.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0,  1.0,   0.04);
+  PDCELVertex *v3 = new PDCELVertex(0.0,  0.0,   0.04);
+  std::vector<PDCELVertex *> base = {v0, v1, v2, v3, v0};  // closed CCW
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  // side = +1 → inward in PreVABS convention. dist = 0.10 ≫ h ≈ 0.02.
+  CHECK(offset(base, /*side*/ 1, /*dist*/ 0.10,
+               offset_vertices, id_pairs) == 0);
+  CHECK(offset_vertices.empty());
+  CHECK(id_pairs.empty());
+
+  // Sanity: a small inward offset (dist = 0.005, h ≈ 0.02 ≫ dist)
+  // succeeds — Stage E precheck stays silent, Clipper2 produces a clean
+  // loop, Stage C bridge reports no dropped ranges.
+  std::vector<PDCELVertex *> offset_ok;
+  BaseOffsetMap id_pairs_ok;
+  REQUIRE(offset(base, 1, 0.005, offset_ok, id_pairs_ok) == 1);
+  CHECK(offset_ok.size() >= 4);
+  CHECK(validateBaseOffsetMap(id_pairs_ok));
+  // Closed convention: front and back are the same pointer.
+  REQUIRE(!offset_ok.empty());
+  CHECK(offset_ok.front() == offset_ok.back());
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_ok) {
+    if (freed.insert(v).second) delete v;
+  }
+  delete v0;
+  delete v1;
+  delete v2;
+  delete v3;
+}
+
 TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
           "[dcel][segment][areas][head][tail]") {
 

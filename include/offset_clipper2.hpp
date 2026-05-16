@@ -54,6 +54,96 @@ struct OffsetPolygon {
   bool                            is_closed;
 };
 
+/// One row of a reverse-matched base/offset correspondence, expressed
+/// in SPoint2 coordinates (yz plane). This is the SPoint2-only output
+/// of `planReverseMatch` — the PDCELVertex-aware wrapper
+/// `buildBaseOffsetMapFromOffsetPolygons` (declared below) consumes it
+/// and produces PDCELVertex* outputs.
+///
+/// Designed as the data carrier between Stage B (Clipper2 geometry)
+/// and Stage D (offset() main-body replacement). Per plan-20260515
+/// §8.4 the SPoint2 layer is forward-compatible with the future
+/// end-state nested-offset orchestrator; the PDCELVertex wrapper is
+/// the deletable adapter.
+struct ReverseMatchPlan {
+  /// Offset polygon vertices in walk order, in SPoint2 (yz).
+  /// For a closed input, `offset_points[0]` is the rotated "anchor"
+  /// (it does NOT carry a trailing duplicate — the PDCELVertex
+  /// wrapper appends the dup pointer when materializing).
+  std::vector<SPoint2> offset_points;
+
+  /// Staircase base→offset correspondence — see
+  /// include/geo_types.hpp:27 for the invariant. For a closed input
+  /// the last entry is `(N_base_distinct, M_off_raw)` so the caller
+  /// can wire the trailing duplicate cleanly.
+  BaseOffsetMap        id_pairs;
+
+  /// Contiguous spans of base indices that have NO geometric
+  /// correspondence on the offset side (Clipper2 "ate" them because
+  /// the local half-thickness was insufficient). Each
+  /// (dropped_base_ranges_lo[k], dropped_base_ranges_hi[k]) is an
+  /// inclusive [lo..hi] range. These base indices still appear in
+  /// `id_pairs` (forward-filled to the closest offset index left of
+  /// the gap) so downstream PSegment::build stays in-bounds — but
+  /// callers should log them as "skin dropped over base indices ..."
+  /// per plan §5.4.
+  std::vector<int>     dropped_base_ranges_lo;
+  std::vector<int>     dropped_base_ranges_hi;
+
+  /// True when offset_points should be treated as a closed loop
+  /// (caller appends a trailing-duplicate vertex pointer / pad point).
+  bool                 closed = false;
+
+  /// True iff the plan is non-empty and passes
+  /// validateBaseOffsetMap. False when Clipper2 produced no
+  /// polygons, or the inputs were degenerate.
+  bool                 ok = false;
+
+  /// Stage F multi-branch diagnostics: |signed area| of every
+  /// disconnected polygon Clipper2 returned (ordered largest-first).
+  /// `primary_polygon_area` is the area of the polygon that was kept
+  /// as the staircase source; the remaining entries in
+  /// `dropped_polygon_areas` are the silently discarded pieces. Both
+  /// empty when Clipper2 returned a single connected polygon.
+  double               primary_polygon_area = 0.0;
+  std::vector<double>  dropped_polygon_areas;
+};
+
+/// Pure-logic reverse-match bridge. Operates entirely on SPoint2 +
+/// index arithmetic; **no PDCELVertex** so it is unit-testable
+/// outside the PreVABS DCEL ecosystem and reusable by the future
+/// end-state nested-offset orchestrator (plan-20260515 §8.4).
+///
+/// @param base            Distinct base vertices in yz (caller MUST
+///                        drop any trailing duplicate before calling).
+/// @param base_is_closed  Whether the base implicitly closes from
+///                        back to front.
+/// @param side            +1 outward, -1 inward (diagnostic; geometry
+///                        is already encoded in `polygons`).
+/// @param dist            Magnitude of the offset distance.
+/// @param polygons        Output of `offsetWithClipper2`. The
+///                        function picks the "primary" polygon by:
+///                          1. largest |signed area|; then if multiple
+///                             candidates are within 5% of the best
+///                             area,
+///                          2. centroid closest to the base bounding-
+///                             box centroid (Stage F tie-break;
+///                             plan-20260514 §5.1 priority 2).
+///                        Smaller pieces (if any) are dropped; their
+///                        areas land in
+///                        `ReverseMatchPlan::dropped_polygon_areas`
+///                        so the caller can emit a detailed warning.
+///
+/// Returns a `ReverseMatchPlan` with `ok=false` when polygons is empty
+/// or the staircase invariant cannot be restored (the caller MUST
+/// check `ok` before using the plan).
+ReverseMatchPlan planReverseMatch(
+    const std::vector<SPoint2>&        base,
+    bool                               base_is_closed,
+    int                                side,
+    double                             dist,
+    const std::vector<OffsetPolygon>&  polygons);
+
 /// Pure-geometry Clipper2 offset wrapper.
 ///
 /// @param base            Input polyline in the yz plane.
@@ -83,6 +173,49 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     bool                        base_is_closed,
     int                         side,
     double                      dist);
+
+}  // namespace geo
+}  // namespace prevabs
+
+
+// Forward declaration so callers and tests that do not need the full
+// PDCEL header chain can still include this header.
+class PDCELVertex;
+
+namespace prevabs {
+namespace geo {
+
+/// PDCELVertex-aware reverse-match result. Stage D wires this into
+/// the legacy `offset()` signature in src/geo/offset.cpp.
+struct ReverseMatchResult {
+  /// Newly allocated PDCELVertex* (caller takes ownership).
+  /// For closed inputs, `offset_vertices.front() == .back()` (same
+  /// pointer), matching the PreVABS Baseline convention.
+  std::vector<PDCELVertex*> offset_vertices;
+  BaseOffsetMap             id_pairs;
+  std::vector<int>          dropped_base_ranges_lo;
+  std::vector<int>          dropped_base_ranges_hi;
+  bool                      ok = false;
+};
+
+/// Stage C adapter (per plan-20260514 §5). Thin wrapper around
+/// `planReverseMatch` that:
+///   - extracts SPoint2 from PDCELVertex* (dropping the trailing
+///     duplicate vertex if the caller passes a closed Baseline with
+///     `base.front() == base.back()`),
+///   - calls `planReverseMatch`,
+///   - allocates new PDCELVertex objects for each offset point and
+///     pads the trailing duplicate pointer for closed inputs.
+///
+/// Per plan-20260515 §8.4 this adapter is the planned deletion site
+/// when the end-state nested-offset orchestrator replaces
+/// `BaseOffsetMap`.
+ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
+    const std::vector<PDCELVertex*>&   base,
+    bool                               base_is_closed,
+    int                                side,
+    double                             dist,
+    const std::vector<OffsetPolygon>&  polygons);
 
 }  // namespace geo
 }  // namespace prevabs

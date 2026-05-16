@@ -29,6 +29,26 @@ set(CPPTERMINAL_ENABLE_DOCS    OFF CACHE BOOL "" FORCE)
 add_subdirectory(${REPO_ROOT}/extern/cpp-terminal cpp-terminal-build)
 
 # ------------------------------------------------------------------
+# Clipper2 (FetchContent, pinned to release tag Clipper2_1.4.0)
+# Same configuration as the top-level CMakeLists.txt. Linked by
+# test_dcel (offset.cpp now calls offsetWithClipper2 after Stage D)
+# and test_offset_clipper2. precision=8 ceiling — see
+# local/issue-20260515-clipper2-airfoil-a0.md §3.1.
+# ------------------------------------------------------------------
+include(FetchContent)
+set(CLIPPER2_TESTS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_UTILS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_USINGZ   OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  clipper2
+  GIT_REPOSITORY https://github.com/AngusJohnson/Clipper2.git
+  GIT_TAG        Clipper2_1.4.0
+  SOURCE_SUBDIR  CPP
+)
+FetchContent_MakeAvailable(clipper2)
+
+# ------------------------------------------------------------------
 # test_geo — self-contained geometry algorithm tests (no project deps)
 # ------------------------------------------------------------------
 set(TEST_GEO_SOURCES
@@ -78,6 +98,9 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/geo_math.cpp
   ${SRC_GEO}/intersect.cpp
   ${SRC_GEO}/offset.cpp
+  ${SRC_GEO}/offset_clipper2.cpp
+  ${SRC_GEO}/offset_clipper2_bridge.cpp
+  ${SRC_GEO}/offset_clipper2_pdcel.cpp
   ${SRC_GEO}/PBST.cpp
   ${SRC_GEO}/polyline.cpp
   ${SRC_ROOT}/plog.cpp
@@ -118,7 +141,7 @@ target_include_directories(test_dcel PRIVATE
 target_compile_definitions(test_dcel PRIVATE
   TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
-target_link_libraries(test_dcel PRIVATE cpp-terminal::cpp-terminal)
+target_link_libraries(test_dcel PRIVATE cpp-terminal::cpp-terminal Clipper2)
 
 if(MSVC)
   target_compile_options(test_dcel PRIVATE /W3 /utf-8 /EHa)
@@ -170,26 +193,6 @@ if(MSVC)
 endif()
 
 # ------------------------------------------------------------------
-# Clipper2 (FetchContent, pinned to release tag Clipper2_1.4.0)
-# Same configuration as the top-level CMakeLists.txt. Pulled into this
-# subproject's own _deps cache so test/unit/ can be configured and
-# built standalone. precision=8 ceiling — see
-# local/issue-20260515-clipper2-airfoil-a0.md §3.1.
-# ------------------------------------------------------------------
-include(FetchContent)
-set(CLIPPER2_TESTS    OFF CACHE BOOL "" FORCE)
-set(CLIPPER2_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(CLIPPER2_UTILS    OFF CACHE BOOL "" FORCE)
-set(CLIPPER2_USINGZ   OFF CACHE BOOL "" FORCE)
-FetchContent_Declare(
-  clipper2
-  GIT_REPOSITORY https://github.com/AngusJohnson/Clipper2.git
-  GIT_TAG        Clipper2_1.4.0
-  SOURCE_SUBDIR  CPP
-)
-FetchContent_MakeAvailable(clipper2)
-
-# ------------------------------------------------------------------
 # test_offset_clipper2 — standalone test for the Clipper2 offset
 # wrapper introduced in Stage B of plan-20260514-clipper2-offset-
 # backend.md. Compiles the production offset_clipper2.cpp directly
@@ -200,6 +203,7 @@ set(TEST_OFFSET_CLIPPER2_SOURCES
   catch_amalgamated.cpp
   test_offset_clipper2.cpp
   ${SRC_GEO}/offset_clipper2.cpp
+  ${SRC_GEO}/offset_clipper2_bridge.cpp
 )
 
 add_executable(test_offset_clipper2 ${TEST_OFFSET_CLIPPER2_SOURCES})
