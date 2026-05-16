@@ -6,7 +6,11 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 
 - **Language**: C++11
 - **Build System**: CMake (minimum 3.14)
-- **Dependencies**: Gmsh SDK, git submodule `extern/cpp-terminal`
+- **Dependencies**:
+  - Gmsh SDK (manual install, located via `$Gmsh_ROOT`)
+  - git submodule `extern/cpp-terminal`
+  - [Clipper2](https://github.com/AngusJohnson/Clipper2) 1.4.0 (pulled
+    via CMake FetchContent on first configure; requires network access)
 - **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (unit, single-header v3.x), CTest (integration)
 
 ## First Principles
@@ -41,6 +45,14 @@ git submodule update --init --recursive extern/cpp-terminal
 After pulling new commits from the main repository, rerun
 `git submodule update --init --recursive` so `extern/cpp-terminal` matches the
 submodule commit pinned by PreVABS.
+
+Clipper2 is pulled via CMake `FetchContent` at the pinned release tag
+`Clipper2_1.4.0`. The first `cmake ..` invocation requires network
+access to GitHub. Subsequent configures reuse the cached download under
+`build_msvc/_deps/`. The Clipper2 1.4.0 hard ceiling for
+`InflatePaths(..., precision)` is **8** (see
+[local/issue-20260515-clipper2-airfoil-a0.md](local/issue-20260515-clipper2-airfoil-a0.md) §3.1);
+passing 9 throws `Clipper2Exception("Precision exceeds the permitted range")`.
 
 ### Windows (MSVC)
 

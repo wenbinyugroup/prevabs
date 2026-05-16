@@ -129,6 +129,34 @@ add_subdirectory(extern/cpp-terminal)
 target_link_libraries(${PROJECTNAME} cpp-terminal::cpp-terminal)
 
 
+# Clipper2 (FetchContent, pinned to release tag Clipper2_1.4.0)
+# -------------------------------------------------------------
+# Used by the upcoming offset backend rewrite (plan-20260514-clipper2-
+# offset-backend.md). Stage A wires the dependency only; src/geo/offset.cpp
+# still uses the legacy implementation until Stage B/C land.
+#
+# Notes:
+# - Clipper2 1.4.0 exposes the bare target name `Clipper2` (no namespace
+#   alias). If a future tag adds `Clipper2::Clipper2` prefer that.
+# - CLIPPER2_MAX_DEC_PRECISION is 8 on 1.4.0; A0 evidence in
+#   local/issue-20260515-clipper2-airfoil-a0.md confirms precision=9
+#   throws "Precision exceeds the permitted range". Callers must use
+#   precision <= 8 when invoking InflatePaths.
+include(FetchContent)
+set(CLIPPER2_TESTS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_UTILS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_USINGZ   OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  clipper2
+  GIT_REPOSITORY https://github.com/AngusJohnson/Clipper2.git
+  GIT_TAG        Clipper2_1.4.0
+  SOURCE_SUBDIR  CPP
+)
+FetchContent_MakeAvailable(clipper2)
+target_link_libraries(${PROJECTNAME} Clipper2)
+
+
 # Link Gmsh library
 # -----------------
 message( STATUS "(st) " $ENV{Gmsh_ROOT} )
