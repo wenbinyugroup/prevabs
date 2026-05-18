@@ -29,7 +29,9 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
   if (base.size() < 2) return out;
 
   // Drop trailing duplicate vertex on closed Baseline (front == back
-  // pointer identity is the PreVABS convention).
+  // pointer identity is the PreVABS convention). Open inputs are
+  // passed through unchanged — front and back are expected to be
+  // distinct end-points.
   std::vector<PDCELVertex*> base_distinct = base;
   const bool input_has_trailing_dup =
       base_is_closed && base.size() >= 2 && base.front() == base.back();
@@ -70,12 +72,18 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     PLOG(warning) << oss.str();
   }
 
+  // Reserve +1 to leave room for the closed-only trailing-duplicate
+  // pointer below; for open inputs the extra slot is unused.
   out.offset_vertices.reserve(plan.offset_points.size() + 1);
   for (const auto& p : plan.offset_points) {
     out.offset_vertices.push_back(new PDCELVertex(0.0, p.x(), p.y()));
   }
   if (base_is_closed && !out.offset_vertices.empty()) {
     // §5.6 closed convention: front and back are the same pointer.
+    // Open inputs skip this — `offset_vertices` stays end-to-end
+    // distinct so `.front()` and `.back()` align 1:1 with
+    // `base.front()` and `base.back()` (matching `PSegment::build`'s
+    // expectation for an open offset curve).
     out.offset_vertices.push_back(out.offset_vertices.front());
   }
 

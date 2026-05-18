@@ -152,13 +152,66 @@ TEST_CASE("offsetWithClipper2: rhombus apex external offset produces "
 // Open polyline — side semantics + EndType::Butt
 // ===================================================================
 
-TEST_CASE("offsetWithClipper2: open polyline produces a Butt-surrounded "
-          "closed polygon (side is ignored)",
-          "[offset_clipper2][open]") {
-  // Open polyline along the x axis. Clipper2's EndType::Butt wraps
-  // the polyline with a closed perimeter on BOTH sides plus flat caps
-  // at the ends; "side" cannot pick one half (that's why open-side
-  // selection isn't a supported semantic here — see header doc).
+// ===================================================================
+// Open polyline — Phase 1: Butt-wrap single-side filtering
+// ===================================================================
+//
+// After plan-20260518-open-polyline-butt-side-filter.md Phase 1, open
+// inputs return a one-sided OPEN polyline (is_closed = false). The
+// Butt wrap is post-filtered by `side` according to sign(t × d) of
+// each wrap vertex against the closest base segment.
+//
+//   side = +1 → left  of base (t × d > 0)
+//   side = -1 → right of base (t × d < 0)
+//
+// Each filtered run walks in base direction (P_0 → P_{N-1}), so
+// base_seg in `sources` is non-decreasing.
+// ===================================================================
+
+namespace {
+
+// Verify base_seg sequence is non-decreasing along the run.
+bool baseSegNonDecreasing(const OffsetPolygon& op) {
+  int last = -1;
+  for (const auto& s : op.sources) {
+    if (s.base_seg < 0) continue;
+    if (s.base_seg < last) return false;
+    last = s.base_seg;
+  }
+  return true;
+}
+
+// Verify every vertex lies on the requested side of the base
+// (computed via the same t × d sign convention the filter uses).
+bool allOnSide(const OffsetPolygon& op,
+               const std::vector<SPoint2>& base,
+               int side) {
+  for (std::size_t k = 0; k < op.points.size(); ++k) {
+    const int seg = op.sources[k].base_seg;
+    if (seg < 0) continue;
+    const double tx = base[seg + 1].x() - base[seg].x();
+    const double ty = base[seg + 1].y() - base[seg].y();
+    const double u  = op.sources[k].base_u;
+    const double fx = base[seg].x() + u * tx;
+    const double fy = base[seg].y() + u * ty;
+    const double dx = op.points[k].x() - fx;
+    const double dy = op.points[k].y() - fy;
+    const double cross = tx * dy - ty * dx;
+    if (side > 0 && cross <= 0.0) return false;
+    if (side < 0 && cross >= 0.0) return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+
+// O1 — Straight horizontal open polyline, two segments. side = +1
+// (left = +y direction). Output should be a flat polyline at y = +dist
+// with at least 3 vertices (one per base vertex plus possibly Butt-cap
+// extras at the ends).
+TEST_CASE("offsetWithClipper2: open 2-segment straight base, side=+1",
+          "[offset_clipper2][open][side]") {
   const std::vector<SPoint2> base = {
       SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
   };
@@ -168,20 +221,193 @@ TEST_CASE("offsetWithClipper2: open polyline produces a Butt-surrounded "
   REQUIRE(out.size() == 1);
   const auto& op = out[0];
 
-  // Clipper2 always returns closed paths from InflatePaths.
-  CHECK(op.is_closed);
+  CHECK_FALSE(op.is_closed);
+  // Clipper2 collapses collinear vertices: a 3-vertex straight base
+  // produces a 2-vertex left side (the Butt-cap endpoints at P_0 and
+  // P_{N-1}).
+  CHECK(op.points.size() >= 2);
+  CHECK(op.points.size() == op.sources.size());
 
-  // Area ≈ 2 * dist * total_length = 2 * 0.05 * 2.0 = 0.20
-  // (butt caps add nothing; they are flat at the endpoints).
-  CHECK(polygonAbsArea(op.points) == Catch::Approx(0.20).margin(1e-6));
+  for (const auto& p : op.points) {
+    CHECK(p.y() == Catch::Approx(+dist).margin(1e-9));
+  }
+  CHECK(allOnSide(op, base, +1));
+  CHECK(baseSegNonDecreasing(op));
+  CHECK(op.points.front().x() == Catch::Approx(0.0).margin(1e-9));
+  CHECK(op.points.back().x()  == Catch::Approx(2.0).margin(1e-9));
+}
 
-  // side = -1 with an open input also produces non-empty output (the
-  // wrapper takes |dist| internally because Clipper2 requires positive
-  // delta for open paths).
-  auto out_neg = offsetWithClipper2(base, false, -1, dist);
-  REQUIRE(out_neg.size() == 1);
-  CHECK(polygonAbsArea(out_neg[0].points)
-        == Catch::Approx(0.20).margin(1e-6));
+
+// O2 — Same base, side = -1 (right = -y direction).
+TEST_CASE("offsetWithClipper2: open 2-segment straight base, side=-1",
+          "[offset_clipper2][open][side]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
+  };
+  const double dist = 0.05;
+
+  auto out = offsetWithClipper2(base, false, -1, dist);
+  REQUIRE(out.size() == 1);
+  const auto& op = out[0];
+
+  CHECK_FALSE(op.is_closed);
+  CHECK(op.points.size() >= 2);
+  for (const auto& p : op.points) {
+    CHECK(p.y() == Catch::Approx(-dist).margin(1e-9));
+  }
+  CHECK(allOnSide(op, base, -1));
+  CHECK(baseSegNonDecreasing(op));
+  CHECK(op.points.front().x() == Catch::Approx(0.0).margin(1e-9));
+  CHECK(op.points.back().x()  == Catch::Approx(2.0).margin(1e-9));
+}
+
+
+// O3 — L-shape, inward-convex side (side = +1). Convex side of the
+// "L" picks up a single miter corner at the bend.
+TEST_CASE("offsetWithClipper2: open L-shape, convex (left) side",
+          "[offset_clipper2][open][corner]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(1.0, 1.0),
+  };
+  const double dist = 0.1;
+
+  auto out = offsetWithClipper2(base, false, +1, dist);
+  REQUIRE(out.size() == 1);
+  const auto& op = out[0];
+
+  CHECK_FALSE(op.is_closed);
+  CHECK(op.points.size() >= 3);
+  CHECK(allOnSide(op, base, +1));
+  CHECK(baseSegNonDecreasing(op));
+
+  // Endpoints sit on the +y axis at x=0 (P_0 left-cap) and the +x axis
+  // at y=1 (P_{N-1} left-cap). The "left" of a CCW L-shape vector is
+  // outward of the bend (upper-left direction).
+  // After Butt cap at P_0 (segment 0 tangent = +x), the left end-cap
+  // point is at (0, +dist). After Butt cap at P_{N-1} (segment 1
+  // tangent = +y), the left end-cap point is at (-dist, +1).
+  // Note: the order may be either (0,+dist) at front / (-dist,+1) at
+  // back, or vice versa, depending on Butt-cap traversal.
+}
+
+
+// O4 — L-shape, concave (right) side. The right side traces the
+// inside corner of the L; Clipper2 inserts a snipped or limited-miter
+// vertex there.
+TEST_CASE("offsetWithClipper2: open L-shape, concave (right) side",
+          "[offset_clipper2][open][corner]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(1.0, 1.0),
+  };
+  const double dist = 0.1;
+
+  auto out = offsetWithClipper2(base, false, -1, dist);
+  REQUIRE(out.size() == 1);
+  const auto& op = out[0];
+
+  CHECK_FALSE(op.is_closed);
+  CHECK(op.points.size() >= 3);
+  CHECK(allOnSide(op, base, -1));
+  CHECK(baseSegNonDecreasing(op));
+}
+
+
+// O5 — Smooth-ish open arc (10 segments along a quarter circle).
+// Verifies both sides give a clean single run with monotone base_seg.
+TEST_CASE("offsetWithClipper2: open quarter-arc, both sides",
+          "[offset_clipper2][open][arc]") {
+  // 11 vertices along the unit quarter circle (CCW from +x to +y).
+  std::vector<SPoint2> base;
+  const int N = 11;
+  const double half_pi = std::acos(-1.0) * 0.5;
+  for (int i = 0; i < N; ++i) {
+    const double t = half_pi * static_cast<double>(i)
+                     / static_cast<double>(N - 1);
+    base.emplace_back(std::cos(t), std::sin(t));
+  }
+  const double dist = 0.05;
+
+  for (int side : {+1, -1}) {
+    auto out = offsetWithClipper2(base, false, side, dist);
+    REQUIRE(out.size() >= 1);
+    REQUIRE(out[0].points.size() >= static_cast<std::size_t>(N - 1));
+    CHECK_FALSE(out[0].is_closed);
+    CHECK(allOnSide(out[0], base, side));
+    CHECK(baseSegNonDecreasing(out[0]));
+  }
+}
+
+
+// O6 — Validate the two sides are geometric mirrors: each side's
+// vertex count should match, and every left point should have a
+// corresponding right point at the reflected position across the base.
+TEST_CASE("offsetWithClipper2: open base — both sides are reflections",
+          "[offset_clipper2][open][mirror]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(0.4, 0.0),
+      SPoint2(0.8, 0.0), SPoint2(1.2, 0.0),
+  };
+  const double dist = 0.07;
+
+  auto left  = offsetWithClipper2(base, false, +1, dist);
+  auto right = offsetWithClipper2(base, false, -1, dist);
+  REQUIRE(left.size() == 1);
+  REQUIRE(right.size() == 1);
+  REQUIRE(left[0].points.size() == right[0].points.size());
+
+  // For a straight base on the x-axis, the right side is the left side
+  // reflected through y = 0.
+  for (std::size_t k = 0; k < left[0].points.size(); ++k) {
+    CHECK(left[0].points[k].x()
+          == Catch::Approx(right[0].points[k].x()).margin(1e-9));
+    CHECK(left[0].points[k].y()
+          == Catch::Approx(-right[0].points[k].y()).margin(1e-9));
+  }
+}
+
+
+// O7 — Endpoint alignment: the first/last filtered vertex must lie
+// near the offset of the corresponding base endpoint (within dist
+// along the base-normal direction, ≤ tiny tangential drift from the
+// Butt cap).
+TEST_CASE("offsetWithClipper2: open base — endpoints align with caps",
+          "[offset_clipper2][open][endpoints]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
+  };
+  const double dist = 0.05;
+
+  auto out = offsetWithClipper2(base, false, +1, dist);
+  REQUIRE(out.size() == 1);
+  const auto& op = out[0];
+
+  // First vertex projects to a foot near P_0 (base_u close to 0 on
+  // segment 0).
+  REQUIRE(op.sources.front().base_seg == 0);
+  CHECK(op.sources.front().base_u == Catch::Approx(0.0).margin(1e-6));
+
+  // Last vertex projects to a foot near P_{N-1} (base_u close to 1
+  // on the last segment).
+  const int last_seg = static_cast<int>(base.size()) - 2;
+  REQUIRE(op.sources.back().base_seg == last_seg);
+  CHECK(op.sources.back().base_u == Catch::Approx(1.0).margin(1e-6));
+}
+
+
+// O8 — Closed-branch sanity check: the old closed-input contract is
+// untouched (this guards against the open-branch refactor accidentally
+// breaking closed inputs).
+TEST_CASE("offsetWithClipper2: closed input unchanged by open-branch "
+          "refactor",
+          "[offset_clipper2][closed][regression]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  auto out = offsetWithClipper2(base, /*closed*/ true, -1, 0.1);
+  REQUIRE(out.size() == 1);
+  CHECK(out[0].is_closed);
+  CHECK(polygonAbsArea(out[0].points) == Catch::Approx(0.64).margin(1e-6));
 }
 
 
@@ -364,6 +590,16 @@ OffsetPolygon makePolygon(
     p.points.emplace_back(std::get<0>(t), std::get<1>(t));
     p.sources.push_back({std::get<2>(t), std::get<3>(t)});
   }
+  return p;
+}
+
+// Open variant of the synthetic builder (is_closed = false). Used by
+// Phase 2 bridge tests that drive planReverseMatch with hand-crafted
+// open runs.
+OffsetPolygon makeOpenPolygon(
+    const std::vector<std::tuple<double, double, int, double>>& vs) {
+  OffsetPolygon p = makePolygon(vs);
+  p.is_closed = false;
   return p;
 }
 
@@ -766,4 +1002,149 @@ TEST_CASE("planReverseMatch: small numeric noise preserves staircase",
   CHECK(plan.id_pairs.front().base   == 0);
   CHECK(plan.id_pairs.back().base
         == static_cast<int>(base.size()));
+}
+
+
+// ===================================================================
+// Phase 2 — planReverseMatch open-input branch
+//
+// Open inputs:
+//   - Primary picking uses base_seg span (not area).
+//   - No rotation (the Phase 1 extractor orients the run already).
+//   - No wrap pair at the staircase tail (`(N-1, M-1)` instead of
+//     `(N, M)`).
+//   - anchorAtZero still applies if the run anchor doesn't reach base[0].
+// ===================================================================
+
+// O-Bridge-1 — Clean staircase for a 4-vertex open base + 4-vertex open
+// run, one offset vertex per base vertex.
+TEST_CASE("planReverseMatch: open polyline — clean staircase",
+          "[offset_clipper2][bridge][open]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(2.0, 0.0), SPoint2(3.0, 0.0),
+  };
+  // One offset vertex anchored at each base vertex via segments
+  // 0/1/2 with u rounded to {0, 1, 1, 1} so cand_base = [0, 2, 3, 3].
+  // For a strict 1-per-base correspondence we use u alternating so
+  // attributeOne maps to [0, 1, 2, 3].
+  OffsetPolygon prim = makeOpenPolygon({
+      {0.0, 0.05, /*seg*/ 0, /*u*/ 0.0},  // -> base 0
+      {1.0, 0.05, /*seg*/ 0, /*u*/ 1.0},  // -> base 1
+      {2.0, 0.05, /*seg*/ 1, /*u*/ 1.0},  // -> base 2
+      {3.0, 0.05, /*seg*/ 2, /*u*/ 1.0},  // -> base 3
+  });
+
+  const auto plan = planReverseMatch(
+      base, /*closed*/ false, /*side*/ +1, 0.05, {prim});
+  REQUIRE(plan.ok);
+  CHECK_FALSE(plan.closed);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  // Open-staircase endpoints: (0, 0) and (N-1, M-1) — NO wrap pair.
+  REQUIRE(plan.id_pairs.size() == 4);
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base    == 3);   // N-1
+  CHECK(plan.id_pairs.back().offset  == 3);   // M-1
+
+  CHECK(plan.dropped_base_ranges_lo.empty());
+  CHECK(plan.dropped_base_ranges_hi.empty());
+  CHECK(plan.offset_points.size() == 4);
+
+  // Diagnostics: open branch leaves area fields at zero/empty.
+  CHECK(plan.primary_polygon_area == 0.0);
+  CHECK(plan.dropped_polygon_areas.empty());
+}
+
+// O-Bridge-2 — A skipped base segment surfaces as a dropped range.
+TEST_CASE("planReverseMatch: open polyline — dropped base range from skip",
+          "[offset_clipper2][bridge][open][dropped]") {
+  // 5 base vertices, 3 offset vertices: skip seg 1 entirely so cand
+  // jumps from base 0 → base 3 (2 base indices dropped).
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
+      SPoint2(3.0, 0.0), SPoint2(4.0, 0.0),
+  };
+  OffsetPolygon prim = makeOpenPolygon({
+      {0.0, 0.05, /*seg*/ 0, /*u*/ 0.0},  // -> base 0
+      {3.0, 0.05, /*seg*/ 2, /*u*/ 1.0},  // -> base 3
+      {4.0, 0.05, /*seg*/ 3, /*u*/ 1.0},  // -> base 4
+  });
+
+  const auto plan = planReverseMatch(
+      base, false, +1, 0.05, {prim});
+  REQUIRE(plan.ok);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  // Front pinned at (0,0), back at (N-1, M-1) = (4, 2).
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base    == 4);
+  CHECK(plan.id_pairs.back().offset  == 2);
+
+  // Forward-fill inserts (1, 0) and (2, 0) — base 1 and 2 share
+  // offset index 0. The skip is recorded as a dropped range [1, 2].
+  REQUIRE(plan.dropped_base_ranges_lo.size() == 1);
+  CHECK(plan.dropped_base_ranges_lo[0] == 1);
+  CHECK(plan.dropped_base_ranges_hi[0] == 2);
+}
+
+// O-Bridge-3 — pickPrimaryOpen selects the run with the widest
+// base_seg span when multiple runs come in.
+TEST_CASE("planReverseMatch: open polyline — widest base_seg span wins",
+          "[offset_clipper2][bridge][open][pick]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
+      SPoint2(3.0, 0.0), SPoint2(4.0, 0.0),
+  };
+  // Narrow run: spans only segments 0..1 (span = 1).
+  OffsetPolygon narrow = makeOpenPolygon({
+      {0.0, 0.05, /*seg*/ 0, /*u*/ 0.0},
+      {1.0, 0.05, /*seg*/ 0, /*u*/ 1.0},
+      {2.0, 0.05, /*seg*/ 1, /*u*/ 1.0},
+  });
+  // Wide run: spans segments 0..3 (span = 3) — should win.
+  OffsetPolygon wide = makeOpenPolygon({
+      {0.0, 0.05, /*seg*/ 0, /*u*/ 0.0},
+      {2.0, 0.05, /*seg*/ 1, /*u*/ 1.0},
+      {4.0, 0.05, /*seg*/ 3, /*u*/ 1.0},
+  });
+
+  const auto plan = planReverseMatch(
+      base, false, +1, 0.05, {narrow, wide});
+  REQUIRE(plan.ok);
+  // The wide run produces 3 offset_points; narrow would produce 3 too
+  // but with different base_seg coverage, so check the staircase
+  // reaches base[N-1] = 4.
+  CHECK(plan.id_pairs.back().base   == 4);
+  CHECK(plan.id_pairs.back().offset == 2);   // wide.points.size() - 1
+}
+
+// O-Bridge-4 — End-to-end: feed offsetWithClipper2's open output into
+// planReverseMatch and check the full pipeline closes cleanly.
+TEST_CASE("planReverseMatch: open L-shape end-to-end with Phase 1 core",
+          "[offset_clipper2][bridge][open][e2e]") {
+  // 3-vertex L-shape; Phase 1 produces a one-sided open polyline.
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(1.0, 1.0),
+  };
+  const double dist = 0.1;
+
+  // Both sides — independently.
+  for (int side : {+1, -1}) {
+    auto polys = offsetWithClipper2(base, /*closed*/ false, side, dist);
+    REQUIRE(polys.size() >= 1);
+    const auto plan = planReverseMatch(
+        base, /*closed*/ false, side, dist, polys);
+    REQUIRE(plan.ok);
+    CHECK_FALSE(plan.closed);
+    CHECK(isValidStaircase(plan.id_pairs));
+    // (0, 0) at the head, (N-1, M-1) at the tail.
+    CHECK(plan.id_pairs.front().base   == 0);
+    CHECK(plan.id_pairs.front().offset == 0);
+    CHECK(plan.id_pairs.back().base    == 2);  // N-1
+    CHECK(plan.id_pairs.back().offset
+          == static_cast<int>(plan.offset_points.size()) - 1);
+  }
 }

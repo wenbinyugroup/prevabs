@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -88,6 +89,40 @@ SPoint2 bboxCentroid(const std::vector<SPoint2>& p) {
     if (q.y() > ymax) ymax = q.y();
   }
   return SPoint2(0.5 * (xmin + xmax), 0.5 * (ymin + ymax));
+}
+
+// pickPrimaryOpen: choose the open OffsetPolygon whose attributed
+// `base_seg` indices span the widest range (max - min). Area is not a
+// meaningful selector for one-sided open polylines (they have ~zero
+// signed area), but base_seg span directly measures "how much of the
+// base this run actually covers" — exactly the property we want when
+// the open Butt-wrap filter has produced multiple disconnected runs
+// from pathological inputs (very high curvature, large dist/length).
+//
+// Returns -1 when no candidate has >= 2 points or no attributed source.
+int pickPrimaryOpen(const std::vector<OffsetPolygon>& polys,
+                    const std::vector<SPoint2>&       base) {
+  (void)base;
+  int leader = -1;
+  int leader_span = -1;
+  for (int i = 0; i < static_cast<int>(polys.size()); ++i) {
+    if (polys[i].points.size() < 2) continue;
+    int lo = std::numeric_limits<int>::max();
+    int hi = std::numeric_limits<int>::min();
+    for (const auto& s : polys[i].sources) {
+      if (s.base_seg >= 0) {
+        if (s.base_seg < lo) lo = s.base_seg;
+        if (s.base_seg > hi) hi = s.base_seg;
+      }
+    }
+    if (lo > hi) continue;
+    const int span = hi - lo;
+    if (span > leader_span) {
+      leader_span = span;
+      leader = i;
+    }
+  }
+  return leader;
 }
 
 // Stage F pickPrimary: largest |signed area|; on near-ties (within
@@ -265,8 +300,13 @@ void buildIdPairs(const std::vector<int>& walked,
     }
   }
 
-  if (closed) {
-    int last_b = walked.back();
+  // Tail forward-fill: if `walked.back()` doesn't reach the last
+  // distinct base index, extend the staircase by repeating offset
+  // index m-1. Applies to BOTH closed and open inputs — open paths
+  // need it when the filtered run anchor doesn't reach base[N-1]
+  // (typically only on pathological inputs).
+  {
+    const int last_b = walked.back();
     for (int b = last_b + 1; b < n_base_distinct; ++b) {
       emit(id_pairs, b, m - 1);
     }
@@ -274,13 +314,20 @@ void buildIdPairs(const std::vector<int>& walked,
       dropped_lo.push_back(last_b + 1);
       dropped_hi.push_back(n_base_distinct - 1);
     }
+  }
+
+  if (closed) {
+    // Wrap pair (N_distinct, M_off_raw) — closed-only. Lets the
+    // PDCELVertex adapter wire the trailing-duplicate cleanly.
     emit(id_pairs, n_base_distinct, m);
   }
 }
 
-// Force a closed loop's id_pairs to start at base index 0. Prepends
-// (0,0)..(b0-1,0) and records the prepended range as dropped.
-void anchorClosed(BaseOffsetMap& id_pairs,
+// Force id_pairs to start at base index 0. Prepends (0,0)..(b0-1,0)
+// and records the prepended range as dropped. Applies to both closed
+// and open inputs (the open filtered run anchor may not coincide with
+// base[0] on pathological inputs).
+void anchorAtZero(BaseOffsetMap& id_pairs,
                   std::vector<int>& dropped_lo,
                   std::vector<int>& dropped_hi) {
   if (id_pairs.empty()) return;
@@ -311,24 +358,33 @@ ReverseMatchPlan planReverseMatch(
 
   if (base.size() < 2 || polygons.empty()) return out;
 
-  const int primary_idx = pickPrimary(polygons, base);
+  // Primary picking dispatches on closed/open. Closed inputs select by
+  // |signed area| (with centroid tie-break); open inputs select by
+  // base_seg span (area ≈ 0 for one-sided open polylines).
+  const int primary_idx = base_is_closed
+                            ? pickPrimary(polygons, base)
+                            : pickPrimaryOpen(polygons, base);
   if (primary_idx < 0) return out;
   const OffsetPolygon& primary = polygons[primary_idx];
-  if (primary.points.size() < 3) return out;
+  const std::size_t min_pts = base_is_closed ? 3u : 2u;
+  if (primary.points.size() < min_pts) return out;
 
-  // Stage F multi-branch diagnostics: record areas (largest-first
-  // semantics; we already know primary_idx is the chosen one). The
-  // PDCELVertex adapter consumes this for the user-facing warning.
-  out.primary_polygon_area = std::fabs(signedArea(primary.points));
-  if (polygons.size() > 1) {
-    std::vector<double> dropped;
-    dropped.reserve(polygons.size() - 1);
-    for (int i = 0; i < static_cast<int>(polygons.size()); ++i) {
-      if (i == primary_idx) continue;
-      dropped.push_back(std::fabs(signedArea(polygons[i].points)));
+  // Stage F multi-branch diagnostics — closed only. For open inputs
+  // the polygon area is ~0 so areas would carry no signal; the open
+  // counterpart "how many runs were dropped" is implicitly visible via
+  // `polygons.size() - 1` to the caller.
+  if (base_is_closed) {
+    out.primary_polygon_area = std::fabs(signedArea(primary.points));
+    if (polygons.size() > 1) {
+      std::vector<double> dropped;
+      dropped.reserve(polygons.size() - 1);
+      for (int i = 0; i < static_cast<int>(polygons.size()); ++i) {
+        if (i == primary_idx) continue;
+        dropped.push_back(std::fabs(signedArea(polygons[i].points)));
+      }
+      std::sort(dropped.begin(), dropped.end(), std::greater<double>());
+      out.dropped_polygon_areas = std::move(dropped);
     }
-    std::sort(dropped.begin(), dropped.end(), std::greater<double>());
-    out.dropped_polygon_areas = std::move(dropped);
   }
 
   const int n_base_distinct = static_cast<int>(base.size());
@@ -346,6 +402,9 @@ ReverseMatchPlan planReverseMatch(
 
   std::vector<SPoint2> points_rot = primary.points;
   if (base_is_closed) {
+    // Rotation only makes sense on a cyclic walk. For open inputs the
+    // Phase 1 extractor already orients the run from P_0 toward
+    // P_{N-1} (base_seg non-decreasing).
     const int k_start = findRotationStart(cand);
     rotateInPlace(cand,       k_start);
     rotateInPlace(points_rot, k_start);
@@ -359,10 +418,11 @@ ReverseMatchPlan planReverseMatch(
                out.dropped_base_ranges_lo,
                out.dropped_base_ranges_hi);
 
-  if (base_is_closed) {
-    anchorClosed(out.id_pairs, out.dropped_base_ranges_lo,
-                 out.dropped_base_ranges_hi);
-  }
+  // Anchor the staircase at base index 0 if the first attributed index
+  // wasn't already 0 (prepends forward-fill pairs). Applies to both
+  // closed and open inputs.
+  anchorAtZero(out.id_pairs, out.dropped_base_ranges_lo,
+               out.dropped_base_ranges_hi);
 
   out.offset_points = std::move(points_rot);
 

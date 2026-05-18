@@ -46,11 +46,14 @@ struct OffsetVertexSource {
 struct OffsetPolygon {
   std::vector<SPoint2>            points;
   std::vector<OffsetVertexSource> sources;   // size == points.size()
-  // Clipper2's InflatePaths always returns closed paths regardless of
-  // EndType (Butt / Square / Round merely cap the open ends; the
-  // result is still a closed perimeter loop). The flag is kept for
-  // forward-compatibility but is currently always true for non-empty
-  // output.
+  // is_closed = true   → closed offset polygon (closed-input branch).
+  //                     `points` walks the perimeter; `points.front()`
+  //                     and `points.back()` are distinct (no trailing
+  //                     duplicate; closure is implicit).
+  // is_closed = false  → one-sided open polyline filtered from the
+  //                     Butt wrap (open-input branch). `points`
+  //                     traverses from the P_0 side toward P_{N-1};
+  //                     base_seg in `sources` is non-decreasing.
   bool                            is_closed;
 };
 
@@ -151,18 +154,30 @@ ReverseMatchPlan planReverseMatch(
 ///                        trailing duplicate vertex; if it is present
 ///                        the wrapper drops it defensively.
 /// @param base_is_closed  true  → EndType::Polygon (implicit closing
-///                                 edge from back to front).
-///                        false → EndType::Butt (open-ended).
-/// @param side            +1 for outward, -1 for inward. Honored only
-///                        for closed inputs; for open inputs Clipper2's
-///                        InflatePaths requires positive delta and the
-///                        result is always a Butt-capped surrounding
-///                        polygon (no left/right distinction).
+///                                 edge from back to front; output is
+///                                 a closed offset polygon).
+///                        false → EndType::Butt (open-ended; output is
+///                                 a one-sided OPEN polyline filtered
+///                                 from the Butt-wrap by `side`).
+/// @param side            +1 = left  of base (sign(t × d) > 0,
+///                              CCW outward for a closed CCW input)
+///                        -1 = right of base (sign(t × d) < 0,
+///                              CCW inward  for a closed CCW input)
+///                        Honored for BOTH closed and open inputs.
+///                        For open inputs, the Butt wrap is filtered
+///                        post-Clipper2 so each output is a one-sided
+///                        open polyline (`is_closed = false`).
 /// @param dist            Magnitude of offset distance, > 0.
 ///
-/// Returns zero or more `OffsetPolygon` instances. Empty when
-/// Clipper2 has eaten the input completely (typically caused by
-/// local half-thickness < dist somewhere along the path).
+/// Returns zero or more `OffsetPolygon` instances:
+///   - closed input → one polygon per Clipper2 path (`is_closed=true`)
+///   - open input   → one OPEN polyline per filtered side-run
+///                    (`is_closed=false`). Well-formed inputs produce
+///                    exactly one run with N or N+1 points (one per
+///                    base vertex plus one Butt-cap point at each end).
+/// Empty result indicates Clipper2 ate the input completely (local
+/// half-thickness < dist) or all wrap vertices landed on the opposite
+/// side from the requested one.
 ///
 /// Implementation choices (locked in by A0 evidence; see
 /// local/issue-20260515-clipper2-airfoil-a0.md):
@@ -189,9 +204,20 @@ namespace geo {
 /// the legacy `offset()` signature in src/geo/offset.cpp.
 struct ReverseMatchResult {
   /// Newly allocated PDCELVertex* (caller takes ownership).
-  /// For closed inputs, `offset_vertices.front() == .back()` (same
-  /// pointer), matching the PreVABS Baseline convention.
+  /// Convention:
+  ///   - closed input  → `offset_vertices.front() == .back()` (same
+  ///                     pointer), matching the PreVABS Baseline
+  ///                     trailing-duplicate convention. Size =
+  ///                     M_off_raw + 1.
+  ///   - open   input  → `offset_vertices.front()` and `.back()` are
+  ///                     distinct pointers, end-to-end 1:1 aligned
+  ///                     with `base.front()` and `base.back()`.
+  ///                     Size = M_off_raw.
   std::vector<PDCELVertex*> offset_vertices;
+  /// Staircase per geo_types.hpp:27.
+  ///   - closed → last entry is `(N_distinct, M_off_raw)` wrap pair.
+  ///   - open   → last entry is `(N_distinct - 1, M_off_raw - 1)`,
+  ///              no wrap pair.
   BaseOffsetMap             id_pairs;
   std::vector<int>          dropped_base_ranges_lo;
   std::vector<int>          dropped_base_ranges_hi;
@@ -202,10 +228,14 @@ struct ReverseMatchResult {
 /// `planReverseMatch` that:
 ///   - extracts SPoint2 from PDCELVertex* (dropping the trailing
 ///     duplicate vertex if the caller passes a closed Baseline with
-///     `base.front() == base.back()`),
+///     `base.front() == base.back()`; for open inputs the input
+///     vector is consumed unchanged).
 ///   - calls `planReverseMatch`,
-///   - allocates new PDCELVertex objects for each offset point and
-///     pads the trailing duplicate pointer for closed inputs.
+///   - allocates new PDCELVertex objects for each offset point.
+///     For closed inputs, also appends the trailing-duplicate pointer
+///     so `offset_vertices.front() == .back()`. Open inputs return
+///     end-to-end distinct pointers with size == plan.offset_points
+///     size.
 ///
 /// Per plan-20260515 §8.4 this adapter is the planned deletion site
 /// when the end-state nested-offset orchestrator replaces

@@ -100,12 +100,28 @@ void assertValidBaseOffsetMap(
 // vertex count N_distinct = N - 1 is >= 3 — required for a non-trivial
 // polygon).
 double signedHalfThickness(
-    const std::vector<PDCELVertex *> &base, int i, int side) {
-  const int n_distinct = static_cast<int>(base.size()) - 1;
+    const std::vector<PDCELVertex *> &base, int i, int side,
+    bool base_is_closed) {
+  // Distinct base vertex count:
+  //   closed → drop trailing duplicate (front == back pointer).
+  //   open   → all entries are distinct.
+  const int n_distinct = base_is_closed
+                           ? static_cast<int>(base.size()) - 1
+                           : static_cast<int>(base.size());
   if (n_distinct < 3) return INF;
 
-  const int i_prev = (i - 1 + n_distinct) % n_distinct;
-  const int i_next = (i + 1)              % n_distinct;
+  // Endpoint vertices on an open base have only one neighbour, so a
+  // half-thickness measurement is geometrically undefined (no opposite
+  // side to project onto). Stage E callers should iterate interior
+  // vertices only; this guard is defensive.
+  if (!base_is_closed && (i <= 0 || i >= n_distinct - 1)) return INF;
+
+  const int i_prev = base_is_closed
+                       ? (i - 1 + n_distinct) % n_distinct
+                       : i - 1;
+  const int i_next = base_is_closed
+                       ? (i + 1) % n_distinct
+                       : i + 1;
 
   const SPoint2 p_i    = base[i]     ->point2();
   const SPoint2 p_prev = base[i_prev]->point2();
@@ -130,15 +146,18 @@ double signedHalfThickness(
   const double dir_y =  side * tx_n;
 
   // Intersect ray (p_i + t * dir) with each non-adjacent segment.
+  // Closed: there are n_distinct segments (last wraps back to base[0]).
+  // Open:   there are n_distinct - 1 segments (no wrap).
+  const int n_seg = base_is_closed ? n_distinct : n_distinct - 1;
   double min_t = INF;
-  for (int j = 0; j < n_distinct; ++j) {
+  for (int j = 0; j < n_seg; ++j) {
     // Skip segments that touch base[i].
     //   seg j      = base[j]   → base[j+1]
     //   "j == i"   touches at start
     //   "j == i_prev" touches at end
     if (j == i || j == i_prev) continue;
 
-    const int j_next = (j + 1) % n_distinct;
+    const int j_next = base_is_closed ? (j + 1) % n_distinct : j + 1;
     const SPoint2 a = base[j]     ->point2();
     const SPoint2 b = base[j_next]->point2();
 
@@ -1221,121 +1240,159 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   }
 
   // -------------------------------------------------------------------------
-  // Closed multi-vertex path: Clipper2 backend (Stage B + Stage C bridge of
-  // plan-20260514-clipper2-offset-backend.md). Replaces the legacy 5-stage
-  // pipeline for closed curves only — open multi-vertex polylines fall
-  // through to the legacy code below, because Clipper2's EndType::Butt
-  // wraps the polyline with a closed surrounding polygon, which is not
-  // the one-sided contract PSegment::offsetCurveBase expects. The closed
-  // case is where Clipper2's robustness against cusps / multi-self-
-  // intersections wins live (plan §1.1).
+  // Multi-vertex path (closed OR open): Clipper2 backend.
+  //
+  // Phases of plan-20260514 / plan-20260518:
+  //   Phase 1 — `offsetWithClipper2` geometric core, with single-side
+  //             filtering of the Butt wrap for open inputs.
+  //   Phase 2 — `planReverseMatch` reverse-match bridge, open-aware.
+  //   Phase 3 — PDCELVertex adapter, open contract (no trailing-dup).
+  //   Phase 4 — this main-entry route flattening (closed + open both
+  //             flow through the unified backend).
   //
   // PreVABS legacy convention (single-vertex offset() above uses n × t
   // with n = SVector3(side, 0, 0)): for a CCW closed curve side = +1
-  // produces an **inward** offset. Clipper2's InflatePaths takes positive
-  // delta = **outward**. Flip the sign when bridging to preserve the
-  // legacy caller contract.
-  if (base.front() == base.back()) {
-    // ---------------------------------------------------------------------
-    // Stage E §7 precheck: local half-thickness scan.
-    //
-    // For each base vertex i, project an inward-normal ray and measure
-    // the distance to the nearest non-adjacent base segment (h_i).
-    // Categories:
-    //   h_i < |dist|     — the inward offset crosses to the far side
-    //                      locally. Stage C will record this region in
-    //                      `dropped_base_ranges` and downstream skin is
-    //                      locally absent.
-    //   h_i < 2 * |dist| — the post-offset thickness is below the
-    //                      "two-sided" headroom; Clipper2 still
-    //                      succeeds.
-    //
-    // Behaviour: count + summarise as PLOG(warning). We do NOT fail-fast
-    // — Clipper2's InflatePaths handles all these geometrically (Stage
-    // C bridge's dropped-range mechanism produces the user-actionable
-    // diagnostic when skin is actually eaten). The plan-20260514 §7
-    // fail-fast was tuned for a moderately thick uniform skin layup;
-    // sharp TE cusps in real airfoils give h_i ≪ |dist| at the cusp
-    // vertex but the geometry is still meshable. The truly-impossible
-    // case (Clipper2 returns no polygon) is caught right after the
-    // backend call.
-    //
-    // O(N²); fine for the N < 200 typical PreVABS payload.
-    // ---------------------------------------------------------------------
-    {
-      const int    n_distinct = static_cast<int>(size) - 1;
-      const double abs_dist   = std::fabs(dist);
-      int n_below_dist   = 0;
-      int n_below_2dist  = 0;
-      int first_below    = -1;
-      for (int i = 0; i < n_distinct; ++i) {
-        const double h = signedHalfThickness(base, i, side);
-        if (h < abs_dist - TOLERANCE) {
-          ++n_below_dist;
-          if (first_below < 0) first_below = i;
-        } else if (h < 2.0 * abs_dist - TOLERANCE) {
-          ++n_below_2dist;
-        }
+  // is the inward direction. Clipper2's InflatePaths takes positive
+  // delta = outward. For open inputs the same `clipper_side = -side`
+  // flip puts side = +1 on the left of the base walking direction
+  // (consistent with the single-segment `offsetLineSegment` n × t
+  // direction).
+  //
+  // Legacy 5-stage pipeline helpers (computeOffsetJunctions /
+  // groupValidSegments / trimSubLinePair / trimSubLineSelfIntersections /
+  // trimJoinedCurveSelfIntersections / buildLimitedMiterJunction /
+  // createSingleVertexBevelSurrogate) remain in this translation unit
+  // but are no longer called from `offset()`. Their deletion is the
+  // scope of plan-20260518 §10 / Phase R (separate PR).
+  // -------------------------------------------------------------------------
+  const bool base_is_closed = (base.front() == base.back());
+
+  // ---------------------------------------------------------------------
+  // Stage E precheck: local half-thickness scan (closed + open).
+  //
+  // For each interior base vertex i, project an inward-normal ray and
+  // measure the distance to the nearest non-adjacent base segment (h_i).
+  // Categories:
+  //   h_i < |dist|     — the inward offset crosses to the far side
+  //                      locally. Stage C will record this region in
+  //                      `dropped_base_ranges` and downstream skin is
+  //                      locally absent.
+  //   h_i < 2 * |dist| — the post-offset thickness is below the
+  //                      "two-sided" headroom; Clipper2 still
+  //                      succeeds.
+  //
+  // Behaviour: count + summarise as PLOG(warning). We do NOT fail-fast
+  // — Clipper2's InflatePaths handles all these geometrically (Stage
+  // C bridge's dropped-range mechanism produces the user-actionable
+  // diagnostic when skin is actually eaten). The plan-20260514 §7
+  // fail-fast was tuned for a moderately thick uniform skin layup;
+  // sharp TE cusps in real airfoils give h_i ≪ |dist| at the cusp
+  // vertex but the geometry is still meshable.
+  //
+  // Open inputs skip the two endpoint vertices (half-thickness is
+  // geometrically undefined there — `signedHalfThickness` returns INF
+  // for them when base_is_closed=false).
+  //
+  // O(N²); fine for the N < 200 typical PreVABS payload.
+  // ---------------------------------------------------------------------
+  {
+    const int n_distinct = base_is_closed
+                             ? static_cast<int>(size) - 1
+                             : static_cast<int>(size);
+    const double abs_dist   = std::fabs(dist);
+    const char* const kind  = base_is_closed ? "closed" : "open";
+    int n_below_dist   = 0;
+    int n_below_2dist  = 0;
+    int first_below    = -1;
+    for (int i = 0; i < n_distinct; ++i) {
+      const double h = signedHalfThickness(base, i, side, base_is_closed);
+      if (h < abs_dist - TOLERANCE) {
+        ++n_below_dist;
+        if (first_below < 0) first_below = i;
+      } else if (h < 2.0 * abs_dist - TOLERANCE) {
+        ++n_below_2dist;
       }
-      if (n_below_dist > 0) {
-        PLOG(warning)
-            << "offset (multi-vertex, closed): " << n_below_dist
-            << " base vertex/vertices have local half-thickness < |dist| = "
-            << abs_dist << " (first at base[" << first_below << "] = "
-            << base[first_below]->printString()
-            << "); skin will be locally dropped at those locations";
-      }
-      if (n_below_2dist > 0) {
-        PLOG(warning)
-            << "offset (multi-vertex, closed): " << n_below_2dist
-            << " base vertex/vertices have local half-thickness "
-            << "in [|dist|, 2*|dist|) = [" << abs_dist << ", "
-            << (2.0 * abs_dist)
-            << "); offset will be valid but locally thin";
-      }
     }
-
-    std::vector<SPoint2> base_pts;
-    base_pts.reserve(size);
-    for (auto *v : base) {
-      base_pts.emplace_back(v->point2()[0], v->point2()[1]);
+    if (n_below_dist > 0) {
+      PLOG(warning)
+          << "offset (multi-vertex, " << kind << "): " << n_below_dist
+          << " base vertex/vertices have local half-thickness < |dist| = "
+          << abs_dist << " (first at base[" << first_below << "] = "
+          << base[first_below]->printString()
+          << "); skin will be locally dropped at those locations";
     }
-    const int clipper_side = -side;
-    auto polygons = prevabs::geo::offsetWithClipper2(
-        base_pts, /*closed*/ true, clipper_side, std::fabs(dist));
-
-    if (polygons.empty()) {
-      PLOG(error) << "offset (multi-vertex, closed): Clipper2 returned "
-                     "no offset polygon (local thickness < |dist| "
-                     "somewhere along the path?); returning empty result";
-      return 0;
+    if (n_below_2dist > 0) {
+      PLOG(warning)
+          << "offset (multi-vertex, " << kind << "): " << n_below_2dist
+          << " base vertex/vertices have local half-thickness "
+          << "in [|dist|, 2*|dist|) = [" << abs_dist << ", "
+          << (2.0 * abs_dist)
+          << "); offset will be valid but locally thin";
     }
-
-    const auto result =
-        prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
-            base, /*closed*/ true, clipper_side, std::fabs(dist), polygons);
-
-    if (!result.ok) {
-      PLOG(error) << "offset (multi-vertex, closed): reverse-match bridge "
-                     "failed to build a valid BaseOffsetMap; returning "
-                     "empty result";
-      return 0;
-    }
-
-    offset_vertices = result.offset_vertices;
-    id_pairs        = result.id_pairs;
-
-    for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
-      PLOG(warning) << "offset (multi-vertex, closed): skin dropped over "
-                    << "base indices ["
-                    << result.dropped_base_ranges_lo[k] << ".."
-                    << result.dropped_base_ranges_hi[k]
-                    << "] due to insufficient local thickness";
-    }
-
-    assertValidBaseOffsetMap(id_pairs, "offset clipper2 backend");
-    return 1;
   }
+
+  // Build SPoint2 view of base + invoke Clipper2 backend.
+  std::vector<SPoint2> base_pts;
+  base_pts.reserve(size);
+  for (auto *v : base) {
+    base_pts.emplace_back(v->point2()[0], v->point2()[1]);
+  }
+  const int clipper_side = -side;
+  auto polygons = prevabs::geo::offsetWithClipper2(
+      base_pts, base_is_closed, clipper_side, std::fabs(dist));
+
+  if (polygons.empty()) {
+    PLOG(error)
+        << "offset (multi-vertex, "
+        << (base_is_closed ? "closed" : "open")
+        << "): Clipper2 returned no offset polygon (local thickness "
+           "< |dist| somewhere along the path?); returning empty result";
+    return 0;
+  }
+
+  const auto result =
+      prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
+          base, base_is_closed, clipper_side, std::fabs(dist), polygons);
+
+  if (!result.ok) {
+    PLOG(error)
+        << "offset (multi-vertex, "
+        << (base_is_closed ? "closed" : "open")
+        << "): reverse-match bridge failed to build a valid "
+           "BaseOffsetMap; returning empty result";
+    return 0;
+  }
+
+  offset_vertices = result.offset_vertices;
+  id_pairs        = result.id_pairs;
+
+  for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
+    PLOG(warning) << "offset (multi-vertex, "
+                  << (base_is_closed ? "closed" : "open")
+                  << "): skin dropped over base indices ["
+                  << result.dropped_base_ranges_lo[k] << ".."
+                  << result.dropped_base_ranges_hi[k]
+                  << "] due to insufficient local thickness";
+  }
+
+  assertValidBaseOffsetMap(id_pairs, "offset clipper2 backend");
+  return 1;
+}
+
+// =========================================================================
+// Below: legacy 5-stage open-baseline orchestration is preserved as
+// dead code until plan-20260518 §10 / Phase R deletes it together with
+// the helper functions. To avoid a "function declared but body shadows
+// the previous one" compile error, we wrap it in an unreachable static
+// helper that no one calls.
+// =========================================================================
+
+#if 0  // Phase 4 unreachable: legacy 5-stage open-path orchestration.
+
+int offset_legacy_open(const std::vector<PDCELVertex *> &base, int side,
+                       double dist,
+                       std::vector<PDCELVertex *> &offset_vertices,
+                       BaseOffsetMap &id_pairs) {
 
   // -------------------------------------------------------------------------
   // Open multi-vertex path: legacy 5-stage pipeline.
@@ -1803,3 +1860,6 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 
   return 1;
 }
+
+#endif  // Phase 4 unreachable legacy 5-stage open path
+

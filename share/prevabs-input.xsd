@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PreVABS main input XML schema.
+
+  Mirrors the readers under src/io and the user guide under
+  doc/user/source/contents/guide. The schema is intentionally permissive
+  where the C++ readers are permissive (string-valued numeric fields,
+  reorderable top-level sections, optional defaults) and strict where the
+  readers enforce a fixed vocabulary (material types, line types, joint
+  styles, etc.).
+
+  Numeric fields are typed as xs:string rather than xs:double because the
+  code accepts space-separated lists, ranges (e.g. "a:z"), placeholder
+  tokens, and trims whitespace before parsing.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+  <!-- ============================================================ -->
+  <!-- Root: cross_section (legacy alias: sg)                       -->
+  <!-- ============================================================ -->
+
+  <xs:element name="cross_section" type="CrossSectionType"/>
+  <xs:element name="sg"            type="CrossSectionType"/>
+
+  <xs:complexType name="CrossSectionType">
+    <xs:all>
+      <xs:element name="include"   type="IncludeType"   minOccurs="0"/>
+      <xs:element name="settings"  type="SettingsType"  minOccurs="0"/>
+      <xs:element name="analysis"  type="AnalysisType"  minOccurs="0"/>
+      <xs:element name="general"   type="GeneralType"/>
+      <xs:element name="baselines" type="BaselinesType" minOccurs="0"/>
+      <xs:element name="materials" type="MaterialsType" minOccurs="0"/>
+      <xs:element name="layups"    type="LayupsType"    minOccurs="0"/>
+      <xs:element name="global"    type="GlobalType"    minOccurs="0"/>
+      <!-- One or more <component>: xs:all in XSD 1.0 cannot bound
+           repetition properly, so allow unbounded via a wrapper trick:
+           we use xs:any-like fallthrough below. Practically the schema
+           expects at least one <component> sibling of <general>; that
+           cardinality is enforced informally. -->
+    </xs:all>
+    <xs:attribute name="name"   type="xs:string" use="required"/>
+    <xs:attribute name="format" type="xs:string"/>
+    <xs:attribute name="type"   type="xs:string"/>
+  </xs:complexType>
+
+  <!-- Because xs:all cannot host an unbounded element in XSD 1.0, we
+       declare <component> as a global top-level element that consumers
+       can validate against by structure when not strict-ordering.
+       Tools that support XSD 1.1 may instead embed <xs:assert> rules. -->
+  <xs:element name="component" type="ComponentType"/>
+
+
+  <!-- ============================================================ -->
+  <!-- <include>                                                    -->
+  <!-- ============================================================ -->
+
+  <xs:complexType name="IncludeType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="baseline" type="xs:string" minOccurs="0"/>
+      <xs:element name="material" type="xs:string" minOccurs="0"/>
+      <xs:element name="layup"    type="xs:string" minOccurs="0"/>
+    </xs:choice>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <settings>                                                   -->
+  <!-- ============================================================ -->
+
+  <xs:complexType name="SettingsType">
+    <xs:all>
+      <xs:element name="tolerance" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <analysis>                                                   -->
+  <!-- ============================================================ -->
+
+  <xs:complexType name="AnalysisType">
+    <xs:all>
+      <xs:element name="model_dim"            type="xs:string" minOccurs="0"/>
+      <xs:element name="model"                type="xs:string" minOccurs="0"/>
+      <xs:element name="damping"              type="xs:string" minOccurs="0"/>
+      <xs:element name="thermal"              type="xs:string" minOccurs="0"/>
+      <xs:element name="trapeze"              type="xs:string" minOccurs="0"/>
+      <xs:element name="vlasov"               type="xs:string" minOccurs="0"/>
+      <xs:element name="initial_twist"        type="xs:string" minOccurs="0"/>
+      <xs:element name="initial_curvature_2"  type="xs:string" minOccurs="0"/>
+      <xs:element name="initial_curvature_3"  type="xs:string" minOccurs="0"/>
+      <xs:element name="oblique_y1"           type="xs:string" minOccurs="0"/>
+      <xs:element name="oblique_y2"           type="xs:string" minOccurs="0"/>
+      <xs:element name="physics"              type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <general>                                                    -->
+  <!-- ============================================================ -->
+
+  <xs:simpleType name="ElementTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="linear"/>
+      <xs:enumeration value="quadratic"/>
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ElementShapeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="3"/>
+      <xs:enumeration value="tri"/>
+      <xs:enumeration value="triangle"/>
+      <xs:enumeration value="4"/>
+      <xs:enumeration value="quad"/>
+      <xs:enumeration value="quadrilateral"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BooleanLike">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="0"/>
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+      <xs:enumeration value="True"/>
+      <xs:enumeration value="False"/>
+      <xs:enumeration value="TRUE"/>
+      <xs:enumeration value="FALSE"/>
+      <xs:enumeration value="yes"/>
+      <xs:enumeration value="no"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="GeneralType">
+    <xs:all>
+      <xs:element name="translate"     type="xs:string"        minOccurs="0"/>
+      <xs:element name="scale"         type="xs:string"        minOccurs="0"/>
+      <xs:element name="rotate"        type="xs:string"        minOccurs="0"/>
+      <xs:element name="mesh_size"     type="xs:string"        minOccurs="0"/>
+      <xs:element name="element_type"  type="ElementTypeEnum"  minOccurs="0"/>
+      <xs:element name="element_shape" type="ElementShapeEnum" minOccurs="0"/>
+      <xs:element name="tolerance"     type="xs:string"        minOccurs="0"/>
+      <xs:element name="omega"         type="xs:string"        minOccurs="0"/>
+
+      <xs:element name="transfinite_auto"          type="BooleanLike" minOccurs="0"/>
+      <xs:element name="transfinite_corner_angle"  type="xs:string"   minOccurs="0"/>
+      <xs:element name="transfinite_recombine"     type="BooleanLike" minOccurs="0"/>
+      <xs:element name="recombine"                 type="BooleanLike" minOccurs="0"/>
+      <xs:element name="recombine_angle"           type="xs:string"   minOccurs="0"/>
+
+      <xs:element name="track_interface"                  type="xs:string" minOccurs="0"/>
+      <xs:element name="interface_theta1_diff_threshold"  type="xs:string" minOccurs="0"/>
+      <xs:element name="interface_theta3_diff_threshold"  type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <baselines>                                                  -->
+  <!-- ============================================================ -->
+
+  <xs:complexType name="BaselinesType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="point"      type="PointType"/>
+      <xs:element name="basepoints" type="BasepointsType"/>
+      <xs:element name="line"       type="LineType"/>
+      <xs:element name="baseline"   type="LineType"/>  <!-- legacy alias -->
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- Point: element value is either "x y" coordinates, a single
+       horizontal coordinate (with on=/by=), or a "p1 p2" pair for
+       constraint="middle". -->
+  <xs:complexType name="PointType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name"       type="xs:string" use="required"/>
+        <xs:attribute name="on"         type="xs:string"/>
+        <xs:attribute name="by"         type="xs:string"/>   <!-- "x2" / "y" -->
+        <xs:attribute name="which"      type="xs:string"/>   <!-- "top" / "bottom" -->
+        <xs:attribute name="constraint" type="xs:string"/>   <!-- "middle" / "none" -->
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="BasepointsType">
+    <xs:all>
+      <xs:element name="include">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="scale" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <line>                                                       -->
+  <!-- ============================================================ -->
+
+  <xs:simpleType name="LineTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="straight"/>
+      <xs:enumeration value="arc"/>
+      <xs:enumeration value="circle"/>
+      <xs:enumeration value="airfoil"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="LineMethodEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="direct"/>
+      <xs:enumeration value="join"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DirectionEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="cw"/>
+      <xs:enumeration value="ccw"/>
+      <xs:enumeration value="forward"/>
+      <xs:enumeration value="reverse"/>
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="-1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SideEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="right"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- The four <line type> variants share many child element names;
+       we collect them into a single permissive content model and rely
+       on the C++ reader to enforce variant-specific completeness. -->
+  <xs:complexType name="LineType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- Straight (polyline) -->
+      <xs:element name="points">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <!-- For airfoil: data, format, header, direction; for other
+                   types: typically just the value. -->
+              <xs:attribute name="data"      type="xs:string"/>
+              <xs:attribute name="format"    type="xs:string"/>
+              <xs:attribute name="header"    type="xs:string"/>
+              <xs:attribute name="direction" type="DirectionEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- Straight (point + angle) -->
+      <xs:element name="point">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="loc" type="xs:string"/>  <!-- "inner" | "end" -->
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="angle" type="xs:string"/>
+
+      <!-- Arc / circle -->
+      <xs:element name="center"    type="xs:string"/>
+      <xs:element name="start"     type="xs:string"/>
+      <xs:element name="end"       type="xs:string"/>
+      <xs:element name="radius"    type="xs:string"/>
+      <xs:element name="curvature" type="xs:string"/>
+      <xs:element name="side"      type="SideEnum"/>
+      <xs:element name="direction" type="DirectionEnum"/>
+      <xs:element name="discrete">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="by" type="xs:string"/>  <!-- "angle" | "number" -->
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- Airfoil -->
+      <xs:element name="leading_edge">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="name" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="trailing_edge">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="name" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="normalize" type="BooleanLike"/>
+      <xs:element name="flip">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="BooleanLike">
+              <xs:attribute name="axis" type="xs:string"/>
+              <xs:attribute name="loc"  type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="reverse" type="BooleanLike"/>
+
+      <!-- method="join": one or more <line> children naming existing lines -->
+      <xs:element name="line" type="xs:string"/>
+    </xs:choice>
+
+    <xs:attribute name="name"   type="xs:string"        use="required"/>
+    <xs:attribute name="type"   type="LineTypeEnum"/>
+    <xs:attribute name="method" type="LineMethodEnum"/>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <materials>                                                  -->
+  <!-- ============================================================ -->
+
+  <xs:complexType name="MaterialsType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="material" type="MaterialType"/>
+      <xs:element name="lamina"   type="LaminaType"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:simpleType name="MaterialTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="isotropic"/>
+      <xs:enumeration value="transversely isotropic"/>
+      <xs:enumeration value="orthotropic"/>
+      <xs:enumeration value="engineering"/>
+      <xs:enumeration value="anisotropic"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="MaterialType">
+    <xs:all>
+      <xs:element name="density"               type="xs:string" minOccurs="0"/>
+      <xs:element name="elastic"               type="ElasticType"/>
+      <xs:element name="failure_criterion"     type="xs:string" minOccurs="0"/>
+      <xs:element name="characteristic_length" type="xs:string" minOccurs="0"/>
+      <xs:element name="strength"              type="StrengthType" minOccurs="0"/>
+    </xs:all>
+    <xs:attribute name="name" type="xs:string"          use="required"/>
+    <xs:attribute name="type" type="MaterialTypeEnum"   use="required"/>
+  </xs:complexType>
+
+  <!-- Elastic constants. The union of all type-specific constants is
+       permitted; the C++ reader picks the subset matching the material
+       type and infers transversely-isotropic defaults when needed. -->
+  <xs:complexType name="ElasticType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- isotropic -->
+      <xs:element name="e"   type="xs:string"/>
+      <xs:element name="nu"  type="xs:string"/>
+      <!-- engineering / orthotropic / transversely isotropic -->
+      <xs:element name="e1"   type="xs:string"/>
+      <xs:element name="e2"   type="xs:string"/>
+      <xs:element name="e3"   type="xs:string"/>
+      <xs:element name="g12"  type="xs:string"/>
+      <xs:element name="g13"  type="xs:string"/>
+      <xs:element name="g23"  type="xs:string"/>
+      <xs:element name="nu12" type="xs:string"/>
+      <xs:element name="nu13" type="xs:string"/>
+      <xs:element name="nu23" type="xs:string"/>
+      <!-- anisotropic (21 stiffness constants) -->
+      <xs:element name="c11" type="xs:string"/>
+      <xs:element name="c12" type="xs:string"/>
+      <xs:element name="c13" type="xs:string"/>
+      <xs:element name="c14" type="xs:string"/>
+      <xs:element name="c15" type="xs:string"/>
+      <xs:element name="c16" type="xs:string"/>
+      <xs:element name="c22" type="xs:string"/>
+      <xs:element name="c23" type="xs:string"/>
+      <xs:element name="c24" type="xs:string"/>
+      <xs:element name="c25" type="xs:string"/>
+      <xs:element name="c26" type="xs:string"/>
+      <xs:element name="c33" type="xs:string"/>
+      <xs:element name="c34" type="xs:string"/>
+      <xs:element name="c35" type="xs:string"/>
+      <xs:element name="c36" type="xs:string"/>
+      <xs:element name="c44" type="xs:string"/>
+      <xs:element name="c45" type="xs:string"/>
+      <xs:element name="c46" type="xs:string"/>
+      <xs:element name="c55" type="xs:string"/>
+      <xs:element name="c56" type="xs:string"/>
+      <xs:element name="c66" type="xs:string"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- Strength constants. Aliases are accepted by the reader: t1/x for xt,
+       t2/y for yt, t3/z for zt; c1/c2/c3 for xc/yc/zc; s12 for s, s13 for t,
+       s23 for r. -->
+  <xs:complexType name="StrengthType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="xt"  type="xs:string"/>
+      <xs:element name="yt"  type="xs:string"/>
+      <xs:element name="zt"  type="xs:string"/>
+      <xs:element name="t1"  type="xs:string"/>
+      <xs:element name="t2"  type="xs:string"/>
+      <xs:element name="t3"  type="xs:string"/>
+      <xs:element name="x"   type="xs:string"/>
+      <xs:element name="y"   type="xs:string"/>
+      <xs:element name="z"   type="xs:string"/>
+      <xs:element name="xc"  type="xs:string"/>
+      <xs:element name="yc"  type="xs:string"/>
+      <xs:element name="zc"  type="xs:string"/>
+      <xs:element name="c1"  type="xs:string"/>
+      <xs:element name="c2"  type="xs:string"/>
+      <xs:element name="c3"  type="xs:string"/>
+      <xs:element name="s"   type="xs:string"/>
+      <xs:element name="t"   type="xs:string"/>
+      <xs:element name="r"   type="xs:string"/>
+      <xs:element name="s12" type="xs:string"/>
+      <xs:element name="s13" type="xs:string"/>
+      <xs:element name="s23" type="xs:string"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="LaminaType">
+    <xs:all>
+      <xs:element name="material"  type="xs:string"/>
+      <xs:element name="thickness" type="xs:string"/>
+    </xs:all>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <layups>                                                     -->
+  <!-- ============================================================ -->
+
+  <xs:simpleType name="LayupMethodEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="layer list"/>
+      <xs:enumeration value="ll"/>
+      <xs:enumeration value="stack sequence"/>
+      <xs:enumeration value="ss"/>
+      <!-- 'explicit list' appears in older docs; accepted by some readers -->
+      <xs:enumeration value="explicit list"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="LayupsType">
+    <xs:sequence>
+      <xs:element name="layup" type="LayupType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="LayupType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- layer-list method -->
+      <xs:element name="layer">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="lamina" type="xs:string"/>
+              <xs:attribute name="layup"  type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <!-- stack-sequence method -->
+      <xs:element name="lamina" type="xs:string"/>
+      <xs:element name="code"   type="xs:string"/>
+    </xs:choice>
+    <xs:attribute name="name"   type="xs:string"        use="required"/>
+    <xs:attribute name="method" type="LayupMethodEnum"/>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <component>                                                  -->
+  <!-- ============================================================ -->
+
+  <xs:simpleType name="ComponentTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="laminate"/>
+      <xs:enumeration value="fill"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="JointStyleEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ComponentType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- Laminate-component children (DEFINITION 1) -->
+      <xs:element name="segment" type="SegmentType"/>
+      <xs:element name="joint">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="style" type="JointStyleEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- Laminate-component children (DEFINITION 2) -->
+      <xs:element name="segments" type="SegmentsType"/>
+
+      <!-- Fill-component children -->
+      <xs:element name="material" type="xs:string"/>
+      <xs:element name="location" type="xs:string"/>
+      <xs:element name="baseline">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="fillside" type="SideEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="theta1" type="xs:string"/>
+      <xs:element name="theta3" type="xs:string"/>
+      <xs:element name="mesh_size">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="at" type="xs:string" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+
+    <xs:attribute name="name"   type="xs:string"          use="required"/>
+    <xs:attribute name="type"   type="ComponentTypeEnum"/>
+    <xs:attribute name="depend" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="SegmentType">
+    <xs:all>
+      <xs:element name="baseline" type="xs:string"/>
+      <xs:element name="layup">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="direction" type="SideEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="SegmentsType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="baseline"   type="xs:string"/>
+      <xs:element name="layup_side" type="SideEnum"/>
+      <xs:element name="layup">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="begin"     type="xs:string"/>
+              <xs:attribute name="end"       type="xs:string"/>
+              <xs:attribute name="direction" type="SideEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <global> (recovery / dehomogenization data)                  -->
+  <!-- ============================================================ -->
+
+  <xs:simpleType name="MeasureEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="stress"/>
+      <xs:enumeration value="strain"/>
+      <xs:enumeration value="0"/>
+      <xs:enumeration value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="GlobalType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="displacements" type="xs:string"/>
+      <xs:element name="rotations"     type="xs:string"/>
+      <xs:element name="loads"         type="xs:string"/>
+      <xs:element name="distributed"   type="DistributedType"/>
+      <xs:element name="case"          type="CaseType"/>
+      <xs:element name="include">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="format" type="xs:string"/>
+              <xs:attribute name="header" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="measure" type="MeasureEnum"/>
+  </xs:complexType>
+
+  <xs:complexType name="DistributedType">
+    <xs:all>
+      <xs:element name="forces"     type="xs:string" minOccurs="0"/>
+      <xs:element name="forces_d1"  type="xs:string" minOccurs="0"/>
+      <xs:element name="forces_d2"  type="xs:string" minOccurs="0"/>
+      <xs:element name="forces_d3"  type="xs:string" minOccurs="0"/>
+      <xs:element name="moments"    type="xs:string" minOccurs="0"/>
+      <xs:element name="moments_d1" type="xs:string" minOccurs="0"/>
+      <xs:element name="moments_d2" type="xs:string" minOccurs="0"/>
+      <xs:element name="moments_d3" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="CaseType">
+    <xs:all>
+      <xs:element name="displacements" type="xs:string"     minOccurs="0"/>
+      <xs:element name="rotations"     type="xs:string"     minOccurs="0"/>
+      <xs:element name="loads"         type="xs:string"     minOccurs="0"/>
+      <xs:element name="distributed"   type="DistributedType" minOccurs="0"/>
+      <!-- Failure-envelope variant (SwiftComp CLI flag fe): -->
+      <xs:element name="axis1"     type="xs:string" minOccurs="0"/>
+      <xs:element name="axis2"     type="xs:string" minOccurs="0"/>
+      <xs:element name="divisions" type="xs:string" minOccurs="0"/>
+    </xs:all>
+    <xs:attribute name="measure" type="MeasureEnum"/>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- Root elements for sub-files referenced by <include>          -->
+  <!-- ============================================================ -->
+
+  <!-- A separate baseline include file uses <baselines> as root. -->
+  <xs:element name="baselines" type="BaselinesType"/>
+
+  <!-- A separate materials include file uses <materials> as root. -->
+  <xs:element name="materials" type="MaterialsType"/>
+
+  <!-- A separate layups include file uses <layups> as root. -->
+  <xs:element name="layups" type="LayupsType"/>
+
+</xs:schema>
