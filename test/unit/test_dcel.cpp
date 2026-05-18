@@ -607,8 +607,8 @@ TEST_CASE("getIntersectionVertex: aliased curves shift the second insertion",
   delete v4;
 }
 
-TEST_CASE("offset: acute cusp on open base routes through Clipper2 "
-          "with miter-limit bevel",
+TEST_CASE("offset: acute cusp on open base honours miter limit "
+          "via Clipper2 backend (outward side)",
           "[dcel][geo][offset][clipper2][open][cusp]") {
   // Open 3-vertex hairpin: v0 → v1 → v2 with ~177° turn at v1. The
   // raw miter at v1 would project >> 2*dist outward; Clipper2's
@@ -616,26 +616,27 @@ TEST_CASE("offset: acute cusp on open base routes through Clipper2 "
   // createSingleVertexBevelSurrogate emulated) caps the corner to a
   // bevel.
   //
-  // Phase 4 (plan-20260518) routes this open input through the
-  // Clipper2 backend. Unlike the legacy 5-stage pipeline (which
-  // inserted exactly one bevel-midpoint vertex giving size == 3),
-  // Clipper2 may collapse or expand the corner depending on
-  // self-intersection of the inner-side offset. We therefore assert
-  // only the invariants that survive any reasonable backend:
-  //   - a valid staircase
-  //   - at least 2 output vertices (end-to-end alignment)
-  //   - no offset vertex projects further than 2 * dist + eps from
-  //     the cusp vertex v1 (miter limit honoured)
+  // Phase 4 (plan-20260518) routes open inputs through the Clipper2
+  // backend. We test side = -1 (outward side of the hairpin in
+  // PreVABS's n × t convention), which has geometric room for the
+  // bevel; side = +1 (inward side) is degenerate at this acuity and
+  // would collapse on either backend.
+  //
+  // Assertions are backend-agnostic invariants:
+  //   - return value 1 (success)
+  //   - >= 2 output vertices (end-to-end alignment)
+  //   - valid staircase
+  //   - no offset vertex projects past the raw_miter overshoot
+  //     location (miter limit honoured)
   PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
   PDCELVertex *v1 = new PDCELVertex(0.0, 1.0, 0.0);
   PDCELVertex *v2 = new PDCELVertex(0.0, 0.1, 0.05);
   std::vector<PDCELVertex *> base = {v0, v1, v2};
 
-  const int side = 1;
+  const int side = -1;  // outward side has geometric room for bevel
   const double dist = 0.1;
 
-  // Sanity: confirm the raw miter would overshoot if not limited
-  // (gives the test its reason to exist).
+  // Sanity: confirm the raw miter would overshoot if not limited.
   PDCELVertex prev_start, prev_end, cur_start, cur_end;
   REQUIRE(offset(v0, v1, side, dist, &prev_start, &prev_end) == 1);
   REQUIRE(offset(v1, v2, side, dist, &cur_start, &cur_end) == 1);
@@ -659,11 +660,7 @@ TEST_CASE("offset: acute cusp on open base routes through Clipper2 "
   // trailing-duplicate).
   CHECK(offset_vertices.front() != offset_vertices.back());
 
-  // Miter limit invariant: any output vertex's distance from v1 must
-  // be bounded by the geometry's natural bound — 2*dist (the miter
-  // cap) plus an arbitrary endpoint-segment slack ≈ |v0v1| or |v1v2|.
-  // Most relevantly, no vertex is allowed to sit at the raw_miter
-  // overshoot location.
+  // Miter limit invariant: no vertex sits at the raw_miter overshoot.
   for (PDCELVertex *vertex : offset_vertices) {
     const double d_to_v1 = vertex->point().distance(v1->point());
     CHECK(d_to_v1 < raw_miter_dist - 1e-6);

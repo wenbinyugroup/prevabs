@@ -1,0 +1,34 @@
+=== DCEL CRASH DUMP ===
+
+VERTICES (24):
+  v#1 (0, inf, inf) edge=he#1
+  v#2 (0, -inf, inf) edge=he#2
+  v#3 (0, -inf, -inf) edge=he#4
+  v#4 (0, inf, -inf) edge=he#6
+  v#5 (0, -1, 0) edge=he#9
+  v#6 (0, -1, -0.11) edge=he#10
+  v#7 (0, 1, 0) edge=he#11
+  v#8 (0, 1, -0.11) edge=he#12
+  v#9 (0, 0, 0) edge=he#14
+  v#10 (0, -1.5, -3) edge=he#19
+  v#11 (0, -1.5, -2.935) edge=he#20
+  v#12 (0, 1.5, -3) edge=he#21
+  v#13 (0, 1.5, -2.935) edge=he#22
+  v#14 (0, 0, -3) edge=he#24
+  v#15 (0, -1, 0.08) edge=he#51
+  v#16 (0, -1.5, -3.08) edge=he#32
+  v#17 (0, 0.08, 0.08) edge=he#36
+  v#18 (0, 0.08, -3.08) edge=he#38
+  v#19 (0, 1, 0.08) edge=he#42
+  v#20 (0, 1.5, -3.08) edge=he#44
+  v#21 (0, -0.08, 0.08) edge=he#46
+  v#22 (0, -0.08, -3.08) edge=he#48
+  v#23 (0, -1, 0.06) edge=he#52
+  v#24 (0, -0.545455, -0.06) edge=he#58
+
+HALFEDGES (56):
+  he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
+  he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
+  he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
+  he#7 scope=active src=v#4 twin=he#8 next=he#1 prev=he#5 loop=loop#1 face=f#1(background)
+  he#9 scope=active src=v#5 twin=he#10 next=he#60 prev=he#14 loop=loop#13 face=f#7(sgm_1_area_2)

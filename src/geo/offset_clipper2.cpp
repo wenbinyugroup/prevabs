@@ -73,21 +73,52 @@ OffsetVertexSource closestOpenSegment(double qx, double qy,
   return best;
 }
 
-// Sign of (t × d) where t is the closest base-segment tangent and d is
-// the displacement from the foot-of-perpendicular to the query point.
-// +1 → left of base (CCW perpendicular), -1 → right, 0 → degenerate
-// (point on the base or tangent length == 0). Used to classify each
-// Butt-wrap vertex into one of the two physical sides.
+// Sign of (t × d) where t is the local base tangent at the foot of
+// perpendicular and d is the displacement from foot to query point.
+// +1 → left of base, -1 → right, 0 → degenerate.
+//
+// Corner handling: when the foot lands at a shared base vertex (u ≈ 0
+// or u ≈ 1 with an adjacent segment present), the picked segment's
+// tangent is ambiguous — picking the wrong one can flip the sign for
+// query points on the outer side of an acute corner (e.g. miter-limit
+// bevel vertices in a V-shape). We average the two adjacent segment
+// tangents at the corner, which mirrors the legacy n × t formula in
+// `signedHalfThickness`.
 int sideSignOfBase(double qx, double qy,
                    const std::vector<SPoint2>& base) {
   if (base.size() < 2) return 0;
   const OffsetVertexSource src = closestOpenSegment(qx, qy, base);
-  const auto& a = base[src.base_seg];
-  const auto& b = base[src.base_seg + 1];
-  const double tx = b.x() - a.x();
-  const double ty = b.y() - a.y();
-  const double fx = a.x() + src.base_u * tx;
-  const double fy = a.y() + src.base_u * ty;
+  const int n_seg = static_cast<int>(base.size()) - 1;
+  const double u_eps = 1e-9;
+
+  double tx, ty, fx, fy;
+  if (src.base_u < u_eps && src.base_seg > 0) {
+    // Foot at base[src.base_seg]: shared with prev segment. Average.
+    const auto& prev_a = base[src.base_seg - 1];
+    const auto& prev_b = base[src.base_seg];
+    const auto& cur_b  = base[src.base_seg + 1];
+    tx = (prev_b.x() - prev_a.x()) + (cur_b.x() - prev_b.x());
+    ty = (prev_b.y() - prev_a.y()) + (cur_b.y() - prev_b.y());
+    fx = prev_b.x();
+    fy = prev_b.y();
+  } else if (src.base_u > 1.0 - u_eps && src.base_seg + 1 < n_seg) {
+    // Foot at base[src.base_seg+1]: shared with next segment. Average.
+    const auto& cur_a  = base[src.base_seg];
+    const auto& cur_b  = base[src.base_seg + 1];
+    const auto& next_b = base[src.base_seg + 2];
+    tx = (cur_b.x() - cur_a.x()) + (next_b.x() - cur_b.x());
+    ty = (cur_b.y() - cur_a.y()) + (next_b.y() - cur_b.y());
+    fx = cur_b.x();
+    fy = cur_b.y();
+  } else {
+    const auto& a = base[src.base_seg];
+    const auto& b = base[src.base_seg + 1];
+    tx = b.x() - a.x();
+    ty = b.y() - a.y();
+    fx = a.x() + src.base_u * tx;
+    fy = a.y() + src.base_u * ty;
+  }
+
   const double dx = qx - fx;
   const double dy = qy - fy;
   const double cross = tx * dy - ty * dx;
@@ -204,6 +235,96 @@ std::vector<OffsetPolygon> extractOpenRuns(
     if (first_seg >= 0 && last_seg >= 0 && first_seg > last_seg) {
       std::reverse(r.points.begin(), r.points.end());
       std::reverse(r.sources.begin(), r.sources.end());
+    }
+  }
+
+  // 5. Resample at base-vertex resolution (covered subset only).
+  //
+  // Clipper2 collapses collinear interior vertices: a 3-vertex straight
+  // base produces a 2-vertex run, leaving the middle base vertex with
+  // no offset correspondent. PreVABS downstream (`PSegment::build` +
+  // layup intersection insertion) relies on 1:1 base ↔ offset alignment
+  // and breaks on M < N output. We resample the run polyline at every
+  // base vertex covered by the raw run; dropped base vertices stay
+  // out and the Stage C bridge's forward-fill handles them as
+  // `dropped_base_ranges`.
+  //
+  // Attribution for resampled base[i] uses (seg = max(0, i-1),
+  // u = i==0 ? 0 : 1). `attributeOne` open-branch maps these to base
+  // index i ⇒ Stage C sees a clean staircase over the covered subset.
+  if (runs.size() == 1 && runs[0].points.size() >= 2) {
+    auto& r = runs[0];
+    const int N = static_cast<int>(base.size());
+
+    std::vector<bool> base_covered(N, false);
+    for (const auto& s : r.sources) {
+      if (s.base_seg < 0) continue;
+      if (s.base_seg     >= 0 && s.base_seg     < N) base_covered[s.base_seg]     = true;
+      if (s.base_seg + 1 >= 0 && s.base_seg + 1 < N) base_covered[s.base_seg + 1] = true;
+    }
+
+    // Boundary trim: drop one more vertex at the trailing edge of a
+    // covered region (last covered before a drop), but only when the
+    // covered run is long enough that the trim won't kill the entire
+    // resample (preserves V-shape acute cusps where the run is short).
+    // Rationale: at the boundary the resampled foot of perpendicular
+    // sits where Clipper2's inset folds back, creating a downstream
+    // "fan" of layup intersections that breaks `PSegment::build`.
+    {
+      const std::vector<bool> orig_cov = base_covered;
+      int cov_count = 0;
+      for (bool c : orig_cov) if (c) ++cov_count;
+      if (cov_count >= 4) {
+        for (int i = 0; i + 1 < N; ++i) {
+          if (orig_cov[i] && !orig_cov[i + 1]) {
+            base_covered[i] = false;
+          }
+        }
+      }
+    }
+
+    std::vector<SPoint2>            new_pts;
+    std::vector<OffsetVertexSource> new_srcs;
+    new_pts.reserve(N);
+    new_srcs.reserve(N);
+
+    int cur_seg = 0;
+    const int n_run_seg = static_cast<int>(r.points.size()) - 1;
+    for (int i = 0; i < N; ++i) {
+      if (!base_covered[i]) continue;
+
+      int    best_seg = cur_seg;
+      double best_u   = 0.0;
+      double best_d   = std::numeric_limits<double>::infinity();
+      for (int s = cur_seg; s < n_run_seg; ++s) {
+        const Projection p = projectOnSegment(
+            base[i].x(), base[i].y(),
+            r.points[s].x(),     r.points[s].y(),
+            r.points[s + 1].x(), r.points[s + 1].y());
+        if (p.dist < best_d) {
+          best_d   = p.dist;
+          best_seg = s;
+          best_u   = p.u;
+        }
+      }
+
+      const auto& a = r.points[best_seg];
+      const auto& b = r.points[best_seg + 1];
+      new_pts.emplace_back(
+          a.x() + best_u * (b.x() - a.x()),
+          a.y() + best_u * (b.y() - a.y()));
+
+      OffsetVertexSource src;
+      src.base_seg = (i == 0) ? 0 : (i - 1);
+      src.base_u   = (i == 0) ? 0.0 : 1.0;
+      new_srcs.push_back(src);
+
+      cur_seg = best_seg;
+    }
+
+    if (new_pts.size() >= 2) {
+      r.points  = std::move(new_pts);
+      r.sources = std::move(new_srcs);
     }
   }
 

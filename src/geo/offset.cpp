@@ -534,7 +534,10 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   for (auto *v : base) {
     base_pts.emplace_back(v->point2()[0], v->point2()[1]);
   }
-  const int clipper_side = -side;
+  // Closed CCW: PreVABS side = +1 (inward) ⇒ Clipper2 δ < 0 (shrink) ⇒ flip.
+  // Open polyline: PreVABS side = +1 (left, sign(t × d) > 0) already matches
+  //                Phase 1's filter convention ⇒ pass through.
+  const int clipper_side = base_is_closed ? -side : side;
   auto polygons = prevabs::geo::offsetWithClipper2(
       base_pts, base_is_closed, clipper_side, std::fabs(dist));
 
