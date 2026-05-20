@@ -187,11 +187,13 @@ std::vector<OffsetPolygon> extractOpenRuns(
     op.is_closed = false;
     op.points.reserve(M);
     op.sources.reserve(M);
+    op.resampled.reserve(M);
     for (int k = 0; k < M; ++k) {
       op.points.emplace_back(path[k].x, path[k].y);
       op.sources.push_back(
           attributeSource(path[k].x, path[k].y, base,
                           /*closed*/ false, source_radius));
+      op.resampled.push_back(false);
     }
     runs.push_back(std::move(op));
     return runs;
@@ -209,6 +211,7 @@ std::vector<OffsetPolygon> extractOpenRuns(
       cur.sources.push_back(
           attributeSource(path[k].x, path[k].y, base,
                           /*closed*/ false, source_radius));
+      cur.resampled.push_back(false);
       in_run = true;
     } else if (in_run) {
       runs.push_back(std::move(cur));
@@ -235,6 +238,7 @@ std::vector<OffsetPolygon> extractOpenRuns(
     if (first_seg >= 0 && last_seg >= 0 && first_seg > last_seg) {
       std::reverse(r.points.begin(), r.points.end());
       std::reverse(r.sources.begin(), r.sources.end());
+      std::reverse(r.resampled.begin(), r.resampled.end());
     }
   }
 
@@ -325,6 +329,9 @@ std::vector<OffsetPolygon> extractOpenRuns(
     if (new_pts.size() >= 2) {
       r.points  = std::move(new_pts);
       r.sources = std::move(new_srcs);
+      // Every vertex of the resampled run is synthetic — drawn at the
+      // perpendicular foot of a base vertex on the raw Clipper2 run.
+      r.resampled.assign(r.points.size(), true);
     }
   }
 
@@ -431,12 +438,14 @@ std::vector<OffsetPolygon> offsetWithClipper2(
 
   if (base_is_closed) {
     // Closed branch: each Clipper2 path is the offset polygon itself.
+    // Every vertex is raw (closed inputs don't go through resample).
     result.reserve(sol.size());
     for (const auto& path : sol) {
       OffsetPolygon op;
       op.is_closed = true;
       op.points.reserve(path.size());
       op.sources.reserve(path.size());
+      op.resampled.assign(path.size(), false);
       for (const auto& p : path) {
         op.points.emplace_back(p.x, p.y);
         op.sources.push_back(

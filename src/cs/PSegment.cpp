@@ -7,6 +7,7 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
+#include "debug/baseOffsetMapSvg.hpp"
 #include "geo.hpp"
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
@@ -245,6 +246,7 @@ Segment::Segment(Segment &&other) noexcept
       _head_vertex_offset(other._head_vertex_offset),
       _tail_vertex_offset(other._tail_vertex_offset),
       _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
+      _offset_vertex_resampled(std::move(other._offset_vertex_resampled)),
       _state(other._state) {
   other._curve_base = nullptr;
   other._layup = nullptr;
@@ -286,6 +288,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _head_vertex_offset = other._head_vertex_offset;
   _tail_vertex_offset = other._tail_vertex_offset;
   _base_offset_indices_pairs = std::move(other._base_offset_indices_pairs);
+  _offset_vertex_resampled = std::move(other._offset_vertex_resampled);
   _state = other._state;
 
   other._curve_base = nullptr;
@@ -604,6 +607,7 @@ void Segment::offsetCurveBase() {
     _curve_offset.reset();
   }
   _base_offset_indices_pairs.clear();
+  _offset_vertex_resampled.clear();
 
   const int side = requireValidLayupSide("offsetCurveBase");
   if (side == 0) {
@@ -617,7 +621,8 @@ void Segment::offsetCurveBase() {
 
   _curve_offset.reset(new Baseline());
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
-         _curve_offset->vertices(), _base_offset_indices_pairs);
+         _curve_offset->vertices(), _base_offset_indices_pairs,
+         &_offset_vertex_resampled);
   _face = nullptr;
   _areas.clear();
   _head_vertex_offset = nullptr;
@@ -631,6 +636,17 @@ void Segment::offsetCurveBase() {
   if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offset line: "
     << _curve_offset->vertices().front()->printString() << " -> "
     << _curve_offset->vertices().back()->printString();
+
+  // Debug: dump base/offset/staircase as SVG when --debug geo is on.
+  if (config.debug_level >= DebugLevel::geo) {
+    const std::string svg_path = config.file_directory + config.file_base_name
+                               + "." + _name + ".base_offset_map.svg";
+    dumpBaseOffsetMapSvg(svg_path, _name,
+                         _curve_base->vertices(),
+                         _curve_offset->vertices(),
+                         _base_offset_indices_pairs,
+                         &_offset_vertex_resampled);
+  }
 }
 
 void Segment::build(const BuilderConfig &bcfg) {

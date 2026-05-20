@@ -46,6 +46,14 @@ struct OffsetVertexSource {
 struct OffsetPolygon {
   std::vector<SPoint2>            points;
   std::vector<OffsetVertexSource> sources;   // size == points.size()
+  // Per-vertex origin tag (size == points.size()).
+  //   false → vertex came straight out of Clipper2 (raw corner / bevel /
+  //           Butt-cap point). For closed inputs every vertex is raw.
+  //   true  → vertex was synthesized by `extractOpenRuns`'s base-vertex
+  //           resample step (foot-of-perpendicular projection of a base
+  //           vertex onto the raw run polyline). Only ever true on the
+  //           open-input branch.
+  std::vector<bool>               resampled;
   // is_closed = true   → closed offset polygon (closed-input branch).
   //                     `points` walks the perimeter; `points.front()`
   //                     and `points.back()` are distinct (no trailing
@@ -74,6 +82,12 @@ struct ReverseMatchPlan {
   /// (it does NOT carry a trailing duplicate — the PDCELVertex
   /// wrapper appends the dup pointer when materializing).
   std::vector<SPoint2> offset_points;
+
+  /// Per-vertex origin tag, parallel to `offset_points` (see
+  /// `OffsetPolygon::resampled` for the convention). Carried through
+  /// the bridge so the PDCELVertex adapter can hand it to debug
+  /// visualizers.
+  std::vector<bool>    offset_resampled;
 
   /// Staircase base→offset correspondence — see
   /// include/geo_types.hpp:27 for the invariant. For a closed input
@@ -214,6 +228,10 @@ struct ReverseMatchResult {
   ///                     with `base.front()` and `base.back()`.
   ///                     Size = M_off_raw.
   std::vector<PDCELVertex*> offset_vertices;
+  /// Per-vertex origin tag, parallel to `offset_vertices`. See
+  /// `OffsetPolygon::resampled` for the convention. For closed inputs
+  /// the trailing-duplicate slot copies the flag of the first vertex.
+  std::vector<bool>         offset_resampled;
   /// Staircase per geo_types.hpp:27.
   ///   - closed → last entry is `(N_distinct, M_off_raw)` wrap pair.
   ///   - open   → last entry is `(N_distinct - 1, M_off_raw - 1)`,

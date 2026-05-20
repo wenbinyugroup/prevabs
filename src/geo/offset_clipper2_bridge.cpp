@@ -401,13 +401,21 @@ ReverseMatchPlan planReverseMatch(
   if (!any_valid) return out;
 
   std::vector<SPoint2> points_rot = primary.points;
+  // Mirror the points array with the per-vertex origin tag. Length-
+  // pad with `false` if upstream forgot to populate it (defensive —
+  // a missing tag is conservatively reported as "raw Clipper2").
+  std::vector<bool> resampled_rot = primary.resampled;
+  if (resampled_rot.size() != points_rot.size()) {
+    resampled_rot.assign(points_rot.size(), false);
+  }
   if (base_is_closed) {
     // Rotation only makes sense on a cyclic walk. For open inputs the
     // Phase 1 extractor already orients the run from P_0 toward
     // P_{N-1} (base_seg non-decreasing).
     const int k_start = findRotationStart(cand);
-    rotateInPlace(cand,       k_start);
-    rotateInPlace(points_rot, k_start);
+    rotateInPlace(cand,          k_start);
+    rotateInPlace(points_rot,    k_start);
+    rotateInPlace(resampled_rot, k_start);
   }
 
   const std::vector<int> walked =
@@ -424,7 +432,8 @@ ReverseMatchPlan planReverseMatch(
   anchorAtZero(out.id_pairs, out.dropped_base_ranges_lo,
                out.dropped_base_ranges_hi);
 
-  out.offset_points = std::move(points_rot);
+  out.offset_points    = std::move(points_rot);
+  out.offset_resampled = std::move(resampled_rot);
 
   std::string err;
   if (!staircaseValid(out.id_pairs, &err)) return out;

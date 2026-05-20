@@ -75,8 +75,16 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
   // Reserve +1 to leave room for the closed-only trailing-duplicate
   // pointer below; for open inputs the extra slot is unused.
   out.offset_vertices.reserve(plan.offset_points.size() + 1);
-  for (const auto& p : plan.offset_points) {
+  out.offset_resampled.reserve(plan.offset_points.size() + 1);
+  // Defensive: if upstream skipped populating the tag, treat every
+  // vertex as raw rather than crashing on a size mismatch.
+  const bool tag_aligned =
+      plan.offset_resampled.size() == plan.offset_points.size();
+  for (std::size_t k = 0; k < plan.offset_points.size(); ++k) {
+    const auto& p = plan.offset_points[k];
     out.offset_vertices.push_back(new PDCELVertex(0.0, p.x(), p.y()));
+    out.offset_resampled.push_back(tag_aligned ? plan.offset_resampled[k]
+                                               : false);
   }
   if (base_is_closed && !out.offset_vertices.empty()) {
     // §5.6 closed convention: front and back are the same pointer.
@@ -85,6 +93,7 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     // `base.front()` and `base.back()` (matching `PSegment::build`'s
     // expectation for an open offset curve).
     out.offset_vertices.push_back(out.offset_vertices.front());
+    out.offset_resampled.push_back(out.offset_resampled.front());
   }
 
   out.id_pairs               = plan.id_pairs;

@@ -1,0 +1,109 @@
+<!--
+  Minimal repro for issue-20260518-clipper2-airfoil-gmsh-sensitivity §5.1 G.1
+  =========================================================================
+
+  Scenario: open multi-vertex U-bend baseline with inner offset
+  thicker than the U interior height. Mimics the airfoil sg_te
+  "thin TE skin wrap" geometry that triggers downstream crash in
+  Phase 4 Clipper2 backend.
+
+  Geometry (yz plane):
+
+    p0 ─── p1 ─── p2
+                    \      <-- top side, z = +0.035
+                     p3    <-- U-bend apex
+                    /      <-- bottom side, z = -0.035
+    p6 ─── p5 ─── p4
+
+  U interior height = 0.070 (z = +0.035 to z = -0.035).
+  Layup total thickness = 0.080 (16 plies × 0.005).
+  direction="right" places offset INSIDE the U (between top and
+  bottom sides) → offset distance 0.080 > U height 0.070, forcing
+  Clipper2 to drop base vertices near the bend apex.
+
+  Expected behaviour:
+    bc2229c (legacy 5-stage, closed-only routing): the open baseline
+      falls through to legacy `computeOffsetJunctions` +
+      `groupValidSegments` + `trimSubLinePair`, which filters folded
+      segments and produces a small but valid offset polyline.
+      → pass.
+    99915bf + (Phase 1-4): open baseline routes to Clipper2
+      backend. Phase 1 `extractOpenRuns` + resample places the
+      drop-boundary offset vertex at the perpendicular foot of
+      base[boundary], not at Clipper2's natural inset corner. The
+      resulting fan structure crowds layup intersections onto a
+      single offset edge → downstream `PSegment::build` produces
+      degenerate edges → Gmsh edge-recovery failure.
+      → fail.
+
+  Layup: [45:2/-45:2/0:2/90:2]s = 16 plies × 0.005 = 0.080 total.
+-->
+<cross_section name="thin_te_ubend" format="1">
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1</scale>
+    <rotate></rotate>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <!--
+    U interior height ≈ 0.13 (z = +0.065 to z = -0.065); offset 0.080
+    fits with thin headroom near the bend apex (h ≈ 0.065 ≥ dist).
+    The 4 vertices at the bend (p2, p3, p4) have small h_i because the
+    perpendicular ray from each hits the opposite side close-by; some
+    of them drop in Phase 1's Clipper2 path.
+  -->
+  <baselines>
+    <point name="p0">0.00  0.065</point>
+    <point name="p1">0.50  0.065</point>
+    <point name="p2">1.00  0.065</point>
+    <point name="p3">1.10  0.000</point>
+    <point name="p4">1.00 -0.065</point>
+    <point name="p5">0.50 -0.065</point>
+    <point name="p6">0.00 -0.065</point>
+    <baseline name="bl" type="straight">
+      <points>p0,p1,p2,p3,p4,p5,p6</points>
+    </baseline>
+  </baselines>
+
+  <materials>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_iso5_1_0005">
+      <material>iso5_1</material>
+      <thickness>0.005</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1" method="ss">
+      <lamina>la_iso5_1_0005</lamina>
+      <code>[45:2/-45:2/0:2/90:2]s</code>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_ubend">
+      <baseline>bl</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>

@@ -65,6 +65,10 @@ private:
   int _free; // Free end. 0 (head) or 1 (tail)
   PDCELVertex *_head_vertex_offset, *_tail_vertex_offset;
   BaseOffsetMap _base_offset_indices_pairs;
+  // Per-offset-vertex origin tag, parallel to `_curve_offset->vertices()`.
+  // `false` = raw Clipper2 vertex, `true` = synthesized by the open-path
+  // base-vertex resample. Debug-only; consumed by `dumpBaseOffsetMapSvg`.
+  std::vector<bool> _offset_vertex_resampled;
   LifecycleState _state{LifecycleState::BaseReady};
 
 public:

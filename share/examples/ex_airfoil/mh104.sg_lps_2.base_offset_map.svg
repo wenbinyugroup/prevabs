@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 800" width="1600" height="800">
+<rect width="100%" height="100%" fill="white"/>
+<text x="60" y="24" font-family="sans-serif" font-size="18" fill="#222">base-offset map: sg_lps_2</text>
+<text x="60" y="44" font-family="sans-serif" font-size="12" fill="#555">base verts = 8,  offset verts = 8 (raw 0 / resampled 8),  pairs = 8,  bbox y=[-0.467298, -0.251786]  z=[0.0117619, 0.141239]</text>
+<g stroke="#888" stroke-width="0.7" opacity="0.7">
+<line x1="1338.57" y1="60" x2="1365.92" y2="152.579" />
+<line x1="1150.16" y1="115.663" x2="1180.9" y2="207.242" />
+<line x1="896.816" y1="211.139" x2="934.729" y2="300.014" />
+<line x1="680.016" y1="314.806" x2="726.085" y2="399.782" />
+<line x1="501.107" y1="423.892" x2="556.44" y2="503.218" />
+<line x1="361.403" y1="534.711" x2="427.397" y2="605.581" />
+<line x1="262.275" y1="642.874" x2="340.61" y2="700.278" />
+<line x1="234.078" y1="691.787" x2="317.711" y2="740" />
+</g>
+<polyline fill="none" stroke="#1f77b4" stroke-width="1.4" points="1338.57,60 1150.16,115.663 896.816,211.139 680.016,314.806 501.107,423.892 361.403,534.711 262.275,642.874 234.078,691.787 " />
+<polyline fill="none" stroke="#ff7f0e" stroke-width="1.4" points="1365.92,152.579 1180.9,207.242 934.729,300.014 726.085,399.782 556.44,503.218 427.397,605.581 340.61,700.278 317.711,740 " />
+<circle cx="1338.57" cy="60" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="1342.57" y="56" font-family="sans-serif" font-size="10" fill="#0b3d61">b0</text>
+<circle cx="1150.16" cy="115.663" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="1154.16" y="111.663" font-family="sans-serif" font-size="10" fill="#0b3d61">b1</text>
+<circle cx="896.816" cy="211.139" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="900.816" y="207.139" font-family="sans-serif" font-size="10" fill="#0b3d61">b2</text>
+<circle cx="680.016" cy="314.806" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="684.016" y="310.806" font-family="sans-serif" font-size="10" fill="#0b3d61">b3</text>
+<circle cx="501.107" cy="423.892" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="505.107" y="419.892" font-family="sans-serif" font-size="10" fill="#0b3d61">b4</text>
+<circle cx="361.403" cy="534.711" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="365.403" y="530.711" font-family="sans-serif" font-size="10" fill="#0b3d61">b5</text>
+<circle cx="262.275" cy="642.874" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="266.275" y="638.874" font-family="sans-serif" font-size="10" fill="#0b3d61">b6</text>
+<circle cx="234.078" cy="691.787" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="238.078" y="687.787" font-family="sans-serif" font-size="10" fill="#0b3d61">b7</text>
+<rect x="1361.92" y="148.579" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="1369.92" y="164.579" font-family="sans-serif" font-size="10" fill="#7a3d05">o0</text>
+<rect x="1176.9" y="203.242" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="1184.9" y="219.242" font-family="sans-serif" font-size="10" fill="#7a3d05">o1</text>
+<rect x="930.729" y="296.014" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="938.729" y="312.014" font-family="sans-serif" font-size="10" fill="#7a3d05">o2</text>
+<rect x="722.085" y="395.782" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="730.085" y="411.782" font-family="sans-serif" font-size="10" fill="#7a3d05">o3</text>
+<rect x="552.44" y="499.218" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="560.44" y="515.218" font-family="sans-serif" font-size="10" fill="#7a3d05">o4</text>
+<rect x="423.397" y="601.581" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="431.397" y="617.581" font-family="sans-serif" font-size="10" fill="#7a3d05">o5</text>
+<rect x="336.61" y="696.278" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="344.61" y="712.278" font-family="sans-serif" font-size="10" fill="#7a3d05">o6</text>
+<rect x="313.711" y="736" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="321.711" y="752" font-family="sans-serif" font-size="10" fill="#7a3d05">o7</text>
+<g font-family="sans-serif" font-size="12">
+<rect x="1350" y="12" width="230" height="122" fill="#fafafa" stroke="#ccc"/>
+<line x1="1360" y1="30" x2="1384" y2="30" stroke="#1f77b4" stroke-width="2"/>
+<circle cx="1372" cy="30" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="1392" y="34" font-family="sans-serif" font-size="12" fill="#0b3d61">base vertex (b_i)</text>
+<line x1="1360" y1="50" x2="1384" y2="50" stroke="#ff7f0e" stroke-width="2"/>
+<text x="1392" y="54" font-family="sans-serif" font-size="12" fill="#7a3d05">offset curve</text>
+<circle cx="1372" cy="70" r="3" fill="#ff7f0e" stroke="#7a3d05" stroke-width="0.5" />
+<text x="1392" y="74" font-family="sans-serif" font-size="12" fill="#7a3d05">offset: raw Clipper2</text>
+<rect x="1368" y="86" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="1392" y="94" font-family="sans-serif" font-size="12" fill="#7a3d05">offset: base-vertex resample</text>
+<line x1="1360" y1="110" x2="1384" y2="110" stroke="#888" stroke-width="0.7"/>
+<text x="1392" y="114" font-family="sans-serif" font-size="12" fill="#444">pair (b_i, o_j)</text>
+</g>
+</svg>
