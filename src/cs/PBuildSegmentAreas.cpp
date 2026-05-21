@@ -455,12 +455,48 @@ void Segment::createIntermediateAreas(
 
     if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "2. creating areas";
 
+  // issue-20260521-skip-dropped-areas: in regions where Clipper2 produced
+  // no genuine offset correspondence (h_i < |dist| → base vertex eaten by
+  // inset), the staircase forward-fills every base index in the dropped
+  // range to the same offset vertex. splitFace'ing through that shared
+  // offset vertex generates a fan of slivers that gmsh cannot recover.
+  // For OPEN segments we skip those areas outright — geometrically the
+  // laminate is locally absent at the endpoints, the staircase already
+  // shrinks the covered span, and the user has been warned via the M/N
+  // warning + "skin dropped" message.
+  // For CLOSED segments the dropped range lives in the middle of a loop;
+  // skipping those areas would tear the shell open and break the DCEL
+  // face closure. Keep the legacy forward-fill behavior — sliver areas
+  // are sometimes the lesser evil there. Until a proper closed-loop
+  // dropped-region story exists, the closed branch keeps the gmsh risk.
+  const bool skip_dropped_areas =
+      !closed() && !_dropped_base_ranges_lo.empty();
+  auto inDroppedRange = [&](int base_idx) {
+    if (!skip_dropped_areas) return false;
+    for (std::size_t r = 0; r < _dropped_base_ranges_lo.size(); ++r) {
+      if (base_idx >= _dropped_base_ranges_lo[r]
+          && base_idx <= _dropped_base_ranges_hi[r]) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
         if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "area " + std::to_string(k);
     const int layup_side = layupSide();
 
     int vbi_tmp = _base_offset_indices_pairs[k].base;
     int voi_tmp = _base_offset_indices_pairs[k].offset;
+
+    if (inDroppedRange(vbi_tmp)) {
+      if (bcfg.debug_level >= DebugLevel::join) {
+        PLOG(debug) << "  skipping area at base[" << vbi_tmp
+                    << "] (in dropped range — skin locally absent)";
+      }
+      continue;
+    }
+
     PDCELVertex *vb_tmp = _curve_base->vertices()[vbi_tmp];
     PDCELVertex *vo_tmp = _curve_offset->vertices()[voi_tmp];
         if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "  base vertex: " + vb_tmp->printString();

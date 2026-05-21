@@ -74,6 +74,14 @@ private:
   // resample didn't fire. Plotted as a topmost scatter overlay by
   // `dumpBaseOffsetMapSvg`.
   std::vector<SPoint2> _offset_pre_resample_raw_points;
+  // Inclusive [lo..hi] ranges of base indices where Clipper2 produced no
+  // genuine offset correspondence (skin locally absent). Forward-filled in
+  // `_base_offset_indices_pairs` so the staircase walk stays in-bounds,
+  // but `createIntermediateAreas` skips area creation in these ranges to
+  // avoid sliver fans around the shared offset vertex.
+  // See issue-20260521-skip-dropped-areas.md.
+  std::vector<int> _dropped_base_ranges_lo;
+  std::vector<int> _dropped_base_ranges_hi;
   LifecycleState _state{LifecycleState::BaseReady};
 
 public:

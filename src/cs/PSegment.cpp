@@ -247,6 +247,8 @@ Segment::Segment(Segment &&other) noexcept
       _tail_vertex_offset(other._tail_vertex_offset),
       _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
       _offset_vertex_resampled(std::move(other._offset_vertex_resampled)),
+      _dropped_base_ranges_lo(std::move(other._dropped_base_ranges_lo)),
+      _dropped_base_ranges_hi(std::move(other._dropped_base_ranges_hi)),
       _state(other._state) {
   other._curve_base = nullptr;
   other._layup = nullptr;
@@ -289,6 +291,8 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _tail_vertex_offset = other._tail_vertex_offset;
   _base_offset_indices_pairs = std::move(other._base_offset_indices_pairs);
   _offset_vertex_resampled = std::move(other._offset_vertex_resampled);
+  _dropped_base_ranges_lo = std::move(other._dropped_base_ranges_lo);
+  _dropped_base_ranges_hi = std::move(other._dropped_base_ranges_hi);
   _state = other._state;
 
   other._curve_base = nullptr;
@@ -609,6 +613,8 @@ void Segment::offsetCurveBase() {
   _base_offset_indices_pairs.clear();
   _offset_vertex_resampled.clear();
   _offset_pre_resample_raw_points.clear();
+  _dropped_base_ranges_lo.clear();
+  _dropped_base_ranges_hi.clear();
 
   const int side = requireValidLayupSide("offsetCurveBase");
   if (side == 0) {
@@ -624,7 +630,9 @@ void Segment::offsetCurveBase() {
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
          _curve_offset->vertices(), _base_offset_indices_pairs,
          &_offset_vertex_resampled,
-         &_offset_pre_resample_raw_points);
+         &_offset_pre_resample_raw_points,
+         &_dropped_base_ranges_lo,
+         &_dropped_base_ranges_hi);
   _face = nullptr;
   _areas.clear();
   _head_vertex_offset = nullptr;

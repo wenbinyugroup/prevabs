@@ -391,7 +391,9 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<PDCELVertex *> &offset_vertices,
            BaseOffsetMap &id_pairs,
            std::vector<bool> *offset_resampled,
-           std::vector<SPoint2> *pre_resample_raw_points) {
+           std::vector<SPoint2> *pre_resample_raw_points,
+           std::vector<int> *dropped_base_ranges_lo,
+           std::vector<int> *dropped_base_ranges_hi) {
 
 
   std::size_t size = base.size();
@@ -408,6 +410,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   id_pairs.clear();
   if (offset_resampled) offset_resampled->clear();
   if (pre_resample_raw_points) pre_resample_raw_points->clear();
+  if (dropped_base_ranges_lo) dropped_base_ranges_lo->clear();
+  if (dropped_base_ranges_hi) dropped_base_ranges_hi->clear();
 
   if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
@@ -592,6 +596,10 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   if (offset_resampled) *offset_resampled = result.offset_resampled;
   if (pre_resample_raw_points)
     *pre_resample_raw_points = result.pre_resample_raw_points;
+  if (dropped_base_ranges_lo)
+    *dropped_base_ranges_lo = result.dropped_base_ranges_lo;
+  if (dropped_base_ranges_hi)
+    *dropped_base_ranges_hi = result.dropped_base_ranges_hi;
 
   for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
     PLOG(warning) << "offset (multi-vertex, "

@@ -100,7 +100,9 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<PDCELVertex *> &offset, BaseOffsetMap &id_pairs,
            std::vector<bool> *offset_resampled = nullptr,
-           std::vector<SPoint2> *pre_resample_raw_points = nullptr);
+           std::vector<SPoint2> *pre_resample_raw_points = nullptr,
+           std::vector<int> *dropped_base_ranges_lo = nullptr,
+           std::vector<int> *dropped_base_ranges_hi = nullptr);
 
 // Validates the BaseOffsetMap staircase invariant.
 bool validateBaseOffsetMap(
