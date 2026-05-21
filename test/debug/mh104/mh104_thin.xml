@@ -1,0 +1,56 @@
+<cross_section name="mh104_thin">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>-0.25  0</translate>
+    <scale>1.9</scale>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">mh104.dat</points>
+    </line>
+
+    <point name="l34" on="ln_af" by="x2" which="top">0.8</point>
+    <point name="h34" on="ln_af" by="x2" which="bottom">0.8</point>
+
+    <line name="bl_te">
+      <points>h34:l34</points>
+    </line>
+
+  </baselines>
+
+
+  <!-- §6.1 thin-layup probe: drop layup thickness so it stays under -->
+  <!-- the TE half-thickness, and verify M/N returns to ~1 + mesh OK. -->
+  <layups>
+    <layup name="layup_thin">
+      <layer lamina="la_db_frp_000053">20:17</layer>
+      <layer lamina="la_balsa_0003125">0</layer>
+    </layup>
+  </layups>
+
+
+  <component name="surface">
+    <segment name="sg_te">
+      <baseline>bl_te</baseline>
+      <layup>layup_thin</layup>
+    </segment>
+  </component>
+
+
+</cross_section>

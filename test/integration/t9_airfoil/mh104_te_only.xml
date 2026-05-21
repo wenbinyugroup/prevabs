@@ -1,0 +1,87 @@
+<cross_section name="mh104_te_only">
+
+
+  <include>
+    <material>materials</material>
+  </include>
+
+
+  <analysis>
+    <!-- Timoshenko beam model -->
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>-0.25  0</translate>
+
+    <!-- Chord length -->
+    <scale>1.9</scale>
+
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">mh104.dat</points>
+      <!-- <flip>1</flip> -->
+      <!-- <reverse>1</reverse> -->
+    </line>
+
+    <!-- Define dividing points on the airfoil between segments -->
+    <!-- On the low pressure side (top) -->
+    <!-- <point name="l12" on="ln_af" by="x2" which="top">0.004053940</point> -->
+    <!-- <point name="l23" on="ln_af" by="x2" which="top">0.114739930</point> -->
+    <point name="l34" on="ln_af" by="x2" which="top">0.8</point>
+    <!-- On the high pressure side (bottom) -->
+    <!-- <point name="h12" on="ln_af" by="x2" which="bottom">0.004053940</point> -->
+    <!-- <point name="h23" on="ln_af" by="x2" which="bottom">0.114739930</point> -->
+    <point name="h34" on="ln_af" by="x2" which="bottom">0.8</point>
+
+    <!-- <line name="bl_le">
+      <points>l12:h12</points>
+    </line> -->
+    <!-- <line name="bl_lps_2">
+      <points>l23:l12</points>
+    </line> -->
+    <!-- <line name="bl_lps_3">
+      <points>l34:l23</points>
+    </line> -->
+    <line name="bl_te">
+      <points>h34:l34</points>
+    </line>
+    <!-- <line name="bl_hps_3">
+      <points>h23:h34</points>
+    </line> -->
+    <!-- <line name="bl_hps_2">
+      <points>h12:h23</points>
+    </line> -->
+
+
+  </baselines>
+
+
+  <layups>
+    <layup name="layup4">
+      <layer lamina="la_gelcoat_0000381">0</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_db_frp_000053">20:17</layer>
+      <layer lamina="la_balsa_0003125">0</layer>
+      <layer lamina="la_db_frp_000053">0:16</layer>
+    </layup>
+  </layups>
+
+
+  <!-- Surface layup -->
+  <component name="surface">
+    <segment name="sg_te">
+      <baseline>bl_te</baseline>
+      <layup>layup4</layup>
+    </segment>
+  </component>
+
+
+</cross_section>

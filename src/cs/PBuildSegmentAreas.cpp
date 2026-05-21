@@ -567,9 +567,14 @@ void Segment::buildLastArea(
       // Degenerate tail case: the last staircase step stays on the previous
       // base vertex, so the closing bound is anchored on the offset edge and
       // shifted back to recover the effective base-side construction segment.
+      // Index the offset vector by its own size — under the legacy open-path
+      // resample step M == N held implicitly, but the Clipper2 backend's
+      // nearest-pairing variant (issue-20260520) skips that resample and
+      // allows M < N.
+      const auto& off_v_tail = _curve_offset->vertices();
       PGeoLineSegment *ls_tmp = new PGeoLineSegment(
-          _curve_offset->vertices()[_curve_base->vertices().size() - 2],
-          _curve_offset->vertices()[_curve_base->vertices().size() - 1]);
+          off_v_tail[off_v_tail.size() - 2],
+          off_v_tail[off_v_tail.size() - 1]);
       const int dir = layup_side;
       ls_base_end = offsetLineSegment(ls_tmp, dir, _layup->getTotalThickness());
       owns_ls_base_end_vertices = true;

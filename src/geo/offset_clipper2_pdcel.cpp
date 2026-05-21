@@ -12,11 +12,35 @@
 #include "PDCELVertex.hpp"
 #include "plog.hpp"
 
+#include <cctype>
+#include <cstdlib>
 #include <sstream>
+#include <string>
 #include <utility>
 
 namespace prevabs {
 namespace geo {
+
+namespace {
+
+// Temporary opt-in gate (issue-20260520 §6.2). Reads the env var
+// `PREVABS_USE_NEAREST_PAIRING` once per process and caches the result.
+// Truthy values: "1", "true", "yes" (case-insensitive). Any other value
+// — including unset — keeps the legacy `planReverseMatch`.
+// Planned removal after the MH104 case is validated and the new
+// pairing becomes the only path.
+bool useNearestPairingEnv() {
+  static const bool flag = [] {
+    const char* raw = std::getenv("PREVABS_USE_NEAREST_PAIRING");
+    if (!raw || !*raw) return false;
+    std::string s(raw);
+    for (auto& c : s) c = static_cast<char>(std::tolower(c));
+    return s == "1" || s == "true" || s == "yes" || s == "on";
+  }();
+  return flag;
+}
+
+}  // namespace
 
 ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     const std::vector<PDCELVertex*>&   base,
@@ -45,12 +69,16 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     base_pts.emplace_back(v->point2()[0], v->point2()[1]);
   }
 
-  const ReverseMatchPlan plan = planReverseMatch(
-      base_pts, base_is_closed, side, dist, polygons);
+  const bool use_nearest = useNearestPairingEnv();
+  const ReverseMatchPlan plan = use_nearest
+      ? planReverseMatchByNearest(base_pts, base_is_closed, side, dist,
+                                  polygons)
+      : planReverseMatch(base_pts, base_is_closed, side, dist, polygons);
 
   if (!plan.ok) {
     PLOG(error) << "offset clipper2 bridge: failed to build a valid "
-                   "BaseOffsetMap from Clipper2 output";
+                   "BaseOffsetMap from Clipper2 output (pairing="
+                << (use_nearest ? "nearest" : "segment") << ")";
     return out;
   }
 

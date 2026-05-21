@@ -10,6 +10,7 @@
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
+#include "pui.hpp"
 
 #include "offset_clipper2.hpp"
 
@@ -599,6 +600,43 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
                   << result.dropped_base_ranges_lo[k] << ".."
                   << result.dropped_base_ranges_hi[k]
                   << "] due to insufficient local thickness";
+  }
+
+  // M/N ratio diagnostic (issue-20260521 §6): Clipper2 inset merges /
+  // truncates base vertices when |dist| approaches local half-thickness.
+  // Empirically (mh104 TE thickness sweep) the downstream gmsh recovery
+  // breaks once M/N drops below ~0.7 — surface that as a user-visible
+  // warning so the report is actionable (reduce layup thickness or split
+  // layup) rather than a raw `Unable to recover edge` from gmsh.
+  {
+    const std::size_t n_base_distinct = base_is_closed ? size - 1 : size;
+    const std::size_t n_off_distinct  =
+        base_is_closed ? offset_vertices.size() - 1
+                       : offset_vertices.size();
+    constexpr double kMNRatioWarn = 0.7;
+    if (n_base_distinct > 0
+        && static_cast<double>(n_off_distinct)
+             < kMNRatioWarn * static_cast<double>(n_base_distinct)) {
+      const double ratio =
+          static_cast<double>(n_off_distinct)
+          / static_cast<double>(n_base_distinct);
+      std::ostringstream oss;
+      oss.precision(2);
+      oss << std::fixed
+          << "offset (multi-vertex, "
+          << (base_is_closed ? "closed" : "open")
+          << "): only " << n_off_distinct
+          << " offset verts produced for " << n_base_distinct
+          << " base verts (M/N=" << ratio << "). The layup half-thickness "
+          << std::fabs(dist)
+          << " likely exceeds the local base curvature radius along part "
+             "of the curve — Clipper2 has merged base corners during inset. "
+             "Downstream mesh recovery typically fails below M/N=0.7. "
+             "Consider reducing layup thickness, splitting the layup over a "
+             "denser baseline, or excluding the thin region from the layup.";
+      PUI_WARN << oss.str();
+      PLOG(warning) << oss.str();
+    }
   }
 
   assertValidBaseOffsetMap(id_pairs, "offset clipper2 backend");

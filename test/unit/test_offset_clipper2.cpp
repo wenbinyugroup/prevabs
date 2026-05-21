@@ -27,6 +27,7 @@ using prevabs::geo::OffsetVertexSource;
 using prevabs::geo::offsetWithClipper2;
 using prevabs::geo::ReverseMatchPlan;
 using prevabs::geo::planReverseMatch;
+using prevabs::geo::planReverseMatchByNearest;
 
 namespace {
 
@@ -1147,4 +1148,354 @@ TEST_CASE("planReverseMatch: open L-shape end-to-end with Phase 1 core",
     CHECK(plan.id_pairs.back().offset
           == static_cast<int>(plan.offset_points.size()) - 1);
   }
+}
+
+
+// ===================================================================
+// planReverseMatchByNearest — point-to-point nearest pairing variant.
+// See issue-20260520-base-offset-nearest-pairing.md.
+//
+// Same signature as planReverseMatch. The differences this suite
+// exercises:
+//   - On clean cases the staircase is structurally identical to
+//     planReverseMatch (sanity / regression).
+//   - On a sharp-fold base (the MH104 TE failure mode), the new
+//     algorithm produces a valid monotone staircase where the
+//     segment-projection + u-midpoint round would mis-assign.
+//   - On open inputs, attribution is point-to-point, so the
+//     forward-pass + reverse-pass single-switch invariant holds.
+// ===================================================================
+
+namespace {
+
+// Build an OffsetPolygon where the per-vertex `points` is the raw
+// geometry. `srcs` populates `sources` parallel to `points` — needed
+// by `pickPrimaryOpen` for open inputs (which selects by base_seg
+// span). Closed inputs ignore `sources` (pickPrimary uses signed area)
+// so callers may pass an empty list.
+OffsetPolygon makeNearestPolygon(
+    const std::vector<SPoint2>& pts,
+    bool closed,
+    const std::vector<prevabs::geo::OffsetVertexSource>& srcs = {}) {
+  OffsetPolygon p;
+  p.is_closed = closed;
+  p.points    = pts;
+  if (srcs.empty()) {
+    p.sources.assign(pts.size(),
+                     prevabs::geo::OffsetVertexSource{-1, 0.0});
+  } else {
+    p.sources = srcs;
+  }
+  p.resampled.assign(pts.size(), false);
+  return p;
+}
+
+}  // namespace
+
+
+// -------------------------------------------------------------------
+// N-Closed-1 — closed square: structurally same staircase as the
+// legacy bridge on a clean case.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: closed square — clean staircase",
+          "[offset_clipper2][bridge][nearest][closed]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  // 4 offset vertices near each base corner — a 0.9×0.9 inset
+  // contour with one offset point per base vertex.
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.05), SPoint2(0.95, 0.05),
+      SPoint2(0.95, 0.95), SPoint2(0.05, 0.95),
+  }, /*closed*/ true);
+
+  const auto plan = planReverseMatchByNearest(
+      base, /*closed*/ true, /*side*/ -1, /*dist*/ 0.1, {prim});
+  REQUIRE(plan.ok);
+  CHECK(plan.closed);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  REQUIRE(plan.id_pairs.size() >= 2);
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base    == 4);  // wrap (N, M)
+  CHECK(plan.id_pairs.back().offset  == 4);
+  CHECK(plan.dropped_base_ranges_lo.empty());
+  CHECK(plan.dropped_base_ranges_hi.empty());
+  CHECK(plan.offset_points.size() == 4);
+}
+
+
+// -------------------------------------------------------------------
+// N-Closed-2 — input rotated → anchor at base 0.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: closed square — rotated input "
+          "anchored at base 0",
+          "[offset_clipper2][bridge][nearest][closed][rotation]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  // Same vertices but starting walk at the corner near base[3].
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.95),   // closest to base[3]
+      SPoint2(0.05, 0.05),   // closest to base[0]
+      SPoint2(0.95, 0.05),   // closest to base[1]
+      SPoint2(0.95, 0.95),   // closest to base[2]
+  }, /*closed*/ true);
+
+  const auto plan = planReverseMatchByNearest(base, true, -1, 0.1, {prim});
+  REQUIRE(plan.ok);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base    == 4);
+  CHECK(plan.id_pairs.back().offset  == 4);
+
+  // After rotation, offset_points[0] is the one closest to base[0]
+  // — i.e. (0.05, 0.05).
+  CHECK(plan.offset_points[0].x() == Catch::Approx(0.05));
+  CHECK(plan.offset_points[0].y() == Catch::Approx(0.05));
+}
+
+
+// -------------------------------------------------------------------
+// N-Open-1 — open polyline, 1:1 clean pairing.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: open polyline — clean staircase",
+          "[offset_clipper2][bridge][nearest][open]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(2.0, 0.0), SPoint2(3.0, 0.0),
+  };
+  OffsetPolygon prim = makeNearestPolygon(
+      {SPoint2(0.0, 0.05), SPoint2(1.0, 0.05),
+       SPoint2(2.0, 0.05), SPoint2(3.0, 0.05)},
+      /*closed*/ false,
+      // Populate sources so pickPrimaryOpen sees a base_seg span.
+      {{0, 0.0}, {0, 1.0}, {1, 1.0}, {2, 1.0}});
+
+  const auto plan = planReverseMatchByNearest(
+      base, /*closed*/ false, /*side*/ +1, /*dist*/ 0.05, {prim});
+  REQUIRE(plan.ok);
+  CHECK_FALSE(plan.closed);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  // Open: (0, 0) → (N-1, M-1) — NO wrap pair.
+  REQUIRE(plan.id_pairs.size() == 4);
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base    == 3);
+  CHECK(plan.id_pairs.back().offset  == 3);
+  CHECK(plan.dropped_base_ranges_lo.empty());
+}
+
+
+// -------------------------------------------------------------------
+// N-Open-2 — open polyline with M > N: extra offset vertex between
+// base[1] and base[2] must be assigned to one side without breaking
+// the staircase (this is the M ≠ N case the algorithm targets).
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: open polyline — M > N pairing "
+          "via reverse pass",
+          "[offset_clipper2][bridge][nearest][open]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(2.0, 0.0), SPoint2(3.0, 0.0),
+  };
+  // 5 offset vertices: one extra near x = 1.4 (slightly closer to
+  // base[1] than to base[2], so the reverse pass should attribute it
+  // to base[1]).
+  OffsetPolygon prim = makeNearestPolygon(
+      {SPoint2(0.0, 0.05), SPoint2(1.0, 0.05),
+       SPoint2(1.4, 0.05), SPoint2(2.0, 0.05),
+       SPoint2(3.0, 0.05)},
+      /*closed*/ false,
+      {{0, 0.0}, {0, 1.0}, {1, 0.4}, {1, 1.0}, {2, 1.0}});
+
+  const auto plan = planReverseMatchByNearest(
+      base, /*closed*/ false, /*side*/ +1, /*dist*/ 0.05, {prim});
+  REQUIRE(plan.ok);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  // Endpoints pinned.
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base    == 3);
+  CHECK(plan.id_pairs.back().offset  == 4);
+
+  // Inspect the staircase: the extra offset (index 2) should pair with
+  // base 1 — the (1, 1) and (1, 2) pair must coexist before stepping
+  // to base 2.
+  bool saw_b1_o1 = false;
+  bool saw_b1_o2 = false;
+  for (const auto& pr : plan.id_pairs) {
+    if (pr.base == 1 && pr.offset == 1) saw_b1_o1 = true;
+    if (pr.base == 1 && pr.offset == 2) saw_b1_o2 = true;
+  }
+  CHECK(saw_b1_o1);
+  CHECK(saw_b1_o2);
+}
+
+
+// -------------------------------------------------------------------
+// N-Sharp — MH104-TE-like fold. A closed shape where two base segments
+// meet at a near-180° apex with a near-collinear back-fold. Under the
+// legacy `attributeSource` + `attributeOne` midpoint round, a small
+// perturbation at the apex can flip the assignment. The
+// point-to-point nearest variant must produce a valid monotone
+// staircase regardless.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: sharp fold near apex — valid "
+          "staircase",
+          "[offset_clipper2][bridge][nearest][closed][sharp]") {
+  // 6-vertex closed wedge: a long thin lozenge with the right tip
+  // squeezed to a near-zero opening (MH104-TE caricature).
+  //          (-1, 0.2)
+  //                  *---* (0.5, 0.2)
+  //                 /      \
+  //   (-1, 0.0) *           * (1.0, 0.0)  <-- TE apex
+  //                 \      /
+  //                  *---* (0.5, -0.2)
+  //          (-1, -0.2)
+  const std::vector<SPoint2> base = {
+      SPoint2(-1.0,  0.0),
+      SPoint2(-1.0,  0.2),
+      SPoint2( 0.5,  0.2),
+      SPoint2( 1.0,  0.0),
+      SPoint2( 0.5, -0.2),
+      SPoint2(-1.0, -0.2),
+  };
+
+  // Drive through the real Clipper2 backend so the test exercises the
+  // realistic vertex layout (raw join points, miter / bevel insertions).
+  const double dist = 0.02;
+  auto polys = offsetWithClipper2(base, /*closed*/ true, /*side*/ -1, dist);
+  REQUIRE(!polys.empty());
+
+  const auto plan = planReverseMatchByNearest(
+      base, /*closed*/ true, /*side*/ -1, dist, polys);
+  REQUIRE(plan.ok);
+  CHECK(isValidStaircase(plan.id_pairs));
+
+  // Front anchor pinned at base 0; closed wrap at the tail.
+  CHECK(plan.id_pairs.front().base   == 0);
+  CHECK(plan.id_pairs.front().offset == 0);
+  CHECK(plan.id_pairs.back().base
+        == static_cast<int>(base.size()));
+  CHECK(plan.id_pairs.back().offset
+        == static_cast<int>(plan.offset_points.size()));
+
+  // Every distinct base index in [0, N-1] must appear at least once
+  // in the staircase — even when it lands in a forward-fill / dropped
+  // range, `buildIdPairs` emits an explicit pair for it.
+  std::vector<int> seen(base.size(), 0);
+  for (const auto& pr : plan.id_pairs) {
+    if (pr.base >= 0 && pr.base < static_cast<int>(base.size())) {
+      seen[pr.base] = 1;
+    }
+  }
+  for (std::size_t i = 0; i < base.size(); ++i) {
+    INFO("base index " << i << " missing from staircase");
+    CHECK(seen[i] == 1);
+  }
+}
+
+
+// -------------------------------------------------------------------
+// N-Open-Sharp — MH104-TE open baseline: the TE in mh104_te_only.xml
+// is two near-collinear segments meeting at a sharp pinch on the TE
+// side. Drive an open polyline with this geometry through
+// offsetWithClipper2 + planReverseMatchByNearest and assert the
+// staircase holds end-to-end.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: open MH104-TE-like polyline — "
+          "valid staircase",
+          "[offset_clipper2][bridge][nearest][open][sharp]") {
+  // Sharp open V — apex at the origin, arms 1 unit long. The apex
+  // angle is tight enough that the legacy midpoint round on
+  // post-resample foot-distances is the failure mode we're avoiding.
+  const std::vector<SPoint2> base = {
+      SPoint2(-1.0,  0.02),
+      SPoint2(-0.5,  0.01),
+      SPoint2( 0.0,  0.0 ),  // apex
+      SPoint2(-0.5, -0.01),
+      SPoint2(-1.0, -0.02),
+  };
+  const double dist = 0.005;
+
+  for (int side : {+1, -1}) {
+    auto polys =
+        offsetWithClipper2(base, /*closed*/ false, side, dist);
+    REQUIRE(!polys.empty());
+
+    const auto plan = planReverseMatchByNearest(
+        base, /*closed*/ false, side, dist, polys);
+    REQUIRE(plan.ok);
+    CHECK(isValidStaircase(plan.id_pairs));
+
+    // Open endpoints: (0, 0) at the head, (N-1, M-1) at the tail.
+    CHECK(plan.id_pairs.front().base   == 0);
+    CHECK(plan.id_pairs.front().offset == 0);
+    CHECK(plan.id_pairs.back().base
+          == static_cast<int>(base.size()) - 1);
+    CHECK(plan.id_pairs.back().offset
+          == static_cast<int>(plan.offset_points.size()) - 1);
+  }
+}
+
+
+// -------------------------------------------------------------------
+// N-Guards — empty / degenerate inputs return ok=false (no crash).
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByNearest: empty polygon list returns ok=false",
+          "[offset_clipper2][bridge][nearest][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  const auto plan = planReverseMatchByNearest(base, true, -1, 0.1, {});
+  CHECK_FALSE(plan.ok);
+}
+
+TEST_CASE("planReverseMatchByNearest: zero dist returns ok=false",
+          "[offset_clipper2][bridge][nearest][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.05), SPoint2(0.95, 0.05),
+      SPoint2(0.95, 0.95), SPoint2(0.05, 0.95),
+  }, /*closed*/ true);
+  // dist == 0 makes the validity gate `> 1.5 * dist` reject every
+  // offset vertex; the function must early-out with ok=false rather
+  // than divide-by-zero.
+  const auto plan = planReverseMatchByNearest(base, true, -1, 0.0, {prim});
+  CHECK_FALSE(plan.ok);
+}
+
+TEST_CASE("planReverseMatchByNearest: all offsets outside gate returns "
+          "ok=false",
+          "[offset_clipper2][bridge][nearest][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  // Offset points placed far away (foot-distance >> 1.5 * dist).
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(100.0, 100.0), SPoint2(101.0, 100.0),
+      SPoint2(101.0, 101.0), SPoint2(100.0, 101.0),
+  }, /*closed*/ true);
+  const auto plan = planReverseMatchByNearest(base, true, -1, 0.1, {prim});
+  CHECK_FALSE(plan.ok);
 }

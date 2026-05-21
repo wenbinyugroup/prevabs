@@ -1,0 +1,297 @@
+=== DCEL CRASH DUMP ===
+
+VERTICES (50):
+  v#1 (0, inf, inf) edge=he#1
+  v#2 (0, -inf, inf) edge=he#2
+  v#3 (0, -inf, -inf) edge=he#4
+  v#4 (0, inf, -inf) edge=he#6
+  v#5 (0, 1.045, -0.0427002) edge=he#68
+  v#6 (0, 1.04383, -0.0306215) edge=he#65
+  v#7 (0, 1.045, 0.0487112) edge=he#165
+  v#8 (0, 1.04314, 0.0367191) edge=he#168
+  v#9 (0, 1.06719, -0.0405535) edge=he#14
+  v#10 (0, 1.14432, -0.0327949) edge=he#16
+  v#11 (0, 1.21379, -0.0255278) edge=he#18
+  v#12 (0, 1.27469, -0.0188831) edge=he#20
+  v#13 (0, 1.32615, -0.0129185) edge=he#22
+  v#14 (0, 1.36757, -0.0076441) edge=he#24
+  v#15 (0, 1.39853, -0.00342224) edge=he#26
+  v#16 (0, 1.41817, -0.000844911) edge=he#28
+  v#17 (0, 1.425, 0) edge=he#30
+  v#18 (0, 1.41777, 0.000323893) edge=he#32
+  v#19 (0, 1.39679, 0.00190405) edge=he#34
+  v#20 (0, 1.36352, 0.00542401) edge=he#36
+  v#21 (0, 1.31901, 0.010564) edge=he#38
+  v#22 (0, 1.26371, 0.0172288) edge=he#40
+  v#23 (0, 1.19841, 0.0257899) edge=he#42
+  v#24 (0, 1.12438, 0.0364192) edge=he#44
+  v#25 (0, 1.066, -0.0284772) edge=he#48
+  v#26 (0, 1.14308, -0.0207231) edge=he#50
+  v#27 (0, 1.2125, -0.0134614) edge=he#52
+  v#28 (0, 1.31848, -0.00159086) edge=he#54
+  v#29 (0, 1.31762, -0.00149088) edge=he#56
+  v#30 (0, 1.26213, 0.00519677) edge=he#58
+  v#31 (0, 1.19683, 0.0137579) edge=he#60
+  v#32 (0, 1.12266, 0.0244074) edge=he#62
+  v#33 (0, 1.04413, -0.033732) edge=he#66
+  v#34 (0, 1.06631, -0.0315871) edge=he#72
+  v#35 (0, 1.1434, -0.0238319) edge=he#78
+  v#36 (0, 1.21284, -0.0165688) edge=he#84
+  v#37 (0, 1.22852, -0.0148576) edge=he#90
+  v#38 (0, 1.24177, -0.0133216) edge=he#96
+  v#39 (0, 1.25244, -0.0119634) edge=he#102
+  v#40 (0, 1.26041, -0.0108762) edge=he#108
+  v#41 (0, 1.26547, -0.0102124) edge=he#114
+  v#42 (0, 1.26723, -0.00999486) edge=he#120
+  v#43 (0, 1.26536, -0.00991145) edge=he#126
+  v#44 (0, 1.25996, -0.00950453) edge=he#132
+  v#45 (0, 1.33008, 0.000215605) edge=he#138
+  v#46 (0, 1.31797, 0.00161349) edge=he#144
+  v#47 (0, 1.26254, 0.00829525) edge=he#150
+  v#48 (0, 1.19724, 0.0168564) edge=he#156
+  v#49 (0, 1.1231, 0.0275007) edge=he#162
+  v#50 (0, 1.04362, 0.0398073) edge=he#166
+
+HALFEDGES (166):
+  he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
+  he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
+  he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
+  he#7 scope=active src=v#4 twin=he#8 next=he#1 prev=he#5 loop=loop#1 face=f#1(background)
+  he#13 scope=active src=v#5 twin=he#14 next=he#71 prev=he#67 loop=loop#37 face=f#36(sg_te_area_1_layer_1)
+  he#14 scope=active src=v#9 twin=he#13 next=he#68 prev=he#16 loop=loop#3 face=nullptr
+  he#15 scope=active src=v#9 twin=he#16 next=he#77 prev=he#72 loop=loop#39 face=f#38(sg_te_area_2_layer_1)
+  he#16 scope=active src=v#10 twin=he#15 next=he#14 prev=he#18 loop=loop#3 face=nullptr
+  he#17 scope=active src=v#10 twin=he#18 next=he#83 prev=he#78 loop=loop#41 face=f#40(sg_te_area_3_layer_1)
+  he#18 scope=active src=v#11 twin=he#17 next=he#16 prev=he#20 loop=loop#3 face=nullptr
+  he#19 scope=active src=v#11 twin=he#20 next=he#89 prev=he#84 loop=loop#43 face=f#42(sg_te_area_4_layer_1)
+  he#20 scope=active src=v#12 twin=he#19 next=he#18 prev=he#22 loop=loop#3 face=nullptr
+  he#21 scope=active src=v#12 twin=he#22 next=he#95 prev=he#90 loop=loop#45 face=f#44(sg_te_area_5_layer_1)
+  he#22 scope=active src=v#13 twin=he#21 next=he#20 prev=he#24 loop=loop#3 face=nullptr
+  he#23 scope=active src=v#13 twin=he#24 next=he#101 prev=he#96 loop=loop#47 face=f#46(sg_te_area_6_layer_1)
+  he#24 scope=active src=v#14 twin=he#23 next=he#22 prev=he#26 loop=loop#3 face=nullptr
+  he#25 scope=active src=v#14 twin=he#26 next=he#107 prev=he#102 loop=loop#49 face=f#48(sg_te_area_7_layer_1)
+  he#26 scope=active src=v#15 twin=he#25 next=he#24 prev=he#28 loop=loop#3 face=nullptr
+  he#27 scope=active src=v#15 twin=he#28 next=he#113 prev=he#108 loop=loop#51 face=f#50(sg_te_area_8_layer_1)
+  he#28 scope=active src=v#16 twin=he#27 next=he#26 prev=he#30 loop=loop#3 face=nullptr
+  he#29 scope=active src=v#16 twin=he#30 next=he#119 prev=he#114 loop=loop#53 face=f#52(sg_te_area_9_layer_1)
+  he#30 scope=active src=v#17 twin=he#29 next=he#28 prev=he#32 loop=loop#3 face=nullptr
+  he#31 scope=active src=v#17 twin=he#32 next=he#125 prev=he#120 loop=loop#55 face=f#54(sg_te_area_10_layer_1)
+  he#32 scope=active src=v#18 twin=he#31 next=he#30 prev=he#34 loop=loop#3 face=nullptr
+  he#33 scope=active src=v#18 twin=he#34 next=he#131 prev=he#126 loop=loop#57 face=f#56(sg_te_area_11_layer_1)
+  he#34 scope=active src=v#19 twin=he#33 next=he#32 prev=he#36 loop=loop#3 face=nullptr
+  he#35 scope=active src=v#19 twin=he#36 next=he#137 prev=he#132 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#36 scope=active src=v#20 twin=he#35 next=he#34 prev=he#38 loop=loop#3 face=nullptr
+  he#37 scope=active src=v#20 twin=he#38 next=he#143 prev=he#138 loop=loop#61 face=f#60(sg_te_area_13_layer_1)
+  he#38 scope=active src=v#21 twin=he#37 next=he#36 prev=he#40 loop=loop#3 face=nullptr
+  he#39 scope=active src=v#21 twin=he#40 next=he#149 prev=he#144 loop=loop#63 face=f#62(sg_te_area_14_layer_1)
+  he#40 scope=active src=v#22 twin=he#39 next=he#38 prev=he#42 loop=loop#3 face=nullptr
+  he#41 scope=active src=v#22 twin=he#42 next=he#155 prev=he#150 loop=loop#65 face=f#64(sg_te_area_15_layer_1)
+  he#42 scope=active src=v#23 twin=he#41 next=he#40 prev=he#44 loop=loop#3 face=nullptr
+  he#43 scope=active src=v#23 twin=he#44 next=he#161 prev=he#156 loop=loop#67 face=f#66(sg_te_area_16_layer_1)
+  he#44 scope=active src=v#24 twin=he#43 next=he#42 prev=he#46 loop=loop#3 face=nullptr
+  he#45 scope=active src=v#24 twin=he#46 next=he#165 prev=he#162 loop=loop#69 face=f#68(sg_te_area_17_layer_1)
+  he#46 scope=active src=v#7 twin=he#45 next=he#44 prev=he#166 loop=loop#3 face=nullptr
+  he#47 scope=active src=v#6 twin=he#48 next=he#49 prev=he#66 loop=loop#3 face=nullptr
+  he#48 scope=active src=v#25 twin=he#47 next=he#65 prev=he#73 loop=loop#36 face=f#35(sg_te_area_1_layer_2)
+  he#49 scope=active src=v#25 twin=he#50 next=he#51 prev=he#47 loop=loop#3 face=nullptr
+  he#50 scope=active src=v#26 twin=he#49 next=he#74 prev=he#79 loop=loop#38 face=f#37(sg_te_area_2_layer_2)
+  he#51 scope=active src=v#26 twin=he#52 next=he#53 prev=he#49 loop=loop#3 face=nullptr
+  he#52 scope=active src=v#27 twin=he#51 next=he#80 prev=he#85 loop=loop#40 face=f#39(sg_te_area_3_layer_2)
+  he#53 scope=active src=v#27 twin=he#54 next=he#55 prev=he#51 loop=loop#3 face=nullptr
+  he#54 scope=active src=v#28 twin=he#53 next=he#134 prev=he#139 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#55 scope=active src=v#28 twin=he#56 next=he#57 prev=he#53 loop=loop#3 face=nullptr
+  he#56 scope=active src=v#29 twin=he#55 next=he#140 prev=he#145 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#57 scope=active src=v#29 twin=he#58 next=he#59 prev=he#55 loop=loop#3 face=nullptr
+  he#58 scope=active src=v#30 twin=he#57 next=he#146 prev=he#151 loop=loop#62 face=f#61(sg_te_area_14_layer_2)
+  he#59 scope=active src=v#30 twin=he#60 next=he#61 prev=he#57 loop=loop#3 face=nullptr
+  he#60 scope=active src=v#31 twin=he#59 next=he#152 prev=he#157 loop=loop#64 face=f#63(sg_te_area_15_layer_2)
+  he#61 scope=active src=v#31 twin=he#62 next=he#63 prev=he#59 loop=loop#3 face=nullptr
+  he#62 scope=active src=v#32 twin=he#61 next=he#158 prev=he#163 loop=loop#66 face=f#65(sg_te_area_16_layer_2)
+  he#63 scope=active src=v#32 twin=he#64 next=he#168 prev=he#61 loop=loop#3 face=nullptr
+  he#64 scope=active src=v#8 twin=he#63 next=he#164 prev=he#167 loop=loop#68 face=f#67(sg_te_area_17_layer_2)
+  he#65 scope=active src=v#6 twin=he#66 next=he#169 prev=he#48 loop=loop#36 face=f#35(sg_te_area_1_layer_2)
+  he#67 scope=active src=v#33 twin=he#68 next=he#13 prev=he#170 loop=loop#37 face=f#36(sg_te_area_1_layer_1)
+  he#68 scope=active src=v#5 twin=he#67 next=he#66 prev=he#14 loop=loop#3 face=nullptr
+  he#66 scope=active src=v#33 twin=he#65 next=he#47 prev=he#68 loop=loop#3 face=nullptr
+  he#71 scope=active src=v#9 twin=he#72 next=he#170 prev=he#13 loop=loop#37 face=f#36(sg_te_area_1_layer_1)
+  he#73 scope=active src=v#34 twin=he#74 next=he#48 prev=he#169 loop=loop#36 face=f#35(sg_te_area_1_layer_2)
+  he#74 scope=active src=v#25 twin=he#73 next=he#171 prev=he#50 loop=loop#38 face=f#37(sg_te_area_2_layer_2)
+  he#72 scope=active src=v#34 twin=he#71 next=he#15 prev=he#172 loop=loop#39 face=f#38(sg_te_area_2_layer_1)
+  he#77 scope=active src=v#10 twin=he#78 next=he#172 prev=he#15 loop=loop#39 face=f#38(sg_te_area_2_layer_1)
+  he#79 scope=active src=v#35 twin=he#80 next=he#50 prev=he#171 loop=loop#38 face=f#37(sg_te_area_2_layer_2)
+  he#80 scope=active src=v#26 twin=he#79 next=he#173 prev=he#52 loop=loop#40 face=f#39(sg_te_area_3_layer_2)
+  he#78 scope=active src=v#35 twin=he#77 next=he#17 prev=he#174 loop=loop#41 face=f#40(sg_te_area_3_layer_1)
+  he#83 scope=active src=v#11 twin=he#84 next=he#174 prev=he#17 loop=loop#41 face=f#40(sg_te_area_3_layer_1)
+  he#85 scope=active src=v#36 twin=he#86 next=he#52 prev=he#173 loop=loop#40 face=f#39(sg_te_area_3_layer_2)
+  he#86 scope=active src=v#27 twin=he#85 next=he#175 prev=he#91 loop=loop#42 face=f#41(sg_te_area_4_layer_2)
+  he#84 scope=active src=v#36 twin=he#83 next=he#19 prev=he#176 loop=loop#43 face=f#42(sg_te_area_4_layer_1)
+  he#89 scope=active src=v#12 twin=he#90 next=he#176 prev=he#19 loop=loop#43 face=f#42(sg_te_area_4_layer_1)
+  he#91 scope=active src=v#37 twin=he#92 next=he#86 prev=he#175 loop=loop#42 face=f#41(sg_te_area_4_layer_2)
+  he#92 scope=active src=v#27 twin=he#91 next=he#177 prev=he#97 loop=loop#44 face=f#43(sg_te_area_5_layer_2)
+  he#90 scope=active src=v#37 twin=he#89 next=he#21 prev=he#178 loop=loop#45 face=f#44(sg_te_area_5_layer_1)
+  he#95 scope=active src=v#13 twin=he#96 next=he#178 prev=he#21 loop=loop#45 face=f#44(sg_te_area_5_layer_1)
+  he#97 scope=active src=v#38 twin=he#98 next=he#92 prev=he#177 loop=loop#44 face=f#43(sg_te_area_5_layer_2)
+  he#98 scope=active src=v#27 twin=he#97 next=he#179 prev=he#103 loop=loop#46 face=f#45(sg_te_area_6_layer_2)
+  he#96 scope=active src=v#38 twin=he#95 next=he#23 prev=he#180 loop=loop#47 face=f#46(sg_te_area_6_layer_1)
+  he#101 scope=active src=v#14 twin=he#102 next=he#180 prev=he#23 loop=loop#47 face=f#46(sg_te_area_6_layer_1)
+  he#103 scope=active src=v#39 twin=he#104 next=he#98 prev=he#179 loop=loop#46 face=f#45(sg_te_area_6_layer_2)
+  he#104 scope=active src=v#27 twin=he#103 next=he#181 prev=he#109 loop=loop#48 face=f#47(sg_te_area_7_layer_2)
+  he#102 scope=active src=v#39 twin=he#101 next=he#25 prev=he#182 loop=loop#49 face=f#48(sg_te_area_7_layer_1)
+  he#107 scope=active src=v#15 twin=he#108 next=he#182 prev=he#25 loop=loop#49 face=f#48(sg_te_area_7_layer_1)
+  he#109 scope=active src=v#40 twin=he#110 next=he#104 prev=he#181 loop=loop#48 face=f#47(sg_te_area_7_layer_2)
+  he#110 scope=active src=v#27 twin=he#109 next=he#183 prev=he#115 loop=loop#50 face=f#49(sg_te_area_8_layer_2)
+  he#108 scope=active src=v#40 twin=he#107 next=he#27 prev=he#184 loop=loop#51 face=f#50(sg_te_area_8_layer_1)
+  he#113 scope=active src=v#16 twin=he#114 next=he#184 prev=he#27 loop=loop#51 face=f#50(sg_te_area_8_layer_1)
+  he#115 scope=active src=v#41 twin=he#116 next=he#110 prev=he#183 loop=loop#50 face=f#49(sg_te_area_8_layer_2)
+  he#116 scope=active src=v#27 twin=he#115 next=he#185 prev=he#121 loop=loop#52 face=f#51(sg_te_area_9_layer_2)
+  he#114 scope=active src=v#41 twin=he#113 next=he#29 prev=he#186 loop=loop#53 face=f#52(sg_te_area_9_layer_1)
+  he#119 scope=active src=v#17 twin=he#120 next=he#186 prev=he#29 loop=loop#53 face=f#52(sg_te_area_9_layer_1)
+  he#121 scope=active src=v#42 twin=he#122 next=he#116 prev=he#185 loop=loop#52 face=f#51(sg_te_area_9_layer_2)
+  he#122 scope=active src=v#27 twin=he#121 next=he#187 prev=he#127 loop=loop#54 face=f#53(sg_te_area_10_layer_2)
+  he#120 scope=active src=v#42 twin=he#119 next=he#31 prev=he#188 loop=loop#55 face=f#54(sg_te_area_10_layer_1)
+  he#125 scope=active src=v#18 twin=he#126 next=he#188 prev=he#31 loop=loop#55 face=f#54(sg_te_area_10_layer_1)
+  he#127 scope=active src=v#43 twin=he#128 next=he#122 prev=he#187 loop=loop#54 face=f#53(sg_te_area_10_layer_2)
+  he#128 scope=active src=v#27 twin=he#127 next=he#189 prev=he#133 loop=loop#56 face=f#55(sg_te_area_11_layer_2)
+  he#126 scope=active src=v#43 twin=he#125 next=he#33 prev=he#190 loop=loop#57 face=f#56(sg_te_area_11_layer_1)
+  he#131 scope=active src=v#19 twin=he#132 next=he#190 prev=he#33 loop=loop#57 face=f#56(sg_te_area_11_layer_1)
+  he#133 scope=active src=v#44 twin=he#134 next=he#128 prev=he#189 loop=loop#56 face=f#55(sg_te_area_11_layer_2)
+  he#134 scope=active src=v#27 twin=he#133 next=he#191 prev=he#54 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#132 scope=active src=v#44 twin=he#131 next=he#35 prev=he#192 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#137 scope=active src=v#20 twin=he#138 next=he#139 prev=he#35 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#139 scope=active src=v#45 twin=he#140 next=he#54 prev=he#137 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#140 scope=active src=v#28 twin=he#139 next=he#192 prev=he#56 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#138 scope=active src=v#45 twin=he#137 next=he#37 prev=he#194 loop=loop#61 face=f#60(sg_te_area_13_layer_1)
+  he#143 scope=active src=v#21 twin=he#144 next=he#194 prev=he#37 loop=loop#61 face=f#60(sg_te_area_13_layer_1)
+  he#145 scope=active src=v#46 twin=he#146 next=he#56 prev=he#193 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#146 scope=active src=v#29 twin=he#145 next=he#195 prev=he#58 loop=loop#62 face=f#61(sg_te_area_14_layer_2)
+  he#144 scope=active src=v#46 twin=he#143 next=he#39 prev=he#196 loop=loop#63 face=f#62(sg_te_area_14_layer_1)
+  he#149 scope=active src=v#22 twin=he#150 next=he#196 prev=he#39 loop=loop#63 face=f#62(sg_te_area_14_layer_1)
+  he#151 scope=active src=v#47 twin=he#152 next=he#58 prev=he#195 loop=loop#62 face=f#61(sg_te_area_14_layer_2)
+  he#152 scope=active src=v#30 twin=he#151 next=he#197 prev=he#60 loop=loop#64 face=f#63(sg_te_area_15_layer_2)
+  he#150 scope=active src=v#47 twin=he#149 next=he#41 prev=he#198 loop=loop#65 face=f#64(sg_te_area_15_layer_1)
+  he#155 scope=active src=v#23 twin=he#156 next=he#198 prev=he#41 loop=loop#65 face=f#64(sg_te_area_15_layer_1)
+  he#157 scope=active src=v#48 twin=he#158 next=he#60 prev=he#197 loop=loop#64 face=f#63(sg_te_area_15_layer_2)
+  he#158 scope=active src=v#31 twin=he#157 next=he#199 prev=he#62 loop=loop#66 face=f#65(sg_te_area_16_layer_2)
+  he#156 scope=active src=v#48 twin=he#155 next=he#43 prev=he#200 loop=loop#67 face=f#66(sg_te_area_16_layer_1)
+  he#161 scope=active src=v#24 twin=he#162 next=he#200 prev=he#43 loop=loop#67 face=f#66(sg_te_area_16_layer_1)
+  he#163 scope=active src=v#49 twin=he#164 next=he#62 prev=he#199 loop=loop#66 face=f#65(sg_te_area_16_layer_2)
+  he#164 scope=active src=v#32 twin=he#163 next=he#201 prev=he#64 loop=loop#68 face=f#67(sg_te_area_17_layer_2)
+  he#162 scope=active src=v#49 twin=he#161 next=he#45 prev=he#202 loop=loop#69 face=f#68(sg_te_area_17_layer_1)
+  he#165 scope=active src=v#7 twin=he#166 next=he#202 prev=he#45 loop=loop#69 face=f#68(sg_te_area_17_layer_1)
+  he#167 scope=active src=v#50 twin=he#168 next=he#64 prev=he#201 loop=loop#68 face=f#67(sg_te_area_17_layer_2)
+  he#168 scope=active src=v#8 twin=he#167 next=he#166 prev=he#63 loop=loop#3 face=nullptr
+  he#166 scope=active src=v#50 twin=he#165 next=he#46 prev=he#168 loop=loop#3 face=nullptr
+  he#169 scope=active src=v#33 twin=he#170 next=he#73 prev=he#65 loop=loop#36 face=f#35(sg_te_area_1_layer_2)
+  he#170 scope=active src=v#34 twin=he#169 next=he#67 prev=he#71 loop=loop#37 face=f#36(sg_te_area_1_layer_1)
+  he#171 scope=active src=v#34 twin=he#172 next=he#79 prev=he#74 loop=loop#38 face=f#37(sg_te_area_2_layer_2)
+  he#172 scope=active src=v#35 twin=he#171 next=he#72 prev=he#77 loop=loop#39 face=f#38(sg_te_area_2_layer_1)
+  he#173 scope=active src=v#35 twin=he#174 next=he#85 prev=he#80 loop=loop#40 face=f#39(sg_te_area_3_layer_2)
+  he#174 scope=active src=v#36 twin=he#173 next=he#78 prev=he#83 loop=loop#41 face=f#40(sg_te_area_3_layer_1)
+  he#175 scope=active src=v#36 twin=he#176 next=he#91 prev=he#86 loop=loop#42 face=f#41(sg_te_area_4_layer_2)
+  he#176 scope=active src=v#37 twin=he#175 next=he#84 prev=he#89 loop=loop#43 face=f#42(sg_te_area_4_layer_1)
+  he#177 scope=active src=v#37 twin=he#178 next=he#97 prev=he#92 loop=loop#44 face=f#43(sg_te_area_5_layer_2)
+  he#178 scope=active src=v#38 twin=he#177 next=he#90 prev=he#95 loop=loop#45 face=f#44(sg_te_area_5_layer_1)
+  he#179 scope=active src=v#38 twin=he#180 next=he#103 prev=he#98 loop=loop#46 face=f#45(sg_te_area_6_layer_2)
+  he#180 scope=active src=v#39 twin=he#179 next=he#96 prev=he#101 loop=loop#47 face=f#46(sg_te_area_6_layer_1)
+  he#181 scope=active src=v#39 twin=he#182 next=he#109 prev=he#104 loop=loop#48 face=f#47(sg_te_area_7_layer_2)
+  he#182 scope=active src=v#40 twin=he#181 next=he#102 prev=he#107 loop=loop#49 face=f#48(sg_te_area_7_layer_1)
+  he#183 scope=active src=v#40 twin=he#184 next=he#115 prev=he#110 loop=loop#50 face=f#49(sg_te_area_8_layer_2)
+  he#184 scope=active src=v#41 twin=he#183 next=he#108 prev=he#113 loop=loop#51 face=f#50(sg_te_area_8_layer_1)
+  he#185 scope=active src=v#41 twin=he#186 next=he#121 prev=he#116 loop=loop#52 face=f#51(sg_te_area_9_layer_2)
+  he#186 scope=active src=v#42 twin=he#185 next=he#114 prev=he#119 loop=loop#53 face=f#52(sg_te_area_9_layer_1)
+  he#187 scope=active src=v#42 twin=he#188 next=he#127 prev=he#122 loop=loop#54 face=f#53(sg_te_area_10_layer_2)
+  he#188 scope=active src=v#43 twin=he#187 next=he#120 prev=he#125 loop=loop#55 face=f#54(sg_te_area_10_layer_1)
+  he#189 scope=active src=v#43 twin=he#190 next=he#133 prev=he#128 loop=loop#56 face=f#55(sg_te_area_11_layer_2)
+  he#190 scope=active src=v#44 twin=he#189 next=he#126 prev=he#131 loop=loop#57 face=f#56(sg_te_area_11_layer_1)
+  he#191 scope=active src=v#44 twin=he#192 next=he#193 prev=he#134 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#192 scope=active src=v#45 twin=he#191 next=he#132 prev=he#140 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#193 scope=active src=v#45 twin=he#194 next=he#145 prev=he#191 loop=loop#60 face=f#59(sg_te_area_13_layer_2)
+  he#194 scope=active src=v#46 twin=he#193 next=he#138 prev=he#143 loop=loop#61 face=f#60(sg_te_area_13_layer_1)
+  he#195 scope=active src=v#46 twin=he#196 next=he#151 prev=he#146 loop=loop#62 face=f#61(sg_te_area_14_layer_2)
+  he#196 scope=active src=v#47 twin=he#195 next=he#144 prev=he#149 loop=loop#63 face=f#62(sg_te_area_14_layer_1)
+  he#197 scope=active src=v#47 twin=he#198 next=he#157 prev=he#152 loop=loop#64 face=f#63(sg_te_area_15_layer_2)
+  he#198 scope=active src=v#48 twin=he#197 next=he#150 prev=he#155 loop=loop#65 face=f#64(sg_te_area_15_layer_1)
+  he#199 scope=active src=v#48 twin=he#200 next=he#163 prev=he#158 loop=loop#66 face=f#65(sg_te_area_16_layer_2)
+  he#200 scope=active src=v#49 twin=he#199 next=he#156 prev=he#161 loop=loop#67 face=f#66(sg_te_area_16_layer_1)
+  he#201 scope=active src=v#49 twin=he#202 next=he#167 prev=he#164 loop=loop#68 face=f#67(sg_te_area_17_layer_2)
+  he#202 scope=active src=v#50 twin=he#201 next=he#162 prev=he#165 loop=loop#69 face=f#68(sg_te_area_17_layer_1)
+  he#2 scope=background src=v#2 twin=he#1 next=he#8 prev=he#4 loop=nullptr face=nullptr
+  he#4 scope=background src=v#3 twin=he#3 next=he#2 prev=he#6 loop=nullptr face=nullptr
+  he#6 scope=background src=v#4 twin=he#5 next=he#4 prev=he#8 loop=nullptr face=nullptr
+  he#8 scope=background src=v#1 twin=he#7 next=he#6 prev=he#2 loop=nullptr face=nullptr
+
+LOOPS (36):
+  loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
+  loop#3 incident=he#168 face=nullptr kept=false adjacent=nullptr
+  loop#28 incident=he#56 face=nullptr kept=false adjacent=nullptr
+  loop#36 incident=he#65 face=nullptr kept=false adjacent=nullptr
+  loop#37 incident=he#67 face=nullptr kept=false adjacent=nullptr
+  loop#38 incident=he#74 face=nullptr kept=false adjacent=nullptr
+  loop#39 incident=he#72 face=nullptr kept=false adjacent=nullptr
+  loop#40 incident=he#80 face=nullptr kept=false adjacent=nullptr
+  loop#41 incident=he#78 face=nullptr kept=false adjacent=nullptr
+  loop#42 incident=he#86 face=nullptr kept=false adjacent=nullptr
+  loop#43 incident=he#84 face=nullptr kept=false adjacent=nullptr
+  loop#44 incident=he#92 face=nullptr kept=false adjacent=nullptr
+  loop#45 incident=he#90 face=nullptr kept=false adjacent=nullptr
+  loop#46 incident=he#98 face=nullptr kept=false adjacent=nullptr
+  loop#47 incident=he#96 face=nullptr kept=false adjacent=nullptr
+  loop#48 incident=he#104 face=nullptr kept=false adjacent=nullptr
+  loop#49 incident=he#102 face=nullptr kept=false adjacent=nullptr
+  loop#50 incident=he#110 face=nullptr kept=false adjacent=nullptr
+  loop#51 incident=he#108 face=nullptr kept=false adjacent=nullptr
+  loop#52 incident=he#116 face=nullptr kept=false adjacent=nullptr
+  loop#53 incident=he#114 face=nullptr kept=false adjacent=nullptr
+  loop#54 incident=he#122 face=nullptr kept=false adjacent=nullptr
+  loop#55 incident=he#188 face=nullptr kept=false adjacent=nullptr
+  loop#56 incident=he#128 face=nullptr kept=false adjacent=nullptr
+  loop#57 incident=he#190 face=nullptr kept=false adjacent=nullptr
+  loop#58 incident=he#134 face=nullptr kept=false adjacent=nullptr
+  loop#60 incident=he#134 face=nullptr kept=false adjacent=nullptr
+  loop#61 incident=he#194 face=nullptr kept=false adjacent=nullptr
+  loop#62 incident=he#58 face=nullptr kept=false adjacent=nullptr
+  loop#63 incident=he#196 face=nullptr kept=false adjacent=nullptr
+  loop#64 incident=he#60 face=nullptr kept=false adjacent=nullptr
+  loop#65 incident=he#198 face=nullptr kept=false adjacent=nullptr
+  loop#66 incident=he#62 face=nullptr kept=false adjacent=nullptr
+  loop#67 incident=he#200 face=nullptr kept=false adjacent=nullptr
+  loop#68 incident=he#64 face=nullptr kept=false adjacent=nullptr
+  loop#69 incident=he#202 face=nullptr kept=false adjacent=nullptr
+
+FACES (35):
+  f#1 name=background bounded=false outer=he#1
+  f#35 name=sg_te_area_1_layer_2 bounded=true outer=he#65
+  f#36 name=sg_te_area_1_layer_1 bounded=true outer=he#67
+  f#37 name=sg_te_area_2_layer_2 bounded=true outer=he#74
+  f#38 name=sg_te_area_2_layer_1 bounded=true outer=he#72
+  f#39 name=sg_te_area_3_layer_2 bounded=true outer=he#80
+  f#40 name=sg_te_area_3_layer_1 bounded=true outer=he#78
+  f#41 name=sg_te_area_4_layer_2 bounded=true outer=he#86
+  f#42 name=sg_te_area_4_layer_1 bounded=true outer=he#84
+  f#43 name=sg_te_area_5_layer_2 bounded=true outer=he#92
+  f#44 name=sg_te_area_5_layer_1 bounded=true outer=he#90
+  f#45 name=sg_te_area_6_layer_2 bounded=true outer=he#98
+  f#46 name=sg_te_area_6_layer_1 bounded=true outer=he#96
+  f#47 name=sg_te_area_7_layer_2 bounded=true outer=he#104
+  f#48 name=sg_te_area_7_layer_1 bounded=true outer=he#102
+  f#49 name=sg_te_area_8_layer_2 bounded=true outer=he#110
+  f#50 name=sg_te_area_8_layer_1 bounded=true outer=he#108
+  f#51 name=sg_te_area_9_layer_2 bounded=true outer=he#116
+  f#52 name=sg_te_area_9_layer_1 bounded=true outer=he#114
+  f#53 name=sg_te_area_10_layer_2 bounded=true outer=he#122
+  f#54 name=sg_te_area_10_layer_1 bounded=true outer=he#188
+  f#55 name=sg_te_area_11_layer_2 bounded=true outer=he#128
+  f#56 name=sg_te_area_11_layer_1 bounded=true outer=he#190
+  f#57 name=sg_te_area_12_layer_2 bounded=true outer=he#134
+  f#58 name=sg_te_area_12_layer_1 bounded=true outer=he#134
+  f#59 name=sg_te_area_13_layer_2 bounded=true outer=he#134
+  f#60 name=sg_te_area_13_layer_1 bounded=true outer=he#194
+  f#61 name=sg_te_area_14_layer_2 bounded=true outer=he#58
+  f#62 name=sg_te_area_14_layer_1 bounded=true outer=he#196
+  f#63 name=sg_te_area_15_layer_2 bounded=true outer=he#60
+  f#64 name=sg_te_area_15_layer_1 bounded=true outer=he#198
+  f#65 name=sg_te_area_16_layer_2 bounded=true outer=he#62
+  f#66 name=sg_te_area_16_layer_1 bounded=true outer=he#200
+  f#67 name=sg_te_area_17_layer_2 bounded=true outer=he#64
+  f#68 name=sg_te_area_17_layer_1 bounded=true outer=he#202
+

@@ -2496,7 +2496,7 @@ LOOPS (373):
   loop#731 incident=he#2257 face=nullptr kept=false adjacent=nullptr
   loop#732 incident=he#2259 face=nullptr kept=false adjacent=nullptr
   loop#734 incident=he#2262 face=nullptr kept=false adjacent=nullptr
-  loop#735 incident=he#2268 face=nullptr kept=true adjacent=nullptr
+  loop#735 incident=he#2268 face=nullptr kept=false adjacent=nullptr
   loop#736 incident=he#2266 face=nullptr kept=false adjacent=nullptr
 
 FACES (369):

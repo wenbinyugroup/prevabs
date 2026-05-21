@@ -289,13 +289,51 @@ std::vector<OffsetPolygon> extractOpenRuns(
 
     std::vector<SPoint2>            new_pts;
     std::vector<OffsetVertexSource> new_srcs;
+    std::vector<bool>               new_resampled;
     new_pts.reserve(N);
     new_srcs.reserve(N);
+    new_resampled.reserve(N);
 
     int cur_seg = 0;
     const int n_run_seg = static_cast<int>(r.points.size()) - 1;
     for (int i = 0; i < N; ++i) {
       if (!base_covered[i]) continue;
+
+      // G.1 (summary-20260520 §2.2 / §3.1): leading boundary covered base
+      // vert sits next to an uncovered range. The foot-of-perpendicular
+      // onto the raw run polyline pulls its anchor toward the base normal,
+      // which in thin-TE geometry yanks the bevel boundary away from
+      // where Clipper2 actually sat — downstream layup intersections
+      // generate a degenerate fan. Use the closest raw run VERTEX instead;
+      // that is the actual Clipper2 bevel / trim boundary point.
+      // The trailing boundary was already dropped by the trim above, so
+      // the only remaining boundary case is leading.
+      const bool is_leading_boundary =
+          (i == 0) || !base_covered[i - 1];
+
+      if (is_leading_boundary) {
+        int    best_m  = cur_seg;
+        double best_d2 = std::numeric_limits<double>::infinity();
+        const int m_hi = static_cast<int>(r.points.size());
+        for (int m = cur_seg; m < m_hi; ++m) {
+          const double dx = base[i].x() - r.points[m].x();
+          const double dy = base[i].y() - r.points[m].y();
+          const double d2 = dx * dx + dy * dy;
+          if (d2 < best_d2) { best_d2 = d2; best_m = m; }
+        }
+        new_pts.emplace_back(r.points[best_m].x(), r.points[best_m].y());
+
+        OffsetVertexSource src;
+        src.base_seg = (i == 0) ? 0 : (i - 1);
+        src.base_u   = (i == 0) ? 0.0 : 1.0;
+        new_srcs.push_back(src);
+        new_resampled.push_back(false);  // raw Clipper2 vertex
+
+        // Advance cur_seg so the next foot-of-perpendicular projection
+        // doesn't walk back behind this anchor.
+        cur_seg = std::min(best_m, n_run_seg - 1);
+        continue;
+      }
 
       int    best_seg = cur_seg;
       double best_u   = 0.0;
@@ -322,22 +360,20 @@ std::vector<OffsetPolygon> extractOpenRuns(
       src.base_seg = (i == 0) ? 0 : (i - 1);
       src.base_u   = (i == 0) ? 0.0 : 1.0;
       new_srcs.push_back(src);
+      new_resampled.push_back(true);  // synthetic foot-of-perpendicular
 
       cur_seg = best_seg;
     }
 
     if (new_pts.size() >= 2) {
-      // Snapshot the raw run polyline before it is wholesale-replaced by
-      // the foot-of-perpendicular interpolations below. Debug overlays use
-      // this to plot where Clipper2 originally placed vertices — those
-      // positions are otherwise lost (every slot below is tagged
-      // `resampled=true`).
+      // Snapshot the raw run polyline before any positions are replaced
+      // by the foot-of-perpendicular interpolations above. Debug overlays
+      // use this to plot where Clipper2 originally placed vertices — those
+      // positions are otherwise lost for slots tagged `resampled=true`.
       r.pre_resample_points = r.points;
-      r.points  = std::move(new_pts);
-      r.sources = std::move(new_srcs);
-      // Every vertex of the resampled run is synthetic — drawn at the
-      // perpendicular foot of a base vertex on the raw Clipper2 run.
-      r.resampled.assign(r.points.size(), true);
+      r.points    = std::move(new_pts);
+      r.sources   = std::move(new_srcs);
+      r.resampled = std::move(new_resampled);
     }
   }
 
