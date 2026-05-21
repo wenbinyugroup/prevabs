@@ -74,7 +74,8 @@ void dumpBaseOffsetMapSvg(const std::string& path,
                           const std::vector<PDCELVertex*>& base,
                           const std::vector<PDCELVertex*>& offset,
                           const BaseOffsetMap& pairs,
-                          const std::vector<bool>* offset_resampled) {
+                          const std::vector<bool>* offset_resampled,
+                          const std::vector<SPoint2>* pre_resample_raw_points) {
   if (base.empty() && offset.empty()) {
     PLOG(warning) << "dumpBaseOffsetMapSvg: nothing to draw for '" << title
                   << "', skipping";
@@ -85,6 +86,9 @@ void dumpBaseOffsetMapSvg(const std::string& path,
   BBox bb;
   for (auto* v : base)   { if (v) bb.add(v->y(), v->z()); }
   for (auto* v : offset) { if (v) bb.add(v->y(), v->z()); }
+  if (pre_resample_raw_points) {
+    for (const auto& p : *pre_resample_raw_points) bb.add(p.x(), p.y());
+  }
   if (bb.empty()) {
     PLOG(warning) << "dumpBaseOffsetMapSvg: all vertices null for '" << title
                   << "', skipping";
@@ -129,10 +133,13 @@ void dumpBaseOffsetMapSvg(const std::string& path,
   } else {
     n_raw = offset.size();
   }
+  const std::size_t n_pre_raw =
+      pre_resample_raw_points ? pre_resample_raw_points->size() : 0;
   std::ostringstream subtitle;
   subtitle << "base verts = " << base.size()
            << ",  offset verts = " << offset.size()
            << " (raw " << n_raw << " / resampled " << n_resampled << ")"
+           << ",  pre-resample raw = " << n_pre_raw
            << ",  pairs = " << pairs.size()
            << ",  bbox y=[" << bb.min_y << ", " << bb.max_y
            << "]  z=[" << bb.min_z << ", " << bb.max_z << "]";
@@ -197,18 +204,32 @@ void dumpBaseOffsetMapSvg(const std::string& path,
       // Hollow square, slightly larger than the disk marker — easier to
       // pick out when raw + resampled markers overlap on a single base
       // vertex's projection foot.
-      writeSquare(os, cx, cy, R + 1.0, "white", "#7a3d05", 1.2);
+      writeSquare(os, cx, cy, R + 1.0, "none", "#7a3d05", 1.2);
     } else {
       writeCircle(os, cx, cy, R, "#ff7f0e", "#7a3d05");
     }
     writeText(os, cx + 4, cy + 12, 10, "#7a3d05", "o" + std::to_string(i));
   }
 
+  // 8b. Topmost overlay: Clipper2 raw run vertices captured immediately
+  // before the open-path resample step replaced them wholesale. These
+  // positions have no counterpart in `offset` — the resample commits
+  // `r.points = new_pts` and tags every slot `resampled=true`, so this
+  // layer is the only way to see the raw Clipper2 placement that the
+  // staircase was originally going to align to.
+  if (pre_resample_raw_points && !pre_resample_raw_points->empty()) {
+    const double r_pre = R * 0.6;
+    for (const auto& p : *pre_resample_raw_points) {
+      const double cx = x.svgX(p.x()), cy = x.svgY(p.y());
+      writeCircle(os, cx, cy, r_pre, "#e41a1c", "#5a0606");
+    }
+  }
+
   // 9. Legend (top-right corner of the canvas).
   const double lx = W - 240, ly = 30;
   os << "<g font-family=\"sans-serif\" font-size=\"12\">\n";
   os << "<rect x=\"" << lx - 10 << "\" y=\"" << ly - 18
-     << "\" width=\"230\" height=\"122\" fill=\"#fafafa\""
+     << "\" width=\"230\" height=\"142\" fill=\"#fafafa\""
      << " stroke=\"#ccc\"/>\n";
   // base curve line + filled blue disk marker
   os << "<line x1=\"" << lx << "\" y1=\"" << ly << "\" x2=\"" << lx + 24
@@ -229,6 +250,9 @@ void dumpBaseOffsetMapSvg(const std::string& path,
   os << "<line x1=\"" << lx << "\" y1=\"" << ly + 80 << "\" x2=\"" << lx + 24
      << "\" y2=\"" << ly + 80 << "\" stroke=\"#888\" stroke-width=\"0.7\"/>\n";
   writeText(os, lx + 32, ly + 84, 12, "#444", "pair (b_i, o_j)");
+  // pre-resample raw vertex marker (smaller red dot)
+  writeCircle(os, lx + 12, ly + 100, R * 0.6, "#e41a1c", "#5a0606");
+  writeText(os, lx + 32, ly + 104, 12, "#5a0606", "raw vertex (pre-resample)");
   os << "</g>\n";
 
   os << "</svg>\n";

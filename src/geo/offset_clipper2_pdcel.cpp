@@ -96,10 +96,11 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     out.offset_resampled.push_back(out.offset_resampled.front());
   }
 
-  out.id_pairs               = plan.id_pairs;
-  out.dropped_base_ranges_lo = plan.dropped_base_ranges_lo;
-  out.dropped_base_ranges_hi = plan.dropped_base_ranges_hi;
-  out.ok                     = true;
+  out.id_pairs                  = plan.id_pairs;
+  out.dropped_base_ranges_lo    = plan.dropped_base_ranges_lo;
+  out.dropped_base_ranges_hi    = plan.dropped_base_ranges_hi;
+  out.pre_resample_raw_points   = plan.pre_resample_raw_points;
+  out.ok                        = true;
   return out;
 }
 

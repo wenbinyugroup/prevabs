@@ -54,6 +54,15 @@ struct OffsetPolygon {
   //           vertex onto the raw run polyline). Only ever true on the
   //           open-input branch.
   std::vector<bool>               resampled;
+  // Debug-only snapshot of the raw Clipper2 run polyline taken
+  // immediately before `extractOpenRuns`'s foot-of-perpendicular
+  // resample step replaced every vertex in this run. Empty when the
+  // run never went through the resample branch (e.g. M >= N, or
+  // closed-input branch). The positions are otherwise unrecoverable
+  // because the resample commit overwrites `points` and tags every
+  // slot `resampled=true`. See `extractOpenRuns` in
+  // src/geo/offset_clipper2.cpp.
+  std::vector<SPoint2>            pre_resample_points;
   // is_closed = true   → closed offset polygon (closed-input branch).
   //                     `points` walks the perimeter; `points.front()`
   //                     and `points.back()` are distinct (no trailing
@@ -88,6 +97,13 @@ struct ReverseMatchPlan {
   /// the bridge so the PDCELVertex adapter can hand it to debug
   /// visualizers.
   std::vector<bool>    offset_resampled;
+
+  /// Debug-only snapshot of the primary polygon's raw Clipper2 vertices
+  /// captured immediately before the open-path resample step replaced
+  /// them. Empty when the primary run never went through resample.
+  /// No rotation is applied — order is the run-extractor's native walk
+  /// (it is used only as an unordered scatter overlay).
+  std::vector<SPoint2> pre_resample_raw_points;
 
   /// Staircase base→offset correspondence — see
   /// include/geo_types.hpp:27 for the invariant. For a closed input
@@ -232,6 +248,10 @@ struct ReverseMatchResult {
   /// `OffsetPolygon::resampled` for the convention. For closed inputs
   /// the trailing-duplicate slot copies the flag of the first vertex.
   std::vector<bool>         offset_resampled;
+  /// Debug-only pre-resample raw Clipper2 vertex snapshot — see
+  /// `ReverseMatchPlan::pre_resample_raw_points`. Empty when the
+  /// open-path resample step never triggered.
+  std::vector<SPoint2>      pre_resample_raw_points;
   /// Staircase per geo_types.hpp:27.
   ///   - closed → last entry is `(N_distinct, M_off_raw)` wrap pair.
   ///   - open   → last entry is `(N_distinct - 1, M_off_raw - 1)`,

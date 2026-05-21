@@ -69,6 +69,11 @@ private:
   // `false` = raw Clipper2 vertex, `true` = synthesized by the open-path
   // base-vertex resample. Debug-only; consumed by `dumpBaseOffsetMapSvg`.
   std::vector<bool> _offset_vertex_resampled;
+  // Debug-only snapshot of the Clipper2 raw run polyline taken right
+  // before the open-path resample replaced every vertex. Empty when
+  // resample didn't fire. Plotted as a topmost scatter overlay by
+  // `dumpBaseOffsetMapSvg`.
+  std::vector<SPoint2> _offset_pre_resample_raw_points;
   LifecycleState _state{LifecycleState::BaseReady};
 
 public:

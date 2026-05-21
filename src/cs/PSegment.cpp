@@ -608,6 +608,7 @@ void Segment::offsetCurveBase() {
   }
   _base_offset_indices_pairs.clear();
   _offset_vertex_resampled.clear();
+  _offset_pre_resample_raw_points.clear();
 
   const int side = requireValidLayupSide("offsetCurveBase");
   if (side == 0) {
@@ -622,7 +623,8 @@ void Segment::offsetCurveBase() {
   _curve_offset.reset(new Baseline());
   offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
          _curve_offset->vertices(), _base_offset_indices_pairs,
-         &_offset_vertex_resampled);
+         &_offset_vertex_resampled,
+         &_offset_pre_resample_raw_points);
   _face = nullptr;
   _areas.clear();
   _head_vertex_offset = nullptr;
@@ -645,7 +647,8 @@ void Segment::offsetCurveBase() {
                          _curve_base->vertices(),
                          _curve_offset->vertices(),
                          _base_offset_indices_pairs,
-                         &_offset_vertex_resampled);
+                         &_offset_vertex_resampled,
+                         &_offset_pre_resample_raw_points);
   }
 }
 

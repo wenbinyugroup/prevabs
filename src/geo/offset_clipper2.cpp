@@ -327,6 +327,12 @@ std::vector<OffsetPolygon> extractOpenRuns(
     }
 
     if (new_pts.size() >= 2) {
+      // Snapshot the raw run polyline before it is wholesale-replaced by
+      // the foot-of-perpendicular interpolations below. Debug overlays use
+      // this to plot where Clipper2 originally placed vertices — those
+      // positions are otherwise lost (every slot below is tagged
+      // `resampled=true`).
+      r.pre_resample_points = r.points;
       r.points  = std::move(new_pts);
       r.sources = std::move(new_srcs);
       // Every vertex of the resampled run is synthetic — drawn at the

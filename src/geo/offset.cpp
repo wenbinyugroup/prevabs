@@ -374,13 +374,23 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  *                         perpendicular foot by the open-path
  *                         resample step. Closed inputs and the
  *                         2-vertex fast path always report `false`.
+ * @param pre_resample_raw_points
+ *                         Optional debug-only output (may be null):
+ *                         snapshot of the Clipper2 raw run polyline
+ *                         taken immediately before the open-path
+ *                         resample step replaced every vertex. Empty
+ *                         on closed inputs, the 2-vertex fast path,
+ *                         and on open runs that did not need resample.
+ *                         Consumed by `dumpBaseOffsetMapSvg` as a
+ *                         topmost scatter overlay.
  * @return int             1 on success, 0 on degenerate input or
  *                         Clipper2 backend failure.
  */
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<PDCELVertex *> &offset_vertices,
            BaseOffsetMap &id_pairs,
-           std::vector<bool> *offset_resampled) {
+           std::vector<bool> *offset_resampled,
+           std::vector<SPoint2> *pre_resample_raw_points) {
 
 
   std::size_t size = base.size();
@@ -396,6 +406,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   offset_vertices.clear();
   id_pairs.clear();
   if (offset_resampled) offset_resampled->clear();
+  if (pre_resample_raw_points) pre_resample_raw_points->clear();
 
   if (config.debug_level >= DebugLevel::geo) {
         PLOG(debug) <<
@@ -578,6 +589,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   offset_vertices = result.offset_vertices;
   id_pairs        = result.id_pairs;
   if (offset_resampled) *offset_resampled = result.offset_resampled;
+  if (pre_resample_raw_points)
+    *pre_resample_raw_points = result.pre_resample_raw_points;
 
   for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
     PLOG(warning) << "offset (multi-vertex, "

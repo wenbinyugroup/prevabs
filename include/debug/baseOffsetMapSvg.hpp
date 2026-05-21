@@ -35,9 +35,17 @@ class PDCELVertex;
 //        draws raw vertices as filled circles and resampled vertices
 //        as hollow squares so the staircase fan structure can be
 //        attributed to either layer.
+// pre_resample_raw_points
+//        Optional debug overlay: Clipper2 raw run vertices snapshot
+//        at the moment immediately before the open-path resample step
+//        replaced them. Drawn as a topmost scatter layer (small red
+//        dots, no connecting line) so the viewer can see where
+//        Clipper2 originally placed vertices in runs that the
+//        resample wholesale-replaced. Empty / null → layer skipped.
 void dumpBaseOffsetMapSvg(const std::string& path,
                           const std::string& title,
                           const std::vector<PDCELVertex*>& base,
                           const std::vector<PDCELVertex*>& offset,
                           const BaseOffsetMap& pairs,
-                          const std::vector<bool>* offset_resampled = nullptr);
+                          const std::vector<bool>* offset_resampled = nullptr,
+                          const std::vector<SPoint2>* pre_resample_raw_points = nullptr);

@@ -434,6 +434,9 @@ ReverseMatchPlan planReverseMatch(
 
   out.offset_points    = std::move(points_rot);
   out.offset_resampled = std::move(resampled_rot);
+  // Debug overlay: carry the pre-resample raw vertex snapshot through.
+  // No rotation — it is rendered as an unordered scatter.
+  out.pre_resample_raw_points = primary.pre_resample_points;
 
   std::string err;
   if (!staircaseValid(out.id_pairs, &err)) return out;
