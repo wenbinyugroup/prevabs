@@ -445,5 +445,293 @@ ReverseMatchPlan planReverseMatch(
   return out;
 }
 
+// ===========================================================================
+// planReverseMatchByNearest — alternative point-to-point pairing.
+// See header for the algorithm description.
+// ===========================================================================
+
+namespace {
+
+inline double distSq(const SPoint2& a, const SPoint2& b) {
+  const double dx = a.x() - b.x();
+  const double dy = a.y() - b.y();
+  return dx * dx + dy * dy;
+}
+
+// Foot-of-perpendicular distance from query point `q` to the base
+// polyline. Mirrors `attributeSource`'s acceptance gate (1.5 * dist)
+// without depending on the offset_clipper2.cpp TU.
+double footDistToBase(const SPoint2& q,
+                      const std::vector<SPoint2>& base,
+                      bool closed) {
+  const int n_v = static_cast<int>(base.size());
+  if (n_v < 2) return std::numeric_limits<double>::infinity();
+  const int n_s = closed ? n_v : (n_v - 1);
+  double best = std::numeric_limits<double>::infinity();
+  for (int i = 0; i < n_s; ++i) {
+    const int j  = (closed && i == n_v - 1) ? 0 : i + 1;
+    const auto& a = base[i];
+    const auto& b = base[j];
+    const double dx = b.x() - a.x();
+    const double dy = b.y() - a.y();
+    const double len2 = dx * dx + dy * dy;
+    double u;
+    if (len2 == 0.0) {
+      u = 0.0;
+    } else {
+      u = ((q.x() - a.x()) * dx + (q.y() - a.y()) * dy) / len2;
+      if (u < 0.0) u = 0.0;
+      if (u > 1.0) u = 1.0;
+    }
+    const double fx  = a.x() + u * dx;
+    const double fy  = a.y() + u * dy;
+    const double rdx = q.x() - fx;
+    const double rdy = q.y() - fy;
+    const double d   = std::sqrt(rdx * rdx + rdy * rdy);
+    if (d < best) best = d;
+  }
+  return best;
+}
+
+}  // namespace
+
+ReverseMatchPlan planReverseMatchByNearest(
+    const std::vector<SPoint2>&        base,
+    bool                               base_is_closed,
+    int                                side,
+    double                             dist,
+    const std::vector<OffsetPolygon>&  polygons) {
+  (void)side;
+
+  ReverseMatchPlan out;
+  out.closed = base_is_closed;
+
+  if (base.size() < 2 || polygons.empty() || !(dist > 0.0)) return out;
+
+  const int primary_idx = base_is_closed
+                            ? pickPrimary(polygons, base)
+                            : pickPrimaryOpen(polygons, base);
+  if (primary_idx < 0) return out;
+  const OffsetPolygon& primary = polygons[primary_idx];
+
+  // Prefer the pre-resample raw vertex sequence when available — that
+  // is the whole point of this variant. Falls back to `points` for
+  // closed inputs (which never resample) and for open runs that
+  // didn't trigger resample.
+  const std::vector<SPoint2>& src_seq =
+      primary.pre_resample_points.empty() ? primary.points
+                                          : primary.pre_resample_points;
+
+  const int M = static_cast<int>(src_seq.size());
+  const int min_pts = base_is_closed ? 3 : 2;
+  if (M < min_pts) return out;
+
+  // Stage F multi-branch diagnostics — closed only, mirrors planReverseMatch.
+  if (base_is_closed) {
+    out.primary_polygon_area = std::fabs(signedArea(primary.points));
+    if (polygons.size() > 1) {
+      std::vector<double> dropped;
+      dropped.reserve(polygons.size() - 1);
+      for (int i = 0; i < static_cast<int>(polygons.size()); ++i) {
+        if (i == primary_idx) continue;
+        dropped.push_back(std::fabs(signedArea(polygons[i].points)));
+      }
+      std::sort(dropped.begin(), dropped.end(), std::greater<double>());
+      out.dropped_polygon_areas = std::move(dropped);
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Step 1: per-offset validity (foot-of-perpendicular gate).
+  // ---------------------------------------------------------------------
+  const double radius = 1.5 * dist;
+  std::vector<bool> src_valid(M, true);
+  int n_valid = 0;
+  for (int m = 0; m < M; ++m) {
+    if (footDistToBase(src_seq[m], base, base_is_closed) > radius) {
+      src_valid[m] = false;
+    } else {
+      ++n_valid;
+    }
+  }
+  if (n_valid == 0) return out;
+
+  // ---------------------------------------------------------------------
+  // Step 2: seed. `j_seed` is the offset index (in src_seq's original
+  // numbering) whose point is closest to base[0].
+  // ---------------------------------------------------------------------
+  int    j_seed = -1;
+  double d_seed = std::numeric_limits<double>::infinity();
+  for (int m = 0; m < M; ++m) {
+    if (!src_valid[m]) continue;
+    const double d = distSq(base[0], src_seq[m]);
+    if (d < d_seed) { d_seed = d; j_seed = m; }
+  }
+  if (j_seed < 0) return out;
+
+  // ---------------------------------------------------------------------
+  // Step 3: rotate for closed inputs so off[0] == src_seq[j_seed].
+  // For open inputs leave the polyline as-is; the seed is in src_seq's
+  // native frame.
+  // ---------------------------------------------------------------------
+  std::vector<SPoint2> off(M);
+  std::vector<bool>    off_valid(M);
+  if (base_is_closed) {
+    for (int m = 0; m < M; ++m) {
+      const int src_m = (j_seed + m) % M;
+      off[m]       = src_seq[src_m];
+      off_valid[m] = src_valid[src_m];
+    }
+  } else {
+    off       = src_seq;
+    off_valid = src_valid;
+  }
+  const int j_seed_rot = base_is_closed ? 0 : j_seed;
+
+  // ---------------------------------------------------------------------
+  // Step 4: forward pass. For each base[i], walk j forward (unrolled
+  // for closed) starting from the previous pairing. Stop when the
+  // point-to-point distance starts increasing. Pair base[i] with
+  // the j of minimum distance.
+  // ---------------------------------------------------------------------
+  const int N = static_cast<int>(base.size());
+  std::vector<int> pair_for_base(N, 0);  // unrolled offset index per base
+  pair_for_base[0] = j_seed_rot;
+
+  for (int i = 1; i < N; ++i) {
+    const int j_last = pair_for_base[i - 1];
+    int    j_min = j_last;
+    double d_min = distSq(base[i], off[j_last % M]);
+
+    // For closed we may walk up to a full revolution; for open we
+    // stop at the polyline end.
+    const int j_limit = base_is_closed ? (j_last + M) : (M - 1);
+    for (int j = j_last + 1; j <= j_limit; ++j) {
+      const int jm = base_is_closed ? (j % M) : j;
+      if (!off_valid[jm]) continue;  // join-point: don't stop, just skip
+      const double d = distSq(base[i], off[jm]);
+      if (d < d_min) {
+        d_min = d;
+        j_min = j;
+      } else if (d > d_min) {
+        break;  // distance has crossed the local min — stop walking
+      }
+      // d == d_min: tied; keep walking. Rare in practice.
+    }
+    pair_for_base[i] = j_min;
+  }
+
+  // ---------------------------------------------------------------------
+  // Step 5: build walked_base[m] for m in [0, M-1], filling gaps via
+  // the reverse pass and tail / pre-seed anchors.
+  // ---------------------------------------------------------------------
+  std::vector<int> walked(M, -1);
+
+  // (a) Direct assignments from the forward pass.
+  for (int i = 0; i < N; ++i) {
+    const int jm = pair_for_base[i] % M;
+    walked[jm] = i;  // last write wins if two base i's hit the same jm
+                     // (only possible at the closed wrap, which we
+                     // overwrite intentionally — the wrap pair (N, M)
+                     // is added by buildIdPairs at the end).
+  }
+
+  // (b) Reverse pass: gaps between consecutive forward-pass slots.
+  // For each skipped offset, pair with whichever of {i-1, i} is
+  // geometrically nearer. Once we switch from i-1 to i within a single
+  // gap, we don't switch back.
+  for (int i = 1; i < N; ++i) {
+    const int j_prev = pair_for_base[i - 1];
+    const int j_curr = pair_for_base[i];
+    if (j_curr <= j_prev + 1) continue;  // no gap
+
+    bool switched = false;
+    for (int j = j_prev + 1; j < j_curr; ++j) {
+      const int jm = base_is_closed ? (j % M) : j;
+      if (walked[jm] >= 0) continue;  // already assigned (shouldn't happen here)
+      if (!off_valid[jm]) {
+        // Join-point: inherit the more-recent assignment.
+        walked[jm] = switched ? i : (i - 1);
+        continue;
+      }
+      const double d_prev = distSq(base[i - 1], off[jm]);
+      const double d_curr = distSq(base[i],     off[jm]);
+      if (!switched && d_prev <= d_curr) {
+        walked[jm] = i - 1;
+      } else {
+        walked[jm] = i;
+        switched = true;
+      }
+    }
+  }
+
+  // (c) Pre-seed anchor (open only). For closed, j_seed_rot == 0 so
+  // there are no pre-seed slots.
+  if (!base_is_closed) {
+    for (int m = 0; m < j_seed_rot; ++m) {
+      if (walked[m] < 0) walked[m] = 0;
+    }
+  }
+
+  // (d) Tail fill.
+  if (base_is_closed) {
+    // Closed: any unassigned slot is in the wrap region (between
+    // pair_for_base[N-1] and the cyclic return to seed). They all
+    // pair with base[N-1] in the walked array; buildIdPairs appends
+    // the wrap pair (N, M) at the end on top of this.
+    for (int m = 0; m < M; ++m) {
+      if (walked[m] < 0) walked[m] = N - 1;
+    }
+  } else {
+    // Open: slots after pair_for_base[N-1] pair with base[N-1]
+    // (tail forward-fill of the staircase on the base side).
+    const int j_tail = pair_for_base[N - 1];
+    for (int m = j_tail + 1; m < M; ++m) {
+      if (walked[m] < 0) walked[m] = N - 1;
+    }
+  }
+
+  // Sanity: every slot must be assigned now (defensive — should hold
+  // by construction).
+  for (int m = 0; m < M; ++m) {
+    if (walked[m] < 0) walked[m] = 0;
+  }
+
+  // Defensive monotonization: a degenerate offset polyline can in
+  // principle produce a non-monotone walked sequence (e.g. when a
+  // join-point lies "out of order"). Force non-decreasing so
+  // buildIdPairs sees a clean staircase input.
+  for (int m = 1; m < M; ++m) {
+    if (walked[m] < walked[m - 1]) walked[m] = walked[m - 1];
+  }
+
+  // ---------------------------------------------------------------------
+  // Step 6: write the offset polyline + delegate id_pairs construction
+  // to the same helpers as planReverseMatch.
+  // ---------------------------------------------------------------------
+  out.offset_points    = std::move(off);
+  out.offset_resampled.assign(out.offset_points.size(), false);
+  // Carry pre-resample raw points through for debug overlays. Since
+  // the source sequence already IS the raw vertices, the snapshot is
+  // an empty vector here — debug rendering can drop the overlay
+  // for this variant.
+  out.pre_resample_raw_points.clear();
+
+  buildIdPairs(walked, N, base_is_closed,
+               out.id_pairs,
+               out.dropped_base_ranges_lo,
+               out.dropped_base_ranges_hi);
+
+  anchorAtZero(out.id_pairs,
+               out.dropped_base_ranges_lo,
+               out.dropped_base_ranges_hi);
+
+  std::string err;
+  if (!staircaseValid(out.id_pairs, &err)) return out;
+
+  out.ok = true;
+  return out;
+}
+
 }  // namespace geo
 }  // namespace prevabs

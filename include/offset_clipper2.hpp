@@ -177,6 +177,52 @@ ReverseMatchPlan planReverseMatch(
     double                             dist,
     const std::vector<OffsetPolygon>&  polygons);
 
+/// Alternative reverse-match using a **point-to-point nearest-vertex**
+/// criterion instead of the segment-projection + segment-midpoint
+/// rounding used by `planReverseMatch` / `attributeOne`.
+///
+/// Motivation: at sharp folds (e.g. airfoil thin TE), `attributeSource`
+/// projects an offset vertex onto a segment and `attributeOne` rounds
+/// to whichever segment endpoint has `u > 0.5`. The midpoint threshold
+/// is discontinuous, so a small perturbation at a high-curvature corner
+/// can flip the assignment to the wrong base end. Point-to-point
+/// nearest doesn't have this midpoint cliff.
+///
+/// Operates on the **pre-resample** raw Clipper2 vertex sequence when
+/// available (i.e. `OffsetPolygon::pre_resample_points` non-empty),
+/// otherwise falls back to `OffsetPolygon::points`. Bypasses the
+/// `extractOpenRuns` base-vertex resample step entirely — the staircase
+/// stair-step handles M != N natively.
+///
+/// Algorithm sketch:
+///   1. Pick the primary polygon (same as planReverseMatch).
+///   2. Build a per-offset "valid" mask via foot-distance to base
+///      polyline; discard offsets > 1.5 * |dist| from the base (the
+///      Clipper2 join-point criterion, identical to attributeSource).
+///   3. Seed the walk at `j_seed = argmin_m |base[0] - off[m]|`.
+///      For closed inputs, rotate the offset sequence so `off[0]`
+///      becomes the seed (cyclic alignment with `base[0]`).
+///   4. Forward pass: for each base[i], walk j forward from the
+///      previous pairing until point-to-point distance starts
+///      increasing; pair with the j_min.
+///   5. Reverse pass: for each offset slot skipped between consecutive
+///      forward-pass pairings, assign it to whichever of {i-1, i} is
+///      geometrically nearer. Once switched from i-1 to i, stay at i.
+///   6. Tail / pre-seed fill (open only): pre-seed offsets pair with
+///      base[0], post-tail offsets pair with base[N-1].
+///   7. Reuse `buildIdPairs` + `anchorAtZero` + `staircaseValid` for
+///      the index-domain housekeeping (drop ranges, wrap pair, etc.).
+///
+/// Same signature as `planReverseMatch` for drop-in A/B comparison.
+/// `planReverseMatch` is unchanged; callers must opt in to this
+/// variant explicitly.
+ReverseMatchPlan planReverseMatchByNearest(
+    const std::vector<SPoint2>&        base,
+    bool                               base_is_closed,
+    int                                side,
+    double                             dist,
+    const std::vector<OffsetPolygon>&  polygons);
+
 /// Pure-geometry Clipper2 offset wrapper.
 ///
 /// @param base            Input polyline in the yz plane.
