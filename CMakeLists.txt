@@ -54,6 +54,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/cs/PModel.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PSegment.cpp
   ${CMAKE_SOURCE_DIR}/src/debug/baseOffsetMapSvg.cpp
+  ${CMAKE_SOURCE_DIR}/src/debug/baseOffsetMapJson.cpp
   ${CMAKE_SOURCE_DIR}/src/execu.cpp
   ${CMAKE_SOURCE_DIR}/src/execu_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/DCELSweepLine.cpp

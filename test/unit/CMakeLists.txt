@@ -129,6 +129,7 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/cs/PSegment.cpp
   ${SRC_ROOT}/cs/join.cpp
   ${SRC_ROOT}/debug/baseOffsetMapSvg.cpp
+  ${SRC_ROOT}/debug/baseOffsetMapJson.cpp
   ${SRC_ROOT}/execu_utils.cpp
 )
 

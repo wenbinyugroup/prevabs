@@ -223,6 +223,97 @@ ReverseMatchPlan planReverseMatchByNearest(
     double                             dist,
     const std::vector<OffsetPolygon>&  polygons);
 
+/// Cost weights for `planReverseMatchByDP` (min-sum dynamic programming).
+///
+/// Cost of pairing base[i] with offset[j] is:
+///
+///   c(i,j) = wd · |a-b|² / dist²
+///          + wu · (u_i - v_j)²
+///          + wt · (1 - |t_A_i · t_B_j|)
+///          + wn · (r_ij · t_A_i)² / (|r_ij|² + eps)
+///
+/// where (u_i, v_j) are normalized cumulative arclengths on base/offset,
+/// (t_A_i, t_B_j) are unit tangents, and r_ij = offset[j] - base[i].
+/// Transition penalty `gap` is added on (i+1, j) and (i, j+1) steps
+/// (diag transition (i+1, j+1) is free beyond the cell cost).
+///
+/// Defaults are the Phase A prototype values
+/// (issue-20260522-dp-matcher-phase-a.md §2.2). Override only when
+/// tuning a specific failure case in Phase D.
+struct DPCostWeights {
+  double wd  = 1.0;
+  double wu  = 0.2;
+  double wt  = 0.1;
+  double wn  = 0.5;
+  double gap = 0.05;
+  double eps = 1e-9;
+};
+
+/// Pairing-algorithm selector consumed by `rebuildBaseOffsetMapFromGeometry`
+/// and the production dispatcher in `buildBaseOffsetMapFromOffsetPolygons`.
+/// The three variants are kept side-by-side during Phase D tuning; one of
+/// them becomes the default in Phase E.
+///
+///   SegmentProjection  legacy planReverseMatch (foot-of-perpendicular
+///                      + segment-midpoint round, see `attributeOne`).
+///   Nearest            planReverseMatchByNearest (point-to-point
+///                      greedy forward walk; current default).
+///   DP                 planReverseMatchByDP (min-sum dynamic
+///                      programming with four-term geometric cost).
+enum class PairingAlgo {
+  SegmentProjection,
+  Nearest,
+  DP,
+};
+
+/// Single source of truth for the pairing-algo selector env-var.
+/// Reads `PREVABS_PAIRING_ALGO` once per process and caches the result.
+///
+///   segment | seg | segment_projection  → SegmentProjection (default)
+///   nearest                              → Nearest
+///   dp                                   → DP
+///
+/// Value matching is case-insensitive. Unset / empty / unknown values
+/// return `SegmentProjection` — the de-facto pre-Phase-C production
+/// default that the integration-test Phase 4 baseline (29 pass / 5
+/// fail) was measured under. Phase E may flip the default once Phase D
+/// validates a different algorithm on the failing set.
+PairingAlgo readPairingAlgoEnv();
+
+/// Constrained monotone curve matcher via min-sum dynamic programming.
+///
+/// Algorithm:
+///   1. Pick the primary polygon (same rule as planReverseMatch /
+///      planReverseMatchByNearest).
+///   2. Use the raw pre-resample vertex sequence when available,
+///      otherwise the post-resample `points`.
+///   3. For closed inputs, seed at `j_seed = argmin_m |base[0] - off[m]|`
+///      and rotate the offset sequence so off[0] == off[j_seed]. Open
+///      inputs walk the source sequence directly.
+///   4. Fill DP table D[N][M] (min-sum) with three transitions
+///      ({i-1,j-1}, {i-1,j}+gap, {i,j-1}+gap) and the four-term cost
+///      (see `DPCostWeights`). Boundary rows/cols use accumulated cost
+///      + per-step gap.
+///   5. Backtrack from (N-1, M-1) to (0, 0). For each offset slot m
+///      take the largest base index seen at j=m → walked[m].
+///   6. Hand walked to the shared `buildIdPairs` / `anchorAtZero` /
+///      `staircaseValid` helpers — index-gap drops fall out for free.
+///   7. Geometric refinement: any pair (bi, oj) with
+///      |base[bi] - off[oj]| > 1.5·dist is additionally marked
+///      dropped (catches the diagonal-borderline case from
+///      issue-20260522-dp-matcher-phase-a.md §3.1).
+///
+/// Same signature shape as `planReverseMatch` /
+/// `planReverseMatchByNearest` so callers can A/B drop in a single
+/// dispatch site. `weights == nullptr` uses the `DPCostWeights` defaults.
+ReverseMatchPlan planReverseMatchByDP(
+    const std::vector<SPoint2>&        base,
+    bool                               base_is_closed,
+    int                                side,
+    double                             dist,
+    const std::vector<OffsetPolygon>&  polygons,
+    const DPCostWeights*               weights = nullptr);
+
 /// Rebuild a `BaseOffsetMap` (and any derived dropped-base ranges)
 /// purely from the **current geometry** of a base polyline and its
 /// already-materialized offset polyline. Does NOT invoke Clipper2 —
@@ -254,15 +345,13 @@ ReverseMatchPlan planReverseMatchByNearest(
 ///                        perpendicular acceptance gate (mirrors
 ///                        `attributeSource`); the offset polyline
 ///                        itself is not regenerated.
-/// @param use_nearest_pairing
-///                        true  → run `planReverseMatchByNearest`
-///                                (default; the long-term plan).
-///                        false → run `planReverseMatch` (segment-
-///                                projection pairing). Phase 2 callers
-///                                that need parity with a production
-///                                `offset()` configured with
-///                                `PREVABS_USE_NEAREST_PAIRING` unset
-///                                must pass `false`.
+/// @param algo            Pairing algorithm selector — must match the
+///                        algorithm production `offset()` used when
+///                        first populating `_base_offset_indices_pairs`
+///                        (otherwise the derived staircase diverges
+///                        by algorithm choice rather than geometry).
+///                        Callers in segment-area rebuild should pass
+///                        `readPairingAlgoEnv()`.
 ///
 /// Returns a `ReverseMatchPlan` with `ok=true` and the same data
 /// shape as `planReverseMatchByNearest`. `ok=false` indicates the
@@ -274,7 +363,7 @@ ReverseMatchPlan rebuildBaseOffsetMapFromGeometry(
     bool                               base_is_closed,
     int                                side,
     double                             dist,
-    bool                               use_nearest_pairing = true);
+    PairingAlgo                        algo = PairingAlgo::Nearest);
 
 /// Pure-geometry Clipper2 offset wrapper.
 ///

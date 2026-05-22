@@ -7,6 +7,7 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
+#include "debug/baseOffsetMapJson.hpp"
 #include "debug/baseOffsetMapSvg.hpp"
 #include "geo.hpp"
 #include "globalVariables.hpp"
@@ -657,6 +658,21 @@ void Segment::offsetCurveBase() {
                          _base_offset_indices_pairs,
                          &_offset_vertex_resampled,
                          &_offset_pre_resample_raw_points);
+    // plan-20260522-staircase-dp-matcher.md Phase A: write the same
+    // snapshot as JSON for the Python DP matcher prototype.
+    const std::string json_path = config.file_directory + config.file_base_name
+                                + "." + _name + ".base_offset_map.json";
+    const double dist =
+        (_layup != nullptr) ? _layup->getTotalThickness() : 0.0;
+    dumpBaseOffsetMapJson(json_path, _name,
+                          _curve_base->vertices(),
+                          _curve_offset->vertices(),
+                          _base_offset_indices_pairs,
+                          closed(),
+                          requireValidLayupSide("offsetCurveBase/json"),
+                          dist,
+                          &_dropped_base_ranges_lo,
+                          &_dropped_base_ranges_hi);
   }
 }
 

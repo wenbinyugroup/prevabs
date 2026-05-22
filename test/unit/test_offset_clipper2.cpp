@@ -28,7 +28,9 @@ using prevabs::geo::offsetWithClipper2;
 using prevabs::geo::ReverseMatchPlan;
 using prevabs::geo::planReverseMatch;
 using prevabs::geo::planReverseMatchByNearest;
+using prevabs::geo::planReverseMatchByDP;
 using prevabs::geo::rebuildBaseOffsetMapFromGeometry;
+using prevabs::geo::DPCostWeights;
 
 namespace {
 
@@ -1780,4 +1782,309 @@ TEST_CASE("rebuildBaseOffsetMapFromGeometry: short inputs return ok=false",
   CHECK_FALSE(rebuildBaseOffsetMapFromGeometry(base, o1, false, +1, 0.1).ok);
 
   CHECK_FALSE(rebuildBaseOffsetMapFromGeometry(base, off, false, +1, 0.0).ok);
+}
+
+
+// ===================================================================
+// planReverseMatchByDP — plan-20260522-staircase-dp-matcher.md Phase B.
+//
+// Min-sum DP constrained monotone matcher. Same I/O shape as
+// planReverseMatchByNearest so an A/B comparison is structural.
+// Parity assertions cover healthy cases (DP must reproduce the
+// nearest staircase identically); behavior assertions cover folded /
+// pinched cases where DP is the upgrade path.
+// ===================================================================
+
+
+// -------------------------------------------------------------------
+// DP-Parity-1 — closed square: DP and Nearest must produce the same
+// staircase on a clean convex case.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: closed square parity with Nearest",
+          "[offset_clipper2][bridge][dp][closed]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.05), SPoint2(0.95, 0.05),
+      SPoint2(0.95, 0.95), SPoint2(0.05, 0.95),
+  }, /*closed*/ true);
+
+  const auto nearest = planReverseMatchByNearest(
+      base, /*closed*/ true, /*side*/ -1, /*dist*/ 0.1, {prim});
+  const auto dp = planReverseMatchByDP(
+      base, /*closed*/ true, /*side*/ -1, /*dist*/ 0.1, {prim});
+
+  REQUIRE(nearest.ok);
+  REQUIRE(dp.ok);
+  CHECK(isValidStaircase(dp.id_pairs));
+  CHECK(idPairsEqual(dp.id_pairs, nearest.id_pairs));
+  CHECK(dp.dropped_base_ranges_lo.empty());
+  CHECK(dp.dropped_base_ranges_hi.empty());
+  CHECK(dp.offset_points.size() == nearest.offset_points.size());
+}
+
+
+// -------------------------------------------------------------------
+// DP-Parity-2 — pseudo-airfoil + small dist: healthy, DP == Nearest.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: pseudo-airfoil small dist parity",
+          "[offset_clipper2][bridge][dp][closed][airfoil]") {
+  const auto base = pseudoAirfoilCCW();
+  const double dist = 0.005;
+
+  auto polys = offsetWithClipper2(base, /*closed*/ true, /*side*/ -1, dist);
+  REQUIRE(polys.size() == 1);
+
+  const auto nearest =
+      planReverseMatchByNearest(base, true, -1, dist, polys);
+  const auto dp = planReverseMatchByDP(base, true, -1, dist, polys);
+
+  REQUIRE(nearest.ok);
+  REQUIRE(dp.ok);
+  CHECK(isValidStaircase(dp.id_pairs));
+  // Pair / offset count agreement is the Phase A "healthy-case
+  // equivalence" criterion. Dropped-range reporting can legitimately
+  // differ: DP applies a per-pair point-to-point gate (Phase A §3.1)
+  // and will flag a TE / LE cusp whose inset-region offset vertex is
+  // > 1.5·dist away — even though the legacy offset-side attribution
+  // gate accepts it (the offset corner foot-projects onto a base
+  // segment within 1.5·dist).
+  CHECK(dp.id_pairs.size() == nearest.id_pairs.size());
+  CHECK(dp.offset_points.size() == nearest.offset_points.size());
+}
+
+
+// -------------------------------------------------------------------
+// DP-Thick — pseudo-airfoil + thick dist: TE region must be reported
+// as a dropped range, staircase still valid.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: pseudo-airfoil thick dist drops TE",
+          "[offset_clipper2][bridge][dp][closed][airfoil][thin]") {
+  const auto base = pseudoAirfoilCCW();
+  const double dist = 0.04;  // ~80% half-thickness → eats TE.
+
+  auto polys = offsetWithClipper2(base, true, -1, dist);
+  REQUIRE(!polys.empty());
+
+  const auto dp = planReverseMatchByDP(base, true, -1, dist, polys);
+  REQUIRE(dp.ok);
+  CHECK(isValidStaircase(dp.id_pairs));
+
+  // TE-eaten case: at least one dropped range, staircase anchored at 0.
+  REQUIRE(dp.dropped_base_ranges_lo.size()
+          == dp.dropped_base_ranges_hi.size());
+  CHECK_FALSE(dp.dropped_base_ranges_lo.empty());
+  CHECK(dp.id_pairs.front().base   == 0);
+  CHECK(dp.id_pairs.front().offset == 0);
+}
+
+
+// -------------------------------------------------------------------
+// DP-Open-1 — open polyline clean 1:1 pairing parity with Nearest.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: open polyline clean staircase",
+          "[offset_clipper2][bridge][dp][open]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(2.0, 0.0), SPoint2(3.0, 0.0),
+  };
+  OffsetPolygon prim = makeNearestPolygon(
+      {SPoint2(0.0, 0.05), SPoint2(1.0, 0.05),
+       SPoint2(2.0, 0.05), SPoint2(3.0, 0.05)},
+      /*closed*/ false,
+      {{0, 0.0}, {0, 1.0}, {1, 1.0}, {2, 1.0}});
+
+  const auto dp = planReverseMatchByDP(
+      base, /*closed*/ false, /*side*/ +1, /*dist*/ 0.05, {prim});
+  REQUIRE(dp.ok);
+  CHECK_FALSE(dp.closed);
+  CHECK(isValidStaircase(dp.id_pairs));
+
+  REQUIRE(dp.id_pairs.size() == 4);
+  CHECK(dp.id_pairs.front().base   == 0);
+  CHECK(dp.id_pairs.front().offset == 0);
+  CHECK(dp.id_pairs.back().base    == 3);
+  CHECK(dp.id_pairs.back().offset  == 3);
+  CHECK(dp.dropped_base_ranges_lo.empty());
+}
+
+
+// -------------------------------------------------------------------
+// DP-Open-L — open L-shape end-to-end via the real Clipper2 backend.
+// Mirrors the planReverseMatchByNearest open MH104-TE-like test.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: open MH104-TE-like polyline valid staircase",
+          "[offset_clipper2][bridge][dp][open][sharp]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(-1.0,  0.02),
+      SPoint2(-0.5,  0.01),
+      SPoint2( 0.0,  0.0 ),
+      SPoint2(-0.5, -0.01),
+      SPoint2(-1.0, -0.02),
+  };
+  const double dist = 0.005;
+  for (int side : {+1, -1}) {
+    auto polys = offsetWithClipper2(base, /*closed*/ false, side, dist);
+    REQUIRE(!polys.empty());
+
+    const auto dp =
+        planReverseMatchByDP(base, /*closed*/ false, side, dist, polys);
+    REQUIRE(dp.ok);
+    CHECK(isValidStaircase(dp.id_pairs));
+    CHECK(dp.id_pairs.front().base   == 0);
+    CHECK(dp.id_pairs.front().offset == 0);
+    CHECK(dp.id_pairs.back().base
+          == static_cast<int>(base.size()) - 1);
+    CHECK(dp.id_pairs.back().offset
+          == static_cast<int>(dp.offset_points.size()) - 1);
+  }
+}
+
+
+// -------------------------------------------------------------------
+// DP-Fold — V-shape base, offset straddles the apex on the outside.
+// The nearest-vertex greedy walk can in principle produce a folded
+// pairing where two non-adjacent base vertices both claim the apex
+// offset. The DP path is globally monotone by construction and must
+// emit a valid staircase regardless.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: V-shape base monotone staircase",
+          "[offset_clipper2][bridge][dp][open][sharp]") {
+  // 5-vertex V — apex pulled in toward the offset side. The
+  // base[2] apex is geometrically very close to both apex-flanking
+  // offset vertices; a midpoint-style heuristic can flip-flop.
+  const std::vector<SPoint2> base = {
+      SPoint2(-1.0,  0.5),
+      SPoint2(-0.5,  0.1),
+      SPoint2( 0.0,  0.0),
+      SPoint2( 0.5,  0.1),
+      SPoint2( 1.0,  0.5),
+  };
+  // Offset polyline running along +y at 0.1 above the V, with 5
+  // vertices evenly spaced in x.
+  OffsetPolygon prim = makeNearestPolygon(
+      {SPoint2(-1.0, 0.6),
+       SPoint2(-0.5, 0.2),
+       SPoint2( 0.0, 0.1),
+       SPoint2( 0.5, 0.2),
+       SPoint2( 1.0, 0.6)},
+      /*closed*/ false,
+      {{0, 0.0}, {0, 1.0}, {1, 1.0}, {2, 1.0}, {3, 1.0}});
+
+  const auto dp = planReverseMatchByDP(
+      base, /*closed*/ false, /*side*/ +1, /*dist*/ 0.1, {prim});
+  REQUIRE(dp.ok);
+  CHECK(isValidStaircase(dp.id_pairs));
+
+  // Endpoints pinned and base order strictly non-decreasing.
+  CHECK(dp.id_pairs.front().base   == 0);
+  CHECK(dp.id_pairs.front().offset == 0);
+  CHECK(dp.id_pairs.back().base    == 4);
+  CHECK(dp.id_pairs.back().offset  == 4);
+  for (std::size_t k = 1; k < dp.id_pairs.size(); ++k) {
+    CHECK(dp.id_pairs[k].base >= dp.id_pairs[k - 1].base);
+  }
+}
+
+
+// -------------------------------------------------------------------
+// DP-Rotated — closed square with rotated offset: DP must anchor the
+// staircase at base 0 just like Nearest's `findRotationStart` does.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: closed square rotated input anchors at 0",
+          "[offset_clipper2][bridge][dp][closed][rotation]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  // Walk starts at the corner near base[3].
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.95),
+      SPoint2(0.05, 0.05),
+      SPoint2(0.95, 0.05),
+      SPoint2(0.95, 0.95),
+  }, /*closed*/ true);
+
+  const auto dp = planReverseMatchByDP(base, true, -1, 0.1, {prim});
+  REQUIRE(dp.ok);
+  CHECK(isValidStaircase(dp.id_pairs));
+  CHECK(dp.id_pairs.front().base   == 0);
+  CHECK(dp.id_pairs.front().offset == 0);
+  CHECK(dp.id_pairs.back().base    == 4);
+  CHECK(dp.id_pairs.back().offset  == 4);
+  // After rotation the seed offset is closest to base[0] = (0,0).
+  CHECK(dp.offset_points[0].x() == Catch::Approx(0.05));
+  CHECK(dp.offset_points[0].y() == Catch::Approx(0.05));
+}
+
+
+// -------------------------------------------------------------------
+// DP-Guards — empty / zero-dist / no-primary inputs return ok=false.
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: empty polygon list returns ok=false",
+          "[offset_clipper2][bridge][dp][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  const auto plan = planReverseMatchByDP(base, true, -1, 0.1, {});
+  CHECK_FALSE(plan.ok);
+}
+
+TEST_CASE("planReverseMatchByDP: zero dist returns ok=false",
+          "[offset_clipper2][bridge][dp][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.05), SPoint2(0.95, 0.05),
+      SPoint2(0.95, 0.95), SPoint2(0.05, 0.95),
+  }, /*closed*/ true);
+  const auto plan = planReverseMatchByDP(base, true, -1, 0.0, {prim});
+  CHECK_FALSE(plan.ok);
+}
+
+TEST_CASE("planReverseMatchByDP: short base returns ok=false",
+          "[offset_clipper2][bridge][dp][guard]") {
+  const std::vector<SPoint2> base = {SPoint2(0.0, 0.0)};
+  OffsetPolygon prim = makeNearestPolygon({
+      SPoint2(0.05, 0.05), SPoint2(0.95, 0.05),
+      SPoint2(0.95, 0.95), SPoint2(0.05, 0.95),
+  }, /*closed*/ true);
+  const auto plan = planReverseMatchByDP(base, true, -1, 0.1, {prim});
+  CHECK_FALSE(plan.ok);
+}
+
+
+// -------------------------------------------------------------------
+// DP-Weights — custom weights are honored (sanity: passing the default
+// struct explicitly yields the same plan as the nullptr default).
+// -------------------------------------------------------------------
+
+TEST_CASE("planReverseMatchByDP: explicit default weights match nullptr",
+          "[offset_clipper2][bridge][dp][closed]") {
+  const auto base = pseudoAirfoilCCW();
+  const double dist = 0.005;
+  auto polys = offsetWithClipper2(base, true, -1, dist);
+  REQUIRE(polys.size() == 1);
+
+  const auto a = planReverseMatchByDP(base, true, -1, dist, polys);
+  DPCostWeights w;
+  const auto b = planReverseMatchByDP(base, true, -1, dist, polys, &w);
+  REQUIRE(a.ok);
+  REQUIRE(b.ok);
+  CHECK(idPairsEqual(a.id_pairs, b.id_pairs));
+  CHECK(a.dropped_base_ranges_lo == b.dropped_base_ranges_lo);
+  CHECK(a.dropped_base_ranges_hi == b.dropped_base_ranges_hi);
 }

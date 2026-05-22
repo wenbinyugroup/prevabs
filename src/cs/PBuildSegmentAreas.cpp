@@ -30,23 +30,6 @@
 
 namespace {
 
-// Mirror of the `PREVABS_USE_NEAREST_PAIRING` env-var read by
-// offset_clipper2_pdcel.cpp. The staircase rebuild at the start of
-// `buildAreas` must use the SAME pairing algorithm as production
-// `offset()` did when it first populated `_base_offset_indices_pairs`;
-// otherwise the derived staircase diverges by algorithm choice rather
-// than by geometry.
-bool useNearestPairingEnvLocal() {
-  static const bool flag = [] {
-    const char *raw = std::getenv("PREVABS_USE_NEAREST_PAIRING");
-    if (!raw || !*raw) return false;
-    std::string s(raw);
-    for (auto &c : s) c = static_cast<char>(std::tolower(c));
-    return s == "1" || s == "true" || s == "yes" || s == "on";
-  }();
-  return flag;
-}
-
 void logSkippingSegmentAreasAction(
     const char *caller, const std::string &segment_name,
     const std::string &reason) {
@@ -730,7 +713,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         && off_pts.size() >= 2) {
       const auto plan = prevabs::geo::rebuildBaseOffsetMapFromGeometry(
           base_pts, off_pts, closed(), side, dist,
-          /*use_nearest_pairing=*/useNearestPairingEnvLocal());
+          prevabs::geo::readPairingAlgoEnv());
       if (plan.ok) {
         if (bcfg.debug_level >= DebugLevel::join) {
           PLOG(debug) << "buildAreas: derived staircase: "
