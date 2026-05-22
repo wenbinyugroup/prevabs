@@ -223,6 +223,59 @@ ReverseMatchPlan planReverseMatchByNearest(
     double                             dist,
     const std::vector<OffsetPolygon>&  polygons);
 
+/// Rebuild a `BaseOffsetMap` (and any derived dropped-base ranges)
+/// purely from the **current geometry** of a base polyline and its
+/// already-materialized offset polyline. Does NOT invoke Clipper2 —
+/// the offset polyline is treated as ground truth, and the staircase
+/// is reverse-engineered from the two polylines using the
+/// nearest-point pairing rules of `planReverseMatchByNearest`.
+///
+/// Use case (plan-20260522 Phase 1): once `offset()` has populated
+/// `_curve_offset` and `_base_offset_indices_pairs`, downstream stages
+/// (join, build) may trim / mutate `_curve_base` and `_curve_offset`.
+/// Rather than splicing the discrete `BaseOffsetMap` in lockstep, the
+/// caller can drop the stored map and re-derive it from the post-trim
+/// geometry just before consumers (`createIntermediateAreas`, etc.)
+/// iterate the staircase.
+///
+/// @param base            Distinct base vertices in yz (drop trailing
+///                        duplicate on closed inputs before calling).
+/// @param offset          Offset polyline vertices in walk order.
+///                        For closed inputs the caller may pass either
+///                        a leading/trailing duplicate or not; this
+///                        function drops a trailing duplicate
+///                        defensively.
+/// @param base_is_closed  Whether the base implicitly closes back to
+///                        front.
+/// @param side            +1 outward, -1 inward. Diagnostic only —
+///                        geometry already encodes the side.
+/// @param dist            Magnitude of the original offset distance.
+///                        Used only for the 1.5·dist foot-of-
+///                        perpendicular acceptance gate (mirrors
+///                        `attributeSource`); the offset polyline
+///                        itself is not regenerated.
+/// @param use_nearest_pairing
+///                        true  → run `planReverseMatchByNearest`
+///                                (default; the long-term plan).
+///                        false → run `planReverseMatch` (segment-
+///                                projection pairing). Phase 2 callers
+///                                that need parity with a production
+///                                `offset()` configured with
+///                                `PREVABS_USE_NEAREST_PAIRING` unset
+///                                must pass `false`.
+///
+/// Returns a `ReverseMatchPlan` with `ok=true` and the same data
+/// shape as `planReverseMatchByNearest`. `ok=false` indicates the
+/// inputs were too short or the staircase invariant could not be
+/// restored — the caller MUST check `ok` before using the plan.
+ReverseMatchPlan rebuildBaseOffsetMapFromGeometry(
+    const std::vector<SPoint2>&        base,
+    const std::vector<SPoint2>&        offset,
+    bool                               base_is_closed,
+    int                                side,
+    double                             dist,
+    bool                               use_nearest_pairing = true);
+
 /// Pure-geometry Clipper2 offset wrapper.
 ///
 /// @param base            Input polyline in the yz plane.

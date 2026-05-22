@@ -9,14 +9,17 @@
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
+#include "offset_clipper2.hpp"
 #include "overloadOperator.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
 #include "geo_types.hpp"
 
+#include <cctype>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <list>
@@ -26,6 +29,23 @@
 #include <vector>
 
 namespace {
+
+// Mirror of the `PREVABS_USE_NEAREST_PAIRING` env-var read by
+// offset_clipper2_pdcel.cpp. The staircase rebuild at the start of
+// `buildAreas` must use the SAME pairing algorithm as production
+// `offset()` did when it first populated `_base_offset_indices_pairs`;
+// otherwise the derived staircase diverges by algorithm choice rather
+// than by geometry.
+bool useNearestPairingEnvLocal() {
+  static const bool flag = [] {
+    const char *raw = std::getenv("PREVABS_USE_NEAREST_PAIRING");
+    if (!raw || !*raw) return false;
+    std::string s(raw);
+    for (auto &c : s) c = static_cast<char>(std::tolower(c));
+    return s == "1" || s == "true" || s == "yes" || s == "on";
+  }();
+  return flag;
+}
 
 void logSkippingSegmentAreasAction(
     const char *caller, const std::string &segment_name,
@@ -145,14 +165,24 @@ void logMissingHalfEdgeBetween(
 
 
 
-bool usesOffsetAsBaseAtPair(
-    const BaseOffsetMap &pairs, std::size_t pair_index) {
-  // Repeated base indices mean the staircase map advanced only on the offset
-  // side at this step. Geometrically, the laminate consumed offset length
-  // while the base curve stayed on the same vertex, so the local "base" edge
-  // for area construction must come from the offset curve instead.
-  return pair_index > 0
-         && pairs[pair_index].base == pairs[pair_index - 1].base;
+// plan-20260522 §3.2: geometric replacement for the legacy
+// `usesOffsetAsBaseAtPair(Δbase=0)` signal. The "base edge degenerate"
+// condition is no longer derived from the staircase's discrete index
+// history — it's read straight off the two base vertices that bound
+// the area:
+//
+//   if |base[i] - base[i-1]| < GEO_TOL → use offset edge as "base"
+//
+// Under the legacy editor-splice path, Δbase=0 happens exactly when
+// the two indexed base vertices are the same PDCELVertex* (so their
+// distance is 0). Under the Phase 2 geometry-derived staircase, the
+// rebuilt pairs may instead have Δbase=1 with two distinct PDCELVertex
+// pointers that nonetheless sit on top of each other after join trim;
+// the geometric check still fires.
+bool usesOffsetAsBaseAt(
+    const PDCELVertex *vb_prev, const PDCELVertex *vb_curr) {
+  if (vb_prev == nullptr || vb_curr == nullptr) return false;
+  return vb_prev->point().distance(vb_curr->point()) < GEO_TOL;
 }
 
 
@@ -163,8 +193,15 @@ PGeoLineSegment *buildAreaBaseSegmentFromPair(
     const BaseOffsetMap &pairs, std::size_t pair_index) {
   const int vbi = pairs[pair_index].base;
   const int voi = pairs[pair_index].offset;
+  // vbi == 0 means the current pair sits on the very first base vertex
+  // (the legacy Δbase=0 case at step 1, equivalent to "use offset edge").
+  // There is no preceding base vertex to form a base edge with, so route
+  // straight to the offset branch and skip the geometric distance check.
   const bool use_offset_as_base =
-      usesOffsetAsBaseAtPair(pairs, pair_index);
+      (vbi <= 0)
+          ? true
+          : usesOffsetAsBaseAt(curve_base->vertices()[vbi - 1],
+                               curve_base->vertices()[vbi]);
 
   if (!use_offset_as_base) {
     return new PGeoLineSegment(
@@ -399,13 +436,14 @@ std::vector<PDCELVertex *> Segment::buildBeginningBound(
 
     PDCELVertex *vb = _curve_base->vertices()[0];
     PDCELVertex *vo = _curve_offset->vertices()[0];
-        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) <<
         "first vertex of the base: " + vb->printString();
-        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << 
+        if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) <<
         "first vertex of the offset: " + vo->printString();
 
-    const bool use_offset_as_base =
-        usesOffsetAsBaseAtPair(_base_offset_indices_pairs, 1);
+    // Head area's base edge runs base[0] -> base[1].
+    const bool use_offset_as_base = usesOffsetAsBaseAt(
+        _curve_base->vertices()[0], _curve_base->vertices()[1]);
     const int layup_side = layupSide();
 
     PGeoLineSegment *ls_base;
@@ -588,8 +626,11 @@ void Segment::buildLastArea(
     area->setNextBoundVertices(first_bound_vertices);
   }
   else {
-    const bool use_offset_as_base =
-        usesOffsetAsBaseAtPair(_base_offset_indices_pairs, last_pair_index);
+    // Tail area's base edge runs base[N-2] -> base[N-1].
+    const auto &base_v_tail = _curve_base->vertices();
+    const bool use_offset_as_base = usesOffsetAsBaseAt(
+        base_v_tail[base_v_tail.size() - 2],
+        base_v_tail[base_v_tail.size() - 1]);
     const int layup_side = layupSide();
 
     PGeoLineSegment *ls_base_end;
@@ -656,6 +697,59 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   }
 
     if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building areas of segment: " + _name;
+
+  // plan-20260522: re-derive the staircase from the current base/offset
+  // geometry. The persisted `_base_offset_indices_pairs` is treated as a
+  // geometric view, not as independent state — any prior join-time
+  // mutation of the curves is reflected by recomputing here from the
+  // present polylines, so no editor-side discrete splice is needed.
+  // See rebuildBaseOffsetMapFromGeometry in include/offset_clipper2.hpp.
+  if (_curve_base != nullptr && _curve_offset != nullptr) {
+    std::vector<SPoint2> base_pts;
+    base_pts.reserve(_curve_base->vertices().size());
+    for (auto *v : _curve_base->vertices()) {
+      base_pts.emplace_back(v->point2()[0], v->point2()[1]);
+    }
+    // Closed Baseline convention has front == back as the same pointer;
+    // drop the trailing duplicate so the SPoint2 helper sees N distinct
+    // vertices, matching the contract of planReverseMatchByNearest.
+    if (closed() && base_pts.size() >= 2
+        && _curve_base->vertices().front()
+             == _curve_base->vertices().back()) {
+      base_pts.pop_back();
+    }
+    std::vector<SPoint2> off_pts;
+    off_pts.reserve(_curve_offset->vertices().size());
+    for (auto *v : _curve_offset->vertices()) {
+      off_pts.emplace_back(v->point2()[0], v->point2()[1]);
+    }
+    const int side = requireValidLayupSide("buildAreas/derive");
+    const double dist =
+        (_layup != nullptr) ? _layup->getTotalThickness() : 0.0;
+    if (side != 0 && dist > 0.0 && base_pts.size() >= 2
+        && off_pts.size() >= 2) {
+      const auto plan = prevabs::geo::rebuildBaseOffsetMapFromGeometry(
+          base_pts, off_pts, closed(), side, dist,
+          /*use_nearest_pairing=*/useNearestPairingEnvLocal());
+      if (plan.ok) {
+        if (bcfg.debug_level >= DebugLevel::join) {
+          PLOG(debug) << "buildAreas: derived staircase: "
+                      << _base_offset_indices_pairs.size() << " pairs (was) -> "
+                      << plan.id_pairs.size() << " pairs (derived); "
+                      << "dropped ranges (was)="
+                      << _dropped_base_ranges_lo.size()
+                      << ", (derived)=" << plan.dropped_base_ranges_lo.size();
+        }
+        _base_offset_indices_pairs = plan.id_pairs;
+        _dropped_base_ranges_lo    = plan.dropped_base_ranges_lo;
+        _dropped_base_ranges_hi    = plan.dropped_base_ranges_hi;
+      } else {
+        PLOG(warning) << "buildAreas: rebuildBaseOffsetMapFromGeometry "
+                         "failed for segment '" << _name
+                      << "' — keeping persisted staircase";
+      }
+    }
+  }
 
   std::vector<PDCELVertex *> first_bound_vertices;
   std::vector<PDCELVertex *> prev_bound_vertices =

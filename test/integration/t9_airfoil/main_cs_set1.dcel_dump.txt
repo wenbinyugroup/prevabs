@@ -1469,11 +1469,11 @@ HALFEDGES (1978):
   he#804 scope=active src=v#393 twin=he#803 next=he#802 prev=he#806 loop=loop#49 face=nullptr
   he#805 scope=active src=v#393 twin=he#806 next=he#1813 prev=he#803 loop=loop#484 face=f#445(seg_back_te_area_59_layer_1)
   he#806 scope=active src=v#394 twin=he#805 next=he#804 prev=he#808 loop=loop#49 face=nullptr
-  he#807 scope=active src=v#394 twin=he#808 next=he#1815 prev=he#1814 loop=loop#486 face=f#447(seg_back_te_area_60_layer_1)
+  he#807 scope=active src=v#394 twin=he#808 next=he#1817 prev=he#1814 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#808 scope=active src=v#395 twin=he#807 next=he#806 prev=he#810 loop=loop#49 face=nullptr
-  he#809 scope=active src=v#395 twin=he#810 next=he#1817 prev=he#1816 loop=loop#488 face=f#449(seg_back_te_area_61_layer_1)
+  he#809 scope=active src=v#395 twin=he#810 next=he#811 prev=he#1816 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#810 scope=active src=v#396 twin=he#809 next=he#808 prev=he#812 loop=loop#49 face=nullptr
-  he#811 scope=active src=v#396 twin=he#812 next=he#1819 prev=he#1818 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
+  he#811 scope=active src=v#396 twin=he#812 next=he#1819 prev=he#809 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#812 scope=active src=v#397 twin=he#811 next=he#810 prev=he#814 loop=loop#49 face=nullptr
   he#813 scope=active src=v#397 twin=he#814 next=he#1821 prev=he#1820 loop=loop#492 face=f#453(seg_back_te_area_63_layer_1)
   he#814 scope=active src=v#398 twin=he#813 next=he#812 prev=he#816 loop=loop#49 face=nullptr
@@ -1710,7 +1710,7 @@ HALFEDGES (1978):
   he#1047 scope=active src=v#513 twin=he#1048 next=he#1049 prev=he#1045 loop=loop#47 face=f#12(fill_te_fill_face)
   he#1048 scope=active src=v#514 twin=he#1047 next=he#1812 prev=he#1813 loop=loop#484 face=f#445(seg_back_te_area_59_layer_1)
   he#1049 scope=active src=v#514 twin=he#1050 next=he#1053 prev=he#1047 loop=loop#47 face=f#12(fill_te_fill_face)
-  he#1050 scope=active src=v#515 twin=he#1049 next=he#1814 prev=he#1815 loop=loop#486 face=f#447(seg_back_te_area_60_layer_1)
+  he#1050 scope=active src=v#515 twin=he#1049 next=he#1814 prev=he#1815 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#1053 scope=active src=v#515 twin=he#1054 next=he#1055 prev=he#1049 loop=loop#47 face=f#12(fill_te_fill_face)
   he#1054 scope=active src=v#516 twin=he#1053 next=he#1818 prev=he#1819 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#1055 scope=active src=v#516 twin=he#1056 next=he#1057 prev=he#1053 loop=loop#47 face=f#12(fill_te_fill_face)
@@ -2470,11 +2470,11 @@ HALFEDGES (1978):
   he#1811 scope=active src=v#391 twin=he#1812 next=he#1046 prev=he#799 loop=loop#482 face=f#443(seg_back_te_area_58_layer_1)
   he#1812 scope=active src=v#513 twin=he#1811 next=he#801 prev=he#1048 loop=loop#484 face=f#445(seg_back_te_area_59_layer_1)
   he#1813 scope=active src=v#394 twin=he#1814 next=he#1048 prev=he#805 loop=loop#484 face=f#445(seg_back_te_area_59_layer_1)
-  he#1814 scope=active src=v#514 twin=he#1813 next=he#807 prev=he#1050 loop=loop#486 face=f#447(seg_back_te_area_60_layer_1)
-  he#1815 scope=active src=v#395 twin=he#1816 next=he#1050 prev=he#807 loop=loop#486 face=f#447(seg_back_te_area_60_layer_1)
-  he#1816 scope=active src=v#515 twin=he#1815 next=he#809 prev=he#1817 loop=loop#488 face=f#449(seg_back_te_area_61_layer_1)
-  he#1817 scope=active src=v#396 twin=he#1818 next=he#1816 prev=he#809 loop=loop#488 face=f#449(seg_back_te_area_61_layer_1)
-  he#1818 scope=active src=v#515 twin=he#1817 next=he#811 prev=he#1054 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
+  he#1814 scope=active src=v#514 twin=he#1813 next=he#807 prev=he#1050 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
+  he#1815 scope=active src=v#395 twin=he#1816 next=he#1050 prev=he#1818 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
+  he#1816 scope=active src=v#515 twin=he#1815 next=he#809 prev=he#1817 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
+  he#1817 scope=active src=v#395 twin=he#1818 next=he#1816 prev=he#807 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
+  he#1818 scope=active src=v#515 twin=he#1817 next=he#1815 prev=he#1054 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#1819 scope=active src=v#397 twin=he#1820 next=he#1054 prev=he#811 loop=loop#490 face=f#451(seg_back_te_area_62_layer_1)
   he#1820 scope=active src=v#516 twin=he#1819 next=he#813 prev=he#1056 loop=loop#492 face=f#453(seg_back_te_area_63_layer_1)
   he#1821 scope=active src=v#398 twin=he#1822 next=he#1056 prev=he#813 loop=loop#492 face=f#453(seg_back_te_area_63_layer_1)
@@ -2660,7 +2660,7 @@ LOOPS (322):
   loop#35 incident=he#1371 face=f#10 kept=true adjacent=nullptr
   loop#41 incident=he#523 face=f#11 kept=true adjacent=nullptr
   loop#44 incident=he#1328 face=f#11 kept=true adjacent=loop#41
-  loop#47 incident=he#1053 face=f#12 kept=true adjacent=loop#484
+  loop#47 incident=he#1053 face=f#12 kept=true adjacent=loop#517
   loop#49 incident=he#808 face=nullptr kept=false adjacent=nullptr
   loop#50 incident=he#139 face=nullptr kept=false adjacent=nullptr
   loop#51 incident=he#1051 face=nullptr kept=false adjacent=nullptr
@@ -2762,7 +2762,7 @@ LOOPS (322):
   loop#239 incident=he#404 face=nullptr kept=false adjacent=nullptr
   loop#240 incident=he#444 face=nullptr kept=false adjacent=nullptr
   loop#242 incident=he#446 face=nullptr kept=false adjacent=nullptr
-  loop#244 incident=he#448 face=nullptr kept=false adjacent=nullptr
+  loop#244 incident=he#448 face=nullptr kept=true adjacent=nullptr
   loop#246 incident=he#450 face=nullptr kept=false adjacent=nullptr
   loop#248 incident=he#452 face=nullptr kept=false adjacent=nullptr
   loop#250 incident=he#454 face=nullptr kept=false adjacent=nullptr
@@ -2887,8 +2887,8 @@ LOOPS (322):
   loop#482 incident=he#1811 face=nullptr kept=false adjacent=nullptr
   loop#484 incident=he#1813 face=nullptr kept=false adjacent=nullptr
   loop#486 incident=he#1815 face=nullptr kept=false adjacent=nullptr
-  loop#488 incident=he#809 face=nullptr kept=false adjacent=nullptr
-  loop#490 incident=he#811 face=nullptr kept=false adjacent=nullptr
+  loop#488 incident=he#1817 face=nullptr kept=false adjacent=nullptr
+  loop#490 incident=he#1815 face=nullptr kept=false adjacent=nullptr
   loop#492 incident=he#813 face=nullptr kept=false adjacent=nullptr
   loop#494 incident=he#815 face=nullptr kept=false adjacent=nullptr
   loop#496 incident=he#817 face=nullptr kept=false adjacent=nullptr
@@ -3207,8 +3207,8 @@ FACES (318):
   f#443 name=seg_back_te_area_58_layer_1 bounded=true outer=he#1811
   f#445 name=seg_back_te_area_59_layer_1 bounded=true outer=he#1813
   f#447 name=seg_back_te_area_60_layer_1 bounded=true outer=he#1815
-  f#449 name=seg_back_te_area_61_layer_1 bounded=true outer=he#809
-  f#451 name=seg_back_te_area_62_layer_1 bounded=true outer=he#811
+  f#449 name=seg_back_te_area_61_layer_1 bounded=true outer=he#1817
+  f#451 name=seg_back_te_area_62_layer_1 bounded=true outer=he#1815
   f#453 name=seg_back_te_area_63_layer_1 bounded=true outer=he#813
   f#455 name=seg_back_te_area_64_layer_1 bounded=true outer=he#815
   f#457 name=seg_back_te_area_65_layer_1 bounded=true outer=he#817

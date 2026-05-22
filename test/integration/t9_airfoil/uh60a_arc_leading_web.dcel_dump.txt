@@ -1,3 +1,0 @@
-=== DCEL CRASH DUMP ===
-
-VERTICES (

@@ -28,6 +28,7 @@ using prevabs::geo::offsetWithClipper2;
 using prevabs::geo::ReverseMatchPlan;
 using prevabs::geo::planReverseMatch;
 using prevabs::geo::planReverseMatchByNearest;
+using prevabs::geo::rebuildBaseOffsetMapFromGeometry;
 
 namespace {
 
@@ -1498,4 +1499,285 @@ TEST_CASE("planReverseMatchByNearest: all offsets outside gate returns "
   }, /*closed*/ true);
   const auto plan = planReverseMatchByNearest(base, true, -1, 0.1, {prim});
   CHECK_FALSE(plan.ok);
+}
+
+
+// ===================================================================
+// rebuildBaseOffsetMapFromGeometry — plan-20260522 Phase 1.
+//
+// Scope: a thin wrapper that synthesizes a single OffsetPolygon from
+// an externally supplied base/offset polyline pair (computing per-
+// vertex sources via foot-of-perpendicular onto the base) and runs
+// planReverseMatchByNearest on it. The contract: when fed the same
+// (base, offset.points) the function must produce a ReverseMatchPlan
+// with id_pairs identical to planReverseMatchByNearest's. When fed a
+// truncated base (simulating a join-trim) it must produce a staircase
+// that drops the leading pairs cleanly.
+// ===================================================================
+
+namespace {
+
+bool idPairsEqual(const BaseOffsetMap& a, const BaseOffsetMap& b) {
+  if (a.size() != b.size()) return false;
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (a[i].base != b[i].base || a[i].offset != b[i].offset) return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+
+// -------------------------------------------------------------------
+// Parity (closed square) — rebuilt staircase matches direct call.
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: closed square parity with "
+          "planReverseMatchByNearest",
+          "[offset_clipper2][bridge][derive][closed]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  const double dist = 0.1;
+
+  auto polys = offsetWithClipper2(base, /*closed*/ true, /*side*/ -1, dist);
+  REQUIRE(polys.size() == 1);
+
+  const auto baseline =
+      planReverseMatchByNearest(base, true, -1, dist, polys);
+  REQUIRE(baseline.ok);
+
+  // Feed the same offset polyline through the geometry-derived path.
+  const auto rebuilt = rebuildBaseOffsetMapFromGeometry(
+      base, polys[0].points, /*closed*/ true, /*side*/ -1, dist);
+  REQUIRE(rebuilt.ok);
+
+  CHECK(idPairsEqual(rebuilt.id_pairs, baseline.id_pairs));
+  CHECK(rebuilt.closed == baseline.closed);
+  CHECK(rebuilt.dropped_base_ranges_lo == baseline.dropped_base_ranges_lo);
+  CHECK(rebuilt.dropped_base_ranges_hi == baseline.dropped_base_ranges_hi);
+  CHECK(rebuilt.offset_points.size() == baseline.offset_points.size());
+}
+
+
+// -------------------------------------------------------------------
+// Parity (pseudo-airfoil, small dist) — clean staircase reproduced.
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: pseudo-airfoil small dist "
+          "parity with planReverseMatchByNearest",
+          "[offset_clipper2][bridge][derive][closed][airfoil]") {
+  const auto base = pseudoAirfoilCCW();
+  const double dist = 0.005;
+
+  auto polys = offsetWithClipper2(base, /*closed*/ true, -1, dist);
+  REQUIRE(polys.size() == 1);
+
+  const auto baseline =
+      planReverseMatchByNearest(base, true, -1, dist, polys);
+  REQUIRE(baseline.ok);
+
+  const auto rebuilt = rebuildBaseOffsetMapFromGeometry(
+      base, polys[0].points, true, -1, dist);
+  REQUIRE(rebuilt.ok);
+
+  CHECK(idPairsEqual(rebuilt.id_pairs, baseline.id_pairs));
+  CHECK(rebuilt.dropped_base_ranges_lo.empty());
+  CHECK(rebuilt.dropped_base_ranges_hi.empty());
+}
+
+
+// -------------------------------------------------------------------
+// Parity (pseudo-airfoil, thick dist) — dropped ranges reproduced.
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: pseudo-airfoil thick dist "
+          "reproduces dropped ranges",
+          "[offset_clipper2][bridge][derive][closed][airfoil][thin]") {
+  const auto base = pseudoAirfoilCCW();
+  const double dist = 0.04;
+
+  auto polys = offsetWithClipper2(base, /*closed*/ true, -1, dist);
+  REQUIRE(polys.size() >= 1);
+
+  const auto baseline =
+      planReverseMatchByNearest(base, true, -1, dist, polys);
+  REQUIRE(baseline.ok);
+
+  const auto rebuilt = rebuildBaseOffsetMapFromGeometry(
+      base, polys[0].points, true, -1, dist);
+  REQUIRE(rebuilt.ok);
+
+  CHECK(idPairsEqual(rebuilt.id_pairs, baseline.id_pairs));
+  CHECK(rebuilt.dropped_base_ranges_lo == baseline.dropped_base_ranges_lo);
+  CHECK(rebuilt.dropped_base_ranges_hi == baseline.dropped_base_ranges_hi);
+  // Sanity: thick-dist should actually have produced a non-empty drop.
+  CHECK_FALSE(baseline.dropped_base_ranges_lo.empty());
+}
+
+
+// -------------------------------------------------------------------
+// Parity (open L-shape) — both sides agree with direct call.
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: open L-shape parity",
+          "[offset_clipper2][bridge][derive][open]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(1.0, 1.0),
+  };
+  const double dist = 0.1;
+
+  for (int side : {+1, -1}) {
+    auto polys = offsetWithClipper2(base, /*closed*/ false, side, dist);
+    REQUIRE(polys.size() >= 1);
+
+    const auto baseline =
+        planReverseMatchByNearest(base, false, side, dist, polys);
+    REQUIRE(baseline.ok);
+
+    // Pick whichever polygon planReverseMatchByNearest would have
+    // chosen — for the open branch this is the widest-base_seg-span
+    // run. The geometry-derived path synthesizes a single polygon
+    // from the polyline we hand it, so we must hand it the same one.
+    // The simplest faithful test: re-derive from the baseline's own
+    // offset_points (which already are the primary's vertex sequence).
+    const auto rebuilt = rebuildBaseOffsetMapFromGeometry(
+        base, baseline.offset_points, false, side, dist);
+    REQUIRE(rebuilt.ok);
+
+    CHECK(idPairsEqual(rebuilt.id_pairs, baseline.id_pairs));
+    CHECK(rebuilt.dropped_base_ranges_lo == baseline.dropped_base_ranges_lo);
+    CHECK(rebuilt.dropped_base_ranges_hi == baseline.dropped_base_ranges_hi);
+  }
+}
+
+
+// -------------------------------------------------------------------
+// Closed-input trailing-duplicate defense — passing a polyline with
+// front == back must not double-count the closing vertex.
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: closed input with trailing "
+          "duplicate drops dup defensively",
+          "[offset_clipper2][bridge][derive][closed][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(1.0, 1.0), SPoint2(0.0, 1.0),
+  };
+  const double dist = 0.1;
+
+  auto polys = offsetWithClipper2(base, true, -1, dist);
+  REQUIRE(polys.size() == 1);
+
+  // Without trailing dup.
+  const auto rebuilt_no_dup = rebuildBaseOffsetMapFromGeometry(
+      base, polys[0].points, true, -1, dist);
+  REQUIRE(rebuilt_no_dup.ok);
+
+  // With trailing dup appended — caller convention for some PreVABS
+  // baselines.
+  auto off_with_dup = polys[0].points;
+  off_with_dup.push_back(polys[0].points.front());
+  const auto rebuilt_with_dup = rebuildBaseOffsetMapFromGeometry(
+      base, off_with_dup, true, -1, dist);
+  REQUIRE(rebuilt_with_dup.ok);
+
+  CHECK(idPairsEqual(rebuilt_with_dup.id_pairs, rebuilt_no_dup.id_pairs));
+  CHECK(rebuilt_with_dup.offset_points.size()
+        == rebuilt_no_dup.offset_points.size());
+}
+
+
+// -------------------------------------------------------------------
+// Trim invariants (open) — after dropping leading base + offset
+// vertices, the rebuilt staircase must still satisfy the geometric
+// contract (anchored at (0, 0), monotone, reaches the trimmed
+// endpoints).
+//
+// This is the central property motivating Phase 1: instead of
+// splicing the persisted BaseOffsetMap when join trims the base,
+// we discard the map and re-derive it from the post-trim geometry.
+// Strict pair-by-pair equality with a manually spliced original is
+// NOT guaranteed (the per-pair offset assignment can differ where
+// nearest-pairing chooses a different seed under the trimmed seed
+// search), but the staircase must be valid and cover the trimmed
+// geometry end-to-end.
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: open L-shape head-trim "
+          "produces valid staircase covering trimmed geometry",
+          "[offset_clipper2][bridge][derive][open][trim]") {
+  // 5-vertex open polyline so we have enough room to head-trim.
+  const std::vector<SPoint2> base_full = {
+      SPoint2(0.0, 0.0),
+      SPoint2(1.0, 0.0),
+      SPoint2(2.0, 0.0),
+      SPoint2(2.0, 1.0),
+      SPoint2(2.0, 2.0),
+  };
+  const double dist = 0.1;
+
+  auto polys = offsetWithClipper2(base_full, false, +1, dist);
+  REQUIRE(polys.size() >= 1);
+
+  const auto baseline =
+      planReverseMatchByNearest(base_full, false, +1, dist, polys);
+  REQUIRE(baseline.ok);
+
+  // Identify how many leading offset points were associated with the
+  // first n_trim_base base vertices in the original baseline.
+  const int n_trim_base = 2;
+  const int n_trim_offset = [&] {
+    int o = 0;
+    for (const auto& p : baseline.id_pairs) {
+      if (p.base < n_trim_base) o = std::max(o, p.offset + 1);
+    }
+    return o;
+  }();
+  REQUIRE(n_trim_offset > 0);
+
+  // Trim the geometry — simulates a join trim that ate the head.
+  std::vector<SPoint2> base_trim(base_full.begin() + n_trim_base,
+                                 base_full.end());
+  std::vector<SPoint2> off_trim(baseline.offset_points.begin()
+                                + n_trim_offset,
+                                baseline.offset_points.end());
+  REQUIRE(base_trim.size() >= 2);
+  REQUIRE(off_trim.size()  >= 2);
+
+  const auto rebuilt = rebuildBaseOffsetMapFromGeometry(
+      base_trim, off_trim, false, +1, dist);
+  REQUIRE(rebuilt.ok);
+
+  // (1) Anchored at (0, 0).
+  CHECK(rebuilt.id_pairs.front().base   == 0);
+  CHECK(rebuilt.id_pairs.front().offset == 0);
+  // (2) Reaches the trimmed endpoints.
+  CHECK(rebuilt.id_pairs.back().base
+        == static_cast<int>(base_trim.size()) - 1);
+  CHECK(rebuilt.id_pairs.back().offset
+        == static_cast<int>(off_trim.size()) - 1);
+  // (3) Satisfies the staircase invariant — no editor splice needed.
+  CHECK(isValidStaircase(rebuilt.id_pairs));
+}
+
+
+// -------------------------------------------------------------------
+// Guards — short / degenerate inputs return ok=false (no crash).
+// -------------------------------------------------------------------
+
+TEST_CASE("rebuildBaseOffsetMapFromGeometry: short inputs return ok=false",
+          "[offset_clipper2][bridge][derive][guard]") {
+  const std::vector<SPoint2> b1 = {SPoint2(0.0, 0.0)};
+  const std::vector<SPoint2> off = {SPoint2(0.0, 0.1), SPoint2(1.0, 0.1)};
+  CHECK_FALSE(rebuildBaseOffsetMapFromGeometry(b1, off, false, +1, 0.1).ok);
+
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
+  };
+  const std::vector<SPoint2> o1 = {SPoint2(0.0, 0.1)};
+  CHECK_FALSE(rebuildBaseOffsetMapFromGeometry(base, o1, false, +1, 0.1).ok);
+
+  CHECK_FALSE(rebuildBaseOffsetMapFromGeometry(base, off, false, +1, 0.0).ok);
 }

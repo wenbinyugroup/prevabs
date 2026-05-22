@@ -733,5 +733,110 @@ ReverseMatchPlan planReverseMatchByNearest(
   return out;
 }
 
+// ===========================================================================
+// rebuildBaseOffsetMapFromGeometry — derive staircase from current geometry.
+// See header for full contract. Implementation strategy: synthesize a
+// single-polygon `OffsetPolygon` from the offset polyline (computing
+// per-vertex `OffsetVertexSource` via foot-of-perpendicular projection
+// onto the base, with the same 1.5·dist acceptance gate as
+// `attributeSource` in offset_clipper2.cpp), then hand it to
+// `planReverseMatchByNearest`. This reuses the existing primary-pick
+// and id_pairs building helpers and gives parity-by-construction with
+// the original Clipper2 → reverse-match path when the offset polyline
+// is unmodified.
+// ===========================================================================
+
+namespace {
+
+OffsetVertexSource attributeFootToBase(const SPoint2& q,
+                                       const std::vector<SPoint2>& base,
+                                       bool base_is_closed,
+                                       double source_radius) {
+  const int n_v = static_cast<int>(base.size());
+  if (n_v < 2) return {-1, 0.0};
+  const int n_s = base_is_closed ? n_v : (n_v - 1);
+  OffsetVertexSource best{-1, 0.0};
+  double best_d = std::numeric_limits<double>::infinity();
+  for (int i = 0; i < n_s; ++i) {
+    const int j  = (base_is_closed && i == n_v - 1) ? 0 : i + 1;
+    const auto& a = base[i];
+    const auto& b = base[j];
+    const double dx = b.x() - a.x();
+    const double dy = b.y() - a.y();
+    const double len2 = dx * dx + dy * dy;
+    double u;
+    if (len2 == 0.0) {
+      u = 0.0;
+    } else {
+      u = ((q.x() - a.x()) * dx + (q.y() - a.y()) * dy) / len2;
+      if (u < 0.0) u = 0.0;
+      if (u > 1.0) u = 1.0;
+    }
+    const double fx  = a.x() + u * dx;
+    const double fy  = a.y() + u * dy;
+    const double rdx = q.x() - fx;
+    const double rdy = q.y() - fy;
+    const double d   = std::sqrt(rdx * rdx + rdy * rdy);
+    if (d < best_d) {
+      best_d = d;
+      best   = {i, u};
+    }
+  }
+  if (best_d > source_radius) return {-1, 0.0};
+  return best;
+}
+
+}  // namespace
+
+ReverseMatchPlan rebuildBaseOffsetMapFromGeometry(
+    const std::vector<SPoint2>&  base,
+    const std::vector<SPoint2>&  offset,
+    bool                         base_is_closed,
+    int                          side,
+    double                       dist,
+    bool                         use_nearest_pairing) {
+  ReverseMatchPlan empty;
+  empty.closed = base_is_closed;
+
+  if (base.size() < 2 || offset.size() < 2 || !(dist > 0.0)) return empty;
+
+  // Drop a trailing-duplicate offset vertex on closed inputs (the PreVABS
+  // Baseline convention is to repeat the first vertex at the end). For
+  // open inputs the front/back are expected to be distinct end-points
+  // already; leave the sequence untouched.
+  std::vector<SPoint2> off = offset;
+  if (base_is_closed && off.size() >= 2) {
+    const auto& f = off.front();
+    const auto& b = off.back();
+    if (f.x() == b.x() && f.y() == b.y()) {
+      off.pop_back();
+    }
+  }
+  if (off.size() < 2) return empty;
+
+  // Synthesize a single-polygon OffsetPolygon from the offset polyline.
+  // `points` holds the raw vertices; `sources` is reconstructed by
+  // projecting each offset vertex onto the base polyline with the same
+  // 1.5·dist acceptance gate `attributeSource` uses. `resampled` is
+  // all-false (we have no resample provenance for an externally-supplied
+  // polyline) and `pre_resample_points` is empty so
+  // planReverseMatchByNearest walks `points` directly.
+  OffsetPolygon poly;
+  poly.points    = off;
+  poly.is_closed = base_is_closed;
+  poly.resampled.assign(off.size(), false);
+  poly.sources.reserve(off.size());
+  const double radius = 1.5 * dist;
+  for (const auto& p : off) {
+    poly.sources.push_back(
+        attributeFootToBase(p, base, base_is_closed, radius));
+  }
+
+  const std::vector<OffsetPolygon> polygons = {std::move(poly)};
+  return use_nearest_pairing
+      ? planReverseMatchByNearest(base, base_is_closed, side, dist, polygons)
+      : planReverseMatch(base, base_is_closed, side, dist, polygons);
+}
+
 }  // namespace geo
 }  // namespace prevabs

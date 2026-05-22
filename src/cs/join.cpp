@@ -15,7 +15,6 @@
 
 #include "geo_types.hpp"
 
-#include <cassert>
 #include <algorithm>
 #include <stdexcept>
 #include <cmath>
@@ -37,19 +36,6 @@
 namespace {
 
 using LineSegmentPtr = std::unique_ptr<PGeoLineSegment>;
-
-// Validates the staircase invariant on a BaseOffsetMap and asserts on
-// violation. Used as a guard after every structural edit.
-void assertValidBaseOffsetMap(
-    const BaseOffsetMap &map, const std::string &caller)
-{
-  std::string error_message;
-  const bool valid = validateBaseOffsetMap(map, &error_message);
-  if (!valid) {
-    PLOG(error) << caller + ": invalid BaseOffsetMap: " + error_message;
-  }
-  assert(valid && "BaseOffsetMap staircase invariant violated");
-}
 
 
 
@@ -265,225 +251,12 @@ static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
 
 
 
-// Stores the cap (termination) vertex indices for a tail-trim operation.
-// When both caps are present they prevent the staircase filler loop from
-// overshooting the already-computed endpoint.
-struct TailTrimCaps {
-  bool has_base_cap;
-  bool has_offset_cap;
-  int base_cap;
-  int offset_cap;
-
-  TailTrimCaps()
-      : has_base_cap(false), has_offset_cap(false),
-        base_cap(0), offset_cap(0) {}
-
-  TailTrimCaps(int base_cap_value, int offset_cap_value)
-      : has_base_cap(true), has_offset_cap(true),
-        base_cap(base_cap_value), offset_cap(offset_cap_value) {}
-};
-
-
-
-
-// RAII editor for BaseOffsetMap that validates the staircase invariant after
-// every structural operation and reports violations with the caller name.
-class BaseOffsetMapEditor {
-public:
-  explicit BaseOffsetMapEditor(
-      BaseOffsetMap &pairs, const std::string &caller)
-      : _pairs(pairs), _caller(caller) {}
-
-  // Removes all entries up to (and including) the entries that have base <=
-  // ls_i_base (if remove_base) and offset <= ls_i_offset, then re-indexes
-  // both axes to start from zero and inserts staircase entries to cover the
-  // range [0, max(ls_i_base, ls_i_offset)].
-  //
-  // Used after the head of a segment is trimmed to an intersection vertex.
-  void trimHead(int ls_i_base, int ls_i_offset, bool remove_base)
-  {
-    BaseOffsetMap::iterator keep_it = _pairs.begin();
-    if (remove_base) {
-      keep_it = std::find_if(
-          _pairs.begin(), _pairs.end(),
-          [ls_i_base](const BaseOffsetPair &pair) {
-            return pair.base > ls_i_base;
-          });
-      _pairs.erase(_pairs.begin(), keep_it);
-    }
-    keep_it = std::find_if(
-        _pairs.begin(), _pairs.end(),
-        [ls_i_offset](const BaseOffsetPair &pair) {
-          return pair.offset > ls_i_offset;
-        });
-    _pairs.erase(_pairs.begin(), keep_it);
-
-    // Shift all remaining indices so that the new start becomes (0, 0).
-    for (auto &p : _pairs) {
-      p.base -= ls_i_base;
-      p.offset -= ls_i_offset;
-    }
-
-    // Insert staircase entries to bridge the gap created by the asymmetric
-    // trim (one axis may have been trimmed more than the other).
-    int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-    auto it = _pairs.begin();
-    for (int k = 0; k < nv_diff; k++) {
-      if (ls_i_base > ls_i_offset)
-        it = _pairs.insert(it, BaseOffsetPair(0, nv_diff - k));
-      else if (ls_i_base < ls_i_offset)
-        it = _pairs.insert(it, BaseOffsetPair(nv_diff - k, 0));
-    }
-    _pairs.insert(it, BaseOffsetPair(0, 0));
-    validate("trimHead");
-  }
-
-  // Removes all entries from the back that have base >= ls_i_base (if
-  // remove_base) or offset >= ls_i_offset, then appends staircase entries up
-  // to the trimmed intersection vertex.  The TailTrimCaps guard prevents the
-  // filler from running past the already-computed cap vertices.
-  //
-  // Used after the tail of a segment is trimmed to an intersection vertex.
-  void trimTail(
-      int ls_i_base, int ls_i_offset, bool remove_base,
-      const TailTrimCaps &caps)
-  {
-    if (remove_base) {
-      while (_pairs.back().base >= ls_i_base)
-        _pairs.pop_back();
-    }
-    while (_pairs.back().offset >= ls_i_offset)
-      _pairs.pop_back();
-
-    // Append staircase entries to bridge any asymmetric trim on base vs offset.
-    int nv_diff = std::max(ls_i_base, ls_i_offset) - std::min(ls_i_base, ls_i_offset);
-    int id_base = _pairs.back().base;
-    int id_offset = _pairs.back().offset;
-    for (int k = 0; k < nv_diff; k++) {
-      if (caps.has_base_cap && caps.has_offset_cap
-          && id_base == caps.base_cap - 2
-          && id_offset == caps.offset_cap - 2)
-        break;
-      _pairs.push_back(BaseOffsetPair(id_base + 1, id_offset + 1));
-      if (ls_i_base > ls_i_offset)      id_base++;
-      else if (ls_i_base < ls_i_offset) id_offset++;
-    }
-    _pairs.push_back(BaseOffsetPair(id_base + 1, id_offset + 1));
-    validate("trimTail");
-  }
-
-  // Adjusts the BaseOffsetMap after a style-1 (angle-bisector) intersection
-  // is resolved on the offset curve only (the base curve is unchanged).
-  //
-  // is_new: non-zero if a new vertex was inserted into the offset curve
-  //         (i.e. the intersection point was not already an endpoint).
-  //
-  // extending: true when the trimmed offset curve is longer than what the
-  //            current map expects — this happens when the bisector clips the
-  //            offset curve at a point beyond the existing last vertex.
-  void adjustStyle1(
-      int end, int ls_i, int is_new,
-      std::size_t offset_vertex_count,
-      std::size_t base_vertex_count)
-  {
-    const bool extending =
-        offset_vertex_count > static_cast<std::size_t>(_pairs.back().offset + 1);
-
-    if (is_new) {
-      if (end == 0) {
-        if (extending) {
-          // The offset curve grew at the head; shift all offset indices up
-          // and prepend a (0, 0) anchor.
-          for (auto &pair : _pairs) {
-            pair.offset++;
-          }
-          _pairs.insert(_pairs.begin(), BaseOffsetPair(0, 0));
-        } else {
-          // The offset curve was trimmed inward at the head; drop entries
-          // whose offset index is below the new start and re-index.
-          int _iter_1 = 0;
-          while (true) {
-            if (++_iter_1 > 4096) {
-              throw std::runtime_error(
-                  "adjustStyle1: loop exceeded 4096 iterations (end=0)");
-            }
-            const int id_offset_tmp = _pairs.front().offset;
-            if (id_offset_tmp > (ls_i - 1)) {
-              break;
-            }
-            _pairs.erase(_pairs.begin());
-          }
-
-          for (auto &pair : _pairs) {
-            pair.offset -= (ls_i - 1);
-          }
-
-          // Insert staircase entries so the map still starts at base index 0.
-          BaseOffsetMap::iterator it_tmp = _pairs.begin();
-          const int id_base_tmp = _pairs.front().base;
-          for (int k = 0; k < id_base_tmp; k++) {
-            it_tmp = _pairs.insert(
-                it_tmp, BaseOffsetPair(id_base_tmp - 1 - k, 0));
-          }
-        }
-      } else if (end == 1) {
-        if (extending) {
-          // The offset curve grew at the tail; append one more entry.
-          _pairs.push_back(
-              BaseOffsetPair(_pairs.back().base, _pairs.back().offset + 1));
-        } else {
-          // The offset curve was trimmed inward at the tail; pop entries
-          // beyond the new end and append entries to reach all base vertices.
-          int _iter_2 = 0;
-          while (true) {
-            if (++_iter_2 > 4096) {
-              throw std::runtime_error(
-                  "adjustStyle1: loop exceeded 4096 iterations (end=1)");
-            }
-            const int id_offset_tmp = _pairs.back().offset;
-            if (id_offset_tmp < ls_i) {
-              break;
-            }
-            _pairs.pop_back();
-          }
-
-          for (int k = _pairs.back().base + 1;
-               k < static_cast<int>(base_vertex_count); k++) {
-            _pairs.push_back(BaseOffsetPair(k, ls_i));
-          }
-        }
-      }
-    } else {
-      // The intersection landed exactly on an existing offset vertex; only
-      // clamp the offset indices in the map without inserting anything.
-      if (end == 0) {
-        for (auto &pair : _pairs) {
-          if (pair.offset <= ls_i) {
-            pair.offset = 0;
-          } else {
-            pair.offset -= ls_i;
-          }
-        }
-      } else if (end == 1) {
-        for (auto &pair : _pairs) {
-          if (pair.offset > ls_i) {
-            pair.offset = ls_i;
-          }
-        }
-      }
-    }
-    validate("adjustStyle1");
-  }
-
-private:
-  void validate(const char *operation) const
-  {
-    assertValidBaseOffsetMap(_pairs, _caller + "::" + operation);
-  }
-
-  BaseOffsetMap &_pairs;
-  std::string _caller;
-};
+// plan-20260522 Phase 4: `BaseOffsetMapEditor`, its TailTrimCaps helper,
+// and the `useDerivedStaircaseEnvJoin()` gate have been removed.
+// Discrete splice of `_base_offset_indices_pairs` during join is no
+// longer performed — the staircase is re-derived from post-trim geometry
+// at the start of `Segment::buildAreas` via
+// `rebuildBaseOffsetMapFromGeometry`.
 
 
 
@@ -577,20 +350,14 @@ static void joinStyle1(
   if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  intersecting offset of " + s1->getName() + " with bound";
   v1_new = intersectAndTrimOffsetWithBound(
       s1, e1, tmp_bound_1, ls_i1, ls_bu1, is_new_1);
-  BaseOffsetMapEditor(s1->baseOffsetIndicesPairs(), "joinStyle1 s1")
-      .adjustStyle1(
-          e1, ls_i1, is_new_1,
-          s1->curveOffset()->vertices().size(),
-          s1->curveBase()->vertices().size());
+  // plan-20260522 Phase 4: no staircase splice — the geometric trim
+  // above mutated `_curve_offset` in place, and the staircase will be
+  // re-derived from the post-trim geometry at the start of `buildAreas`.
 
   if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  intersecting offset of " + s2->getName() + " with bound";
   v2_new = intersectAndTrimOffsetWithBound(
       s2, e2, tmp_bound_2, ls_i2, ls_bu2, is_new_2);
-  BaseOffsetMapEditor(s2->baseOffsetIndicesPairs(), "joinStyle1 s2")
-      .adjustStyle1(
-          e2, ls_i2, is_new_2,
-          s2->curveOffset()->vertices().size(),
-          s2->curveBase()->vertices().size());
+  // plan-20260522 Phase 4: no staircase splice (see above).
 
   // Determine the order of bound vertices based on their position (ls_bu)
   // along the bisector.  If they coincide, unify them to a single vertex.
@@ -998,13 +765,10 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
   if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i_base = " + std::to_string(ls_i_base)
               + ", ls_i_offset = " + std::to_string(ls_i_offset);
 
-  if (e == 0) {
-    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "joinSegments")
-        .trimHead(ls_i_base, ls_i_offset, true);
-  } else {
-    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "joinSegments")
-        .trimTail(ls_i_base, ls_i_offset, true, TailTrimCaps());
-  }
+  // plan-20260522 Phase 4: no staircase splice — the head/tail geometric
+  // trim above already mutated `_curve_base` / `_curve_offset`; the
+  // staircase will be re-derived from that post-trim geometry at the
+  // start of `Segment::buildAreas`.
 
   s->printBaseOffsetPairs();
 }
@@ -1143,8 +907,8 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
     // segment start, which becomes the new offset head index.
     int ls_i_offset = ls_i1 - 1;
     if (config.debug_level >= DebugLevel::join) PLOG(debug) << "  ls_i_offset = " + std::to_string(ls_i_offset);
-    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "createSegmentFreeEnd head")
-        .trimHead(0, ls_i_offset, false);
+    // plan-20260522 Phase 4: no staircase splice; the offset trim above
+    // is geometric and the staircase is re-derived at buildAreas entry.
 
   }
 
@@ -1199,10 +963,9 @@ void PComponent::createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &bc
                 + ", nv_offset = " + std::to_string(_tmp_nv_offset);
 
     s->printBaseOffsetPairs();
-    BaseOffsetMapEditor(s->baseOffsetIndicesPairs(), "createSegmentFreeEnd tail")
-        .trimTail(
-            ls_i_base, ls_i_offset, false,
-            TailTrimCaps(ls_i_base, _tmp_nv_offset));
+    // plan-20260522 Phase 4: no staircase splice; the tail offset trim
+    // above is geometric and the staircase is re-derived at buildAreas
+    // entry.
     s->printBaseOffsetPairs();
 
   }
