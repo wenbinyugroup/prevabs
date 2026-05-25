@@ -503,6 +503,21 @@ void Segment::createIntermediateAreas(
     return false;
   };
 
+  // Boundary-area skip: the area at pair k uses the base edge
+  // base[pairs[k].base - 1] → base[pairs[k].base]. When EITHER endpoint
+  // sits inside a dropped range, the edge crosses the cusp/thin region
+  // and gmsh cannot mesh the resulting long thin sliver — this is the
+  // same `Unable to recover the edge` failure mode that motivated Stage E
+  // pre-trim (plan-20260522-stage-e-pretrim.md, Phase B). Skipping when
+  // the previous base index is dropped removes the one extra area
+  // immediately after the dropped run on each side.
+  auto areaAtPairUsesDroppedEdge = [&](int base_idx) {
+    if (!skip_dropped_areas) return false;
+    if (inDroppedRange(base_idx)) return true;
+    if (base_idx > 0 && inDroppedRange(base_idx - 1)) return true;
+    return false;
+  };
+
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
         if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "area " + std::to_string(k);
     const int layup_side = layupSide();
@@ -510,10 +525,11 @@ void Segment::createIntermediateAreas(
     int vbi_tmp = _base_offset_indices_pairs[k].base;
     int voi_tmp = _base_offset_indices_pairs[k].offset;
 
-    if (inDroppedRange(vbi_tmp)) {
+    if (areaAtPairUsesDroppedEdge(vbi_tmp)) {
       if (bcfg.debug_level >= DebugLevel::join) {
         PLOG(debug) << "  skipping area at base[" << vbi_tmp
-                    << "] (in dropped range — skin locally absent)";
+                    << "] (base edge endpoint in dropped range — "
+                       "skin locally absent or boundary sliver)";
       }
       continue;
     }

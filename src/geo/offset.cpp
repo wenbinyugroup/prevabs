@@ -566,8 +566,97 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   // Open polyline: PreVABS side = +1 (left, sign(t × d) > 0) already matches
   //                Phase 1's filter convention ⇒ pass through.
   const int clipper_side = base_is_closed ? -side : side;
+
+  // -----------------------------------------------------------------------
+  // Stage E pre-trim (plan-20260522-stage-e-pretrim.md, OPEN base only).
+  //
+  // Build a thin-mask via signedHalfThickness with α=0.8 (Phase A standard
+  // — issue-20260522-stage-e-pretrim-phase-a.md §4), interior INF treated
+  // as thin (cusp apex), endpoints kept. If exactly one strictly-interior
+  // contiguous run is found, replace the Clipper2 input with a trimmed
+  // polyline that bridges the cusp tip with a single chord. After
+  // Clipper2, remap base_seg back to original indices and inject the
+  // trim range into dropped_base_ranges. Closed base, leading/trailing
+  // run, and ≥2 disjoint runs fall back to the untrimmed path.
+  // -----------------------------------------------------------------------
+  std::vector<SPoint2> clipper_input = base_pts;
+  prevabs::geo::ThinRun thin_run{};
+  bool did_pretrim = false;
+  // α = 1.2 is the production-tuned value (Phase B integration tuning):
+  //   α = 0.8 (Phase A initial standard, §6.2 candidate range [0.5, 0.8])
+  //     only removes the inner cusp [11..17] for mh104; bridge endpoints
+  //     base[10] (h/dist=1.08) and base[18] (h/dist=1.15) remain in the
+  //     trimmed polyline and Clipper2 folds them anyway → M/N=0.66.
+  //   α = 1.2 also captures those borderline boundary vertices so the
+  //     bridge endpoints (base[9] h/dist=1.65, base[19] h/dist=1.77)
+  //     sit firmly outside the thin band → M/N=0.69.
+  //   α = 2.0 over-trims and the shortened polyline produces fewer
+  //     offset vertices (M=18); empirically worse than α=1.2.
+  // Phase A data also verifies α=1.2 keeps healthy webs untouched
+  // (their interior INFs have no finite-thin neighbours under any α).
+  constexpr double kPreTrimAlpha = 1.2;
+  if (!base_is_closed) {
+    const int n_distinct = static_cast<int>(size);
+    const double abs_dist = std::fabs(dist);
+    const double threshold = kPreTrimAlpha * abs_dist;
+    // Two-pass mask construction:
+    //   Pass 1: gather finite h values per interior vertex; mark a
+    //     vertex finite-thin iff h < α·|dist|.
+    //   Pass 2: a vertex with h == INF (inward ray missed every
+    //     non-adjacent segment) is only counted as thin when at least
+    //     one immediate neighbour is finite-thin. This distinguishes a
+    //     real cusp apex (finite-thin neighbours, e.g. mh104 TE i=14
+    //     with neighbours at h/dist ≈ 0.05) from a healthy short open
+    //     segment where every interior vertex returns INF (e.g. a 3-/
+    //     4-vertex web) — without this guard every web would be
+    //     pre-trimmed to a bare bridge chord.
+    std::vector<double> h_vals(n_distinct, INF);
+    std::vector<bool>   finite_thin(n_distinct, false);
+    for (int i = 1; i < n_distinct - 1; ++i) {
+      const double h =
+          signedHalfThickness(base, i, side, /*base_is_closed*/ false);
+      h_vals[i] = h;
+      if (h < INF * 0.5 && h < threshold - TOLERANCE) {
+        finite_thin[i] = true;
+      }
+    }
+    std::vector<bool> thin_mask(n_distinct, false);
+    for (int i = 1; i < n_distinct - 1; ++i) {
+      if (finite_thin[i]) {
+        thin_mask[i] = true;
+      } else if (h_vals[i] >= INF * 0.5) {
+        // INF here. Treat as cusp apex iff bordered by a finite-thin
+        // vertex.
+        const bool left_finite_thin  = (i > 0)              && finite_thin[i - 1];
+        const bool right_finite_thin = (i < n_distinct - 1) && finite_thin[i + 1];
+        thin_mask[i] = left_finite_thin || right_finite_thin;
+      }
+    }
+    if (prevabs::geo::extractSingleInteriorRun(thin_mask, &thin_run)) {
+      clipper_input =
+          prevabs::geo::buildTrimmedOpenPolyline(base_pts, thin_run);
+      if (clipper_input.size() >= 2) {
+        did_pretrim = true;
+        PLOG(warning)
+            << "offset (multi-vertex, open): Stage E pre-trim removed base["
+            << thin_run.lo << ".." << thin_run.hi << "] ("
+            << (thin_run.hi - thin_run.lo + 1)
+            << " vertices) due to local half-thickness < "
+            << kPreTrimAlpha << " * |dist| = " << threshold
+            << "; skin will be reported dropped over these indices";
+      } else {
+        // Should not happen — extractSingleInteriorRun guarantees
+        // lo > 0 and hi < N-1 so the trimmed polyline has >= 2 vertices.
+        clipper_input = base_pts;
+      }
+    }
+  }
+
   auto polygons = prevabs::geo::offsetWithClipper2(
-      base_pts, base_is_closed, clipper_side, std::fabs(dist));
+      clipper_input, base_is_closed, clipper_side, std::fabs(dist));
+  if (did_pretrim) {
+    prevabs::geo::remapBaseSegToOriginal(polygons, thin_run);
+  }
 
   if (polygons.empty()) {
     PLOG(error)
@@ -578,7 +667,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
     return 0;
   }
 
-  const auto result =
+  auto result =
       prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
           base, base_is_closed, clipper_side, std::fabs(dist), polygons);
 
@@ -589,6 +678,27 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
         << "): reverse-match bridge failed to build a valid "
            "BaseOffsetMap; returning empty result";
     return 0;
+  }
+
+  // Stage E pre-trim post-process: ensure the trimmed range is present
+  // in result.dropped_base_ranges so PSegment skips area construction
+  // and the user-facing warning loop below covers it. Stage C's own
+  // forward-fill may already record the range (when the bridge offset
+  // vertices have base_seg=-1, Stage C records a gap in walked[]); if
+  // it does, skip the duplicate to avoid double-warning.
+  if (did_pretrim) {
+    bool covered = false;
+    for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
+      if (result.dropped_base_ranges_lo[k] <= thin_run.lo
+          && result.dropped_base_ranges_hi[k] >= thin_run.hi) {
+        covered = true;
+        break;
+      }
+    }
+    if (!covered) {
+      result.dropped_base_ranges_lo.push_back(thin_run.lo);
+      result.dropped_base_ranges_hi.push_back(thin_run.hi);
+    }
   }
 
   offset_vertices = result.offset_vertices;

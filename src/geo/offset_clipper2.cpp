@@ -163,7 +163,8 @@ std::vector<OffsetPolygon> extractOpenRuns(
     const Clipper2Lib::PathD&       path,
     const std::vector<SPoint2>&     base,
     int                             side,
-    double                          source_radius) {
+    double                          source_radius,
+    bool                            do_resample) {
   std::vector<OffsetPolygon> runs;
   const int M = static_cast<int>(path.size());
   if (M < 2 || base.size() < 2) return runs;
@@ -256,7 +257,13 @@ std::vector<OffsetPolygon> extractOpenRuns(
   // Attribution for resampled base[i] uses (seg = max(0, i-1),
   // u = i==0 ? 0 : 1). `attributeOne` open-branch maps these to base
   // index i ⇒ Stage C sees a clean staircase over the covered subset.
-  if (runs.size() == 1 && runs[0].points.size() >= 2) {
+  //
+  // Control group: `do_resample = false` skips this entire block — the
+  // returned `points` is then the raw side-filtered run (M = raw
+  // Clipper2 vertex count, sources already attributed via
+  // `attributeSource` foot-of-perpendicular). Used by the standalone
+  // experimentation harness; production keeps `do_resample = true`.
+  if (do_resample && runs.size() == 1 && runs[0].points.size() >= 2) {
     auto& r = runs[0];
     const int N = static_cast<int>(base.size());
 
@@ -423,7 +430,10 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     const std::vector<SPoint2>& base,
     bool                        base_is_closed,
     int                         side,
-    double                      dist) {
+    double                      dist,
+    JoinTypeChoice              join,
+    double                      miter_limit,
+    bool                        resample_open) {
 
   std::vector<OffsetPolygon> result;
   if (base.size() < 2 || !(dist > 0.0)) return result;
@@ -463,18 +473,24 @@ std::vector<OffsetPolygon> offsetWithClipper2(
   const double delta = base_is_closed
                          ? (side >= 0 ? +1.0 : -1.0) * dist
                          : dist;
-  const Clipper2Lib::JoinType jt = Clipper2Lib::JoinType::Miter;
+  Clipper2Lib::JoinType jt = Clipper2Lib::JoinType::Miter;
+  switch (join) {
+    case JoinTypeChoice::Miter:  jt = Clipper2Lib::JoinType::Miter;  break;
+    case JoinTypeChoice::Square: jt = Clipper2Lib::JoinType::Square; break;
+    case JoinTypeChoice::Bevel:  jt = Clipper2Lib::JoinType::Bevel;  break;
+    case JoinTypeChoice::Round:  jt = Clipper2Lib::JoinType::Round;  break;
+  }
   const Clipper2Lib::EndType  et = base_is_closed
                                      ? Clipper2Lib::EndType::Polygon
                                      : Clipper2Lib::EndType::Butt;
 
   // precision = 8 is the Clipper2 1.4.0 hard ceiling — see
   // local/issue-20260515-clipper2-airfoil-a0.md §3.1.
-  // miter_limit = 2.0 matches the legacy kOffsetMiterLimitFactor.
-  constexpr int    kClipperPrecision = 8;
-  constexpr double kMiterLimit       = 2.0;
+  // miter_limit defaults to 2.0 (legacy kOffsetMiterLimitFactor); only
+  // honoured by jt == Miter, ignored by other join types.
+  constexpr int kClipperPrecision = 8;
   const Clipper2Lib::PathsD sol = Clipper2Lib::InflatePaths(
-      subjs, delta, jt, et, kMiterLimit, kClipperPrecision);
+      subjs, delta, jt, et, miter_limit, kClipperPrecision);
 
   const double source_radius = 1.5 * dist;
 
@@ -503,7 +519,7 @@ std::vector<OffsetPolygon> offsetWithClipper2(
   // and exactly one run on the requested side.
   for (const auto& path : sol) {
     std::vector<OffsetPolygon> runs =
-        extractOpenRuns(path, input, side, source_radius);
+        extractOpenRuns(path, input, side, source_radius, resample_open);
     for (auto& r : runs) {
       result.push_back(std::move(r));
     }

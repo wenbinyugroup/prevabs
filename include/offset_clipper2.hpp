@@ -365,6 +365,71 @@ ReverseMatchPlan rebuildBaseOffsetMapFromGeometry(
     double                             dist,
     PairingAlgo                        algo = PairingAlgo::Nearest);
 
+// ---------------------------------------------------------------------------
+// Stage E pre-trim — plan-20260522-stage-e-pretrim.md.
+//
+// Removes a contiguous interior thin-cusp run from an OPEN base polyline
+// before Clipper2 inset. Eliminates the M ≪ N degeneracy that causes
+// downstream gmsh edge-recovery failures on airfoil thin-TE segments.
+// Driver (offset.cpp) flow:
+//   1. Build a thin_mask[] from `signedHalfThickness < α·|dist|` on the
+//      original base polyline (interior INF treated as thin = cusp apex,
+//      endpoints kept).
+//   2. extractSingleInteriorRun(thin_mask, &run) — if exactly one
+//      strictly-interior contiguous run, proceed; else fall back to the
+//      untrimmed Clipper2 call.
+//   3. buildTrimmedOpenPolyline(base_pts, run) — concat
+//      base_pts[0..lo-1] + base_pts[hi+1..N-1]; the implicit
+//      base_pts[lo-1]→base_pts[hi+1] segment in the trimmed polyline is
+//      the "bridge" chord across the cusp tip.
+//   4. offsetWithClipper2(trimmed, /*closed*/ false, side, dist).
+//   5. remapBaseSegToOriginal(polygons, run) — fix-up
+//      `OffsetVertexSource::base_seg` so attributions point at the
+//      ORIGINAL base segments; offset vertices on the bridge segment
+//      become `base_seg = -1`.
+//   6. The driver injects `[run.lo, run.hi]` into the final
+//      `dropped_base_ranges_lo/hi` so PSegment skips area construction
+//      over the trimmed indices and a `PLOG(warning)` surfaces the
+//      action to the user.
+// ---------------------------------------------------------------------------
+
+/// One contiguous interior thin-cusp range in original base indices.
+/// Both endpoints inclusive. `lo > 0` and `hi < N - 1` strictly
+/// (`extractSingleInteriorRun` enforces this).
+struct ThinRun {
+  int lo;
+  int hi;
+};
+
+/// Find at most one strictly-interior contiguous run of `true` in
+/// `thin_mask`. Returns true and writes `*out` only when:
+///   - exactly one such run exists, AND
+///   - the run is strictly interior (lo > 0, hi < N - 1), AND
+///   - the endpoints (`thin_mask.front()`, `thin_mask.back()`) are false.
+/// Any other configuration (zero runs, multiple disjoint runs, run
+/// touching either endpoint) returns false so the caller falls back to
+/// the untrimmed Clipper2 path.
+bool extractSingleInteriorRun(const std::vector<bool>& thin_mask,
+                              ThinRun* out);
+
+/// Concatenate `base_pts[0..run.lo-1] + base_pts[run.hi+1..N-1]`.
+/// The implicit segment between the last preserved leading vertex and
+/// the first preserved trailing vertex is the bridge chord across the
+/// cusp tip. Returns empty on contract violation
+/// (run.lo <= 0 || run.hi >= N-1 || run.lo > run.hi).
+std::vector<SPoint2> buildTrimmedOpenPolyline(
+    const std::vector<SPoint2>& base_pts, const ThinRun& run);
+
+/// Map `OffsetVertexSource::base_seg` from the trimmed-input indexing
+/// (as returned by `offsetWithClipper2` over the trimmed polyline) to
+/// original-base indexing. Bridge segment (trimmed index `run.lo - 1`)
+/// becomes `base_seg = -1` so Stage C reverse-match treats those
+/// offset vertices as Clipper2 join points (forward-fill assigns them
+/// to a neighbouring base index). Already-unattributed (-1) sources
+/// pass through unchanged. Mutates `polygons` in place.
+void remapBaseSegToOriginal(std::vector<OffsetPolygon>& polygons,
+                            const ThinRun& run);
+
 /// Pure-geometry Clipper2 offset wrapper.
 ///
 /// @param base            Input polyline in the yz plane.
@@ -399,13 +464,40 @@ ReverseMatchPlan rebuildBaseOffsetMapFromGeometry(
 ///
 /// Implementation choices (locked in by A0 evidence; see
 /// local/issue-20260515-clipper2-airfoil-a0.md):
-///   - JoinType::Miter, miter_limit = 2.0
+///   - JoinType::Miter, miter_limit = 2.0 (defaults below)
 ///   - precision = 8 (the Clipper2 1.4.0 hard ceiling)
+///
+/// `join` + `miter_limit` are tunable for the standalone
+/// experimentation harness (test/integration/t0_offset_clipper2/);
+/// production callers omit them and get the locked-in Miter + 2.0
+/// pair unchanged.
+enum class JoinTypeChoice {
+  Miter,    // sharp corner extended outward until miter_limit, else bevelled
+  Square,   // 90° squared corner (square cap-like)
+  Bevel,    // flat chord connecting offset edges (shortest)
+  Round,    // arc with `arc_tolerance` deviation budget
+};
+
+/// @param resample_open   Open-input only. When `true` (default,
+///                        production behaviour), `extractOpenRuns`
+///                        resamples the raw side-filtered run polyline
+///                        at every base vertex via foot-of-perpendicular
+///                        projection so downstream sees a 1:1
+///                        base ↔ offset alignment over the covered
+///                        subset. When `false` (control group used by
+///                        `test/integration/t0_offset_clipper2/`), the
+///                        resample step is skipped and `points` is the
+///                        raw side-filtered Clipper2 run (M can be
+///                        ≪ N). Closed inputs ignore this flag (they
+///                        never go through resample).
 std::vector<OffsetPolygon> offsetWithClipper2(
     const std::vector<SPoint2>& base,
     bool                        base_is_closed,
     int                         side,
-    double                      dist);
+    double                      dist,
+    JoinTypeChoice              join          = JoinTypeChoice::Miter,
+    double                      miter_limit   = 2.0,
+    bool                        resample_open = true);
 
 }  // namespace geo
 }  // namespace prevabs

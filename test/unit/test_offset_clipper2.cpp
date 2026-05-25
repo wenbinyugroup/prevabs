@@ -31,6 +31,10 @@ using prevabs::geo::planReverseMatchByNearest;
 using prevabs::geo::planReverseMatchByDP;
 using prevabs::geo::rebuildBaseOffsetMapFromGeometry;
 using prevabs::geo::DPCostWeights;
+using prevabs::geo::ThinRun;
+using prevabs::geo::extractSingleInteriorRun;
+using prevabs::geo::buildTrimmedOpenPolyline;
+using prevabs::geo::remapBaseSegToOriginal;
 
 namespace {
 
@@ -2087,4 +2091,255 @@ TEST_CASE("planReverseMatchByDP: explicit default weights match nullptr",
   CHECK(idPairsEqual(a.id_pairs, b.id_pairs));
   CHECK(a.dropped_base_ranges_lo == b.dropped_base_ranges_lo);
   CHECK(a.dropped_base_ranges_hi == b.dropped_base_ranges_hi);
+}
+
+
+// ===================================================================
+// Stage E pre-trim — plan-20260522-stage-e-pretrim.md Phase B.
+//
+// Three pure-logic helpers:
+//   - extractSingleInteriorRun: find a single strictly-interior thin run
+//   - buildTrimmedOpenPolyline: concat preserved leading + trailing
+//   - remapBaseSegToOriginal: fix-up OffsetVertexSource::base_seg after
+//     Clipper2 returns from the trimmed polyline (bridge → -1)
+// ===================================================================
+
+
+// -------------------------------------------------------------------
+// PT-Extract-1 — clean single interior run.
+// -------------------------------------------------------------------
+
+TEST_CASE("extractSingleInteriorRun: single interior run accepted",
+          "[offset_clipper2][bridge][pretrim]") {
+  // mask = [F, F, F, T, T, T, F, F, F]; N=9, run [3,5].
+  const std::vector<bool> mask = {false, false, false,
+                                  true,  true,  true,
+                                  false, false, false};
+  ThinRun run{};
+  REQUIRE(extractSingleInteriorRun(mask, &run));
+  CHECK(run.lo == 3);
+  CHECK(run.hi == 5);
+}
+
+
+// -------------------------------------------------------------------
+// PT-Extract-2 — leading endpoint thin → fallback.
+// -------------------------------------------------------------------
+
+TEST_CASE("extractSingleInteriorRun: leading endpoint thin returns false",
+          "[offset_clipper2][bridge][pretrim]") {
+  const std::vector<bool> mask = {true, true, true, false, false};
+  ThinRun run{};
+  CHECK_FALSE(extractSingleInteriorRun(mask, &run));
+}
+
+
+// -------------------------------------------------------------------
+// PT-Extract-3 — trailing endpoint thin → fallback.
+// -------------------------------------------------------------------
+
+TEST_CASE("extractSingleInteriorRun: trailing endpoint thin returns false",
+          "[offset_clipper2][bridge][pretrim]") {
+  const std::vector<bool> mask = {false, false, false, true, true};
+  ThinRun run{};
+  CHECK_FALSE(extractSingleInteriorRun(mask, &run));
+}
+
+
+// -------------------------------------------------------------------
+// PT-Extract-4 — multiple disjoint interior runs → fallback.
+// -------------------------------------------------------------------
+
+TEST_CASE("extractSingleInteriorRun: two disjoint runs return false",
+          "[offset_clipper2][bridge][pretrim]") {
+  const std::vector<bool> mask = {false, true, false, true, false};
+  ThinRun run{};
+  CHECK_FALSE(extractSingleInteriorRun(mask, &run));
+}
+
+
+// -------------------------------------------------------------------
+// PT-Extract-5 — no thin vertices → fallback.
+// -------------------------------------------------------------------
+
+TEST_CASE("extractSingleInteriorRun: no thin returns false",
+          "[offset_clipper2][bridge][pretrim]") {
+  const std::vector<bool> mask(8, false);
+  ThinRun run{};
+  CHECK_FALSE(extractSingleInteriorRun(mask, &run));
+}
+
+
+// -------------------------------------------------------------------
+// PT-Extract-6 — too short / null out → false.
+// -------------------------------------------------------------------
+
+TEST_CASE("extractSingleInteriorRun: short mask returns false",
+          "[offset_clipper2][bridge][pretrim][guard]") {
+  ThinRun run{};
+  CHECK_FALSE(extractSingleInteriorRun({}, &run));
+  CHECK_FALSE(extractSingleInteriorRun({false}, &run));
+  CHECK_FALSE(extractSingleInteriorRun({false, false}, &run));
+  // Single interior vertex (N=3) with that vertex thin is accepted.
+  ThinRun ok{};
+  REQUIRE(extractSingleInteriorRun({false, true, false}, &ok));
+  CHECK(ok.lo == 1);
+  CHECK(ok.hi == 1);
+}
+
+TEST_CASE("extractSingleInteriorRun: null out returns false",
+          "[offset_clipper2][bridge][pretrim][guard]") {
+  const std::vector<bool> mask = {false, true, false};
+  CHECK_FALSE(extractSingleInteriorRun(mask, nullptr));
+}
+
+
+// -------------------------------------------------------------------
+// PT-Trim-1 — trimmed polyline = leading + trailing, no run vertices.
+// -------------------------------------------------------------------
+
+TEST_CASE("buildTrimmedOpenPolyline: concats leading and trailing",
+          "[offset_clipper2][bridge][pretrim]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0),  // 0 (leading start)
+      SPoint2(1.0, 0.0),  // 1 (leading end)
+      SPoint2(2.0, 0.0),  // 2 thin
+      SPoint2(3.0, 0.0),  // 3 thin
+      SPoint2(4.0, 0.0),  // 4 thin
+      SPoint2(5.0, 0.0),  // 5 (trailing start)
+      SPoint2(6.0, 0.0),  // 6 (trailing end)
+  };
+  const ThinRun run{2, 4};
+  const auto trimmed = buildTrimmedOpenPolyline(base, run);
+  REQUIRE(trimmed.size() == 4u);
+  CHECK(trimmed[0].x() == Catch::Approx(0.0));
+  CHECK(trimmed[1].x() == Catch::Approx(1.0));
+  // Bridge: trimmed[1]→trimmed[2] connects base[1]→base[5] directly.
+  CHECK(trimmed[2].x() == Catch::Approx(5.0));
+  CHECK(trimmed[3].x() == Catch::Approx(6.0));
+}
+
+
+// -------------------------------------------------------------------
+// PT-Trim-2 — contract violation returns empty.
+// -------------------------------------------------------------------
+
+TEST_CASE("buildTrimmedOpenPolyline: contract violation returns empty",
+          "[offset_clipper2][bridge][pretrim][guard]") {
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0),
+      SPoint2(2.0, 0.0), SPoint2(3.0, 0.0),
+  };
+  // lo == 0 (touches leading endpoint) → empty.
+  CHECK(buildTrimmedOpenPolyline(base, ThinRun{0, 1}).empty());
+  // hi == N-1 (touches trailing endpoint) → empty.
+  CHECK(buildTrimmedOpenPolyline(base, ThinRun{2, 3}).empty());
+  // lo > hi → empty.
+  CHECK(buildTrimmedOpenPolyline(base, ThinRun{2, 1}).empty());
+}
+
+
+// -------------------------------------------------------------------
+// PT-Remap-1 — base_seg fix-up over the three regions + bridge.
+// -------------------------------------------------------------------
+
+TEST_CASE("remapBaseSegToOriginal: leading / bridge / trailing mapping",
+          "[offset_clipper2][bridge][pretrim]") {
+  // Original base N=8 vertices (segments 0..6). Trim run = [2, 4] —
+  // three thin interior vertices.
+  //   trimmed_pts = base[0..1] + base[5..7] → N_trim = 5 → segs 0..3:
+  //     trimmed seg 0 = base[0]→base[1]   = orig seg 0
+  //     trimmed seg 1 = base[1]→base[5]   = bridge (no original)
+  //     trimmed seg 2 = base[5]→base[6]   = orig seg 5
+  //     trimmed seg 3 = base[6]→base[7]   = orig seg 6
+  //   gap = hi - lo + 1 = 3.
+  OffsetPolygon poly;
+  poly.points.assign(6, SPoint2(0.0, 0.0));
+  poly.resampled.assign(6, false);
+  poly.is_closed = false;
+  // Per-vertex sources at trimmed segs {0, 1 (bridge), 2, 3,
+  // -1 (pre-existing unattributed join point), 0 (sentinel for in-place
+  // verification)}.
+  poly.sources = {{0,  0.3},
+                  {1,  0.4},   // bridge — will become -1
+                  {2,  0.7},
+                  {3,  0.6},
+                  {-1, 0.0},
+                  {0,  0.5}};
+  std::vector<OffsetPolygon> polygons = {std::move(poly)};
+
+  const ThinRun run{2, 4};  // gap = 3
+  remapBaseSegToOriginal(polygons, run);
+
+  const auto& s = polygons[0].sources;
+  CHECK(s[0].base_seg == 0);   // leading, unchanged
+  CHECK(s[0].base_u   == Catch::Approx(0.3));
+  CHECK(s[1].base_seg == -1);  // bridge → -1
+  CHECK(s[1].base_u   == Catch::Approx(0.0));  // u cleared on bridge
+  CHECK(s[2].base_seg == 5);   // trailing: 2 + 3 = 5
+  CHECK(s[2].base_u   == Catch::Approx(0.7));
+  CHECK(s[3].base_seg == 6);   // trailing: 3 + 3 = 6
+  CHECK(s[3].base_u   == Catch::Approx(0.6));
+  CHECK(s[4].base_seg == -1);  // already unattributed, untouched
+  CHECK(s[5].base_seg == 0);   // leading, unchanged
+}
+
+
+// -------------------------------------------------------------------
+// PT-E2E — synthetic open cusp end-to-end.
+//
+// V-shape with interior thin cusp. Without pre-trim, Clipper2 on the
+// inset side would fold the cusp; with pre-trim, the trimmed polyline
+// has no cusp and Clipper2 produces a clean offset.
+//
+// Here we don't drive offset.cpp (it pulls PDCELVertex); we just verify
+// the helpers compose correctly: build mask manually → extract run →
+// trim → call offsetWithClipper2 → remap. The result should have at
+// least one offset vertex with a non-bridge base_seg mapping to the
+// trailing region (≥ run.hi + 1).
+// -------------------------------------------------------------------
+
+TEST_CASE("Stage E pre-trim: synthetic open cusp end-to-end via helpers",
+          "[offset_clipper2][bridge][pretrim][e2e]") {
+  // 7-vertex open polyline shaped like a wide V with a sharp apex:
+  //   base[0..2] descending toward the apex, base[3] apex,
+  //   base[4..6] ascending away.
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0,  1.0),
+      SPoint2(1.0,  0.5),
+      SPoint2(2.0,  0.1),
+      SPoint2(2.5,  0.0),   // apex
+      SPoint2(3.0,  0.1),
+      SPoint2(4.0,  0.5),
+      SPoint2(5.0,  1.0),
+  };
+  // Synthetic mask: declare [2, 4] thin (around the apex).
+  const std::vector<bool> mask =
+      {false, false, true, true, true, false, false};
+
+  ThinRun run{};
+  REQUIRE(extractSingleInteriorRun(mask, &run));
+  CHECK(run.lo == 2);
+  CHECK(run.hi == 4);
+
+  const auto trimmed = buildTrimmedOpenPolyline(base, run);
+  REQUIRE(trimmed.size() == 4u);
+
+  // Drive the actual Clipper2 backend on the trimmed polyline to verify
+  // the bridge produces a non-degenerate offset.
+  auto polys =
+      offsetWithClipper2(trimmed, /*closed*/ false, /*side*/ +1, /*dist*/ 0.1);
+  REQUIRE(!polys.empty());
+
+  remapBaseSegToOriginal(polys, run);
+
+  // Some offset vertex must map to an original-base segment in the
+  // trailing region (base_seg >= run.hi + 1 = 5).
+  bool saw_trailing = false;
+  for (const auto& p : polys) {
+    for (const auto& src : p.sources) {
+      if (src.base_seg >= run.hi + 1) saw_trailing = true;
+    }
+  }
+  CHECK(saw_trailing);
 }

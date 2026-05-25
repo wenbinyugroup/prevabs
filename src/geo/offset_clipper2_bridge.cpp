@@ -1150,5 +1150,87 @@ ReverseMatchPlan rebuildBaseOffsetMapFromGeometry(
   return planReverseMatchByNearest(base, base_is_closed, side, dist, polygons);
 }
 
+// ===========================================================================
+// Stage E pre-trim helpers (plan-20260522-stage-e-pretrim.md §1.2).
+//
+// Removes a contiguous interior thin-cusp run from an OPEN base polyline
+// before Clipper2 inset, eliminating the M ≪ N degeneracy that causes
+// downstream gmsh edge-recovery failures on thin-TE airfoils. Closed
+// inputs are deliberately not handled (Phase A §3 evidence: PreVABS
+// splits closed airfoils into open per-segment offsets, so closed cusp
+// is not a real production case).
+//
+// All three helpers are pure logic, no PDCEL / no Clipper2 dependency,
+// so they can be tested in isolation alongside the bridge.
+// ===========================================================================
+
+bool extractSingleInteriorRun(const std::vector<bool>& thin_mask,
+                              ThinRun* out) {
+  if (!out) return false;
+  const int n = static_cast<int>(thin_mask.size());
+  if (n < 3) return false;  // need at least one interior vertex
+  // Endpoints must not be thin (caller's contract; defensive check).
+  if (thin_mask.front() || thin_mask.back()) return false;
+
+  // Scan for runs of true.
+  int n_runs = 0;
+  int lo = -1;
+  int hi = -1;
+  int i = 0;
+  while (i < n) {
+    if (!thin_mask[i]) { ++i; continue; }
+    const int run_lo = i;
+    while (i < n && thin_mask[i]) ++i;
+    const int run_hi = i - 1;
+    ++n_runs;
+    if (n_runs > 1) return false;  // multiple disjoint runs: fallback
+    lo = run_lo;
+    hi = run_hi;
+  }
+  if (n_runs != 1) return false;
+  // Strictly interior (Phase A scope: leading/trailing thin not handled).
+  if (lo <= 0 || hi >= n - 1) return false;
+  out->lo = lo;
+  out->hi = hi;
+  return true;
+}
+
+std::vector<SPoint2> buildTrimmedOpenPolyline(
+    const std::vector<SPoint2>& base_pts, const ThinRun& run) {
+  const int n = static_cast<int>(base_pts.size());
+  std::vector<SPoint2> out;
+  if (run.lo <= 0 || run.hi >= n - 1 || run.lo > run.hi) {
+    // Defensive: contract violation — return empty so caller's check
+    // (size < 2) early-outs cleanly.
+    return out;
+  }
+  out.reserve(n - (run.hi - run.lo + 1));
+  for (int k = 0; k < run.lo; ++k)       out.push_back(base_pts[k]);
+  for (int k = run.hi + 1; k < n; ++k)   out.push_back(base_pts[k]);
+  return out;
+}
+
+void remapBaseSegToOriginal(std::vector<OffsetPolygon>& polygons,
+                            const ThinRun& run) {
+  // Trimmed-input segment index → original-base segment index:
+  //   k < run.lo - 1           → k                    (preserved leading)
+  //   k == run.lo - 1          → -1                   (bridge segment)
+  //   k >= run.lo              → k + (run.hi - run.lo + 1)  (preserved trailing)
+  const int gap = run.hi - run.lo + 1;
+  for (auto& poly : polygons) {
+    for (auto& src : poly.sources) {
+      if (src.base_seg < 0) continue;  // already unattributed (Clipper2 join)
+      if (src.base_seg < run.lo - 1) {
+        // No change.
+      } else if (src.base_seg == run.lo - 1) {
+        src.base_seg = -1;  // bridge chord — no original correspondence
+        src.base_u   = 0.0;
+      } else {
+        src.base_seg += gap;
+      }
+    }
+  }
+}
+
 }  // namespace geo
 }  // namespace prevabs
