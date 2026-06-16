@@ -2085,7 +2085,7 @@ LOOPS (318):
   loop#408 incident=he#1432 face=nullptr kept=false adjacent=nullptr
   loop#410 incident=he#1434 face=nullptr kept=false adjacent=nullptr
   loop#412 incident=he#1436 face=nullptr kept=false adjacent=nullptr
-  loop#414 incident=he#1438 face=nullptr kept=false adjacent=nullptr
+  loop#414 incident=he#1438 face=nullptr kept=true adjacent=nullptr
   loop#415 incident=he#228 face=nullptr kept=false adjacent=nullptr
   loop#416 incident=he#1440 face=nullptr kept=false adjacent=nullptr
   loop#418 incident=he#1442 face=nullptr kept=false adjacent=nullptr

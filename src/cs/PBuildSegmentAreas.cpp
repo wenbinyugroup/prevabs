@@ -517,6 +517,10 @@ void Segment::createIntermediateAreas(
     if (base_idx > 0 && inDroppedRange(base_idx - 1)) return true;
     return false;
   };
+  auto isRightBoundaryOfDroppedRange = [&](int base_idx) {
+    if (!skip_dropped_areas || base_idx <= 0) return false;
+    return !inDroppedRange(base_idx) && inDroppedRange(base_idx - 1);
+  };
 
   for (auto k = 1; k < _base_offset_indices_pairs.size() - 1; k++) {
         if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "area " + std::to_string(k);
@@ -530,6 +534,28 @@ void Segment::createIntermediateAreas(
         PLOG(debug) << "  skipping area at base[" << vbi_tmp
                     << "] (base edge endpoint in dropped range — "
                        "skin locally absent or boundary sliver)";
+      }
+      if (isRightBoundaryOfDroppedRange(vbi_tmp)) {
+        PDCELVertex *vb_tmp = _curve_base->vertices()[vbi_tmp];
+        PDCELVertex *vo_tmp = _curve_offset->vertices()[voi_tmp];
+        std::list<PDCELFace *> new_faces =
+            bcfg.dcel->splitFace(_face, vb_tmp, vo_tmp);
+
+        // The split peels off the whole dropped/thin gap accumulated since
+        // the last kept area. Do not materialize that face as a laminate
+        // area; continue from the right-side bound.
+        PDCELFace *gap_face =
+            (layup_side > 0) ? new_faces.front() : new_faces.back();
+        if (gap_face != nullptr) {
+          gap_face->setBounded(false);
+        }
+        _face = (layup_side > 0) ? new_faces.back() : new_faces.front();
+        prev_bound_vertices = splitBoundByLayup(vb_tmp, vo_tmp, bcfg);
+
+        if (bcfg.debug_level >= DebugLevel::join) {
+          PLOG(debug) << "  dropped gap closed at base[" << vbi_tmp
+                      << "]; continuing from right-side face";
+        }
       }
       continue;
     }
@@ -731,6 +757,8 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
           base_pts, off_pts, closed(), side, dist,
           prevabs::geo::readPairingAlgoEnv());
       if (plan.ok) {
+        const std::vector<int> persisted_drop_lo = _dropped_base_ranges_lo;
+        const std::vector<int> persisted_drop_hi = _dropped_base_ranges_hi;
         if (bcfg.debug_level >= DebugLevel::join) {
           PLOG(debug) << "buildAreas: derived staircase: "
                       << _base_offset_indices_pairs.size() << " pairs (was) -> "
@@ -742,6 +770,10 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
         _base_offset_indices_pairs = plan.id_pairs;
         _dropped_base_ranges_lo    = plan.dropped_base_ranges_lo;
         _dropped_base_ranges_hi    = plan.dropped_base_ranges_hi;
+        for (std::size_t r = 0; r < persisted_drop_lo.size(); ++r) {
+          _dropped_base_ranges_lo.push_back(persisted_drop_lo[r]);
+          _dropped_base_ranges_hi.push_back(persisted_drop_hi[r]);
+        }
       } else {
         PLOG(warning) << "buildAreas: rebuildBaseOffsetMapFromGeometry "
                          "failed for segment '" << _name

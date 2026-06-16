@@ -9,6 +9,9 @@ endif()
 if(NOT DEFINED CASE_NAME OR CASE_NAME STREQUAL "")
   message(FATAL_ERROR "CASE_NAME is required")
 endif()
+if(NOT DEFINED PREVABS_ARGS)
+  set(PREVABS_ARGS "")
+endif()
 
 set(input_xml "${TEST_DIR}/${CASE_NAME}.xml")
 set(check_file "${TEST_DIR}/${CASE_NAME}.check.txt")
@@ -52,7 +55,7 @@ endforeach()
 file(REMOVE "${log_file}" "${dump_file}")
 
 execute_process(
-  COMMAND "${PREVABS}" -i "${input_xml}" --hm ${extra_args}
+  COMMAND "${PREVABS}" -i "${input_xml}" --hm ${PREVABS_ARGS} ${extra_args}
   WORKING_DIRECTORY "${TEST_DIR}"
   RESULT_VARIABLE run_exit
   OUTPUT_VARIABLE run_stdout

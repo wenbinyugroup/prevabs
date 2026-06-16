@@ -122,7 +122,13 @@ if (-not (Test-Path $prevabs)) {
 # ctest. VS ships Ninja alongside its bundled cmake, so the vswhere path works.
 Remove-Item -Recurse -Force $buildDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $buildDir | Out-Null
-$cmakeArgs = @("-S", $integrationDir, "-B", $buildDir, "-DPREVABS:FILEPATH=$prevabs")
+$prevabsArgs = "-v;--nopopup"
+$cmakeArgs = @(
+    "-S", $integrationDir,
+    "-B", $buildDir,
+    "-DPREVABS:FILEPATH=$prevabs",
+    "-DPREVABS_ARGS:STRING=$prevabsArgs"
+)
 $ninja = Find-Tool "ninja"
 if ($ninja) { $cmakeArgs += @("-G", "Ninja", "-DCMAKE_MAKE_PROGRAM=$ninja") }
 & $cmake @cmakeArgs

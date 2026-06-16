@@ -5,6 +5,7 @@ enable_testing()
 
 # Path to prevabs must be supplied by the caller (-DPREVABS=<path>).
 set(PREVABS "" CACHE FILEPATH "Path to prevabs executable")
+set(PREVABS_ARGS "" CACHE STRING "Extra arguments passed to prevabs")
 if(NOT EXISTS "${PREVABS}")
     message(FATAL_ERROR
         "prevabs executable not found. Supply its path:\n"
@@ -36,7 +37,7 @@ function(register_tests dir_name)
             get_filename_component(base "${xml_file}" NAME_WE)
             add_test(
                 NAME             "${dir_name}/${base}"
-                COMMAND          "${PREVABS}" -i "${xml_file}" --hm
+                COMMAND          "${PREVABS}" -i "${xml_file}" --hm ${PREVABS_ARGS}
                 WORKING_DIRECTORY "${test_dir}"
             )
             set_tests_properties("${dir_name}/${base}" PROPERTIES
@@ -62,6 +63,7 @@ function(register_logging_checks dir_name)
             NAME "${dir_name}/${case_name}.logcheck"
             COMMAND "${CMAKE_COMMAND}"
                 -DPREVABS:FILEPATH=${PREVABS}
+                "-DPREVABS_ARGS:STRING=${PREVABS_ARGS}"
                 -DTEST_DIR:PATH=${test_dir}
                 -DCASE_NAME=${case_name}
                 -P "${CMAKE_SOURCE_DIR}/RunLoggingCase.cmake"
