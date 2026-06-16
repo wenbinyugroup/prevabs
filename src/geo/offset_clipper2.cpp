@@ -73,6 +73,72 @@ OffsetVertexSource closestOpenSegment(double qx, double qy,
   return best;
 }
 
+SPoint2 openOffsetNormal(const SPoint2& a, const SPoint2& b,
+                         int side, double dist) {
+  const double dx = b.x() - a.x();
+  const double dy = b.y() - a.y();
+  const double len = std::sqrt(dx * dx + dy * dy);
+  if (len == 0.0) return SPoint2(0.0, 0.0);
+  const double s = side >= 0 ? 1.0 : -1.0;
+  return SPoint2(s * -dy / len * dist, s * dx / len * dist);
+}
+
+bool lineIntersection(const SPoint2& p, const SPoint2& r,
+                      const SPoint2& q, const SPoint2& s,
+                      SPoint2* out) {
+  const double det = r.x() * s.y() - r.y() * s.x();
+  if (std::fabs(det) < 1e-14) return false;
+  const double qpx = q.x() - p.x();
+  const double qpy = q.y() - p.y();
+  const double t = (qpx * s.y() - qpy * s.x()) / det;
+  *out = SPoint2(p.x() + t * r.x(), p.y() + t * r.y());
+  return true;
+}
+
+std::vector<SPoint2> buildOpenMiterOffset(
+    const std::vector<SPoint2>& base, int side, double dist) {
+  std::vector<SPoint2> out;
+  const int N = static_cast<int>(base.size());
+  if (N < 2 || !(dist > 0.0)) return out;
+
+  std::vector<SPoint2> normals;
+  normals.reserve(N - 1);
+  for (int i = 0; i + 1 < N; ++i) {
+    normals.push_back(openOffsetNormal(base[i], base[i + 1], side, dist));
+  }
+
+  out.reserve(N);
+  out.push_back(SPoint2(base[0].x() + normals[0].x(),
+                        base[0].y() + normals[0].y()));
+  for (int i = 1; i + 1 < N; ++i) {
+    const SPoint2 p0(base[i].x() + normals[i - 1].x(),
+                     base[i].y() + normals[i - 1].y());
+    const SPoint2 d0(base[i].x() - base[i - 1].x(),
+                     base[i].y() - base[i - 1].y());
+    const SPoint2 p1(base[i].x() + normals[i].x(),
+                     base[i].y() + normals[i].y());
+    const SPoint2 d1(base[i + 1].x() - base[i].x(),
+                     base[i + 1].y() - base[i].y());
+    SPoint2 q;
+    if (lineIntersection(p0, d0, p1, d1, &q)) {
+      out.push_back(q);
+    } else {
+      out.push_back(SPoint2(base[i].x() + 0.5 * (normals[i - 1].x()
+                                                 + normals[i].x()),
+                            base[i].y() + 0.5 * (normals[i - 1].y()
+                                                 + normals[i].y())));
+    }
+  }
+  out.push_back(SPoint2(base[N - 1].x() + normals[N - 2].x(),
+                        base[N - 1].y() + normals[N - 2].y()));
+  return out;
+}
+
+bool samePoint(const SPoint2& a, const SPoint2& b) {
+  return std::fabs(a.x() - b.x()) <= 1e-14
+      && std::fabs(a.y() - b.y()) <= 1e-14;
+}
+
 // Sign of (t × d) where t is the local base tangent at the foot of
 // perpendicular and d is the displacement from foot to query point.
 // +1 → left of base, -1 → right, 0 → degenerate.
@@ -164,7 +230,9 @@ std::vector<OffsetPolygon> extractOpenRuns(
     const std::vector<SPoint2>&     base,
     int                             side,
     double                          source_radius,
-    bool                            do_resample) {
+    double                          dist,
+    bool                            do_resample,
+    bool                            do_miter_resample) {
   std::vector<OffsetPolygon> runs;
   const int M = static_cast<int>(path.size());
   if (M < 2 || base.size() < 2) return runs;
@@ -267,31 +335,31 @@ std::vector<OffsetPolygon> extractOpenRuns(
     auto& r = runs[0];
     const int N = static_cast<int>(base.size());
 
+    if (do_miter_resample
+        && static_cast<int>(2 * r.points.size()) >= N) {
+      std::vector<SPoint2> miter_pts =
+          buildOpenMiterOffset(base, side, dist);
+      if (miter_pts.size() >= 2) {
+        r.pre_resample_points = r.points;
+        r.points = std::move(miter_pts);
+        r.sources.clear();
+        r.resampled.assign(r.points.size(), true);
+        r.sources.reserve(r.points.size());
+        for (int i = 0; i < static_cast<int>(r.points.size()); ++i) {
+          OffsetVertexSource src;
+          src.base_seg = (i == 0) ? 0 : (i - 1);
+          src.base_u   = (i == 0) ? 0.0 : 1.0;
+          r.sources.push_back(src);
+        }
+      }
+      return runs;
+    }
+
     std::vector<bool> base_covered(N, false);
     for (const auto& s : r.sources) {
       if (s.base_seg < 0) continue;
       if (s.base_seg     >= 0 && s.base_seg     < N) base_covered[s.base_seg]     = true;
       if (s.base_seg + 1 >= 0 && s.base_seg + 1 < N) base_covered[s.base_seg + 1] = true;
-    }
-
-    // Boundary trim: drop one more vertex at the trailing edge of a
-    // covered region (last covered before a drop), but only when the
-    // covered run is long enough that the trim won't kill the entire
-    // resample (preserves V-shape acute cusps where the run is short).
-    // Rationale: at the boundary the resampled foot of perpendicular
-    // sits where Clipper2's inset folds back, creating a downstream
-    // "fan" of layup intersections that breaks `PSegment::build`.
-    {
-      const std::vector<bool> orig_cov = base_covered;
-      int cov_count = 0;
-      for (bool c : orig_cov) if (c) ++cov_count;
-      if (cov_count >= 4) {
-        for (int i = 0; i + 1 < N; ++i) {
-          if (orig_cov[i] && !orig_cov[i + 1]) {
-            base_covered[i] = false;
-          }
-        }
-      }
     }
 
     std::vector<SPoint2>            new_pts;
@@ -305,42 +373,6 @@ std::vector<OffsetPolygon> extractOpenRuns(
     const int n_run_seg = static_cast<int>(r.points.size()) - 1;
     for (int i = 0; i < N; ++i) {
       if (!base_covered[i]) continue;
-
-      // G.1 (summary-20260520 §2.2 / §3.1): leading boundary covered base
-      // vert sits next to an uncovered range. The foot-of-perpendicular
-      // onto the raw run polyline pulls its anchor toward the base normal,
-      // which in thin-TE geometry yanks the bevel boundary away from
-      // where Clipper2 actually sat — downstream layup intersections
-      // generate a degenerate fan. Use the closest raw run VERTEX instead;
-      // that is the actual Clipper2 bevel / trim boundary point.
-      // The trailing boundary was already dropped by the trim above, so
-      // the only remaining boundary case is leading.
-      const bool is_leading_boundary =
-          (i == 0) || !base_covered[i - 1];
-
-      if (is_leading_boundary) {
-        int    best_m  = cur_seg;
-        double best_d2 = std::numeric_limits<double>::infinity();
-        const int m_hi = static_cast<int>(r.points.size());
-        for (int m = cur_seg; m < m_hi; ++m) {
-          const double dx = base[i].x() - r.points[m].x();
-          const double dy = base[i].y() - r.points[m].y();
-          const double d2 = dx * dx + dy * dy;
-          if (d2 < best_d2) { best_d2 = d2; best_m = m; }
-        }
-        new_pts.emplace_back(r.points[best_m].x(), r.points[best_m].y());
-
-        OffsetVertexSource src;
-        src.base_seg = (i == 0) ? 0 : (i - 1);
-        src.base_u   = (i == 0) ? 0.0 : 1.0;
-        new_srcs.push_back(src);
-        new_resampled.push_back(false);  // raw Clipper2 vertex
-
-        // Advance cur_seg so the next foot-of-perpendicular projection
-        // doesn't walk back behind this anchor.
-        cur_seg = std::min(best_m, n_run_seg - 1);
-        continue;
-      }
 
       int    best_seg = cur_seg;
       double best_u   = 0.0;
@@ -373,14 +405,29 @@ std::vector<OffsetPolygon> extractOpenRuns(
     }
 
     if (new_pts.size() >= 2) {
+      std::vector<SPoint2>            compact_pts;
+      std::vector<OffsetVertexSource> compact_srcs;
+      std::vector<bool>               compact_resampled;
+      compact_pts.reserve(new_pts.size());
+      compact_srcs.reserve(new_srcs.size());
+      compact_resampled.reserve(new_resampled.size());
+      for (std::size_t k = 0; k < new_pts.size(); ++k) {
+        if (!compact_pts.empty() && samePoint(compact_pts.back(), new_pts[k])) {
+          continue;
+        }
+        compact_pts.push_back(new_pts[k]);
+        compact_srcs.push_back(new_srcs[k]);
+        compact_resampled.push_back(new_resampled[k]);
+      }
+
       // Snapshot the raw run polyline before any positions are replaced
       // by the foot-of-perpendicular interpolations above. Debug overlays
       // use this to plot where Clipper2 originally placed vertices — those
       // positions are otherwise lost for slots tagged `resampled=true`.
       r.pre_resample_points = r.points;
-      r.points    = std::move(new_pts);
-      r.sources   = std::move(new_srcs);
-      r.resampled = std::move(new_resampled);
+      r.points    = std::move(compact_pts);
+      r.sources   = std::move(compact_srcs);
+      r.resampled = std::move(compact_resampled);
     }
   }
 
@@ -433,7 +480,8 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     double                      dist,
     JoinTypeChoice              join,
     double                      miter_limit,
-    bool                        resample_open) {
+    bool                        resample_open,
+    bool                        experimental_open_miter_resample) {
 
   std::vector<OffsetPolygon> result;
   if (base.size() < 2 || !(dist > 0.0)) return result;
@@ -519,7 +567,9 @@ std::vector<OffsetPolygon> offsetWithClipper2(
   // and exactly one run on the requested side.
   for (const auto& path : sol) {
     std::vector<OffsetPolygon> runs =
-        extractOpenRuns(path, input, side, source_radius, resample_open);
+        extractOpenRuns(path, input, side, source_radius, dist, resample_open,
+                        experimental_open_miter_resample
+                            && join == JoinTypeChoice::Miter);
     for (auto& r : runs) {
       result.push_back(std::move(r));
     }

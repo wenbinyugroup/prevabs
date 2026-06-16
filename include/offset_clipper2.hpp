@@ -490,6 +490,13 @@ enum class JoinTypeChoice {
 ///                        raw side-filtered Clipper2 run (M can be
 ///                        ≪ N). Closed inputs ignore this flag (they
 ///                        never go through resample).
+/// @param experimental_open_miter_resample
+///                        Open-input only, and only when `join` is
+///                        Miter. When true, the resample step rebuilds
+///                        a per-base-vertex miter polyline directly
+///                        from neighbouring offset lines. This is an
+///                        opt-in t0 harness experiment; production
+///                        callers keep the default `false`.
 std::vector<OffsetPolygon> offsetWithClipper2(
     const std::vector<SPoint2>& base,
     bool                        base_is_closed,
@@ -497,7 +504,8 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     double                      dist,
     JoinTypeChoice              join          = JoinTypeChoice::Miter,
     double                      miter_limit   = 2.0,
-    bool                        resample_open = true);
+    bool                        resample_open = true,
+    bool                        experimental_open_miter_resample = false);
 
 }  // namespace geo
 }  // namespace prevabs

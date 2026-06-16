@@ -73,7 +73,7 @@ switch ($Mode) {
         New-Item -ItemType Directory -Force .\build_msvc | Out-Null
         Write-ToLog "=== full build started at $(Get-Date) ==="
         Set-Location .\build_msvc
-        Invoke-Logged cmake @("..")
+        Invoke-Logged cmake @("..", "-G", "Visual Studio 17 2022", "-A", "x64")
         Invoke-Logged cmake @("--build", ".", "--config", "Release")
         Set-Location ..
         Write-ToLog "=== build finished at $(Get-Date) ==="

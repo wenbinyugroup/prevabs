@@ -13,7 +13,9 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -37,6 +39,15 @@ const char* joinName(JoinTypeChoice j) {
     case JoinTypeChoice::Square: return "square";
     case JoinTypeChoice::Bevel:  return "bevel";
     case JoinTypeChoice::Round:  return "round";
+  }
+  return "?";
+}
+
+const char* matcherName(PairingAlgo algo) {
+  switch (algo) {
+    case PairingAlgo::SegmentProjection: return "segment";
+    case PairingAlgo::Nearest:           return "nearest";
+    case PairingAlgo::DP:                return "dp";
   }
   return "?";
 }
@@ -207,6 +218,12 @@ Scenario makeAirfoilMh104TEOpen(double dist = 0.02,
   std::vector<SPoint2> open_te;
   for (int k = n - 9; k < n; ++k) open_te.push_back(pts[k]);
   for (int k = 0; k <= 8; ++k)    open_te.push_back(pts[k]);
+  open_te.erase(
+      std::unique(open_te.begin(), open_te.end(),
+                  [](const SPoint2& a, const SPoint2& b) {
+                    return a.x() == b.x() && a.y() == b.y();
+                  }),
+      open_te.end());
   return {"airfoil_mh104_te_open", std::move(open_te), false, +1, dist,
           pretrim_alpha};
 }
@@ -217,6 +234,11 @@ Scenario makeAirfoilMh104TEOpen(double dist = 0.02,
 
 struct RunResult {
   std::string          label;
+  PairingAlgo          matcher       = PairingAlgo::SegmentProjection;
+  bool                 pretrim_requested = false;
+  JoinTypeChoice       join_type     = JoinTypeChoice::Miter;
+  double               miter_limit   = 2.0;
+  bool                 resample_open = true;
   bool                 ok            = false;
   std::size_t          pair_count    = 0;
   std::size_t          offset_count  = 0;
@@ -342,11 +364,12 @@ RunResult runOnce(const Scenario& s, PairingAlgo algo, bool with_pretrim,
                   double         miter_lim = 2.0,
                   bool           resample_open = true) {
   RunResult r;
-  switch (algo) {
-    case PairingAlgo::SegmentProjection: r.label = "segment"; break;
-    case PairingAlgo::Nearest:           r.label = "nearest"; break;
-    case PairingAlgo::DP:                r.label = "dp";      break;
-  }
+  r.matcher = algo;
+  r.pretrim_requested = with_pretrim;
+  r.join_type = join;
+  r.miter_limit = miter_lim;
+  r.resample_open = resample_open;
+  r.label = matcherName(algo);
   if (with_pretrim)              r.label += "+pretrim";
   if (join != JoinTypeChoice::Miter) {
     r.label += std::string("+") + joinName(join);
@@ -370,7 +393,8 @@ RunResult runOnce(const Scenario& s, PairingAlgo algo, bool with_pretrim,
   const int clipper_side = s.closed ? -s.side : s.side;
   auto polygons = offsetWithClipper2(
       clipper_input, s.closed, clipper_side, s.dist, join, miter_lim,
-      resample_open);
+      resample_open,
+      resample_open && join == JoinTypeChoice::Miter);
   if (r.pretrimmed) {
     remapBaseSegToOriginal(polygons, r.pretrim_run);
   }
@@ -650,6 +674,162 @@ void writeSvgMultiPanel(const std::string& path,
 }
 
 // ---------------------------------------------------------------------------
+// JSON dump — one array item per SVG panel, in the same order.
+// ---------------------------------------------------------------------------
+
+std::string jsonEscape(const std::string& in) {
+  std::ostringstream out;
+  for (char c : in) {
+    switch (c) {
+      case '\\': out << "\\\\"; break;
+      case '"':  out << "\\\""; break;
+      case '\b': out << "\\b";  break;
+      case '\f': out << "\\f";  break;
+      case '\n': out << "\\n";  break;
+      case '\r': out << "\\r";  break;
+      case '\t': out << "\\t";  break;
+      default:
+        if (static_cast<unsigned char>(c) < 0x20) {
+          out << "\\u"
+              << std::hex << std::setw(4) << std::setfill('0')
+              << static_cast<int>(static_cast<unsigned char>(c))
+              << std::dec << std::setfill(' ');
+        } else {
+          out << c;
+        }
+    }
+  }
+  return out.str();
+}
+
+void writeJsonString(std::ostream& out, const std::string& s) {
+  out << "\"" << jsonEscape(s) << "\"";
+}
+
+void writeJsonPoint(std::ostream& out, const SPoint2& p) {
+  out << "[" << p.x() << ", " << p.y() << "]";
+}
+
+void writeJsonPointArray(std::ostream& out,
+                         const std::vector<SPoint2>& points,
+                         const std::string& indent) {
+  out << "[";
+  if (!points.empty()) out << "\n";
+  for (std::size_t i = 0; i < points.size(); ++i) {
+    out << indent;
+    writeJsonPoint(out, points[i]);
+    if (i + 1 < points.size()) out << ",";
+    out << "\n";
+  }
+  if (!points.empty()) out << indent.substr(0, indent.size() - 2);
+  out << "]";
+}
+
+void writeJsonPairs(std::ostream& out,
+                    const BaseOffsetMap& pairs,
+                    const std::string& indent) {
+  out << "[";
+  if (!pairs.empty()) out << "\n";
+  for (std::size_t i = 0; i < pairs.size(); ++i) {
+    out << indent << "[" << pairs[i].base << ", " << pairs[i].offset << "]";
+    if (i + 1 < pairs.size()) out << ",";
+    out << "\n";
+  }
+  if (!pairs.empty()) out << indent.substr(0, indent.size() - 2);
+  out << "]";
+}
+
+void writeJsonDrops(std::ostream& out,
+                    const ReverseMatchPlan& plan,
+                    const std::string& indent) {
+  out << "[";
+  if (!plan.dropped_base_ranges_lo.empty()) out << "\n";
+  for (std::size_t i = 0; i < plan.dropped_base_ranges_lo.size(); ++i) {
+    out << indent << "[" << plan.dropped_base_ranges_lo[i]
+        << ", " << plan.dropped_base_ranges_hi[i] << "]";
+    if (i + 1 < plan.dropped_base_ranges_lo.size()) out << ",";
+    out << "\n";
+  }
+  if (!plan.dropped_base_ranges_lo.empty()) {
+    out << indent.substr(0, indent.size() - 2);
+  }
+  out << "]";
+}
+
+void writeJsonForSvg(const std::string& path,
+                     const std::string& svg_name,
+                     const std::string& comparison_group,
+                     const Scenario& s,
+                     const std::vector<RunResult>& runs) {
+  std::ofstream f(path);
+  if (!f) {
+    std::fprintf(stderr, "WARN: cannot open %s for writing\n",
+                 path.c_str());
+    return;
+  }
+
+  f << std::setprecision(17);
+  f << "[\n";
+  for (std::size_t i = 0; i < runs.size(); ++i) {
+    const auto& r = runs[i];
+    f << "  {\n";
+    f << "    \"source_svg\": "; writeJsonString(f, svg_name); f << ",\n";
+    f << "    \"comparison_group\": ";
+    writeJsonString(f, comparison_group);
+    f << ",\n";
+    f << "    \"panel_index\": " << i << ",\n";
+    f << "    \"scenario\": "; writeJsonString(f, s.name); f << ",\n";
+    f << "    \"closed\": " << (s.closed ? "true" : "false") << ",\n";
+    f << "    \"side\": " << s.side << ",\n";
+    f << "    \"dist\": " << s.dist << ",\n";
+    f << "    \"matcher\": "; writeJsonString(f, matcherName(r.matcher));
+    f << ",\n";
+    f << "    \"join_type\": "; writeJsonString(f, joinName(r.join_type));
+    f << ",\n";
+    f << "    \"miter_limit\": " << r.miter_limit << ",\n";
+    f << "    \"resample_open\": "
+      << (r.resample_open ? "true" : "false") << ",\n";
+    f << "    \"pretrim_requested\": "
+      << (r.pretrim_requested ? "true" : "false") << ",\n";
+    f << "    \"pretrim_alpha\": " << s.pretrim_alpha << ",\n";
+    f << "    \"pretrimmed\": " << (r.pretrimmed ? "true" : "false")
+      << ",\n";
+    f << "    \"pretrim_run\": ";
+    if (r.pretrimmed) {
+      f << "{\"lo\": " << r.pretrim_run.lo
+        << ", \"hi\": " << r.pretrim_run.hi << "}";
+    } else {
+      f << "null";
+    }
+    f << ",\n";
+    f << "    \"ok\": " << (r.ok ? "true" : "false") << ",\n";
+    f << "    \"base_count\": " << s.base.size() << ",\n";
+    f << "    \"offset_count\": " << r.offset_count << ",\n";
+    f << "    \"pair_count\": " << r.pair_count << ",\n";
+    f << "    \"dropped_count\": " << r.dropped_count << ",\n";
+    f << "    \"drops\": ";
+    writeJsonDrops(f, r.plan, "      ");
+    f << ",\n";
+    f << "    \"base\": ";
+    writeJsonPointArray(f, s.base, "      ");
+    f << ",\n";
+    f << "    \"offset\": ";
+    writeJsonPointArray(f, r.plan.offset_points, "      ");
+    f << ",\n";
+    f << "    \"pairs\": ";
+    writeJsonPairs(f, r.plan.id_pairs, "      ");
+    f << ",\n";
+    f << "    \"trimmed_input\": ";
+    writeJsonPointArray(f, r.trimmed_input, "      ");
+    f << "\n";
+    f << "  }";
+    if (i + 1 < runs.size()) f << ",";
+    f << "\n";
+  }
+  f << "]\n";
+}
+
+// ---------------------------------------------------------------------------
 // Per-scenario summary line + CSV row.
 // ---------------------------------------------------------------------------
 
@@ -788,6 +968,12 @@ int main(int argc, char** argv) {
     writeSvgMultiPanel(out_dir + "/" + s.name + ".svg",       s, runs);
     writeSvgMultiPanel(out_dir + "/" + s.name + "_joins.svg", s, join_runs);
     writeSvgMultiPanel(out_dir + "/" + s.name + "_raw.svg",   s, raw_runs);
+    writeJsonForSvg(out_dir + "/" + s.name + ".json",
+                    s.name + ".svg", "matcher", s, runs);
+    writeJsonForSvg(out_dir + "/" + s.name + "_joins.json",
+                    s.name + "_joins.svg", "join", s, join_runs);
+    writeJsonForSvg(out_dir + "/" + s.name + "_raw.json",
+                    s.name + "_raw.svg", "raw", s, raw_runs);
 
     // ---- Paired resample-vs-raw compare SVG ----
     // Interleave default + raw runs in matcher-paired order so adjacent
@@ -805,8 +991,12 @@ int main(int argc, char** argv) {
     }
     writeSvgMultiPanel(out_dir + "/" + s.name + "_compare.svg",
                        s, pair_runs);
+    writeJsonForSvg(out_dir + "/" + s.name + "_compare.json",
+                    s.name + "_compare.svg", "resample_compare",
+                    s, pair_runs);
   }
 
-  std::printf("done. SVG + summary.csv written to %s\n", out_dir.c_str());
+  std::printf("done. SVG + JSON + summary.csv written to %s\n",
+              out_dir.c_str());
   return 0;
 }

@@ -2656,7 +2656,7 @@ LOOPS (320):
   loop#35 incident=he#1371 face=f#10 kept=true adjacent=nullptr
   loop#41 incident=he#523 face=f#11 kept=true adjacent=nullptr
   loop#44 incident=he#1328 face=f#11 kept=true adjacent=loop#41
-  loop#47 incident=he#1053 face=f#12 kept=true adjacent=loop#440
+  loop#47 incident=he#1053 face=f#12 kept=true adjacent=loop#474
   loop#49 incident=he#808 face=nullptr kept=false adjacent=nullptr
   loop#50 incident=he#139 face=nullptr kept=false adjacent=nullptr
   loop#51 incident=he#1051 face=nullptr kept=false adjacent=nullptr
@@ -2859,7 +2859,7 @@ LOOPS (320):
   loop#434 incident=he#1763 face=nullptr kept=false adjacent=nullptr
   loop#436 incident=he#1765 face=nullptr kept=false adjacent=nullptr
   loop#438 incident=he#1767 face=nullptr kept=false adjacent=nullptr
-  loop#440 incident=he#1769 face=nullptr kept=true adjacent=nullptr
+  loop#440 incident=he#1769 face=nullptr kept=false adjacent=nullptr
   loop#442 incident=he#1771 face=nullptr kept=false adjacent=nullptr
   loop#444 incident=he#1773 face=nullptr kept=false adjacent=nullptr
   loop#446 incident=he#1775 face=nullptr kept=false adjacent=nullptr
@@ -2942,7 +2942,7 @@ LOOPS (320):
   loop#600 incident=he#925 face=nullptr kept=false adjacent=nullptr
   loop#602 incident=he#927 face=nullptr kept=false adjacent=nullptr
   loop#603 incident=he#929 face=nullptr kept=false adjacent=nullptr
-  loop#604 incident=he#1173 face=nullptr kept=false adjacent=nullptr
+  loop#604 incident=he#1173 face=nullptr kept=true adjacent=nullptr
   loop#606 incident=he#1175 face=nullptr kept=false adjacent=nullptr
   loop#608 incident=he#1177 face=nullptr kept=false adjacent=nullptr
   loop#610 incident=he#1179 face=nullptr kept=false adjacent=nullptr
