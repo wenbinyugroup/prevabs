@@ -251,4 +251,14 @@ private:
       const std::vector<PDCELVertex *> &prev_bound_vertices,
       const std::vector<PDCELVertex *> &first_bound_vertices,
       int count, const BuilderConfig &bcfg);
+
+  // Phase-2a (plan-20260618-per-layer-offset-within-shell.md): when the
+  // PREVABS_LAYERED_OFFSET flag is on, compute the route-i per-layer offset
+  // curves + per-layer staircase maps for THIS segment and PLOG the three
+  // exit checks (nesting within the shell, curve_n == shell offset, valid
+  // maps). Pure validation — touches no DCEL — so the legacy area/layer
+  // construction still runs and the mesh is unchanged. De-risks per-layer
+  // curve generation in the production context (real layups, joins,
+  // open/closed) before the DCEL tiling lands in Phase 2b.
+  void validatePerLayerOffsets(const BuilderConfig &bcfg);
 };

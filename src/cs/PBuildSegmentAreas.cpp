@@ -18,17 +18,88 @@
 
 #include "geo_types.hpp"
 
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <list>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+namespace {
+
+// Phase-2a (plan-20260618-per-layer-offset-within-shell.md): env gate for
+// the layered per-layer-offset path. Off by default — the legacy
+// interpolated-layer path stays the production default.
+bool useLayeredOffsetEnv() {
+  static const bool cached = [] {
+    const char* raw = std::getenv("PREVABS_LAYERED_OFFSET");
+    if (!raw || !*raw) return false;
+    std::string s(raw);
+    for (auto& c : s) c = static_cast<char>(std::tolower(c));
+    return s == "1" || s == "true" || s == "on" || s == "yes";
+  }();
+  return cached;
+}
+
+// Foot-of-perpendicular distance from q to a polyline (open or closed).
+double footDistToPolylineSeg(const SPoint2& q,
+                             const std::vector<SPoint2>& poly, bool closed) {
+  const int n = static_cast<int>(poly.size());
+  if (n < 2) return std::numeric_limits<double>::infinity();
+  const int ns = closed ? n : n - 1;
+  double best = std::numeric_limits<double>::infinity();
+  for (int i = 0; i < ns; ++i) {
+    const SPoint2& a = poly[i];
+    const SPoint2& b = poly[(i + 1) % n];
+    const double dx = b.x() - a.x(), dy = b.y() - a.y();
+    const double len2 = dx * dx + dy * dy;
+    double u = 0.0;
+    if (len2 > 0.0) {
+      u = ((q.x() - a.x()) * dx + (q.y() - a.y()) * dy) / len2;
+      u = std::max(0.0, std::min(1.0, u));
+    }
+    const double fx = a.x() + u * dx, fy = a.y() + u * dy;
+    best = std::min(best, std::hypot(q.x() - fx, q.y() - fy));
+  }
+  return best;
+}
+
+// Route-i offset curve of `base` at `dist` — the primary run. Closed →
+// largest |signed area| polygon; open → most-vertices side run. Mirrors the
+// Phase-0 prototype (test/integration/t0_offset_clipper2/phase0_layered_v.cpp).
+std::vector<SPoint2> offsetCurveSeg(const std::vector<SPoint2>& base,
+                                    bool closed, int clipper_side,
+                                    double dist) {
+  auto polys =
+      prevabs::geo::offsetWithClipper2(base, closed, clipper_side, dist);
+  const prevabs::geo::OffsetPolygon* best = nullptr;
+  double best_metric = -1.0;
+  for (const auto& p : polys) {
+    if (p.points.size() < 2) continue;
+    double metric = static_cast<double>(p.points.size());
+    if (closed) {
+      double a = 0.0;
+      const std::size_t m = p.points.size();
+      for (std::size_t i = 0; i < m; ++i) {
+        const auto& p0 = p.points[i];
+        const auto& p1 = p.points[(i + 1) % m];
+        a += p0.x() * p1.y() - p1.x() * p0.y();
+      }
+      metric = std::fabs(0.5 * a);
+    }
+    if (metric > best_metric) { best_metric = metric; best = &p; }
+  }
+  return best ? best->points : std::vector<SPoint2>{};
+}
+
+}  // namespace
 
 namespace {
 
@@ -679,6 +750,92 @@ void Segment::buildLastArea(
 }
 
 
+// Phase-2a: route-i per-layer offset validation (no DCEL effect). See header.
+void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
+  if (_layup == nullptr || _curve_base == nullptr) return;
+  // Non-const copy: Layer/Lamina accessors (getLamina/getStack/getThickness)
+  // are non-const member functions.
+  std::vector<Layer> layers = _layup->getLayers();
+  const int n = static_cast<int>(layers.size());
+  if (n == 0) return;
+
+  // Base in SPoint2 (drop trailing duplicate on a closed Baseline).
+  std::vector<SPoint2> base;
+  base.reserve(_curve_base->vertices().size());
+  for (auto* v : _curve_base->vertices()) {
+    base.emplace_back(v->point2()[0], v->point2()[1]);
+  }
+  const bool is_closed = closed();
+  if (is_closed && base.size() >= 2
+      && _curve_base->vertices().front() == _curve_base->vertices().back()) {
+    base.pop_back();
+  }
+  if (base.size() < 2) return;
+
+  const int side = layupSide();
+  const double total = _layup->getTotalThickness();
+  if (side == 0 || !(total > 0.0)) return;
+  // Match offset()'s side convention: closed flips, open passes through.
+  const int clipper_side = is_closed ? -side : side;
+
+  const std::vector<SPoint2> shell =
+      offsetCurveSeg(base, is_closed, clipper_side, total);
+  if (shell.size() < 2) {
+    PLOG(warning) << "per-layer[" << _name << "]: shell offset empty; skip";
+    return;
+  }
+
+  std::vector<SPoint2> prev = base;
+  std::vector<SPoint2> raw_last;
+  double cum = 0.0, prev_mean = -1.0;
+  bool nesting_ok = true, maps_ok = true;
+  for (int k = 0; k < n; ++k) {
+    const double tk = (layers[k].getLamina() != nullptr)
+                          ? layers[k].getLamina()->getThickness()
+                                * layers[k].getStack()
+                          : 0.0;
+    cum += tk;
+    const std::vector<SPoint2> curve =
+        offsetCurveSeg(base, is_closed, clipper_side, cum);
+    if (curve.size() < 2) { maps_ok = false; break; }
+    raw_last = curve;
+
+    const auto plan = prevabs::geo::rebuildBaseOffsetMapFromGeometry(
+        prev, curve, is_closed, side, std::max(tk, 1e-12),
+        prevabs::geo::readPairingAlgoEnv());
+    if (!plan.ok) maps_ok = false;
+
+    double dmax = 0.0, dsum = 0.0;
+    for (const auto& p : curve) {
+      const double d = footDistToPolylineSeg(p, base, is_closed);
+      dmax = std::max(dmax, d);
+      dsum += d;
+    }
+    const double dmean = dsum / static_cast<double>(curve.size());
+    const bool within = (k == n - 1) || (dmax < total + 1e-6);
+    if (!within || dmean < prev_mean - 1e-6) nesting_ok = false;
+    prev_mean = dmean;
+    prev = plan.ok ? plan.offset_points : curve;
+  }
+
+  // zero-gap: route-i cum_n curve must equal the shell (same offset call).
+  double gap = std::numeric_limits<double>::infinity();
+  if (raw_last.size() == shell.size()) {
+    gap = 0.0;
+    for (std::size_t i = 0; i < shell.size(); ++i) {
+      gap = std::max(gap, std::hypot(raw_last[i].x() - shell[i].x(),
+                                     raw_last[i].y() - shell[i].y()));
+    }
+  }
+  const bool zero_gap = gap < 1e-6;
+  const bool pass = nesting_ok && zero_gap && maps_ok;
+  PLOG(info) << "per-layer[" << _name << "]: "
+             << (is_closed ? "closed" : "open") << " N=" << base.size()
+             << " layers=" << n << " nesting=" << (nesting_ok ? "Y" : "N")
+             << " zero_gap=" << (zero_gap ? "Y" : "N") << "(gap=" << gap << ")"
+             << " maps=" << (maps_ok ? "Y" : "N") << " -> "
+             << (pass ? "PASS" : "FAIL");
+}
 
 
 void Segment::buildAreas(const BuilderConfig &bcfg) {
@@ -784,6 +941,12 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
                           &_dropped_base_ranges_lo,
                           &_dropped_base_ranges_hi,
                           _used_adaptive_thickness ? &_adaptive_plan : nullptr);
+  }
+
+  // Phase-2a: validate route-i per-layer offsets in the production context
+  // (flag-gated, no DCEL effect — legacy path below still builds the mesh).
+  if (useLayeredOffsetEnv()) {
+    validatePerLayerOffsets(bcfg);
   }
 
   std::vector<PDCELVertex *> first_bound_vertices;
