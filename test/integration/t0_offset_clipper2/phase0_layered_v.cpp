@@ -59,7 +59,8 @@ struct Scenario {
   std::vector<double>  thick;   // per-layer thickness (inner -> outer)
   int                  side;    // 0 = auto
   std::string          note;
-  bool                 resample = true;  // false = raw run (forces M!=N)
+  bool                 resample = true;     // false = raw run (forces M!=N)
+  double               miter_limit = 2.0;   // Clipper2 miter limit
 };
 
 // 1) Symmetric V mirroring t2_z/v3.xml. M == N == 3 (single miter apex).
@@ -77,15 +78,19 @@ Scenario makeVAsymmetric() {
           {0.1, 0.1, 0.1}, 0, "asymmetric arms/angles"};
 }
 
-// 3) Sharp tent (∧), offset to the CONVEX (outer) side: the apex exceeds
-// miter_limit=2.0 so Clipper2 bevels it into TWO vertices -> M == N+1.
-// Validates the M != N staircase (one base apex -> two offset vertices).
+// 3) Sharp tent (∧), offset to the CONVEX (outer) side. Uses the RAW run
+// (no resample) + a high miter_limit so the apex extends to the TRUE miter
+// as a single vertex (M == N), the geometrically faithful laminate corner.
+// (With the default foot-of-perpendicular resample the convex apex is
+// distorted — collapsed toward the base normal — so resample is off here;
+// with the default miter_limit=2.0 it would bevel into two vertices, see
+// tent_sharp_raw.) Walking left->apex->right turns clockwise; side=+1
+// (left) is the convex side.
 Scenario makeTentSharpConvex() {
-  // apex half-angle ~14deg -> miter ratio ~4 > 2 -> bevel on convex side.
-  // Walking left->apex->right turns clockwise; side=+1 (left) is convex.
   return {"tent_sharp_convex",
           {SPoint2(-0.5, 0.0), SPoint2(0.0, 2.0), SPoint2(0.5, 0.0)},
-          {0.08, 0.08, 0.08}, +1, "sharp convex apex, expect M==N+1 (bevel)"};
+          {0.08, 0.08, 0.08}, +1, "sharp convex apex, true miter (M==N)",
+          /*resample*/ false, /*miter_limit*/ 10.0};
 }
 
 // 4) Quarter-circle arc (7 vertices) — many pairs, smooth, M == N.
@@ -103,10 +108,15 @@ Scenario makeArcOpen() {
 // 5) Gently bent thick strip with NON-UNIFORM layer thicknesses
 // {0.05, 0.10, 0.15}. Validates cumulative-thickness handling (route i).
 Scenario makeStripBendNonUniform() {
+  // Raw run (no resample): the foot-of-perpendicular resample places a
+  // convex-bend offset at the perpendicular foot of ONE edge instead of
+  // the true miter (intersection of both offset edges). The bends here are
+  // mild, so miter_limit=2.0 does not bevel — each curve keeps N vertices.
   return {"strip_bend_nonuniform",
           {SPoint2(-1.0, 0.0), SPoint2(0.0, 0.15), SPoint2(1.0, 0.05),
            SPoint2(2.0, 0.30)},
-          {0.05, 0.10, 0.15}, 0, "non-uniform layer thicknesses"};
+          {0.05, 0.10, 0.15}, 0, "non-uniform layer thicknesses",
+          /*resample*/ false};
 }
 
 // 6) Same sharp tent, but RAW offset (resample=false): the convex apex
@@ -159,9 +169,11 @@ const OffsetPolygon* pickPrimaryOpen(const std::vector<OffsetPolygon>& polys) {
 // vertices -> M can exceed N), exercising the M!=N staircase path.
 // Returns the primary run's points, or empty on failure.
 std::vector<SPoint2> offsetCurve(const std::vector<SPoint2>& base,
-                                 int side, double dist, bool resample = true) {
+                                 int side, double dist, bool resample = true,
+                                 double miter_limit = 2.0) {
   auto polys = offsetWithClipper2(base, /*closed*/ false, side, dist,
-                                  prevabs::geo::JoinTypeChoice::Miter, 2.0,
+                                  prevabs::geo::JoinTypeChoice::Miter,
+                                  miter_limit,
                                   /*resample_open*/ resample,
                                   /*experimental*/ false);
   const OffsetPolygon* prim = pickPrimaryOpen(polys);
@@ -391,7 +403,8 @@ ScenarioResult runScenario(const Scenario& sc, const std::string& outdir) {
   for (double t : sc.thick) t_total += t;
 
   int side = sc.side != 0 ? sc.side : +1;
-  if (offsetCurve(sc.base, side, t_total, sc.resample).empty()) side = -side;
+  if (offsetCurve(sc.base, side, t_total, sc.resample, sc.miter_limit).empty())
+    side = -side;
 
   std::ostringstream out;
   out << "=================================================================\n";
@@ -410,7 +423,7 @@ ScenarioResult runScenario(const Scenario& sc, const std::string& outdir) {
       << t_total << ")\n";
   out << "----------------------------------------------------------------\n";
   const std::vector<SPoint2> shell_offset =
-      offsetCurve(sc.base, side, t_total, sc.resample);
+      offsetCurve(sc.base, side, t_total, sc.resample, sc.miter_limit);
   if (shell_offset.empty()) {
     out << "  FAILED: Clipper2 returned no offset run for either side.\n";
     std::ofstream(outdir + "/phase0_" + sc.name + ".txt") << out.str();
@@ -452,12 +465,33 @@ ScenarioResult runScenario(const Scenario& sc, const std::string& outdir) {
 
     // Route i: ALWAYS offset the original base by the cumulative thickness.
     const std::vector<SPoint2> raw_k =
-        offsetCurve(sc.base, side, cum, sc.resample);
-    L.plan = rebuildBaseOffsetMapFromGeometry(
-        L.inner, raw_k, /*closed*/ false, side, L.t,
-        PairingAlgo::SegmentProjection);
-    L.outer = L.plan.offset_points;
-    if (L.outer.empty()) L.outer = raw_k;
+        offsetCurve(sc.base, side, cum, sc.resample, sc.miter_limit);
+
+    // Route-i natural correspondence: curve_{k-1} and curve_k are both
+    // offsets of the SAME base, so when they have equal vertex counts the
+    // per-layer map is the IDENTITY (vertex i of each descends from
+    // base[i]). Use it directly. Re-projecting curve_k onto curve_{k-1}
+    // with rebuildBaseOffsetMapFromGeometry's foot-of-perpendicular + a
+    // 1.5*dist acceptance gate gets convex corners wrong: the miter apex
+    // sits at miter-length (cum/sin(theta/2)) >> dist, beyond the gate, so
+    // it is rejected and forward-filled into a spurious fan pair (e.g.
+    // (0,1) at a sharp apex). Fall back to the geometric matcher only when
+    // the counts differ (a bevel/collapse appears at one thickness only).
+    if (raw_k.size() == L.inner.size() && raw_k.size() >= 2) {
+      L.outer = raw_k;
+      L.plan = ReverseMatchPlan{};
+      L.plan.offset_points = raw_k;
+      for (int i = 0; i < static_cast<int>(raw_k.size()); ++i) {
+        L.plan.id_pairs.emplace_back(i, i);
+      }
+      L.plan.ok = true;
+    } else {
+      L.plan = rebuildBaseOffsetMapFromGeometry(
+          L.inner, raw_k, /*closed*/ false, side, L.t,
+          PairingAlgo::SegmentProjection);
+      L.outer = L.plan.offset_points;
+      if (L.outer.empty()) L.outer = raw_k;
+    }
 
     if (L.inner.size() != L.outer.size()) R.m_ne_n = true;
 
@@ -486,6 +520,16 @@ ScenarioResult runScenario(const Scenario& sc, const std::string& outdir) {
   out << " PHASE-0 EXIT CHECKS\n";
   out << "----------------------------------------------------------------\n";
 
+  // Nesting bound = the shell's OWN max foot-distance to base, not t_total.
+  // At a convex corner the offset apex projects to the base VERTEX (miter
+  // length cum/sin(theta/2), not the perpendicular edge distance cum), so
+  // comparing to t_total spuriously fails the miter apex. The shell is the
+  // outermost curve, so any nested inner curve stays within its envelope.
+  double shell_max_foot = 0.0;
+  for (const auto& p : shell_offset) {
+    shell_max_foot = std::max(shell_max_foot, footDistToPolyline(p, sc.base));
+  }
+
   bool nesting_ok = true;
   double prev_mean = -1.0;
   for (const auto& L : layers) {
@@ -497,12 +541,13 @@ ScenarioResult runScenario(const Scenario& sc, const std::string& outdir) {
       dsum += d;
     }
     const double dmean = L.outer.empty() ? 0.0 : dsum / L.outer.size();
-    const bool within = (L.index == n) || (dmax < t_total + 1e-6);
+    // Within the shell envelope (handles convex miter apexes correctly).
+    const bool within = (dmax <= shell_max_foot + 1e-6);
     const bool grows = (dmean > prev_mean - 1e-6);
     if (!within || !grows) nesting_ok = false;
     out << "  curve_" << L.index << ": foot-dist to base  min=" << dmin
-        << " mean=" << dmean << " max=" << dmax << "  (expect ~" << L.cum
-        << ")  within_band=" << (within ? "Y" : "N")
+        << " mean=" << dmean << " max=" << dmax << "  (shell envelope "
+        << shell_max_foot << ")  within_shell=" << (within ? "Y" : "N")
         << " monotone=" << (grows ? "Y" : "N") << "\n";
     prev_mean = dmean;
   }

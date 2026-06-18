@@ -510,8 +510,8 @@ HALFEDGES (392):
 
 LOOPS (87):
   loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
-  loop#3 incident=he#394 face=nullptr kept=false adjacent=nullptr
-  loop#20 incident=he#394 face=nullptr kept=false adjacent=nullptr
+  loop#3 incident=he#390 face=nullptr kept=false adjacent=nullptr
+  loop#20 incident=he#390 face=nullptr kept=false adjacent=nullptr
   loop#37 incident=he#83 face=nullptr kept=false adjacent=nullptr
   loop#39 incident=he#87 face=nullptr kept=false adjacent=nullptr
   loop#41 incident=he#91 face=nullptr kept=false adjacent=nullptr

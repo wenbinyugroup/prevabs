@@ -789,6 +789,14 @@ void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
   std::vector<SPoint2> raw_last;
   double cum = 0.0, prev_mean = -1.0;
   bool nesting_ok = true, maps_ok = true;
+  // Geometric-quality signals (the topological checks above are necessary
+  // but NOT sufficient — they pass on thin segments that still fail to mesh,
+  // cf. summary-20260520 "valid staircase != geometrically stable"). Track
+  // the worst per-layer vertex ratio M_k/N and the total dropped base span:
+  // these expose the thin-region collapse the exit checks miss.
+  const int N = static_cast<int>(base.size());
+  double min_m_ratio = 1.0;
+  int total_dropped = 0;
   for (int k = 0; k < n; ++k) {
     const double tk = (layers[k].getLamina() != nullptr)
                           ? layers[k].getLamina()->getThickness()
@@ -804,6 +812,13 @@ void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
         prev, curve, is_closed, side, std::max(tk, 1e-12),
         prevabs::geo::readPairingAlgoEnv());
     if (!plan.ok) maps_ok = false;
+
+    min_m_ratio = std::min(min_m_ratio,
+                           static_cast<double>(curve.size()) / N);
+    for (std::size_t r = 0; r < plan.dropped_base_ranges_lo.size(); ++r) {
+      total_dropped += plan.dropped_base_ranges_hi[r]
+                       - plan.dropped_base_ranges_lo[r] + 1;
+    }
 
     double dmax = 0.0, dsum = 0.0;
     for (const auto& p : curve) {
@@ -828,13 +843,21 @@ void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
     }
   }
   const bool zero_gap = gap < 1e-6;
-  const bool pass = nesting_ok && zero_gap && maps_ok;
+  const bool topo_pass = nesting_ok && zero_gap && maps_ok;
+  // Geometric-quality flag: thin collapse (worst layer M_k/N below the
+  // empirical mesh-able threshold ~0.7, cf. issue-20260521-mh104) or any
+  // dropped base span. PASS-but-thin is the Phase-3 hard case.
+  const bool geom_ok = (min_m_ratio >= 0.7) && (total_dropped == 0);
   PLOG(info) << "per-layer[" << _name << "]: "
              << (is_closed ? "closed" : "open") << " N=" << base.size()
-             << " layers=" << n << " nesting=" << (nesting_ok ? "Y" : "N")
-             << " zero_gap=" << (zero_gap ? "Y" : "N") << "(gap=" << gap << ")"
-             << " maps=" << (maps_ok ? "Y" : "N") << " -> "
-             << (pass ? "PASS" : "FAIL");
+             << " layers=" << n
+             << " minM/N=" << min_m_ratio << " dropped=" << total_dropped
+             << " nesting=" << (nesting_ok ? "Y" : "N")
+             << " zero_gap=" << (zero_gap ? "Y" : "N")
+             << " maps=" << (maps_ok ? "Y" : "N")
+             << " geom=" << (geom_ok ? "OK" : "THIN")
+             << " -> " << (topo_pass ? "PASS" : "FAIL")
+             << (topo_pass && !geom_ok ? " (PASS-but-thin)" : "");
 }
 
 
