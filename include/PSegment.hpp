@@ -12,6 +12,7 @@ class PGeoLineSegment;
 struct BuilderConfig;
 
 #include "geo_types.hpp"
+#include "adaptive_thickness.hpp"
 
 #include <iosfwd>
 #include <memory>
@@ -83,6 +84,14 @@ private:
   std::vector<int> _dropped_base_ranges_lo;
   std::vector<int> _dropped_base_ranges_hi;
   bool _adaptive_variable_offset = false;
+  // Phase-1 (plan-20260618-per-layer-offset-within-shell.md): the
+  // base-offset-map debug dump moved out of `offsetCurveBase` to the end
+  // of `buildAreas`, where the staircase has been authoritatively
+  // re-derived from geometry. These carry the adaptive-thickness context
+  // that `offsetCurveBase` computed, so the relocated `--debug geo` JSON
+  // dump keeps its adaptive annotation.
+  bool _used_adaptive_thickness = false;
+  prevabs::geo::LinearAdaptiveThicknessPlan _adaptive_plan;
   LifecycleState _state{LifecycleState::BaseReady};
 
 public:

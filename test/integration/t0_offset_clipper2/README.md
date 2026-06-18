@@ -365,6 +365,36 @@ auto pts = loadAirfoilDat(std::string(T0_DATA_DIR) + "/yourfoil.dat");
 | 6 | airfoil_mh104_closed | yes | 67 | 0.02 | 1.2 | 真实 mh104（closed） |
 | 7 | airfoil_mh104_te_open | no | 18 | 0.02 | 1.2 | mh104 TE 开口子段 |
 
+## phase0_layered_v（第二个可执行目标）
+
+`phase0_layered_v.cpp` 是
+[plan-20260618-per-layer-offset-within-shell.md](../../../../rnd/notes/dev/prevabs/dev-notes/todo/plan-20260618-per-layer-offset-within-shell.md)
+的 **Phase-0 离线原型**：在一个健康 V 形截面（镜像
+[`test/integration/t2_z/v3.xml`](../t2_z/v3.xml)，3 层 0.1 铺层）上验证
+
+1. **总厚度外壳**（offset 总厚 0.3）
+2. **路线 i 逐层切分**（始终从原始基线按累积厚度 offset，map 用
+   `rebuildBaseOffsetMapFromGeometry(curve_{k-1}, curve_k)`）
+
+每步打印 **点 / 线 / 面**，并校验三个 Phase-0 退出条件：嵌套（曲线落壳内）、
+零缝（`curve_n` ≡ 外壳 offset）、map 合法。每个场景输出
+`out/phase0_<name>.{txt,svg}`，stdout 打汇总表。与 `test_offset_map` 同 build
+（`build.ps1 fast -Run` 会先跑它）。
+
+内置 6 个健康场景，**当前 6/6 PASS**：
+
+| 场景 | N | M | 说明 |
+|---|---|---|---|
+| v_symmetric | 3 | 3 | 对称 V（镜像 v3.xml） |
+| v_asymmetric | 3 | 3 | 不对称臂长/角度 |
+| tent_sharp_convex | 3 | 3 | 尖凸角（resample，M==N） |
+| arc_open | 7 | 7 | 7 顶点圆弧，多 pair |
+| strip_bend_nonuniform | 4 | 4 | 非均匀层厚 {0.05,0.10,0.15} |
+| tent_sharp_raw | 3 | 4 | **raw offset，miter bevel 保留 → M!=N**（apex 一个 base 顶点对两个 offset 顶点，生成三角扇面） |
+
+`tent_sharp_raw` 专门验证 **M≠N** staircase：base apex 映射到两个 bevel 顶点
+`(1,1)(1,2)`，face 是一个良形三角扇 + 两侧四边形，route i 仍嵌套 + 零缝。
+
 ## 相关文档
 
 - [`include/offset_clipper2.hpp`](../../../include/offset_clipper2.hpp)

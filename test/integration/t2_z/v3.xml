@@ -1,0 +1,75 @@
+<!--
+  V-section with a simplified 3-layer layup. Mirrors v.xml geometry
+  (apex at origin, two arms going up to (-1,2) and (1,2)) but replaces
+  the 16-ply symmetric layup with a plain 3-ply stack [0/45/90].
+
+  Used as the reference input for the Phase-0 per-layer-offset prototype
+  (test/integration/t0_offset_clipper2/phase0_layered_v.cpp), which
+  embeds this same geometry + 3 x 0.1 layer thicknesses.
+
+  NOTE: not listed in INDEX.txt `main` — the production per-layer build
+  path is not implemented yet (see
+  rnd/notes/.../plan-20260618-per-layer-offset-within-shell.md). This
+  file documents the intended input; the prototype validates the geometry
+  offline.
+-->
+<cross_section name="v3" format="1">
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1</scale>
+    <rotate></rotate>
+    <mesh_size>0.05</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <point name="p1">-1 2</point>
+    <point name="p2">0 0</point>
+    <point name="p3">1 2</point>
+    <baseline name="bl" type="straight">
+      <points>p1,p2,p3</points>
+    </baseline>
+  </baselines>
+
+  <materials>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_iso5_1_01">
+      <material>iso5_1</material>
+      <thickness>0.1</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <!-- 3 layers, one ply each: 0deg / 45deg / 90deg, 0.1 thick each. -->
+    <layup name="layup3" method="ss">
+      <lamina>la_iso5_1_01</lamina>
+      <code>[0/45/90]</code>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_v">
+      <baseline>bl</baseline>
+      <layup>layup3</layup>
+    </segment>
+  </component>
+
+</cross_section>

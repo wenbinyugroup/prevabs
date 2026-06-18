@@ -50,9 +50,14 @@ try {
 finally { Pop-Location }
 
 $exe = Join-Path $build 'Release\test_offset_map.exe'
+$phase0 = Join-Path $build 'Release\phase0_layered_v.exe'
 Write-Host "built: $exe"
+Write-Host "built: $phase0"
 
 if ($Run) {
+  & $phase0
+  $phase0_rc = $LASTEXITCODE
+  Write-Host "phase0_layered_v exit code: $phase0_rc"
   & $exe
-  if ($LASTEXITCODE -ne 0) { throw "run failed" }
+  if ($LASTEXITCODE -ne 0) { throw "test_offset_map run failed" }
 }

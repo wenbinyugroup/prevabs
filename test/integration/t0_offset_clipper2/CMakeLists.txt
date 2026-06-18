@@ -60,6 +60,31 @@ if(MSVC)
   target_compile_options(test_offset_map PRIVATE /W3 /utf-8 /EHa)
 endif()
 
+# ------------------------------------------------------------------
+# phase0_layered_v — Phase-0 prototype for
+# plan-20260618-per-layer-offset-within-shell.md. Same coupling
+# principle: links only the two pure-logic geo TUs + Clipper2.
+# ------------------------------------------------------------------
+add_executable(phase0_layered_v
+  phase0_layered_v.cpp
+  ${REPO_ROOT}/src/geo/offset_clipper2.cpp
+  ${REPO_ROOT}/src/geo/offset_clipper2_bridge.cpp
+)
+
+target_include_directories(phase0_layered_v PRIVATE
+  ${REPO_ROOT}/include
+)
+
+target_compile_definitions(phase0_layered_v PRIVATE
+  PHASE0_OUT_DIR="${CMAKE_CURRENT_BINARY_DIR}/out"
+)
+
+target_link_libraries(phase0_layered_v PRIVATE Clipper2)
+
+if(MSVC)
+  target_compile_options(phase0_layered_v PRIVATE /W3 /utf-8 /EHa)
+endif()
+
 # Make the output directory at configure time so the executable can
 # always write into it.
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/out")

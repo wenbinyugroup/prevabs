@@ -6,6 +6,8 @@
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
+#include "debug/baseOffsetMapJson.hpp"
+#include "debug/baseOffsetMapSvg.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
@@ -752,6 +754,36 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
                       << "' — keeping persisted staircase";
       }
     }
+  }
+
+  // Phase-1 (plan-20260618-per-layer-offset-within-shell.md): emit the
+  // base-offset-map debug dump here (moved from `offsetCurveBase`), now that
+  // `_base_offset_indices_pairs` is the authoritative geometry-derived
+  // staircase actually used for area construction. `--debug geo` only.
+  if (bcfg.debug_level >= DebugLevel::geo
+      && _curve_base != nullptr && _curve_offset != nullptr) {
+    const std::string svg_path = config.file_directory + config.file_base_name
+                               + "." + _name + ".base_offset_map.svg";
+    dumpBaseOffsetMapSvg(svg_path, _name,
+                         _curve_base->vertices(),
+                         _curve_offset->vertices(),
+                         _base_offset_indices_pairs,
+                         &_offset_vertex_resampled,
+                         &_offset_pre_resample_raw_points);
+    const std::string json_path = config.file_directory + config.file_base_name
+                                + "." + _name + ".base_offset_map.json";
+    const double dist =
+        (_layup != nullptr) ? _layup->getTotalThickness() : 0.0;
+    dumpBaseOffsetMapJson(json_path, _name,
+                          _curve_base->vertices(),
+                          _curve_offset->vertices(),
+                          _base_offset_indices_pairs,
+                          closed(),
+                          requireValidLayupSide("buildAreas/json"),
+                          dist,
+                          &_dropped_base_ranges_lo,
+                          &_dropped_base_ranges_hi,
+                          _used_adaptive_thickness ? &_adaptive_plan : nullptr);
   }
 
   std::vector<PDCELVertex *> first_bound_vertices;

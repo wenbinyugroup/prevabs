@@ -347,6 +347,8 @@ Segment::Segment(Segment &&other) noexcept
       _dropped_base_ranges_lo(std::move(other._dropped_base_ranges_lo)),
       _dropped_base_ranges_hi(std::move(other._dropped_base_ranges_hi)),
       _adaptive_variable_offset(other._adaptive_variable_offset),
+      _used_adaptive_thickness(other._used_adaptive_thickness),
+      _adaptive_plan(std::move(other._adaptive_plan)),
       _state(other._state) {
   other._curve_base = nullptr;
   other._layup = nullptr;
@@ -393,6 +395,8 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _dropped_base_ranges_lo = std::move(other._dropped_base_ranges_lo);
   _dropped_base_ranges_hi = std::move(other._dropped_base_ranges_hi);
   _adaptive_variable_offset = other._adaptive_variable_offset;
+  _used_adaptive_thickness = other._used_adaptive_thickness;
+  _adaptive_plan = std::move(other._adaptive_plan);
   _state = other._state;
 
   other._curve_base = nullptr;
@@ -420,6 +424,7 @@ void Segment::releaseOwnedResources() {
   _head_vertex_offset = nullptr;
   _tail_vertex_offset = nullptr;
   _adaptive_variable_offset = false;
+  _used_adaptive_thickness = false;
   _state = LifecycleState::BaseReady;
 }
 
@@ -840,33 +845,13 @@ void Segment::offsetCurveBase() {
     << _curve_offset->vertices().front()->printString() << " -> "
     << _curve_offset->vertices().back()->printString();
 
-  // Debug: dump base/offset/staircase as SVG when --debug geo is on.
-  if (config.debug_level >= DebugLevel::geo) {
-    const std::string svg_path = config.file_directory + config.file_base_name
-                               + "." + _name + ".base_offset_map.svg";
-    dumpBaseOffsetMapSvg(svg_path, _name,
-                         _curve_base->vertices(),
-                         _curve_offset->vertices(),
-                         _base_offset_indices_pairs,
-                         &_offset_vertex_resampled,
-                         &_offset_pre_resample_raw_points);
-    // plan-20260522-staircase-dp-matcher.md Phase A: write the same
-    // snapshot as JSON for the Python DP matcher prototype.
-    const std::string json_path = config.file_directory + config.file_base_name
-                                + "." + _name + ".base_offset_map.json";
-    const double dist =
-        (_layup != nullptr) ? _layup->getTotalThickness() : 0.0;
-    dumpBaseOffsetMapJson(json_path, _name,
-                          _curve_base->vertices(),
-                          _curve_offset->vertices(),
-                          _base_offset_indices_pairs,
-                          closed(),
-                          requireValidLayupSide("offsetCurveBase/json"),
-                          dist,
-                          &_dropped_base_ranges_lo,
-                          &_dropped_base_ranges_hi,
-                          used_adaptive_thickness ? &adaptive_plan : nullptr);
-  }
+  // Phase-1 (plan-20260618-per-layer-offset-within-shell.md): the
+  // base-offset-map debug dump moved to the end of `buildAreas`, where the
+  // staircase is authoritatively re-derived from geometry. offsetCurveBase
+  // no longer consumes the staircase. Stash the adaptive-thickness context
+  // the relocated dump needs.
+  _used_adaptive_thickness = used_adaptive_thickness;
+  _adaptive_plan = adaptive_plan;
 }
 
 void Segment::build(const BuilderConfig &bcfg) {

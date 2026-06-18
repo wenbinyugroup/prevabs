@@ -2085,7 +2085,7 @@ LOOPS (318):
   loop#408 incident=he#1432 face=nullptr kept=false adjacent=nullptr
   loop#410 incident=he#1434 face=nullptr kept=false adjacent=nullptr
   loop#412 incident=he#1436 face=nullptr kept=false adjacent=nullptr
-  loop#414 incident=he#1438 face=nullptr kept=true adjacent=nullptr
+  loop#414 incident=he#1438 face=nullptr kept=false adjacent=nullptr
   loop#415 incident=he#228 face=nullptr kept=false adjacent=nullptr
   loop#416 incident=he#1440 face=nullptr kept=false adjacent=nullptr
   loop#418 incident=he#1442 face=nullptr kept=false adjacent=nullptr
@@ -2369,9 +2369,9 @@ FACES (314):
   f#349 name=sg_te_area_8_layer_3 bounded=true outer=he#1148
   f#350 name=sg_te_area_8_layer_5 bounded=true outer=he#1154
   f#351 name=sg_te_area_8_layer_4 bounded=true outer=he#1152
-  f#353 name=sg_te_area_9_layer_1 bounded=true outer=he#1144
-  f#355 name=sg_te_area_9_layer_2 bounded=true outer=he#1148
-  f#357 name=sg_te_area_9_layer_3 bounded=true outer=he#1152
+  f#352 name=sg_te_area_9_layer_1 bounded=true outer=he#1144
+  f#354 name=sg_te_area_9_layer_2 bounded=true outer=he#1148
+  f#356 name=sg_te_area_9_layer_3 bounded=true outer=he#1152
   f#358 name=sg_te_area_9_layer_5 bounded=true outer=he#1154
   f#359 name=sg_te_area_9_layer_4 bounded=true outer=he#1154
   f#361 name=sg_te_area_10_layer_1 bounded=true outer=he#1394
