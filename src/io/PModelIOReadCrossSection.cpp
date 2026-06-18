@@ -86,6 +86,26 @@ double readOptionalDoubleNode(
   return default_val;
 }
 
+std::string readOptionalStringNode(
+  const rapidxml::xml_node<> *parent, const char *name,
+  const std::string &default_val
+) {
+  rapidxml::xml_node<> *n = parent->first_node(name);
+  if (!n) return default_val;
+  const std::string s{trim(n->value())};
+  return s.empty() ? default_val : s;
+}
+
+bool readOptionalBoolAttr(
+  const rapidxml::xml_node<> *node, const char *name, bool default_val,
+  const std::string &context
+) {
+  rapidxml::xml_attribute<> *attr = node->first_attribute(name);
+  if (!attr) return default_val;
+  const std::string s{trim(attr->value())};
+  return s.empty() ? default_val : parseXmlBoolValue(s, context);
+}
+
 // ---------------------------------------------------------------------------
 // Geometry transform and mesh parameters returned from readGeneralSection
 
@@ -113,6 +133,99 @@ void readSettingsSection(const rapidxml::xml_node<> *xn_settings) {
         );
       }
     }
+  }
+}
+
+
+void readAdaptiveThicknessSection(
+  const rapidxml::xml_node<> *xn_adaptive
+) {
+  config.adaptive_thickness = AdaptiveThicknessConfig{};
+  if (!xn_adaptive) return;
+
+  auto &cfg = config.adaptive_thickness;
+  cfg.enabled = readOptionalBoolAttr(
+    xn_adaptive, "enabled", cfg.enabled,
+    "<adaptive_thickness>@enabled"
+  );
+
+  rapidxml::xml_node<> *nodeReportOnly{
+    xn_adaptive->first_node("report_only")
+  };
+  if (nodeReportOnly) {
+    const std::string s{trim(nodeReportOnly->value())};
+    if (!s.empty()) {
+      cfg.report_only = parseXmlBoolValue(
+        s, "<adaptive_thickness>/<report_only>"
+      );
+    }
+  }
+
+  cfg.mode = lowerString(readOptionalStringNode(
+    xn_adaptive, "mode", cfg.mode
+  ));
+  if (cfg.mode != "linear") {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<mode> currently supports only 'linear'"
+    );
+  }
+
+  cfg.safety = readOptionalDoubleNode(
+    xn_adaptive, "safety", cfg.safety
+  );
+  if (cfg.safety <= 0.0 || cfg.safety > 1.0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<safety> must be in (0, 1]"
+    );
+  }
+
+  cfg.transition_base_count = readOptionalIntNode(
+    xn_adaptive, "transition_base_count", cfg.transition_base_count
+  );
+  cfg.repair_base_padding = readOptionalIntNode(
+    xn_adaptive, "repair_base_padding", cfg.repair_base_padding
+  );
+  if (cfg.repair_base_padding < 0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<repair_base_padding> must be non-negative"
+    );
+  }
+  if (cfg.transition_base_count < 0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<transition_base_count> must be non-negative"
+    );
+  }
+
+  cfg.min_half_thickness = readOptionalDoubleNode(
+    xn_adaptive, "min_half_thickness", cfg.min_half_thickness
+  );
+  if (cfg.min_half_thickness < 0.0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<min_half_thickness> must be non-negative"
+    );
+  }
+
+  rapidxml::xml_node<> *nodeTargets{
+    xn_adaptive->first_node("target_segments")
+  };
+  if (nodeTargets) {
+    const std::string s{trim(nodeTargets->value())};
+    if (!s.empty()) {
+      cfg.target_segments = splitString(s, ',');
+      for (auto &segment : cfg.target_segments) {
+        segment = trim(segment);
+      }
+    }
+  }
+
+  if (cfg.enabled) {
+    PLOG(info) << "adaptive thickness configured: mode=" << cfg.mode
+               << ", report_only=" << (cfg.report_only ? "true" : "false")
+               << ", safety=" << cfg.safety
+               << ", repair_base_padding="
+               << cfg.repair_base_padding
+               << ", transition_base_count="
+               << cfg.transition_base_count;
   }
 }
 
@@ -581,6 +694,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   rapidxml::xml_node<> *xn_include{p_xn_sg->first_node("include")};
 
   readSettingsSection(p_xn_sg->first_node("settings"));
+  readAdaptiveThicknessSection(p_xn_sg->first_node("adaptive_thickness"));
   readAnalysisSection(p_xn_sg, pmodel);
 
   rapidxml::xml_node<> *xn_general{p_xn_sg->first_node("general")};

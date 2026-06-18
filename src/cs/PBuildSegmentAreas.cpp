@@ -702,7 +702,12 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   // mutation of the curves is reflected by recomputing here from the
   // present polylines, so no editor-side discrete splice is needed.
   // See rebuildBaseOffsetMapFromGeometry in include/offset_clipper2.hpp.
-  if (_curve_base != nullptr && _curve_offset != nullptr) {
+  if (_adaptive_variable_offset) {
+    if (bcfg.debug_level >= DebugLevel::join) {
+      PLOG(debug) << "buildAreas: keeping adaptive variable-offset "
+                  << "BaseOffsetMap for segment '" << _name << "'";
+    }
+  } else if (_curve_base != nullptr && _curve_offset != nullptr) {
     std::vector<SPoint2> base_pts;
     base_pts.reserve(_curve_base->vertices().size());
     for (auto *v : _curve_base->vertices()) {

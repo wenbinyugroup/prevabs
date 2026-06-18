@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <string>
+#include <vector>
 
 class PDCEL;
 class LayerType;
@@ -24,6 +25,17 @@ struct AppConfig {
   // External solver timeout in seconds. 0 = no timeout (default).
   // Set via prevabs.json to enable; CLI is unchanged.
   int    solver_timeout_s = 0;
+};
+
+struct AdaptiveThicknessConfig {
+  bool enabled = false;
+  bool report_only = true;
+  std::string mode = "linear";
+  double safety = 0.90;
+  int repair_base_padding = 0;
+  int transition_base_count = 2;
+  double min_half_thickness = 0.0;
+  std::vector<std::string> target_segments;
 };
 
 // ---------------------------------------------------------------------------
@@ -67,6 +79,9 @@ struct PConfig {
 
   // --- Persistent numeric/output settings (may be overridden by config file) ---
   AppConfig app;
+
+  // --- Explicit geometry repair options (XML controlled; off by default) ---
+  AdaptiveThicknessConfig adaptive_thickness;
 
   // --- Derived display/option strings (set by processConfigVariables) ---
   std::string tool_name    = "VABS";

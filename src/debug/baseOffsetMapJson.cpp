@@ -2,6 +2,7 @@
 
 #include "debug/baseOffsetMapJson.hpp"
 
+#include "adaptive_thickness.hpp"
 #include "PDCELVertex.hpp"
 #include "plog.hpp"
 
@@ -45,7 +46,8 @@ void dumpBaseOffsetMapJson(
     int    side,
     double dist,
     const std::vector<int>* dropped_base_ranges_lo,
-    const std::vector<int>* dropped_base_ranges_hi) {
+    const std::vector<int>* dropped_base_ranges_hi,
+    const prevabs::geo::LinearAdaptiveThicknessPlan* adaptive_plan) {
   std::ofstream os(path);
   if (!os) {
     PLOG(error) << "dumpBaseOffsetMapJson: cannot open '" << path
@@ -102,6 +104,35 @@ void dumpBaseOffsetMapJson(
       os << (*dropped_base_ranges_hi)[i];
     }
     os << "]";
+  }
+
+  if (adaptive_plan && adaptive_plan->ok) {
+    os << ",\n  \"adaptive_thickness\": {\n";
+    os << "    \"enabled\": true,\n";
+    os << "    \"mode\": \"linear\",\n";
+    os << "    \"repair_range\": ["
+       << adaptive_plan->range.repair_lo << ", "
+       << adaptive_plan->range.repair_hi << "],\n";
+    os << "    \"taper_range\": ["
+       << adaptive_plan->range.taper_lo << ", "
+       << adaptive_plan->range.taper_hi << "],\n";
+    os << "    \"design_half_thickness\": "
+       << snap(adaptive_plan->range.design_half_thickness) << ",\n";
+    os << "    \"repaired_half_thickness\": "
+       << snap(adaptive_plan->range.repaired_half_thickness) << ",\n";
+    os << "    \"safety\": "
+       << snap(adaptive_plan->range.safety) << ",\n";
+    os << "    \"stations\": [";
+    for (std::size_t i = 0; i < adaptive_plan->stations.size(); ++i) {
+      if (i) os << ", ";
+      const auto& station = adaptive_plan->stations[i];
+      os << "{\"base\": " << station.base_index
+         << ", \"s\": " << snap(station.s)
+         << ", \"half_thickness\": " << snap(station.half_thickness)
+         << "}";
+    }
+    os << "]\n";
+    os << "  }";
   }
 
   os << "\n}\n";

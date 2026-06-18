@@ -53,8 +53,12 @@ FetchContent_MakeAvailable(clipper2)
 # ------------------------------------------------------------------
 set(TEST_GEO_SOURCES
   catch_amalgamated.cpp
+  test_adaptive_thickness.cpp
   test_geo.cpp
   test_geo_offset.cpp
+  test_variable_offset.cpp
+  ${SRC_GEO}/adaptive_thickness.cpp
+  ${SRC_GEO}/variable_offset.cpp
 )
 
 add_executable(test_geo ${TEST_GEO_SOURCES})
@@ -85,6 +89,7 @@ set(TEST_DCEL_SOURCES
   test_parse_helpers.cpp
   test_execu_timeout.cpp
   ${SRC_GEO}/DCELSweepLine.cpp
+  ${SRC_GEO}/adaptive_thickness.cpp
   ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp
   ${SRC_GEO}/PDCELFace.cpp
@@ -103,6 +108,7 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/offset_clipper2_pdcel.cpp
   ${SRC_GEO}/PBST.cpp
   ${SRC_GEO}/polyline.cpp
+  ${SRC_GEO}/variable_offset.cpp
   ${SRC_ROOT}/plog.cpp
   ${SRC_ROOT}/pui.cpp
   ${SRC_ROOT}/utilities.cpp
@@ -204,6 +210,8 @@ endif()
 set(TEST_OFFSET_CLIPPER2_SOURCES
   catch_amalgamated.cpp
   test_offset_clipper2.cpp
+  ${SRC_GEO}/adaptive_thickness.cpp
+  ${SRC_GEO}/variable_offset.cpp
   ${SRC_GEO}/offset_clipper2.cpp
   ${SRC_GEO}/offset_clipper2_bridge.cpp
 )

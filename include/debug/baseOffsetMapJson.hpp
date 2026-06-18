@@ -16,6 +16,11 @@
 #include <vector>
 
 class PDCELVertex;
+namespace prevabs {
+namespace geo {
+struct LinearAdaptiveThicknessPlan;
+}
+}
 
 // JSON schema:
 //   {
@@ -41,4 +46,5 @@ void dumpBaseOffsetMapJson(
     int    side,
     double dist,
     const std::vector<int>* dropped_base_ranges_lo = nullptr,
-    const std::vector<int>* dropped_base_ranges_hi = nullptr);
+    const std::vector<int>* dropped_base_ranges_hi = nullptr,
+    const prevabs::geo::LinearAdaptiveThicknessPlan* adaptive_plan = nullptr);

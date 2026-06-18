@@ -4,6 +4,7 @@
 #include "execu.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
+#include "adaptive_thickness.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 #include "pui.hpp"
@@ -354,6 +355,17 @@ struct AdaptiveThicknessSuggestion {
   double ratio = 0.0;
 };
 
+std::string joinStrings(
+    const std::vector<std::string> &values,
+    const std::string &sep) {
+  std::ostringstream ss;
+  for (std::size_t i = 0; i < values.size(); ++i) {
+    if (i > 0) ss << sep;
+    ss << values[i];
+  }
+  return ss.str();
+}
+
 bool parseFirstMatch(
     const std::string &line,
     const std::regex &pattern,
@@ -428,7 +440,7 @@ AdaptiveThicknessSuggestion collectAdaptiveThicknessSuggestion(
 void writeAdaptiveThicknessSuggestion(std::ostream &out) {
   const auto suggestion =
       collectAdaptiveThicknessSuggestion(config.file_name_log_dev);
-  if (!suggestion.found) return;
+  if (!suggestion.found && !config.adaptive_thickness.enabled) return;
 
   const int repair_lo =
       (suggestion.dropped_lo >= 0) ? suggestion.dropped_lo
@@ -436,31 +448,76 @@ void writeAdaptiveThicknessSuggestion(std::ostream &out) {
   const int repair_hi =
       (suggestion.dropped_hi >= 0) ? suggestion.dropped_hi
                                   : suggestion.pretrim_hi;
-  const int taper_pad = 2;
-  const int taper_lo = repair_lo >= 0
-      ? std::max(0, repair_lo - taper_pad) : -1;
-  const int taper_hi = repair_hi >= 0
-      ? repair_hi + taper_pad : -1;
-  const double safety = 0.90;
-  const double trial_half_thickness =
+  const double safety = config.adaptive_thickness.enabled
+      ? config.adaptive_thickness.safety : 0.90;
+  const int transition_base_count = config.adaptive_thickness.enabled
+      ? config.adaptive_thickness.transition_base_count : 2;
+  const int repair_base_padding = config.adaptive_thickness.enabled
+      ? config.adaptive_thickness.repair_base_padding : 0;
+  const double design_half_thickness =
       (suggestion.design_half_thickness > 0.0)
-      ? suggestion.design_half_thickness * safety
-      : (suggestion.offset_distance > 0.0
-         ? suggestion.offset_distance * safety : 0.0);
+      ? suggestion.design_half_thickness : suggestion.offset_distance;
+
+  prevabs::geo::LinearAdaptiveThicknessInput plan_input;
+  plan_input.segment_name = suggestion.segment_name;
+  plan_input.base_count = suggestion.base_vertices;
+  plan_input.repair_lo = repair_lo;
+  plan_input.repair_hi = repair_hi;
+  plan_input.design_half_thickness = design_half_thickness;
+  plan_input.safety = safety;
+  plan_input.repair_base_padding = repair_base_padding;
+  plan_input.transition_base_count = transition_base_count;
+  plan_input.min_half_thickness =
+      config.adaptive_thickness.min_half_thickness;
+  const auto plan =
+      prevabs::geo::buildLinearAdaptiveThicknessPlan(plan_input);
 
   out << "## Adaptive thickness suggestion\n\n";
-  out << "This is a dry-run suggestion only. The model was not modified.\n\n";
-  out << "- Suggested mode: `linear`\n";
+  if (config.adaptive_thickness.enabled) {
+    if (config.adaptive_thickness.report_only) {
+      out << "Adaptive thickness is configured in report-only mode, so the "
+             "model was not modified.\n\n";
+    } else {
+      out << "Adaptive thickness is configured for matching open segments. "
+             "This report was written because the build still failed.\n\n";
+    }
+    out << "- Configured mode: `" << config.adaptive_thickness.mode << "`\n";
+    out << "- Configured report_only: "
+        << (config.adaptive_thickness.report_only ? "true" : "false")
+        << "\n";
+    out << "- Configured safety: " << config.adaptive_thickness.safety
+        << "\n";
+    out << "- Configured repair_base_padding: "
+        << config.adaptive_thickness.repair_base_padding << "\n";
+    out << "- Configured transition_base_count: "
+        << config.adaptive_thickness.transition_base_count << "\n";
+    out << "- Configured min_half_thickness: "
+        << config.adaptive_thickness.min_half_thickness << "\n";
+    if (!config.adaptive_thickness.target_segments.empty()) {
+      out << "- Configured target_segments: `"
+          << joinStrings(config.adaptive_thickness.target_segments, ", ")
+          << "`\n";
+    }
+    if (!suggestion.found) {
+      out << "\nNo offset-thickness diagnostic was found in the debug log, "
+             "so no repair range could be suggested.\n\n";
+      return;
+    }
+  } else {
+    out << "This is a dry-run suggestion only. The model was not modified.\n\n";
+    out << "- Suggested mode: `linear`\n";
+  }
   if (!suggestion.segment_name.empty()) {
     out << "- Segment: `" << suggestion.segment_name << "`\n";
   }
-  if (repair_lo >= 0 && repair_hi >= 0) {
-    out << "- Repair range: base[" << repair_lo << ".." << repair_hi
-        << "]\n";
-  }
-  if (taper_lo >= 0 && taper_hi >= 0) {
-    out << "- Suggested taper range: base[" << taper_lo << ".."
-        << taper_hi << "]\n";
+  if (!plan.ok) {
+    out << "- Adaptive thickness plan: unavailable (" << plan.error
+        << ")\n";
+  } else {
+    out << "- Repair range: base[" << plan.range.repair_lo << ".."
+        << plan.range.repair_hi << "]\n";
+    out << "- Suggested taper range: base[" << plan.range.taper_lo << ".."
+        << plan.range.taper_hi << "]\n";
   }
   if (suggestion.pretrim_lo >= 0 && suggestion.pretrim_hi >= 0) {
     out << "- Stage E pre-trim range: base[" << suggestion.pretrim_lo
@@ -478,9 +535,10 @@ void writeAdaptiveThicknessSuggestion(std::ostream &out) {
     out << "- Current offset distance: " << suggestion.offset_distance
         << "\n";
   }
-  if (trial_half_thickness > 0.0) {
+  if (plan.ok && plan.range.repaired_half_thickness > 0.0) {
     out << "- Initial trial local half-thickness `t'`: "
-        << trial_half_thickness << " (safety = " << safety << ")\n";
+        << plan.range.repaired_half_thickness
+        << " (safety = " << safety << ")\n";
   }
   if (suggestion.offset_vertices >= 0 && suggestion.base_vertices > 0) {
     out << "- Offset/base vertex ratio: " << suggestion.offset_vertices
@@ -488,8 +546,8 @@ void writeAdaptiveThicknessSuggestion(std::ostream &out) {
         << suggestion.ratio << "\n";
   }
   out << "\n";
-  out << "Use this as the starting point for a future opt-in adaptive "
-         "thickness repair. A strict automatic value requires logging the "
+  out << "Use this as the audit trail for the opt-in adaptive thickness "
+         "repair. A stricter automatic value still requires logging the "
          "minimum local available half-thickness in the failed range.\n\n";
 }
 

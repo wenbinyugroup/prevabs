@@ -5,6 +5,15 @@
     <material>materials</material>
   </include>
 
+  <adaptive_thickness enabled="true">
+    <mode>linear</mode>
+    <report_only>false</report_only>
+    <safety>0.25</safety>
+    <repair_base_padding>2</repair_base_padding>
+    <transition_base_count>2</transition_base_count>
+    <min_half_thickness>0.0</min_half_thickness>
+    <target_segments>sg_te</target_segments>
+  </adaptive_thickness>
 
   <analysis>
     <!-- Timoshenko beam model -->
@@ -18,7 +27,7 @@
     <!-- Chord length -->
     <scale>1.9</scale>
 
-    <mesh_size>0.005</mesh_size>
+    <mesh_size>0.001</mesh_size>
     <element_type>linear</element_type>
 
   </general>

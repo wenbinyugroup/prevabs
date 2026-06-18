@@ -57,6 +57,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/debug/baseOffsetMapJson.cpp
   ${CMAKE_SOURCE_DIR}/src/execu.cpp
   ${CMAKE_SOURCE_DIR}/src/execu_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/adaptive_thickness.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/DCELSweepLine.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/DCELValidator.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/curve.cpp
@@ -76,6 +77,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoClasses.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoLine.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/polyline.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/variable_offset.cpp
   ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp

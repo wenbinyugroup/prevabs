@@ -82,6 +82,7 @@ private:
   // See issue-20260521-skip-dropped-areas.md.
   std::vector<int> _dropped_base_ranges_lo;
   std::vector<int> _dropped_base_ranges_hi;
+  bool _adaptive_variable_offset = false;
   LifecycleState _state{LifecycleState::BaseReady};
 
 public:

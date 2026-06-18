@@ -3,6 +3,7 @@
 #include "CurveFrameLookup.hpp"
 #include "Material.hpp"
 #include "PBaseLine.hpp"
+#include "PDCEL.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
@@ -50,6 +51,18 @@ bool computeFaceCentroid2D(PDCELFace *face, SPoint2 &out) {
   if (n == 0) return false;
   out = SPoint2(sy / n, sz / n);
   return true;
+}
+
+bool faceContainsVertex(PDCEL *dcel, PDCELFace *face, PDCELVertex *vertex) {
+  if (dcel == nullptr || face == nullptr || vertex == nullptr) return false;
+  return dcel->findHalfEdgeInFace(vertex, face) != nullptr;
+}
+
+bool faceContainsBothVertices(
+    PDCEL *dcel, PDCELFace *face,
+    PDCELVertex *a, PDCELVertex *b) {
+  return faceContainsVertex(dcel, face, a)
+      && faceContainsVertex(dcel, face, b);
 }
 
 }  // namespace
@@ -201,13 +214,34 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
     // fnew.front()->print();
     // fnew.back()->print();
 
-    if (lside == "left") {
-      _faces.push_back(fnew.back());
-      _face = fnew.front();
-    } else {
-      _faces.push_back(fnew.front());
-      _face = fnew.back();
+    PDCELFace *layer_face = nullptr;
+    PDCELFace *remaining_face = nullptr;
+    if (i + 1 < static_cast<int>(_prev_bound_vertices.size())
+        && i + 1 < static_cast<int>(_next_bound_vertices.size())) {
+      PDCELVertex *next_prev = _prev_bound_vertices[i + 1];
+      PDCELVertex *next_next = _next_bound_vertices[i + 1];
+      const bool front_has_next = faceContainsBothVertices(
+          bcfg.dcel, fnew.front(), next_prev, next_next);
+      const bool back_has_next = faceContainsBothVertices(
+          bcfg.dcel, fnew.back(), next_prev, next_next);
+      if (front_has_next != back_has_next) {
+        remaining_face = front_has_next ? fnew.front() : fnew.back();
+        layer_face = front_has_next ? fnew.back() : fnew.front();
+      }
     }
+
+    if (layer_face == nullptr || remaining_face == nullptr) {
+      if (lside == "left") {
+        layer_face = fnew.back();
+        remaining_face = fnew.front();
+      } else {
+        layer_face = fnew.front();
+        remaining_face = fnew.back();
+      }
+    }
+
+    _faces.push_back(layer_face);
+    _face = remaining_face;
 
     // std::cout << "        setting new layer face properties" << std::endl;
     // std::cout << "        name" << std::endl;

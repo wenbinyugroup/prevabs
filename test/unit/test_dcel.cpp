@@ -37,6 +37,12 @@ struct LoggerSetup {
     }
   }
 } _logger_setup;
+
+struct ScopedConfig {
+  PConfig previous;
+  ScopedConfig() : previous(config) {}
+  ~ScopedConfig() { config = previous; }
+};
 } // namespace
 
 // ------------------------------------------------------------------
@@ -565,6 +571,47 @@ TEST_CASE("offsetCurveBase: repeated pre-build calls reuse the same offset curve
   CHECK(segment.curveOffset() == first_offset);
   CHECK(segment.curveOffset()->vertices().size() == offset_vertex_count);
   CHECK(segment.baseOffsetIndicesPairs().size() == pair_count);
+}
+
+TEST_CASE("offsetCurveBase: adaptive thickness uses variable offset on open "
+          "dropped range",
+          "[dcel][segment][offset][adaptive]") {
+  ScopedConfig scoped_config;
+  config.adaptive_thickness.enabled = true;
+  config.adaptive_thickness.report_only = false;
+  config.adaptive_thickness.mode = "linear";
+  config.adaptive_thickness.safety = 0.5;
+  config.adaptive_thickness.transition_base_count = 1;
+  config.adaptive_thickness.min_half_thickness = 0.0;
+  config.adaptive_thickness.target_segments = {"adaptive_seg"};
+  config.app.geo_tol = 1e-12;
+
+  Material material("mat");
+  Lamina lamina("lam", &material, 0.1);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("base", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.0, 1.0));
+  base.addPVertex(new PDCELVertex(0.0, 1.0, 0.5));
+  base.addPVertex(new PDCELVertex(0.0, 2.0, 0.1));
+  base.addPVertex(new PDCELVertex(0.0, 2.5, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 3.0, 0.1));
+  base.addPVertex(new PDCELVertex(0.0, 4.0, 0.5));
+  base.addPVertex(new PDCELVertex(0.0, 5.0, 1.0));
+
+  Segment segment("adaptive_seg", &base, &layup, "left", 1);
+  segment.offsetCurveBase();
+
+  REQUIRE(segment.curveOffset() != nullptr);
+  REQUIRE(segment.curveOffset()->vertices().size() == base.vertices().size());
+  REQUIRE(segment.baseOffsetIndicesPairs().size() == base.vertices().size());
+
+  for (std::size_t i = 0; i < base.vertices().size(); ++i) {
+    CHECK(segment.baseOffsetIndicesPairs()[i].base == static_cast<int>(i));
+    CHECK(segment.baseOffsetIndicesPairs()[i].offset == static_cast<int>(i));
+  }
 }
 
 TEST_CASE("getIntersectionVertex: aliased curves shift the second insertion",
