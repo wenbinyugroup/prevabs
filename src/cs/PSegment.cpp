@@ -326,6 +326,7 @@ Segment::Segment(Segment &&other) noexcept
       _curve_offset(std::move(other._curve_offset)),
       _layup(other._layup),
       _areas(std::move(other._areas)),
+      _layered_faces(std::move(other._layered_faces)),
       _layupside(std::move(other._layupside)),
       _level(other._level),
       _prev(other._prev),
@@ -358,6 +359,7 @@ Segment::Segment(Segment &&other) noexcept
   other._head_vertex_offset = nullptr;
   other._tail_vertex_offset = nullptr;
   other._areas.clear();
+  other._layered_faces.clear();
   other._adaptive_variable_offset = false;
   other._state = LifecycleState::BaseReady;
 }
@@ -374,6 +376,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _curve_offset = std::move(other._curve_offset);
   _layup = other._layup;
   _areas = std::move(other._areas);
+  _layered_faces = std::move(other._layered_faces);
   _layupside = std::move(other._layupside);
   _level = other._level;
   _prev = other._prev;
@@ -407,6 +410,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   other._head_vertex_offset = nullptr;
   other._tail_vertex_offset = nullptr;
   other._areas.clear();
+  other._layered_faces.clear();
   other._adaptive_variable_offset = false;
   other._state = LifecycleState::BaseReady;
 
@@ -415,6 +419,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
 
 void Segment::releaseOwnedResources() {
   _areas.clear();
+  _layered_faces.clear();
 
   if (_curve_offset != nullptr) {
     deleteUnregisteredVertices(_curve_offset->vertices());
@@ -497,7 +502,7 @@ bool Segment::validateStateInvariants(const char *caller) const {
 
   const bool offset_ready = (_curve_offset != nullptr);
   const bool shell_built = (_face != nullptr);
-  const bool areas_built = !_areas.empty();
+  const bool areas_built = !_areas.empty() || !_layered_faces.empty();
 
   bool valid = true;
   switch (_state) {
@@ -525,7 +530,8 @@ bool Segment::validateStateInvariants(const char *caller) const {
       << " [state=" << toString(_state)
       << ", has_offset=" << offset_ready
       << ", has_face=" << shell_built
-      << ", areas=" << _areas.size() << "]";
+      << ", areas=" << _areas.size()
+      << ", layered_faces=" << _layered_faces.size() << "]";
   PLOG(error) << oss.str();
   assert(valid && "Segment lifecycle invariants violated");
   return false;
@@ -673,6 +679,9 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
 }
 
 std::size_t Segment::layerCount() const {
+  if (!_layered_faces.empty()) {
+    return _layered_faces.size();
+  }
   std::size_t count = 0;
   for (const auto &area : _areas) {
     count += area->faces().size();

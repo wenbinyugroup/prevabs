@@ -1521,6 +1521,172 @@ TEST_CASE("splitFace: original face is deleted; two new faces created",
   CHECK(dcel.validate());
 }
 
+TEST_CASE("splitFaceByPolyline: straight path splits a rectangular face",
+          "[dcel][face]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = new PDCELVertex(0, 0.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0, 4.0, 0.0);
+  PDCELVertex *v3 = new PDCELVertex(0, 4.0, 4.0);
+  PDCELVertex *v4 = new PDCELVertex(0, 0.0, 4.0);
+
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v4, v1};
+  PDCELFace *f_square = dcel.addFace(vloop);
+  REQUIRE(f_square != nullptr);
+  REQUIRE(f_square->outer() != nullptr);
+  REQUIRE(dcel.addHalfEdgeLoop(f_square->outer()) != nullptr);
+
+  const std::size_t faces_before = dcel.faces().size();
+
+  PDCELVertex *v_bottom = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELVertex *v_top = dcel.addVertex(new PDCELVertex(0, 2.0, 4.0));
+
+  PDCELHalfEdge *he_bottom = dcel.findHalfEdgeBetween(v1, v2);
+  REQUIRE(he_bottom != nullptr);
+  v_bottom = dcel.splitEdge(he_bottom, v_bottom);
+
+  PDCELHalfEdge *he_top = dcel.findHalfEdgeBetween(v4, v3);
+  REQUIRE(he_top != nullptr);
+  v_top = dcel.splitEdge(he_top, v_top);
+
+  std::vector<PDCELVertex *> path = {v_bottom, v_top};
+  std::list<PDCELFace *> new_faces =
+      dcel.splitFaceByPolyline(f_square, path);
+
+  REQUIRE(new_faces.size() == 2);
+  CHECK(dcel.faces().size() == faces_before + 1);
+  REQUIRE(dcel.validate());
+
+  PDCELHalfEdge *he_up = dcel.findHalfEdgeBetween(v_bottom, v_top);
+  PDCELHalfEdge *he_down = dcel.findHalfEdgeBetween(v_top, v_bottom);
+  REQUIRE(he_up != nullptr);
+  REQUIRE(he_down != nullptr);
+  CHECK(he_up->twin() == he_down);
+  CHECK(he_down->twin() == he_up);
+  CHECK(he_up->face() != nullptr);
+  CHECK(he_down->face() != nullptr);
+  CHECK(he_up->face() != he_down->face());
+
+  for (PDCELFace *face : new_faces) {
+    REQUIRE(face != nullptr);
+    REQUIRE(face->outer() != nullptr);
+    CHECK(collectFaceBoundary(face->outer()).size() == 4);
+  }
+}
+
+TEST_CASE("splitFaceByPolyline: bent path creates two valid shared-edge faces",
+          "[dcel][face]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = new PDCELVertex(0, 0.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0, 6.0, 0.0);
+  PDCELVertex *v3 = new PDCELVertex(0, 6.0, 4.0);
+  PDCELVertex *v4 = new PDCELVertex(0, 0.0, 4.0);
+
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v4, v1};
+  PDCELFace *f_rect = dcel.addFace(vloop);
+  REQUIRE(f_rect != nullptr);
+  REQUIRE(f_rect->outer() != nullptr);
+  REQUIRE(dcel.addHalfEdgeLoop(f_rect->outer()) != nullptr);
+
+  const std::size_t faces_before = dcel.faces().size();
+
+  PDCELVertex *v_bottom = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELVertex *v_mid = dcel.addVertex(new PDCELVertex(0, 3.0, 2.0));
+  PDCELVertex *v_top = dcel.addVertex(new PDCELVertex(0, 4.0, 4.0));
+
+  PDCELHalfEdge *he_bottom = dcel.findHalfEdgeBetween(v1, v2);
+  REQUIRE(he_bottom != nullptr);
+  v_bottom = dcel.splitEdge(he_bottom, v_bottom);
+
+  PDCELHalfEdge *he_top = dcel.findHalfEdgeBetween(v4, v3);
+  REQUIRE(he_top != nullptr);
+  v_top = dcel.splitEdge(he_top, v_top);
+
+  std::vector<PDCELVertex *> path = {v_bottom, v_mid, v_top};
+  std::list<PDCELFace *> new_faces =
+      dcel.splitFaceByPolyline(f_rect, path);
+
+  REQUIRE(new_faces.size() == 2);
+  CHECK(dcel.faces().size() == faces_before + 1);
+  REQUIRE(dcel.validate());
+
+  PDCELHalfEdge *he_bottom_mid =
+      dcel.findHalfEdgeBetween(v_bottom, v_mid);
+  PDCELHalfEdge *he_mid_bottom =
+      dcel.findHalfEdgeBetween(v_mid, v_bottom);
+  PDCELHalfEdge *he_mid_top =
+      dcel.findHalfEdgeBetween(v_mid, v_top);
+  PDCELHalfEdge *he_top_mid =
+      dcel.findHalfEdgeBetween(v_top, v_mid);
+
+  REQUIRE(he_bottom_mid != nullptr);
+  REQUIRE(he_mid_bottom != nullptr);
+  REQUIRE(he_mid_top != nullptr);
+  REQUIRE(he_top_mid != nullptr);
+  CHECK(he_bottom_mid->twin() == he_mid_bottom);
+  CHECK(he_mid_top->twin() == he_top_mid);
+  CHECK(he_bottom_mid->face() != he_mid_bottom->face());
+  CHECK(he_mid_top->face() != he_top_mid->face());
+
+  for (PDCELFace *face : new_faces) {
+    REQUIRE(face != nullptr);
+    REQUIRE(face->outer() != nullptr);
+    CHECK(collectFaceBoundary(face->outer()).size() == 5);
+  }
+}
+
+TEST_CASE("splitFaceByPolyline: invalid paths do not mutate the DCEL",
+          "[dcel][face]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = new PDCELVertex(0, 0.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0, 4.0, 0.0);
+  PDCELVertex *v3 = new PDCELVertex(0, 4.0, 4.0);
+  PDCELVertex *v4 = new PDCELVertex(0, 0.0, 4.0);
+
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v4, v1};
+  PDCELFace *f_square = dcel.addFace(vloop);
+  REQUIRE(f_square != nullptr);
+  REQUIRE(f_square->outer() != nullptr);
+  REQUIRE(dcel.addHalfEdgeLoop(f_square->outer()) != nullptr);
+  REQUIRE(dcel.validate());
+
+  const std::size_t vertices_before = dcel.vertices().size();
+  const std::size_t halfedges_before = dcel.halfedges().size();
+  const std::size_t loops_before = dcel.halfedgeloops().size();
+  const std::size_t faces_before = dcel.faces().size();
+
+  SECTION("path has fewer than two vertices") {
+    std::vector<PDCELVertex *> path = {v1};
+    std::list<PDCELFace *> new_faces =
+        dcel.splitFaceByPolyline(f_square, path);
+
+    CHECK(new_faces.empty());
+  }
+
+  SECTION("path endpoints are not on the face boundary") {
+    PDCELVertex *inside_a = new PDCELVertex(0, 1.0, 1.0);
+    PDCELVertex *inside_b = new PDCELVertex(0, 3.0, 3.0);
+    std::vector<PDCELVertex *> path = {inside_a, inside_b};
+    std::list<PDCELFace *> new_faces =
+        dcel.splitFaceByPolyline(f_square, path);
+
+    CHECK(new_faces.empty());
+    CHECK(dcel.vertices().size() == vertices_before);
+    delete inside_a;
+    delete inside_b;
+  }
+
+  CHECK(dcel.halfedges().size() == halfedges_before);
+  CHECK(dcel.halfedgeloops().size() == loops_before);
+  CHECK(dcel.faces().size() == faces_before);
+  CHECK(dcel.validate());
+}
+
 
 // ==================================================================
 // 8. addHalfEdgeLoop

@@ -1,5 +1,6 @@
 #include "PSegment.hpp"
 
+#include "CurveFrameLookup.hpp"
 #include "Material.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
@@ -30,6 +31,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -97,6 +99,307 @@ std::vector<SPoint2> offsetCurveSeg(const std::vector<SPoint2>& base,
     if (metric > best_metric) { best_metric = metric; best = &p; }
   }
   return best ? best->points : std::vector<SPoint2>{};
+}
+
+struct LayeredCurve {
+  std::vector<PDCELVertex *> vertices;
+  std::vector<SPoint2> points;
+  bool owns_vertices = false;
+};
+
+void deleteUnregisteredLayeredCurve(LayeredCurve& curve) {
+  if (!curve.owns_vertices) return;
+  for (auto* v : curve.vertices) {
+    if (v != nullptr && !v->isRegistered()) {
+      delete v;
+    }
+  }
+  curve.vertices.clear();
+  curve.points.clear();
+}
+
+double signedArea2D(const std::vector<SPoint2>& pts) {
+  if (pts.size() < 3) return 0.0;
+  double a = 0.0;
+  for (std::size_t i = 0; i < pts.size(); ++i) {
+    const auto& p = pts[i];
+    const auto& q = pts[(i + 1) % pts.size()];
+    a += p.x() * q.y() - q.x() * p.y();
+  }
+  return 0.5 * a;
+}
+
+const prevabs::geo::OffsetPolygon* pickLayeredPrimary(
+    const std::vector<prevabs::geo::OffsetPolygon>& polys, bool closed) {
+  const prevabs::geo::OffsetPolygon* best = nullptr;
+  double best_metric = -1.0;
+  for (const auto& p : polys) {
+    if (p.points.size() < 2) continue;
+    double metric = static_cast<double>(p.points.size());
+    if (closed) {
+      metric = std::fabs(signedArea2D(p.points));
+    } else {
+      int lo = std::numeric_limits<int>::max();
+      int hi = std::numeric_limits<int>::min();
+      for (const auto& s : p.sources) {
+        if (s.base_seg < 0) continue;
+        lo = std::min(lo, s.base_seg);
+        hi = std::max(hi, s.base_seg);
+      }
+      if (lo <= hi) {
+        metric = static_cast<double>(hi - lo + 1);
+      }
+    }
+    if (metric > best_metric) {
+      best_metric = metric;
+      best = &p;
+    }
+  }
+  return best;
+}
+
+LayeredCurve makeExistingCurve(
+    const std::vector<PDCELVertex *>& source, bool closed) {
+  LayeredCurve curve;
+  curve.owns_vertices = false;
+  curve.vertices = source;
+  if (closed && curve.vertices.size() >= 2
+      && curve.vertices.front() == curve.vertices.back()) {
+    curve.vertices.pop_back();
+  }
+  curve.points.reserve(curve.vertices.size());
+  for (auto* v : curve.vertices) {
+    curve.points.emplace_back(v->point2()[0], v->point2()[1]);
+  }
+  return curve;
+}
+
+LayeredCurve makeRawOffsetCurve(
+    const std::vector<SPoint2>& base, bool closed, int clipper_side,
+    double dist) {
+  LayeredCurve curve;
+  auto polys = prevabs::geo::offsetWithClipper2(
+      base, closed, clipper_side, dist,
+      prevabs::geo::JoinTypeChoice::Miter, 2.0,
+      /*resample_open*/ false,
+      /*experimental_open_miter_resample*/ false);
+  const auto* primary = pickLayeredPrimary(polys, closed);
+  if (primary == nullptr) return curve;
+
+  curve.points = primary->points;
+  curve.vertices.reserve(curve.points.size());
+  for (const auto& p : curve.points) {
+    curve.vertices.push_back(new PDCELVertex(0.0, p.x(), p.y()));
+  }
+  curve.owns_vertices = true;
+  return curve;
+}
+
+SPoint2 interpolatePoint2DForLayered(
+    const SPoint2& a, const SPoint2& b, double u) {
+  return SPoint2(a.x() + u * (b.x() - a.x()),
+                 a.y() + u * (b.y() - a.y()));
+}
+
+void replaceOwnedLayeredVertex(
+    LayeredCurve& curve, std::size_t index, const SPoint2& p) {
+  if (index >= curve.vertices.size() || index >= curve.points.size()) return;
+  if (curve.owns_vertices && curve.vertices[index] != nullptr
+      && !curve.vertices[index]->isRegistered()) {
+    delete curve.vertices[index];
+  }
+  curve.points[index] = p;
+  curve.vertices[index] = new PDCELVertex(0.0, p.x(), p.y());
+}
+
+void alignOpenLayerBoundaryEndpoints(
+    LayeredCurve& curve, const LayeredCurve& base,
+    const LayeredCurve& shell, double ratio) {
+  if (curve.vertices.size() < 2 || base.points.size() < 2
+      || shell.points.size() < 2) {
+    return;
+  }
+
+  const std::size_t last = curve.vertices.size() - 1;
+  const std::size_t outer_last = shell.points.size() - 1;
+  const SPoint2 head = interpolatePoint2DForLayered(
+      base.points.front(), shell.points.front(), ratio);
+  const SPoint2 tail = interpolatePoint2DForLayered(
+      base.points.back(), shell.points[outer_last], ratio);
+  replaceOwnedLayeredVertex(curve, 0, head);
+  replaceOwnedLayeredVertex(curve, last, tail);
+}
+
+SVector3 averageLayupVector(
+    const LayeredCurve& inner, const LayeredCurve& outer,
+    std::size_t i0, std::size_t i1) {
+  SVector3 y2(0, 1, 0);
+  if (inner.vertices.empty() || outer.vertices.empty()) return y2;
+  const SVector3 a(inner.vertices[i0]->point(), outer.vertices[i0]->point());
+  const SVector3 b(inner.vertices[i1]->point(), outer.vertices[i1]->point());
+  y2 = a + b;
+  if (y2.norm() > 0.0) {
+    y2.normalize();
+  }
+  return y2;
+}
+
+bool computeFaceCentroid2DForLayered(PDCELFace *face, SPoint2 &out) {
+  if (face == nullptr || face->outer() == nullptr) return false;
+  double sy = 0.0, sz = 0.0;
+  int n = 0;
+  PDCELHalfEdge *start = face->outer();
+  PDCELHalfEdge *he = start;
+  do {
+    if (he == nullptr) return false;
+    PDCELVertex *v = he->source();
+    if (v != nullptr) {
+      sy += v->y();
+      sz += v->z();
+      ++n;
+    }
+    he = he->next();
+  } while (he != start);
+  if (n == 0) return false;
+  out = SPoint2(sy / n, sz / n);
+  return true;
+}
+
+double faceCentroidDistanceToCurveForLayered(
+    PDCELFace *face, const LayeredCurve& curve, bool closed) {
+  SPoint2 centroid;
+  if (!computeFaceCentroid2DForLayered(face, centroid)) {
+    return std::numeric_limits<double>::infinity();
+  }
+  return footDistToPolylineSeg(centroid, curve.points, closed);
+}
+
+void applyLayeredFaceFrame(
+    PDCELFace *face, Baseline *base_curve, bool closed,
+    const std::string& e1, const std::string& e2,
+    const SVector3& layup_y2, const BuilderConfig& bcfg) {
+  if (face == nullptr) return;
+
+  if (e2 == "layup") {
+    face->setLocaly2(layup_y2);
+    if (bcfg.tool == AnalysisTool::VABS) {
+      face->setTheta1(face->calcTheta1Fromy2(layup_y2));
+    }
+  }
+
+  const bool e1_baseline = (e1 == "baseline");
+  const bool e2_baseline = (e2 == "baseline");
+  if (!e1_baseline && !e2_baseline) return;
+  if (base_curve == nullptr || base_curve->vertices().size() < 2) return;
+
+  std::vector<SPoint2> poly;
+  poly.reserve(base_curve->vertices().size());
+  for (auto* v : base_curve->vertices()) {
+    poly.emplace_back(v->y(), v->z());
+  }
+  if (closed && poly.size() > 1
+      && poly.front().x() == poly.back().x()
+      && poly.front().y() == poly.back().y()) {
+    poly.pop_back();
+  }
+  if (poly.size() < 2) return;
+
+  SPoint2 centroid;
+  if (!computeFaceCentroid2DForLayered(face, centroid)) return;
+  CurveFrameLookup lookup(poly, closed);
+  const SVector3 tangent = lookup.yAxisAt(centroid);
+  if (e1_baseline) {
+    face->setLocaly1(tangent);
+  }
+  if (e2_baseline) {
+    face->setLocaly2(tangent);
+    if (bcfg.tool == AnalysisTool::VABS) {
+      face->setTheta1(face->calcTheta1Fromy2(tangent));
+    }
+  }
+}
+
+bool assignLayeredFaceProperties(
+    PDCELFace *face, const std::string& name, Layer layer,
+    const LayeredCurve& inner, const LayeredCurve& outer,
+    Baseline *base_curve, bool closed,
+    const std::string& e1, const std::string& e2,
+    const BuilderConfig& bcfg) {
+  if (face == nullptr || layer.getLamina() == nullptr) return false;
+  if (inner.vertices.empty() || outer.vertices.empty()) return false;
+
+  bcfg.model->setFaceName(face, name);
+  face->setMaterial(layer.getLamina()->getMaterial());
+  face->setTheta3(layer.getAngle());
+  face->setLayerType(layer.getLayerType());
+
+  const std::size_t last =
+      std::min(inner.vertices.size(), outer.vertices.size()) - 1;
+  const SVector3 layup_y2 = averageLayupVector(inner, outer, 0, last);
+  applyLayeredFaceFrame(
+      face, base_curve, closed, e1, e2, layup_y2, bcfg);
+  return true;
+}
+
+bool layeredFaceContainsVertex(
+    PDCEL *dcel, PDCELFace *face, PDCELVertex *vertex) {
+  if (dcel == nullptr || face == nullptr || vertex == nullptr) return false;
+  return dcel->findHalfEdgeInFace(vertex, face) != nullptr;
+}
+
+bool layeredFaceContainsBothVertices(
+    PDCEL *dcel, PDCELFace *face,
+    PDCELVertex *a, PDCELVertex *b) {
+  return layeredFaceContainsVertex(dcel, face, a)
+      && layeredFaceContainsVertex(dcel, face, b);
+}
+
+std::vector<PDCELFace *> splitLayerBandIntoCells(
+    PDCELFace *band_face, const LayeredCurve& inner,
+    const LayeredCurve& outer, PDCEL *dcel,
+    const std::string& segment_name) {
+  std::vector<PDCELFace *> cells;
+  const std::size_t n = std::min(inner.vertices.size(), outer.vertices.size());
+  if (band_face == nullptr || n < 2) return cells;
+  if (n == 2) {
+    cells.push_back(band_face);
+    return cells;
+  }
+
+  PDCELFace *remaining = band_face;
+  PDCELVertex *tail_inner = inner.vertices[n - 1];
+  PDCELVertex *tail_outer = outer.vertices[n - 1];
+  for (std::size_t i = 1; i + 1 < n; ++i) {
+    std::vector<PDCELVertex *> connector = {
+        inner.vertices[i], outer.vertices[i]};
+    std::list<PDCELFace *> split_faces =
+        dcel->splitFaceByPolyline(remaining, connector);
+    if (split_faces.size() != 2) {
+      PLOG(error) << "layered offset[" << segment_name
+                  << "]: failed to split layer band cell at connector "
+                  << i;
+      return {};
+    }
+
+    PDCELFace *f0 = split_faces.front();
+    PDCELFace *f1 = split_faces.back();
+    const bool f0_has_tail = layeredFaceContainsBothVertices(
+        dcel, f0, tail_inner, tail_outer);
+    const bool f1_has_tail = layeredFaceContainsBothVertices(
+        dcel, f1, tail_inner, tail_outer);
+    if (f0_has_tail == f1_has_tail) {
+      PLOG(error) << "layered offset[" << segment_name
+                  << "]: ambiguous layer cell split at connector " << i;
+      return {};
+    }
+
+    PDCELFace *cell = f0_has_tail ? f1 : f0;
+    remaining = f0_has_tail ? f0 : f1;
+    cells.push_back(cell);
+  }
+
+  cells.push_back(remaining);
+  return cells;
 }
 
 }  // namespace
@@ -749,6 +1052,218 @@ void Segment::buildLastArea(
   _areas.emplace_back(area);
 }
 
+bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
+  if (_layup == nullptr || _curve_base == nullptr || _curve_offset == nullptr
+      || _face == nullptr) {
+    return false;
+  }
+
+  std::vector<Layer> layers = _layup->getLayers();
+  const int n_layers = static_cast<int>(layers.size());
+  if (n_layers <= 0) return false;
+  for (int k = 0; k < n_layers; ++k) {
+    if (layers[k].getLamina() == nullptr) {
+      PLOG(warning) << "layered offset[" << _name << "]: layer "
+                    << (k + 1) << " has no lamina; falling back";
+      return false;
+    }
+  }
+
+  const bool is_closed = closed();
+  const int side = requireValidLayupSide("buildLayeredOffsetAreas");
+  if (side == 0) return false;
+  const int clipper_side = is_closed ? -side : side;
+
+  LayeredCurve base_curve =
+      makeExistingCurve(_curve_base->vertices(), is_closed);
+  LayeredCurve shell_curve =
+      makeExistingCurve(_curve_offset->vertices(), is_closed);
+  const std::size_t n = base_curve.vertices.size();
+  double min_base_edge = std::numeric_limits<double>::infinity();
+  const std::size_t edge_count = is_closed ? n : n - 1;
+  for (std::size_t i = 0; i < edge_count; ++i) {
+    const std::size_t j = (i + 1) % n;
+    min_base_edge = std::min(
+        min_base_edge,
+        base_curve.vertices[i]->point().distance(
+            base_curve.vertices[j]->point()));
+  }
+  if (std::isfinite(min_base_edge)
+      && _layup->getTotalThickness() > 0.5 * min_base_edge) {
+    PLOG(warning) << "layered offset[" << _name
+                  << "]: total thickness " << _layup->getTotalThickness()
+                  << " exceeds healthy limit 0.5 * shortest base edge ("
+                  << min_base_edge
+                  << "); falling back to legacy area/layer build";
+    return false;
+  }
+  if (n < 2 || shell_curve.vertices.size() != n) {
+    PLOG(warning) << "layered offset[" << _name
+                  << "]: shell/base vertex count mismatch (base=" << n
+                  << ", shell=" << shell_curve.vertices.size()
+                  << "); falling back to legacy area/layer build";
+    return false;
+  }
+
+  if (n_layers == 1) {
+    Layer layer = layers.front();
+    _layered_faces.push_back(_face);
+    bcfg.model->setFaceName(_face, _name + "_layer_1_face_1");
+    _face->setMaterial(layer.getLamina()->getMaterial());
+    _face->setTheta3(layer.getAngle());
+    _face->setLayerType(layer.getLayerType());
+    const SVector3 layup_y2 =
+        averageLayupVector(base_curve, shell_curve, 0, n - 1);
+    applyLayeredFaceFrame(
+        _face, _curve_base, is_closed,
+        _mat_orient_e1, _mat_orient_e2, layup_y2, bcfg);
+    _state = LifecycleState::AreasBuilt;
+    PLOG(info) << "built layered offset segment " << _name
+               << ": layers=1, faces=1";
+    return true;
+  }
+
+  if (is_closed) {
+    PLOG(warning) << "layered offset[" << _name
+                  << "]: closed multi-layer offset needs closed-loop DCEL "
+                     "tiling; falling back to legacy area/layer build";
+    return false;
+  }
+  if (n > 3) {
+    PLOG(warning) << "layered offset[" << _name
+                  << "]: open multi-bend offset tiling is not enabled yet "
+                  << "(base verts=" << n
+                  << "); falling back to legacy area/layer build";
+    return false;
+  }
+
+  std::vector<LayeredCurve> curves;
+  curves.reserve(n_layers + 1);
+  curves.push_back(base_curve);
+
+  double cum = 0.0;
+  for (int k = 0; k < n_layers - 1; ++k) {
+    const double tk = (layers[k].getLamina() != nullptr)
+                          ? layers[k].getLamina()->getThickness()
+                                * layers[k].getStack()
+                          : 0.0;
+    cum += tk;
+    LayeredCurve c = makeRawOffsetCurve(
+        base_curve.points, is_closed, clipper_side, cum);
+    if (c.vertices.size() != n) {
+      PLOG(warning) << "layered offset[" << _name << "]: layer "
+                    << (k + 1) << " raw offset produced "
+                    << c.vertices.size() << " verts for " << n
+                    << " base verts; falling back to legacy area/layer build";
+      deleteUnregisteredLayeredCurve(c);
+      for (auto& owned : curves) {
+        deleteUnregisteredLayeredCurve(owned);
+      }
+      return false;
+    }
+    if (!is_closed && _layup->getTotalThickness() > 0.0) {
+      alignOpenLayerBoundaryEndpoints(
+          c, base_curve, shell_curve, cum / _layup->getTotalThickness());
+    }
+    curves.push_back(std::move(c));
+  }
+  curves.push_back(shell_curve);
+
+  int face_count = 0;
+  PDCELFace *remaining_face = _face;
+  for (int k = 0; k < n_layers - 1; ++k) {
+    std::list<PDCELFace *> split_faces =
+        bcfg.dcel->splitFaceByPolyline(
+            remaining_face, curves[k + 1].vertices);
+    if (split_faces.size() != 2) {
+      PLOG(error) << "layered offset[" << _name
+                  << "]: splitFaceByPolyline failed at layer boundary "
+                  << (k + 1);
+      return false;
+    }
+
+    PDCELFace *f0 = split_faces.front();
+    PDCELFace *f1 = split_faces.back();
+    PDCELFace *layer_face = nullptr;
+    PDCELFace *next_remaining = nullptr;
+
+    const double d0 =
+        faceCentroidDistanceToCurveForLayered(f0, curves[k], false);
+    const double d1 =
+        faceCentroidDistanceToCurveForLayered(f1, curves[k], false);
+    layer_face = (d0 <= d1) ? f0 : f1;
+    next_remaining = (layer_face == f0) ? f1 : f0;
+
+    std::vector<PDCELFace *> layer_cells = splitLayerBandIntoCells(
+        layer_face, curves[k], curves[k + 1], bcfg.dcel, _name);
+    if (layer_cells.empty()) {
+      PLOG(error) << "layered offset[" << _name
+                  << "]: failed to split layer " << (k + 1)
+                  << " into cells";
+      return false;
+    }
+    for (std::size_t i = 0; i < layer_cells.size(); ++i) {
+      const std::string face_name =
+          _name + "_layer_" + std::to_string(k + 1)
+                + "_face_" + std::to_string(i + 1);
+      if (!assignLayeredFaceProperties(
+              layer_cells[i], face_name, layers[k],
+              curves[k], curves[k + 1], _curve_base, is_closed,
+              _mat_orient_e1, _mat_orient_e2, bcfg)) {
+        PLOG(error) << "layered offset[" << _name
+                    << "]: failed to assign layer face properties for layer "
+                    << (k + 1) << ", face " << (i + 1);
+        return false;
+      }
+      ++face_count;
+      _layered_faces.push_back(layer_cells[i]);
+    }
+
+    remaining_face = next_remaining;
+    _face = remaining_face;
+
+    PLOG(debug) << "layered offset[" << _name
+                << "]: split boundary " << (k + 1)
+                << ", layer_face=" << faceLabel(layer_cells.front(), bcfg.model)
+                << ", remaining_face="
+                << faceLabel(remaining_face, bcfg.model);
+  }
+
+  const int last = n_layers - 1;
+  std::vector<PDCELFace *> final_cells = splitLayerBandIntoCells(
+      remaining_face, curves[last], curves[last + 1], bcfg.dcel, _name);
+  if (final_cells.empty()) {
+    PLOG(error) << "layered offset[" << _name
+                << "]: failed to split final layer into cells";
+    return false;
+  }
+  for (std::size_t i = 0; i < final_cells.size(); ++i) {
+    const std::string face_name =
+        _name + "_layer_" + std::to_string(n_layers)
+              + "_face_" + std::to_string(i + 1);
+    if (!assignLayeredFaceProperties(
+            final_cells[i], face_name, layers[last],
+            curves[last], curves[last + 1],
+            _curve_base, is_closed, _mat_orient_e1, _mat_orient_e2, bcfg)) {
+      PLOG(error) << "layered offset[" << _name
+                  << "]: failed to assign final layer face properties";
+      return false;
+    }
+    ++face_count;
+    _layered_faces.push_back(final_cells[i]);
+  }
+  _face = final_cells.back();
+
+  for (auto& owned : curves) {
+    deleteUnregisteredLayeredCurve(owned);
+  }
+  _state = LifecycleState::AreasBuilt;
+  PLOG(info) << "built layered offset segment " << _name
+             << ": layers=" << n_layers
+             << ", faces=" << face_count;
+  return true;
+}
+
 
 // Phase-2a: route-i per-layer offset validation (no DCEL effect). See header.
 void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
@@ -967,9 +1482,16 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   }
 
   // Phase-2a: validate route-i per-layer offsets in the production context
-  // (flag-gated, no DCEL effect — legacy path below still builds the mesh).
+  // (flag-gated). Phase-2b then tries the direct layered-offset face build;
+  // unsupported healthy-subset gaps fall back to the legacy path below.
   if (useLayeredOffsetEnv()) {
     validatePerLayerOffsets(bcfg);
+    if (buildLayeredOffsetAreas(bcfg)) {
+      validateStateInvariants("buildAreas/layered-offset");
+      segment_areas_section.setEndDetails(
+          "areas=0, layers=" + std::to_string(layerCount()));
+      return;
+    }
   }
 
   std::vector<PDCELVertex *> first_bound_vertices;

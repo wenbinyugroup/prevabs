@@ -42,6 +42,7 @@ private:
 
   Layup *_layup;
   std::vector<std::unique_ptr<PArea>> _areas;
+  std::vector<PDCELFace *> _layered_faces;
   // Layup offset side relative to the directed base curve:
   // "left" means positive offset from base start -> end,
   // "right" means negative offset.
@@ -261,4 +262,5 @@ private:
   // curve generation in the production context (real layups, joins,
   // open/closed) before the DCEL tiling lands in Phase 2b.
   void validatePerLayerOffsets(const BuilderConfig &bcfg);
+  bool buildLayeredOffsetAreas(const BuilderConfig &bcfg);
 };

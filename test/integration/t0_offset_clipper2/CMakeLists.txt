@@ -85,6 +85,30 @@ if(MSVC)
   target_compile_options(phase0_layered_v PRIVATE /W3 /utf-8 /EHa)
 endif()
 
+# ------------------------------------------------------------------
+# compare_resample — old foot-resample vs new raw-miter offset (SVG).
+# Same coupling: offset core + Clipper2.
+# ------------------------------------------------------------------
+add_executable(compare_resample
+  compare_resample.cpp
+  ${REPO_ROOT}/src/geo/offset_clipper2.cpp
+  ${REPO_ROOT}/src/geo/offset_clipper2_bridge.cpp
+)
+
+target_include_directories(compare_resample PRIVATE
+  ${REPO_ROOT}/include
+)
+
+target_compile_definitions(compare_resample PRIVATE
+  PHASE0_OUT_DIR="${CMAKE_CURRENT_BINARY_DIR}/out"
+)
+
+target_link_libraries(compare_resample PRIVATE Clipper2)
+
+if(MSVC)
+  target_compile_options(compare_resample PRIVATE /W3 /utf-8 /EHa)
+endif()
+
 # Make the output directory at configure time so the executable can
 # always write into it.
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/out")

@@ -223,6 +223,11 @@ public:
   */
   std::list<PDCELFace *> splitFace(PDCELFace *f, PDCELVertex *v1,
                                    PDCELVertex *v2);
+
+  /// Split a bounded face by a simple polyline whose endpoints lie on the
+  /// face outer boundary. The original face is deleted on success.
+  std::list<PDCELFace *> splitFaceByPolyline(
+      PDCELFace *f, const std::vector<PDCELVertex *> &path);
   
   /// Split a bounded face (convex) by a line or line segment
   std::list<PDCELFace *> splitFace(PDCELFace *f, PGeoLineSegment *ls);
