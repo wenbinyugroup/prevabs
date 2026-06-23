@@ -117,6 +117,10 @@ struct RuntimeState {
 
 extern RuntimeState runtime;
 
+// Env gate (PREVABS_LAYERED_OFFSET) for the layered per-layer-offset path.
+// Off by default. Defined in src/cs/PBuildSegmentAreas.cpp.
+bool useLayeredOffsetEnv();
+
 // ---------------------------------------------------------------------------
 // Sub-structs passed explicitly to subsystems (no global dependency needed)
 // ---------------------------------------------------------------------------

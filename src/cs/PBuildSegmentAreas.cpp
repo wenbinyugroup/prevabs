@@ -34,11 +34,11 @@
 #include <utility>
 #include <vector>
 
-namespace {
-
 // Phase-2a (plan-20260618-per-layer-offset-within-shell.md): env gate for
 // the layered per-layer-offset path. Off by default — the legacy
-// interpolated-layer path stays the production default.
+// interpolated-layer path stays the production default. Global so
+// offsetCurveBase (PSegment.cpp) can decide whether to keep the shell raw
+// (clean miter) instead of foot-resampled; declared in globalVariables.hpp.
 bool useLayeredOffsetEnv() {
   static const bool cached = [] {
     const char* raw = std::getenv("PREVABS_LAYERED_OFFSET");
@@ -49,6 +49,8 @@ bool useLayeredOffsetEnv() {
   }();
   return cached;
 }
+
+namespace {
 
 // Foot-of-perpendicular distance from q to a polyline (open or closed).
 double footDistToPolylineSeg(const SPoint2& q,

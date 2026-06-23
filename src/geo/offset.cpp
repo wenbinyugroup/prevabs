@@ -494,7 +494,8 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
                        std::vector<bool> *offset_resampled,
                        std::vector<SPoint2> *pre_resample_raw_points,
                        std::vector<int> *dropped_base_ranges_lo,
-                       std::vector<int> *dropped_base_ranges_hi) {
+                       std::vector<int> *dropped_base_ranges_hi,
+                       bool resample) {
   (void)side;
   offset_vertices.clear();
   id_pairs.clear();
@@ -522,10 +523,13 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
   }
 
   // 1. Base-vertex resample (moved here from the geometry core), against the
-  //    same base that was fed to Clipper2 (trimmed if pre-trim ran).
-  prevabs::geo::resampleOpenRuns(geom.polygons, geom.clipper_input,
-                                 geom.clipper_side, geom.abs_dist,
-                                 /*do_miter_resample*/ false);
+  //    same base that was fed to Clipper2 (trimmed if pre-trim ran). Skipped
+  //    when `resample=false` (layered path keeps raw clean-miter geometry).
+  if (resample) {
+    prevabs::geo::resampleOpenRuns(geom.polygons, geom.clipper_input,
+                                   geom.clipper_side, geom.abs_dist,
+                                   /*do_miter_resample*/ false);
+  }
   // 2. Remap pre-trim base_seg back to original indices (after resample).
   if (geom.did_pretrim) {
     prevabs::geo::remapBaseSegToOriginal(geom.polygons, geom.thin_run);

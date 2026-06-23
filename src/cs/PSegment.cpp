@@ -853,6 +853,11 @@ void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
     }
     // Two-step offset: raw geometry first, then the base-offset map (which
     // applies the resample). See geo.hpp / offsetGeometry / buildBaseOffsetMap.
+    //
+    // Under the layered-offset path keep the shell RAW (clean miter, no
+    // foot-of-perpendicular corner collapse) so it stays consistent with the
+    // per-layer raw offset curves; legacy keeps the foot resample (mesh-safe).
+    const bool resample_shell = !useLayeredOffsetEnv();
     OffsetGeometry geom = offsetGeometry(
         _curve_base->vertices(), side, _layup->getTotalThickness());
     buildBaseOffsetMap(
@@ -861,7 +866,8 @@ void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
         &_offset_vertex_resampled,
         &_offset_pre_resample_raw_points,
         &_dropped_base_ranges_lo,
-        &_dropped_base_ranges_hi);
+        &_dropped_base_ranges_hi,
+        resample_shell);
   }
   _face = nullptr;
   _areas.clear();

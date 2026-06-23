@@ -143,6 +143,10 @@ OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
 // Step 2: resample (moved here from the geometry core) + reverse-match
 // staircase. Mutates `geom.polygons` in place. Returns 1 on success, 0 on
 // degenerate geometry or a reverse-match failure.
+// `resample` (default true) applies the foot-of-perpendicular base-vertex
+// resample before the reverse-match. Pass false to keep the RAW clean-miter
+// geometry (no corner collapse) — used by the layered-offset path so the shell
+// stays consistent with the per-layer raw offset curves.
 int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
                        double dist, OffsetGeometry &geom,
                        std::vector<PDCELVertex *> &offset_vertices,
@@ -150,7 +154,8 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
                        std::vector<bool> *offset_resampled = nullptr,
                        std::vector<SPoint2> *pre_resample_raw_points = nullptr,
                        std::vector<int> *dropped_base_ranges_lo = nullptr,
-                       std::vector<int> *dropped_base_ranges_hi = nullptr);
+                       std::vector<int> *dropped_base_ranges_hi = nullptr,
+                       bool resample = true);
 
 // Validates the BaseOffsetMap staircase invariant.
 bool validateBaseOffsetMap(
