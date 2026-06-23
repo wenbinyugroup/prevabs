@@ -689,7 +689,93 @@ std::size_t Segment::layerCount() const {
   return count;
 }
 
-void Segment::offsetCurveBase() {
+bool Segment::applyAdaptiveThicknessOffset(
+    int side, bool &used_adaptive,
+    prevabs::geo::LinearAdaptiveThicknessPlan &adaptive_plan) {
+  used_adaptive = false;
+
+  // Probe with a plain constant-thickness offset to see whether any base
+  // region is too thin (skin dropped). If none, adopt the probe as the offset.
+  std::vector<PDCELVertex *> probe_offset_vertices;
+  BaseOffsetMap probe_pairs;
+  std::vector<bool> probe_offset_resampled;
+  std::vector<SPoint2> probe_pre_resample_raw_points;
+  std::vector<int> probe_dropped_lo;
+  std::vector<int> probe_dropped_hi;
+
+  offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
+         probe_offset_vertices, probe_pairs,
+         &probe_offset_resampled,
+         &probe_pre_resample_raw_points,
+         &probe_dropped_lo,
+         &probe_dropped_hi);
+
+  int repair_lo = -1;
+  int repair_hi = -1;
+  if (firstDroppedRange(
+          probe_dropped_lo, probe_dropped_hi, &repair_lo, &repair_hi)) {
+    adaptive_plan = makeAdaptiveThicknessPlan(
+        _name, _curve_base->vertices(), _layup->getTotalThickness(),
+        repair_lo, repair_hi);
+    if (!adaptive_plan.ok) {
+      PLOG(error) << "adaptive thickness: failed to build linear plan for "
+                  << "segment '" << _name << "': "
+                  << adaptive_plan.error;
+      deleteUnregisteredVertices(probe_offset_vertices);
+      return false;
+    }
+
+    prevabs::geo::VariableOffsetInput variable_input;
+    variable_input.base = toPoint2List(_curve_base->vertices());
+    variable_input.side = side;
+    variable_input.tol = config.app.geo_tol;
+    variable_input.half_thickness_by_base.reserve(
+        adaptive_plan.stations.size());
+    for (const auto &station : adaptive_plan.stations) {
+      variable_input.half_thickness_by_base.push_back(
+          station.half_thickness);
+    }
+
+    const auto variable_result =
+        prevabs::geo::offsetVariableDistance(variable_input);
+    if (!variable_result.ok) {
+      PLOG(error) << "adaptive thickness: variable offset failed for "
+                  << "segment '" << _name << "': "
+                  << variable_result.error;
+      deleteUnregisteredVertices(probe_offset_vertices);
+      return false;
+    }
+
+    deleteUnregisteredVertices(probe_offset_vertices);
+    assignVariableOffsetResult(
+        variable_result, _curve_offset.get(), &_base_offset_indices_pairs,
+        &_offset_vertex_resampled,
+        &_offset_pre_resample_raw_points,
+        &_dropped_base_ranges_lo,
+        &_dropped_base_ranges_hi);
+    used_adaptive = true;
+    _adaptive_variable_offset = true;
+    PLOG(info) << "adaptive thickness: segment '" << _name
+               << "' uses linear variable offset over repair base["
+               << adaptive_plan.range.repair_lo << ".."
+               << adaptive_plan.range.repair_hi << "], taper base["
+               << adaptive_plan.range.taper_lo << ".."
+               << adaptive_plan.range.taper_hi << "], t="
+               << adaptive_plan.range.design_half_thickness << " -> "
+               << adaptive_plan.range.repaired_half_thickness;
+  } else {
+    // No thin region: adopt the probe result as the offset directly.
+    _curve_offset->vertices() = probe_offset_vertices;
+    _base_offset_indices_pairs = probe_pairs;
+    _offset_vertex_resampled = probe_offset_resampled;
+    _offset_pre_resample_raw_points = probe_pre_resample_raw_points;
+    _dropped_base_ranges_lo = probe_dropped_lo;
+    _dropped_base_ranges_hi = probe_dropped_hi;
+  }
+  return true;
+}
+
+void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
   if (!requireBaseDefinition("offsetCurveBase")) {
     logSkippingSegmentAction(
         "offsetCurveBase", _name, "base definition is incomplete");
@@ -746,99 +832,36 @@ void Segment::offsetCurveBase() {
   _curve_offset.reset(new Baseline());
   bool used_adaptive_thickness = false;
   prevabs::geo::LinearAdaptiveThicknessPlan adaptive_plan;
+  // Master switch off by default: the adaptive variable-offset path only runs
+  // when the caller opts in AND the XML config targets this open segment.
   const bool may_use_adaptive_thickness =
-      adaptiveThicknessTargetsSegment(_name) && !closed();
+      enable_adaptive_thickness
+      && adaptiveThicknessTargetsSegment(_name) && !closed();
 
   if (may_use_adaptive_thickness) {
-    std::vector<PDCELVertex *> probe_offset_vertices;
-    BaseOffsetMap probe_pairs;
-    std::vector<bool> probe_offset_resampled;
-    std::vector<SPoint2> probe_pre_resample_raw_points;
-    std::vector<int> probe_dropped_lo;
-    std::vector<int> probe_dropped_hi;
-
-    offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
-           probe_offset_vertices, probe_pairs,
-           &probe_offset_resampled,
-           &probe_pre_resample_raw_points,
-           &probe_dropped_lo,
-           &probe_dropped_hi);
-
-    int repair_lo = -1;
-    int repair_hi = -1;
-    if (firstDroppedRange(
-            probe_dropped_lo, probe_dropped_hi, &repair_lo, &repair_hi)) {
-      adaptive_plan = makeAdaptiveThicknessPlan(
-          _name, _curve_base->vertices(), _layup->getTotalThickness(),
-          repair_lo, repair_hi);
-      if (!adaptive_plan.ok) {
-        PLOG(error) << "adaptive thickness: failed to build linear plan for "
-                    << "segment '" << _name << "': "
-                    << adaptive_plan.error;
-        deleteUnregisteredVertices(probe_offset_vertices);
-        _curve_offset.reset();
-        return;
-      }
-
-      prevabs::geo::VariableOffsetInput variable_input;
-      variable_input.base = toPoint2List(_curve_base->vertices());
-      variable_input.side = side;
-      variable_input.tol = config.app.geo_tol;
-      variable_input.half_thickness_by_base.reserve(
-          adaptive_plan.stations.size());
-      for (const auto &station : adaptive_plan.stations) {
-        variable_input.half_thickness_by_base.push_back(
-            station.half_thickness);
-      }
-
-      const auto variable_result =
-          prevabs::geo::offsetVariableDistance(variable_input);
-      if (!variable_result.ok) {
-        PLOG(error) << "adaptive thickness: variable offset failed for "
-                    << "segment '" << _name << "': "
-                    << variable_result.error;
-        deleteUnregisteredVertices(probe_offset_vertices);
-        _curve_offset.reset();
-        return;
-      }
-
-      deleteUnregisteredVertices(probe_offset_vertices);
-      assignVariableOffsetResult(
-          variable_result, _curve_offset.get(), &_base_offset_indices_pairs,
-          &_offset_vertex_resampled,
-          &_offset_pre_resample_raw_points,
-          &_dropped_base_ranges_lo,
-          &_dropped_base_ranges_hi);
-      used_adaptive_thickness = true;
-      _adaptive_variable_offset = true;
-      PLOG(info) << "adaptive thickness: segment '" << _name
-                 << "' uses linear variable offset over repair base["
-                 << adaptive_plan.range.repair_lo << ".."
-                 << adaptive_plan.range.repair_hi << "], taper base["
-                 << adaptive_plan.range.taper_lo << ".."
-                 << adaptive_plan.range.taper_hi << "], t="
-                 << adaptive_plan.range.design_half_thickness << " -> "
-                 << adaptive_plan.range.repaired_half_thickness;
-    } else {
-      _curve_offset->vertices() = probe_offset_vertices;
-      _base_offset_indices_pairs = probe_pairs;
-      _offset_vertex_resampled = probe_offset_resampled;
-      _offset_pre_resample_raw_points = probe_pre_resample_raw_points;
-      _dropped_base_ranges_lo = probe_dropped_lo;
-      _dropped_base_ranges_hi = probe_dropped_hi;
+    if (!applyAdaptiveThicknessOffset(
+            side, used_adaptive_thickness, adaptive_plan)) {
+      _curve_offset.reset();
+      return;
     }
   } else {
-    if (adaptiveThicknessTargetsSegment(_name) && closed()) {
+    if (enable_adaptive_thickness
+        && adaptiveThicknessTargetsSegment(_name) && closed()) {
       PLOG(warning) << "adaptive thickness: segment '" << _name
                     << "' is closed; linear adaptive thickness currently "
                        "supports only open segments";
     }
-    offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
-           _curve_offset->vertices(), _base_offset_indices_pairs,
-           &_offset_vertex_resampled,
-           &_offset_pre_resample_raw_points,
-           &_dropped_base_ranges_lo,
-           &_dropped_base_ranges_hi);
+    // Two-step offset: raw geometry first, then the base-offset map (which
+    // applies the resample). See geo.hpp / offsetGeometry / buildBaseOffsetMap.
+    OffsetGeometry geom = offsetGeometry(
+        _curve_base->vertices(), side, _layup->getTotalThickness());
+    buildBaseOffsetMap(
+        _curve_base->vertices(), side, _layup->getTotalThickness(), geom,
+        _curve_offset->vertices(), _base_offset_indices_pairs,
+        &_offset_vertex_resampled,
+        &_offset_pre_resample_raw_points,
+        &_dropped_base_ranges_lo,
+        &_dropped_base_ranges_hi);
   }
   _face = nullptr;
   _areas.clear();

@@ -13,6 +13,7 @@
 #include "pui.hpp"
 
 #include "offset_clipper2.hpp"
+#include "geo_diagnostics.hpp"
 
 #include "geo_types.hpp"
 
@@ -71,102 +72,72 @@ void assertValidBaseOffsetMap(
   assert(valid && "BaseOffsetMap staircase invariant violated");
 }
 
-// Local half-thickness at base[i] for a closed polyline: project a ray
-// from base[i] along the inward normal (determined by `side`, matching
-// the single-vertex offset() cross-product convention), find the nearest
-// non-adjacent base segment it hits, and return that distance. Returns
-// +INF when the inward ray never re-enters the polygon (the offset has
-// plenty of room locally).
+// ---------------------------------------------------------------------------
+// Stage E pre-trim (plan-20260522-stage-e-pretrim.md, OPEN base only).
 //
-// Stage E of plan-20260514-clipper2-offset-backend.md §7 — runs before
-// the Clipper2 backend kicks in on the closed branch and lets us
-// fail-fast with a readable error when the local geometry leaves
-// Clipper2 nothing to inflate.
+// Build a thin-mask via signedHalfThickness with α = 1.2 (production-tuned;
+// Phase B), treating an interior INF vertex as a cusp apex only when bordered
+// by a finite-thin neighbour. If exactly one strictly-interior contiguous thin
+// run exists, produce a trimmed polyline that bridges the cusp tip with a
+// single chord and report the run.
 //
-// Pre: `base` is a closed polyline (caller checks
-// base.front() == base.back()) with N >= 4 vertices (so the distinct
-// vertex count N_distinct = N - 1 is >= 3 — required for a non-trivial
-// polygon).
-double signedHalfThickness(
-    const std::vector<PDCELVertex *> &base, int i, int side,
-    bool base_is_closed) {
-  // Distinct base vertex count:
-  //   closed → drop trailing duplicate (front == back pointer).
-  //   open   → all entries are distinct.
-  const int n_distinct = base_is_closed
-                           ? static_cast<int>(base.size()) - 1
-                           : static_cast<int>(base.size());
-  if (n_distinct < 3) return INF;
+// Returns true (and fills `trimmed` + `run`) when a trim was applied; false
+// otherwise — the caller then keeps the untrimmed `base_pts`.
+bool buildStageEPreTrimInput(
+    const std::vector<PDCELVertex *> &base,
+    const std::vector<SPoint2> &base_pts,
+    int side, double dist,
+    std::vector<SPoint2> &trimmed,
+    prevabs::geo::ThinRun &run) {
+  constexpr double kPreTrimAlpha = 1.2;
+  const int n_distinct = static_cast<int>(base.size());
+  const double abs_dist = std::fabs(dist);
+  const double threshold = kPreTrimAlpha * abs_dist;
 
-  // Endpoint vertices on an open base have only one neighbour, so a
-  // half-thickness measurement is geometrically undefined (no opposite
-  // side to project onto). Stage E callers should iterate interior
-  // vertices only; this guard is defensive.
-  if (!base_is_closed && (i <= 0 || i >= n_distinct - 1)) return INF;
-
-  const int i_prev = base_is_closed
-                       ? (i - 1 + n_distinct) % n_distinct
-                       : i - 1;
-  const int i_next = base_is_closed
-                       ? (i + 1) % n_distinct
-                       : i + 1;
-
-  const SPoint2 p_i    = base[i]     ->point2();
-  const SPoint2 p_prev = base[i_prev]->point2();
-  const SPoint2 p_next = base[i_next]->point2();
-
-  // Local tangent: average of incoming + outgoing edge tangents at
-  // base[i]. Using (p_next - p_prev) gives this average direction in
-  // one subtraction and is robust at near-cusp vertices.
-  const double tx = p_next.x() - p_prev.x();
-  const double ty = p_next.y() - p_prev.y();
-  const double t_norm = std::sqrt(tx * tx + ty * ty);
-  if (t_norm < TOLERANCE) return INF;
-  const double tx_n = tx / t_norm;
-  const double ty_n = ty / t_norm;
-
-  // Inward normal in the yz plane. In 3D the single-segment offset()
-  // direction is n × t with n = SVector3(side, 0, 0), giving 2-D yz
-  // components (-side * tz, side * ty). In SPoint2 coordinates (x=y, y=z):
-  //   normal_x = -side * (ty_n in yz, which is the SPoint2 y-component)
-  //   normal_y =  side * (the SPoint2 x-component)
-  const double dir_x = -side * ty_n;
-  const double dir_y =  side * tx_n;
-
-  // Intersect ray (p_i + t * dir) with each non-adjacent segment.
-  // Closed: there are n_distinct segments (last wraps back to base[0]).
-  // Open:   there are n_distinct - 1 segments (no wrap).
-  const int n_seg = base_is_closed ? n_distinct : n_distinct - 1;
-  double min_t = INF;
-  for (int j = 0; j < n_seg; ++j) {
-    // Skip segments that touch base[i].
-    //   seg j      = base[j]   → base[j+1]
-    //   "j == i"   touches at start
-    //   "j == i_prev" touches at end
-    if (j == i || j == i_prev) continue;
-
-    const int j_next = base_is_closed ? (j + 1) % n_distinct : j + 1;
-    const SPoint2 a = base[j]     ->point2();
-    const SPoint2 b = base[j_next]->point2();
-
-    const double ex = b.x() - a.x();
-    const double ey = b.y() - a.y();
-
-    // Solve  p_i + t * dir = a + s * (b - a)
-    //  →  [ dir_x, -ex ] [ t ]   [ a.x - p_i.x ]
-    //     [ dir_y, -ey ] [ s ] = [ a.y - p_i.y ]
-    const double det = -dir_x * ey + dir_y * ex;
-    if (std::fabs(det) < TOLERANCE) continue;  // parallel / collinear
-
-    const double rx = a.x() - p_i.x();
-    const double ry = a.y() - p_i.y();
-    const double t = (-rx * ey + ry * ex) / det;
-    const double s = (-dir_x * ry + dir_y * rx) / -det;
-    if (t > TOLERANCE && s >= -TOLERANCE && s <= 1.0 + TOLERANCE) {
-      if (t < min_t) min_t = t;
+  // Pass 1: finite half-thickness per interior vertex; mark finite-thin.
+  std::vector<double> h_vals(n_distinct, INF);
+  std::vector<bool> finite_thin(n_distinct, false);
+  for (int i = 1; i < n_distinct - 1; ++i) {
+    const double h = prevabs::geo::signedHalfThickness(
+        base, i, side, /*base_is_closed*/ false);
+    h_vals[i] = h;
+    if (h < INF * 0.5 && h < threshold - TOLERANCE) {
+      finite_thin[i] = true;
     }
   }
-  return min_t;
+  // Pass 2: an INF interior vertex counts as a cusp apex only when an
+  // immediate neighbour is finite-thin (distinguishes a real cusp from a
+  // healthy short web whose interior vertices all return INF).
+  std::vector<bool> thin_mask(n_distinct, false);
+  for (int i = 1; i < n_distinct - 1; ++i) {
+    if (finite_thin[i]) {
+      thin_mask[i] = true;
+    } else if (h_vals[i] >= INF * 0.5) {
+      const bool left_finite_thin  = (i > 0)              && finite_thin[i - 1];
+      const bool right_finite_thin = (i < n_distinct - 1) && finite_thin[i + 1];
+      thin_mask[i] = left_finite_thin || right_finite_thin;
+    }
+  }
+
+  if (!prevabs::geo::extractSingleInteriorRun(thin_mask, &run)) {
+    return false;
+  }
+  std::vector<SPoint2> t =
+      prevabs::geo::buildTrimmedOpenPolyline(base_pts, run);
+  if (t.size() < 2) {
+    // Should not happen — extractSingleInteriorRun guarantees lo > 0 and
+    // hi < N-1 so the trimmed polyline has >= 2 vertices.
+    return false;
+  }
+  trimmed = std::move(t);
+  PLOG(warning)
+      << "offset (multi-vertex, open): Stage E pre-trim removed base["
+      << run.lo << ".." << run.hi << "] ("
+      << (run.hi - run.lo + 1)
+      << " vertices) due to local half-thickness < "
+      << kPreTrimAlpha << " * |dist| = " << threshold
+      << "; skin will be reported dropped over these indices";
+  return true;
 }
 
 } // namespace
@@ -384,6 +355,10 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  *                         and on open runs that did not need resample.
  *                         Consumed by `dumpBaseOffsetMapSvg` as a
  *                         topmost scatter overlay.
+ * @param enable_pretrim   Optional (default false): when true, run the
+ *                         Stage E pre-trim (open base only) that bridges a
+ *                         single interior thin cusp with a chord before the
+ *                         Clipper2 core. Off by default — callers opt in.
  * @return int             1 on success, 0 on degenerate input or
  *                         Clipper2 backend failure.
  */
@@ -393,7 +368,8 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
            std::vector<bool> *offset_resampled,
            std::vector<SPoint2> *pre_resample_raw_points,
            std::vector<int> *dropped_base_ranges_lo,
-           std::vector<int> *dropped_base_ranges_hi) {
+           std::vector<int> *dropped_base_ranges_hi,
+           bool enable_pretrim) {
 
 
   std::size_t size = base.size();
@@ -421,283 +397,165 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
   }
 
   // -------------------------------------------------------------------------
-  // Geometric robustness check: warn when the offset distance is large
-  // relative to the shortest base segment.  Beyond ratio ~0.5 the offset
-  // construction becomes numerically fragile (junction overshoot, near-
-  // tangent self-intersections at sharp closures, etc.).  The fix in
-  // src/geo/offset.cpp's step 4 lets us survive ratios well above this
-  // threshold in practice, so the warning is informational only — it gives
-  // users a readable trail to follow if a downstream stage fails on an
-  // input that sits close to the failure regime, before the stack trace
-  // has decayed into "DCEL half-edge cycle discarded" or a Gmsh meshing
-  // error.
+  // Two steps: raw geometry (offsetGeometry), then base-offset map with
+  // resample (buildBaseOffsetMap). offset() is the convenience composition;
+  // callers that want raw geometry only (e.g. the layered-offset path) call
+  // offsetGeometry() directly. The 2-vertex fast path and diagnostics live in
+  // offsetGeometry.
   // -------------------------------------------------------------------------
-  {
-    double L_min     = base[0]->point().distance(base[1]->point());
-    int    L_min_seg = 0;
-    for (std::size_t i = 1; i + 1 < size; ++i) {
-      const double L = base[i]->point().distance(base[i + 1]->point());
-      if (L < L_min) {
-        L_min     = L;
-        L_min_seg = static_cast<int>(i);
-      }
-    }
-    const double abs_dist = std::fabs(dist);
-    if (L_min > 0.0 && abs_dist > 0.5 * L_min) {
-      std::ostringstream oss;
-      oss.precision(6);
-      oss << "offset (multi-vertex): offset distance " << abs_dist
-          << " is " << (abs_dist / L_min) << "x the shortest base segment "
-          << "length (" << L_min
-          << " at segment " << L_min_seg
-          << "); offset construction may be numerically fragile — "
-          << "consider <normalize>1</normalize>, a larger <scale>, "
-          << "or a denser baseline";
-      PLOG(warning) << oss.str();
-    }
-  }
-
-  // -------------------------------------------------------------------------
-  // Fast path: 2-vertex polyline — a single segment, no junctions needed.
-  // -------------------------------------------------------------------------
-  if (size == 2) {
-    PDCELVertex *seg_start = new PDCELVertex();
-    PDCELVertex *seg_end   = new PDCELVertex();
-
-    offset(base[0], base[1], side, dist, seg_start, seg_end);
-
-    offset_vertices.push_back(seg_start);
-    offset_vertices.push_back(seg_end);
-
-    id_pairs.push_back(BaseOffsetPair(0, 0));
-    id_pairs.push_back(BaseOffsetPair(1, 1));
-    assertValidBaseOffsetMap(id_pairs, "offset fast path");
-
-    if (offset_resampled) {
-      offset_resampled->assign(2, false);
-    }
-    return 1;
-  }
-
-  // -------------------------------------------------------------------------
-  // Multi-vertex path (closed OR open): Clipper2 backend.
-  //
-  // PreVABS legacy convention (single-vertex offset() above uses n × t
-  // with n = SVector3(side, 0, 0)): for a CCW closed curve side = +1
-  // is the inward direction. Clipper2's InflatePaths takes positive
-  // delta = outward. For open inputs the same `clipper_side = -side`
-  // flip puts side = +1 on the left of the base walking direction
-  // (consistent with the single-segment `offsetLineSegment` n × t
-  // direction).
-  // -------------------------------------------------------------------------
-  const bool base_is_closed = (base.front() == base.back());
-
-  // ---------------------------------------------------------------------
-  // Stage E precheck: local half-thickness scan (closed + open).
-  //
-  // For each interior base vertex i, project an inward-normal ray and
-  // measure the distance to the nearest non-adjacent base segment (h_i).
-  // Categories:
-  //   h_i < |dist|     — the inward offset crosses to the far side
-  //                      locally. Stage C will record this region in
-  //                      `dropped_base_ranges` and downstream skin is
-  //                      locally absent.
-  //   h_i < 2 * |dist| — the post-offset thickness is below the
-  //                      "two-sided" headroom; Clipper2 still
-  //                      succeeds.
-  //
-  // Behaviour: count + summarise as PLOG(warning). We do NOT fail-fast
-  // — Clipper2's InflatePaths handles all these geometrically (Stage
-  // C bridge's dropped-range mechanism produces the user-actionable
-  // diagnostic when skin is actually eaten). The plan-20260514 §7
-  // fail-fast was tuned for a moderately thick uniform skin layup;
-  // sharp TE cusps in real airfoils give h_i ≪ |dist| at the cusp
-  // vertex but the geometry is still meshable.
-  //
-  // Open inputs skip the two endpoint vertices (half-thickness is
-  // geometrically undefined there — `signedHalfThickness` returns INF
-  // for them when base_is_closed=false).
-  //
-  // O(N²); fine for the N < 200 typical PreVABS payload.
-  // ---------------------------------------------------------------------
-  {
-    const int n_distinct = base_is_closed
-                             ? static_cast<int>(size) - 1
-                             : static_cast<int>(size);
-    const double abs_dist   = std::fabs(dist);
-    const char* const kind  = base_is_closed ? "closed" : "open";
-    int n_below_dist   = 0;
-    int n_below_2dist  = 0;
-    int first_below    = -1;
-    for (int i = 0; i < n_distinct; ++i) {
-      const double h = signedHalfThickness(base, i, side, base_is_closed);
-      if (h < abs_dist - TOLERANCE) {
-        ++n_below_dist;
-        if (first_below < 0) first_below = i;
-      } else if (h < 2.0 * abs_dist - TOLERANCE) {
-        ++n_below_2dist;
-      }
-    }
-    if (n_below_dist > 0) {
-      PLOG(warning)
-          << "offset (multi-vertex, " << kind << "): " << n_below_dist
-          << " base vertex/vertices have local half-thickness < |dist| = "
-          << abs_dist << " (first at base[" << first_below << "] = "
-          << base[first_below]->printString()
-          << "); skin will be locally dropped at those locations";
-    }
-    if (n_below_2dist > 0) {
-      PLOG(warning)
-          << "offset (multi-vertex, " << kind << "): " << n_below_2dist
-          << " base vertex/vertices have local half-thickness "
-          << "in [|dist|, 2*|dist|) = [" << abs_dist << ", "
-          << (2.0 * abs_dist)
-          << "); offset will be valid but locally thin";
-    }
-  }
-
-  // Build SPoint2 view of base + invoke Clipper2 backend.
-  std::vector<SPoint2> base_pts;
-  base_pts.reserve(size);
-  for (auto *v : base) {
-    base_pts.emplace_back(v->point2()[0], v->point2()[1]);
-  }
-  // Closed CCW: PreVABS side = +1 (inward) ⇒ Clipper2 δ < 0 (shrink) ⇒ flip.
-  // Open polyline: PreVABS side = +1 (left, sign(t × d) > 0) already matches
-  //                Phase 1's filter convention ⇒ pass through.
-  const int clipper_side = base_is_closed ? -side : side;
-
-  // -----------------------------------------------------------------------
-  // Stage E pre-trim (plan-20260522-stage-e-pretrim.md, OPEN base only).
-  //
-  // Build a thin-mask via signedHalfThickness with α=0.8 (Phase A standard
-  // — issue-20260522-stage-e-pretrim-phase-a.md §4), interior INF treated
-  // as thin (cusp apex), endpoints kept. If exactly one strictly-interior
-  // contiguous run is found, replace the Clipper2 input with a trimmed
-  // polyline that bridges the cusp tip with a single chord. After
-  // Clipper2, remap base_seg back to original indices and inject the
-  // trim range into dropped_base_ranges. Closed base, leading/trailing
-  // run, and ≥2 disjoint runs fall back to the untrimmed path.
-  // -----------------------------------------------------------------------
-  std::vector<SPoint2> clipper_input = base_pts;
-  prevabs::geo::ThinRun thin_run{};
-  bool did_pretrim = false;
-  // α = 1.2 is the production-tuned value (Phase B integration tuning):
-  //   α = 0.8 (Phase A initial standard, §6.2 candidate range [0.5, 0.8])
-  //     only removes the inner cusp [11..17] for mh104; bridge endpoints
-  //     base[10] (h/dist=1.08) and base[18] (h/dist=1.15) remain in the
-  //     trimmed polyline and Clipper2 folds them anyway → M/N=0.66.
-  //   α = 1.2 also captures those borderline boundary vertices so the
-  //     bridge endpoints (base[9] h/dist=1.65, base[19] h/dist=1.77)
-  //     sit firmly outside the thin band → M/N=0.69.
-  //   α = 2.0 over-trims and the shortened polyline produces fewer
-  //     offset vertices (M=18); empirically worse than α=1.2.
-  // Phase A data also verifies α=1.2 keeps healthy webs untouched
-  // (their interior INFs have no finite-thin neighbours under any α).
-  constexpr double kPreTrimAlpha = 1.2;
-  if (!base_is_closed) {
-    const int n_distinct = static_cast<int>(size);
-    const double abs_dist = std::fabs(dist);
-    const double threshold = kPreTrimAlpha * abs_dist;
-    // Two-pass mask construction:
-    //   Pass 1: gather finite h values per interior vertex; mark a
-    //     vertex finite-thin iff h < α·|dist|.
-    //   Pass 2: a vertex with h == INF (inward ray missed every
-    //     non-adjacent segment) is only counted as thin when at least
-    //     one immediate neighbour is finite-thin. This distinguishes a
-    //     real cusp apex (finite-thin neighbours, e.g. mh104 TE i=14
-    //     with neighbours at h/dist ≈ 0.05) from a healthy short open
-    //     segment where every interior vertex returns INF (e.g. a 3-/
-    //     4-vertex web) — without this guard every web would be
-    //     pre-trimmed to a bare bridge chord.
-    std::vector<double> h_vals(n_distinct, INF);
-    std::vector<bool>   finite_thin(n_distinct, false);
-    for (int i = 1; i < n_distinct - 1; ++i) {
-      const double h =
-          signedHalfThickness(base, i, side, /*base_is_closed*/ false);
-      h_vals[i] = h;
-      if (h < INF * 0.5 && h < threshold - TOLERANCE) {
-        finite_thin[i] = true;
-      }
-    }
-    std::vector<bool> thin_mask(n_distinct, false);
-    for (int i = 1; i < n_distinct - 1; ++i) {
-      if (finite_thin[i]) {
-        thin_mask[i] = true;
-      } else if (h_vals[i] >= INF * 0.5) {
-        // INF here. Treat as cusp apex iff bordered by a finite-thin
-        // vertex.
-        const bool left_finite_thin  = (i > 0)              && finite_thin[i - 1];
-        const bool right_finite_thin = (i < n_distinct - 1) && finite_thin[i + 1];
-        thin_mask[i] = left_finite_thin || right_finite_thin;
-      }
-    }
-    if (prevabs::geo::extractSingleInteriorRun(thin_mask, &thin_run)) {
-      clipper_input =
-          prevabs::geo::buildTrimmedOpenPolyline(base_pts, thin_run);
-      if (clipper_input.size() >= 2) {
-        did_pretrim = true;
-        PLOG(warning)
-            << "offset (multi-vertex, open): Stage E pre-trim removed base["
-            << thin_run.lo << ".." << thin_run.hi << "] ("
-            << (thin_run.hi - thin_run.lo + 1)
-            << " vertices) due to local half-thickness < "
-            << kPreTrimAlpha << " * |dist| = " << threshold
-            << "; skin will be reported dropped over these indices";
-      } else {
-        // Should not happen — extractSingleInteriorRun guarantees
-        // lo > 0 and hi < N-1 so the trimmed polyline has >= 2 vertices.
-        clipper_input = base_pts;
-      }
-    }
-  }
-
-  auto polygons = prevabs::geo::offsetWithClipper2(
-      clipper_input, base_is_closed, clipper_side, std::fabs(dist));
-  if (did_pretrim) {
-    prevabs::geo::remapBaseSegToOriginal(polygons, thin_run);
-  }
-
-  if (polygons.empty()) {
+  OffsetGeometry geom = offsetGeometry(base, side, dist, enable_pretrim);
+  if (!geom.ok) {
     PLOG(error)
         << "offset (multi-vertex, "
-        << (base_is_closed ? "closed" : "open")
+        << (geom.base_is_closed ? "closed" : "open")
         << "): Clipper2 returned no offset polygon (local thickness "
            "< |dist| somewhere along the path?); returning empty result";
     return 0;
   }
+  return buildBaseOffsetMap(base, side, dist, geom, offset_vertices, id_pairs,
+                            offset_resampled, pre_resample_raw_points,
+                            dropped_base_ranges_lo, dropped_base_ranges_hi);
+}
 
-  auto result =
-      prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
-          base, base_is_closed, clipper_side, std::fabs(dist), polygons);
+// ===========================================================================
+// Two-step offset: raw geometry (offsetGeometry) + staircase base-offset map
+// with resample (buildBaseOffsetMap). See geo.hpp.
+// ===========================================================================
 
-  if (!result.ok) {
-    PLOG(error)
-        << "offset (multi-vertex, "
-        << (base_is_closed ? "closed" : "open")
-        << "): reverse-match bridge failed to build a valid "
-           "BaseOffsetMap; returning empty result";
+OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
+                              int side, double dist, bool enable_pretrim) {
+  OffsetGeometry geom;
+  if (base.size() < 2) return geom;  // ok stays false
+
+  // Diagnostic (informational): offset distance vs shortest base segment.
+  prevabs::geo::checkOffsetDistanceVsShortestEdge(base, dist);
+
+  // Fast path: 2-vertex polyline = a single segment, no Clipper2 junctions.
+  // Produce the two translated endpoints as a trivial raw run; the staircase
+  // (0,0)(1,1) is materialized in buildBaseOffsetMap (two_vertex branch).
+  if (base.size() == 2) {
+    PDCELVertex *s0 = new PDCELVertex();
+    PDCELVertex *s1 = new PDCELVertex();
+    offset(base[0], base[1], side, dist, s0, s1);  // single-segment overload
+    prevabs::geo::OffsetPolygon poly;
+    poly.is_closed = false;
+    poly.points = {SPoint2(s0->point2()[0], s0->point2()[1]),
+                   SPoint2(s1->point2()[0], s1->point2()[1])};
+    poly.sources   = {{0, 0.0}, {0, 1.0}};
+    poly.resampled = {false, false};
+    delete s0;
+    delete s1;
+    geom.polygons.push_back(std::move(poly));
+    geom.base_is_closed = false;
+    geom.clipper_side   = side;
+    geom.abs_dist       = std::fabs(dist);
+    geom.two_vertex     = true;
+    geom.ok             = true;
+    return geom;
+  }
+
+  geom.base_is_closed = (base.front() == base.back());
+
+  // Diagnostic (informational): local half-thickness precheck.
+  prevabs::geo::warnLocalThinRegions(base, side, dist, geom.base_is_closed);
+
+  std::vector<SPoint2> base_pts;
+  base_pts.reserve(base.size());
+  for (auto *v : base) {
+    base_pts.emplace_back(v->point2()[0], v->point2()[1]);
+  }
+  // Closed CCW: PreVABS side = +1 (inward) ⇒ Clipper2 δ < 0 (shrink) ⇒ flip.
+  // Open polyline: PreVABS side = +1 already matches Phase 1's filter ⇒ pass.
+  geom.clipper_side = geom.base_is_closed ? -side : side;
+  geom.abs_dist     = std::fabs(dist);
+
+  // Stage E pre-trim (OPEN base only; off unless enable_pretrim). Bridges a
+  // single interior thin cusp before Clipper2; remap happens in step 2.
+  geom.clipper_input = base_pts;
+  if (enable_pretrim && !geom.base_is_closed) {
+    geom.did_pretrim = buildStageEPreTrimInput(
+        base, base_pts, side, dist, geom.clipper_input, geom.thin_run);
+  }
+
+  // Geometry core — RAW (resample_open = false). The base-vertex resample is
+  // applied later by buildBaseOffsetMap, not here.
+  geom.polygons = prevabs::geo::offsetWithClipper2(
+      geom.clipper_input, geom.base_is_closed, geom.clipper_side, geom.abs_dist,
+      prevabs::geo::JoinTypeChoice::Miter, 2.0,
+      /*resample_open*/ false, /*experimental*/ false);
+  geom.ok = !geom.polygons.empty();
+  return geom;
+}
+
+int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
+                       double dist, OffsetGeometry &geom,
+                       std::vector<PDCELVertex *> &offset_vertices,
+                       BaseOffsetMap &id_pairs,
+                       std::vector<bool> *offset_resampled,
+                       std::vector<SPoint2> *pre_resample_raw_points,
+                       std::vector<int> *dropped_base_ranges_lo,
+                       std::vector<int> *dropped_base_ranges_hi) {
+  (void)side;
+  offset_vertices.clear();
+  id_pairs.clear();
+  if (offset_resampled) offset_resampled->clear();
+  if (pre_resample_raw_points) pre_resample_raw_points->clear();
+  if (dropped_base_ranges_lo) dropped_base_ranges_lo->clear();
+  if (dropped_base_ranges_hi) dropped_base_ranges_hi->clear();
+
+  if (!geom.ok) {
+    PLOG(error) << "buildBaseOffsetMap: offset geometry is empty / not ok";
     return 0;
   }
 
-  // Stage E pre-trim post-process: ensure the trimmed range is present
-  // in result.dropped_base_ranges so PSegment skips area construction
-  // and the user-facing warning loop below covers it. Stage C's own
-  // forward-fill may already record the range (when the bridge offset
-  // vertices have base_seg=-1, Stage C records a gap in walked[]); if
-  // it does, skip the duplicate to avoid double-warning.
-  if (did_pretrim) {
+  // 2-vertex fast path: trivial 1:1 staircase, no resample / reverse-match.
+  if (geom.two_vertex && geom.polygons.size() == 1
+      && geom.polygons[0].points.size() == 2) {
+    const auto &pts = geom.polygons[0].points;
+    offset_vertices.push_back(new PDCELVertex(0.0, pts[0].x(), pts[0].y()));
+    offset_vertices.push_back(new PDCELVertex(0.0, pts[1].x(), pts[1].y()));
+    id_pairs.push_back(BaseOffsetPair(0, 0));
+    id_pairs.push_back(BaseOffsetPair(1, 1));
+    if (offset_resampled) offset_resampled->assign(2, false);
+    assertValidBaseOffsetMap(id_pairs, "offset fast path");
+    return 1;
+  }
+
+  // 1. Base-vertex resample (moved here from the geometry core), against the
+  //    same base that was fed to Clipper2 (trimmed if pre-trim ran).
+  prevabs::geo::resampleOpenRuns(geom.polygons, geom.clipper_input,
+                                 geom.clipper_side, geom.abs_dist,
+                                 /*do_miter_resample*/ false);
+  // 2. Remap pre-trim base_seg back to original indices (after resample).
+  if (geom.did_pretrim) {
+    prevabs::geo::remapBaseSegToOriginal(geom.polygons, geom.thin_run);
+  }
+
+  // 3. Reverse-match staircase.
+  auto result = prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
+      base, geom.base_is_closed, geom.clipper_side, geom.abs_dist,
+      geom.polygons);
+  if (!result.ok) {
+    PLOG(error)
+        << "buildBaseOffsetMap (" << (geom.base_is_closed ? "closed" : "open")
+        << "): reverse-match bridge failed to build a valid BaseOffsetMap";
+    return 0;
+  }
+
+  // Ensure the pre-trim range is recorded as dropped (avoid double-warning if
+  // the Stage C forward-fill already covered it).
+  if (geom.did_pretrim) {
     bool covered = false;
     for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
-      if (result.dropped_base_ranges_lo[k] <= thin_run.lo
-          && result.dropped_base_ranges_hi[k] >= thin_run.hi) {
+      if (result.dropped_base_ranges_lo[k] <= geom.thin_run.lo
+          && result.dropped_base_ranges_hi[k] >= geom.thin_run.hi) {
         covered = true;
         break;
       }
     }
     if (!covered) {
-      result.dropped_base_ranges_lo.push_back(thin_run.lo);
-      result.dropped_base_ranges_hi.push_back(thin_run.hi);
+      result.dropped_base_ranges_lo.push_back(geom.thin_run.lo);
+      result.dropped_base_ranges_hi.push_back(geom.thin_run.hi);
     }
   }
 
@@ -713,49 +571,16 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 
   for (std::size_t k = 0; k < result.dropped_base_ranges_lo.size(); ++k) {
     PLOG(warning) << "offset (multi-vertex, "
-                  << (base_is_closed ? "closed" : "open")
+                  << (geom.base_is_closed ? "closed" : "open")
                   << "): skin dropped over base indices ["
                   << result.dropped_base_ranges_lo[k] << ".."
                   << result.dropped_base_ranges_hi[k]
                   << "] due to insufficient local thickness";
   }
 
-  // M/N ratio diagnostic (issue-20260521 §6): Clipper2 inset merges /
-  // truncates base vertices when |dist| approaches local half-thickness.
-  // Empirically (mh104 TE thickness sweep) the downstream gmsh recovery
-  // breaks once M/N drops below ~0.7 — surface that as a user-visible
-  // warning so the report is actionable (reduce layup thickness or split
-  // layup) rather than a raw `Unable to recover edge` from gmsh.
-  {
-    const std::size_t n_base_distinct = base_is_closed ? size - 1 : size;
-    const std::size_t n_off_distinct  =
-        base_is_closed ? offset_vertices.size() - 1
-                       : offset_vertices.size();
-    constexpr double kMNRatioWarn = 0.7;
-    if (n_base_distinct > 0
-        && static_cast<double>(n_off_distinct)
-             < kMNRatioWarn * static_cast<double>(n_base_distinct)) {
-      const double ratio =
-          static_cast<double>(n_off_distinct)
-          / static_cast<double>(n_base_distinct);
-      std::ostringstream oss;
-      oss.precision(2);
-      oss << std::fixed
-          << "offset (multi-vertex, "
-          << (base_is_closed ? "closed" : "open")
-          << "): only " << n_off_distinct
-          << " offset verts produced for " << n_base_distinct
-          << " base verts (M/N=" << ratio << "). The layup half-thickness "
-          << std::fabs(dist)
-          << " likely exceeds the local base curvature radius along part "
-             "of the curve — Clipper2 has merged base corners during inset. "
-             "Downstream mesh recovery typically fails below M/N=0.7. "
-             "Consider reducing layup thickness, splitting the layup over a "
-             "denser baseline, or excluding the thin region from the layup.";
-      PUI_WARN << oss.str();
-      PLOG(warning) << oss.str();
-    }
-  }
+  // Diagnostic (user-facing): low M/N ratio.
+  prevabs::geo::warnLowOffsetMNRatio(
+      base.size(), offset_vertices.size(), geom.base_is_closed, dist);
 
   assertValidBaseOffsetMap(id_pairs, "offset clipper2 backend");
   return 1;

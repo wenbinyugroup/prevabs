@@ -196,12 +196,24 @@ public:
   void setPDCELFace(PDCELFace *face) { _face = face; }
 
   // Build the offset curve once. Repeated calls before build() are no-ops.
-  void offsetCurveBase();
+  // `enable_adaptive_thickness` (default false) is the master switch for the
+  // adaptive variable-offset path; when off, only the plain constant-thickness
+  // offset runs regardless of the XML adaptive_thickness config.
+  void offsetCurveBase(bool enable_adaptive_thickness = false);
 
   void build(const BuilderConfig &);
   void buildAreas(const BuilderConfig &);
 
 private:
+  // Adaptive variable-offset path of offsetCurveBase(). Returns true if it
+  // produced the offset (members filled; `used_adaptive` set per outcome),
+  // false on a hard failure (plan / variable offset failed) — on false the
+  // caller aborts offsetCurveBase. See issue-20260623-offset-adaptive-
+  // thickness-extract-and-gate.md.
+  bool applyAdaptiveThicknessOffset(
+      int side, bool &used_adaptive,
+      prevabs::geo::LinearAdaptiveThicknessPlan &adaptive_plan);
+
   bool requireBaseDefinition(const char *caller) const;
   int requireValidLayupSide(const char *caller) const;
   bool requireOffsetCurve(const char *caller) const;

@@ -62,6 +62,7 @@ add_executable(t0_dcel
   ${SRC_GEO}/adaptive_thickness.cpp
   ${SRC_GEO}/curve.cpp
   ${SRC_GEO}/CurveFrameLookup.cpp
+  ${SRC_GEO}/geo_diagnostics.cpp
   ${SRC_GEO}/geo_math.cpp
   ${SRC_GEO}/intersect.cpp
   ${SRC_GEO}/offset.cpp

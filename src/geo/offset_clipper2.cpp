@@ -311,145 +311,14 @@ std::vector<OffsetPolygon> extractOpenRuns(
     }
   }
 
-  // 5. Resample at base-vertex resolution (covered subset only).
-  //
-  // Clipper2 collapses collinear interior vertices: a 3-vertex straight
-  // base produces a 2-vertex run, leaving the middle base vertex with
-  // no offset correspondent. PreVABS downstream (`PSegment::build` +
-  // layup intersection insertion) relies on 1:1 base ↔ offset alignment
-  // and breaks on M < N output. We resample the run polyline at every
-  // base vertex covered by the raw run; dropped base vertices stay
-  // out and the Stage C bridge's forward-fill handles them as
-  // `dropped_base_ranges`.
-  //
-  // Attribution for resampled base[i] uses (seg = max(0, i-1),
-  // u = i==0 ? 0 : 1). `attributeOne` open-branch maps these to base
-  // index i ⇒ Stage C sees a clean staircase over the covered subset.
-  //
-  // Control group: `do_resample = false` skips this entire block — the
-  // returned `points` is then the raw side-filtered run (M = raw
-  // Clipper2 vertex count, sources already attributed via
-  // `attributeSource` foot-of-perpendicular). Used by the standalone
-  // experimentation harness; production keeps `do_resample = true`.
-  if (do_resample && runs.size() == 1 && runs[0].points.size() >= 2) {
-    auto& r = runs[0];
-    const int N = static_cast<int>(base.size());
-
-    if (do_miter_resample
-        && static_cast<int>(2 * r.points.size()) >= N) {
-      std::vector<SPoint2> miter_pts =
-          buildOpenMiterOffset(base, side, dist);
-      if (miter_pts.size() >= 2) {
-        r.pre_resample_points = r.points;
-        r.points = std::move(miter_pts);
-        r.sources.clear();
-        r.resampled.assign(r.points.size(), true);
-        r.sources.reserve(r.points.size());
-        for (int i = 0; i < static_cast<int>(r.points.size()); ++i) {
-          OffsetVertexSource src;
-          src.base_seg = (i == 0) ? 0 : (i - 1);
-          src.base_u   = (i == 0) ? 0.0 : 1.0;
-          r.sources.push_back(src);
-        }
-      }
-      return runs;
-    }
-
-    // Insert-only resample: preserve every raw Clipper2 vertex (including
-    // clean miter corners) and only ADD a vertex for an interior base vertex
-    // that Clipper2 *swallowed* — one whose two adjacent base segments are
-    // (nearly) collinear, so their offset segments merged and the vertex was
-    // dropped. The added vertex sits on the angle bisector at distance `dist`
-    // (NOT the foot-of-perpendicular). If it nearly coincides with an
-    // already-present offset vertex it is skipped. Existing vertices are never
-    // removed — the offset point count only stays the same or grows.
-    //
-    // The old behaviour rebuilt the run as exactly N foot-of-perpendicular
-    // points, which collapsed convex miter corners (a Z bend's (0.07,0.57)
-    // apex became the foot (0.07,0.5)) and could drop bevel vertices (M > N).
-    // See local/issue-20260618-shell-offset-resample-miter-collapse.md.
-    r.pre_resample_points = r.points;
-
-    std::vector<SPoint2>            out_pts(r.points);
-    std::vector<OffsetVertexSource> out_srcs(r.sources);
-    std::vector<bool>               out_resampled;
-    out_resampled.assign(out_pts.size(), false);
-    if (out_srcs.size() != out_pts.size()) out_srcs.resize(out_pts.size());
-
-    const double kCollinearSinTol = 0.05;          // ~2.9deg turn = swallowed
-    const double dedup_eps = 1e-3 * std::fabs(dist);
-
-    for (int i = 1; i + 1 < N; ++i) {
-      const double d0x = base[i].x()     - base[i - 1].x();
-      const double d0y = base[i].y()     - base[i - 1].y();
-      const double d1x = base[i + 1].x() - base[i].x();
-      const double d1y = base[i + 1].y() - base[i].y();
-      const double l0 = std::sqrt(d0x * d0x + d0y * d0y);
-      const double l1 = std::sqrt(d1x * d1x + d1y * d1y);
-      if (l0 == 0.0 || l1 == 0.0) continue;
-
-      // collinear gate: small |sin(turn)| AND same direction (dot > 0). Only
-      // the swallowed-collinear case is filled; convex/concave corners keep
-      // whatever Clipper2 produced.
-      const double sin_turn = (d0x * d1y - d0y * d1x) / (l0 * l1);
-      const double cos_turn = (d0x * d1x + d0y * d1y) / (l0 * l1);
-      if (cos_turn <= 0.0 || std::fabs(sin_turn) > kCollinearSinTol) continue;
-
-      // Point on the angle bisector at the miter-apex distance
-      // dist / cos(turn/2). This is exactly where Clipper2 places the kept
-      // vertex of a convex corner within the miter limit, so for a corner
-      // Clipper2 did NOT swallow the apex coincides with the existing offset
-      // vertex and the dedup below drops it; for a truly swallowed collinear
-      // vertex cos(turn/2)->1 and the apex lands at distance |dist|.
-      const SPoint2 n_in  = openOffsetNormal(base[i - 1], base[i], side, dist);
-      const SPoint2 n_out = openOffsetNormal(base[i], base[i + 1], side, dist);
-      const double bx = n_in.x() + n_out.x();
-      const double by = n_in.y() + n_out.y();
-      const double bl = std::sqrt(bx * bx + by * by);
-      if (bl == 0.0) continue;
-      const double half_cos = std::sqrt((1.0 + cos_turn) * 0.5);  // cos(turn/2)
-      if (half_cos <= 0.0) continue;
-      const double miter = std::fabs(dist) / half_cos;
-      const SPoint2 apex(base[i].x() + miter * bx / bl,
-                         base[i].y() + miter * by / bl);
-
-      // skip if an existing offset vertex is already very close
-      bool near_existing = false;
-      for (const auto& p : out_pts) {
-        const double dx = p.x() - apex.x();
-        const double dy = p.y() - apex.y();
-        if (dx * dx + dy * dy <= dedup_eps * dedup_eps) {
-          near_existing = true;
-          break;
-        }
-      }
-      if (near_existing) continue;
-
-      // insert at the run segment the apex lies on (preserves base order)
-      int    best_seg = -1;
-      double best_d   = std::numeric_limits<double>::infinity();
-      for (int s = 0; s + 1 < static_cast<int>(out_pts.size()); ++s) {
-        const Projection p = projectOnSegment(
-            apex.x(), apex.y(),
-            out_pts[s].x(),     out_pts[s].y(),
-            out_pts[s + 1].x(), out_pts[s + 1].y());
-        if (p.dist < best_d) {
-          best_d   = p.dist;
-          best_seg = s;
-        }
-      }
-      if (best_seg < 0) continue;
-
-      const OffsetVertexSource src = attributeSource(
-          apex.x(), apex.y(), base, /*closed*/ false, source_radius);
-      out_pts.insert(out_pts.begin() + best_seg + 1, apex);
-      out_srcs.insert(out_srcs.begin() + best_seg + 1, src);
-      out_resampled.insert(out_resampled.begin() + best_seg + 1, true);
-    }
-
-    r.points    = std::move(out_pts);
-    r.sources   = std::move(out_srcs);
-    r.resampled = std::move(out_resampled);
+  // 5. Resample at base-vertex resolution (open-only). Production rebuilds the
+  //    run as one foot-of-perpendicular point per covered base vertex (forces
+  //    M=N over the covered subset; dropped base vertices stay out and the
+  //    Stage C forward-fill records them). The logic lives in
+  //    `resampleOpenRuns` so the offset / build-base-offset-map split can drive
+  //    it from the map step instead of from the geometry core.
+  if (do_resample) {
+    resampleOpenRuns(runs, base, side, dist, do_miter_resample);
   }
 
   return runs;
@@ -493,6 +362,122 @@ OffsetVertexSource attributeSource(double qx, double qy,
 }
 
 }  // namespace
+
+// Resample one open offset run to base-vertex resolution. Production
+// (`do_miter_resample=false`) rebuilds the single run as one
+// foot-of-perpendicular point per *covered* base vertex, forcing M=N over the
+// covered subset (Clipper2 collapses collinear interior vertices → M<N, which
+// downstream PSegment::build + layup-intersection insertion cannot consume).
+// Dropped base vertices stay out and the Stage C bridge's forward-fill records
+// them as `dropped_base_ranges`. `do_miter_resample=true` selects the
+// experimental clean-miter variant. No-op unless `runs` holds exactly one open
+// run with >= 2 points; mutates `runs[0]` in place (points/sources/resampled,
+// and stores the pre-resample raw run for debug overlays).
+//
+// Lives at namespace scope (declared in the header) so the offset /
+// build-base-offset-map split can invoke it from the map step; `extractOpenRuns`
+// also calls it (open-input geometry path) when its `do_resample` flag is set.
+void resampleOpenRuns(std::vector<OffsetPolygon>& runs,
+                      const std::vector<SPoint2>& base,
+                      int side, double dist, bool do_miter_resample) {
+  if (!(runs.size() == 1 && !runs[0].is_closed
+        && runs[0].points.size() >= 2)) {
+    return;
+  }
+  auto& r = runs[0];
+  const int N = static_cast<int>(base.size());
+
+  // Experimental clean-miter variant (preserves convex apexes).
+  if (do_miter_resample && static_cast<int>(2 * r.points.size()) >= N) {
+    std::vector<SPoint2> miter_pts = buildOpenMiterOffset(base, side, dist);
+    if (miter_pts.size() >= 2) {
+      r.pre_resample_points = r.points;
+      r.points = std::move(miter_pts);
+      r.sources.clear();
+      r.resampled.assign(r.points.size(), true);
+      r.sources.reserve(r.points.size());
+      for (int i = 0; i < static_cast<int>(r.points.size()); ++i) {
+        OffsetVertexSource src;
+        src.base_seg = (i == 0) ? 0 : (i - 1);
+        src.base_u   = (i == 0) ? 0.0 : 1.0;
+        r.sources.push_back(src);
+      }
+    }
+    return;
+  }
+
+  // Production foot-of-perpendicular resample: one point per covered base
+  // vertex, projected onto the raw run polyline.
+  std::vector<bool> base_covered(N, false);
+  for (const auto& s : r.sources) {
+    if (s.base_seg < 0) continue;
+    if (s.base_seg     >= 0 && s.base_seg     < N) base_covered[s.base_seg]     = true;
+    if (s.base_seg + 1 >= 0 && s.base_seg + 1 < N) base_covered[s.base_seg + 1] = true;
+  }
+
+  std::vector<SPoint2>            new_pts;
+  std::vector<OffsetVertexSource> new_srcs;
+  std::vector<bool>               new_resampled;
+  new_pts.reserve(N);
+  new_srcs.reserve(N);
+  new_resampled.reserve(N);
+
+  int cur_seg = 0;
+  const int n_run_seg = static_cast<int>(r.points.size()) - 1;
+  for (int i = 0; i < N; ++i) {
+    if (!base_covered[i]) continue;
+
+    int    best_seg = cur_seg;
+    double best_u   = 0.0;
+    double best_d   = std::numeric_limits<double>::infinity();
+    for (int s = cur_seg; s < n_run_seg; ++s) {
+      const Projection p = projectOnSegment(
+          base[i].x(), base[i].y(),
+          r.points[s].x(),     r.points[s].y(),
+          r.points[s + 1].x(), r.points[s + 1].y());
+      if (p.dist < best_d) {
+        best_d   = p.dist;
+        best_seg = s;
+        best_u   = p.u;
+      }
+    }
+
+    const auto& a = r.points[best_seg];
+    const auto& b = r.points[best_seg + 1];
+    new_pts.emplace_back(
+        a.x() + best_u * (b.x() - a.x()),
+        a.y() + best_u * (b.y() - a.y()));
+
+    OffsetVertexSource src;
+    src.base_seg = (i == 0) ? 0 : (i - 1);
+    src.base_u   = (i == 0) ? 0.0 : 1.0;
+    new_srcs.push_back(src);
+    new_resampled.push_back(true);  // synthetic foot-of-perpendicular
+
+    cur_seg = best_seg;
+  }
+
+  if (new_pts.size() >= 2) {
+    std::vector<SPoint2>            compact_pts;
+    std::vector<OffsetVertexSource> compact_srcs;
+    std::vector<bool>               compact_resampled;
+    compact_pts.reserve(new_pts.size());
+    compact_srcs.reserve(new_srcs.size());
+    compact_resampled.reserve(new_resampled.size());
+    for (std::size_t k = 0; k < new_pts.size(); ++k) {
+      if (!compact_pts.empty() && samePoint(compact_pts.back(), new_pts[k])) {
+        continue;
+      }
+      compact_pts.push_back(new_pts[k]);
+      compact_srcs.push_back(new_srcs[k]);
+      compact_resampled.push_back(new_resampled[k]);
+    }
+    r.pre_resample_points = r.points;
+    r.points    = std::move(compact_pts);
+    r.sources   = std::move(compact_srcs);
+    r.resampled = std::move(compact_resampled);
+  }
+}
 
 std::vector<OffsetPolygon> offsetWithClipper2(
     const std::vector<SPoint2>& base,

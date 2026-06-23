@@ -62,6 +62,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/DCELValidator.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/curve.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/CurveFrameLookup.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geo_diagnostics.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/geo_math.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp

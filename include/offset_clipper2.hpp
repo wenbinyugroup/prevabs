@@ -507,6 +507,18 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     bool                        resample_open = true,
     bool                        experimental_open_miter_resample = false);
 
+/// Resample one open offset run to base-vertex resolution (foot-of-
+/// perpendicular, one point per covered base vertex → forces M=N over the
+/// covered subset). No-op unless `runs` holds exactly one open run with >= 2
+/// points; mutates `runs[0]` in place. `do_miter_resample` selects the
+/// experimental clean-miter variant. Extracted from `extractOpenRuns` so the
+/// offset / build-base-offset-map split can invoke resample from the map step
+/// (plan: offset = raw geometry, build-base-offset-map = staircase + resample).
+void resampleOpenRuns(std::vector<OffsetPolygon>& runs,
+                      const std::vector<SPoint2>& base,
+                      int side, double dist,
+                      bool do_miter_resample = false);
+
 }  // namespace geo
 }  // namespace prevabs
 
