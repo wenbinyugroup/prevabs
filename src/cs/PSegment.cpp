@@ -857,7 +857,7 @@ void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
     // Under the layered-offset path keep the shell RAW (clean miter, no
     // foot-of-perpendicular corner collapse) so it stays consistent with the
     // per-layer raw offset curves; legacy keeps the foot resample (mesh-safe).
-    const bool resample_shell = !useLayeredOffsetEnv();
+    const bool resample_shell = !useLayeredOffset();
     OffsetGeometry geom = offsetGeometry(
         _curve_base->vertices(), side, _layup->getTotalThickness());
     buildBaseOffsetMap(

@@ -83,6 +83,10 @@ struct PConfig {
   // --- Explicit geometry repair options (XML controlled; off by default) ---
   AdaptiveThicknessConfig adaptive_thickness;
 
+  // Layered per-layer-offset build path. XML <general>/<layered_offset>;
+  // default ON. Env PREVABS_LAYERED_OFFSET overrides if set.
+  bool layered_offset = true;
+
   // --- Derived display/option strings (set by processConfigVariables) ---
   std::string tool_name    = "VABS";
   std::string vabs_name    = "VABS";
@@ -117,9 +121,11 @@ struct RuntimeState {
 
 extern RuntimeState runtime;
 
-// Env gate (PREVABS_LAYERED_OFFSET) for the layered per-layer-offset path.
-// Off by default. Defined in src/cs/PBuildSegmentAreas.cpp.
-bool useLayeredOffsetEnv();
+// Whether the layered per-layer-offset build path is active. Reads
+// config.layered_offset (XML <general>/<layered_offset>, default ON); the
+// env var PREVABS_LAYERED_OFFSET overrides if set. Defined in
+// src/cs/PBuildSegmentAreas.cpp.
+bool useLayeredOffset();
 
 // ---------------------------------------------------------------------------
 // Sub-structs passed explicitly to subsystems (no global dependency needed)

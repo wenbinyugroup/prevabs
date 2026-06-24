@@ -363,6 +363,16 @@ GeneralResult readGeneralSection(
       pmodel->setRecombine(parseXmlBoolValue(s, "<general>/<recombine>"));
   }
 
+  // Layered per-layer-offset build path (default ON; see globalVariables.hpp).
+  rapidxml::xml_node<> *nodeLayeredOffset{
+    xn_general->first_node("layered_offset")};
+  if (nodeLayeredOffset) {
+    std::string s{trim(nodeLayeredOffset->value())};
+    if (!s.empty())
+      config.layered_offset =
+          parseXmlBoolValue(s, "<general>/<layered_offset>");
+  }
+
   rapidxml::xml_node<> *nodeRecombineAngle{
     xn_general->first_node("recombine_angle")
   };

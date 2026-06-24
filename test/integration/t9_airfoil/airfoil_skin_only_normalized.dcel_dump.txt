@@ -107,11 +107,11 @@ VERTICES (416):
   v#104 (0, 1.14212, -0.0114016) edge=he#210
   v#105 (0, 1.21151, -0.00414358) edge=he#212
   v#106 (0, 1.23867, -0.00117924) edge=he#214
-  v#107 (0, 1.19535, 0.00450256) edge=he#216
-  v#108 (0, 1.12109, 0.015167) edge=he#218
-  v#109 (0, 1.0395, 0.027801) edge=he#220
-  v#110 (0, 0.952157, 0.0421304) edge=he#222
-  v#111 (0, 0.860089, 0.057825) edge=he#224
+  v#107 (0, 1.19548, 0.00448384) edge=he#216
+  v#108 (0, 1.1212, 0.0151489) edge=he#218
+  v#109 (0, 1.0396, 0.0277854) edge=he#220
+  v#110 (0, 0.952091, 0.0421413) edge=he#222
+  v#111 (0, 0.860121, 0.0578195) edge=he#224
   v#112 (0, 0.765088, 0.0743116) edge=he#226
   v#113 (0, 0.668342, 0.091029) edge=he#228
   v#114 (0, 0.571137, 0.107337) edge=he#230
@@ -297,26 +297,26 @@ VERTICES (416):
   v#294 (0, 1.2137, -0.0246421) edge=he#1162
   v#295 (0, 1.21274, -0.015683) edge=he#1166
   v#296 (0, 1.21241, -0.0125757) edge=he#1170
-  v#297 (0, 1.19835, 0.0254131) edge=he#1176
-  v#298 (0, 1.19828, 0.0249083) edge=he#1180
-  v#299 (0, 1.197, 0.0159898) edge=he#1184
-  v#300 (0, 1.19655, 0.0128965) edge=he#1188
-  v#301 (0, 1.12432, 0.0360432) edge=he#1194
-  v#302 (0, 1.12424, 0.0355392) edge=he#1198
-  v#303 (0, 1.12286, 0.0266353) edge=he#1202
-  v#304 (0, 1.12238, 0.0235471) edge=he#1206
-  v#305 (0, 1.04292, 0.0486474) edge=he#1212
-  v#306 (0, 1.04284, 0.0481441) edge=he#1216
-  v#307 (0, 1.04138, 0.039253) edge=he#1220
-  v#308 (0, 1.04087, 0.0361692) edge=he#1224
-  v#309 (0, 0.955577, 0.0629768) edge=he#1230
-  v#310 (0, 0.955494, 0.0624735) edge=he#1234
-  v#311 (0, 0.954036, 0.0535823) edge=he#1238
-  v#312 (0, 0.95353, 0.0504986) edge=he#1242
-  v#313 (0, 0.863701, 0.0786389) edge=he#1248
-  v#314 (0, 0.863614, 0.0781364) edge=he#1252
-  v#315 (0, 0.862074, 0.0692591) edge=he#1256
-  v#316 (0, 0.861539, 0.0661801) edge=he#1260
+  v#297 (0, 1.19835, 0.0254128) edge=he#1176
+  v#298 (0, 1.19828, 0.0249075) edge=he#1180
+  v#299 (0, 1.19706, 0.0159811) edge=he#1184
+  v#300 (0, 1.19663, 0.0128851) edge=he#1188
+  v#301 (0, 1.12432, 0.0360429) edge=he#1194
+  v#302 (0, 1.12425, 0.0355384) edge=he#1198
+  v#303 (0, 1.12292, 0.026627) edge=he#1202
+  v#304 (0, 1.12246, 0.0235361) edge=he#1206
+  v#305 (0, 1.04292, 0.0486471) edge=he#1212
+  v#306 (0, 1.04284, 0.0481435) edge=he#1216
+  v#307 (0, 1.04142, 0.0392458) edge=he#1220
+  v#308 (0, 1.04093, 0.0361597) edge=he#1224
+  v#309 (0, 0.955576, 0.062977) edge=he#1230
+  v#310 (0, 0.955492, 0.0624739) edge=he#1234
+  v#311 (0, 0.954005, 0.0535873) edge=he#1238
+  v#312 (0, 0.95349, 0.0505052) edge=he#1242
+  v#313 (0, 0.863702, 0.0786388) edge=he#1248
+  v#314 (0, 0.863615, 0.0781361) edge=he#1252
+  v#315 (0, 0.862088, 0.0692565) edge=he#1256
+  v#316 (0, 0.861558, 0.0661768) edge=he#1260
   v#317 (0, 0.768696, 0.0951262) edge=he#1266
   v#318 (0, 0.768608, 0.0946237) edge=he#1270
   v#319 (0, 0.76707, 0.0857461) edge=he#1274
@@ -410,7 +410,7 @@ VERTICES (416):
   v#407 (0, -0.18924, 0) edge=he#1944
   v#408 (0, -0.192365, 0) edge=he#1948
   v#409 (0, -0.18924, 0.0950714) edge=he#1956
-  v#410 (0, -0.192365, 0.0943651) edge=he#1960
+  v#410 (0, -0.192365, 0.0943651) edge=he#1962
   v#411 (0, 0.47576, -0.0284578) edge=he#1974
   v#412 (0, 0.472635, -0.0286548) edge=he#1972
   v#413 (0, 0.47576, 0) edge=he#1976
@@ -691,16 +691,16 @@ HALFEDGES (1462):
   he#308 scope=active src=v#148 twin=he#307 next=he#1477 prev=he#310 loop=loop#461 face=f#452(sg_hps_3_area_1_layer_7)
   he#313 scope=active src=v#149 twin=he#314 next=he#838 prev=he#1956 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
   he#314 scope=active src=v#69 twin=he#313 next=he#324 prev=he#135 loop=loop#20 face=nullptr
-  he#315 scope=active src=v#70 twin=he#316 next=he#1962 prev=he#863 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
+  he#315 scope=active src=v#70 twin=he#316 next=he#1964 prev=he#863 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
   he#316 scope=active src=v#150 twin=he#315 next=he#139 prev=he#325 loop=loop#17 face=nullptr
   he#319 scope=active src=v#147 twin=he#320 next=he#1943 prev=he#1937 loop=loop#612 face=f#603(sg_web_1_1_area_1_layer_1)
   he#320 scope=active src=v#145 twin=he#319 next=he#305 prev=he#324 loop=loop#20 face=nullptr
   he#321 scope=active src=v#148 twin=he#322 next=he#325 prev=he#307 loop=loop#17 face=nullptr
   he#322 scope=active src=v#146 twin=he#321 next=he#309 prev=he#1949 loop=loop#613 face=f#604(sg_web_1_1_area_1_layer_3)
-  he#323 scope=active src=v#145 twin=he#324 next=he#1955 prev=he#1944 loop=loop#616 face=f#607(sg_web_1_2_area_1_layer_1)
+  he#323 scope=active src=v#145 twin=he#324 next=he#1955 prev=he#1944 loop=loop#616 face=f#607(sg_web_1_2_layer_1_face_1)
   he#324 scope=active src=v#149 twin=he#323 next=he#320 prev=he#314 loop=loop#20 face=nullptr
   he#325 scope=active src=v#146 twin=he#326 next=he#316 prev=he#321 loop=loop#17 face=nullptr
-  he#326 scope=active src=v#150 twin=he#325 next=he#1950 prev=he#1961 loop=loop#617 face=f#608(sg_web_1_2_area_1_layer_3)
+  he#326 scope=active src=v#150 twin=he#325 next=he#1950 prev=he#1963 loop=loop#617 face=f#608(sg_web_1_2_layer_3_face_1)
   he#331 scope=active src=v#153 twin=he#332 next=he#271 prev=he#346 loop=loop#18 face=nullptr
   he#332 scope=active src=v#132 twin=he#331 next=he#1970 prev=he#1713 loop=loop#557 face=f#548(sg_hps_3_area_9_layer_7)
   he#333 scope=active src=v#131 twin=he#334 next=he#347 prev=he#267 loop=loop#20 face=nullptr
@@ -1832,25 +1832,25 @@ HALFEDGES (1462):
   he#1942 scope=active src=v#405 twin=he#1941 next=he#1940 prev=he#1938 loop=loop#473 face=f#464(sg_hps_3_area_2_layer_7)
   he#1940 scope=active src=v#406 twin=he#1939 next=he#1506 prev=he#1942 loop=loop#473 face=f#464(sg_hps_3_area_2_layer_7)
   he#1943 scope=active src=v#145 twin=he#1944 next=he#1952 prev=he#319 loop=loop#612 face=f#603(sg_web_1_1_area_1_layer_1)
-  he#1944 scope=active src=v#407 twin=he#1943 next=he#323 prev=he#1964 loop=loop#616 face=f#607(sg_web_1_2_area_1_layer_1)
+  he#1944 scope=active src=v#407 twin=he#1943 next=he#323 prev=he#1960 loop=loop#616 face=f#607(sg_web_1_2_layer_1_face_1)
   he#1947 scope=active src=v#407 twin=he#1948 next=he#1954 prev=he#1951 loop=loop#614 face=f#605(sg_web_1_1_area_1_layer_2)
   he#1949 scope=active src=v#408 twin=he#1950 next=he#322 prev=he#1953 loop=loop#613 face=f#604(sg_web_1_1_area_1_layer_3)
-  he#1950 scope=active src=v#146 twin=he#1949 next=he#1965 prev=he#326 loop=loop#617 face=f#608(sg_web_1_2_area_1_layer_3)
-  he#1948 scope=active src=v#408 twin=he#1947 next=he#1963 prev=he#1966 loop=loop#618 face=f#609(sg_web_1_2_area_1_layer_2)
+  he#1950 scope=active src=v#146 twin=he#1949 next=he#1965 prev=he#326 loop=loop#617 face=f#608(sg_web_1_2_layer_3_face_1)
+  he#1948 scope=active src=v#408 twin=he#1947 next=he#1959 prev=he#1966 loop=loop#618 face=f#609(sg_web_1_2_layer_2_face_1)
   he#1951 scope=active src=v#405 twin=he#1952 next=he#1947 prev=he#1941 loop=loop#614 face=f#605(sg_web_1_1_area_1_layer_2)
   he#1952 scope=active src=v#407 twin=he#1951 next=he#1937 prev=he#1943 loop=loop#612 face=f#603(sg_web_1_1_area_1_layer_1)
   he#1953 scope=active src=v#406 twin=he#1954 next=he#1949 prev=he#1939 loop=loop#613 face=f#604(sg_web_1_1_area_1_layer_3)
   he#1954 scope=active src=v#408 twin=he#1953 next=he#1941 prev=he#1947 loop=loop#614 face=f#605(sg_web_1_1_area_1_layer_2)
-  he#1955 scope=active src=v#149 twin=he#1956 next=he#1964 prev=he#323 loop=loop#616 face=f#607(sg_web_1_2_area_1_layer_1)
-  he#1956 scope=active src=v#409 twin=he#1955 next=he#313 prev=he#1960 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
-  he#1959 scope=active src=v#409 twin=he#1960 next=he#1966 prev=he#1963 loop=loop#618 face=f#609(sg_web_1_2_area_1_layer_2)
-  he#1961 scope=active src=v#410 twin=he#1962 next=he#326 prev=he#1965 loop=loop#617 face=f#608(sg_web_1_2_area_1_layer_3)
-  he#1962 scope=active src=v#150 twin=he#1961 next=he#1960 prev=he#315 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
-  he#1960 scope=active src=v#410 twin=he#1959 next=he#1956 prev=he#1962 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
-  he#1963 scope=active src=v#407 twin=he#1964 next=he#1959 prev=he#1948 loop=loop#618 face=f#609(sg_web_1_2_area_1_layer_2)
-  he#1964 scope=active src=v#409 twin=he#1963 next=he#1944 prev=he#1955 loop=loop#616 face=f#607(sg_web_1_2_area_1_layer_1)
-  he#1965 scope=active src=v#408 twin=he#1966 next=he#1961 prev=he#1950 loop=loop#617 face=f#608(sg_web_1_2_area_1_layer_3)
-  he#1966 scope=active src=v#410 twin=he#1965 next=he#1948 prev=he#1959 loop=loop#618 face=f#609(sg_web_1_2_area_1_layer_2)
+  he#1955 scope=active src=v#149 twin=he#1956 next=he#1960 prev=he#323 loop=loop#616 face=f#607(sg_web_1_2_layer_1_face_1)
+  he#1956 scope=active src=v#409 twin=he#1955 next=he#313 prev=he#1962 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
+  he#1959 scope=active src=v#407 twin=he#1960 next=he#1961 prev=he#1948 loop=loop#618 face=f#609(sg_web_1_2_layer_2_face_1)
+  he#1960 scope=active src=v#409 twin=he#1959 next=he#1944 prev=he#1955 loop=loop#616 face=f#607(sg_web_1_2_layer_1_face_1)
+  he#1961 scope=active src=v#409 twin=he#1962 next=he#1966 prev=he#1959 loop=loop#618 face=f#609(sg_web_1_2_layer_2_face_1)
+  he#1963 scope=active src=v#410 twin=he#1964 next=he#326 prev=he#1965 loop=loop#617 face=f#608(sg_web_1_2_layer_3_face_1)
+  he#1964 scope=active src=v#150 twin=he#1963 next=he#1962 prev=he#315 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
+  he#1962 scope=active src=v#410 twin=he#1961 next=he#1956 prev=he#1964 loop=loop#251 face=f#242(sg_lps_3_area_10_layer_7)
+  he#1965 scope=active src=v#408 twin=he#1966 next=he#1963 prev=he#1950 loop=loop#617 face=f#608(sg_web_1_2_layer_3_face_1)
+  he#1966 scope=active src=v#410 twin=he#1965 next=he#1948 prev=he#1961 loop=loop#618 face=f#609(sg_web_1_2_layer_2_face_1)
   he#1969 scope=active src=v#411 twin=he#1970 next=he#345 prev=he#1984 loop=loop#620 face=f#611(sg_web_2_1_area_1_layer_1)
   he#1970 scope=active src=v#153 twin=he#1969 next=he#1974 prev=he#332 loop=loop#557 face=f#548(sg_hps_3_area_9_layer_7)
   he#1971 scope=active src=v#154 twin=he#1972 next=he#1985 prev=he#348 loop=loop#621 face=f#612(sg_web_2_1_area_1_layer_3)
@@ -2020,7 +2020,7 @@ LOOPS (318):
   loop#304 incident=he#1027 face=nullptr kept=false adjacent=nullptr
   loop#306 incident=he#1032 face=nullptr kept=false adjacent=nullptr
   loop#308 incident=he#1036 face=nullptr kept=false adjacent=nullptr
-  loop#310 incident=he#1040 face=nullptr kept=false adjacent=nullptr
+  loop#310 incident=he#1040 face=nullptr kept=true adjacent=nullptr
   loop#311 incident=he#1046 face=nullptr kept=false adjacent=nullptr
   loop#312 incident=he#1044 face=nullptr kept=false adjacent=nullptr
   loop#314 incident=he#1050 face=nullptr kept=false adjacent=nullptr
@@ -2194,8 +2194,8 @@ LOOPS (318):
   loop#614 incident=he#1941 face=nullptr kept=false adjacent=nullptr
   loop#616 incident=he#1944 face=nullptr kept=false adjacent=nullptr
   loop#617 incident=he#1950 face=nullptr kept=false adjacent=nullptr
-  loop#618 incident=he#1966 face=nullptr kept=false adjacent=nullptr
-  loop#620 incident=he#1969 face=nullptr kept=true adjacent=nullptr
+  loop#618 incident=he#1948 face=nullptr kept=false adjacent=nullptr
+  loop#620 incident=he#1969 face=nullptr kept=false adjacent=nullptr
   loop#621 incident=he#1971 face=nullptr kept=false adjacent=nullptr
   loop#622 incident=he#1973 face=nullptr kept=false adjacent=nullptr
   loop#624 incident=he#1976 face=nullptr kept=false adjacent=nullptr
@@ -2508,9 +2508,9 @@ FACES (314):
   f#603 name=sg_web_1_1_area_1_layer_1 bounded=true outer=he#1937
   f#604 name=sg_web_1_1_area_1_layer_3 bounded=true outer=he#309
   f#605 name=sg_web_1_1_area_1_layer_2 bounded=true outer=he#1941
-  f#607 name=sg_web_1_2_area_1_layer_1 bounded=true outer=he#1944
-  f#608 name=sg_web_1_2_area_1_layer_3 bounded=true outer=he#1950
-  f#609 name=sg_web_1_2_area_1_layer_2 bounded=true outer=he#1966
+  f#607 name=sg_web_1_2_layer_1_face_1 bounded=true outer=he#1944
+  f#608 name=sg_web_1_2_layer_3_face_1 bounded=true outer=he#1950
+  f#609 name=sg_web_1_2_layer_2_face_1 bounded=true outer=he#1948
   f#611 name=sg_web_2_1_area_1_layer_1 bounded=true outer=he#1969
   f#612 name=sg_web_2_1_area_1_layer_3 bounded=true outer=he#1971
   f#613 name=sg_web_2_1_area_1_layer_2 bounded=true outer=he#1973

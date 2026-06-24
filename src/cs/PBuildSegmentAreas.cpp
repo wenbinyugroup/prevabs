@@ -34,20 +34,20 @@
 #include <utility>
 #include <vector>
 
-// Phase-2a (plan-20260618-per-layer-offset-within-shell.md): env gate for
-// the layered per-layer-offset path. Off by default — the legacy
-// interpolated-layer path stays the production default. Global so
-// offsetCurveBase (PSegment.cpp) can decide whether to keep the shell raw
-// (clean miter) instead of foot-resampled; declared in globalVariables.hpp.
-bool useLayeredOffsetEnv() {
-  static const bool cached = [] {
-    const char* raw = std::getenv("PREVABS_LAYERED_OFFSET");
-    if (!raw || !*raw) return false;
+// Whether the layered per-layer-offset build path is active. Primary knob is
+// the XML config `config.layered_offset` (<general>/<layered_offset>, default
+// ON). The env var PREVABS_LAYERED_OFFSET still overrides if set (quick CLI
+// toggle / tests). Global so offsetCurveBase (PSegment.cpp) can decide whether
+// to keep the shell raw (clean miter) instead of foot-resampled; declared in
+// globalVariables.hpp.
+bool useLayeredOffset() {
+  const char* raw = std::getenv("PREVABS_LAYERED_OFFSET");
+  if (raw && *raw) {
     std::string s(raw);
     for (auto& c : s) c = static_cast<char>(std::tolower(c));
     return s == "1" || s == "true" || s == "on" || s == "yes";
-  }();
-  return cached;
+  }
+  return config.layered_offset;
 }
 
 namespace {
@@ -1131,18 +1131,17 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
                      "tiling; falling back to legacy area/layer build";
     return false;
   }
-  if (n > 3) {
-    PLOG(warning) << "layered offset[" << _name
-                  << "]: open multi-bend offset tiling is not enabled yet "
-                  << "(base verts=" << n
-                  << "); falling back to legacy area/layer build";
-    return false;
-  }
+  // Open multi-bend (n > 3) is now handled: the clean-miter shell keeps the
+  // outermost band's connectors well-conditioned (no near-collinear collapse),
+  // so splitLayerBandIntoCells tiles per-connector for any open vertex count.
 
   std::vector<LayeredCurve> curves;
   curves.reserve(n_layers + 1);
   curves.push_back(base_curve);
 
+  // Route-ii (note-build-laminate-segment.md §2.1.1): each layer curve is the
+  // offset of the PREVIOUS layer curve by that layer's thickness; the last
+  // layer's outer curve is the total-thickness shell (reused → zero seam).
   double cum = 0.0;
   for (int k = 0; k < n_layers - 1; ++k) {
     const double tk = (layers[k].getLamina() != nullptr)
@@ -1151,7 +1150,7 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
                           : 0.0;
     cum += tk;
     LayeredCurve c = makeRawOffsetCurve(
-        base_curve.points, is_closed, clipper_side, cum);
+        curves[k].points, is_closed, clipper_side, tk);
     if (c.vertices.size() != n) {
       PLOG(warning) << "layered offset[" << _name << "]: layer "
                     << (k + 1) << " raw offset produced "
@@ -1486,7 +1485,7 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   // Phase-2a: validate route-i per-layer offsets in the production context
   // (flag-gated). Phase-2b then tries the direct layered-offset face build;
   // unsupported healthy-subset gaps fall back to the legacy path below.
-  if (useLayeredOffsetEnv()) {
+  if (useLayeredOffset()) {
     validatePerLayerOffsets(bcfg);
     if (buildLayeredOffsetAreas(bcfg)) {
       validateStateInvariants("buildAreas/layered-offset");

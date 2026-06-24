@@ -2,7 +2,7 @@
 
 - Input: `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.xml`
 - Case: `missing_general`
-- Time: 2026-06-23 15:06:22
+- Time: 2026-06-23 17:04:56
 - Failure: fatal exception: homogenization failed: Missing required XML element <general>
 - Catch context: initialize model
 
