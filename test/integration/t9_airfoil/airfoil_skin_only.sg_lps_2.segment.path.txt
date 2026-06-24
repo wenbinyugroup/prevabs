@@ -1,0 +1,8 @@
+# build path for segment 'sg_lps_2'
+  1. buildAreas: enter (closed=N, base_verts=8)
+  2. buildAreas: useLayeredOffset=yes
+  3. layered: enter (n_layers=3, side=1)
+  4. layered: open multi-layer route-ii (n_layers=3)
+  5. splitLayerBandIntoCells: AMBIGUOUS tail attribution @connector 1 of 7
+  6. layered: splitLayerBandIntoCells FAILED @layer 1 -> FALLBACK (DCEL already mutated/dirty)
+  7. buildAreas: layered FELL BACK -> legacy

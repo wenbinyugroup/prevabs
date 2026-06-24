@@ -1,0 +1,35 @@
+<cross_section name="arc_fine" format="1">
+  <!-- 90-degree arc, fine discretisation (1 deg -> ~90 segments), 4 layers.
+       This is the case that used to time out via the legacy fallback before
+       the min-chord guard was removed (issue-20260624). It must now build
+       layered and fast. -->
+  <include><material>materials</material></include>
+  <general>
+    <mesh_size>0.02</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <point name="ct">0 0</point>
+    <point name="ptop">0 2</point>
+    <point name="pleft">-2 0</point>
+    <baseline name="bl" type="arc">
+      <center>ct</center>
+      <start>ptop</start>
+      <end>pleft</end>
+      <discrete by="angle">1</discrete>
+      <direction>ccw</direction>
+    </baseline>
+  </baselines>
+  <layups>
+    <layup name="lp" method="ss">
+      <lamina>la_005</lamina>
+      <code>[45/-45/0/90]</code>
+    </layup>
+  </layups>
+  <component name="c">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>lp</layup>
+    </segment>
+  </component>
+</cross_section>

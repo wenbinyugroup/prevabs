@@ -1,0 +1,34 @@
+<materials>
+
+  <!-- Simple isotropic material; keeps the focus on segment geometry/tiling
+       rather than constitutive complexity. -->
+  <material name="iso" type="isotropic">
+    <density>1.0e3</density>
+    <elastic>
+      <e>1.0e9</e>
+      <nu>0.3</nu>
+    </elastic>
+  </material>
+
+  <!-- Laminae at a few thicknesses for uniform / non-uniform layup cases. -->
+  <lamina name="la_005">
+    <material>iso</material>
+    <thickness>0.005</thickness>
+  </lamina>
+
+  <lamina name="la_010">
+    <material>iso</material>
+    <thickness>0.010</thickness>
+  </lamina>
+
+  <lamina name="la_020">
+    <material>iso</material>
+    <thickness>0.020</thickness>
+  </lamina>
+
+  <lamina name="la_001">
+    <material>iso</material>
+    <thickness>0.001</thickness>
+  </lamina>
+
+</materials>

@@ -1,0 +1,26 @@
+<cross_section name="line_thin_many" format="1">
+  <!-- Edge case: many thin layers (8 x 0.001) on a straight base. Stresses
+       the per-layer offset nesting at small thickness. -->
+  <include><material>materials</material></include>
+  <general>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <point name="lc">-1 0</point>
+    <point name="rc"> 1 0</point>
+    <baseline name="bl" type="straight"><points>lc,rc</points></baseline>
+  </baselines>
+  <layups>
+    <layup name="lp" method="ss">
+      <lamina>la_001</lamina>
+      <code>[0/45/-45/90/0/45/-45/90]</code>
+    </layup>
+  </layups>
+  <component name="c">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>lp</layup>
+    </segment>
+  </component>
+</cross_section>

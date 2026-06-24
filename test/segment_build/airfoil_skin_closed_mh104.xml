@@ -1,0 +1,91 @@
+<cross_section name="airfoil_skin_closed_mh104">
+  <!-- Extracted verbatim from integration t9_airfoil/mh104_9webs (segment
+       sg_le). The full MH104 airfoil skin as a single CLOSED loop with a
+       3-layer layup. Closed multi-layer segments currently fall back to legacy
+       (like circle_closed), and legacy tiling leaves sliver faces here. The 9
+       web components are dropped; the skin segment parameters are unchanged. -->
+  <general>
+    <translate>-0.25  0</translate>
+    <scale>1.9</scale>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">mh104.dat</points>
+    </line>
+  </baselines>
+
+  <materials>
+    <material name="db_frp" type="orthotropic">
+      <density>1.83E+03</density>
+      <elastic>
+        <e1>1.03E+10</e1>
+        <e2>1.03E+10</e2>
+        <e3>1.03E+10</e3>
+        <g12>8.00E+09</g12>
+        <g13>8.00E+09</g13>
+        <g23>8.00E+09</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <material name="gelcoat" type="orthotropic">
+      <density>1.83E+03</density>
+      <elastic>
+        <e1>1.00E+01</e1>
+        <e2>1.00E+01</e2>
+        <e3>1.00E+01</e3>
+        <g12>1.00E+00</g12>
+        <g13>1.00E+00</g13>
+        <g23>1.00E+00</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <material name="nexus" type="orthotropic">
+      <density>1.664E+03</density>
+      <elastic>
+        <e1>1.03E+10</e1>
+        <e2>1.03E+10</e2>
+        <e3>1.03E+10</e3>
+        <g12>8.00E+09</g12>
+        <g13>8.00E+09</g13>
+        <g23>8.00E+09</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_db_frp_000053">
+      <material>db_frp</material>
+      <thickness>0.00053</thickness>
+    </lamina>
+    <lamina name="la_gelcoat_0000381">
+      <material>gelcoat</material>
+      <thickness>0.000381</thickness>
+    </lamina>
+    <lamina name="la_nexus_000051">
+      <material>nexus</material>
+      <thickness>0.00051</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_gelcoat_0000381">0</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_db_frp_000053">20:18</layer>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+</cross_section>

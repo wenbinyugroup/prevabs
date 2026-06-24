@@ -1,0 +1,129 @@
+<cross_section name="airfoil_te_adaptive">
+  <!-- Extracted verbatim from integration t9_airfoil/mh104_te_only (segment
+       sg_te). A trailing-edge skin line (h34:l34 at x2=0.8) on the MH104
+       airfoil with a 5-layer balsa-cored layup and adaptive_thickness enabled
+       on sg_te. The layered offset route falls back to legacy. The
+       adaptive_thickness block is kept verbatim (it sets segment thickness);
+       all segment parameters are unchanged. -->
+  <adaptive_thickness enabled="true">
+    <mode>linear</mode>
+    <report_only>false</report_only>
+    <safety>0.25</safety>
+    <repair_base_padding>2</repair_base_padding>
+    <transition_base_count>2</transition_base_count>
+    <min_half_thickness>0.0</min_half_thickness>
+    <target_segments>sg_te</target_segments>
+  </adaptive_thickness>
+
+  <general>
+    <translate>-0.25  0</translate>
+    <scale>1.9</scale>
+    <mesh_size>0.001</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">mh104.dat</points>
+    </line>
+
+    <point name="l34" on="ln_af" by="x2" which="top">0.8</point>
+    <point name="h34" on="ln_af" by="x2" which="bottom">0.8</point>
+
+    <line name="bl_te">
+      <points>h34:l34</points>
+    </line>
+  </baselines>
+
+  <materials>
+    <material name="db_frp" type="orthotropic">
+      <density>1.83E+03</density>
+      <elastic>
+        <e1>1.03E+10</e1>
+        <e2>1.03E+10</e2>
+        <e3>1.03E+10</e3>
+        <g12>8.00E+09</g12>
+        <g13>8.00E+09</g13>
+        <g23>8.00E+09</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <material name="gelcoat" type="orthotropic">
+      <density>1.83E+03</density>
+      <elastic>
+        <e1>1.00E+01</e1>
+        <e2>1.00E+01</e2>
+        <e3>1.00E+01</e3>
+        <g12>1.00E+00</g12>
+        <g13>1.00E+00</g13>
+        <g23>1.00E+00</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <material name="nexus" type="orthotropic">
+      <density>1.664E+03</density>
+      <elastic>
+        <e1>1.03E+10</e1>
+        <e2>1.03E+10</e2>
+        <e3>1.03E+10</e3>
+        <g12>8.00E+09</g12>
+        <g13>8.00E+09</g13>
+        <g23>8.00E+09</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <material name="balsa" type="orthotropic">
+      <density>1.28E+02</density>
+      <elastic>
+        <e1>1.00E+07</e1>
+        <e2>1.00E+07</e2>
+        <e3>1.00E+07</e3>
+        <g12>2.00E+05</g12>
+        <g13>2.00E+05</g13>
+        <g23>2.00E+05</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_db_frp_000053">
+      <material>db_frp</material>
+      <thickness>0.00053</thickness>
+    </lamina>
+    <lamina name="la_gelcoat_0000381">
+      <material>gelcoat</material>
+      <thickness>0.000381</thickness>
+    </lamina>
+    <lamina name="la_nexus_000051">
+      <material>nexus</material>
+      <thickness>0.00051</thickness>
+    </lamina>
+    <lamina name="la_balsa_0003125">
+      <material>balsa</material>
+      <thickness>0.003125</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup4">
+      <layer lamina="la_gelcoat_0000381">0</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_db_frp_000053">20:17</layer>
+      <layer lamina="la_balsa_0003125">0</layer>
+      <layer lamina="la_db_frp_000053">0:16</layer>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_te">
+      <baseline>bl_te</baseline>
+      <layup>layup4</layup>
+    </segment>
+  </component>
+</cross_section>

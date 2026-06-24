@@ -553,6 +553,8 @@ void writeAdaptiveThicknessSuggestion(std::ostream &out) {
 
 std::string classifyFailure(const std::string &fatal_msg) {
   if (fatal_msg.find("Unable to recover the edge") != std::string::npos ||
+      fatal_msg.find("Impossible to recover edge") != std::string::npos ||
+      fatal_msg.find("edge recovery reported failure") != std::string::npos ||
       fatal_msg.find("recover the edge") != std::string::npos) {
     return "Gmsh could not recover one generated mesh edge. This usually "
            "means the generated laminate face is too thin, self-intersecting, "

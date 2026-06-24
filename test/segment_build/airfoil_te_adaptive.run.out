@@ -1,0 +1,5 @@
+PreVABS 2.1.0
+==> prevabs start (2026-06-24 17:05:15)
+==> reading main input file: airfoil_te_adaptive.xml
+!!  offset (multi-vertex, open): only 8 offset verts produced for 18 base verts (M/N=0.44). The layup half-thickness 0.02 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+xx  fatal exception: homogenization failed: gmsh mesh generation failed: Unable to recover the edge 22111 (97/119) on curve 69 (on surface 16) (faces=30, global_mesh_size=0.001000)

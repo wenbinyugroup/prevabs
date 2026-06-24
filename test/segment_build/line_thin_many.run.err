@@ -1,0 +1,11 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  splitEdge: repeated splits on edge lineage #5 (3 splits in current phase), edge=he#27 v#6( 0 , -1 , 0.008 ) -> v#11( 0 , -1 , 0.002 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #6 (3 splits in current phase), edge=he#33 v#12( 0 , 1 , 0.002 ) -> v#8( 0 , 1 , 0.008 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #5 (4 splits in current phase), edge=he#37 v#6( 0 , -1 , 0.008 ) -> v#13( 0 , -1 , 0.003 ) | loop: loop#8 | face: f#7
+[warning]  splitEdge: repeated splits on edge lineage #6 (4 splits in current phase), edge=he#43 v#14( 0 , 1 , 0.003 ) -> v#8( 0 , 1 , 0.008 ) | loop: loop#8 | face: f#7
+[warning]  splitEdge: repeated splits on edge lineage #5 (5 splits in current phase), edge=he#47 v#6( 0 , -1 , 0.008 ) -> v#15( 0 , -1 , 0.004 ) | loop: loop#10 | face: f#9
+[warning]  splitEdge: repeated splits on edge lineage #6 (5 splits in current phase), edge=he#53 v#16( 0 , 1 , 0.004 ) -> v#8( 0 , 1 , 0.008 ) | loop: loop#10 | face: f#9
+[warning]  splitEdge: repeated splits on edge lineage #5 (6 splits in current phase), edge=he#57 v#6( 0 , -1 , 0.008 ) -> v#17( 0 , -1 , 0.005 ) | loop: loop#12 | face: f#11
+[warning]  splitEdge: repeated splits on edge lineage #6 (6 splits in current phase), edge=he#63 v#18( 0 , 1 , 0.005 ) -> v#8( 0 , 1 , 0.008 ) | loop: loop#12 | face: f#11
+[warning]  splitEdge: repeated splits on edge lineage #5 (7 splits in current phase), edge=he#67 v#6( 0 , -1 , 0.008 ) -> v#19( 0 , -1 , 0.006 ) | loop: loop#14 | face: f#13
+[warning]  splitEdge: repeated splits on edge lineage #6 (7 splits in current phase), edge=he#73 v#20( 0 , 1 , 0.006 ) -> v#8( 0 , 1 , 0.008 ) | loop: loop#14 | face: f#13

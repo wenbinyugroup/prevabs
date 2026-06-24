@@ -1,0 +1,24 @@
+{
+  "segment": "sgm_1",
+  "closed": false,
+  "route": "layered",
+  "base_vertices": 2,
+  "offset_vertices": 2,
+  "layers": 8,
+  "face_count": 8,
+  "n_inverted": 0,
+  "n_sliver": 0,
+  "n_degenerate": 0,
+  "ok": true,
+  "path": ["buildAreas: enter (closed=N, base_verts=2)", "buildAreas: useLayeredOffset=yes", "layered: enter (n_layers=8, side=1)", "layered: open multi-layer route-ii (n_layers=8)", "layered: tiled all layers (SUCCESS, faces=8)", "buildAreas: layered OK -> AreasBuilt"],
+  "faces": [
+    {"name": "sgm_1_layer_1_face_1", "layer": 1, "material": "iso", "theta3": 0, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_2_face_1", "layer": 2, "material": "iso", "theta3": 45, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_3_face_1", "layer": 3, "material": "iso", "theta3": -45, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_4_face_1", "layer": 4, "material": "iso", "theta3": 90, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_5_face_1", "layer": 5, "material": "iso", "theta3": 0, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_6_face_1", "layer": 6, "material": "iso", "theta3": 45, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_8_face_1", "layer": 8, "material": "iso", "theta3": 90, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_7_face_1", "layer": 7, "material": "iso", "theta3": -45, "verts": 4, "area": 0.002, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false}
+  ]
+}

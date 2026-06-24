@@ -29,6 +29,12 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
   PDCELHalfEdge *he = start;
   int iter = 0;
   do {
+    if (he == nullptr) {
+      std::ostringstream oss;
+      oss << "DCEL loop walk hit nullptr before returning to start"
+          << " | start=" << formatLoopWalkHalfEdge(start);
+      throw std::runtime_error(oss.str());
+    }
     if (iter >= max_iter) {
       std::ostringstream oss;
       oss << "DCEL loop walk exceeded " << max_iter

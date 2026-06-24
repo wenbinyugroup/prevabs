@@ -1,0 +1,7 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  offset (multi-vertex, open): skin dropped over base indices [1..1] due to insufficient local thickness
+[warning]  offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.11 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+[warning]  offset (multi-vertex, open): skin dropped over base indices [1..1] due to insufficient local thickness
+[warning]  offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.07 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+[warning]  layered offset[sgtop]: shell/base vertex count mismatch (base=3, shell=2); falling back to legacy area/layer build
+[warning]  layered offset[sgbottom]: shell/base vertex count mismatch (base=3, shell=2); falling back to legacy area/layer build

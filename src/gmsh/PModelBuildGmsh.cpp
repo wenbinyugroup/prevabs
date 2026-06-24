@@ -1,6 +1,7 @@
 #include "PModel.hpp"
 
 #include "PDCELFace.hpp"
+#include "PDCELUtils.hpp"
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -17,12 +18,215 @@
 // #include "gmsh/MElement.h"
 // #include "gmsh/MTriangle.h"
 
+#include <chrono>
+#include <atomic>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
+#include <thread>
 #include <vector>
 #include <utility>
+
+namespace {
+
+const double kGmshFailFastMaxRetries = 1.0;
+const double kGmshMeshingHardTimeoutSeconds = 12.0;
+const int kGmshEdgeRecoveryWarningLimit = 3;
+
+bool isGmshEdgeRecoveryMessage(const std::string &msg) {
+  return msg.find("Impossible to recover edge") != std::string::npos
+      || msg.find("Unable to recover the edge") != std::string::npos
+      || msg.find("recover the edge") != std::string::npos
+      || msg.find("error tag -1") != std::string::npos;
+}
+
+bool hasGmshEdgeRecoveryFailure(const std::vector<std::string> &log) {
+  for (const auto &msg : log) {
+    if (isGmshEdgeRecoveryMessage(msg)) return true;
+  }
+  return false;
+}
+
+int countGmshEdgeRecoveryMessages(const std::vector<std::string> &log) {
+  int count = 0;
+  for (const auto &msg : log) {
+    if (isGmshEdgeRecoveryMessage(msg)) ++count;
+  }
+  return count;
+}
+
+std::string gmshEvidenceSnippet(const std::vector<std::string> &log) {
+  std::vector<std::string> evidence;
+  for (const auto &msg : log) {
+    if (isGmshEdgeRecoveryMessage(msg)
+        || msg.find("Error") != std::string::npos) {
+      evidence.push_back(msg);
+    }
+  }
+  if (evidence.empty()) return "";
+
+  const std::size_t max_lines = 6;
+  const std::size_t first =
+      evidence.size() > max_lines ? evidence.size() - max_lines : 0;
+  std::ostringstream oss;
+  for (std::size_t i = first; i < evidence.size(); ++i) {
+    if (i != first) oss << " | ";
+    oss << evidence[i];
+  }
+  return oss.str();
+}
+
+std::string gmshMeshContext(double global_mesh_size, double elapsed_s) {
+  std::vector<std::pair<int, int>> ents;
+  try { gmsh::model::getEntities(ents, 2); } catch (...) {}
+
+  std::ostringstream oss;
+  oss << "faces=" << ents.size()
+      << ", global_mesh_size=" << global_mesh_size
+      << ", elapsed_s=" << elapsed_s;
+  return oss.str();
+}
+
+void startGmshLoggerBestEffort(bool &started) {
+  started = false;
+  try {
+    gmsh::logger::start();
+    started = true;
+  } catch (...) {}
+}
+
+void collectAndStopGmshLoggerBestEffort(
+    bool started, std::vector<std::string> &log) {
+  if (!started) return;
+  try { gmsh::logger::get(log); } catch (...) {}
+  try { gmsh::logger::stop(); } catch (...) {}
+}
+
+class GmshMeshingWatchdog {
+public:
+  GmshMeshingWatchdog(bool logger_started, double global_mesh_size)
+      : _done(false), _logger_started(logger_started),
+        _global_mesh_size(global_mesh_size), _face_count(0) {
+    std::vector<std::pair<int, int>> ents;
+    try { gmsh::model::getEntities(ents, 2); } catch (...) {}
+    _face_count = ents.size();
+    _worker = std::thread([this]() { run(); });
+  }
+
+  ~GmshMeshingWatchdog() {
+    _done.store(true);
+    if (_worker.joinable()) _worker.join();
+  }
+
+private:
+  std::atomic<bool> _done;
+  bool _logger_started;
+  double _global_mesh_size;
+  std::size_t _face_count;
+  std::thread _worker;
+
+  void failFromWatchdog(
+      const std::string &reason, double elapsed_s,
+      const std::vector<std::string> &log) {
+    const std::string evidence = gmshEvidenceSnippet(log);
+    std::ostringstream context;
+    context << "faces=" << _face_count
+            << ", global_mesh_size=" << _global_mesh_size
+            << ", elapsed_s=" << elapsed_s;
+    const std::string msg =
+        "fatal exception: gmsh mesh generation failed: " + reason
+        + " (" + context.str() + ")"
+        + (evidence.empty() ? "" : " | gmsh log: " + evidence);
+
+    PLOG(error) << msg;
+    flushPrevabsLoggers();
+    std::cerr << "xx  " << msg << std::endl;
+    std::exit(1);
+  }
+
+  void run() {
+    const auto t0 = std::chrono::steady_clock::now();
+    while (!_done.load()) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(200));
+      const auto now = std::chrono::steady_clock::now();
+      const double elapsed_s =
+          std::chrono::duration<double>(now - t0).count();
+
+      std::vector<std::string> log;
+      if (_logger_started) {
+        try { gmsh::logger::get(log); } catch (...) {}
+        if (countGmshEdgeRecoveryMessages(log)
+            >= kGmshEdgeRecoveryWarningLimit) {
+          failFromWatchdog(
+              "repeated edge recovery warnings during meshing",
+              elapsed_s, log);
+        }
+      }
+
+      if (elapsed_s >= kGmshMeshingHardTimeoutSeconds) {
+        failFromWatchdog(
+            "meshing exceeded hard time limit of "
+            + std::to_string(kGmshMeshingHardTimeoutSeconds)
+            + " seconds",
+            elapsed_s, log);
+      }
+    }
+  }
+};
+
+void generateMesh2DWithDiagnostics(double global_mesh_size) {
+  bool logger_started = false;
+  std::vector<std::string> log;
+  startGmshLoggerBestEffort(logger_started);
+
+  const auto t0 = std::chrono::steady_clock::now();
+  try {
+    gmsh::option::setNumber("General.AbortOnError", 3);
+    gmsh::option::setNumber("Mesh.MaxRetries", kGmshFailFastMaxRetries);
+  } catch (...) {}
+
+  try {
+    GmshMeshingWatchdog watchdog(logger_started, global_mesh_size);
+    gmsh::model::mesh::generate(2);
+  } catch (const std::exception &e) {
+    const auto t1 = std::chrono::steady_clock::now();
+    const double elapsed_s =
+        std::chrono::duration<double>(t1 - t0).count();
+    collectAndStopGmshLoggerBestEffort(logger_started, log);
+
+    std::string reason = e.what();
+    std::string last_error;
+    try { gmsh::logger::getLastError(last_error); } catch (...) {}
+    if (!last_error.empty() && reason.find(last_error) == std::string::npos) {
+      reason += "; last_error=" + last_error;
+    }
+
+    const std::string evidence = gmshEvidenceSnippet(log);
+    throw std::runtime_error(
+        "gmsh mesh generation failed: " + reason
+        + " (" + gmshMeshContext(global_mesh_size, elapsed_s) + ")"
+        + (evidence.empty() ? "" : " | gmsh log: " + evidence));
+  }
+
+  const auto t1 = std::chrono::steady_clock::now();
+  const double elapsed_s =
+      std::chrono::duration<double>(t1 - t0).count();
+  collectAndStopGmshLoggerBestEffort(logger_started, log);
+
+  if (hasGmshEdgeRecoveryFailure(log)) {
+    const std::string evidence = gmshEvidenceSnippet(log);
+    throw std::runtime_error(
+        "gmsh mesh generation failed: edge recovery reported failure"
+        + std::string(" (") + gmshMeshContext(global_mesh_size, elapsed_s)
+        + ")"
+        + (evidence.empty() ? "" : " | gmsh log: " + evidence));
+  }
+}
+
+}  // namespace
 
 
 
@@ -269,15 +473,7 @@ void PModel::createGmshFaces() {
 
       // Add outer loop
             PLOG_DEBUG_AT(geo) << "  adding outer loop";
-      PDCELHalfEdge *he = f->outer();
-      int _iter_outer = 0;
-      do {
-        if (++_iter_outer > 65536) {
-          throw std::runtime_error(
-              "DCEL loop walk exceeded 65536 iterations"
-              " in createGmshFaces (outer loop) at " +
-              f->outer()->printString());
-        }
+      walkLoopWithLimit(f->outer(), [&](PDCELHalfEdge *he) {
         auto it_he = _gmsh_edge_tags.find(he);
         int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
         if (_tag == 0) {
@@ -288,9 +484,7 @@ void PModel::createGmshFaces() {
           _tag = -1 * _tag;
         }
         _ge_tags.push_back(_tag);
-        he = he->next();
-
-      } while (he != f->outer());
+      });
       _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
       _geloop_tags.push_back(_gel_tag);
 
@@ -300,15 +494,7 @@ void PModel::createGmshFaces() {
       for (auto hei : f->inners()) {
 
         _ge_tags.clear();
-        he = hei;
-        int _iter_inner = 0;
-        do {
-          if (++_iter_inner > 65536) {
-            throw std::runtime_error(
-                "DCEL loop walk exceeded 65536 iterations"
-                " in createGmshFaces (inner loop) at " +
-                hei->printString());
-          }
+        walkLoopWithLimit(hei, [&](PDCELHalfEdge *he) {
           auto it_he = _gmsh_edge_tags.find(he);
           int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
           if (_tag == 0) {
@@ -316,9 +502,7 @@ void PModel::createGmshFaces() {
             _tag = (it_tw != _gmsh_edge_tags.end()) ? -(it_tw->second) : 0;
           }
           _ge_tags.push_back(_tag);
-          he = he->next();
-        }
-        while (he != hei);
+        });
         _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
         _geloop_tags.push_back(_gel_tag);
 
@@ -541,17 +725,7 @@ void PModel::buildGmsh() {
   // unsigned int mesh_algo = 6;
   // GmshSetOption("Mesh", "Algorithm", mesh_algo);
   // _gmodel->mesh(2);
-  try {
-    gmsh::model::mesh::generate(2);
-  } catch (const std::exception &e) {
-    std::vector<std::pair<int, int>> ents;
-    gmsh::model::getEntities(ents, 2);
-    throw std::runtime_error(
-      std::string("gmsh mesh generation failed: ") + e.what() +
-      " (faces=" + std::to_string(ents.size()) +
-      ", global_mesh_size=" + std::to_string(_global_mesh_size) + ")"
-    );
-  }
+  generateMesh2DWithDiagnostics(_global_mesh_size);
   // pmessage->print(1, "element type: " + std::to_string(_element_type));
   if (_element_type == 2) {
     // _gmodel->setOrderN(2, 0, 0);

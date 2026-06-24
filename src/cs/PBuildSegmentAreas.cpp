@@ -4,11 +4,13 @@
 #include "Material.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "debug/baseOffsetMapJson.hpp"
 #include "debug/baseOffsetMapSvg.hpp"
+#include "debug/segmentBuildDump.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
@@ -251,17 +253,14 @@ bool computeFaceCentroid2DForLayered(PDCELFace *face, SPoint2 &out) {
   double sy = 0.0, sz = 0.0;
   int n = 0;
   PDCELHalfEdge *start = face->outer();
-  PDCELHalfEdge *he = start;
-  do {
-    if (he == nullptr) return false;
+  walkLoopWithLimit(start, [&](PDCELHalfEdge *he) {
     PDCELVertex *v = he->source();
     if (v != nullptr) {
       sy += v->y();
       sz += v->z();
       ++n;
     }
-    he = he->next();
-  } while (he != start);
+  });
   if (n == 0) return false;
   out = SPoint2(sy / n, sz / n);
   return true;
@@ -349,11 +348,20 @@ bool layeredFaceContainsVertex(
   return dcel->findHalfEdgeInFace(vertex, face) != nullptr;
 }
 
-bool layeredFaceContainsBothVertices(
-    PDCEL *dcel, PDCELFace *face,
-    PDCELVertex *a, PDCELVertex *b) {
-  return layeredFaceContainsVertex(dcel, face, a)
-      && layeredFaceContainsVertex(dcel, face, b);
+// Once the route-ii layered build has destructively split the shared band
+// face, the DCEL can no longer be handed to the legacy fallback: the legacy
+// area build walks the now-fragmented topology (and connector vertices shared
+// with neighbouring segments) and dereferences stale half-edges, which on
+// Windows manifests as heap corruption / access violation. So a failure that
+// occurs *after* the first mutation aborts the build cleanly instead of
+// returning false into that unsafe fallback. Failures *before* any mutation
+// still return false and fall back to legacy safely.
+[[noreturn]] void failLayeredAfterMutation(
+    const std::string& segment_name, const std::string& reason) {
+  throw std::runtime_error(
+      "layered offset[" + segment_name + "]: " + reason
+      + " after the shared DCEL was already mutated; aborting (a legacy "
+        "fallback here would corrupt the cross-section mesh)");
 }
 
 std::vector<PDCELFace *> splitLayerBandIntoCells(
@@ -369,8 +377,6 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
   }
 
   PDCELFace *remaining = band_face;
-  PDCELVertex *tail_inner = inner.vertices[n - 1];
-  PDCELVertex *tail_outer = outer.vertices[n - 1];
   for (std::size_t i = 1; i + 1 < n; ++i) {
     std::vector<PDCELVertex *> connector = {
         inner.vertices[i], outer.vertices[i]};
@@ -380,23 +386,45 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
       PLOG(error) << "layered offset[" << segment_name
                   << "]: failed to split layer band cell at connector "
                   << i;
+      prevabs::debug::segmentTracePush(
+          "splitLayerBandIntoCells: split failed @connector " + std::to_string(i));
       return {};
     }
 
     PDCELFace *f0 = split_faces.front();
     PDCELFace *f1 = split_faces.back();
-    const bool f0_has_tail = layeredFaceContainsBothVertices(
-        dcel, f0, tail_inner, tail_outer);
-    const bool f1_has_tail = layeredFaceContainsBothVertices(
-        dcel, f1, tail_inner, tail_outer);
-    if (f0_has_tail == f1_has_tail) {
+    // Attribute the just-split cell vs the remaining (tail-side) band by
+    // GEOMETRY, not DCEL vertex identity. The cell spans connectors i-1..i,
+    // so its expected centroid is the average of those four corner points;
+    // the remaining band spans connectors i..n-1 and sits farther along the
+    // curve. Identity tests (does face X contain curve vertex Y) mis-fire
+    // because a curve endpoint coincident with an existing DCEL vertex is
+    // replaced by the canonical vertex during the split, leaving the curve's
+    // own vertex pointer off the face — a spurious "ambiguous" that left the
+    // DCEL half-split and crashed the legacy fallback at shared connectors.
+    const double cell_y =
+        0.25 * (inner.vertices[i - 1]->y() + inner.vertices[i]->y()
+              + outer.vertices[i - 1]->y() + outer.vertices[i]->y());
+    const double cell_z =
+        0.25 * (inner.vertices[i - 1]->z() + inner.vertices[i]->z()
+              + outer.vertices[i - 1]->z() + outer.vertices[i]->z());
+    SPoint2 c0, c1;
+    if (!computeFaceCentroid2DForLayered(f0, c0)
+        || !computeFaceCentroid2DForLayered(f1, c1)) {
       PLOG(error) << "layered offset[" << segment_name
-                  << "]: ambiguous layer cell split at connector " << i;
+                  << "]: cannot compute split-face centroid at connector " << i;
+      prevabs::debug::segmentTracePush(
+          "splitLayerBandIntoCells: centroid failure @connector "
+          + std::to_string(i) + " of " + std::to_string(n - 1));
       return {};
     }
-
-    PDCELFace *cell = f0_has_tail ? f1 : f0;
-    remaining = f0_has_tail ? f0 : f1;
+    const double d0 = (c0.x() - cell_y) * (c0.x() - cell_y)
+                    + (c0.y() - cell_z) * (c0.y() - cell_z);
+    const double d1 = (c1.x() - cell_y) * (c1.x() - cell_y)
+                    + (c1.y() - cell_z) * (c1.y() - cell_z);
+    const bool f0_is_cell = (d0 <= d1);
+    PDCELFace *cell = f0_is_cell ? f0 : f1;
+    remaining = f0_is_cell ? f1 : f0;
     cells.push_back(cell);
   }
 
@@ -1073,8 +1101,14 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
 
   const bool is_closed = closed();
   const int side = requireValidLayupSide("buildLayeredOffsetAreas");
-  if (side == 0) return false;
+  if (side == 0) {
+    prevabs::debug::segmentTracePush("layered: invalid layup side -> FALLBACK");
+    return false;
+  }
   const int clipper_side = is_closed ? -side : side;
+  prevabs::debug::segmentTracePush(
+      "layered: enter (n_layers=" + std::to_string(n_layers)
+      + ", side=" + std::to_string(side) + ")");
 
   LayeredCurve base_curve =
       makeExistingCurve(_curve_base->vertices(), is_closed);
@@ -1092,6 +1126,10 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
                   << "]: shell/base vertex count mismatch (base=" << n
                   << ", shell=" << shell_curve.vertices.size()
                   << "); falling back to legacy area/layer build";
+    prevabs::debug::segmentTracePush(
+        "layered: shell/base vertex mismatch (base=" + std::to_string(n)
+        + ", shell=" + std::to_string(shell_curve.vertices.size())
+        + ") -> FALLBACK");
     return false;
   }
 
@@ -1108,6 +1146,8 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
         _face, _curve_base, is_closed,
         _mat_orient_e1, _mat_orient_e2, layup_y2, bcfg);
     _state = LifecycleState::AreasBuilt;
+    prevabs::debug::segmentTracePush(
+        "layered: n_layers==1 -> single face (SUCCESS)");
     PLOG(info) << "built layered offset segment " << _name
                << ": layers=1, faces=1";
     return true;
@@ -1117,8 +1157,13 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     PLOG(warning) << "layered offset[" << _name
                   << "]: closed multi-layer offset needs closed-loop DCEL "
                      "tiling; falling back to legacy area/layer build";
+    prevabs::debug::segmentTracePush(
+        "layered: closed multi-layer (no closed-loop tiling yet) -> FALLBACK");
     return false;
   }
+  prevabs::debug::segmentTracePush(
+      "layered: open multi-layer route-ii (n_layers=" + std::to_string(n_layers)
+      + ")");
   // Open multi-bend (n > 3) is now handled: the clean-miter shell keeps the
   // outermost band's connectors well-conditioned (no near-collinear collapse),
   // so splitLayerBandIntoCells tiles per-connector for any open vertex count.
@@ -1144,6 +1189,10 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
                     << (k + 1) << " raw offset produced "
                     << c.vertices.size() << " verts for " << n
                     << " base verts; falling back to legacy area/layer build";
+      prevabs::debug::segmentTracePush(
+          "layered: layer " + std::to_string(k + 1) + " offset verts="
+          + std::to_string(c.vertices.size()) + " != base=" + std::to_string(n)
+          + " (thin collapse) -> FALLBACK");
       deleteUnregisteredLayeredCurve(c);
       for (auto& owned : curves) {
         deleteUnregisteredLayeredCurve(owned);
@@ -1160,6 +1209,9 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
 
   int face_count = 0;
   PDCELFace *remaining_face = _face;
+  // Tracks whether any splitFaceByPolyline below has already mutated the
+  // shared DCEL; once true a failure can no longer fall back to legacy safely.
+  bool dcel_mutated = false;
   for (int k = 0; k < n_layers - 1; ++k) {
     std::list<PDCELFace *> split_faces =
         bcfg.dcel->splitFaceByPolyline(
@@ -1168,8 +1220,18 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
       PLOG(error) << "layered offset[" << _name
                   << "]: splitFaceByPolyline failed at layer boundary "
                   << (k + 1);
+      if (dcel_mutated) {
+        failLayeredAfterMutation(
+            _name, "splitFaceByPolyline failed at layer boundary "
+                       + std::to_string(k + 1));
+      }
+      prevabs::debug::segmentTracePush(
+          "layered: splitFaceByPolyline FAILED @layer boundary "
+          + std::to_string(k + 1) + " -> FALLBACK (clean: no mutation yet)");
       return false;
     }
+    // splitFaceByPolyline succeeded above: the shared DCEL is now mutated.
+    dcel_mutated = true;
 
     PDCELFace *f0 = split_faces.front();
     PDCELFace *f1 = split_faces.back();
@@ -1189,7 +1251,12 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
       PLOG(error) << "layered offset[" << _name
                   << "]: failed to split layer " << (k + 1)
                   << " into cells";
-      return false;
+      prevabs::debug::segmentTracePush(
+          "layered: splitLayerBandIntoCells FAILED @layer " + std::to_string(k + 1)
+          + " -> ABORT (DCEL already mutated, cannot fall back)");
+      failLayeredAfterMutation(
+          _name, "failed to split layer " + std::to_string(k + 1)
+                     + " into cells");
     }
     for (std::size_t i = 0; i < layer_cells.size(); ++i) {
       const std::string face_name =
@@ -1202,7 +1269,9 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
         PLOG(error) << "layered offset[" << _name
                     << "]: failed to assign layer face properties for layer "
                     << (k + 1) << ", face " << (i + 1);
-        return false;
+        failLayeredAfterMutation(
+            _name, "failed to assign layer " + std::to_string(k + 1)
+                       + " face properties");
       }
       ++face_count;
       _layered_faces.push_back(layer_cells[i]);
@@ -1224,7 +1293,11 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   if (final_cells.empty()) {
     PLOG(error) << "layered offset[" << _name
                 << "]: failed to split final layer into cells";
-    return false;
+    prevabs::debug::segmentTracePush(
+        "layered: splitLayerBandIntoCells FAILED @final layer "
+        + std::to_string(n_layers) + " -> ABORT (DCEL already mutated, cannot fall back)");
+    failLayeredAfterMutation(
+        _name, "failed to split final layer into cells");
   }
   for (std::size_t i = 0; i < final_cells.size(); ++i) {
     const std::string face_name =
@@ -1236,7 +1309,8 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
             _curve_base, is_closed, _mat_orient_e1, _mat_orient_e2, bcfg)) {
       PLOG(error) << "layered offset[" << _name
                   << "]: failed to assign final layer face properties";
-      return false;
+      failLayeredAfterMutation(
+          _name, "failed to assign final layer face properties");
     }
     ++face_count;
     _layered_faces.push_back(final_cells[i]);
@@ -1247,6 +1321,9 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     deleteUnregisteredLayeredCurve(owned);
   }
   _state = LifecycleState::AreasBuilt;
+  prevabs::debug::segmentTracePush(
+      "layered: tiled all layers (SUCCESS, faces=" + std::to_string(face_count)
+      + ")");
   PLOG(info) << "built layered offset segment " << _name
              << ": layers=" << n_layers
              << ", faces=" << face_count;
@@ -1382,6 +1459,12 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
 
     if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building areas of segment: " + _name;
 
+  prevabs::debug::segmentTraceBegin(_name);
+  prevabs::debug::segmentTracePush(
+      std::string("buildAreas: enter (closed=") + (closed() ? "Y" : "N")
+      + ", base_verts=" + std::to_string(_curve_base ? _curve_base->vertices().size() : 0)
+      + ")");
+
   // plan-20260522: re-derive the staircase from the current base/offset
   // geometry. The persisted `_base_offset_indices_pairs` is treated as a
   // geometric view, not as independent state — any prior join-time
@@ -1474,13 +1557,19 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   // (flag-gated). Phase-2b then tries the direct layered-offset face build;
   // unsupported healthy-subset gaps fall back to the legacy path below.
   if (useLayeredOffset()) {
+    prevabs::debug::segmentTracePush("buildAreas: useLayeredOffset=yes");
     validatePerLayerOffsets(bcfg);
     if (buildLayeredOffsetAreas(bcfg)) {
       validateStateInvariants("buildAreas/layered-offset");
+      prevabs::debug::segmentTracePush("buildAreas: layered OK -> AreasBuilt");
+      prevabs::debug::dumpSegmentBuild(*this, bcfg);
       segment_areas_section.setEndDetails(
           "areas=0, layers=" + std::to_string(layerCount()));
       return;
     }
+    prevabs::debug::segmentTracePush("buildAreas: layered FELL BACK -> legacy");
+  } else {
+    prevabs::debug::segmentTracePush("buildAreas: useLayeredOffset=no -> legacy");
   }
 
   std::vector<PDCELVertex *> first_bound_vertices;
@@ -1497,6 +1586,10 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   }
   _state = LifecycleState::AreasBuilt;
   validateStateInvariants("buildAreas");
+  prevabs::debug::segmentTracePush(
+      "legacy: built areas=" + std::to_string(_areas.size())
+      + " -> AreasBuilt");
+  prevabs::debug::dumpSegmentBuild(*this, bcfg);
   segment_areas_section.setEndDetails(
       "areas=" + std::to_string(_areas.size())
       + ", layers=" + std::to_string(layerCount()));

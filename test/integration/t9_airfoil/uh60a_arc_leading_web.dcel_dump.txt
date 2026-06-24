@@ -1285,7 +1285,7 @@ VERTICES (1283):
   v#1285 (0, 25.4803, -0.377734) edge=he#4506
   v#1286 (0, 25.4763, -0.367911) edge=he#4510
 
-HALFEDGES (3914):
+HALFEDGES (3984):
   he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
   he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
   he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
@@ -1966,6 +1966,6 @@ HALFEDGES (3914):
   he#708 scope=active src=v#345 twin=he#707 next=he#4502 prev=he#4511 loop=loop#1299 face=f#1276(sgm_blk_3_area_15_layer_3)
   he#709 scope=active src=v#345 twin=he#710 next=he#322 prev=he#707 loop=loop#35 face=f#15(fill_le_fill_face)
   he#710 scope=active src=v#159 twin=he#709 next=he#4512 prev=he#321 loop=loop#1303 face=f#1280(sgm_blk_3_area_16_layer_3)
-  he#711 scope=active src=v#346 twin=he#712 next=he#713 prev=he#851 loop=loop#1358 face=f#1335()
+  he#711 scope=active src=v#346 twin=he#712 next=he#713 prev=he#851 loop=loop#1428 face=f#1405()
   he#712 scope=active src=v#347 twin=he#711 next=he#1023 prev=he#1144 loop=loop#15 face=f#10(sgm_1_2_face)
-  he#713 scope=active src=v#347 twin=he#714 next=he#1022 prev=he#711 loop=loop#1358 face=f#1335()
+  he#713 scope=active src=v#347 twin=he#714 next=he#1022 prev=he#711 loop=loop#1428 face=f#1405()

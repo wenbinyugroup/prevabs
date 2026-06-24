@@ -1,0 +1,6 @@
+# build path for segment 'sgm_1'
+  1. buildAreas: enter (closed=N, base_verts=2)
+  2. buildAreas: useLayeredOffset=yes
+  3. layered: enter (n_layers=1, side=1)
+  4. layered: n_layers==1 -> single face (SUCCESS)
+  5. buildAreas: layered OK -> AreasBuilt

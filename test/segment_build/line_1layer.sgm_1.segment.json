@@ -1,0 +1,17 @@
+{
+  "segment": "sgm_1",
+  "closed": false,
+  "route": "layered",
+  "base_vertices": 2,
+  "offset_vertices": 2,
+  "layers": 1,
+  "face_count": 1,
+  "n_inverted": 0,
+  "n_sliver": 0,
+  "n_degenerate": 0,
+  "ok": true,
+  "path": ["buildAreas: enter (closed=N, base_verts=2)", "buildAreas: useLayeredOffset=yes", "layered: enter (n_layers=1, side=1)", "layered: n_layers==1 -> single face (SUCCESS)", "buildAreas: layered OK -> AreasBuilt"],
+  "faces": [
+    {"name": "sgm_1_layer_1_face_1", "layer": 1, "material": "iso", "theta3": 0, "verts": 4, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false}
+  ]
+}

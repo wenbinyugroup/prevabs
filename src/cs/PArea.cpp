@@ -6,6 +6,7 @@
 #include "PDCEL.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
@@ -36,17 +37,14 @@ bool computeFaceCentroid2D(PDCELFace *face, SPoint2 &out) {
 
   double sy = 0.0, sz = 0.0;
   int n = 0;
-  PDCELHalfEdge *he = start;
-  do {
+  walkLoopWithLimit(start, [&](PDCELHalfEdge *he) {
     PDCELVertex *v = he->source();
     if (v) {
       sy += v->y();
       sz += v->z();
       ++n;
     }
-    he = he->next();
-    if (!he) return false;
-  } while (he != start);
+  });
 
   if (n == 0) return false;
   out = SPoint2(sy / n, sz / n);
@@ -227,6 +225,30 @@ void PArea::buildLayers(const BuilderConfig &bcfg) {
       if (front_has_next != back_has_next) {
         remaining_face = front_has_next ? fnew.front() : fnew.back();
         layer_face = front_has_next ? fnew.back() : fnew.front();
+      } else {
+        // Identity test inconclusive: a next-boundary vertex coincident with
+        // an existing DCEL vertex is replaced by the canonical vertex during
+        // the split, so it is absent from both faces. Disambiguate by
+        // GEOMETRY instead of guessing: the remaining band extends toward the
+        // next layer boundary, so its centroid is closer to that boundary's
+        // midpoint than the just-finished layer cell. A wrong guess here picks
+        // the wrong remaining face and snowballs into a malformed face on the
+        // next split (which can hang downstream boundary walks).
+        const double ref_y =
+            0.5 * (next_prev->y() + next_next->y());
+        const double ref_z =
+            0.5 * (next_prev->z() + next_next->z());
+        SPoint2 cf, cb;
+        if (computeFaceCentroid2D(fnew.front(), cf)
+            && computeFaceCentroid2D(fnew.back(), cb)) {
+          const double df = (cf.x() - ref_y) * (cf.x() - ref_y)
+                          + (cf.y() - ref_z) * (cf.y() - ref_z);
+          const double db = (cb.x() - ref_y) * (cb.x() - ref_y)
+                          + (cb.y() - ref_z) * (cb.y() - ref_z);
+          remaining_face = (df <= db) ? fnew.front() : fnew.back();
+          layer_face = (remaining_face == fnew.front())
+                           ? fnew.back() : fnew.front();
+        }
       }
     }
 

@@ -1,0 +1,25 @@
+{
+  "segment": "sgm_1",
+  "closed": false,
+  "route": "layered",
+  "base_vertices": 4,
+  "offset_vertices": 4,
+  "layers": 3,
+  "face_count": 9,
+  "n_inverted": 0,
+  "n_sliver": 0,
+  "n_degenerate": 0,
+  "ok": true,
+  "path": ["buildAreas: enter (closed=N, base_verts=4)", "buildAreas: useLayeredOffset=yes", "layered: enter (n_layers=3, side=1)", "layered: open multi-layer route-ii (n_layers=3)", "layered: tiled all layers (SUCCESS, faces=9)", "buildAreas: layered OK -> AreasBuilt"],
+  "faces": [
+    {"name": "sgm_1_layer_1_face_1", "layer": 1, "material": "iso", "theta3": 0, "verts": 4, "area": 0.00505, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_1_face_2", "layer": 1, "material": "iso", "theta3": 0, "verts": 4, "area": 0.01, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_1_face_3", "layer": 1, "material": "iso", "theta3": 0, "verts": 4, "area": 0.00495, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_2_face_1", "layer": 2, "material": "iso", "theta3": 90, "verts": 4, "area": 0.00515, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_2_face_2", "layer": 2, "material": "iso", "theta3": 90, "verts": 4, "area": 0.01, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_2_face_3", "layer": 2, "material": "iso", "theta3": 90, "verts": 4, "area": 0.00485, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_3_face_1", "layer": 3, "material": "iso", "theta3": 0, "verts": 4, "area": 0.00525, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_3_face_2", "layer": 3, "material": "iso", "theta3": 0, "verts": 4, "area": 0.01, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_3_face_3", "layer": 3, "material": "iso", "theta3": 0, "verts": 4, "area": 0.00475, "min_angle_deg": 45, "inverted": false, "sliver": false, "degenerate": false}
+  ]
+}

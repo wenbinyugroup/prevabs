@@ -5,6 +5,8 @@
 .DESCRIPTION
   run  (default) — cmake configure + ctest
   clean          — delete generated outputs, keep INDEX.txt and listed source files
+  A run writes a Markdown report to test/integration/build_msvc/integration-report.md.
+  With -OpenGmsh, open each generated section in Gmsh after the run.
 
   Test names follow the pattern <dir>/<case>, e.g. t1_strip/strip.
   CTest -R accepts a regex, so "t1" matches all t1_strip/* cases.
@@ -16,6 +18,10 @@
   run:   passed to ctest -R, e.g. "t1" or "t1_strip/strip$"
   clean: directory-name prefix, e.g. "t6" matches t6_circle
 
+.PARAMETER OpenGmsh
+  After a run, start gmsh for every executed section case:
+  gmsh <test-case>.geo_unrolled <test-case>.msh <test-case>.opt
+
 .EXAMPLE
   # Run all tests
   pwsh -File test\run-integration-tests.ps1
@@ -26,6 +32,9 @@
   # Run only one specific case
   pwsh -File test\run-integration-tests.ps1 -Filter "t1_strip/strip$"
 
+  # Run one specific case and open its generated Gmsh view
+  pwsh -File test\run-integration-tests.ps1 -Filter "t1_strip/strip$" -OpenGmsh
+
   # Clean all generated outputs
   pwsh -File test\run-integration-tests.ps1 clean
 
@@ -35,7 +44,8 @@
 param (
     [ValidateSet("run", "clean")]
     [string]$Mode   = "run",
-    [string]$Filter = ""
+    [string]$Filter = "",
+    [switch]$OpenGmsh
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,6 +54,8 @@ $repoRoot       = Resolve-Path (Join-Path $PSScriptRoot "..")
 $integrationDir = Join-Path $PSScriptRoot "integration"
 $buildDir       = Join-Path $integrationDir "build_msvc"
 $prevabs        = Join-Path $repoRoot "build_msvc\Release\prevabs.exe"
+$junitReport    = Join-Path $buildDir "integration-report.junit.xml"
+$markdownReport = Join-Path $buildDir "integration-report.md"
 
 # ── clean ────────────────────────────────────────────────────────────────────
 if ($Mode -eq "clean") {
@@ -104,10 +116,193 @@ function Find-Tool([string]$name) {
     return $null
 }
 
+function Find-Gmsh() {
+    $found = Get-Command "gmsh" -ErrorAction SilentlyContinue
+    if ($found) { return $found.Source }
+
+    if ($env:Gmsh_ROOT) {
+        foreach ($rel in @("bin\gmsh.exe", "gmsh.exe")) {
+            $candidate = Join-Path $env:Gmsh_ROOT $rel
+            if (Test-Path $candidate) { return $candidate }
+        }
+    }
+
+    foreach ($candidate in @(
+        "C:\Program Files\Gmsh\gmsh.exe",
+        "C:\Program Files (x86)\Gmsh\gmsh.exe"
+    )) {
+        if (Test-Path $candidate) { return $candidate }
+    }
+
+    return $null
+}
+
 $cmake = Find-Tool "cmake"
 $ctest = Find-Tool "ctest"
 if (-not $cmake) { Write-Error "cmake not found. Install CMake or open a VS Developer shell."; exit 1 }
 if (-not $ctest) { Write-Error "ctest not found. Install CMake or open a VS Developer shell."; exit 1 }
+if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
+    $PSNativeCommandUseErrorActionPreference = $false
+}
+
+function Format-Duration([string]$seconds) {
+    $value = 0.0
+    if (-not [double]::TryParse(
+            $seconds,
+            [System.Globalization.NumberStyles]::Float,
+            [System.Globalization.CultureInfo]::InvariantCulture,
+            [ref]$value)) {
+        return ""
+    }
+    return ("{0:0.###}s" -f $value)
+}
+
+function Get-XmlAttribute($node, [string]$name) {
+    if (-not $node -or -not $node.Attributes) { return "" }
+    if ($node.Attributes[$name]) { return $node.Attributes[$name].Value }
+    return ""
+}
+
+function Get-XmlIntAttribute($node, [string]$name) {
+    $value = 0
+    [int]::TryParse((Get-XmlAttribute $node $name), [ref]$value) | Out-Null
+    return $value
+}
+
+function Get-CaseStatus($case) {
+    if ($case.failure) { return "FAIL" }
+    if ($case.error) { return "ERROR" }
+    if ($case.skipped) { return "SKIP" }
+    return "PASS"
+}
+
+function Get-CaseMessage($case) {
+    if ($case.failure) { return Get-XmlAttribute $case.failure "message" }
+    if ($case.error) { return Get-XmlAttribute $case.error "message" }
+    if ($case.skipped) { return Get-XmlAttribute $case.skipped "message" }
+    return ""
+}
+
+function Get-JUnitCases([string]$JUnitPath) {
+    if (-not (Test-Path $JUnitPath)) { return @() }
+    [xml]$junit = Get-Content -Path $JUnitPath -Raw
+    return @($junit.SelectNodes("/testsuite/testcase"))
+}
+
+function Write-IntegrationReport(
+    [string]$JUnitPath,
+    [string]$MarkdownPath,
+    [string]$Filter,
+    [int]$CTestExitCode
+) {
+    if (-not (Test-Path $JUnitPath)) {
+        Write-Warning "CTest did not write $JUnitPath; report not generated."
+        return
+    }
+
+    [xml]$junit = Get-Content -Path $JUnitPath -Raw
+    $suite = $junit.DocumentElement
+    $cases = @(Get-JUnitCases $JUnitPath)
+    $tests = Get-XmlIntAttribute $suite "tests"
+    $failures = Get-XmlIntAttribute $suite "failures"
+    $errors = Get-XmlIntAttribute $suite "errors"
+    $skipped = Get-XmlIntAttribute $suite "skipped"
+    $passed = $tests - $failures - $errors - $skipped
+    $duration = Format-Duration (Get-XmlAttribute $suite "time")
+    $generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss zzz")
+    $filterText = if ($Filter) { $Filter } else { "(none)" }
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.Add("# PreVABS Integration Test Report")
+    $lines.Add("")
+    $lines.Add("- Generated: $generatedAt")
+    $lines.Add("- Filter: ``$filterText``")
+    $lines.Add("- CTest exit code: $CTestExitCode")
+    $lines.Add("- JUnit XML: ``$JUnitPath``")
+    $lines.Add("")
+    $lines.Add("## Summary")
+    $lines.Add("")
+    $lines.Add("| Total | Passed | Failed | Errors | Skipped | Time |")
+    $lines.Add("| ---: | ---: | ---: | ---: | ---: | ---: |")
+    $lines.Add("| $tests | $passed | $failures | $errors | $skipped | $duration |")
+
+    $problemCases = @($cases | Where-Object {
+        (Get-CaseStatus $_) -in @("FAIL", "ERROR", "SKIP")
+    })
+    if ($problemCases.Count -gt 0) {
+        $lines.Add("")
+        $lines.Add("## Problems")
+        $lines.Add("")
+        $lines.Add("| Status | Test | Time | Message |")
+        $lines.Add("| --- | --- | ---: | --- |")
+        foreach ($case in $problemCases) {
+            $status = Get-CaseStatus $case
+            $name = Get-XmlAttribute $case "name"
+            $time = Format-Duration (Get-XmlAttribute $case "time")
+            $message = (Get-CaseMessage $case) -replace "\r?\n", " "
+            $message = $message -replace "\|", "\|"
+            $lines.Add("| $status | ``$name`` | $time | $message |")
+        }
+    }
+
+    $lines.Add("")
+    $lines.Add("## Cases")
+    $lines.Add("")
+    $lines.Add("| Status | Test | Time |")
+    $lines.Add("| --- | --- | ---: |")
+    foreach ($case in $cases) {
+        $status = Get-CaseStatus $case
+        $name = Get-XmlAttribute $case "name"
+        $time = Format-Duration (Get-XmlAttribute $case "time")
+        $lines.Add("| $status | ``$name`` | $time |")
+    }
+
+    Set-Content -Path $MarkdownPath -Value $lines -Encoding utf8
+    Write-Host "Integration report: $MarkdownPath"
+}
+
+function Open-GmshCases([string]$JUnitPath, [string]$GmshPath) {
+    $cases = @(Get-JUnitCases $JUnitPath)
+    if ($cases.Count -eq 0) {
+        Write-Warning "No executed test cases found for Gmsh visualization."
+        return
+    }
+
+    $opened = 0
+    foreach ($case in $cases) {
+        $name = Get-XmlAttribute $case "name"
+        if (-not $name -or $name.EndsWith(".logcheck")) { continue }
+
+        $parts = $name -split "/", 2
+        if ($parts.Count -ne 2) {
+            Write-Warning "Skipping '$name': expected test name '<dir>/<case>'."
+            continue
+        }
+
+        $caseDir = Join-Path $integrationDir $parts[0]
+        $caseBase = $parts[1]
+        $geo = Join-Path $caseDir "$caseBase.geo_unrolled"
+        $msh = Join-Path $caseDir "$caseBase.msh"
+        $opt = Join-Path $caseDir "$caseBase.opt"
+        $visualFiles = @($geo, $msh, $opt)
+        $missing = @($visualFiles | Where-Object { -not (Test-Path $_) })
+        if ($missing.Count -gt 0) {
+            Write-Warning "Skipping '$name': missing $($missing -join ', ')."
+            continue
+        }
+
+        Write-Host "Opening Gmsh: gmsh $caseBase.geo_unrolled $caseBase.msh $caseBase.opt"
+        Start-Process `
+            -FilePath $GmshPath `
+            -ArgumentList @("$caseBase.geo_unrolled", "$caseBase.msh", "$caseBase.opt") `
+            -WorkingDirectory $caseDir
+        $opened += 1
+    }
+
+    if ($opened -eq 0) {
+        Write-Warning "No Gmsh visualizations were opened."
+    }
+}
 
 # ── run ──────────────────────────────────────────────────────────────────────
 if (-not (Test-Path $prevabs)) {
@@ -134,8 +329,22 @@ if ($ninja) { $cmakeArgs += @("-G", "Ninja", "-DCMAKE_MAKE_PROGRAM=$ninja") }
 & $cmake @cmakeArgs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$ctestArgs = @("--test-dir", $buildDir, "--output-on-failure")
+$ctestArgs = @(
+    "--test-dir", $buildDir,
+    "--output-on-failure",
+    "--output-junit", $junitReport
+)
 if (-not $ninja) { $ctestArgs += @("-C", "Release") }
 if ($Filter) { $ctestArgs += @("-R", $Filter) }
 & $ctest @ctestArgs
-exit $LASTEXITCODE
+$ctestExitCode = $LASTEXITCODE
+Write-IntegrationReport $junitReport $markdownReport $Filter $ctestExitCode
+if ($OpenGmsh) {
+    $gmsh = Find-Gmsh
+    if (-not $gmsh) {
+        Write-Warning "gmsh not found. Add it to PATH or set Gmsh_ROOT."
+    } else {
+        Open-GmshCases $junitReport $gmsh
+    }
+}
+exit $ctestExitCode

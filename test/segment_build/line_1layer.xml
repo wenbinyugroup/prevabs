@@ -1,0 +1,24 @@
+<cross_section name="line_1layer" format="1">
+  <include><material>materials</material></include>
+  <general>
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <point name="lc">-1 0</point>
+    <point name="rc"> 1 0</point>
+    <baseline name="bl" type="straight"><points>lc,rc</points></baseline>
+  </baselines>
+  <layups>
+    <layup name="lp" method="ss">
+      <lamina>la_010</lamina>
+      <code>[0]</code>
+    </layup>
+  </layups>
+  <component name="c">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>lp</layup>
+    </segment>
+  </component>
+</cross_section>

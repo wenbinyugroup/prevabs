@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<rect width="100%" height="100%" fill="white"/>
+<text x="70" y="28" font-family="sans-serif" font-size="18" fill="#222">segment build: sgm_1</text>
+<text x="70" y="48" font-family="sans-serif" font-size="12" fill="#555">route=layered  closed=N  base=12  layers=3  faces=33  inverted=0  sliver=0  degenerate=0</text>
+<polygon points="1405.89,467.441 1527.3,486.626 1530,469.534 1408.47,450.33 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1232.97,442.696 1405.89,467.441 1408.47,450.33 1235.25,425.542 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1064.89,422.136 1232.97,442.696 1235.25,425.542 1066.77,404.933 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="903.252,406.738 1064.89,422.136 1066.77,404.933 904.584,389.483 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="749.712,397.664 903.252,406.738 904.584,389.483 750.292,380.364 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="604.448,379.191 604.817,396.498 749.712,397.664 750.292,380.364 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="466.36,386.194 467.717,403.451 604.817,396.498 604.448,379.191 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="336.244,400.065 338.56,417.22 467.717,403.451 466.36,386.194 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="215.291,419.858 218.598,436.851 338.56,417.22 336.244,400.065 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="104.455,444.91 108.818,461.664 218.598,436.851 215.291,419.858 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="70,455.09 74.9027,471.684 108.818,461.664 104.455,444.91 " fill="#cfe8ff" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1403.32,484.552 1524.6,503.718 1527.3,486.626 1405.89,467.441 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1230.7,459.851 1403.32,484.552 1405.89,467.441 1232.97,442.696 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1063.02,439.34 1230.7,459.851 1232.97,442.696 1064.89,422.136 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="901.92,423.994 1063.02,439.34 1064.89,422.136 903.252,406.738 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="749.131,414.963 901.92,423.994 903.252,406.738 749.712,397.664 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="604.817,396.498 605.185,413.805 749.131,414.963 749.712,397.664 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="467.717,403.451 469.073,420.708 605.185,413.805 604.817,396.498 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="338.56,417.22 340.876,434.375 469.073,420.708 467.717,403.451 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="218.598,436.851 221.906,453.843 340.876,434.375 338.56,417.22 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="108.818,461.664 113.182,478.418 221.906,453.843 218.598,436.851 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="74.9027,471.684 79.8053,488.279 113.182,478.418 108.818,461.664 " fill="#ffe0b3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1400.74,501.663 1521.9,520.809 1524.6,503.718 1403.32,484.552 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1228.42,477.005 1400.74,501.663 1403.32,484.552 1230.7,459.851 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="1061.15,456.544 1228.42,477.005 1230.7,459.851 1063.02,439.34 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="900.59,441.249 1061.15,456.544 1063.02,439.34 901.92,423.994 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="748.55,432.263 900.59,441.249 901.92,423.994 749.131,414.963 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="605.185,413.805 605.555,431.112 748.55,432.263 749.131,414.963 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="469.073,420.708 470.429,437.966 605.555,431.112 605.185,413.805 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="340.876,434.375 343.193,451.53 470.429,437.966 469.073,420.708 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="221.906,453.843 225.214,470.836 343.193,451.53 340.876,434.375 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="113.182,478.418 117.545,495.172 225.214,470.836 221.906,453.843 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="79.8053,488.279 84.708,504.873 117.545,495.172 113.182,478.418 " fill="#d7f5d3" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polyline fill="none" stroke="#1f77b4" stroke-width="1.6" points="1530,469.534 1408.47,450.33 1235.25,425.542 1066.77,404.933 904.584,389.483 750.292,380.364 604.448,379.191 466.36,386.194 336.244,400.065 215.291,419.858 104.455,444.91 70,455.09 " />
+<polyline fill="none" stroke="#ff7f0e" stroke-width="1.6" points="1521.9,520.809 1400.74,501.663 1228.42,477.005 1061.15,456.544 900.59,441.249 748.55,432.263 605.555,431.112 470.429,437.966 343.193,451.53 225.214,470.836 117.545,495.172 84.708,504.873 " />
+<g font-family="sans-serif" font-size="12">
+<rect x="1338" y="52" width="242" height="118" fill="#fafafa" stroke="#ccc"/>
+<line x1="1350" y1="70" x2="1374" y2="70" stroke="#1f77b4" stroke-width="2"/>
+<text x="1382" y="74">base curve</text>
+<line x1="1350" y1="90" x2="1374" y2="90" stroke="#ff7f0e" stroke-width="2"/>
+<text x="1382" y="94">offset / shell</text>
+<rect x="1350" y="102" width="20" height="12" fill="#f3b0b0" stroke="#d62728" stroke-width="2"/>
+<text x="1382" y="112">inverted face</text>
+<rect x="1350" y="122" width="20" height="12" fill="#fff5b3" stroke="#ff7f0e" stroke-width="1.6"/>
+<text x="1382" y="132">sliver face</text>
+<text x="1350" y="154" fill="#444">fills cycle by layer index</text>
+</g>
+</svg>

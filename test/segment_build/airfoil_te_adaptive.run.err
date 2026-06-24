@@ -1,0 +1,61 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  offset (multi-vertex): offset distance 0.021506 is 3.12442x the shortest base segment length (0.0068832 at segment 8); offset construction may be numerically fragile — consider <normalize>1</normalize>, a larger <scale>, or a denser baseline
+[warning]  offset (multi-vertex, open): 6 base vertex/vertices have local half-thickness < |dist| = 0.021506 (first at base[6] = v#0( 0 , 1.36757 , -0.0076441 )); skin will be locally dropped at those locations
+[warning]  offset (multi-vertex, open): 4 base vertex/vertices have local half-thickness in [|dist|, 2*|dist|) = [0.021506, 0.043012); offset will be valid but locally thin
+[warning]  offset (multi-vertex, open): skin dropped over base indices [4..13] due to insufficient local thickness
+[warning]  offset (multi-vertex, open): only 8 offset verts produced for 18 base verts (M/N=0.44). The layup half-thickness 0.02 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+[warning]  layered offset[sg_te]: shell/base vertex count mismatch (base=18, shell=8); falling back to legacy area/layer build
+[warning]  splitEdge: repeated splits on edge lineage #5 (3 splits in current phase), edge=he#65 v#6( 0 , 1.04293 , -0.0212941 ) -> v#32( 0 , 1.04491 , -0.0418133 ) | loop: loop#2 | face: f#2 [sg_te_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (4 splits in current phase), edge=he#69 v#6( 0 , 1.04293 , -0.0212941 ) -> v#33( 0 , 1.04405 , -0.0328452 ) | loop: loop#2 | face: f#2 [sg_te_face]
+[warning]  splitEdge: repeated splits on edge lineage #31 (3 splits in current phase), edge=he#85 v#36( 0 , 1.06711 , -0.0396668 ) -> v#25( 0 , 1.06508 , -0.0191514 ) | loop: loop#4 | face: f#3 [sg_te_area_1]
+[warning]  splitEdge: repeated splits on edge lineage #31 (4 splits in current phase), edge=he#89 v#37( 0 , 1.06622 , -0.0307004 ) -> v#25( 0 , 1.06508 , -0.0191514 ) | loop: loop#4 | face: f#3 [sg_te_area_1]
+[warning]  splitEdge: repeated splits on edge lineage #32 (3 splits in current phase), edge=he#103 v#40( 0 , 1.14423 , -0.0319086 ) -> v#26( 0 , 1.14212 , -0.0114012 ) | loop: loop#6 | face: f#5 [sg_te_area_2]
+[warning]  splitEdge: repeated splits on edge lineage #32 (4 splits in current phase), edge=he#107 v#41( 0 , 1.14331 , -0.0229456 ) -> v#26( 0 , 1.14212 , -0.0114012 ) | loop: loop#6 | face: f#5 [sg_te_area_2]
+[warning]  splitEdge: repeated splits on edge lineage #33 (3 splits in current phase), edge=he#121 v#44( 0 , 1.2137 , -0.0246418 ) -> v#27( 0 , 1.21151 , -0.00414326 ) | loop: loop#8 | face: f#7 [sg_te_area_3]
+[warning]  splitEdge: repeated splits on edge lineage #33 (4 splits in current phase), edge=he#125 v#45( 0 , 1.21274 , -0.0156827 ) -> v#27( 0 , 1.21151 , -0.00414326 ) | loop: loop#8 | face: f#7 [sg_te_area_3]
+[warning]  splitEdge: repeated splits on edge lineage #34 (3 splits in current phase), edge=he#139 v#48( 0 , 1.19829 , 0.0249072 ) -> v#29( 0 , 1.19548 , 0.00448352 ) | loop: loop#10 | face: f#9 [sg_te_area_4]
+[warning]  splitEdge: repeated splits on edge lineage #34 (4 splits in current phase), edge=he#143 v#49( 0 , 1.19706 , 0.0159808 ) -> v#29( 0 , 1.19548 , 0.00448352 ) | loop: loop#10 | face: f#9 [sg_te_area_4]
+[warning]  splitEdge: repeated splits on edge lineage #35 (3 splits in current phase), edge=he#157 v#52( 0 , 1.12425 , 0.035538 ) -> v#30( 0 , 1.12121 , 0.0151484 ) | loop: loop#12 | face: f#11 [sg_te_area_5]
+[warning]  splitEdge: repeated splits on edge lineage #35 (4 splits in current phase), edge=he#161 v#53( 0 , 1.12292 , 0.0266265 ) -> v#30( 0 , 1.12121 , 0.0151484 ) | loop: loop#12 | face: f#11 [sg_te_area_5]
+[warning]  splitEdge: repeated splits on edge lineage #6 (3 splits in current phase), edge=he#173 v#56( 0 , 1.04486 , 0.0478307 ) -> v#8( 0 , 1.04171 , 0.0274585 ) | loop: loop#13 | face: f#12 [sg_te_area_6]
+[warning]  splitEdge: repeated splits on edge lineage #6 (4 splits in current phase), edge=he#177 v#57( 0 , 1.04348 , 0.0389268 ) -> v#8( 0 , 1.04171 , 0.0274585 ) | loop: loop#13 | face: f#12 [sg_te_area_6]
+Warning : Impossible to recover edge 6047 6047 (error tag -1)
+Warning : Impossible to recover edge 6047 6047 (error tag -1)
+Warning : Impossible to recover edge 6059 6059 (error tag -1)
+Warning : Impossible to recover edge 6059 6059 (error tag -1)
+Warning : Impossible to recover edge 6063 6063 (error tag -1)
+Warning : Impossible to recover edge 6063 6063 (error tag -1)
+Warning : Impossible to recover edge 6061 6061 (error tag -1)
+Warning : Impossible to recover edge 6069 6069 (error tag -1)
+Warning : Impossible to recover edge 6077 6077 (error tag -1)
+Warning : Impossible to recover edge 6069 6069 (error tag -1)
+Warning : Impossible to recover edge 6077 6077 (error tag -1)
+Warning : Impossible to recover edge 6072 6072 (error tag -1)
+Warning : Impossible to recover edge 6061 6061 (error tag -1)
+Warning : Impossible to recover edge 6072 6072 (error tag -1)
+Warning : Impossible to recover edge 6085 6085 (error tag -1)
+Warning : Impossible to recover edge 6077 6077 (error tag -1)
+Warning : Impossible to recover edge 6087 6087 (error tag -1)
+Warning : Impossible to recover edge 6061 6061 (error tag -1)
+Warning : Impossible to recover edge 6087 6087 (error tag -1)
+Warning : Impossible to recover edge 6084 6084 (error tag -1)
+Warning : Impossible to recover edge 6061 6061 (error tag -1)
+Warning : Impossible to recover edge 6084 6084 (error tag -1)
+Warning : Impossible to recover edge 6085 6085 (error tag -1)
+Warning : Impossible to recover edge 6077 6077 (error tag -1)
+Warning : Impossible to recover edge 6085 6085 (error tag -1)
+Warning : Impossible to recover edge 6102 6102 (error tag -1)
+Warning : Impossible to recover edge 6077 6077 (error tag -1)
+Warning : Impossible to recover edge 6103 6103 (error tag -1)
+Warning : Impossible to recover edge 6061 6061 (error tag -1)
+Warning : Impossible to recover edge 6065 6065 (error tag -1)
+Warning : Impossible to recover edge 6103 6103 (error tag -1)
+Warning : Impossible to recover edge 6084 6084 (error tag -1)
+Warning : Impossible to recover edge 6061 6061 (error tag -1)
+Warning : Impossible to recover edge 6084 6084 (error tag -1)
+Warning : Impossible to recover edge 6085 6085 (error tag -1)
+Warning : Impossible to recover edge 6102 6102 (error tag -1)
+Warning : Impossible to recover edge 6077 6077 (error tag -1)
+Warning : Impossible to recover edge 6065 6065 (error tag -1)
+Error   : Unable to recover the edge 22111 (97/119) on curve 69 (on surface 16)
+[error]    fatal exception: homogenization failed: gmsh mesh generation failed: Unable to recover the edge 22111 (97/119) on curve 69 (on surface 16) (faces=30, global_mesh_size=0.001000)

@@ -1,0 +1,2 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  offset (multi-vertex): offset distance 0.015 is 1.44488x the shortest base segment length (0.0103815 at segment 10); offset construction may be numerically fragile — consider <normalize>1</normalize>, a larger <scale>, or a denser baseline
