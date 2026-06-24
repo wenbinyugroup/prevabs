@@ -1081,24 +1081,12 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   LayeredCurve shell_curve =
       makeExistingCurve(_curve_offset->vertices(), is_closed);
   const std::size_t n = base_curve.vertices.size();
-  double min_base_edge = std::numeric_limits<double>::infinity();
-  const std::size_t edge_count = is_closed ? n : n - 1;
-  for (std::size_t i = 0; i < edge_count; ++i) {
-    const std::size_t j = (i + 1) % n;
-    min_base_edge = std::min(
-        min_base_edge,
-        base_curve.vertices[i]->point().distance(
-            base_curve.vertices[j]->point()));
-  }
-  if (std::isfinite(min_base_edge)
-      && _layup->getTotalThickness() > 0.5 * min_base_edge) {
-    PLOG(warning) << "layered offset[" << _name
-                  << "]: total thickness " << _layup->getTotalThickness()
-                  << " exceeds healthy limit 0.5 * shortest base edge ("
-                  << min_base_edge
-                  << "); falling back to legacy area/layer build";
-    return false;
-  }
+  // No min-base-edge / thickness proxy guard here: it mis-rejects healthy
+  // finely-discretized curves (tiny chords, yet the offset of a smooth arc
+  // is just a larger-radius arc that nests cleanly). The real structural
+  // gate is the per-layer `c.vertices.size() != n` 1:1 check below — a
+  // genuinely thin/pinched segment collapses there (Clipper2 merges verts)
+  // and falls back, while a healthy curve passes regardless of chord length.
   if (n < 2 || shell_curve.vertices.size() != n) {
     PLOG(warning) << "layered offset[" << _name
                   << "]: shell/base vertex count mismatch (base=" << n

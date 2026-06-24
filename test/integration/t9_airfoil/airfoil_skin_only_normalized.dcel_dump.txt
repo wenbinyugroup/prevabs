@@ -2020,7 +2020,7 @@ LOOPS (318):
   loop#304 incident=he#1027 face=nullptr kept=false adjacent=nullptr
   loop#306 incident=he#1032 face=nullptr kept=false adjacent=nullptr
   loop#308 incident=he#1036 face=nullptr kept=false adjacent=nullptr
-  loop#310 incident=he#1040 face=nullptr kept=true adjacent=nullptr
+  loop#310 incident=he#1040 face=nullptr kept=false adjacent=nullptr
   loop#311 incident=he#1046 face=nullptr kept=false adjacent=nullptr
   loop#312 incident=he#1044 face=nullptr kept=false adjacent=nullptr
   loop#314 incident=he#1050 face=nullptr kept=false adjacent=nullptr
