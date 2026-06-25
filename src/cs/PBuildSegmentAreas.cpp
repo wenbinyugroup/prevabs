@@ -52,6 +52,20 @@ bool useLayeredOffset() {
   return config.layered_offset;
 }
 
+// Whether to skip area construction over Clipper2 "dropped" base ranges.
+// Primary knob is the XML config `config.skip_dropped_areas`
+// (<general>/<skip_dropped_areas>, default OFF). The env var
+// PREVABS_SKIP_DROPPED_AREAS overrides if set (quick CLI toggle / tests).
+bool useSkipDroppedAreas() {
+  const char* raw = std::getenv("PREVABS_SKIP_DROPPED_AREAS");
+  if (raw && *raw) {
+    std::string s(raw);
+    for (auto& c : s) c = static_cast<char>(std::tolower(c));
+    return s == "1" || s == "true" || s == "on" || s == "yes";
+  }
+  return config.skip_dropped_areas;
+}
+
 namespace {
 
 // Foot-of-perpendicular distance from q to a polyline (open or closed).
@@ -181,6 +195,8 @@ LayeredCurve makeExistingCurve(
 LayeredCurve makeRawOffsetCurve(
     const std::vector<SPoint2>& base, bool closed, int clipper_side,
     double dist) {
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      "makeRawOffsetCurve (dist=" + std::to_string(dist) + ")");
   LayeredCurve curve;
   auto polys = prevabs::geo::offsetWithClipper2(
       base, closed, clipper_side, dist,
@@ -370,6 +386,8 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
     const std::string& segment_name) {
   std::vector<PDCELFace *> cells;
   const std::size_t n = std::min(inner.vertices.size(), outer.vertices.size());
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      "splitLayerBandIntoCells (n=" + std::to_string(n) + ")");
   if (band_face == nullptr || n < 2) return cells;
   if (n == 2) {
     cells.push_back(band_face);
@@ -387,7 +405,7 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
                   << "]: failed to split layer band cell at connector "
                   << i;
       prevabs::debug::segmentTracePush(
-          "splitLayerBandIntoCells: split failed @connector " + std::to_string(i));
+          "split failed @connector " + std::to_string(i));
       return {};
     }
 
@@ -414,7 +432,7 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
       PLOG(error) << "layered offset[" << segment_name
                   << "]: cannot compute split-face centroid at connector " << i;
       prevabs::debug::segmentTracePush(
-          "splitLayerBandIntoCells: centroid failure @connector "
+          "centroid failure @connector "
           + std::to_string(i) + " of " + std::to_string(n - 1));
       return {};
     }
@@ -896,8 +914,12 @@ void Segment::createIntermediateAreas(
   // face closure. Keep the legacy forward-fill behavior — sliver areas
   // are sometimes the lesser evil there. Until a proper closed-loop
   // dropped-region story exists, the closed branch keeps the gmsh risk.
+  // Gated behind useSkipDroppedAreas() (XML <general>/<skip_dropped_areas>,
+  // default OFF): the layered_offset build path no longer needs this
+  // workaround, so by default the full base range is kept and these areas
+  // are built normally.
   const bool skip_dropped_areas =
-      !closed() && !_dropped_base_ranges_lo.empty();
+      useSkipDroppedAreas() && !closed() && !_dropped_base_ranges_lo.empty();
   auto inDroppedRange = [&](int base_idx) {
     if (!skip_dropped_areas) return false;
     for (std::size_t r = 0; r < _dropped_base_ranges_lo.size(); ++r) {
@@ -1087,6 +1109,7 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
       || _face == nullptr) {
     return false;
   }
+  prevabs::debug::SegmentTraceScope _trace_scope("buildLayeredOffsetAreas");
 
   std::vector<Layer> layers = _layup->getLayers();
   const int n_layers = static_cast<int>(layers.size());
@@ -1459,11 +1482,14 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
 
     if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "building areas of segment: " + _name;
 
+  // Build-path trace: this is the area phase (appends to the per-segment file
+  // started by offsetCurveBase). The scope is the root frame of this phase;
+  // everything below nests under it. See debug/segmentBuildDump.hpp.
   prevabs::debug::segmentTraceBegin(_name);
-  prevabs::debug::segmentTracePush(
-      std::string("buildAreas: enter (closed=") + (closed() ? "Y" : "N")
-      + ", base_verts=" + std::to_string(_curve_base ? _curve_base->vertices().size() : 0)
-      + ")");
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      std::string("buildAreas (closed=") + (closed() ? "Y" : "N")
+      + ", base_verts="
+      + std::to_string(_curve_base ? _curve_base->vertices().size() : 0) + ")");
 
   // plan-20260522: re-derive the staircase from the current base/offset
   // geometry. The persisted `_base_offset_indices_pairs` is treated as a
@@ -1557,19 +1583,19 @@ void Segment::buildAreas(const BuilderConfig &bcfg) {
   // (flag-gated). Phase-2b then tries the direct layered-offset face build;
   // unsupported healthy-subset gaps fall back to the legacy path below.
   if (useLayeredOffset()) {
-    prevabs::debug::segmentTracePush("buildAreas: useLayeredOffset=yes");
+    prevabs::debug::segmentTracePush("useLayeredOffset=yes");
     validatePerLayerOffsets(bcfg);
     if (buildLayeredOffsetAreas(bcfg)) {
       validateStateInvariants("buildAreas/layered-offset");
-      prevabs::debug::segmentTracePush("buildAreas: layered OK -> AreasBuilt");
+      prevabs::debug::segmentTracePush("layered OK -> AreasBuilt");
       prevabs::debug::dumpSegmentBuild(*this, bcfg);
       segment_areas_section.setEndDetails(
           "areas=0, layers=" + std::to_string(layerCount()));
       return;
     }
-    prevabs::debug::segmentTracePush("buildAreas: layered FELL BACK -> legacy");
+    prevabs::debug::segmentTracePush("layered FELL BACK -> legacy");
   } else {
-    prevabs::debug::segmentTracePush("buildAreas: useLayeredOffset=no -> legacy");
+    prevabs::debug::segmentTracePush("useLayeredOffset=no -> legacy");
   }
 
   std::vector<PDCELVertex *> first_bound_vertices;

@@ -373,6 +373,17 @@ GeneralResult readGeneralSection(
           parseXmlBoolValue(s, "<general>/<layered_offset>");
   }
 
+  // Skip area construction over Clipper2 "dropped" base ranges
+  // (default OFF; see globalVariables.hpp).
+  rapidxml::xml_node<> *nodeSkipDroppedAreas{
+    xn_general->first_node("skip_dropped_areas")};
+  if (nodeSkipDroppedAreas) {
+    std::string s{trim(nodeSkipDroppedAreas->value())};
+    if (!s.empty())
+      config.skip_dropped_areas =
+          parseXmlBoolValue(s, "<general>/<skip_dropped_areas>");
+  }
+
   rapidxml::xml_node<> *nodeRecombineAngle{
     xn_general->first_node("recombine_angle")
   };

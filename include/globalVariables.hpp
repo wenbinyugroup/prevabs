@@ -87,6 +87,13 @@ struct PConfig {
   // default ON. Env PREVABS_LAYERED_OFFSET overrides if set.
   bool layered_offset = true;
 
+  // Skip area construction over Clipper2 "dropped" base ranges (thin-region
+  // workaround; see issue-20260521-skip-dropped-areas). XML
+  // <general>/<skip_dropped_areas>; default OFF — the layered_offset build
+  // path no longer needs the sliver-fan avoidance. Env
+  // PREVABS_SKIP_DROPPED_AREAS overrides if set.
+  bool skip_dropped_areas = false;
+
   // --- Derived display/option strings (set by processConfigVariables) ---
   std::string tool_name    = "VABS";
   std::string vabs_name    = "VABS";
@@ -126,6 +133,12 @@ extern RuntimeState runtime;
 // env var PREVABS_LAYERED_OFFSET overrides if set. Defined in
 // src/cs/PBuildSegmentAreas.cpp.
 bool useLayeredOffset();
+
+// Whether to skip area construction over Clipper2 "dropped" base ranges.
+// Reads config.skip_dropped_areas (XML <general>/<skip_dropped_areas>,
+// default OFF); the env var PREVABS_SKIP_DROPPED_AREAS overrides if set.
+// Defined in src/cs/PBuildSegmentAreas.cpp.
+bool useSkipDroppedAreas();
 
 // ---------------------------------------------------------------------------
 // Sub-structs passed explicitly to subsystems (no global dependency needed)

@@ -10,6 +10,7 @@
 #include "offset_clipper2.hpp"
 
 #include "PDCELVertex.hpp"
+#include "debug/segmentBuildDump.hpp"
 #include "plog.hpp"
 
 #include <sstream>
@@ -40,7 +41,16 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     const std::vector<OffsetPolygon>&  polygons) {
   ReverseMatchResult out;
 
-  if (base.size() < 2) return out;
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      "geo::buildBaseOffsetMapFromOffsetPolygons ("
+      + std::string(base_is_closed ? "closed" : "open")
+      + ", base=" + std::to_string(base.size())
+      + ", polys=" + std::to_string(polygons.size()) + ")");
+
+  if (base.size() < 2) {
+    prevabs::debug::segmentTracePush("base < 2 verts -> empty result");
+    return out;
+  }
 
   // Drop trailing duplicate vertex on closed Baseline (front == back
   // pointer identity is the PreVABS convention). Open inputs are
@@ -60,6 +70,8 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
   }
 
   const PairingAlgo algo = readPairingAlgoEnv();
+  prevabs::debug::segmentTracePush(
+      std::string("pairing algo=") + pairingAlgoLabel(algo));
   ReverseMatchPlan plan;
   switch (algo) {
     case PairingAlgo::SegmentProjection:
@@ -79,8 +91,12 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     PLOG(error) << "offset clipper2 bridge: failed to build a valid "
                    "BaseOffsetMap from Clipper2 output (pairing="
                 << pairingAlgoLabel(algo) << ")";
+    prevabs::debug::segmentTracePush("planReverseMatch FAILED -> empty result");
     return out;
   }
+  prevabs::debug::segmentTracePush(
+      "planReverseMatch OK (offset_points="
+      + std::to_string(plan.offset_points.size()) + ")");
 
   // Stage F multi-branch diagnostic: detail per-polygon areas so the
   // user can see which pieces were dropped and how big they were

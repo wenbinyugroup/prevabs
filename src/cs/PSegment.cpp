@@ -10,6 +10,7 @@
 #include "PModel.hpp"
 #include "debug/baseOffsetMapJson.hpp"
 #include "debug/baseOffsetMapSvg.hpp"
+#include "debug/segmentBuildDump.hpp"
 #include "geo.hpp"
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
@@ -826,6 +827,14 @@ void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
     return;
   }
 
+  // Build-path trace: this is the offset phase (root of the per-segment file;
+  // the area phase appends to it later). See debug/segmentBuildDump.hpp.
+  prevabs::debug::segmentTraceBegin(_name);
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      "offsetCurveBase (" + std::string(closed() ? "closed" : "open")
+      + ", side=" + std::to_string(side)
+      + ", dist=" + std::to_string(_layup->getTotalThickness()) + ")");
+
   logClosedBaselineCuspIfAny(
       _curve_base, _name, _layup->getTotalThickness());
 
@@ -839,8 +848,11 @@ void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
       && adaptiveThicknessTargetsSegment(_name) && !closed();
 
   if (may_use_adaptive_thickness) {
+    prevabs::debug::segmentTracePush("adaptive-thickness variable offset path");
     if (!applyAdaptiveThicknessOffset(
             side, used_adaptive_thickness, adaptive_plan)) {
+      prevabs::debug::segmentTracePush(
+          "applyAdaptiveThicknessOffset FAILED -> no offset curve");
       _curve_offset.reset();
       return;
     }

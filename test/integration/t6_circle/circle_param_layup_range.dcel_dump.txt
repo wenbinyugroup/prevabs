@@ -734,7 +734,7 @@ HALFEDGES (520):
 
 LOOPS (55):
   loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
-  loop#3 incident=he#508 face=f#593902949 kept=true adjacent=nullptr
+  loop#3 incident=he#15 face=f#3 kept=true adjacent=nullptr
   loop#4 incident=he#19 face=f#4 kept=true adjacent=nullptr
   loop#5 incident=he#185 face=f#5 kept=true adjacent=nullptr
   loop#6 incident=he#255 face=f#6 kept=true adjacent=nullptr

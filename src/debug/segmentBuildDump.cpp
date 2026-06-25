@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <limits>
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -175,38 +176,98 @@ bool segmentDumpEnabled() {
   return on;
 }
 
+bool segmentTraceEnabled() {
+  // The full dump implies the trace; PREVABS_SEGMENT_PATH enables the trace
+  // alone (no SVG/JSON), as used by the integration suite.
+  static const bool on = [] {
+    if (segmentDumpEnabled()) return true;
+    const char *raw = std::getenv("PREVABS_SEGMENT_PATH");
+    return raw != nullptr && *raw != '\0';
+  }();
+  return on;
+}
+
 namespace {
-std::vector<std::string> &traceBuffer() {
-  static std::vector<std::string> buf;
-  return buf;
+
+// Per-segment trace state. Keyed by segment name so the offset phase and the
+// area phase — which run in separate all-segments passes — append to the same
+// file even though they are not adjacent in time.
+struct SegTrace {
+  std::string file;                 // resolved <file_base>.<seg>.segment.path.txt
+  std::vector<std::string> steps;   // indented step lines (without trailing \n)
+  bool started = false;             // file truncated + header written this run
+};
+
+std::map<std::string, SegTrace> &traceStore() {
+  static std::map<std::string, SegTrace> s;
+  return s;
 }
-std::string &tracePathFile() {
-  static std::string path;
-  return path;
+// The segment currently being traced (set by segmentTraceBegin); empty when no
+// segment is active, in which case pushes are dropped (e.g. offset helpers
+// reached from a non-segment context such as a unit test).
+std::string &currentSeg() {
+  static std::string s;
+  return s;
 }
+// Current call-stack depth (one indent level == 2 spaces).
+int &traceDepth() {
+  static int d = 0;
+  return d;
+}
+
 }  // namespace
 
 void segmentTraceBegin(const std::string &segname) {
-  if (!segmentDumpEnabled()) return;
-  traceBuffer().clear();
-  tracePathFile() = config.file_directory + config.file_base_name + "."
-                    + segname + ".segment.path.txt";
-  // Truncate + header so a crash mid-build still leaves a readable file.
-  std::ofstream ps(tracePathFile(), std::ios::trunc);
-  if (ps) ps << "# build path for segment '" << segname << "'\n";
-}
-
-void segmentTracePush(const std::string &step) {
-  if (!segmentDumpEnabled()) return;
-  traceBuffer().push_back(step);
-  // Append + flush immediately (close) so the line survives a later crash.
-  if (!tracePathFile().empty()) {
-    std::ofstream ps(tracePathFile(), std::ios::app);
-    if (ps) ps << "  " << traceBuffer().size() << ". " << step << "\n";
+  if (!segmentTraceEnabled()) return;
+  currentSeg() = segname;
+  traceDepth() = 0;
+  SegTrace &t = traceStore()[segname];
+  if (t.file.empty()) {
+    t.file = config.file_directory + config.file_base_name + "."
+             + segname + ".segment.path.txt";
+  }
+  // Truncate + header once per segment per process; later phases append.
+  if (!t.started) {
+    t.started = true;
+    t.steps.clear();
+    std::ofstream ps(t.file, std::ios::trunc);
+    if (ps) ps << "# build path for segment '" << segname << "'\n";
   }
 }
 
-const std::vector<std::string> &segmentTraceSteps() { return traceBuffer(); }
+void segmentTracePush(const std::string &step) {
+  if (!segmentTraceEnabled()) return;
+  const std::string &seg = currentSeg();
+  if (seg.empty()) return;
+  SegTrace &t = traceStore()[seg];
+  std::string line(static_cast<std::size_t>(2 * std::max(0, traceDepth())), ' ');
+  line += step;
+  t.steps.push_back(line);
+  // Append + flush immediately (close) so the line survives a later crash.
+  if (!t.file.empty()) {
+    std::ofstream ps(t.file, std::ios::app);
+    if (ps) ps << line << "\n";
+  }
+}
+
+const std::vector<std::string> &segmentTraceSteps() {
+  static const std::vector<std::string> empty;
+  const std::string &seg = currentSeg();
+  if (seg.empty()) return empty;
+  return traceStore()[seg].steps;
+}
+
+SegmentTraceScope::SegmentTraceScope(const std::string &label)
+    : active_(segmentTraceEnabled()) {
+  if (!active_) return;
+  segmentTracePush(label);
+  ++traceDepth();
+}
+
+SegmentTraceScope::~SegmentTraceScope() {
+  if (!active_) return;
+  if (traceDepth() > 0) --traceDepth();
+}
 
 void dumpSegmentBuild(Segment &seg, const BuilderConfig &bcfg) {
   if (!segmentDumpEnabled()) return;

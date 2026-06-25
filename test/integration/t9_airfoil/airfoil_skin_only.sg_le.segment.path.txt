@@ -1,7 +1,19 @@
 # build path for segment 'sg_le'
-  1. buildAreas: enter (closed=N, base_verts=10)
-  2. buildAreas: useLayeredOffset=yes
-  3. layered: enter (n_layers=3, side=1)
-  4. layered: open multi-layer route-ii (n_layers=3)
-  5. layered: tiled all layers (SUCCESS, faces=27)
-  6. buildAreas: layered OK -> AreasBuilt
+offsetCurveBase (open, side=1, dist=0.010431)
+  geo::buildBaseOffsetMap (open, resample=N)
+    geo::buildBaseOffsetMapFromOffsetPolygons (open, base=10, polys=1)
+      pairing algo=segment
+      planReverseMatch OK (offset_points=10)
+    OK (offset_vertices=10, base=10)
+buildAreas (closed=N, base_verts=10)
+  useLayeredOffset=yes
+  buildLayeredOffsetAreas
+    layered: enter (n_layers=3, side=1)
+    layered: open multi-layer route-ii (n_layers=3)
+    makeRawOffsetCurve (dist=0.000381)
+    makeRawOffsetCurve (dist=0.000510)
+    splitLayerBandIntoCells (n=10)
+    splitLayerBandIntoCells (n=10)
+    splitLayerBandIntoCells (n=10)
+    layered: tiled all layers (SUCCESS, faces=27)
+  layered OK -> AreasBuilt

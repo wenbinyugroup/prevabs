@@ -75,11 +75,11 @@
 
   <layups>
     <layup name="layup4">
-      <layer lamina="la_gelcoat_0000381">0</layer>
       <layer lamina="la_nexus_000051">0</layer>
-      <layer lamina="la_db_frp_000053">20:17</layer>
-      <layer lamina="la_balsa_0003125">0</layer>
-      <layer lamina="la_db_frp_000053">0:16</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_nexus_000051">0:17</layer>
+      <layer lamina="la_nexus_000051">0</layer>
+      <layer lamina="la_nexus_000051">0:16</layer>
     </layup>
   </layups>
 

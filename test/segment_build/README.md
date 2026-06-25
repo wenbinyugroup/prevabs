@@ -30,7 +30,7 @@ runner 对每个 `<case>.xml` 用
 |---|---|
 | `<case>.<seg>.segment.svg` | **人读**：base(蓝)/offset·shell(橙)/逐层 tiled face（按层填色）；翻转面红、sliver 橙高亮 |
 | `<case>.<seg>.segment.json` | **机读**：route、层数、face 数、每 face {面积, 最小角, 层, 材料}、inverted/sliver/degenerate 标志、`path` 分支轨迹 |
-| `<case>.<seg>.segment.path.txt` | **分支轨迹**：该段在 `buildAreas`/`buildLayeredOffsetAreas` 各条件分支实际走的哪条路（layered/legacy、回退原因、单层/闭合/顶点不匹配/ambiguous-split）。比 debug log 干净 |
+| `<case>.<seg>.segment.path.txt` | **调用栈/分支轨迹**：该段构建几何时走过的函数调用栈，跨 **offset 阶段**（`offsetCurveBase`→`buildBaseOffsetMap`→`buildBaseOffsetMapFromOffsetPolygons`）与 **area 阶段**（`buildAreas`→`buildLayeredOffsetAreas`→`makeRawOffsetCurve`/`splitLayerBandIntoCells`），并标注每个决策分支（layered/legacy、回退原因、单层/闭合/顶点不匹配/ambiguous-split）。**缩进 = 调用深度**。比 debug log 干净 |
 | `<case>.msh` | gmsh 网格（可视化/下游） |
 | `<case>.dcel_dump.txt` | DCEL 文本转储 |
 

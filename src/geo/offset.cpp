@@ -14,6 +14,7 @@
 
 #include "offset_clipper2.hpp"
 #include "geo_diagnostics.hpp"
+#include "debug/segmentBuildDump.hpp"
 
 #include "geo_types.hpp"
 
@@ -496,6 +497,10 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
                        std::vector<int> *dropped_base_ranges_lo,
                        std::vector<int> *dropped_base_ranges_hi,
                        bool resample) {
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      "geo::buildBaseOffsetMap (" + std::string(geom.base_is_closed ? "closed"
+                                                                     : "open")
+      + ", resample=" + (resample ? "Y" : "N") + ")");
   (void)side;
   offset_vertices.clear();
   id_pairs.clear();
@@ -506,12 +511,14 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
 
   if (!geom.ok) {
     PLOG(error) << "buildBaseOffsetMap: offset geometry is empty / not ok";
+    prevabs::debug::segmentTracePush("offset geometry not ok -> FAIL");
     return 0;
   }
 
   // 2-vertex fast path: trivial 1:1 staircase, no resample / reverse-match.
   if (geom.two_vertex && geom.polygons.size() == 1
       && geom.polygons[0].points.size() == 2) {
+    prevabs::debug::segmentTracePush("two-vertex fast path (1:1 staircase)");
     const auto &pts = geom.polygons[0].points;
     offset_vertices.push_back(new PDCELVertex(0.0, pts[0].x(), pts[0].y()));
     offset_vertices.push_back(new PDCELVertex(0.0, pts[1].x(), pts[1].y()));
@@ -543,6 +550,7 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
     PLOG(error)
         << "buildBaseOffsetMap (" << (geom.base_is_closed ? "closed" : "open")
         << "): reverse-match bridge failed to build a valid BaseOffsetMap";
+    prevabs::debug::segmentTracePush("reverse-match bridge FAILED -> FAIL");
     return 0;
   }
 
@@ -587,5 +595,8 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
       base.size(), offset_vertices.size(), geom.base_is_closed, dist);
 
   assertValidBaseOffsetMap(id_pairs, "offset clipper2 backend");
+  prevabs::debug::segmentTracePush(
+      "OK (offset_vertices=" + std::to_string(offset_vertices.size())
+      + ", base=" + std::to_string(base.size()) + ")");
   return 1;
 }

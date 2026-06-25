@@ -4,6 +4,7 @@ main
 - param_layup.xml
 - mh104_9webs.xml
 - mh104_te_only.xml
+- mh104_te_only_1ply.xml
 - airfoil_skin_only.xml
 - airfoil_skin_only_normalized.xml
 - uh60a_arc_leading_web.xml

@@ -1,8 +1,19 @@
 # build path for segment 'sg_lps_2'
-  1. buildAreas: enter (closed=N, base_verts=8)
-  2. buildAreas: useLayeredOffset=yes
-  3. layered: enter (n_layers=3, side=1)
-  4. layered: open multi-layer route-ii (n_layers=3)
-  5. splitLayerBandIntoCells: AMBIGUOUS tail attribution @connector 1 of 7
-  6. layered: splitLayerBandIntoCells FAILED @layer 1 -> FALLBACK (DCEL already mutated/dirty)
-  7. buildAreas: layered FELL BACK -> legacy
+offsetCurveBase (open, side=1, dist=0.018381)
+  geo::buildBaseOffsetMap (open, resample=N)
+    geo::buildBaseOffsetMapFromOffsetPolygons (open, base=8, polys=1)
+      pairing algo=segment
+      planReverseMatch OK (offset_points=8)
+    OK (offset_vertices=8, base=8)
+buildAreas (closed=N, base_verts=8)
+  useLayeredOffset=yes
+  buildLayeredOffsetAreas
+    layered: enter (n_layers=3, side=1)
+    layered: open multi-layer route-ii (n_layers=3)
+    makeRawOffsetCurve (dist=0.000381)
+    makeRawOffsetCurve (dist=0.000510)
+    splitLayerBandIntoCells (n=8)
+    splitLayerBandIntoCells (n=8)
+    splitLayerBandIntoCells (n=8)
+    layered: tiled all layers (SUCCESS, faces=21)
+  layered OK -> AreasBuilt

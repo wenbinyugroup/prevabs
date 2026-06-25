@@ -40,9 +40,14 @@ function(register_tests dir_name)
                 COMMAND          "${PREVABS}" -i "${xml_file}" --hm ${PREVABS_ARGS}
                 WORKING_DIRECTORY "${test_dir}"
             )
+            # PREVABS_SEGMENT_PATH makes each laminate segment emit its
+            # branch trajectory (<case>.<segment>.segment.path.txt) — which
+            # conditional path it took through buildAreas. Cheap: text only,
+            # no SVG/JSON dump (that needs PREVABS_SEGMENT_DUMP).
             set_tests_properties("${dir_name}/${base}" PROPERTIES
                 TIMEOUT 15
                 LABELS  "${dir_name}"
+                ENVIRONMENT "PREVABS_SEGMENT_PATH=1"
             )
             message(STATUS "  registered: ${dir_name}/${base}")
         endif()

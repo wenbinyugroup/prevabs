@@ -6,7 +6,10 @@
   run  (default) — cmake configure + ctest
   clean          — delete generated outputs, keep INDEX.txt and listed source files
   A run writes a Markdown report to test/integration/build_msvc/integration-report.md.
-  With -OpenGmsh, open each generated section in Gmsh after the run.
+  Each case runs with PREVABS_SEGMENT_PATH=1, so every laminate segment emits a
+  branch-trajectory file <case>.<segment>.segment.path.txt (which conditional
+  path it took through buildAreas); the report ends with a "Build paths" section
+  aggregating them. With -OpenGmsh, open each generated section in Gmsh after the run.
 
   Test names follow the pattern <dir>/<case>, e.g. t1_strip/strip.
   CTest -R accepts a regex, so "t1" matches all t1_strip/* cases.
@@ -189,6 +192,32 @@ function Get-JUnitCases([string]$JUnitPath) {
     return @($junit.SelectNodes("/testsuite/testcase"))
 }
 
+# Collect the per-segment branch-trajectory files a case emitted under
+# PREVABS_SEGMENT_PATH=1. Returns objects { segment; steps }, one per segment.
+function Get-CaseBuildPaths([string]$CaseName) {
+    $parts = $CaseName -split "/", 2
+    if ($parts.Count -ne 2) { return @() }
+    $caseDir  = Join-Path $integrationDir $parts[0]
+    $caseBase = $parts[1]
+    if (-not (Test-Path $caseDir)) { return @() }
+
+    $files = @(Get-ChildItem -Path $caseDir `
+        -Filter "$caseBase.*.segment.path.txt" -ErrorAction SilentlyContinue |
+        Sort-Object Name)
+
+    $result = @()
+    foreach ($f in $files) {
+        # filename: <caseBase>.<segment>.segment.path.txt
+        $seg = $f.Name
+        if ($seg.StartsWith("$caseBase.")) { $seg = $seg.Substring($caseBase.Length + 1) }
+        $seg = $seg -replace "\.segment\.path\.txt$", ""
+        # Drop the leading "# build path ..." header comment(s).
+        $steps = @(Get-Content $f.FullName | Where-Object { $_ -notmatch "^\s*#" })
+        $result += [pscustomobject]@{ segment = $seg; steps = $steps }
+    }
+    return $result
+}
+
 function Write-IntegrationReport(
     [string]$JUnitPath,
     [string]$MarkdownPath,
@@ -255,6 +284,40 @@ function Write-IntegrationReport(
         $name = Get-XmlAttribute $case "name"
         $time = Format-Duration (Get-XmlAttribute $case "time")
         $lines.Add("| $status | ``$name`` | $time |")
+    }
+
+    # Build paths: which conditional branch each laminate segment took through
+    # buildAreas (emitted per segment under PREVABS_SEGMENT_PATH=1). Only cases
+    # that actually built a laminate segment appear here.
+    $pathCases = @()
+    foreach ($case in $cases) {
+        $name = Get-XmlAttribute $case "name"
+        if (-not $name -or $name.EndsWith(".logcheck")) { continue }
+        $segs = @(Get-CaseBuildPaths $name)
+        if ($segs.Count -gt 0) {
+            $pathCases += [pscustomobject]@{ name = $name; segments = $segs }
+        }
+    }
+    if ($pathCases.Count -gt 0) {
+        $lines.Add("")
+        $lines.Add("## Build paths")
+        $lines.Add("")
+        $lines.Add("Call-stack trajectory each laminate segment took while its geometry was built — offset phase (``offsetCurveBase`` -> ``buildBaseOffsetMap`` -> ...) then area phase (``buildAreas`` -> ``buildLayeredOffsetAreas`` -> ...). Indentation = call depth. Per-segment file: ``<case>.<segment>.segment.path.txt``.")
+        foreach ($pc in $pathCases) {
+            $lines.Add("")
+            $lines.Add("### ``$($pc.name)``")
+            foreach ($seg in $pc.segments) {
+                $lines.Add("")
+                $lines.Add("**$($seg.segment)**")
+                $lines.Add('```')
+                if ($seg.steps.Count -eq 0) {
+                    $lines.Add("(no steps recorded)")
+                } else {
+                    foreach ($step in $seg.steps) { $lines.Add($step.TrimEnd()) }
+                }
+                $lines.Add('```')
+            }
+        }
     }
 
     Set-Content -Path $MarkdownPath -Value $lines -Encoding utf8

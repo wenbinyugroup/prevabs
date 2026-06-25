@@ -343,6 +343,61 @@ void anchorAtZero(BaseOffsetMap& id_pairs,
   id_pairs.insert(id_pairs.begin(), prepend.begin(), prepend.end());
 }
 
+// ---------------------------------------------------------------------------
+// Re-anchor interior dropped-range base vertices to their nearest bounding
+// offset vertex (OPEN inputs only).
+//
+// buildIdPairs forward-fills every base index inside a dropped gap to the
+// offset point *before* the gap (k-1). At a thin TE / pinch the far side of
+// the collapsed arc sits much closer to the offset point *after* the gap
+// (k); anchoring it to k-1 makes the area ribs fan back across the section
+// and self-intersect (gmsh "Unable to recover the edge"). For each interior
+// gap [lo,hi] bounded by offset o_before (pair at base lo-1) and o_after
+// (pair at base hi+1), o_after == o_before + 1, so we may switch the
+// assignment from o_before to o_after at the first base vertex that is
+// geometrically closer to o_after, keeping it monotone — the staircase stays
+// valid (each step changes base/offset by at most 1).
+void reanchorDroppedRanges(BaseOffsetMap& id_pairs,
+                           const std::vector<int>& dropped_lo,
+                           const std::vector<int>& dropped_hi,
+                           const std::vector<SPoint2>& base_pts,
+                           const std::vector<SPoint2>& offset_pts) {
+  if (id_pairs.empty()) return;
+  auto dist2 = [](const SPoint2& a, const SPoint2& b) {
+    const double dx = a.x() - b.x(), dy = a.y() - b.y();
+    return dx * dx + dy * dy;
+  };
+  const int n_base   = static_cast<int>(base_pts.size());
+  const int n_offset = static_cast<int>(offset_pts.size());
+  for (std::size_t r = 0; r < dropped_lo.size(); ++r) {
+    const int lo = dropped_lo[r];
+    const int hi = dropped_hi[r];
+    // Skip leading (anchorAtZero) and tail forward-fill drops — they have
+    // only one bounding offset, so there is nothing nearer to switch to.
+    if (lo <= 0 || hi >= n_base - 1) continue;
+    // Bounding offsets: last pair at base lo-1 (highest offset there) and
+    // first pair at base hi+1 (lowest offset there) flank the gap.
+    int o_before = -1, o_after = -1;
+    for (const auto& p : id_pairs) {
+      if (p.base == lo - 1) o_before = p.offset;
+      if (p.base == hi + 1 && o_after < 0) o_after = p.offset;
+    }
+    if (o_before < 0 || o_after != o_before + 1) continue;
+    if (o_after >= n_offset) continue;
+    bool switched = false;
+    for (auto& p : id_pairs) {
+      if (p.base < lo || p.base > hi) continue;
+      if (p.base >= n_base) continue;
+      if (!switched
+          && dist2(base_pts[p.base], offset_pts[o_after])
+               < dist2(base_pts[p.base], offset_pts[o_before])) {
+        switched = true;
+      }
+      p.offset = switched ? o_after : o_before;
+    }
+  }
+}
+
 }  // namespace
 
 
@@ -433,6 +488,17 @@ ReverseMatchPlan planReverseMatch(
   // closed and open inputs.
   anchorAtZero(out.id_pairs, out.dropped_base_ranges_lo,
                out.dropped_base_ranges_hi);
+
+  // Re-anchor interior dropped-range base vertices to their nearest bounding
+  // offset vertex so thin-TE pinch ribs don't fan back and self-intersect.
+  // OPEN only — closed base indexing wraps (modular) and ends with the
+  // (N_distinct, M) wrap pair, which the linear re-anchor doesn't model.
+  if (!base_is_closed) {
+    reanchorDroppedRanges(out.id_pairs,
+                          out.dropped_base_ranges_lo,
+                          out.dropped_base_ranges_hi,
+                          base, points_rot);
+  }
 
   out.offset_points    = std::move(points_rot);
   out.offset_resampled = std::move(resampled_rot);

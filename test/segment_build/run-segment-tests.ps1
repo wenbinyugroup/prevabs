@@ -125,9 +125,10 @@ foreach ($c in $cases) {
       degenerate = $d.n_degenerate; seconds = $run.seconds; status = $status
       notes = ($notes -join "; "); path = @($d.path)
     }
-    # Echo the build path to the console for immediate inspection.
+    # Echo the build path to the console for immediate inspection. Steps are
+    # already indented by call-stack depth, so print them verbatim.
     Write-Host ("    [{0}] path:" -f $d.segment) -ForegroundColor DarkGray
-    foreach ($step in $d.path) { Write-Host ("      - {0}" -f $step) -ForegroundColor DarkGray }
+    foreach ($step in $d.path) { Write-Host ("      {0}" -f $step) -ForegroundColor DarkGray }
   }
 }
 
@@ -167,8 +168,8 @@ foreach ($r in $rows) {
   if ($r.path.Count -eq 0) {
     [void]$md.AppendLine("(no path: $($r.notes))")
   } else {
-    $i = 1
-    foreach ($step in $r.path) { [void]$md.AppendLine(("{0}. {1}" -f $i, $step)); $i++ }
+    # Steps carry their own call-stack indentation; print verbatim.
+    foreach ($step in $r.path) { [void]$md.AppendLine($step) }
   }
   [void]$md.AppendLine('```')
 }
