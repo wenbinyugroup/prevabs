@@ -284,8 +284,21 @@ static PDCELVertex *intersectAndTrimOffsetWithBound(
 
   findAllIntersections(
       seg->curveOffset()->vertices(), bound, i1s, ibs, u1s, ubs);
+  // Prefer a genuine INNER crossing (offset-curve param u1 in [0,1]): there the
+  // bound truly cuts (shortens) the offset curve. Head/tail extrapolated
+  // intersections — e.g. a Butt-cap leading vertex left over when a very short
+  // base edge collapses under a large offset — are only used as a fallback when
+  // no inner crossing exists (concave joints where the offset falls short of the
+  // bound and must be extended). This enforces "the joint bound only shortens an
+  // inward offset, never lengthens it"; see
+  // local/debug-20260625-offset-bound-intersection-analysis.md.
   ls_u = getIntersectionLocation(
-      seg->curveOffset()->vertices(), i1s, u1s, end, 0, ls_i, j1);
+      seg->curveOffset()->vertices(), i1s, u1s, end, /*inner_only*/ 1, ls_i, j1);
+  if (j1 < 0) {
+    ls_u = getIntersectionLocation(
+        seg->curveOffset()->vertices(), i1s, u1s, end, /*inner_only*/ 0, ls_i,
+        j1);
+  }
   ls_bu = ubs[j1];
   ls_bi = ibs[j1];
 
