@@ -401,6 +401,86 @@ void reanchorDroppedRanges(BaseOffsetMap& id_pairs,
 }  // namespace
 
 
+// ===========================================================================
+// collapseCoincidentOffsetSteps — drop zero-length offset edges.
+//
+// At a sharp concave cusp Clipper2 (precision=8) can emit two coincident
+// offset vertices for a single base vertex: a "vertical" staircase step
+// (same base index, offset index advances by 1) whose two offset points
+// are geometrically identical. `staircaseValid` accepts it (the index
+// step is monotone) but downstream `createIntermediateAreas` turns it
+// into a zero-width area with a zero-length base edge, which corrupts the
+// DCEL half-edge linkage and sends `walkLoopWithLimit` into a runaway
+// allocation (std::bad_alloc). Removing the duplicate offset vertex is
+// geometrically lossless (a zero-length edge carries no shape) and
+// restores the 1:1 base↔offset count so the layered-offset path no longer
+// falls back to the fragile legacy builder.
+//
+// OPEN inputs only: a closed staircase wraps (modular) and ends with the
+// (N, M) wrap pair, which this linear re-index does not model.
+// ===========================================================================
+void collapseCoincidentOffsetSteps(ReverseMatchPlan& m) {
+  if (m.closed) return;
+  if (m.offset_points.size() < 2 || m.id_pairs.size() < 2) return;
+
+  // Coincidence threshold: comfortably above the Clipper2 precision=8
+  // grid (1e-8) yet orders of magnitude below any real offset/edge
+  // feature size, so only genuine zero-length steps are folded.
+  const double tol2 = 1e-6 * 1e-6;
+
+  const int n_off = static_cast<int>(m.offset_points.size());
+  std::vector<bool> drop(n_off, false);
+  for (std::size_t i = 1; i < m.id_pairs.size(); ++i) {
+    const int db = m.id_pairs[i].base   - m.id_pairs[i - 1].base;
+    const int dd = m.id_pairs[i].offset - m.id_pairs[i - 1].offset;
+    if (db != 0 || dd != 1) continue;  // only same-base vertical steps
+    const int j = m.id_pairs[i].offset;
+    if (j < 1 || j >= n_off) continue;
+    const double dx = m.offset_points[j].x() - m.offset_points[j - 1].x();
+    const double dy = m.offset_points[j].y() - m.offset_points[j - 1].y();
+    if (dx * dx + dy * dy <= tol2) drop[j] = true;
+  }
+
+  bool any = false;
+  for (bool b : drop) if (b) { any = true; break; }
+  if (!any) return;
+
+  // old offset index -> new offset index (dropped ones fold onto their
+  // surviving predecessor).
+  std::vector<int> remap(n_off, 0);
+  std::vector<SPoint2> new_pts;
+  std::vector<bool> new_res;
+  const bool have_res = m.offset_resampled.size() == m.offset_points.size();
+  int next = 0;
+  for (int j = 0; j < n_off; ++j) {
+    if (drop[j]) {
+      remap[j] = (next > 0) ? next - 1 : 0;
+    } else {
+      remap[j] = next++;
+      new_pts.push_back(m.offset_points[j]);
+      if (have_res) new_res.push_back(m.offset_resampled[j]);
+    }
+  }
+
+  // Re-index id_pairs; a folded pair becomes an exact duplicate of its
+  // predecessor and is dropped to keep the staircase strictly stepping.
+  BaseOffsetMap new_pairs;
+  new_pairs.reserve(m.id_pairs.size());
+  for (std::size_t i = 0; i < m.id_pairs.size(); ++i) {
+    const BaseOffsetPair p(m.id_pairs[i].base, remap[m.id_pairs[i].offset]);
+    if (!new_pairs.empty() && new_pairs.back().base == p.base
+        && new_pairs.back().offset == p.offset) {
+      continue;
+    }
+    new_pairs.push_back(p);
+  }
+
+  m.offset_points    = std::move(new_pts);
+  if (have_res) m.offset_resampled = std::move(new_res);
+  m.id_pairs         = std::move(new_pairs);
+}
+
+
 ReverseMatchPlan planReverseMatch(
     const std::vector<SPoint2>&        base,
     bool                               base_is_closed,

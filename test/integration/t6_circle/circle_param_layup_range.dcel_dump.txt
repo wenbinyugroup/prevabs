@@ -732,14 +732,15 @@ HALFEDGES (520):
   he#6 scope=background src=v#4 twin=he#5 next=he#4 prev=he#8 loop=nullptr face=nullptr
   he#8 scope=background src=v#1 twin=he#7 next=he#6 prev=he#2 loop=nullptr face=nullptr
 
-LOOPS (55):
+LOOPS (56):
   loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
-  loop#3 incident=he#15 face=f#3 kept=true adjacent=nullptr
+  loop#3 incident=he#450 face=f#3 kept=true adjacent=nullptr
   loop#4 incident=he#19 face=f#4 kept=true adjacent=nullptr
   loop#5 incident=he#185 face=f#5 kept=true adjacent=nullptr
   loop#6 incident=he#255 face=f#6 kept=true adjacent=nullptr
   loop#7 incident=he#28 face=f#7 kept=true adjacent=nullptr
   loop#8 incident=he#34 face=f#8 kept=true adjacent=nullptr
+  loop#9 incident=he#19 face=nullptr kept=false adjacent=nullptr
   loop#10 incident=he#184 face=nullptr kept=false adjacent=nullptr
   loop#13 incident=he#348 face=nullptr kept=false adjacent=nullptr
   loop#15 incident=he#350 face=nullptr kept=false adjacent=nullptr

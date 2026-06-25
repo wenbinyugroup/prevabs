@@ -94,6 +94,17 @@ ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
     prevabs::debug::segmentTracePush("planReverseMatch FAILED -> empty result");
     return out;
   }
+  // Drop zero-length offset edges (coincident offset vertices Clipper2
+  // emits at sharp concave cusps). Left in place they produce a
+  // zero-width area downstream that corrupts the DCEL (bad_alloc); see
+  // collapseCoincidentOffsetSteps. No-op when none are present.
+  const std::size_t pts_before = plan.offset_points.size();
+  collapseCoincidentOffsetSteps(plan);
+  if (plan.offset_points.size() != pts_before) {
+    PLOG(debug) << "offset clipper2 bridge: collapsed "
+                << (pts_before - plan.offset_points.size())
+                << " coincident offset vertex/vertices (zero-length step)";
+  }
   prevabs::debug::segmentTracePush(
       "planReverseMatch OK (offset_points="
       + std::to_string(plan.offset_points.size()) + ")");

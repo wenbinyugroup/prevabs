@@ -177,6 +177,16 @@ ReverseMatchPlan planReverseMatch(
     double                             dist,
     const std::vector<OffsetPolygon>&  polygons);
 
+/// Collapse degenerate "vertical" staircase steps whose two offset
+/// endpoints are geometrically coincident (a zero-length offset edge
+/// Clipper2 can emit at a sharp concave cusp). Drops the duplicate
+/// offset vertex and re-indexes `id_pairs` / `offset_points` /
+/// `offset_resampled` in place, restoring a 1:1 base↔offset count so the
+/// layered-offset builder does not fall back to the legacy path (whose
+/// zero-width area corrupts the DCEL → bad_alloc). OPEN inputs only;
+/// closed plans (which wrap modularly) are left untouched.
+void collapseCoincidentOffsetSteps(ReverseMatchPlan& m);
+
 /// Alternative reverse-match using a **point-to-point nearest-vertex**
 /// criterion instead of the segment-projection + segment-midpoint
 /// rounding used by `planReverseMatch` / `attributeOne`.
