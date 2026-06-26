@@ -238,11 +238,38 @@ void PModel::createGmshVertices() {
 
   int _gv_tag;
 
+  // Distinct DCEL vertices that are geometrically coincident (within
+  // VERTEX_MERGE_TOL) must share a single Gmsh point, otherwise Gmsh meshes
+  // each separately and any element spanning the coincident pair is degenerate
+  // (zero area -> negative Jacobian, rejected by VABS). Such coincident pairs
+  // arise where two adjacent sub-segments of different total thickness build
+  // their per-layer interface vertices independently on a shared end-cap; the
+  // two parametric interpolations land ~1e-9 apart, just above GEO_TOL, so the
+  // DCEL's own coincidence-merge does not unify them. We cannot widen that
+  // merge (it runs mid-build and the area-build code is not robust to its
+  // vertices merging), so the sharing is realized here, at the export boundary,
+  // where the DCEL is already complete. Created points are recorded so coincident
+  // followers reuse the same tag.
+  struct CreatedPoint { double x, y, z; int tag; };
+  std::vector<CreatedPoint> created;
+
+  auto tagForLocation = [&](PDCELVertex *v) -> int {
+    const double vx = v->x(), vy = v->y(), vz = v->z();
+    for (const auto &c : created) {
+      const double dx = c.x - vx, dy = c.y - vy, dz = c.z - vz;
+      if (std::sqrt(dx * dx + dy * dy + dz * dz) <= VERTEX_MERGE_TOL) {
+        return c.tag;
+      }
+    }
+    int tag = gmsh::model::geo::addPoint(vx, vy, vz, _global_mesh_size);
+    created.push_back({vx, vy, vz, tag});
+    return tag;
+  };
+
   for (auto v : _dcel->vertices()) {
 
     if (v->isFinite()) {
-      _gv_tag = gmsh::model::geo::addPoint(
-        v->x(), v->y(), v->z(), _global_mesh_size);
+      _gv_tag = tagForLocation(v);
       _gmsh_vertex_tags[v] = _gv_tag;
             PLOG_DEBUG_AT(geo) <<
         "  vertex " + v->printString()
@@ -390,39 +417,36 @@ void PModel::createGmshEdges() {
 
       if (_ge_tag == 0) {
 
-        // New Gmsh line for the pair of half edges
-        if (he->sign() > 0) {
-          int src_tag = _gmsh_vertex_tags[he->source()];
-          int tgt_tag = _gmsh_vertex_tags[he->target()];
-                    PLOG_DEBUG_AT(geo) <<
-            "  he " + he->printString()
-            + " | src_tag=" + std::to_string(src_tag)
-            + " tgt_tag=" + std::to_string(tgt_tag);
-          if (src_tag == 0 || tgt_tag == 0) {
-            PLOG(error) << "  vertex tag is 0 for he " + he->printString()
-              + " | src=" + he->source()->printString()
-              + " (tag=" + std::to_string(src_tag) + ")"
-              + " | tgt=" + he->target()->printString()
-              + " (tag=" + std::to_string(tgt_tag) + ")";
-          }
-          _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
+        // Resolve the endpoint Gmsh tags from the positively-signed half-edge.
+        PDCELHalfEdge *he_pos = (he->sign() > 0) ? he : he->twin();
+        int src_tag = _gmsh_vertex_tags[he_pos->source()];
+        int tgt_tag = _gmsh_vertex_tags[he_pos->target()];
+                  PLOG_DEBUG_AT(geo) <<
+          "  he " + he_pos->printString()
+          + " | src_tag=" + std::to_string(src_tag)
+          + " tgt_tag=" + std::to_string(tgt_tag);
+        if (src_tag == 0 || tgt_tag == 0) {
+          PLOG(error) << "  vertex tag is 0 for he " + he_pos->printString()
+            + " | src=" + he_pos->source()->printString()
+            + " (tag=" + std::to_string(src_tag) + ")"
+            + " | tgt=" + he_pos->target()->printString()
+            + " (tag=" + std::to_string(tgt_tag) + ")";
         }
-        else {
-          int src_tag = _gmsh_vertex_tags[he->twin()->source()];
-          int tgt_tag = _gmsh_vertex_tags[he->twin()->target()];
+
+        // Endpoints merged to the same Gmsh point: this is a zero-length riser
+        // (the cap-step between two coincident layer-interface vertices). Emit
+        // no Gmsh line and mark both half-edges collapsed so face-loop assembly
+        // skips them; the loop stays closed because both endpoints are the same
+        // point.
+        if (src_tag == tgt_tag) {
+          _gmsh_collapsed_halfedges.insert(he);
+          _gmsh_collapsed_halfedges.insert(he->twin());
                     PLOG_DEBUG_AT(geo) <<
-            "  he(twin) " + he->twin()->printString()
-            + " | src_tag=" + std::to_string(src_tag)
-            + " tgt_tag=" + std::to_string(tgt_tag);
-          if (src_tag == 0 || tgt_tag == 0) {
-            PLOG(error) << "  vertex tag is 0 for he(twin) " + he->twin()->printString()
-              + " | src=" + he->twin()->source()->printString()
-              + " (tag=" + std::to_string(src_tag) + ")"
-              + " | tgt=" + he->twin()->target()->printString()
-              + " (tag=" + std::to_string(tgt_tag) + ")";
-          }
-          _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
+            "  he " + he->printString() + " collapsed (coincident endpoints)";
+          continue;
         }
+
+        _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
 
         // Interface
         if (_itf_output) {
@@ -474,6 +498,11 @@ void PModel::createGmshFaces() {
       // Add outer loop
             PLOG_DEBUG_AT(geo) << "  adding outer loop";
       walkLoopWithLimit(f->outer(), [&](PDCELHalfEdge *he) {
+        // Skip zero-length risers collapsed by vertex dedup: no Gmsh line
+        // exists for them and the loop stays closed without them.
+        if (_gmsh_collapsed_halfedges.count(he)) {
+          return;
+        }
         auto it_he = _gmsh_edge_tags.find(he);
         int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
         if (_tag == 0) {
@@ -495,6 +524,9 @@ void PModel::createGmshFaces() {
 
         _ge_tags.clear();
         walkLoopWithLimit(hei, [&](PDCELHalfEdge *he) {
+          if (_gmsh_collapsed_halfedges.count(he)) {
+            return;
+          }
           auto it_he = _gmsh_edge_tags.find(he);
           int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
           if (_tag == 0) {

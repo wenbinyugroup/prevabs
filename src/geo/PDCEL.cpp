@@ -1360,15 +1360,20 @@ std::list<PDCELFace *> PDCEL::splitFaceByPolyline(
       findOuterHalfEdgeContainingPoint(f, path.front());
   PDCELHalfEdge *end_edge =
       findOuterHalfEdgeContainingPoint(f, path.back());
+  // The checks below are recoverable geometric rejections, not errors: this
+  // particular polyline cannot split this face, and that fact is reported to
+  // the caller via the empty-list return. Callers decide the severity (e.g.
+  // the layered-offset build treats it as a clean fall-back to the legacy
+  // path), so log the reason at debug level only — see PDCEL.hpp.
   if (start_edge == nullptr || end_edge == nullptr) {
-    PLOG(error) << "splitFaceByPolyline: path endpoints must lie on the "
+    PLOG(debug) << "splitFaceByPolyline: path endpoints must lie on the "
                 << "face outer boundary";
     return {};
   }
 
   for (std::size_t i = 1; i + 1 < path.size(); ++i) {
     if (pointIsOnOuterBoundary(f, path[i])) {
-      PLOG(error) << "splitFaceByPolyline: interior path vertex lies on the "
+      PLOG(debug) << "splitFaceByPolyline: interior path vertex lies on the "
                   << "face outer boundary";
       return {};
     }
@@ -1377,7 +1382,7 @@ std::list<PDCELFace *> PDCEL::splitFaceByPolyline(
   for (std::size_t i = 1; i < path.size(); ++i) {
     if (findHalfEdgeBetween(path[i - 1], path[i]) != nullptr ||
         findHalfEdgeBetween(path[i], path[i - 1]) != nullptr) {
-      PLOG(error) << "splitFaceByPolyline: path segment already exists";
+      PLOG(debug) << "splitFaceByPolyline: path segment already exists";
       return {};
     }
   }

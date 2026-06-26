@@ -5,6 +5,14 @@
 .DESCRIPTION
   run  (default) — cmake configure + ctest
   clean          — delete generated outputs, keep INDEX.txt and listed source files
+  vabs           — run "prevabs -i <case>.xml --hm -e" directly for every 'main'
+                   case (no CTest), executing VABS, and summarise the results in
+                   test/integration/build_msvc/vabs-report.md. A case PASSes when
+                   prevabs exits 0 AND VABS wrote <case>.sg.K; otherwise it is
+                   reported as BUILD-FAIL (prevabs failed), VABS-FAIL (prevabs ok
+                   but VABS produced no .K — e.g. solver not found / solver error),
+                   or TIMEOUT. prevabs returns 0 even when VABS fails, so the .sg.K
+                   output file — not the exit code — is the success signal.
   A run writes a Markdown report to test/integration/build_msvc/integration-report.md.
   Each case runs with PREVABS_SEGMENT_PATH=1, so every laminate segment emits a
   branch-trajectory file <case>.<segment>.segment.path.txt (which conditional
@@ -15,15 +23,19 @@
   CTest -R accepts a regex, so "t1" matches all t1_strip/* cases.
 
 .PARAMETER Mode
-  run | clean  (default: run)
+  run | clean | vabs  (default: run)
 
 .PARAMETER Filter
   run:   passed to ctest -R, e.g. "t1" or "t1_strip/strip$"
+  vabs:  regex matched against the test name "<dir>/<case>" (same convention as run)
   clean: directory-name prefix, e.g. "t6" matches t6_circle
 
 .PARAMETER OpenGmsh
   After a run, start gmsh for every executed section case:
   gmsh <test-case>.geo_unrolled <test-case>.msh <test-case>.opt
+
+.PARAMETER TimeoutSec
+  vabs mode: hard per-case timeout for the prevabs+VABS run (default: 60).
 
 .EXAMPLE
   # Run all tests
@@ -38,6 +50,12 @@
   # Run one specific case and open its generated Gmsh view
   pwsh -File test\run-integration-tests.ps1 -Filter "t1_strip/strip$" -OpenGmsh
 
+  # Execute VABS directly for every case and summarise (writes vabs-report.md)
+  pwsh -File test\run-integration-tests.ps1 vabs
+
+  # Execute VABS only for t1_strip cases
+  pwsh -File test\run-integration-tests.ps1 vabs -Filter t1
+
   # Clean all generated outputs
   pwsh -File test\run-integration-tests.ps1 clean
 
@@ -45,10 +63,11 @@
   pwsh -File test\run-integration-tests.ps1 clean -Filter t6
 #>
 param (
-    [ValidateSet("run", "clean")]
+    [ValidateSet("run", "clean", "vabs")]
     [string]$Mode   = "run",
     [string]$Filter = "",
-    [switch]$OpenGmsh
+    [switch]$OpenGmsh,
+    [int]$TimeoutSec = 60
 )
 
 $ErrorActionPreference = "Stop"
@@ -59,6 +78,7 @@ $buildDir       = Join-Path $integrationDir "build_msvc"
 $prevabs        = Join-Path $repoRoot "build_msvc\Release\prevabs.exe"
 $junitReport    = Join-Path $buildDir "integration-report.junit.xml"
 $markdownReport = Join-Path $buildDir "integration-report.md"
+$vabsReport     = Join-Path $buildDir "vabs-report.md"
 
 # ── clean ────────────────────────────────────────────────────────────────────
 if ($Mode -eq "clean") {
@@ -140,10 +160,6 @@ function Find-Gmsh() {
     return $null
 }
 
-$cmake = Find-Tool "cmake"
-$ctest = Find-Tool "ctest"
-if (-not $cmake) { Write-Error "cmake not found. Install CMake or open a VS Developer shell."; exit 1 }
-if (-not $ctest) { Write-Error "ctest not found. Install CMake or open a VS Developer shell."; exit 1 }
 if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
     $PSNativeCommandUseErrorActionPreference = $false
 }
@@ -367,11 +383,189 @@ function Open-GmshCases([string]$JUnitPath, [string]$GmshPath) {
     }
 }
 
+# ── vabs ───────────────────────────────────────────────────────────────────
+# Collect the 'main' cases from every t*/INDEX.txt as objects
+# { name="<dir>/<base>"; dir; xml; base }. Filter is a regex on the test name,
+# matching the run-mode (ctest -R) convention.
+function Get-VabsCases([string]$Filter) {
+    $dirs = Get-ChildItem -Path $integrationDir -Directory |
+            Where-Object { $_.Name -like "t*" } | Sort-Object Name
+    $cases = @()
+    foreach ($dir in $dirs) {
+        $indexFile = Join-Path $dir.FullName "INDEX.txt"
+        if (-not (Test-Path $indexFile)) { continue }
+
+        $inMain = $false
+        foreach ($line in Get-Content $indexFile) {
+            $t = $line.Trim()
+            if ($t -eq "main") { $inMain = $true; continue }
+            if ($t -eq "support" -or $t -eq "") { $inMain = $false; continue }
+            if ($inMain -and $t -match "^-\s+(.+)$") {
+                $xml  = $Matches[1].Trim()
+                $base = [System.IO.Path]::GetFileNameWithoutExtension($xml)
+                $name = "$($dir.Name)/$base"
+                if ($Filter -and $name -notmatch $Filter) { continue }
+                $cases += [pscustomobject]@{
+                    name = $name; dir = $dir.FullName; xml = $xml; base = $base
+                }
+            }
+        }
+    }
+    return $cases
+}
+
+# Pull the most relevant diagnostic line out of a prevabs run's captured output.
+# Patterns are ordered by priority; the first match wins. The first group are
+# prevabs-level errors (it failed to build / launch the solver); the second
+# group are VABS's own complaints (VABS often prints an error then exits 0, so
+# these surface "why no .sg.K" for a VABS-FAIL).
+function Get-RunErrorMessage([string]$Output) {
+    foreach ($pat in @(
+        "fatal exception:[^\r\n]*",
+        "cannot find executable[^\r\n]*",
+        "failed to launch[^\r\n]*",
+        "solver timed out[^\r\n]*",
+        "process exited with code[^\r\n]*",
+        "Something wrong[^\r\n]*",
+        "[^\r\n]*Jacobian[^\r\n]*",
+        "[^\r\n]*\b(?:error|invalid|cannot|failed|exceeds)\b[^\r\n]*")) {
+        $m = [regex]::Match($Output, $pat, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if ($m.Success) { return $m.Value.Trim() }
+    }
+    return ""
+}
+
+# Run "prevabs -i <xml> --hm -e" for one case and classify the outcome.
+# prevabs exits 0 even when VABS fails, so the <base>.sg.K output file is the
+# real success signal: PASS needs exit 0 AND a freshly written .sg.K.
+function Invoke-VabsCase($Case, [int]$TimeoutSec) {
+    $kFile = Join-Path $Case.dir "$($Case.base).sg.K"
+    Remove-Item $kFile -ErrorAction SilentlyContinue   # drop stale output
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $prevabs
+    foreach ($a in @("-i", $Case.xml, "--hm", "-e")) { $psi.ArgumentList.Add($a) }
+    $psi.WorkingDirectory       = $Case.dir
+    $psi.UseShellExecute        = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError  = $true
+    $psi.CreateNoWindow         = $true
+
+    $p = New-Object System.Diagnostics.Process
+    $p.StartInfo = $psi
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    $p.Start() | Out-Null
+    $outTask = $p.StandardOutput.ReadToEndAsync()
+    $errTask = $p.StandardError.ReadToEndAsync()
+    $timedOut = -not $p.WaitForExit($TimeoutSec * 1000)
+    if ($timedOut) { $p.Kill($true); $p.WaitForExit() }
+    $sw.Stop()
+
+    $output  = $outTask.Result + $errTask.Result
+    $exit    = if ($timedOut) { 124 } else { $p.ExitCode }
+    $kExists = Test-Path $kFile
+
+    if     ($timedOut)     { $status = "TIMEOUT";    $message = "killed after ${TimeoutSec}s" }
+    elseif ($exit -ne 0)   { $status = "BUILD-FAIL"; $message = Get-RunErrorMessage $output }
+    elseif ($kExists)      { $status = "PASS";       $message = "" }
+    else                   { $status = "VABS-FAIL";  $message = Get-RunErrorMessage $output }
+
+    return [pscustomobject]@{
+        name    = $Case.name
+        status  = $status
+        exit    = $exit
+        seconds = $sw.Elapsed.TotalSeconds
+        kFile   = $kExists
+        message = $message
+    }
+}
+
+function Write-VabsReport($Results, [string]$MarkdownPath, [string]$Filter, [double]$TotalSec) {
+    $total = $Results.Count
+    $pass  = @($Results | Where-Object { $_.status -eq "PASS" }).Count
+    $fail  = $total - $pass
+    $generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss zzz")
+    $filterText  = if ($Filter) { $Filter } else { "(none)" }
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.Add("# PreVABS VABS Execution Report")
+    $lines.Add("")
+    $lines.Add("- Generated: $generatedAt")
+    $lines.Add("- Command: ``prevabs -i <case>.xml --hm -e``")
+    $lines.Add("- Filter: ``$filterText``")
+    $lines.Add("- Total time: $(Format-Duration $TotalSec)")
+    $lines.Add("")
+    $lines.Add("## Summary")
+    $lines.Add("")
+    $lines.Add("| Total | Passed | Failed |")
+    $lines.Add("| ---: | ---: | ---: |")
+    $lines.Add("| $total | $pass | $fail |")
+
+    $problems = @($Results | Where-Object { $_.status -ne "PASS" })
+    if ($problems.Count -gt 0) {
+        $lines.Add("")
+        $lines.Add("## Problems")
+        $lines.Add("")
+        $lines.Add("| Status | Test | Time | Message |")
+        $lines.Add("| --- | --- | ---: | --- |")
+        foreach ($r in $problems) {
+            $msg = ((($r.message -replace "\s+", " ").Trim()) -replace "\|", "\|")
+            $lines.Add("| $($r.status) | ``$($r.name)`` | $(Format-Duration $r.seconds) | $msg |")
+        }
+    }
+
+    $lines.Add("")
+    $lines.Add("## Cases")
+    $lines.Add("")
+    $lines.Add("| Status | Test | Exit | .sg.K | Time |")
+    $lines.Add("| --- | --- | ---: | :---: | ---: |")
+    foreach ($r in $Results) {
+        $k = if ($r.kFile) { "yes" } else { "no" }
+        $lines.Add("| $($r.status) | ``$($r.name)`` | $($r.exit) | $k | $(Format-Duration $r.seconds) |")
+    }
+
+    Set-Content -Path $MarkdownPath -Value $lines -Encoding utf8
+    Write-Host "VABS report: $MarkdownPath"
+}
+
+if ($Mode -eq "vabs") {
+    if (-not (Test-Path $prevabs)) {
+        Write-Error "prevabs.exe not found at $prevabs`nBuild the project first."
+        exit 1
+    }
+    New-Item -ItemType Directory -Force $buildDir | Out-Null
+
+    $cases = @(Get-VabsCases $Filter)
+    if ($cases.Count -eq 0) {
+        Write-Warning "No 'main' cases matched filter '$Filter'."
+        exit 0
+    }
+
+    $results = @()
+    foreach ($case in $cases) {
+        Write-Host -NoNewline "VABS $($case.name) ... "
+        $r = Invoke-VabsCase $case $TimeoutSec
+        Write-Host "$($r.status) ($('{0:0.##}' -f $r.seconds)s)"
+        $results += $r
+    }
+
+    $totalSec = ($results | Measure-Object -Property seconds -Sum).Sum
+    Write-VabsReport $results $vabsReport $Filter $totalSec
+
+    $failed = @($results | Where-Object { $_.status -ne "PASS" }).Count
+    exit ([int]($failed -gt 0))
+}
+
 # ── run ──────────────────────────────────────────────────────────────────────
 if (-not (Test-Path $prevabs)) {
     Write-Error "prevabs.exe not found at $prevabs`nBuild the project first."
     exit 1
 }
+
+$cmake = Find-Tool "cmake"
+$ctest = Find-Tool "ctest"
+if (-not $cmake) { Write-Error "cmake not found. Install CMake or open a VS Developer shell."; exit 1 }
+if (-not $ctest) { Write-Error "ctest not found. Install CMake or open a VS Developer shell."; exit 1 }
 
 # Always re-configure so INDEX.txt changes are picked up immediately.
 # Wipe the build dir first: cmake refuses to switch generators on an existing cache.

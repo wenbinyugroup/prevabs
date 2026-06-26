@@ -465,9 +465,30 @@ OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
   for (auto *v : base) {
     base_pts.emplace_back(v->point2()[0], v->point2()[1]);
   }
-  // Closed CCW: PreVABS side = +1 (inward) ⇒ Clipper2 δ < 0 (shrink) ⇒ flip.
-  // Open polyline: PreVABS side = +1 already matches Phase 1's filter ⇒ pass.
-  geom.clipper_side = geom.base_is_closed ? -side : side;
+  // Closed inputs: PreVABS `side` is defined relative to the *directed*
+  // base curve (left/right of travel), so whether that side is geometric
+  // inward or outward depends on the curve's winding. Clipper2
+  // InflatePaths (EndType::Polygon) inflates the polygon area for δ > 0
+  // regardless of orientation, so the δ sign must fold in the winding:
+  //   clipper_side = -orientation * side   (δ = sign(clipper_side)·|dist|)
+  // where orientation = +1 for CCW (signed area > 0), -1 for CW.
+  //   CCW: side=+1 (left)  → inward (δ<0); side=-1 (right) → outward.
+  //   CW : flips, so a "right" layup on a CW baseline insets correctly.
+  // Open polyline: side already matches Phase 1's single-side filter ⇒ pass.
+  geom.clipper_side = side;
+  if (geom.base_is_closed) {
+    // Shoelace signed area over base_pts (trailing duplicate vertex of the
+    // closed PreVABS convention contributes a zero-area term, so it is safe).
+    double area2 = 0.0;
+    const std::size_t n = base_pts.size();
+    for (std::size_t i = 0; i < n; ++i) {
+      const SPoint2 &p0 = base_pts[i];
+      const SPoint2 &p1 = base_pts[(i + 1) % n];
+      area2 += p0.x() * p1.y() - p1.x() * p0.y();
+    }
+    const int orientation = (area2 >= 0.0) ? 1 : -1;
+    geom.clipper_side = -orientation * side;
+  }
   geom.abs_dist     = std::fabs(dist);
 
   // Stage E pre-trim (OPEN base only; off unless enable_pretrim). Bridges a

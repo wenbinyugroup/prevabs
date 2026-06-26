@@ -207,6 +207,10 @@ private:
   std::unordered_map<PDCELVertex*, int> _gmsh_vertex_tags;
   std::unordered_map<PDCELHalfEdge*, int> _gmsh_edge_tags;
   std::unordered_map<PDCELFace*, int> _gmsh_face_tags;
+  // Half-edges whose two endpoints map to the same Gmsh point (a zero-length
+  // riser collapsed by vertex dedup in createGmshVertices). No Gmsh line is
+  // created for them and they are skipped when assembling curve loops.
+  std::unordered_set<PDCELHalfEdge*> _gmsh_collapsed_halfedges;
   std::unordered_map<PDCELFace*, std::vector<int>> _gmsh_face_embedded_vertex_tags;
   std::unordered_map<PDCELFace*, std::vector<int>> _gmsh_face_embedded_edge_tags;
   std::unordered_map<PDCELFace*, int> _gmsh_face_physical_group_tags;

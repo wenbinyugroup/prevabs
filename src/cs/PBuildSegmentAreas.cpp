@@ -1240,14 +1240,20 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
         bcfg.dcel->splitFaceByPolyline(
             remaining_face, curves[k + 1].vertices);
     if (split_faces.size() != 2) {
-      PLOG(error) << "layered offset[" << _name
-                  << "]: splitFaceByPolyline failed at layer boundary "
-                  << (k + 1);
+      // Once an earlier split mutated the shared DCEL a legacy fallback would
+      // corrupt the mesh, so that case is a hard failure. Before any mutation
+      // the split simply isn't viable on this geometry; that is a recoverable
+      // routing decision (the legacy area build below yields a correct
+      // result), so warn — matching the other layered fall-backs — rather
+      // than error.
       if (dcel_mutated) {
         failLayeredAfterMutation(
             _name, "splitFaceByPolyline failed at layer boundary "
                        + std::to_string(k + 1));
       }
+      PLOG(warning) << "layered offset[" << _name
+                    << "]: cannot split layer boundary " << (k + 1)
+                    << "; falling back to legacy area/layer build";
       prevabs::debug::segmentTracePush(
           "layered: splitFaceByPolyline FAILED @layer boundary "
           + std::to_string(k + 1) + " -> FALLBACK (clean: no mutation yet)");

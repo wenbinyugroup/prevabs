@@ -169,6 +169,21 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 cle
 pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean -Filter t6
 ```
 
+The `vabs` mode bypasses CTest and runs `prevabs -i <case>.xml --hm -e` directly
+for every `main` case, executing VABS, then summarises pass/fail in
+`test/integration/build_msvc/vabs-report.md`. A case PASSes only when prevabs
+exits 0 **and** VABS wrote `<case>.sg.K` (prevabs returns 0 even when VABS
+fails, so the output file is the real success signal); otherwise it is reported
+as `BUILD-FAIL`, `VABS-FAIL`, or `TIMEOUT`.
+
+```powershell
+# Execute VABS for every case and summarise
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 vabs
+
+# Execute VABS only for t1_strip cases (Filter is a regex on "<dir>/<case>")
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 vabs -Filter t1
+```
+
 Or call CTest directly (after the script has run once to configure the build directory):
 
 ```powershell

@@ -226,6 +226,11 @@ public:
 
   /// Split a bounded face by a simple polyline whose endpoints lie on the
   /// face outer boundary. The original face is deleted on success.
+  /// Returns an empty list when the split is not viable (e.g. the path
+  /// endpoints are not on the outer boundary). Such geometric rejections are
+  /// a recoverable status the caller is expected to handle, so they are logged
+  /// at debug level only — the caller chooses whether the empty result is an
+  /// error or a clean fall-back.
   std::list<PDCELFace *> splitFaceByPolyline(
       PDCELFace *f, const std::vector<PDCELVertex *> &path);
   

@@ -29,6 +29,20 @@ const double TOLERANCE{GEO_TOL};
 const double ABS_TOL{GEO_TOL};
 const double REL_TOL{GEO_TOL};
 
+// VERTEX_MERGE_TOL governs DCEL vertex *identity*: two vertices closer than
+// this are treated as the same point and merged into one shared vertex by
+// PDCEL::findCoincidentVertex. It is intentionally looser than GEO_TOL because
+// it must absorb the numerical noise between two independently-computed copies
+// of the same geometric point — e.g. a layer-interface vertex on a cap shared
+// by two adjacent sub-segments, whose two parametric interpolations diverge by
+// ~1e-9 (above GEO_TOL) when the cap's corners are not exactly collinear, and
+// because Clipper2 offset coordinates are only resolved to its precision-8
+// (~1e-8) grid. Kept far below any real feature size (plies are O(1e-2)) so it
+// never merges genuinely distinct vertices. Decoupled from GEO_TOL so the
+// strict tolerance still governs geometric *predicates* (intersections,
+// parallelism, on-boundary tests).
+const double VERTEX_MERGE_TOL{1e-8};
+
 // Log severity levels (match spdlog mapping in plog.cpp)
 constexpr int LOG_LEVEL_TRACE   = 0;
 constexpr int LOG_LEVEL_DEBUG   = 1;
