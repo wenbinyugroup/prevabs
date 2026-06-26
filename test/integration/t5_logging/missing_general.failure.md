@@ -1,8 +1,8 @@
 # PreVABS build failure report
 
-- Input: `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.xml`
+- Input: `C:/Users/foxta/work/dev/prevabs/test/integration/t5_logging/missing_general.xml`
 - Case: `missing_general`
-- Time: 2026-06-25 18:27:54
+- Time: 2026-06-25 19:36:25
 - Failure: fatal exception: homogenization failed: Missing required XML element <general>
 - Catch context: initialize model
 
@@ -12,19 +12,18 @@ PreVABS stopped while building the cross-section. See the fatal message and near
 
 ## Diagnostic evidence
 
-From `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.log`:
+From `C:/Users/foxta/work/dev/prevabs/test/integration/t5_logging/missing_general.log`:
 
 - xx  fatal exception: homogenization failed: Missing required XML element <general>
 
-From `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.debug.log`:
+From `C:/Users/foxta/work/dev/prevabs/test/integration/t5_logging/missing_general.debug.log`:
 
 - [error]    [initialize model] fatal exception: homogenization failed: Missing required XML element <general>  main.cpp:logFatalWithProgress:719
 
 ## Related files
 
-- Log: `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.log`
-- Debug log: `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.debug.log`
-- DCEL dump: `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.dcel_dump.txt`
+- Log: `C:/Users/foxta/work/dev/prevabs/test/integration/t5_logging/missing_general.log`
+- Debug log: `C:/Users/foxta/work/dev/prevabs/test/integration/t5_logging/missing_general.debug.log`
 
 ## User action
 
