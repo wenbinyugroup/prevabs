@@ -57,9 +57,9 @@ std::string paddedSeverityBracket(spdlog::level::level_enum level) {
     case spdlog::level::critical: label = "fatal";   break;
     default:                      label = "?";       break;
   }
-  // "[warning]" is 9 chars; pad all brackets to 9 + 1 space = 10 chars total
+  // "[warning]" is 9 chars; pad all brackets to 9 + 2 space = 11 chars total
   std::string bracket = "[" + label + "]";
-  constexpr int WIDTH = 10;
+  constexpr int WIDTH = 11;
   if ((int)bracket.size() < WIDTH)
     bracket += std::string(WIDTH - bracket.size(), ' ');
   return bracket;
@@ -89,7 +89,19 @@ std::string formatDevMessage(
   if (context.empty()) {
     return padded + " " + message;
   }
-  return padded + " [" + context + "] " + message;
+  // Only emit the breadcrumb when it differs from the previously logged one,
+  // and place it on its own line, indented to align with the message column
+  // and surrounded by blank lines. Consecutive messages sharing the same
+  // breadcrumb omit it to keep the dev log readable.
+  static std::mutex last_context_mutex;
+  static std::string last_context;
+  std::lock_guard<std::mutex> lock(last_context_mutex);
+  if (context == last_context) {
+    return padded + " " + message;
+  }
+  last_context = context;
+  const std::string indent(padded.size() + 1, ' ');
+  return "\n" + indent + "[" + context + "]\n\n" + padded + " " + message;
 }
 
 void initLog() {
