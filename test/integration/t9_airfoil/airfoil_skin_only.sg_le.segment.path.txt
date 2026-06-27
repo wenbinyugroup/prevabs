@@ -12,8 +12,6 @@ buildAreas (closed=N, base_verts=10)
     layered: open multi-layer route-ii (n_layers=3)
     makeRawOffsetCurve (dist=0.000381)
     makeRawOffsetCurve (dist=0.000510)
-    splitLayerBandIntoCells (n=10)
-    splitLayerBandIntoCells (n=10)
-    splitLayerBandIntoCells (n=10)
-    layered: tiled all layers (SUCCESS, faces=27)
-  layered OK -> AreasBuilt
+    layered: splitFaceByPolyline FAILED @layer boundary 1 -> FALLBACK (clean: no mutation yet)
+  layered FELL BACK -> legacy
+  legacy: built areas=9 -> AreasBuilt

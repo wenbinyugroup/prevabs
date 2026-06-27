@@ -531,8 +531,14 @@ TEST_CASE("buildAreas: last-area frame queries base curve, not the offset",
   bcfg.materials = &model;
   bcfg.model = &model;
 
+  // This test validates the legacy area-build frame logic (seg_area_* faces).
+  // Force the legacy route: the layered-offset path now tiles non-1:1 base/
+  // offset geometry directly (no fallback) and would emit seg_layer_* faces.
+  const bool prev_layered = config.layered_offset;
+  config.layered_offset = false;
   segment.build(bcfg);
   segment.buildAreas(bcfg);
+  config.layered_offset = prev_layered;
 
   PDCELFace *last_layer_face = findFaceByName(
       dcel, model, "seg_area_3_layer_1");
@@ -1096,8 +1102,13 @@ TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
   bcfg.materials = &model;
   bcfg.model = &model;
 
+  // Validates the legacy area-build (seg_area_* faces); force the legacy route
+  // since the layered path now tiles this geometry directly (seg_layer_*).
+  const bool prev_layered = config.layered_offset;
+  config.layered_offset = false;
   segment.build(bcfg);
   segment.buildAreas(bcfg);
+  config.layered_offset = prev_layered;
 
   std::string face_names_left;
   for (PDCELFace *face : dcel.faces()) {
@@ -1154,8 +1165,13 @@ TEST_CASE("buildAreas: right-side open segment builds head and tail layer faces"
   bcfg.materials = &model;
   bcfg.model = &model;
 
+  // Validates the legacy area-build (seg_area_* faces); force the legacy route
+  // since the layered path now tiles this geometry directly (seg_layer_*).
+  const bool prev_layered = config.layered_offset;
+  config.layered_offset = false;
   segment.build(bcfg);
   segment.buildAreas(bcfg);
+  config.layered_offset = prev_layered;
 
   std::string face_names_right;
   for (PDCELFace *face : dcel.faces()) {

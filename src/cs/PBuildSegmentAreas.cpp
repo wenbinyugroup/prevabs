@@ -215,39 +215,163 @@ LayeredCurve makeRawOffsetCurve(
   return curve;
 }
 
-SPoint2 interpolatePoint2DForLayered(
-    const SPoint2& a, const SPoint2& b, double u) {
-  return SPoint2(a.x() + u * (b.x() - a.x()),
-                 a.y() + u * (b.y() - a.y()));
+// Signed side of point P relative to the directed cap line A->B (sign of the
+// 2D cross product). Same sign = same side; 0 = on the line.
+double capSide(const SPoint2& A, const SPoint2& B, const SPoint2& P) {
+  return (B.x() - A.x()) * (P.y() - A.y())
+       - (B.y() - A.y()) * (P.x() - A.x());
 }
 
-void replaceOwnedLayeredVertex(
-    LayeredCurve& curve, std::size_t index, const SPoint2& p) {
-  if (index >= curve.vertices.size() || index >= curve.points.size()) return;
-  if (curve.owns_vertices && curve.vertices[index] != nullptr
-      && !curve.vertices[index]->isRegistered()) {
-    delete curve.vertices[index];
+// note-build-laminate-segment.md §2.1.2: trim/extend an OPEN layer offset curve
+// so its two endpoints land exactly on the segment's begin/end bound (cap)
+// lines. At this stage the remaining face is bounded by `inner` (the previous
+// layer curve) and `shell` (the total-thickness offset), so the begin cap line
+// runs inner.head -> shell.head and the end cap line runs inner.tail ->
+// shell.tail (caps are straight single edges, free or joined).
+//
+// The raw miter offset can overshoot a bound (and even fold back into a
+// near-180° reversal cusp just outside it). Trim drops every vertex on the
+// exterior side of the cap and replaces the end with the curve/cap
+// intersection; an undershooting end is extended along its first/last segment
+// to meet the cap. The two new cap endpoints lie on the cap edge, so the
+// subsequent splitFaceByPolyline canonicalizes them onto it.
+//
+// The curve owns its vertices: dropped unregistered vertices are deleted and
+// the two cap endpoints are freshly created. Throws on a parallel/degenerate
+// intersection — bounds are fully resolved by now, so this should not happen
+// (fail fast rather than mask a geometry bug).
+void trimLayerCurveEndsToCaps(
+    LayeredCurve& c, const LayeredCurve& inner, const LayeredCurve& shell,
+    double dist, const std::string& segment_name) {
+  const std::size_t m = c.points.size();
+  if (m < 2 || inner.points.size() < 2 || shell.points.size() < 2) {
+    throw std::runtime_error(
+        "layered offset[" + segment_name +
+        "]: cannot trim degenerate layer curve to segment bounds");
   }
-  curve.points[index] = p;
-  curve.vertices[index] = new PDCELVertex(0.0, p.x(), p.y());
-}
+  // Merge tolerance for spurious near-coincident vertices. The raw miter offset
+  // and the cap intersection emit FP-noise-level duplicates (~1e-9..1e-8) at
+  // sharp corners / open-end caps; left in, they become zero-length connectors
+  // that splitFaceByPolyline rejects. Scale to the layer thickness so the
+  // threshold sits far below real feature size yet well above FP noise.
+  const double merge_tol = std::max(GEO_TOL * 100.0, std::fabs(dist) * 1e-4);
 
-void alignOpenLayerBoundaryEndpoints(
-    LayeredCurve& curve, const LayeredCurve& base,
-    const LayeredCurve& shell, double ratio) {
-  if (curve.vertices.size() < 2 || base.points.size() < 2
-      || shell.points.size() < 2) {
-    return;
+  const SPoint2 beginA = inner.points.front();
+  const SPoint2 beginB = shell.points.front();
+  const SPoint2 endA = inner.points.back();
+  const SPoint2 endB = shell.points.back();
+
+  auto crossCap = [&](std::size_t s, const SPoint2& A, const SPoint2& B,
+                      const char* which) -> SPoint2 {
+    double u1, u2;
+    if (!calcLineIntersection2D(
+            c.points[s], c.points[s + 1], A, B, u1, u2, TOLERANCE)) {
+      throw std::runtime_error(
+          "layered offset[" + segment_name + "]: layer curve "
+          + which + " segment parallel to its bound");
+    }
+    (void)u2;
+    return SPoint2(
+        c.points[s].x() + u1 * (c.points[s + 1].x() - c.points[s].x()),
+        c.points[s].y() + u1 * (c.points[s + 1].y() - c.points[s].y()));
+  };
+
+  // Signed perpendicular distance of a point to a cap line (positive on the
+  // interior reference side). A vertex is "strictly exterior" when it sits
+  // beyond the cap by more than merge_tol; those are the overshoot/reversal
+  // vertices to drop. On-cap (|perp| < merge_tol) and interior vertices stay —
+  // a straight strip whose endpoints lie exactly on the caps must be kept
+  // verbatim.
+  const double caplen_b = std::max(beginA.distance(beginB), GEO_TOL);
+  const double caplen_e = std::max(endA.distance(endB), GEO_TOL);
+  auto beginPerp = [&](const SPoint2& p) {
+    return capSide(beginA, beginB, p) / caplen_b;
+  };
+  auto endPerp = [&](const SPoint2& p) {
+    return capSide(endA, endB, p) / caplen_e;
+  };
+
+  // Head: first vertex on/inside the begin cap (skip strictly-exterior ones).
+  const double begin_sign = (beginPerp(c.points.back()) >= 0.0) ? 1.0 : -1.0;
+  std::size_t head_keep = 0;
+  while (head_keep < m
+         && beginPerp(c.points[head_keep]) * begin_sign < -merge_tol) {
+    ++head_keep;
+  }
+  if (head_keep >= m) {
+    throw std::runtime_error(
+        "layered offset[" + segment_name +
+        "]: entire layer curve lies outside the begin bound");
+  }
+  // If that vertex already lies on the cap (incl. the curve running along the
+  // cap, where an intersection would be ill-conditioned) use it directly;
+  // otherwise intersect to land the endpoint on the cap (trim or extend).
+  const SPoint2 head_pt =
+      (std::fabs(beginPerp(c.points[head_keep])) < merge_tol)
+          ? c.points[head_keep]
+          : crossCap(head_keep == 0 ? 0 : head_keep - 1, beginA, beginB,
+                     "head");
+
+  // Tail: last vertex on/inside the end cap (skip strictly-exterior ones).
+  const double end_sign = (endPerp(c.points.front()) >= 0.0) ? 1.0 : -1.0;
+  std::size_t tail_keep = m;
+  while (tail_keep > 0
+         && endPerp(c.points[tail_keep - 1]) * end_sign < -merge_tol) {
+    --tail_keep;
+  }
+  if (tail_keep == 0) {
+    throw std::runtime_error(
+        "layered offset[" + segment_name +
+        "]: entire layer curve lies outside the end bound");
+  }
+  const std::size_t last_keep = tail_keep - 1;
+  const SPoint2 tail_pt =
+      (std::fabs(endPerp(c.points[last_keep])) < merge_tol)
+          ? c.points[last_keep]
+          : crossCap(last_keep == m - 1 ? m - 2 : last_keep, endA, endB,
+                     "tail");
+
+  // Keep the cap endpoints authoritative and drop interior vertices that are
+  // within merge_tol of a cap endpoint or of the previous kept vertex — these
+  // spurious near-duplicates (sharp corner / open-end cap) would otherwise
+  // become zero-length connectors that splitFaceByPolyline rejects.
+  auto near2 = [&](const SPoint2& a, const SPoint2& b) {
+    return a.distance(b) < merge_tol;
+  };
+  std::vector<bool> kept(m, false);
+  std::vector<int> keep_idx;
+  for (int i = static_cast<int>(head_keep); i <= static_cast<int>(last_keep);
+       ++i) {
+    if (near2(head_pt, c.points[i]) || near2(tail_pt, c.points[i])) continue;
+    if (!keep_idx.empty() && near2(c.points[keep_idx.back()], c.points[i]))
+      continue;
+    keep_idx.push_back(i);
+    kept[i] = true;
   }
 
-  const std::size_t last = curve.vertices.size() - 1;
-  const std::size_t outer_last = shell.points.size() - 1;
-  const SPoint2 head = interpolatePoint2DForLayered(
-      base.points.front(), shell.points.front(), ratio);
-  const SPoint2 tail = interpolatePoint2DForLayered(
-      base.points.back(), shell.points[outer_last], ratio);
-  replaceOwnedLayeredVertex(curve, 0, head);
-  replaceOwnedLayeredVertex(curve, last, tail);
+  // Rebuild: [head_pt] + kept interior + [tail_pt].
+  std::vector<PDCELVertex*> new_v;
+  std::vector<SPoint2> new_p;
+  new_v.push_back(new PDCELVertex(0.0, head_pt.x(), head_pt.y()));
+  new_p.push_back(head_pt);
+  for (int i : keep_idx) {
+    new_v.push_back(c.vertices[i]);
+    new_p.push_back(c.points[i]);
+  }
+  new_v.push_back(new PDCELVertex(0.0, tail_pt.x(), tail_pt.y()));
+  new_p.push_back(tail_pt);
+
+  if (c.owns_vertices) {
+    for (int i = 0; i < static_cast<int>(m); ++i) {
+      if (!kept[i] && c.vertices[i] != nullptr
+          && !c.vertices[i]->isRegistered()) {
+        delete c.vertices[i];
+      }
+    }
+  }
+  c.vertices = std::move(new_v);
+  c.points = std::move(new_p);
+  c.owns_vertices = true;
 }
 
 SVector3 averageLayupVector(
@@ -280,6 +404,21 @@ bool computeFaceCentroid2DForLayered(PDCELFace *face, SPoint2 &out) {
   if (n == 0) return false;
   out = SPoint2(sy / n, sz / n);
   return true;
+}
+
+// True if the face's outer boundary carries a vertex coincident (within tol)
+// with point p (p is in (y,z) like LayeredCurve points).
+bool faceBoundaryHasPoint(PDCELFace *face, const SPoint2& p, double tol) {
+  if (face == nullptr || face->outer() == nullptr) return false;
+  bool found = false;
+  walkLoopWithLimit(face->outer(), [&](PDCELHalfEdge *he) {
+    PDCELVertex *v = he->source();
+    if (v != nullptr && std::fabs(v->y() - p.x()) < tol
+        && std::fabs(v->z() - p.y()) < tol) {
+      found = true;
+    }
+  });
+  return found;
 }
 
 double faceCentroidDistanceToCurveForLayered(
@@ -382,58 +521,93 @@ bool layeredFaceContainsVertex(
 
 std::vector<PDCELFace *> splitLayerBandIntoCells(
     PDCELFace *band_face, const LayeredCurve& inner,
-    const LayeredCurve& outer, PDCEL *dcel,
-    const std::string& segment_name) {
+    const LayeredCurve& outer, bool is_closed, int side, double dist,
+    PDCEL *dcel, const std::string& segment_name) {
   std::vector<PDCELFace *> cells;
-  const std::size_t n = std::min(inner.vertices.size(), outer.vertices.size());
+  // note-build-laminate-segment.md §2.1.4-2.1.5: build the staircase vertex
+  // mapping between this layer's inner (base) and outer (offset) curves, then
+  // place ONE connector per interior staircase step. Reusing the same
+  // base-offset map machinery the total-thickness path uses
+  // (geo::rebuildBaseOffsetMapFromGeometry — the geometry-derived sibling of
+  // buildBaseOffsetMap) is what lets the two curves carry DIFFERENT vertex
+  // counts: a dense base offset by a relatively large distance legitimately
+  // sheds vertices (Clipper2 merges them), exactly as the full-thickness
+  // offsetCurveBase does. Where the staircase advances on only one side it
+  // emits a triangle cell instead of a quad — the same tri/quad tiling the
+  // legacy createIntermediateAreas walk produces. Hence NO 1:1 requirement.
+  const auto plan = prevabs::geo::rebuildBaseOffsetMapFromGeometry(
+      inner.points, outer.points, is_closed, side, std::max(dist, 1e-12),
+      prevabs::geo::readPairingAlgoEnv());
+  const BaseOffsetMap& pairs = plan.id_pairs;
   prevabs::debug::SegmentTraceScope _trace_scope(
-      "splitLayerBandIntoCells (n=" + std::to_string(n) + ")");
-  if (band_face == nullptr || n < 2) return cells;
-  if (n == 2) {
+      "splitLayerBandIntoCells (pairs=" + std::to_string(pairs.size()) + ")");
+  if (band_face == nullptr || !plan.ok || pairs.size() < 2) return cells;
+  // Two staircase entries are just the head/tail end caps with no interior
+  // connector between them: the whole band is a single cell.
+  if (pairs.size() == 2) {
     cells.push_back(band_face);
     return cells;
   }
 
+  const int n_in = static_cast<int>(inner.vertices.size());
+  const int n_out = static_cast<int>(outer.vertices.size());
   PDCELFace *remaining = band_face;
-  for (std::size_t i = 1; i + 1 < n; ++i) {
+  // Interior staircase steps only — skip the first/last entries, which are the
+  // band's two end caps (already edges of band_face).
+  for (std::size_t p = 1; p + 1 < pairs.size(); ++p) {
+    const int bi = pairs[p].base;
+    const int oj = pairs[p].offset;
+    if (bi < 0 || bi >= n_in || oj < 0 || oj >= n_out) {
+      PLOG(error) << "layered offset[" << segment_name
+                  << "]: staircase index out of range at step " << p
+                  << " (base=" << bi << "/" << n_in
+                  << ", offset=" << oj << "/" << n_out << ")";
+      prevabs::debug::segmentTracePush(
+          "staircase index OOR @step " + std::to_string(p));
+      return {};
+    }
     std::vector<PDCELVertex *> connector = {
-        inner.vertices[i], outer.vertices[i]};
+        inner.vertices[bi], outer.vertices[oj]};
     std::list<PDCELFace *> split_faces =
         dcel->splitFaceByPolyline(remaining, connector);
     if (split_faces.size() != 2) {
       PLOG(error) << "layered offset[" << segment_name
-                  << "]: failed to split layer band cell at connector "
-                  << i;
+                  << "]: failed to split layer band cell at staircase step "
+                  << p;
       prevabs::debug::segmentTracePush(
-          "split failed @connector " + std::to_string(i));
+          "split failed @staircase step " + std::to_string(p));
       return {};
     }
 
     PDCELFace *f0 = split_faces.front();
     PDCELFace *f1 = split_faces.back();
     // Attribute the just-split cell vs the remaining (tail-side) band by
-    // GEOMETRY, not DCEL vertex identity. The cell spans connectors i-1..i,
-    // so its expected centroid is the average of those four corner points;
-    // the remaining band spans connectors i..n-1 and sits farther along the
-    // curve. Identity tests (does face X contain curve vertex Y) mis-fire
-    // because a curve endpoint coincident with an existing DCEL vertex is
-    // replaced by the canonical vertex during the split, leaving the curve's
-    // own vertex pointer off the face — a spurious "ambiguous" that left the
-    // DCEL half-split and crashed the legacy fallback at shared connectors.
+    // GEOMETRY, not DCEL vertex identity. The cell spans staircase steps
+    // p-1..p, so its expected centroid is the average of those four corner
+    // points (when the staircase advanced on only one side two corners
+    // coincide and the cell is a triangle — the average is still interior).
+    // Identity tests (does face X contain curve vertex Y) mis-fire because a
+    // curve endpoint coincident with an existing DCEL vertex is replaced by
+    // the canonical vertex during the split, leaving the curve's own vertex
+    // pointer off the face — a spurious "ambiguous" that left the DCEL
+    // half-split and crashed the legacy fallback at shared connectors.
+    const int bi_prev = pairs[p - 1].base;
+    const int oj_prev = pairs[p - 1].offset;
     const double cell_y =
-        0.25 * (inner.vertices[i - 1]->y() + inner.vertices[i]->y()
-              + outer.vertices[i - 1]->y() + outer.vertices[i]->y());
+        0.25 * (inner.vertices[bi_prev]->y() + inner.vertices[bi]->y()
+              + outer.vertices[oj_prev]->y() + outer.vertices[oj]->y());
     const double cell_z =
-        0.25 * (inner.vertices[i - 1]->z() + inner.vertices[i]->z()
-              + outer.vertices[i - 1]->z() + outer.vertices[i]->z());
+        0.25 * (inner.vertices[bi_prev]->z() + inner.vertices[bi]->z()
+              + outer.vertices[oj_prev]->z() + outer.vertices[oj]->z());
     SPoint2 c0, c1;
     if (!computeFaceCentroid2DForLayered(f0, c0)
         || !computeFaceCentroid2DForLayered(f1, c1)) {
       PLOG(error) << "layered offset[" << segment_name
-                  << "]: cannot compute split-face centroid at connector " << i;
+                  << "]: cannot compute split-face centroid at staircase step "
+                  << p;
       prevabs::debug::segmentTracePush(
-          "centroid failure @connector "
-          + std::to_string(i) + " of " + std::to_string(n - 1));
+          "centroid failure @staircase step " + std::to_string(p)
+          + " of " + std::to_string(pairs.size() - 1));
       return {};
     }
     const double d0 = (c0.x() - cell_y) * (c0.x() - cell_y)
@@ -1104,7 +1278,22 @@ void Segment::buildLastArea(
   _areas.emplace_back(area);
 }
 
+// Builds a layered-offset segment by tiling each layer into its own DCEL
+// face(s). Returns true on success; returns false to REQUEST the legacy
+// area/layer build (the caller's fallback path).
+//
+// Fallback contract — this is the central invariant of the function:
+//   * `return false` is only safe BEFORE any splitFaceByPolyline call has
+//     mutated the shared DCEL. Up to that point the geometry is untouched and
+//     the legacy builder can take over cleanly.
+//   * Once the DCEL has been mutated (`dcel_mutated == true`), a partial tiling
+//     already exists; falling back would leave a corrupted mesh. From that
+//     point any failure is a HARD abort via failLayeredAfterMutation(), never a
+//     `return false`.
+// Hence every `return false` below sits in the pre-mutation prologue or the
+// per-layer loop's pre-split checks; everything after the first split aborts.
 bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
+  // Missing inputs: nothing to build from -> let the legacy builder try.
   if (_layup == nullptr || _curve_base == nullptr || _curve_offset == nullptr
       || _face == nullptr) {
     return false;
@@ -1113,8 +1302,10 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
 
   std::vector<Layer> layers = _layup->getLayers();
   const int n_layers = static_cast<int>(layers.size());
-  if (n_layers <= 0) return false;
+  if (n_layers <= 0) return false;  // no layers -> fallback
   for (int k = 0; k < n_layers; ++k) {
+    // A layer without a lamina has no material/thickness to offset or assign;
+    // we cannot tile it, so hand the whole segment to the legacy builder.
     if (layers[k].getLamina() == nullptr) {
       PLOG(warning) << "layered offset[" << _name << "]: layer "
                     << (k + 1) << " has no lamina; falling back";
@@ -1123,6 +1314,8 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   }
 
   const bool is_closed = closed();
+  // Layup side is required to know which side of the base curve to offset onto;
+  // 0 means it could not be determined -> fallback.
   const int side = requireValidLayupSide("buildLayeredOffsetAreas");
   if (side == 0) {
     prevabs::debug::segmentTracePush("layered: invalid layup side -> FALLBACK");
@@ -1138,24 +1331,29 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   LayeredCurve shell_curve =
       makeExistingCurve(_curve_offset->vertices(), is_closed);
   const std::size_t n = base_curve.vertices.size();
-  // No min-base-edge / thickness proxy guard here: it mis-rejects healthy
-  // finely-discretized curves (tiny chords, yet the offset of a smooth arc
-  // is just a larger-radius arc that nests cleanly). The real structural
-  // gate is the per-layer `c.vertices.size() != n` 1:1 check below — a
-  // genuinely thin/pinched segment collapses there (Clipper2 merges verts)
-  // and falls back, while a healthy curve passes regardless of chord length.
-  if (n < 2 || shell_curve.vertices.size() != n) {
+  // No 1:1 base/shell vertex requirement: the per-layer band tiler
+  // (splitLayerBandIntoCells) builds a staircase correspondence between each
+  // layer's inner/outer curves, so the shell legitimately carries a different
+  // vertex count than the base — a dense base offset by the (relatively large)
+  // total thickness sheds vertices the same way the legacy offsetCurveBase
+  // does. The only structural gate is that both curves are non-degenerate
+  // (>= 2 vertices); an empty/degenerate offset still falls back, safely,
+  // before any DCEL mutation.
+  if (n < 2 || shell_curve.vertices.size() < 2) {
     PLOG(warning) << "layered offset[" << _name
-                  << "]: shell/base vertex count mismatch (base=" << n
+                  << "]: degenerate base/shell curve (base=" << n
                   << ", shell=" << shell_curve.vertices.size()
                   << "); falling back to legacy area/layer build";
     prevabs::debug::segmentTracePush(
-        "layered: shell/base vertex mismatch (base=" + std::to_string(n)
+        "layered: degenerate base/shell curve (base=" + std::to_string(n)
         + ", shell=" + std::to_string(shell_curve.vertices.size())
         + ") -> FALLBACK");
     return false;
   }
 
+  // Single layer: no internal boundaries to split, so the existing face IS the
+  // one and only layer face. Assign properties directly — this is a SUCCESS
+  // path, not a fallback, and it never touches the DCEL topology.
   if (n_layers == 1) {
     Layer layer = layers.front();
     _layered_faces.push_back(_face);
@@ -1163,8 +1361,12 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     _face->setMaterial(layer.getLamina()->getMaterial());
     _face->setTheta3(layer.getAngle());
     _face->setLayerType(layer.getLayerType());
+    // base and shell may carry different vertex counts; index the shared last
+    // valid index of both for the representative through-thickness vector.
+    const std::size_t layup_last =
+        std::min(base_curve.vertices.size(), shell_curve.vertices.size()) - 1;
     const SVector3 layup_y2 =
-        averageLayupVector(base_curve, shell_curve, 0, n - 1);
+        averageLayupVector(base_curve, shell_curve, 0, layup_last);
     applyLayeredFaceFrame(
         _face, _curve_base, is_closed,
         _mat_orient_e1, _mat_orient_e2, layup_y2, bcfg);
@@ -1176,6 +1378,9 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     return true;
   }
 
+  // Closed multi-layer is not yet implemented: tiling a closed loop needs
+  // closed-loop DCEL handling (no open endpoints to anchor the per-layer
+  // bands). Until that exists, fall back. Still pre-mutation, so safe.
   if (is_closed) {
     PLOG(warning) << "layered offset[" << _name
                   << "]: closed multi-layer offset needs closed-loop DCEL "
@@ -1187,9 +1392,12 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   prevabs::debug::segmentTracePush(
       "layered: open multi-layer route-ii (n_layers=" + std::to_string(n_layers)
       + ")");
-  // Open multi-bend (n > 3) is now handled: the clean-miter shell keeps the
-  // outermost band's connectors well-conditioned (no near-collinear collapse),
-  // so splitLayerBandIntoCells tiles per-connector for any open vertex count.
+  // Per-layer flow (note-build-laminate-segment.md §2.1): generate each layer
+  // curve by offsetting the previous one, orient it like the base, then in the
+  // split loop trim/extend its ends to the segment bounds, embed it, and tile
+  // the band via the inner/outer staircase map. Base and shell may carry
+  // different vertex counts (no 1:1 requirement) — the staircase emits tri/quad
+  // cells exactly like the legacy area build.
 
   std::vector<LayeredCurve> curves;
   curves.reserve(n_layers + 1);
@@ -1198,33 +1406,52 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   // Route-ii (note-build-laminate-segment.md §2.1.1): each layer curve is the
   // offset of the PREVIOUS layer curve by that layer's thickness; the last
   // layer's outer curve is the total-thickness shell (reused → zero seam).
-  double cum = 0.0;
+  // Ends are NOT aligned here — they are trimmed/extended to the segment bounds
+  // in the split loop below (§2.1.2), once the per-layer inner curve is fixed.
   for (int k = 0; k < n_layers - 1; ++k) {
     const double tk = (layers[k].getLamina() != nullptr)
                           ? layers[k].getLamina()->getThickness()
                                 * layers[k].getStack()
                           : 0.0;
-    cum += tk;
     LayeredCurve c = makeRawOffsetCurve(
         curves[k].points, is_closed, clipper_side, tk);
-    if (c.vertices.size() != n) {
+    // No 1:1 vertex requirement: splitLayerBandIntoCells builds a staircase
+    // correspondence between consecutive layer curves, so a layer curve with
+    // fewer vertices than its inner curve (Clipper2 merged some — normal for a
+    // dense curve offset by a non-trivial distance) still tiles correctly. The
+    // only failure is a fully degenerate offset (< 2 vertices), which cannot
+    // bound a band; release every curve we own and fall back. Still
+    // pre-mutation (no split yet), so safe.
+    if (c.vertices.size() < 2) {
       PLOG(warning) << "layered offset[" << _name << "]: layer "
-                    << (k + 1) << " raw offset produced "
-                    << c.vertices.size() << " verts for " << n
-                    << " base verts; falling back to legacy area/layer build";
+                    << (k + 1) << " raw offset is degenerate ("
+                    << c.vertices.size()
+                    << " verts); falling back to legacy area/layer build";
       prevabs::debug::segmentTracePush(
           "layered: layer " + std::to_string(k + 1) + " offset verts="
-          + std::to_string(c.vertices.size()) + " != base=" + std::to_string(n)
-          + " (thin collapse) -> FALLBACK");
+          + std::to_string(c.vertices.size())
+          + " (degenerate) -> FALLBACK");
       deleteUnregisteredLayeredCurve(c);
       for (auto& owned : curves) {
         deleteUnregisteredLayeredCurve(owned);
       }
       return false;
     }
-    if (!is_closed && _layup->getTotalThickness() > 0.0) {
-      alignOpenLayerBoundaryEndpoints(
-          c, base_curve, shell_curve, cum / _layup->getTotalThickness());
+    // Keep every layer curve oriented like the base. makeRawOffsetCurve can
+    // return the offset polygon walked in the opposite direction; left
+    // reversed, the NEXT offset (clipper_side is direction-relative) would go
+    // to the wrong geometric side, and the begin/end cap correspondence with
+    // the base/shell would connect opposite ends. Reverse when the endpoints
+    // pair better with the base run flipped.
+    const double d_aligned =
+        c.points.front().distance(base_curve.points.front())
+        + c.points.back().distance(base_curve.points.back());
+    const double d_flipped =
+        c.points.front().distance(base_curve.points.back())
+        + c.points.back().distance(base_curve.points.front());
+    if (d_flipped < d_aligned) {
+      std::reverse(c.vertices.begin(), c.vertices.end());
+      std::reverse(c.points.begin(), c.points.end());
     }
     curves.push_back(std::move(c));
   }
@@ -1236,6 +1463,17 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   // shared DCEL; once true a failure can no longer fall back to legacy safely.
   bool dcel_mutated = false;
   for (int k = 0; k < n_layers - 1; ++k) {
+    // §2.1.2: trim/extend this layer boundary curve so its two ends land on the
+    // segment bounds. The remaining face is bounded by curves[k] (inner, already
+    // trimmed in the previous iteration; base_curve for k==0) and shell_curve
+    // (outer), so those are the begin/end cap lines. This removes any miter
+    // overshoot/reversal cusp at the bounds before the curve is embedded.
+    const double tk_k = layers[k].getLamina()->getThickness()
+                        * layers[k].getStack();
+    if (!is_closed) {
+      trimLayerCurveEndsToCaps(
+          curves[k + 1], curves[k], shell_curve, tk_k, _name);
+    }
     std::list<PDCELFace *> split_faces =
         bcfg.dcel->splitFaceByPolyline(
             remaining_face, curves[k + 1].vertices);
@@ -1267,15 +1505,32 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     PDCELFace *layer_face = nullptr;
     PDCELFace *next_remaining = nullptr;
 
-    const double d0 =
-        faceCentroidDistanceToCurveForLayered(f0, curves[k], false);
-    const double d1 =
-        faceCentroidDistanceToCurveForLayered(f1, curves[k], false);
-    layer_face = (d0 <= d1) ? f0 : f1;
-    next_remaining = (layer_face == f0) ? f1 : f0;
+    // Discriminate the layer band from the outer remainder robustly: only the
+    // band carries curves[k] (the remainder is bounded by curves[k+1] and the
+    // shell). Probe an interior vertex of curves[k] — the centroid-distance
+    // heuristic is unreliable for sharp/V shapes where both strips span the
+    // full segment height and share a near-identical centroid.
+    if (curves[k].points.size() > 2) {
+      const SPoint2 probe = curves[k].points[curves[k].points.size() / 2];
+      const double tol = GEO_TOL * 100.0;
+      if (faceBoundaryHasPoint(f0, probe, tol)) {
+        layer_face = f0; next_remaining = f1;
+      } else if (faceBoundaryHasPoint(f1, probe, tol)) {
+        layer_face = f1; next_remaining = f0;
+      }
+    }
+    if (layer_face == nullptr) {
+      const double d0 =
+          faceCentroidDistanceToCurveForLayered(f0, curves[k], false);
+      const double d1 =
+          faceCentroidDistanceToCurveForLayered(f1, curves[k], false);
+      layer_face = (d0 <= d1) ? f0 : f1;
+      next_remaining = (layer_face == f0) ? f1 : f0;
+    }
 
     std::vector<PDCELFace *> layer_cells = splitLayerBandIntoCells(
-        layer_face, curves[k], curves[k + 1], bcfg.dcel, _name);
+        layer_face, curves[k], curves[k + 1], is_closed, side, tk_k,
+        bcfg.dcel, _name);
     if (layer_cells.empty()) {
       PLOG(error) << "layered offset[" << _name
                   << "]: failed to split layer " << (k + 1)
@@ -1317,8 +1572,11 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   }
 
   const int last = n_layers - 1;
+  const double tk_last = layers[last].getLamina()->getThickness()
+                         * layers[last].getStack();
   std::vector<PDCELFace *> final_cells = splitLayerBandIntoCells(
-      remaining_face, curves[last], curves[last + 1], bcfg.dcel, _name);
+      remaining_face, curves[last], curves[last + 1], is_closed, side,
+      tk_last, bcfg.dcel, _name);
   if (final_cells.empty()) {
     PLOG(error) << "layered offset[" << _name
                 << "]: failed to split final layer into cells";
