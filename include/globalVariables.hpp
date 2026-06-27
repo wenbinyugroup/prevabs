@@ -2,7 +2,6 @@
 
 #include "globalConstants.hpp"
 
-#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -60,7 +59,6 @@ struct PConfig {
   std::string file_name_lss_opt = "";
   std::string file_name_log     = "";
   std::string file_name_log_dev = "";
-  std::string file_name_deb     = "";
 
   // --- Tool selection ---
   AnalysisTool tool = AnalysisTool::VABS;
@@ -123,7 +121,6 @@ extern PConfig config;
 // ---------------------------------------------------------------------------
 struct RuntimeState {
   int   gmsh_views = 0;
-  FILE* fdeb       = nullptr;
 };
 
 extern RuntimeState runtime;

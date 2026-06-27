@@ -246,7 +246,6 @@ void processConfigVariables() {
   config.file_directory = v_filename[0];  // ****/****/
   config.file_base_name = v_filename[1];  // ****
   config.file_extension = v_filename[2];  // .****
-  config.file_name_deb  = v_filename[0] + v_filename[1] + ".debug";
 
   config.file_name_geo = config.file_directory + config.file_base_name + ".geo_unrolled";
   config.file_name_msh = config.file_directory + config.file_base_name + ".msh";

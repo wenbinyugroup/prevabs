@@ -46,15 +46,6 @@ PModel::PModel(std::string name) {
 
 void PModel::initialize() {
 
-  if (config.debug_level >= DebugLevel::phase) {
-    runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
-    if (!runtime.fdeb) {
-      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb
-                << std::endl;
-      config.debug_level = DebugLevel::off;
-    }
-  }
-
   gmsh::initialize();
 
   // Control Gmsh's own console output (meshing progress, info lines, etc.).
@@ -72,11 +63,6 @@ void PModel::finalize() {
 
   gmsh::finalize();
   // GmshFinalize();
-
-  if (config.debug_level >= DebugLevel::phase && runtime.fdeb) {
-    fclose(runtime.fdeb);
-    runtime.fdeb = nullptr;
-  }
 
 }
 
