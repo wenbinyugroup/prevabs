@@ -292,8 +292,11 @@ LayeredCurve makeArcResampledOuterCurve(
   if (!(L_in > 0.0) || !(L_sh > 0.0)) return out;
   // Strictly-increasing minimum spacing between consecutive outer arc
   // positions: keeps the staircase 1:1 (no two samples collapse) and the cells
-  // from inverting. Tiny vs the layer/shell scale, well above FP noise.
-  const double min_sep = std::max(GEO_TOL * 100.0, L_sh * 1e-6);
+  // from inverting. Tiny vs the layer/shell scale, yet kept clearly above the
+  // export-time vertex-merge tolerance (PModelBuildGmsh EXPORT_MERGE_TOL ~2e-6)
+  // so an intentional short resample edge is never mistaken for a coincident
+  // pair and merged away.
+  const double min_sep = std::max(1.0e-5, L_sh * 1e-5);
   out.points.reserve(n);
   out.vertices.reserve(n);
   out.owns_vertices = true;

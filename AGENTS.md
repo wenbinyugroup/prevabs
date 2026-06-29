@@ -192,6 +192,32 @@ ctest --test-dir test\integration\build_msvc -R t1        # filter by name regex
 ctest --test-dir test\integration\build_msvc -L t1_strip  # filter by label
 ```
 
+**Examples:**
+
+The examples runner discovers cases from `share/examples/*/meta.json`. It uses
+the metadata `run_command` when present; otherwise it runs the first XML input
+as `prevabs -i <input>.xml --hm`.
+
+```powershell
+# Run all examples (from repo root)
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1
+
+# Run examples whose directory name matches the regex
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -Filter airfoil
+
+# Execute VABS for every example and verify its generated result
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -e
+
+# Execute VABS for one example
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -e -Filter "ex_box$"
+```
+
+The report is written to `share/examples/examples-report.md`, with full
+per-example output under `share/examples/example-logs/`. In `-e` mode, a case
+passes only when VABS reports successful completion and freshly writes its
+mode-specific result (`.sg.K`, `.sg.ELE`, or `.sg.fi`). The script exits with
+code 1 if any case fails, times out, or has invalid metadata.
+
 Adding a new test: create the directory, add `INDEX.txt` with the `main`/`support` sections,
 and drop the XML input file in. No script changes needed — CMakeLists.txt picks it up automatically.
 

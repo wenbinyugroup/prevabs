@@ -238,18 +238,23 @@ void PModel::createGmshVertices() {
 
   int _gv_tag;
 
-  // Distinct DCEL vertices that are geometrically coincident (within
-  // VERTEX_MERGE_TOL) must share a single Gmsh point, otherwise Gmsh meshes
-  // each separately and any element spanning the coincident pair is degenerate
-  // (zero area -> negative Jacobian, rejected by VABS). Such coincident pairs
-  // arise where two adjacent sub-segments of different total thickness build
-  // their per-layer interface vertices independently on a shared end-cap; the
-  // two parametric interpolations land ~1e-9 apart, just above GEO_TOL, so the
-  // DCEL's own coincidence-merge does not unify them. We cannot widen that
-  // merge (it runs mid-build and the area-build code is not robust to its
+  // Distinct DCEL vertices that are geometrically coincident must share a
+  // single Gmsh point, otherwise Gmsh meshes each separately and any element
+  // spanning the coincident pair is degenerate (zero area -> negative Jacobian,
+  // rejected by VABS). Such coincident pairs arise where two adjacent
+  // sub-segments build their per-layer interface vertices independently on a
+  // shared end-cap (e.g. the c-spar and web both end at p3/p4), and — for open
+  // layered segments — where the final layer's arc-resampled shell point lands
+  // on top of an existing shell vertex. These independent interpolations land
+  // ~1e-8 apart (measured up to ~1e-6), at or just above VERTEX_MERGE_TOL, so
+  // the DCEL's own mid-build coincidence-merge does not unify them. We cannot
+  // widen that mid-build merge (the area-build code is not robust to its
   // vertices merging), so the sharing is realized here, at the export boundary,
-  // where the DCEL is already complete. Created points are recorded so coincident
-  // followers reuse the same tag.
+  // where the DCEL is already complete and a wider EXPORT_MERGE_TOL is safe: it
+  // sits far above the coincident gaps yet far below the smallest intentional
+  // feature (the resample min-separation, ~1e-5, and any real geometry, ~1e-3).
+  // Created points are recorded so coincident followers reuse the same tag.
+  const double EXPORT_MERGE_TOL = 2.0e-6;
   struct CreatedPoint { double x, y, z; int tag; };
   std::vector<CreatedPoint> created;
 
@@ -257,7 +262,7 @@ void PModel::createGmshVertices() {
     const double vx = v->x(), vy = v->y(), vz = v->z();
     for (const auto &c : created) {
       const double dx = c.x - vx, dy = c.y - vy, dz = c.z - vz;
-      if (std::sqrt(dx * dx + dy * dy + dz * dz) <= VERTEX_MERGE_TOL) {
+      if (std::sqrt(dx * dx + dy * dy + dz * dz) <= EXPORT_MERGE_TOL) {
         return c.tag;
       }
     }
