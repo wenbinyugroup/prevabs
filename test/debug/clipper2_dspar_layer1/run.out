@@ -1,0 +1,194 @@
+PreVABS 2.1.0
+==> prevabs start (2026-06-28 21:20:30)
+==> reading main input file: cspar_layer1.xml
+[warning]   unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]   material 'AS4 12k/E7K8': <nu23> not specified, using default 0.3; provide nu23 explicitly for accuracy
+[warning]   material 'S2/SP381': <nu23> not specified, using default 0.3; provide nu23 explicitly for accuracy
+[warning]   material 'T300 15k/976': <nu23> not specified, using default 0.3; provide nu23 explicitly for accuracy
+[warning]   material 'T650-35 12k/976': <nu23> not specified, using default 0.3; provide nu23 explicitly for accuracy
+[warning]   material 'T700 24K/E765': <nu23> not specified, using default 0.3; provide nu23 explicitly for accuracy
+[warning]   offset (multi-vertex): offset distance 0.0152834 is 7.87621x the shortest base segment length (0.00194045 at segment 35); offset construction may be numerically fragile — consider <normalize>1</normalize>, a larger <scale>, or a denser baseline
+[warning]   offset (multi-vertex, open): skin dropped over base indices [34..37] due to insufficient local thickness
+[warning]   offset (multi-vertex, open): skin dropped over base indices [1..1] due to insufficient local thickness
+!!  offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.02 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+[warning]   offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.02 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#17 v#5 -> v#11 | loop: loop#2 | current=he#190 v#96 -> v#95 | loop: loop#2 | face=nullptr
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#313 v#151 -> v#153 | loop: loop#6 | current=he#190 v#96 -> v#95 | loop: loop#6 | face=f#2 [sgm_blk_1_face]
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#17 v#5 -> v#11 | loop: loop#7 | current=he#346 v#169 -> v#168 | loop: loop#7 | face=nullptr
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#313 v#151 -> v#153 | loop: loop#6 | current=he#190 v#96 -> v#95 | loop: loop#6 | face=f#4
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#17 v#5 -> v#11 | loop: loop#7 | current=he#346 v#169 -> v#168 | loop: loop#7 | face=f#5
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#9 | current=he#129 v#66 -> v#67 | loop: loop#9 | face=f#5
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#9 | current=he#129 v#66 -> v#67 | loop: loop#9 | face=f#7
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#9 | current=he#129 v#66 -> v#67 | loop: loop#9 | face=f#7
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#11 | current=he#133 v#68 -> v#69 | loop: loop#11 | face=f#7
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#11 | current=he#133 v#68 -> v#69 | loop: loop#11 | face=f#9
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#11 | current=he#133 v#68 -> v#69 | loop: loop#11 | face=f#9
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#13 | current=he#137 v#70 -> v#71 | loop: loop#13 | face=f#9
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#13 | current=he#137 v#70 -> v#71 | loop: loop#13 | face=f#11
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#13 | current=he#137 v#70 -> v#71 | loop: loop#13 | face=f#11
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#15 | current=he#141 v#72 -> v#73 | loop: loop#15 | face=f#11
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#15 | current=he#141 v#72 -> v#73 | loop: loop#15 | face=f#13
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#15 | current=he#141 v#72 -> v#73 | loop: loop#15 | face=f#13
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#17 | current=he#145 v#74 -> v#75 | loop: loop#17 | face=f#13
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#17 | current=he#145 v#74 -> v#75 | loop: loop#17 | face=f#15
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#17 | current=he#145 v#74 -> v#75 | loop: loop#17 | face=f#15
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#19 | current=he#149 v#76 -> v#77 | loop: loop#19 | face=f#15
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#19 | current=he#149 v#76 -> v#77 | loop: loop#19 | face=f#17
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#19 | current=he#149 v#76 -> v#77 | loop: loop#19 | face=f#17
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#21 | current=he#153 v#78 -> v#79 | loop: loop#21 | face=f#17
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#21 | current=he#153 v#78 -> v#79 | loop: loop#21 | face=f#19
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#21 | current=he#153 v#78 -> v#79 | loop: loop#21 | face=f#19
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#23 | current=he#157 v#80 -> v#81 | loop: loop#23 | face=f#19
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#23 | current=he#157 v#80 -> v#81 | loop: loop#23 | face=f#21
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#309 v#8 -> v#152 | loop: loop#23 | current=he#157 v#80 -> v#81 | loop: loop#23 | face=f#21
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#607 v#224 -> v#226 | loop: loop#150 | current=he#194 v#98 -> v#97 | loop: loop#150 | face=f#4
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#313 v#151 -> v#153 | loop: loop#151 | current=he#644 v#244 -> v#243 | loop: loop#151 | face=nullptr
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#607 v#224 -> v#226 | loop: loop#150 | current=he#194 v#98 -> v#97 | loop: loop#150 | face=f#148
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#313 v#151 -> v#153 | loop: loop#151 | current=he#644 v#244 -> v#243 | loop: loop#151 | face=f#149
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#153 | current=he#421 v#206 -> v#207 | loop: loop#153 | face=f#149
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#153 | current=he#421 v#206 -> v#207 | loop: loop#153 | face=f#151
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#153 | current=he#421 v#206 -> v#207 | loop: loop#153 | face=f#151
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#155 | current=he#425 v#208 -> v#209 | loop: loop#155 | face=f#151
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#155 | current=he#425 v#208 -> v#209 | loop: loop#155 | face=f#153
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#155 | current=he#425 v#208 -> v#209 | loop: loop#155 | face=f#153
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#157 | current=he#429 v#210 -> v#211 | loop: loop#157 | face=f#153
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#157 | current=he#429 v#210 -> v#211 | loop: loop#157 | face=f#155
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#157 | current=he#429 v#210 -> v#211 | loop: loop#157 | face=f#155
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#159 | current=he#431 v#211 -> v#212 | loop: loop#159 | face=f#155
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#159 | current=he#431 v#211 -> v#212 | loop: loop#159 | face=f#157
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#159 | current=he#431 v#211 -> v#212 | loop: loop#159 | face=f#157
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#161 | current=he#433 v#212 -> v#213 | loop: loop#161 | face=f#157
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#161 | current=he#433 v#212 -> v#213 | loop: loop#161 | face=f#159
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#161 | current=he#433 v#212 -> v#213 | loop: loop#161 | face=f#159
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#163 | current=he#437 v#214 -> v#215 | loop: loop#163 | face=f#159
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#163 | current=he#437 v#214 -> v#215 | loop: loop#163 | face=f#161
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#163 | current=he#437 v#214 -> v#215 | loop: loop#163 | face=f#161
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#165 | current=he#441 v#216 -> v#217 | loop: loop#165 | face=f#161
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#165 | current=he#441 v#216 -> v#217 | loop: loop#165 | face=f#163
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#165 | current=he#441 v#216 -> v#217 | loop: loop#165 | face=f#163
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#167 | current=he#445 v#218 -> v#219 | loop: loop#167 | face=f#163
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#167 | current=he#445 v#218 -> v#219 | loop: loop#167 | face=f#165
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#167 | current=he#445 v#218 -> v#219 | loop: loop#167 | face=f#165
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#169 | current=he#449 v#220 -> v#221 | loop: loop#169 | face=f#165
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#169 | current=he#449 v#220 -> v#221 | loop: loop#169 | face=f#167
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#169 | current=he#449 v#220 -> v#221 | loop: loop#169 | face=f#167
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#171 | current=he#453 v#222 -> v#223 | loop: loop#171 | face=f#167
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#171 | current=he#453 v#222 -> v#223 | loop: loop#171 | face=f#169
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#603 v#152 -> v#225 | loop: loop#171 | current=he#453 v#222 -> v#223 | loop: loop#171 | face=f#169
+[warning]   splitEdge: repeated splits on edge lineage #5 (3 splits in current phase), edge=he#599 v#6( 0 , 1.48578 , -0.0502117 ) -> v#224( 0 , 1.47498 , -0.0607598 ) | loop: loop#150 | face: f#148
+[warning]   splitEdge: repeated splits on edge lineage #7 (3 splits in current phase), edge=he#605 v#225( 0 , 1.47498 , 0.0873917 ) -> v#9( 0 , 1.48578 , 0.0769483 ) | loop: loop#150 | face: f#148
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#907 v#300 -> v#9 | loop: loop#298 | current=he#1021 v#356 -> v#357 | loop: loop#298 | face=nullptr
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#607 v#224 -> v#226 | loop: loop#299 | current=he#950 v#321 -> v#320 | loop: loop#299 | face=nullptr
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#907 v#300 -> v#9 | loop: loop#298 | current=he#1021 v#356 -> v#357 | loop: loop#298 | face=f#296
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#607 v#224 -> v#226 | loop: loop#299 | current=he#950 v#321 -> v#320 | loop: loop#299 | face=f#297
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#301 | current=he#715 v#279 -> v#280 | loop: loop#301 | face=f#297
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#301 | current=he#715 v#279 -> v#280 | loop: loop#301 | face=f#299
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#301 | current=he#715 v#279 -> v#280 | loop: loop#301 | face=f#299
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#303 | current=he#719 v#281 -> v#282 | loop: loop#303 | face=f#299
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#303 | current=he#719 v#281 -> v#282 | loop: loop#303 | face=f#301
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#303 | current=he#719 v#281 -> v#282 | loop: loop#303 | face=f#301
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#305 | current=he#723 v#283 -> v#284 | loop: loop#305 | face=f#301
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#305 | current=he#723 v#283 -> v#284 | loop: loop#305 | face=f#303
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#305 | current=he#723 v#283 -> v#284 | loop: loop#305 | face=f#303
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#307 | current=he#725 v#284 -> v#285 | loop: loop#307 | face=f#303
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#307 | current=he#725 v#284 -> v#285 | loop: loop#307 | face=f#305
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#307 | current=he#725 v#284 -> v#285 | loop: loop#307 | face=f#305
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#309 | current=he#729 v#286 -> v#287 | loop: loop#309 | face=f#305
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#309 | current=he#729 v#286 -> v#287 | loop: loop#309 | face=f#307
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#309 | current=he#729 v#286 -> v#287 | loop: loop#309 | face=f#307
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#311 | current=he#731 v#287 -> v#288 | loop: loop#311 | face=f#307
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#311 | current=he#731 v#287 -> v#288 | loop: loop#311 | face=f#309
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#311 | current=he#731 v#287 -> v#288 | loop: loop#311 | face=f#309
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#313 | current=he#735 v#289 -> v#290 | loop: loop#313 | face=f#309
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#313 | current=he#735 v#289 -> v#290 | loop: loop#313 | face=f#311
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#313 | current=he#735 v#289 -> v#290 | loop: loop#313 | face=f#311
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#315 | current=he#739 v#291 -> v#292 | loop: loop#315 | face=f#311
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#315 | current=he#739 v#291 -> v#292 | loop: loop#315 | face=f#313
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#315 | current=he#739 v#291 -> v#292 | loop: loop#315 | face=f#313
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#317 | current=he#743 v#293 -> v#294 | loop: loop#317 | face=f#313
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#317 | current=he#743 v#293 -> v#294 | loop: loop#317 | face=f#315
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#317 | current=he#743 v#293 -> v#294 | loop: loop#317 | face=f#315
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#319 | current=he#747 v#295 -> v#296 | loop: loop#319 | face=f#315
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#319 | current=he#747 v#295 -> v#296 | loop: loop#319 | face=f#317
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#319 | current=he#747 v#295 -> v#296 | loop: loop#319 | face=f#317
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#321 | current=he#751 v#297 -> v#298 | loop: loop#321 | face=f#317
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#321 | current=he#751 v#297 -> v#298 | loop: loop#321 | face=f#319
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#905 v#225 -> v#300 | loop: loop#321 | current=he#751 v#297 -> v#298 | loop: loop#321 | face=f#319
+[warning]   splitEdge: repeated splits on edge lineage #5 (4 splits in current phase), edge=he#901 v#6( 0 , 1.48578 , -0.0502117 ) -> v#299( 0 , 1.47858 , -0.0572438 ) | loop: loop#298 | face: f#296
+[warning]   splitEdge: repeated splits on edge lineage #7 (4 splits in current phase), edge=he#907 v#300( 0 , 1.47858 , 0.0839105 ) -> v#9( 0 , 1.48578 , 0.0769483 ) | loop: loop#298 | face: f#296
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#448 | current=he#1325 v#431 -> v#432 | loop: loop#448 | face=nullptr
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#449 | current=he#1015 v#353 -> v#354 | loop: loop#449 | face=f#296
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#448 | current=he#1325 v#431 -> v#432 | loop: loop#448 | face=f#446
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#449 | current=he#1015 v#353 -> v#354 | loop: loop#449 | face=f#447
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#451 | current=he#1019 v#355 -> v#356 | loop: loop#451 | face=f#447
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#451 | current=he#1019 v#355 -> v#356 | loop: loop#451 | face=f#449
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#451 | current=he#1019 v#355 -> v#356 | loop: loop#451 | face=f#449
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#453 | current=he#1023 v#357 -> v#358 | loop: loop#453 | face=f#449
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#453 | current=he#1023 v#357 -> v#358 | loop: loop#453 | face=f#451
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#453 | current=he#1023 v#357 -> v#358 | loop: loop#453 | face=f#451
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#455 | current=he#1027 v#359 -> v#360 | loop: loop#455 | face=f#451
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#455 | current=he#1027 v#359 -> v#360 | loop: loop#455 | face=f#453
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#455 | current=he#1027 v#359 -> v#360 | loop: loop#455 | face=f#453
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#457 | current=he#1031 v#361 -> v#362 | loop: loop#457 | face=f#453
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#457 | current=he#1031 v#361 -> v#362 | loop: loop#457 | face=f#455
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#457 | current=he#1031 v#361 -> v#362 | loop: loop#457 | face=f#455
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#459 | current=he#1033 v#362 -> v#363 | loop: loop#459 | face=f#455
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#459 | current=he#1033 v#362 -> v#363 | loop: loop#459 | face=f#457
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#459 | current=he#1033 v#362 -> v#363 | loop: loop#459 | face=f#457
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#461 | current=he#1035 v#363 -> v#364 | loop: loop#461 | face=f#457
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#461 | current=he#1035 v#363 -> v#364 | loop: loop#461 | face=f#459
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#461 | current=he#1035 v#363 -> v#364 | loop: loop#461 | face=f#459
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#463 | current=he#1039 v#365 -> v#366 | loop: loop#463 | face=f#459
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#463 | current=he#1039 v#365 -> v#366 | loop: loop#463 | face=f#461
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#463 | current=he#1039 v#365 -> v#366 | loop: loop#463 | face=f#461
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#465 | current=he#1043 v#367 -> v#368 | loop: loop#465 | face=f#461
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#465 | current=he#1043 v#367 -> v#368 | loop: loop#465 | face=f#463
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#465 | current=he#1043 v#367 -> v#368 | loop: loop#465 | face=f#463
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#467 | current=he#1047 v#369 -> v#370 | loop: loop#467 | face=f#463
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#467 | current=he#1047 v#369 -> v#370 | loop: loop#467 | face=f#465
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#467 | current=he#1047 v#369 -> v#370 | loop: loop#467 | face=f#465
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#469 | current=he#1051 v#371 -> v#372 | loop: loop#469 | face=f#465
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#469 | current=he#1051 v#371 -> v#372 | loop: loop#469 | face=f#467
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#469 | current=he#1051 v#371 -> v#372 | loop: loop#469 | face=f#467
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#471 | current=he#1055 v#373 -> v#300 | loop: loop#471 | face=f#467
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#471 | current=he#1055 v#373 -> v#300 | loop: loop#471 | face=f#469
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1209 v#300 -> v#375 | loop: loop#471 | current=he#1055 v#373 -> v#300 | loop: loop#471 | face=f#469
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#599 | current=he#1329 v#433 -> v#434 | loop: loop#599 | face=f#446
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#599 | current=he#1329 v#433 -> v#434 | loop: loop#599 | face=f#597
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#599 | current=he#1329 v#433 -> v#434 | loop: loop#599 | face=f#597
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#601 | current=he#1333 v#435 -> v#436 | loop: loop#601 | face=f#597
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#601 | current=he#1333 v#435 -> v#436 | loop: loop#601 | face=f#599
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#601 | current=he#1333 v#435 -> v#436 | loop: loop#601 | face=f#599
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#603 | current=he#1337 v#437 -> v#438 | loop: loop#603 | face=f#599
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#603 | current=he#1337 v#437 -> v#438 | loop: loop#603 | face=f#601
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#603 | current=he#1337 v#437 -> v#438 | loop: loop#603 | face=f#601
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#605 | current=he#1339 v#438 -> v#439 | loop: loop#605 | face=f#601
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#605 | current=he#1339 v#438 -> v#439 | loop: loop#605 | face=f#603
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#605 | current=he#1339 v#438 -> v#439 | loop: loop#605 | face=f#603
+[warning]   splitEdge: repeated splits on edge lineage #84 (3 splits in current phase), edge=he#1517 v#85( 0 , 1.5998 , -0.0522344 ) -> v#449( 0 , 1.57539 , -0.0518948 ) | loop: loop#605 | face: f#603
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#607 | current=he#1341 v#439 -> v#440 | loop: loop#607 | face=f#603
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#607 | current=he#1341 v#439 -> v#440 | loop: loop#607 | face=f#605
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#607 | current=he#1341 v#439 -> v#440 | loop: loop#607 | face=f#605
+[warning]   splitEdge: repeated splits on edge lineage #84 (4 splits in current phase), edge=he#1523 v#85( 0 , 1.5998 , -0.0522344 ) -> v#450( 0 , 1.57539 , -0.0518948 ) | loop: loop#607 | face: f#605
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#609 | current=he#1343 v#440 -> v#441 | loop: loop#609 | face=f#605
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#609 | current=he#1343 v#440 -> v#441 | loop: loop#609 | face=f#607
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#609 | current=he#1343 v#440 -> v#441 | loop: loop#609 | face=f#607
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#611 | current=he#1349 v#443 -> v#444 | loop: loop#611 | face=f#607
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#611 | current=he#1349 v#443 -> v#444 | loop: loop#611 | face=f#609
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#611 | current=he#1349 v#443 -> v#444 | loop: loop#611 | face=f#609
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#613 | current=he#1353 v#445 -> v#446 | loop: loop#613 | face=f#609
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#613 | current=he#1353 v#445 -> v#446 | loop: loop#613 | face=f#611
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#613 | current=he#1353 v#445 -> v#446 | loop: loop#613 | face=f#611
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#615 | current=he#1357 v#447 -> v#375 | loop: loop#615 | face=f#611
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#615 | current=he#1357 v#447 -> v#375 | loop: loop#615 | face=f#613
+[warning]   walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#1211 v#375 -> v#9 | loop: loop#615 | current=he#1357 v#447 -> v#375 | loop: loop#615 | face=f#613
+[warning]   splitEdge: repeated splits on edge lineage #5 (5 splits in current phase), edge=he#602 v#151( 0 , 1.47138 , -0.0642759 ) -> v#224( 0 , 1.47498 , -0.0607598 ) | loop: loop#3 | face: f#3 [sgm_blk_2_face]
+[warning]   splitEdge: repeated splits on edge lineage #5 (6 splits in current phase), edge=he#904 v#224( 0 , 1.47498 , -0.0607598 ) -> v#299( 0 , 1.47858 , -0.0572438 ) | loop: loop#742 | face: f#740
+[warning]   splitEdge: repeated splits on edge lineage #7 (5 splits in current phase), edge=he#906 v#300( 0 , 1.47858 , 0.0839105 ) -> v#225( 0 , 1.47498 , 0.0873917 ) | loop: loop#746 | face: f#744
+[warning]   splitEdge: repeated splits on edge lineage #5 (7 splits in current phase), edge=he#1685 v#455( 0 , 1.47498 , -0.0607598 ) -> v#299( 0 , 1.47858 , -0.0572438 ) | loop: loop#746 | face: f#744
+[warning]   splitEdge: repeated splits on edge lineage #7 (6 splits in current phase), edge=he#1210 v#375( 0 , 1.48218 , 0.0804294 ) -> v#300( 0 , 1.47858 , 0.0839105 ) | loop: loop#748 | face: f#746
+[warning]   splitEdge: repeated splits on edge lineage #5 (8 splits in current phase), edge=he#1208 v#299( 0 , 1.47858 , -0.0572438 ) -> v#374( 0 , 1.48218 , -0.0537278 ) | loop: loop#748 | face: f#746
+Warning : Start point 4 and end point 5 of GEO line 1 are closer than the geometrical tolerance, at position (0, 1.48578, 0.0769483)
+Warning : Start point 370 and end point 449 of GEO line 821 are closer than the geometrical tolerance, at position (0, 1.48218, 0.0804294)
+OK  prevabs finished (2026-06-28 21:20:30)
+==> total running time: 0.237232 sec

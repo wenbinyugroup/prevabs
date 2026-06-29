@@ -215,6 +215,116 @@ LayeredCurve makeRawOffsetCurve(
   return curve;
 }
 
+// Cumulative arc length of an open polyline (cum[0]==0, cum.back()==total).
+std::vector<double> cumulativeArcLength(const std::vector<SPoint2>& p) {
+  std::vector<double> cum(p.size(), 0.0);
+  for (std::size_t i = 1; i < p.size(); ++i) {
+    cum[i] = cum[i - 1] + p[i - 1].distance(p[i]);
+  }
+  return cum;
+}
+
+// Point on open polyline `poly` (with precomputed cumulative arc `cum`) at
+// cumulative arc length `target` (clamped to the polyline ends).
+SPoint2 pointAtArcLength(const std::vector<SPoint2>& poly,
+                         const std::vector<double>& cum, double target) {
+  if (target <= 0.0) return poly.front();
+  if (target >= cum.back()) return poly.back();
+  std::size_t i = 1;
+  while (i < cum.size() && cum[i] < target) ++i;     // first cum[i] >= target
+  const std::size_t a = i - 1;
+  const double seg = cum[i] - cum[a];
+  const double t = (seg > 0.0) ? (target - cum[a]) / seg : 0.0;
+  return SPoint2(poly[a].x() + t * (poly[i].x() - poly[a].x()),
+                 poly[a].y() + t * (poly[i].y() - poly[a].y()));
+}
+
+// Cumulative-arc position of the foot of perpendicular from `q` onto open
+// polyline `poly` (with cumulative arc `cum`) — i.e. the arc length at the
+// closest point on the polyline. Used to resample the shell by projecting each
+// inner vertex onto it (connectors then follow the layer-thickness direction).
+double projectArcOntoPolyline(const SPoint2& q,
+                              const std::vector<SPoint2>& poly,
+                              const std::vector<double>& cum) {
+  double best_d2 = std::numeric_limits<double>::infinity();
+  double best_arc = 0.0;
+  for (std::size_t i = 0; i + 1 < poly.size(); ++i) {
+    const double dx = poly[i + 1].x() - poly[i].x();
+    const double dy = poly[i + 1].y() - poly[i].y();
+    const double len2 = dx * dx + dy * dy;
+    double u = 0.0;
+    if (len2 > 0.0) {
+      u = ((q.x() - poly[i].x()) * dx + (q.y() - poly[i].y()) * dy) / len2;
+      u = std::max(0.0, std::min(1.0, u));
+    }
+    const double fx = poly[i].x() + u * dx, fy = poly[i].y() + u * dy;
+    const double d2 = (q.x() - fx) * (q.x() - fx) + (q.y() - fy) * (q.y() - fy);
+    if (d2 < best_d2) {
+      best_d2 = d2;
+      best_arc = cum[i] + u * std::sqrt(len2);
+    }
+  }
+  return best_arc;
+}
+
+// note-build-laminate-segment.md §2.1 / issue-20260628 §8.3: the FINAL layer's
+// outer boundary is the segment offset (shell) itself — it is NOT re-offset.
+// Its vertex distribution was fixed for the whole segment, independent of this
+// layer's inner curve (curves[last]); mapping the two raw point sets makes the
+// sparser side (the shell, near a convex head) STALL, fanning several
+// connectors off one shell vertex into zero-area sliver cells that crash the
+// split. Fix: resample the shell so it carries exactly ONE point per inner
+// vertex, placed at the matching cumulative-arc-length fraction along the
+// shell. This yields a strictly 1:1, monotone, outer-stall-free correspondence
+// (every cell a quad). Endpoints REUSE the existing shell corner vertices (the
+// band's begin/end caps); interior points are NEW vertices lying ON the shell
+// polyline — splitFaceByPolyline subdivides the shell edges to embed them, so
+// the exact shell geometry is preserved (no re-offset, no offset error). The
+// caller pairs these 1:1 via a trivial {i,i} BaseOffsetMap.
+LayeredCurve makeArcResampledOuterCurve(
+    const LayeredCurve& inner, const LayeredCurve& shell) {
+  LayeredCurve out;
+  const std::size_t n = inner.points.size();
+  if (n < 2 || shell.points.size() < 2) return out;  // empty -> caller falls back
+  const std::vector<double> cum_in = cumulativeArcLength(inner.points);
+  const std::vector<double> cum_sh = cumulativeArcLength(shell.points);
+  const double L_in = cum_in.back(), L_sh = cum_sh.back();
+  if (!(L_in > 0.0) || !(L_sh > 0.0)) return out;
+  // Strictly-increasing minimum spacing between consecutive outer arc
+  // positions: keeps the staircase 1:1 (no two samples collapse) and the cells
+  // from inverting. Tiny vs the layer/shell scale, well above FP noise.
+  const double min_sep = std::max(GEO_TOL * 100.0, L_sh * 1e-6);
+  out.points.reserve(n);
+  out.vertices.reserve(n);
+  out.owns_vertices = true;
+  double prev_arc = 0.0;  // arc position of the previously placed outer vertex
+  for (std::size_t i = 0; i < n; ++i) {
+    if (i == 0) {
+      out.points.push_back(shell.points.front());
+      out.vertices.push_back(shell.vertices.front());   // existing band corner
+      prev_arc = 0.0;
+    } else if (i == n - 1) {
+      out.points.push_back(shell.points.back());
+      out.vertices.push_back(shell.vertices.back());    // existing band corner
+    } else {
+      // Project inner[i] onto the shell (perpendicular foot), then force the
+      // arc position strictly forward of the previous one so connectors stay
+      // ordered (monotone) and never cross — projection alone can stall/retreat
+      // where the shell is locally concave or coarsely sampled.
+      double a = projectArcOntoPolyline(inner.points[i], shell.points, cum_sh);
+      a = std::max(a, prev_arc + min_sep);
+      // Leave room for the remaining interior points before the back cap.
+      a = std::min(a, L_sh - static_cast<double>(n - 1 - i) * min_sep);
+      a = std::max(a, prev_arc + min_sep);  // re-assert after the ceiling clamp
+      const SPoint2 q = pointAtArcLength(shell.points, cum_sh, a);
+      out.points.push_back(q);
+      out.vertices.push_back(new PDCELVertex(0.0, q.x(), q.y()));
+      prev_arc = a;
+    }
+  }
+  return out;
+}
+
 // Signed side of point P relative to the directed cap line A->B (sign of the
 // 2D cross product). Same sign = same side; 0 = on the line.
 double capSide(const SPoint2& A, const SPoint2& B, const SPoint2& P) {
@@ -261,8 +371,12 @@ void trimLayerCurveEndsToCaps(
   const SPoint2 endA = inner.points.back();
   const SPoint2 endB = shell.points.back();
 
+  // Returns the cap-line landing point; `u1_out` reports the parameter of that
+  // landing ALONG the curve segment [s, s+1] (can be <0 or >1: line∩line, not
+  // segment∩segment), which the reversal-spike guard below uses to decide
+  // whether the boundary vertex sits behind or ahead of the landing.
   auto crossCap = [&](std::size_t s, const SPoint2& A, const SPoint2& B,
-                      const char* which) -> SPoint2 {
+                      const char* which, double& u1_out) -> SPoint2 {
     double u1, u2;
     if (!calcLineIntersection2D(
             c.points[s], c.points[s + 1], A, B, u1, u2, TOLERANCE)) {
@@ -271,6 +385,7 @@ void trimLayerCurveEndsToCaps(
           + which + " segment parallel to its bound");
     }
     (void)u2;
+    u1_out = u1;
     return SPoint2(
         c.points[s].x() + u1 * (c.points[s + 1].x() - c.points[s].x()),
         c.points[s].y() + u1 * (c.points[s + 1].y() - c.points[s].y()));
@@ -306,11 +421,14 @@ void trimLayerCurveEndsToCaps(
   // If that vertex already lies on the cap (incl. the curve running along the
   // cap, where an intersection would be ill-conditioned) use it directly;
   // otherwise intersect to land the endpoint on the cap (trim or extend).
+  double head_u1 = 0.0;
+  const bool head_on_cap =
+      std::fabs(beginPerp(c.points[head_keep])) < merge_tol;
   const SPoint2 head_pt =
-      (std::fabs(beginPerp(c.points[head_keep])) < merge_tol)
+      head_on_cap
           ? c.points[head_keep]
           : crossCap(head_keep == 0 ? 0 : head_keep - 1, beginA, beginB,
-                     "head");
+                     "head", head_u1);
 
   // Tail: last vertex on/inside the end cap (skip strictly-exterior ones).
   const double end_sign = (endPerp(c.points.front()) >= 0.0) ? 1.0 : -1.0;
@@ -325,11 +443,37 @@ void trimLayerCurveEndsToCaps(
         "]: entire layer curve lies outside the end bound");
   }
   const std::size_t last_keep = tail_keep - 1;
+  double tail_u1 = 0.0;
+  const bool tail_on_cap =
+      std::fabs(endPerp(c.points[last_keep])) < merge_tol;
   const SPoint2 tail_pt =
-      (std::fabs(endPerp(c.points[last_keep])) < merge_tol)
+      tail_on_cap
           ? c.points[last_keep]
           : crossCap(last_keep == m - 1 ? m - 2 : last_keep, endA, endB,
-                     "tail");
+                     "tail", tail_u1);
+
+  // Reversal-spike guard (note-build-laminate-segment.md §2.1.2; see
+  // dev-docs/trimLayerCurveEndsToCaps.md). When the raw curve's FIRST segment
+  // straddles the begin cap (the head vertex is barely interior, the next is
+  // exterior — e.g. a join-tilted end cap over a thin layer), crossCap lands
+  // head_pt AHEAD of the head vertex along the curve (head_keep==0, head_u1>0).
+  // Prepending head_pt while also keeping that vertex makes the rebuilt head
+  // double back into a near-collinear spike that breaks splitFaceByPolyline.
+  // In that case head_pt REPLACES the head vertex: drop it. Symmetric at tail
+  // (tail_u1<1 means tail_pt lands before the last vertex). The on-cap and
+  // exterior-skip branches never produce this, so the guard is gated on the
+  // boundary index plus the landing being more than merge_tol past the vertex.
+  std::size_t keep_lo = head_keep;
+  std::size_t keep_hi = last_keep;
+  if (!head_on_cap && head_keep == 0
+      && head_u1 * c.points[0].distance(c.points[1]) > merge_tol) {
+    keep_lo = 1;
+  }
+  if (!tail_on_cap && last_keep == m - 1
+      && (1.0 - tail_u1) * c.points[m - 2].distance(c.points[m - 1])
+             > merge_tol) {
+    keep_hi = m - 2;
+  }
 
   // Keep the cap endpoints authoritative and drop interior vertices that are
   // within merge_tol of a cap endpoint or of the previous kept vertex — these
@@ -340,7 +484,7 @@ void trimLayerCurveEndsToCaps(
   };
   std::vector<bool> kept(m, false);
   std::vector<int> keep_idx;
-  for (int i = static_cast<int>(head_keep); i <= static_cast<int>(last_keep);
+  for (int i = static_cast<int>(keep_lo); i <= static_cast<int>(keep_hi);
        ++i) {
     if (near2(head_pt, c.points[i]) || near2(tail_pt, c.points[i])) continue;
     if (!keep_idx.empty() && near2(c.points[keep_idx.back()], c.points[i]))
@@ -404,6 +548,14 @@ bool computeFaceCentroid2DForLayered(PDCELFace *face, SPoint2 &out) {
   if (n == 0) return false;
   out = SPoint2(sy / n, sz / n);
   return true;
+}
+
+// Number of half-edges on the face outer loop (0 if no outer loop).
+int faceOuterEdgeCount(PDCELFace *face) {
+  if (face == nullptr || face->outer() == nullptr) return 0;
+  int n = 0;
+  walkLoopWithLimit(face->outer(), [&](PDCELHalfEdge *) { ++n; });
+  return n;
 }
 
 // True if the face's outer boundary carries a vertex coincident (within tol)
@@ -522,7 +674,8 @@ bool layeredFaceContainsVertex(
 std::vector<PDCELFace *> splitLayerBandIntoCells(
     PDCELFace *band_face, const LayeredCurve& inner,
     const LayeredCurve& outer, bool is_closed, int side, double dist,
-    PDCEL *dcel, const std::string& segment_name) {
+    PDCEL *dcel, const std::string& segment_name,
+    const BaseOffsetMap* precomputed_map = nullptr) {
   std::vector<PDCELFace *> cells;
   // note-build-laminate-segment.md §2.1.4-2.1.5: build the staircase vertex
   // mapping between this layer's inner (base) and outer (offset) curves, then
@@ -535,13 +688,26 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
   // offsetCurveBase does. Where the staircase advances on only one side it
   // emits a triangle cell instead of a quad — the same tri/quad tiling the
   // legacy createIntermediateAreas walk produces. Hence NO 1:1 requirement.
-  const auto plan = prevabs::geo::rebuildBaseOffsetMapFromGeometry(
-      inner.points, outer.points, is_closed, side, std::max(dist, 1e-12),
-      prevabs::geo::readPairingAlgoEnv());
-  const BaseOffsetMap& pairs = plan.id_pairs;
+  //
+  // `precomputed_map`: when the caller has already established the inner/outer
+  // correspondence (the final layer's arc-resampled, strictly 1:1 outer — see
+  // makeArcResampledOuterCurve / issue-20260628 §8.3), use it verbatim and skip
+  // the geometric pairing. That guarantees a deterministic, outer-stall-free
+  // staircase (every step a quad), which the raw shell distribution cannot.
+  BaseOffsetMap local_map;
+  bool plan_ok = true;
+  if (precomputed_map == nullptr) {
+    const auto plan = prevabs::geo::rebuildBaseOffsetMapFromGeometry(
+        inner.points, outer.points, is_closed, side, std::max(dist, 1e-12),
+        prevabs::geo::readPairingAlgoEnv());
+    local_map = plan.id_pairs;
+    plan_ok = plan.ok;
+  }
+  const BaseOffsetMap& pairs =
+      (precomputed_map != nullptr) ? *precomputed_map : local_map;
   prevabs::debug::SegmentTraceScope _trace_scope(
       "splitLayerBandIntoCells (pairs=" + std::to_string(pairs.size()) + ")");
-  if (band_face == nullptr || !plan.ok || pairs.size() < 2) return cells;
+  if (band_face == nullptr || !plan_ok || pairs.size() < 2) return cells;
   // Two staircase entries are just the head/tail end caps with no interior
   // connector between them: the whole band is a single cell.
   if (pairs.size() == 2) {
@@ -607,6 +773,28 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
                   << p;
       prevabs::debug::segmentTracePush(
           "centroid failure @staircase step " + std::to_string(p)
+          + " of " + std::to_string(pairs.size() - 1));
+      return {};
+    }
+    // (B) Post-split degeneracy self-check (issue-20260628 §8.3). A healthy
+    // split yields two well-separated, non-degenerate faces. A near-zero-area
+    // connector (e.g. the final-layer outer-stall fan, where consecutive
+    // connectors share one shell vertex) makes splitFaceByPolyline return two
+    // OVERLAPPING faces with coincident centroids; left undetected, that corrupt
+    // face becomes `remaining` and the NEXT step crashes confusingly. Catch the
+    // degeneracy here, at the step that produced it, with a clear diagnostic.
+    const int e0 = faceOuterEdgeCount(f0);
+    const int e1 = faceOuterEdgeCount(f1);
+    if (e0 < 3 || e1 < 3 || c0.distance(c1) < 1e-6) {
+      PLOG(error) << "layered offset[" << segment_name
+                  << "]: degenerate split at staircase step " << p << "/"
+                  << (pairs.size() - 1) << " (edges f0=" << e0 << " f1=" << e1
+                  << ", |c0-c1|=" << c0.distance(c1) << "); connector ("
+                  << inner.vertices[bi]->y() << "," << inner.vertices[bi]->z()
+                  << ")->(" << outer.vertices[oj]->y() << ","
+                  << outer.vertices[oj]->z() << ")";
+      prevabs::debug::segmentTracePush(
+          "degenerate split @staircase step " + std::to_string(p)
           + " of " + std::to_string(pairs.size() - 1));
       return {};
     }
@@ -1574,9 +1762,32 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   const int last = n_layers - 1;
   const double tk_last = layers[last].getLamina()->getThickness()
                          * layers[last].getStack();
+
+  // Final layer: its outer boundary is the shell (segment offset), reused
+  // verbatim — NOT re-offset. Resample the shell 1:1 against curves[last] so
+  // the staircase cannot outer-stall (issue-20260628 §8.3). Open route-ii only:
+  // a closed segment tiles a loop (no begin/end caps) and does not hit the
+  // open-head shell stall, so it keeps the raw shell path unchanged.
+  LayeredCurve final_outer;
+  BaseOffsetMap final_map;
+  const LayeredCurve* outer_for_final = &curves[last + 1];
+  const BaseOffsetMap* final_map_ptr = nullptr;
+  if (!is_closed) {
+    final_outer = makeArcResampledOuterCurve(curves[last], curves[last + 1]);
+    if (final_outer.vertices.size() == curves[last].vertices.size()
+        && final_outer.vertices.size() >= 2) {
+      final_map.reserve(final_outer.vertices.size());
+      for (int i = 0; i < static_cast<int>(final_outer.vertices.size()); ++i) {
+        final_map.push_back(BaseOffsetPair(i, i));
+      }
+      outer_for_final = &final_outer;
+      final_map_ptr = &final_map;
+    }
+  }
+
   std::vector<PDCELFace *> final_cells = splitLayerBandIntoCells(
-      remaining_face, curves[last], curves[last + 1], is_closed, side,
-      tk_last, bcfg.dcel, _name);
+      remaining_face, curves[last], *outer_for_final, is_closed, side,
+      tk_last, bcfg.dcel, _name, final_map_ptr);
   if (final_cells.empty()) {
     PLOG(error) << "layered offset[" << _name
                 << "]: failed to split final layer into cells";
@@ -1592,7 +1803,7 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
               + "_face_" + std::to_string(i + 1);
     if (!assignLayeredFaceProperties(
             final_cells[i], face_name, layers[last],
-            curves[last], curves[last + 1],
+            curves[last], *outer_for_final,
             _curve_base, is_closed, _mat_orient_e1, _mat_orient_e2, bcfg)) {
       PLOG(error) << "layered offset[" << _name
                   << "]: failed to assign final layer face properties";
@@ -1607,6 +1818,10 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   for (auto& owned : curves) {
     deleteUnregisteredLayeredCurve(owned);
   }
+  // The arc-resampled final outer owns its NEW interior vertices; any that were
+  // not consumed by a split (none, in the success path) are unregistered and
+  // freed here. The reused shell corner endpoints are registered and survive.
+  deleteUnregisteredLayeredCurve(final_outer);
   _state = LifecycleState::AreasBuilt;
   prevabs::debug::segmentTracePush(
       "layered: tiled all layers (SUCCESS, faces=" + std::to_string(face_count)
