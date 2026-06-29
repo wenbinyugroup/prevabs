@@ -384,6 +384,21 @@ GeneralResult readGeneralSection(
           parseXmlBoolValue(s, "<general>/<skip_dropped_areas>");
   }
 
+  // Per-layer offset boundary generation method "dir"/"seq"
+  // (default "dir"; see globalVariables.hpp).
+  rapidxml::xml_node<> *nodeLayerOffsetMethod{
+    xn_general->first_node("layer_offset_method")};
+  if (nodeLayerOffsetMethod) {
+    std::string s{trim(nodeLayerOffsetMethod->value())};
+    for (auto &c : s)
+      c = static_cast<char>((c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c);
+    if (s == "dir" || s == "seq")
+      config.layer_offset_method = s;
+    else if (!s.empty())
+      PLOG(warning) << "<general>/<layer_offset_method>: unknown value '" << s
+                    << "', keeping '" << config.layer_offset_method << "'";
+  }
+
   rapidxml::xml_node<> *nodeRecombineAngle{
     xn_general->first_node("recombine_angle")
   };

@@ -66,6 +66,22 @@ bool useSkipDroppedAreas() {
   return config.skip_dropped_areas;
 }
 
+// Per-layer offset boundary generation method ("dir" or "seq"). Primary knob is
+// the XML config `config.layer_offset_method`
+// (<general>/<layer_offset_method>, default "dir"). The env var
+// PREVABS_LAYER_OFFSET_METHOD overrides if set (quick CLI toggle / tests).
+// Unknown values fall through to the config value. Global so the layered build
+// loop can pick base-cumulative (dir) vs previous-incremental (seq) offsetting.
+std::string layerOffsetMethod() {
+  const char* raw = std::getenv("PREVABS_LAYER_OFFSET_METHOD");
+  if (raw && *raw) {
+    std::string s(raw);
+    for (auto& c : s) c = static_cast<char>(std::tolower(c));
+    if (s == "dir" || s == "seq") return s;
+  }
+  return config.layer_offset_method;
+}
+
 namespace {
 
 // Foot-of-perpendicular distance from q to a polyline (open or closed).
@@ -1594,18 +1610,36 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   curves.reserve(n_layers + 1);
   curves.push_back(base_curve);
 
-  // Route-ii (note-build-laminate-segment.md §2.1.1): each layer curve is the
-  // offset of the PREVIOUS layer curve by that layer's thickness; the last
-  // layer's outer curve is the total-thickness shell (reused → zero seam).
+  // Per-layer boundary curves curves[1..n_layers-1]; the last layer's outer
+  // curve is the total-thickness shell (reused → zero seam). Two methods, see
+  // local/plan-20260629-layer-offset-method-dir-seq.md:
+  //   "dir" (default): each boundary is the offset of the BASE by the CUMULATIVE
+  //     thickness — a true parallel offset of the smooth base, no compounding
+  //     drift, consistent with the DIR pre-check in validatePerLayerOffsets.
+  //   "seq" (route-ii, note-build-laminate-segment.md §2.1.1): each boundary is
+  //     the offset of the PREVIOUS layer curve by this layer's thickness. The
+  //     raw seq offset compounds miter artifacts across layers; foot-resampling
+  //     (resample arg) re-regularises each layer to avoid them.
   // Ends are NOT aligned here — they are trimmed/extended to the segment bounds
   // in the split loop below (§2.1.2), once the per-layer inner curve is fixed.
+  const bool use_dir = (layerOffsetMethod() != "seq");
+  double cumu_thk = 0.0;
   for (int k = 0; k < n_layers - 1; ++k) {
     const double tk = (layers[k].getLamina() != nullptr)
                           ? layers[k].getLamina()->getThickness()
                                 * layers[k].getStack()
                           : 0.0;
-    LayeredCurve c = makeRawOffsetCurve(
-        curves[k].points, is_closed, clipper_side, tk);
+    cumu_thk += tk;
+    // DIR offsets the base by the cumulative thickness; SEQ offsets the previous
+    // layer curve (curves[k]) by this layer's thickness. curves[1] is identical
+    // either way (cumu == first thickness), so only deeper layers differ. SEQ
+    // keeps the raw miter run (no foot-resample): re-regularising it drops
+    // uncovered base vertices in thin/dropped regions and breaks the downstream
+    // split (regresses t9_airfoil mh104 etc.); DIR is the clean path instead.
+    LayeredCurve c = use_dir
+        ? makeRawOffsetCurve(base_curve.points, is_closed, clipper_side,
+                             cumu_thk)
+        : makeRawOffsetCurve(curves[k].points, is_closed, clipper_side, tk);
     // No 1:1 vertex requirement: splitLayerBandIntoCells builds a staircase
     // correspondence between consecutive layer curves, so a layer curve with
     // fewer vertices than its inner curve (Clipper2 merged some — normal for a

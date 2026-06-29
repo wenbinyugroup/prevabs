@@ -69,8 +69,8 @@
         <layup name="lyp_spar">
             <layer lamina="AS4 12k/E7K8_0.0054">-34:8</layer>
             <layer lamina="AS4 12k/E7K8_0.0054">51:8</layer>
-            <layer lamina="AS4 12k/E7K8_0.0054">57:8</layer>
-            <layer lamina="AS4 12k/E7K8_0.0054">-48:8</layer>
+            <!-- <layer lamina="AS4 12k/E7K8_0.0054">57:8</layer> -->
+            <!-- <layer lamina="AS4 12k/E7K8_0.0054">-48:8</layer> -->
         </layup>
 
     </layups>

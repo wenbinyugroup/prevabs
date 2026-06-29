@@ -85,6 +85,16 @@ struct PConfig {
   // default ON. Env PREVABS_LAYERED_OFFSET overrides if set.
   bool layered_offset = true;
 
+  // Method used to generate each per-layer boundary curve in the layered build:
+  //   "dir" = offset the BASE curve by the cumulative thickness (true parallel
+  //           offset; no compounding drift, consistent with the DIR pre-check
+  //           in validatePerLayerOffsets).
+  //   "seq" = offset the PREVIOUS layer curve by this layer's thickness
+  //           (route-ii; foot-resampled per layer to avoid raw-miter artifacts).
+  // XML <general>/<layer_offset_method>; default "dir".
+  // Env PREVABS_LAYER_OFFSET_METHOD overrides if set.
+  std::string layer_offset_method = "dir";
+
   // Skip area construction over Clipper2 "dropped" base ranges (thin-region
   // workaround; see issue-20260521-skip-dropped-areas). XML
   // <general>/<skip_dropped_areas>; default OFF — the layered_offset build
@@ -136,6 +146,12 @@ bool useLayeredOffset();
 // default OFF); the env var PREVABS_SKIP_DROPPED_AREAS overrides if set.
 // Defined in src/cs/PBuildSegmentAreas.cpp.
 bool useSkipDroppedAreas();
+
+// Per-layer offset boundary generation method: returns "dir" or "seq". Reads
+// config.layer_offset_method (XML <general>/<layer_offset_method>, default
+// "dir"); the env var PREVABS_LAYER_OFFSET_METHOD overrides if set. Defined in
+// src/cs/PBuildSegmentAreas.cpp.
+std::string layerOffsetMethod();
 
 // ---------------------------------------------------------------------------
 // Sub-structs passed explicitly to subsystems (no global dependency needed)

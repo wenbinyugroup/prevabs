@@ -30,10 +30,31 @@
         <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
 
         <!-- Main spar -->
-        <line name="line_spar">
-          <points>p4:p3,p4</points>
+        <line name="line_spar_c">
+          <points>p4:p3</points>
         </line>
 
+        <line name="line_spar_web_aft" type="arc">
+            <start>p3</start>
+            <end>p4</end>
+            <curvature>0</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+
+        <!-- Back part and trailing edge -->
+        <line name="bsl_te_top">
+            <points>p3:p7</points>
+        </line>
+        <line name="bsl_te">
+            <points>p7:p8</points>
+        </line>
+        <line name="bsl_te_bottom">
+            <points>p8:p4</points>
+        </line>
+
+        <!-- Filling part -->
+        <point name="pfte1">0.5 0</point>
 
     </baselines>
 
@@ -47,9 +68,9 @@
 
         <layup name="lyp_spar">
             <layer lamina="AS4 12k/E7K8_0.0054">-34:8</layer>
-            <layer lamina="AS4 12k/E7K8_0.0054">51:8</layer>
-            <layer lamina="AS4 12k/E7K8_0.0054">57:8</layer>
-            <layer lamina="AS4 12k/E7K8_0.0054">-48:8</layer>
+            <!-- <layer lamina="AS4 12k/E7K8_0.0054">51:8</layer> -->
+            <!-- <layer lamina="AS4 12k/E7K8_0.0054">57:8</layer> -->
+            <!-- <layer lamina="AS4 12k/E7K8_0.0054">-48:8</layer> -->
         </layup>
 
     </layups>
@@ -58,7 +79,12 @@
 
     <component name="spar">
         <segments>
-            <baseline>line_spar</baseline>
+            <baseline>line_spar_c</baseline>
+            <layup>lyp_skin_graphite</layup>
+            <layup>lyp_spar</layup>
+        </segments>
+        <segments>
+            <baseline>line_spar_web_aft</baseline>
             <layup>lyp_skin_graphite</layup>
             <layup>lyp_spar</layup>
         </segments>

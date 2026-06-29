@@ -1,11 +1,11 @@
 # PreVABS Examples Report
 
-- Generated: 2026-06-29 11:55:47 -04:00
+- Generated: 2026-06-29 17:15:33 -04:00
 - Executable: `C:\Users\tian50\work\dev\prevabs\build_msvc\Release\prevabs.exe`
 - Mode: PreVABS + VABS (-e)
 - Filter: `(none)`
 - Per-example timeout: 60s
-- Total time: 15.458s
+- Total time: 14.223s
 
 ## Summary
 
@@ -17,16 +17,16 @@
 
 | Status | Example | Exit | VABS result | Time | Message | Log |
 | --- | --- | ---: | --- | ---: | --- | --- |
-| PASS | `ex_channel` | 0 | `channel.sg.K` | 0.35s |  | [log](example-logs/ex_channel.log) |
-| PASS | `ex_box` | 0 | `box_cus.sg.K` | 0.429s |  | [log](example-logs/ex_box.log) |
-| PASS | `ex_tube` | 0 | `tube.sg.K` | 0.779s |  | [log](example-logs/ex_tube.log) |
-| PASS | `ex_pipe` | 0 | `pipe.sg.K` | 0.454s |  | [log](example-logs/ex_pipe.log) |
-| PASS | `ex_ibeam` | 0 | `i_web.sg.K` | 0.393s |  | [log](example-logs/ex_ibeam.log) |
-| PASS | `ex_box_ii_quad` | 0 | `box_II.sg.K` | 0.395s |  | [log](example-logs/ex_box_ii_quad.log) |
-| PASS | `ex_airfoil` | 0 | `mh104.sg.K` | 6.439s |  | [log](example-logs/ex_airfoil.log) |
-| PASS | `ex_airfoil_cspar` | 0 | `cs_main.sg.K` | 0.645s |  | [log](example-logs/ex_airfoil_cspar.log) |
-| PASS | `ex_airfoil_dspar` | 0 | `cs_main.sg.K` | 0.483s |  | [log](example-logs/ex_airfoil_dspar.log) |
-| PASS | `ex_airfoil_r` | 0 | `mh104.sg.ELE` | 2.75s |  | [log](example-logs/ex_airfoil_r.log) |
-| PASS | `ex_uh60a` | 0 | `uh60a_section.sg.K` | 0.805s |  | [log](example-logs/ex_uh60a.log) |
-| PASS | `ex_uh60a_f` | 0 | `uh60a.sg.fi` | 0.605s |  | [log](example-logs/ex_uh60a_f.log) |
-| PASS | `ex_airfoil_multi-cells` | 0 | `mh104_9webs.sg.K` | 0.703s |  | [log](example-logs/ex_airfoil_multi-cells.log) |
+| PASS | `ex_channel` | 0 | `channel.sg.K` | 0.351s |  | [log](example-logs/ex_channel.log) |
+| PASS | `ex_box` | 0 | `box_cus.sg.K` | 0.431s |  | [log](example-logs/ex_box.log) |
+| PASS | `ex_tube` | 0 | `tube.sg.K` | 0.782s |  | [log](example-logs/ex_tube.log) |
+| PASS | `ex_pipe` | 0 | `pipe.sg.K` | 0.439s |  | [log](example-logs/ex_pipe.log) |
+| PASS | `ex_ibeam` | 0 | `i_web.sg.K` | 0.382s |  | [log](example-logs/ex_ibeam.log) |
+| PASS | `ex_box_ii_quad` | 0 | `box_II.sg.K` | 0.381s |  | [log](example-logs/ex_box_ii_quad.log) |
+| PASS | `ex_airfoil` | 0 | `mh104.sg.K` | 5.306s |  | [log](example-logs/ex_airfoil.log) |
+| PASS | `ex_airfoil_cspar` | 0 | `cs_main.sg.K` | 0.643s |  | [log](example-logs/ex_airfoil_cspar.log) |
+| PASS | `ex_airfoil_dspar` | 0 | `cs_main.sg.K` | 0.474s |  | [log](example-logs/ex_airfoil_dspar.log) |
+| PASS | `ex_airfoil_r` | 0 | `mh104.sg.ELE` | 2.801s |  | [log](example-logs/ex_airfoil_r.log) |
+| PASS | `ex_uh60a` | 0 | `uh60a_section.sg.K` | 0.804s |  | [log](example-logs/ex_uh60a.log) |
+| PASS | `ex_uh60a_f` | 0 | `uh60a.sg.fi` | 0.614s |  | [log](example-logs/ex_uh60a_f.log) |
+| PASS | `ex_airfoil_multi-cells` | 0 | `mh104_9webs.sg.K` | 0.685s |  | [log](example-logs/ex_airfoil_multi-cells.log) |
