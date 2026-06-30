@@ -5,6 +5,7 @@
 #include "plog.hpp"
 #include "utilities.hpp"
 
+#include <limits>
 #include <vector>
 
 namespace {
@@ -13,6 +14,28 @@ static bool areCoincidentVertices(PDCELVertex *v1, PDCELVertex *v2)
 {
   return v1 != nullptr && v2 != nullptr
       && v1->point().distance(v2->point()) <= GEO_TOL;
+}
+
+// Closed segment annulus slit: the offset curve is a closed ring whose seam
+// (vertices[0]) is fixed by the base-offset staircase, not by proximity to
+// the base seam. When the base seam is a sharp/thin cusp (e.g. an airfoil
+// trailing edge) Clipper2 pinches the inner tip, so the staircase seam lands
+// on the far side of the blunt inner edge; attaching the slit there skips the
+// nearest inner vertex and leaves a thin sliver at the cusp. Pick the offset
+// vertex geometrically nearest the base seam instead so the outer and inner
+// cusp tips connect directly. For a smooth closed curve the nearest vertex IS
+// vertices[0], so this is a no-op there.
+static PDCELVertex *nearestOffsetVertex(
+    PDCELVertex *base_seam, const std::vector<PDCELVertex *> &offset_vertices)
+{
+  PDCELVertex *nearest = nullptr;
+  double best = std::numeric_limits<double>::infinity();
+  for (auto *v : offset_vertices) {
+    if (v == nullptr) continue;
+    const double d = base_seam->point().distance(v->point());
+    if (d < best) { best = d; nearest = v; }
+  }
+  return nearest;
 }
 
 static JointStyle resolveJointStyle(
@@ -83,8 +106,10 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
     if (seg->closed()) {
       seg->setHeadVertexOffset(seg->curveOffset()->vertices().front());
       seg->setTailVertexOffset(seg->curveOffset()->vertices().back());
-      bcfg.dcel->addEdge(seg->curveBase()->vertices()[0],
-                         seg->curveOffset()->vertices()[0]);
+      PDCELVertex *base_seam = seg->curveBase()->vertices()[0];
+      PDCELVertex *slit_offset =
+          nearestOffsetVertex(base_seam, seg->curveOffset()->vertices());
+      bcfg.dcel->addEdge(base_seam, slit_offset);
       continue;
     }
 
