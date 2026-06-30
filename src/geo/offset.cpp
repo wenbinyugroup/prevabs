@@ -247,7 +247,7 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
         // Calculate intersection
         double u1, u2;
         bool not_parallel;
-        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2, TOLERANCE);
+        not_parallel = calcLineIntersection2D(ls, ls_prev, u1, u2);
         if (not_parallel) {
           curve_off->addPVertex(ls->getParametricVertex(u1));
         } else {
@@ -265,7 +265,7 @@ Baseline *offsetCurve(Baseline *curve, int side, double distance) {
     if (curve->vertices().front() == curve->vertices().back()) {
       double u1, u2;
       bool not_parallel;
-      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2, TOLERANCE);
+      not_parallel = calcLineIntersection2D(ls_first_off, ls_prev, u1, u2);
       if (not_parallel) {
         curve_off->vertices()[0] = ls_first_off->getParametricVertex(u1);
       }

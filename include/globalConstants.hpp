@@ -19,29 +19,25 @@ const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.141592653589793};
-// Runtime model-scale tolerance. The input reader updates it after geometry
-// and lamina definitions are available, before component geometry is built.
+// Runtime model-scale length tolerances. The input reader updates both after
+// geometry and lamina definitions are available, before component geometry is
+// built. Both are tied to the model's characteristic length L_char (the smaller
+// of the minimum positive point spacing and the minimum lamina thickness):
+//   GEO_TOL       = L_char * 1e-3   strict length-predicate tolerance, governs
+//                   same-point / on-segment / vertex-coincidence decisions.
+//   GEO_MERGE_TOL = L_char * 1e-1   loose length tolerance for de-duplicating
+//                   two independently-computed copies of the same point
+//                   (Clipper2 grid noise, divergent parametric interpolations).
+//                   100x looser than GEO_TOL by construction, yet still far
+//                   below any real feature size.
 // TOLERANCE, ABS_TOL, and REL_TOL are references kept for existing call sites.
 extern double GEO_TOL;
+extern double GEO_MERGE_TOL;
 extern double& TOLERANCE;
 extern double& ABS_TOL;
 extern double& REL_TOL;
 
 void setGeometryTolerance(double tolerance);
-
-// VERTEX_MERGE_TOL governs DCEL vertex *identity*: two vertices closer than
-// this are treated as the same point and merged into one shared vertex by
-// PDCEL::findCoincidentVertex. It is intentionally looser than GEO_TOL because
-// it must absorb the numerical noise between two independently-computed copies
-// of the same geometric point — e.g. a layer-interface vertex on a cap shared
-// by two adjacent sub-segments, whose two parametric interpolations diverge by
-// ~1e-9 (above GEO_TOL) when the cap's corners are not exactly collinear, and
-// because Clipper2 offset coordinates are only resolved to its precision-8
-// (~1e-8) grid. Kept far below any real feature size (plies are O(1e-2)) so it
-// never merges genuinely distinct vertices. Decoupled from GEO_TOL so the
-// strict tolerance still governs geometric *predicates* (intersections,
-// parallelism, on-boundary tests).
-const double VERTEX_MERGE_TOL{1e-8};
 
 // Log severity levels (match spdlog mapping in plog.cpp)
 constexpr int LOG_LEVEL_TRACE   = 0;

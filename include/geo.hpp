@@ -41,36 +41,40 @@ bool isClose(
   const double&, const double&,
   double, double);
 
+// Note: these line-intersection helpers no longer take a tolerance argument.
+// Parallelism is detected internally via h2d's angle threshold, so the former
+// `tol` parameter was unused; it has been removed to avoid implying that a
+// geometric (length) tolerance participates in the intersection test.
 bool calcLineIntersection2D(
   const double &, const double &, const double &, const double &,
   const double &, const double &, const double &, const double &,
-  double &, double &, const double &
+  double &, double &
   );
 
 // template <typename P2>
 bool calcLineIntersection2D(
   const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &,
-  double &, double &, const double &
+  double &, double &
 );
 
 // template <typename P3>
 bool calcLineIntersection2D(
   const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &,
-  double &, double &, const int &, const double &
+  double &, double &, const int &
 );
 
 bool calcLineIntersection2D(
   SPoint2, SPoint2, SPoint2, SPoint2,
-  double &, double &, const double &);
+  double &, double &);
 bool calcLineIntersection2D(
   SPoint3, SPoint3, SPoint3, SPoint3,
-  double &, double &, int &, const double &);
+  double &, double &, int &);
 bool calcLineIntersection2D(
   PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
-  double &, double &, const double &);
+  double &, double &);
 bool calcLineIntersection2D(
   PGeoLineSegment *, PGeoLineSegment *,
-  double &, double &, const double &);
+  double &, double &);
 
 void offsetLineSegment(SPoint3 &, SPoint3 &, SVector3 &, double &);
 PGeoLineSegment *offsetLineSegment(PGeoLineSegment *, int, double);

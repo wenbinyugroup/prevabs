@@ -18,12 +18,11 @@ namespace {
 bool calcLineIntersectionRaw(
   const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
-  double &u1, double &u2, const double & /*tol*/
+  double &u1, double &u2
   ) {
-  // tol is kept for API compatibility; parallelism is now detected via
-  // h2d::Line2d::isParallelTo(), which uses an angle-based threshold
-  // (h2d default: 0.001 rad) instead of the former |denominator| <= tol
-  // comparison that was unreliable at tol = 1e-15.
+  // Parallelism is detected via h2d::Line2d::isParallelTo(), which uses an
+  // angle-based threshold (h2d default: 0.001 rad) instead of the former
+  // |denominator| <= tol comparison that was unreliable at tol = 1e-15.
 
   const double dx1 = l1p2x - l1p1x, dy1 = l1p2y - l1p1y;
   const double dx2 = l2p2x - l2p1x, dy2 = l2p2y - l2p1y;
@@ -72,12 +71,12 @@ bool calcLineIntersectionRaw(
 bool calcLineIntersection2D(
   const double &l1p1x, const double &l1p1y, const double &l1p2x, const double &l1p2y,
   const double &l2p1x, const double &l2p1y, const double &l2p2x, const double &l2p2y,
-  double &u1, double &u2, const double &tol
+  double &u1, double &u2
   ) {
   return calcLineIntersectionRaw(
     l1p1x, l1p1y, l1p2x, l1p2y,
     l2p1x, l2p1y, l2p2x, l2p2y,
-    u1, u2, tol
+    u1, u2
   );
 }
 
@@ -101,13 +100,13 @@ bool calcLineIntersection2D(
 bool calcLineIntersection2D(
   const PGeoPoint2 &l1p1, const PGeoPoint2 &l1p2,
   const PGeoPoint2 &l2p1, const PGeoPoint2 &l2p2,
-  double &u1, double &u2, const double &tol
+  double &u1, double &u2
   ) {
 
   return calcLineIntersectionRaw(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
-    u1, u2, tol
+    u1, u2
   );
 
 }
@@ -136,7 +135,7 @@ bool calcLineIntersection2D(
 bool calcLineIntersection2D(
   const PGeoPoint3 &l1p1, const PGeoPoint3 &l1p2,
   const PGeoPoint3 &l2p1, const PGeoPoint3 &l2p2,
-  double &u1, double &u2, const int &plane, const double &tol
+  double &u1, double &u2, const int &plane
   ) {
   int d1, d2;
   if (plane == 0) {
@@ -155,7 +154,7 @@ bool calcLineIntersection2D(
   return calcLineIntersectionRaw(
     l1p1[d1], l1p1[d2], l1p2[d1], l1p2[d2],
     l2p1[d1], l2p1[d2], l2p2[d1], l2p2[d2],
-    u1, u2, tol
+    u1, u2
   );
 }
 
@@ -164,13 +163,13 @@ bool calcLineIntersection2D(
 
 bool calcLineIntersection2D(
   SPoint2 l1p1, SPoint2 l1p2, SPoint2 l2p1, SPoint2 l2p2,
-  double &u1, double &u2, const double &tol
+  double &u1, double &u2
   ) {
 
   return calcLineIntersectionRaw(
     l1p1[0], l1p1[1], l1p2[0], l1p2[1],
     l2p1[0], l2p1[1], l2p2[0], l2p2[1],
-    u1, u2, tol
+    u1, u2
   );
 
 }
@@ -200,7 +199,7 @@ bool calcLineIntersection2D(
  */
 bool calcLineIntersection2D(
   SPoint3 l1p1, SPoint3 l1p2, SPoint3 l2p1, SPoint3 l2p2,
-  double &u1, double &u2, const int &plane, const double &tol
+  double &u1, double &u2, const int &plane
   ) {
 
   int d1, d2;
@@ -224,7 +223,7 @@ bool calcLineIntersection2D(
   l2p = SPoint2(l2p1[d1], l2p1[d2]);
   l2q = SPoint2(l2p2[d1], l2p2[d2]);
 
-  return calcLineIntersection2D(l1p, l1q, l2p, l2q, u1, u2, tol);
+  return calcLineIntersection2D(l1p, l1q, l2p, l2q, u1, u2);
 
 }
 
@@ -249,11 +248,11 @@ bool calcLineIntersection2D(
 bool calcLineIntersection2D(
   PDCELVertex *ls1v1, PDCELVertex *ls1v2,
   PDCELVertex *ls2v1, PDCELVertex *ls2v2,
-  double &u1, double &u2, const double &tol
+  double &u1, double &u2
   ) {
 
   return calcLineIntersection2D(
-    ls1v1->point2(), ls1v2->point2(), ls2v1->point2(), ls2v2->point2(), u1, u2, tol);
+    ls1v1->point2(), ls1v2->point2(), ls2v1->point2(), ls2v2->point2(), u1, u2);
 
 }
 
@@ -264,7 +263,7 @@ bool calcLineIntersection2D(
 
 bool calcLineIntersection2D(
   PGeoLineSegment *ls1, PGeoLineSegment *ls2,
-  double &u1, double &u2, const double &tol
+  double &u1, double &u2
   ) {
 
   SPoint2 ls1p1, ls1p2, ls2p1, ls2p2;
@@ -273,7 +272,7 @@ bool calcLineIntersection2D(
   ls2p1 = ls2->v1()->point2();
   ls2p2 = ls2->v2()->point2();
 
-  return calcLineIntersection2D(ls1p1, ls1p2, ls2p1, ls2p2, u1, u2, tol);
+  return calcLineIntersection2D(ls1p1, ls1p2, ls2p1, ls2p2, u1, u2);
 
 }
 
@@ -305,7 +304,7 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
   double us, ut;
   bool not_parallel;
 
-  not_parallel = calcLineIntersection2D(subject, tool, us, ut, TOLERANCE);
+  not_parallel = calcLineIntersection2D(subject, tool, us, ut);
   if (not_parallel) {
     if (us >= 0 && us <= 1) {
       intersect = subject->getParametricVertex(us);
@@ -635,7 +634,7 @@ Baseline *trimCurveAtLineSegment(
 
     // std::cout << "        line segment lsi: " << lsi << std::endl;
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u1, u2, TOLERANCE);
+    not_parallel = calcLineIntersection2D(lsi, ls, u1, u2);
 
     // std::cout << "        u1 = " << u1 << std::endl;
 
@@ -778,7 +777,7 @@ int findAllIntersections(
       // std::endl; std::cout << "        v21 = " << v21 << ", v22 = " << v22
       // << std::endl;
 
-      not_parallel = calcLineIntersection2D(v11, v12, v21, v22, u1, u2, TOLERANCE);
+      not_parallel = calcLineIntersection2D(v11, v12, v21, v22, u1, u2);
 
       // std::cout << "line_" << line_i << "_seg_" << i+1 << " and ";
       // std::cout << "line_" << line_i+1 << "_seg_" << j+1 << ": ";

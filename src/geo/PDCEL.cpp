@@ -1021,7 +1021,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
     }
     lsi = hei->toLineSegment();
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, TOLERANCE);
+    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls);
     if (!not_parallel) {
       if (!isCollinear(lsi, ls)) {
         hei = hei->next();

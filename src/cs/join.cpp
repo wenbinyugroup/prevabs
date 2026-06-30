@@ -96,7 +96,7 @@ static bool scanOffsetIntersectionCandidates(
 {
   for (int i = 0; i < moving_list.size(); ++i) {
     moving_ls = moving_list[i].get();
-    calcLineIntersection2D(fixed_ls, moving_ls, u1_out, u2_out, TOLERANCE);
+    calcLineIntersection2D(fixed_ls, moving_ls, u1_out, u2_out);
     if (isAcceptableOffsetIntersection(
             fixed_ls, moving_ls, fixed_list, moving_list, u1_out, u2_out)) {
       matched_index = i;

@@ -73,7 +73,7 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel, PDCELVertex *v) {
   for (std::list<PGeoLineSegment *>::const_iterator it = ls_list.begin();
        it != ls_list.end(); ++it) {
     bool is_intersect =
-        calcLineIntersection2D(ls_tmp, *it, u1_tmp, u2, TOLERANCE);
+        calcLineIntersection2D(ls_tmp, *it, u1_tmp, u2);
 
     if (is_intersect) {
       if (u1_tmp < 0 && (ls_below == nullptr || std::fabs(u1_tmp) < std::fabs(u1))) {

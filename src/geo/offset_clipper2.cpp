@@ -13,6 +13,20 @@ namespace geo {
 
 namespace {
 
+// Dimensionless degeneracy guards. These reject inputs that are numerically
+// indistinguishable from zero, not real geometric features, so they do NOT
+// scale with the model's characteristic length.
+//   kUnitBisectorDegenerateEps — squared/length guard on the sum of two unit
+//     normals (range [0, 2]); near 0 the two segments are anti-parallel and the
+//     bisector direction is undefined.
+//   kRayDeterminantEps — near-zero guard on the ray/segment determinant, i.e.
+//     the ray direction and the segment are (anti-)parallel.
+//   kRayEndpointSlack — parametric slack admitting hits a hair past a ray or
+//     segment endpoint (applied to ray_t and segment_u, both in parameter space).
+constexpr double kUnitBisectorDegenerateEps = 1e-14;
+constexpr double kRayDeterminantEps = 1e-14;
+constexpr double kRayEndpointSlack = 1e-12;
+
 // Forward declarations — extractOpenRuns calls attributeSource which is
 // defined later in this TU.
 struct Projection;
@@ -103,7 +117,7 @@ bool openOffsetBisector(const std::vector<SPoint2>& base, int i, int side,
   const double bx = n0.x() + n1.x();
   const double by = n0.y() + n1.y();
   const double len = std::sqrt(bx * bx + by * by);
-  if (len <= 1e-14) return false;
+  if (len <= kUnitBisectorDegenerateEps) return false;
   *direction = SPoint2(bx / len, by / len);
   return true;
 }
@@ -119,13 +133,13 @@ bool raySegmentIntersection(const SPoint2& origin,
   const double sx = b.x() - a.x();
   const double sy = b.y() - a.y();
   const double det = direction.x() * sy - direction.y() * sx;
-  if (std::fabs(det) < 1e-14) return false;
+  if (std::fabs(det) < kRayDeterminantEps) return false;
 
   const double qx = a.x() - origin.x();
   const double qy = a.y() - origin.y();
   double t = (qx * sy - qy * sx) / det;
   double u = (qx * direction.y() - qy * direction.x()) / det;
-  const double tol = 1e-12;
+  const double tol = kRayEndpointSlack;
   if (t < -tol || u < -tol || u > 1.0 + tol) return false;
 
   if (t < 0.0) t = 0.0;

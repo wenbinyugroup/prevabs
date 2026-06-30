@@ -697,7 +697,7 @@ TEST_CASE("offset: acute cusp on open base honours miter limit "
   double u_cur = 0.0;
   REQUIRE(calcLineIntersection2D(
       &prev_start, &prev_end, &cur_start, &cur_end,
-      u_prev, u_cur, TOLERANCE));
+      u_prev, u_cur));
   const SPoint3 raw_miter =
       getParametricPoint(prev_start.point(), prev_end.point(), u_prev);
   const double raw_miter_dist = raw_miter.distance(v1->point());

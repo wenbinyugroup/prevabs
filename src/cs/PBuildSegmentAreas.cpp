@@ -385,7 +385,7 @@ void trimLayerCurveEndsToCaps(
   // sharp corners / open-end caps; left in, they become zero-length connectors
   // that splitFaceByPolyline rejects. Scale to the layer thickness so the
   // threshold sits far below real feature size yet well above FP noise.
-  const double merge_tol = std::max(GEO_TOL * 100.0, std::fabs(dist) * 1e-4);
+  const double merge_tol = std::max(GEO_MERGE_TOL, std::fabs(dist) * 1e-4);
 
   const SPoint2 beginA = inner.points.front();
   const SPoint2 beginB = shell.points.front();
@@ -400,7 +400,7 @@ void trimLayerCurveEndsToCaps(
                       const char* which, double& u1_out) -> SPoint2 {
     double u1, u2;
     if (!calcLineIntersection2D(
-            c.points[s], c.points[s + 1], A, B, u1, u2, TOLERANCE)) {
+            c.points[s], c.points[s + 1], A, B, u1, u2)) {
       throw std::runtime_error(
           "layered offset[" + segment_name + "]: layer curve "
           + which + " segment parallel to its bound");
@@ -1124,7 +1124,7 @@ PDCELVertex *Segment::findLayerIntersectionOnFace(
     }
     else {
       bool not_parallel = calcLineIntersection2D(
-          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp, TOLERANCE);
+          he_tmp->toLineSegment(), ls_offset, u1_tmp, u2_tmp);
 
             if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "u1_tmp = " << u1_tmp;
             if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "u2_tmp = " << u2_tmp;
@@ -1753,7 +1753,7 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     // full segment height and share a near-identical centroid.
     if (curves[k].points.size() > 2) {
       const SPoint2 probe = curves[k].points[curves[k].points.size() / 2];
-      const double tol = GEO_TOL * 100.0;
+      const double tol = GEO_MERGE_TOL;
       if (faceBoundaryHasPoint(f0, probe, tol)) {
         layer_face = f0; next_remaining = f1;
       } else if (faceBoundaryHasPoint(f1, probe, tol)) {

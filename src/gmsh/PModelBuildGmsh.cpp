@@ -246,8 +246,8 @@ void PModel::createGmshVertices() {
   // shared end-cap (e.g. the c-spar and web both end at p3/p4), and — for open
   // layered segments — where the final layer's arc-resampled shell point lands
   // on top of an existing shell vertex. These independent interpolations land
-  // ~1e-8 apart (measured up to ~1e-6), at or just above VERTEX_MERGE_TOL, so
-  // the DCEL's own mid-build coincidence-merge does not unify them. We cannot
+  // ~1e-8 apart (measured up to ~1e-6), at or above GEO_TOL, so the DCEL's own
+  // mid-build coincidence-merge (findCoincidentVertex) does not unify them. We cannot
   // widen that mid-build merge (the area-build code is not robust to its
   // vertices merging), so the sharing is realized here, at the export boundary,
   // where the DCEL is already complete and a wider EXPORT_MERGE_TOL is safe: it

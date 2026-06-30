@@ -121,7 +121,7 @@ int adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, CurveEnd end) {
   }
 
   double u1, u2;
-  bool has_intersection = calcLineIntersection2D(ls_end, ls, u1, u2, TOLERANCE);
+  bool has_intersection = calcLineIntersection2D(ls_end, ls, u1, u2);
   if (!has_intersection) {
     std::cout << markError
               << " adjustCurveEnd: failed to intersect baseline tangent with"
