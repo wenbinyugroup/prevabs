@@ -442,73 +442,86 @@ void trimLayerCurveEndsToCaps(
     return SPoint2(A.x() + u * dx, A.y() + u * dy);
   };
 
-  // Head: first vertex on/inside the begin cap (skip strictly-exterior ones).
+  // Land the begin endpoint where the curve first COMMITS to the interior of
+  // the begin cap, not on the first non-exterior vertex. A deep open-end offset
+  // can leave a fold at the bound — leading vertices that are exterior OR merely
+  // on the cap line (perp ≈ 0) but collinear-beyond the inner corner (a butt-cap
+  // remnant; see the circle_param_layup_range 0.6-offset head). Snapping the
+  // endpoint to that first fold vertex lands it OUTSIDE the cap segment and
+  // breaks splitFaceByPolyline. Instead skip the whole non-interior prefix and
+  // cross the segment that enters the interior; the fold vertices are dropped.
   const double begin_sign = (beginPerp(c.points.back()) >= 0.0) ? 1.0 : -1.0;
-  std::size_t head_keep = 0;
-  while (head_keep < m
-         && beginPerp(c.points[head_keep]) * begin_sign < -merge_tol) {
-    ++head_keep;
+  std::size_t head_in = 0;
+  while (head_in < m
+         && beginPerp(c.points[head_in]) * begin_sign <= merge_tol) {
+    ++head_in;
   }
-  if (head_keep >= m) {
-    throw std::runtime_error(
-        "layered offset[" + segment_name +
-        "]: entire layer curve lies outside the begin bound");
+  std::size_t keep_lo = 0;
+  SPoint2 head_pt;
+  if (head_in >= m) {
+    // No strictly-interior vertex: the curve runs along/against the cap, where
+    // an intersection is ill-conditioned. Snap the first non-exterior vertex.
+    std::size_t head_keep = 0;
+    while (head_keep < m
+           && beginPerp(c.points[head_keep]) * begin_sign < -merge_tol) {
+      ++head_keep;
+    }
+    if (head_keep >= m) {
+      throw std::runtime_error(
+          "layered offset[" + segment_name +
+          "]: entire layer curve lies outside the begin bound");
+    }
+    head_pt = snapToCap(c.points[head_keep], beginA, beginB);
+    keep_lo = head_keep;
+  } else if (head_in == 0) {
+    // Curve starts already interior: extend its first segment back to the cap.
+    // Reversal-spike guard (note-build-laminate-segment.md §2.1.2): if the cap
+    // landing sits AHEAD of vertex 0 along that segment, keeping vertex 0 would
+    // double the rebuilt head back into a near-collinear spike — drop it.
+    double head_u1 = 0.0;
+    head_pt = crossCap(0, beginA, beginB, "head", head_u1);
+    keep_lo =
+        (head_u1 * c.points[0].distance(c.points[1]) > merge_tol) ? 1 : 0;
+  } else {
+    // Cross the segment entering the interior; drop the leading fold prefix.
+    double head_u1 = 0.0;
+    head_pt = crossCap(head_in - 1, beginA, beginB, "head", head_u1);
+    keep_lo = head_in;
   }
-  // If that vertex already lies on the cap (incl. the curve running along the
-  // cap, where an intersection would be ill-conditioned) use it directly;
-  // otherwise intersect to land the endpoint on the cap (trim or extend).
-  double head_u1 = 0.0;
-  const bool head_on_cap =
-      std::fabs(beginPerp(c.points[head_keep])) < merge_tol;
-  const SPoint2 head_pt =
-      head_on_cap
-          ? snapToCap(c.points[head_keep], beginA, beginB)
-          : crossCap(head_keep == 0 ? 0 : head_keep - 1, beginA, beginB,
-                     "head", head_u1);
 
-  // Tail: last vertex on/inside the end cap (skip strictly-exterior ones).
+  // Tail: symmetric — land where the curve LAST leaves the interior.
   const double end_sign = (endPerp(c.points.front()) >= 0.0) ? 1.0 : -1.0;
-  std::size_t tail_keep = m;
-  while (tail_keep > 0
-         && endPerp(c.points[tail_keep - 1]) * end_sign < -merge_tol) {
-    --tail_keep;
+  std::size_t tail_in = m;
+  while (tail_in > 0
+         && endPerp(c.points[tail_in - 1]) * end_sign <= merge_tol) {
+    --tail_in;
   }
-  if (tail_keep == 0) {
-    throw std::runtime_error(
-        "layered offset[" + segment_name +
-        "]: entire layer curve lies outside the end bound");
-  }
-  const std::size_t last_keep = tail_keep - 1;
-  double tail_u1 = 0.0;
-  const bool tail_on_cap =
-      std::fabs(endPerp(c.points[last_keep])) < merge_tol;
-  const SPoint2 tail_pt =
-      tail_on_cap
-          ? snapToCap(c.points[last_keep], endA, endB)
-          : crossCap(last_keep == m - 1 ? m - 2 : last_keep, endA, endB,
-                     "tail", tail_u1);
-
-  // Reversal-spike guard (note-build-laminate-segment.md §2.1.2; see
-  // dev-docs/trimLayerCurveEndsToCaps.md). When the raw curve's FIRST segment
-  // straddles the begin cap (the head vertex is barely interior, the next is
-  // exterior — e.g. a join-tilted end cap over a thin layer), crossCap lands
-  // head_pt AHEAD of the head vertex along the curve (head_keep==0, head_u1>0).
-  // Prepending head_pt while also keeping that vertex makes the rebuilt head
-  // double back into a near-collinear spike that breaks splitFaceByPolyline.
-  // In that case head_pt REPLACES the head vertex: drop it. Symmetric at tail
-  // (tail_u1<1 means tail_pt lands before the last vertex). The on-cap and
-  // exterior-skip branches never produce this, so the guard is gated on the
-  // boundary index plus the landing being more than merge_tol past the vertex.
-  std::size_t keep_lo = head_keep;
-  std::size_t keep_hi = last_keep;
-  if (!head_on_cap && head_keep == 0
-      && head_u1 * c.points[0].distance(c.points[1]) > merge_tol) {
-    keep_lo = 1;
-  }
-  if (!tail_on_cap && last_keep == m - 1
-      && (1.0 - tail_u1) * c.points[m - 2].distance(c.points[m - 1])
-             > merge_tol) {
-    keep_hi = m - 2;
+  std::size_t keep_hi = m - 1;
+  SPoint2 tail_pt;
+  if (tail_in == 0) {
+    std::size_t tail_keep = m;
+    while (tail_keep > 0
+           && endPerp(c.points[tail_keep - 1]) * end_sign < -merge_tol) {
+      --tail_keep;
+    }
+    if (tail_keep == 0) {
+      throw std::runtime_error(
+          "layered offset[" + segment_name +
+          "]: entire layer curve lies outside the end bound");
+    }
+    tail_pt = snapToCap(c.points[tail_keep - 1], endA, endB);
+    keep_hi = tail_keep - 1;
+  } else if (tail_in == m) {
+    double tail_u1 = 0.0;
+    tail_pt = crossCap(m - 2, endA, endB, "tail", tail_u1);
+    keep_hi = ((1.0 - tail_u1) * c.points[m - 2].distance(c.points[m - 1])
+                   > merge_tol)
+                  ? m - 2
+                  : m - 1;
+  } else {
+    double tail_u1 = 0.0;
+    tail_pt = crossCap(tail_in - 1, endA, endB, "tail", tail_u1);
+    keep_hi = tail_in - 1;
   }
 
   // Keep the cap endpoints authoritative and drop interior vertices that are
