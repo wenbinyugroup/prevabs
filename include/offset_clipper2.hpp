@@ -17,6 +17,7 @@
 
 #include "geo_types.hpp"
 
+#include <string>
 #include <vector>
 
 namespace prevabs {
@@ -49,19 +50,12 @@ struct OffsetPolygon {
   // Per-vertex origin tag (size == points.size()).
   //   false → vertex came straight out of Clipper2 (raw corner / bevel /
   //           Butt-cap point). For closed inputs every vertex is raw.
-  //   true  → vertex was synthesized by `extractOpenRuns`'s base-vertex
-  //           resample step (foot-of-perpendicular projection of a base
-  //           vertex onto the raw run polyline). Only ever true on the
-  //           open-input branch.
+  //   true  → vertex was synthesized by the base-vertex resample step.
+  //           Only ever true on the open-input branch.
   std::vector<bool>               resampled;
-  // Debug-only snapshot of the raw Clipper2 run polyline taken
-  // immediately before `extractOpenRuns`'s foot-of-perpendicular
-  // resample step replaced every vertex in this run. Empty when the
-  // run never went through the resample branch (e.g. M >= N, or
-  // closed-input branch). The positions are otherwise unrecoverable
-  // because the resample commit overwrites `points` and tags every
-  // slot `resampled=true`. See `extractOpenRuns` in
-  // src/geo/offset_clipper2.cpp.
+  // Debug-only snapshot of the raw Clipper2 run before Replace mode overwrites
+  // it. Empty in Insert mode because raw points remain in `points`, and empty
+  // when resampling is disabled or the input is closed.
   std::vector<SPoint2>            pre_resample_points;
   // is_closed = true   → closed offset polygon (closed-input branch).
   //                     `points` walks the perimeter; `points.front()`
@@ -99,8 +93,8 @@ struct ReverseMatchPlan {
   std::vector<bool>    offset_resampled;
 
   /// Debug-only snapshot of the primary polygon's raw Clipper2 vertices
-  /// captured immediately before the open-path resample step replaced
-  /// them. Empty when the primary run never went through resample.
+  /// captured immediately before Replace-mode open-path resampling.
+  /// Empty in Insert mode and when the run never went through resampling.
   /// No rotation is applied — order is the run-extractor's native walk
   /// (it is used only as an unordered scatter overlay).
   std::vector<SPoint2> pre_resample_raw_points;
@@ -488,25 +482,29 @@ enum class JoinTypeChoice {
   Round,    // arc with `arc_tolerance` deviation budget
 };
 
-/// @param resample_open   Open-input only. When `true` (default,
-///                        production behaviour), `extractOpenRuns`
-///                        resamples the raw side-filtered run polyline
-///                        at every base vertex via foot-of-perpendicular
-///                        projection so downstream sees a 1:1
-///                        base ↔ offset alignment over the covered
-///                        subset. When `false` (control group used by
+enum class OpenResampleMode {
+  Insert,   // preserve raw vertices and insert non-duplicate samples
+  Replace,  // replace the raw run with one sample per covered base vertex
+};
+
+OpenResampleMode openResampleModeFromString(const std::string& value);
+
+/// @param resample_open   Open-input only. When `true`, calculated
+///                        base-vertex points are inserted into or replace the
+///                        raw run according to `resample_mode`. When `false`
+///                        (control group used by
 ///                        `test/integration/t0_offset_clipper2/`), the
 ///                        resample step is skipped and `points` is the
 ///                        raw side-filtered Clipper2 run (M can be
 ///                        ≪ N). Closed inputs ignore this flag (they
 ///                        never go through resample).
 /// @param experimental_open_miter_resample
-///                        Open-input only, and only when `join` is
-///                        Miter. When true, the resample step rebuilds
-///                        a per-base-vertex miter polyline directly
-///                        from neighbouring offset lines. This is an
-///                        opt-in t0 harness experiment; production
-///                        callers keep the default `false`.
+///                        Reserved experiment switch. The synthetic miter
+///                        rebuild is temporarily bypassed; both values use the
+///                        raw-Clipper2 angle-bisector resample.
+/// @param resample_mode   Insert (default) preserves every raw point and adds
+///                        non-duplicate calculated points in run order.
+///                        Replace rebuilds the run from calculated points.
 std::vector<OffsetPolygon> offsetWithClipper2(
     const std::vector<SPoint2>& base,
     bool                        base_is_closed,
@@ -515,19 +513,21 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     JoinTypeChoice              join          = JoinTypeChoice::Miter,
     double                      miter_limit   = 2.0,
     bool                        resample_open = true,
-    bool                        experimental_open_miter_resample = false);
+    bool                        experimental_open_miter_resample = false,
+    OpenResampleMode            resample_mode = OpenResampleMode::Insert);
 
-/// Resample one open offset run to base-vertex resolution (foot-of-
-/// perpendicular, one point per covered base vertex → forces M=N over the
-/// covered subset). No-op unless `runs` holds exactly one open run with >= 2
-/// points; mutates `runs[0]` in place. `do_miter_resample` selects the
-/// experimental clean-miter variant. Extracted from `extractOpenRuns` so the
-/// offset / build-base-offset-map split can invoke resample from the map step
-/// (plan: offset = raw geometry, build-base-offset-map = staircase + resample).
+/// Add base-vertex-resolution points to one open offset run. Insert mode keeps
+/// all raw points; Replace mode rebuilds the run from calculated points.
+/// Coincident calculated/raw points keep the raw point. No-op unless `runs`
+/// holds exactly one open run with >= 2 points; mutates `runs[0]` in place.
+/// `do_miter_resample` is temporarily ignored. Extracted from
+/// `extractOpenRuns` so the offset / build-base-offset-map split can invoke
+/// resample from the map step.
 void resampleOpenRuns(std::vector<OffsetPolygon>& runs,
                       const std::vector<SPoint2>& base,
                       int side, double dist,
-                      bool do_miter_resample = false);
+                      bool do_miter_resample = false,
+                      OpenResampleMode mode = OpenResampleMode::Insert);
 
 }  // namespace geo
 }  // namespace prevabs

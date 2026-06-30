@@ -56,9 +56,12 @@ set(TEST_GEO_SOURCES
   test_adaptive_thickness.cpp
   test_geo.cpp
   test_geo_offset.cpp
+  test_geometry_tolerance.cpp
   test_variable_offset.cpp
   ${SRC_GEO}/adaptive_thickness.cpp
+  ${SRC_GEO}/geometry_tolerance.cpp
   ${SRC_GEO}/variable_offset.cpp
+  ${SRC_ROOT}/globalConstants.cpp
 )
 
 add_executable(test_geo ${TEST_GEO_SOURCES})
@@ -115,6 +118,7 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/utilities.cpp
   ${SRC_ROOT}/overloadOperator.cpp
   ${SRC_ROOT}/GeometryRepository.cpp
+  ${SRC_ROOT}/globalConstants.cpp
   ${SRC_ROOT}/MaterialRepository.cpp
   ${SRC_ROOT}/io/PModelIOReadAirfoil.cpp
   ${SRC_ROOT}/io/PModelIOReadBaseLine.cpp
@@ -216,6 +220,7 @@ set(TEST_OFFSET_CLIPPER2_SOURCES
   ${SRC_GEO}/variable_offset.cpp
   ${SRC_GEO}/offset_clipper2.cpp
   ${SRC_GEO}/offset_clipper2_bridge.cpp
+  ${SRC_ROOT}/globalConstants.cpp
 )
 
 add_executable(test_offset_clipper2 ${TEST_OFFSET_CLIPPER2_SOURCES})

@@ -40,8 +40,8 @@
 // the XML config `config.layered_offset` (<general>/<layered_offset>, default
 // ON). The env var PREVABS_LAYERED_OFFSET still overrides if set (quick CLI
 // toggle / tests). Global so offsetCurveBase (PSegment.cpp) can decide whether
-// to keep the shell raw (clean miter) instead of foot-resampled; declared in
-// globalVariables.hpp.
+// to keep the total-thickness shell raw while per-layer curves are resampled;
+// declared in globalVariables.hpp.
 bool useLayeredOffset() {
   const char* raw = std::getenv("PREVABS_LAYERED_OFFSET");
   if (raw && *raw) {
@@ -208,17 +208,19 @@ LayeredCurve makeExistingCurve(
   return curve;
 }
 
-LayeredCurve makeRawOffsetCurve(
+LayeredCurve makeLayerOffsetCurve(
     const std::vector<SPoint2>& base, bool closed, int clipper_side,
     double dist) {
   prevabs::debug::SegmentTraceScope _trace_scope(
-      "makeRawOffsetCurve (dist=" + std::to_string(dist) + ")");
+      "makeLayerOffsetCurve (dist=" + std::to_string(dist) + ")");
   LayeredCurve curve;
   auto polys = prevabs::geo::offsetWithClipper2(
       base, closed, clipper_side, dist,
       prevabs::geo::JoinTypeChoice::Miter, 2.0,
-      /*resample_open*/ false,
-      /*experimental_open_miter_resample*/ false);
+      /*resample_open*/ true,
+      /*experimental_open_miter_resample*/ false,
+      prevabs::geo::openResampleModeFromString(
+          config.offset_resample_mode));
   const auto* primary = pickLayeredPrimary(polys, closed);
   if (primary == nullptr) return curve;
 
@@ -416,13 +418,28 @@ void trimLayerCurveEndsToCaps(
   // vertices to drop. On-cap (|perp| < merge_tol) and interior vertices stay —
   // a straight strip whose endpoints lie exactly on the caps must be kept
   // verbatim.
-  const double caplen_b = std::max(beginA.distance(beginB), GEO_TOL);
-  const double caplen_e = std::max(endA.distance(endB), GEO_TOL);
+  const double caplen_b = beginA.distance(beginB);
+  const double caplen_e = endA.distance(endB);
+  if (caplen_b <= GEO_TOL || caplen_e <= GEO_TOL) {
+    throw std::runtime_error(
+        "layered offset[" + segment_name + "]: degenerate segment bound");
+  }
   auto beginPerp = [&](const SPoint2& p) {
     return capSide(beginA, beginB, p) / caplen_b;
   };
   auto endPerp = [&](const SPoint2& p) {
     return capSide(endA, endB, p) / caplen_e;
+  };
+  // A merge-tolerance-near endpoint can still be outside PDCEL's stricter
+  // GEO_TOL boundary predicate. Snap it exactly to the cap line before split.
+  auto snapToCap = [](const SPoint2& p, const SPoint2& A,
+                      const SPoint2& B) {
+    const double dx = B.x() - A.x();
+    const double dy = B.y() - A.y();
+    const double len2 = dx * dx + dy * dy;
+    const double u = ((p.x() - A.x()) * dx + (p.y() - A.y()) * dy)
+                     / len2;
+    return SPoint2(A.x() + u * dx, A.y() + u * dy);
   };
 
   // Head: first vertex on/inside the begin cap (skip strictly-exterior ones).
@@ -445,7 +462,7 @@ void trimLayerCurveEndsToCaps(
       std::fabs(beginPerp(c.points[head_keep])) < merge_tol;
   const SPoint2 head_pt =
       head_on_cap
-          ? c.points[head_keep]
+          ? snapToCap(c.points[head_keep], beginA, beginB)
           : crossCap(head_keep == 0 ? 0 : head_keep - 1, beginA, beginB,
                      "head", head_u1);
 
@@ -467,7 +484,7 @@ void trimLayerCurveEndsToCaps(
       std::fabs(endPerp(c.points[last_keep])) < merge_tol;
   const SPoint2 tail_pt =
       tail_on_cap
-          ? c.points[last_keep]
+          ? snapToCap(c.points[last_keep], endA, endB)
           : crossCap(last_keep == m - 1 ? m - 2 : last_keep, endA, endB,
                      "tail", tail_u1);
 
@@ -1618,8 +1635,8 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   //     drift, consistent with the DIR pre-check in validatePerLayerOffsets.
   //   "seq" (route-ii, note-build-laminate-segment.md §2.1.1): each boundary is
   //     the offset of the PREVIOUS layer curve by this layer's thickness. The
-  //     raw seq offset compounds miter artifacts across layers; foot-resampling
-  //     (resample arg) re-regularises each layer to avoid them.
+  //     sequential offset compounds discretization across layers; open-run
+  //     resampling re-regularises every new layer at its input vertices.
   // Ends are NOT aligned here — they are trimmed/extended to the segment bounds
   // in the split loop below (§2.1.2), once the per-layer inner curve is fixed.
   const bool use_dir = (layerOffsetMethod() != "seq");
@@ -1632,14 +1649,13 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     cumu_thk += tk;
     // DIR offsets the base by the cumulative thickness; SEQ offsets the previous
     // layer curve (curves[k]) by this layer's thickness. curves[1] is identical
-    // either way (cumu == first thickness), so only deeper layers differ. SEQ
-    // keeps the raw miter run (no foot-resample): re-regularising it drops
-    // uncovered base vertices in thin/dropped regions and breaks the downstream
-    // split (regresses t9_airfoil mh104 etc.); DIR is the clean path instead.
+    // either way (cumu == first thickness), so only deeper layers differ. Open
+    // curves are resampled along their base-vertex angle bisectors; closed
+    // curves remain raw because resampleOpenRuns handles open runs only.
     LayeredCurve c = use_dir
-        ? makeRawOffsetCurve(base_curve.points, is_closed, clipper_side,
-                             cumu_thk)
-        : makeRawOffsetCurve(curves[k].points, is_closed, clipper_side, tk);
+        ? makeLayerOffsetCurve(base_curve.points, is_closed, clipper_side,
+                               cumu_thk)
+        : makeLayerOffsetCurve(curves[k].points, is_closed, clipper_side, tk);
     // No 1:1 vertex requirement: splitLayerBandIntoCells builds a staircase
     // correspondence between consecutive layer curves, so a layer curve with
     // fewer vertices than its inner curve (Clipper2 merged some — normal for a
@@ -1662,7 +1678,7 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
       }
       return false;
     }
-    // Keep every layer curve oriented like the base. makeRawOffsetCurve can
+    // Keep every layer curve oriented like the base. makeLayerOffsetCurve can
     // return the offset polygon walked in the opposite direction; left
     // reversed, the NEXT offset (clipper_side is direction-relative) would go
     // to the wrong geometric side, and the begin/end cap correspondence with

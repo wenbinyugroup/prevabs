@@ -8,6 +8,7 @@
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "geo.hpp"
+#include "geometry_tolerance.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
 #include "PBaseLine.hpp"
@@ -44,6 +45,38 @@
 #endif
 
 namespace {
+
+void configureModelGeometryTolerance(PModel *pmodel) {
+  std::vector<SPoint2> points;
+  points.reserve(pmodel->vertices().size());
+  for (const auto *vertex : pmodel->vertices()) {
+    points.emplace_back(vertex->y(), vertex->z());
+  }
+
+  std::vector<double> lamina_thicknesses;
+  lamina_thicknesses.reserve(pmodel->laminas().size());
+  for (auto *lamina : pmodel->laminas()) {
+    lamina_thicknesses.push_back(lamina->getThickness());
+  }
+
+  const auto result = prevabs::geo::computeModelGeometryTolerance(
+      points, lamina_thicknesses);
+  if (!result.valid()) {
+    throw std::runtime_error(
+        "cannot determine geometry tolerance: model has no positive point "
+        "spacing or lamina thickness");
+  }
+
+  setGeometryTolerance(result.tolerance);
+  config.app.geo_tol = result.tolerance;
+  PLOG(debug) << "model geometry tolerance: min_point_distance="
+              << result.min_point_distance
+              << ", min_lamina_thickness="
+              << result.min_lamina_thickness
+              << ", characteristic_length="
+              << result.characteristic_length
+              << ", coefficient=0.001, tolerance=" << result.tolerance;
+}
 
 unsigned int parseElementShapeValue(const std::string &value) {
   const std::string s = lowerString(trim(value));
@@ -399,6 +432,20 @@ GeneralResult readGeneralSection(
                     << "', keeping '" << config.layer_offset_method << "'";
   }
 
+  rapidxml::xml_node<> *nodeOffsetResampleMode{
+    xn_general->first_node("offset_resample_mode")};
+  if (nodeOffsetResampleMode) {
+    std::string s{trim(nodeOffsetResampleMode->value())};
+    for (auto &c : s)
+      c = static_cast<char>((c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c);
+    if (s == "insert" || s == "replace")
+      config.offset_resample_mode = s;
+    else if (!s.empty())
+      PLOG(warning) << "<general>/<offset_resample_mode>: unknown value '"
+                    << s << "', keeping '" << config.offset_resample_mode
+                    << "'";
+  }
+
   rapidxml::xml_node<> *nodeRecombineAngle{
     xn_general->first_node("recombine_angle")
   };
@@ -742,6 +789,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   readGeometrySection(p_xn_sg, xn_include, filePath, cs_type, gen, pmodel);
   readMaterialsSection(p_xn_sg, xn_include, filePath, pmodel);
   readLayupsSection(p_xn_sg, xn_include, filePath, pmodel);
+  configureModelGeometryTolerance(pmodel);
 
   std::vector<Layup *> p_layups{};
   int num_combined_layups = 0;

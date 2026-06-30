@@ -18,7 +18,9 @@ extern bool scientific_format;
 // ---------------------------------------------------------------------------
 struct AppConfig {
   double tol            = 1e-12;          // intersection parameter tolerance
-  double geo_tol        = 1e-9;           // geometric edge-length tolerance
+  // Initial geometry tolerance. Cross-section input replaces this with the
+  // model-scale value before component geometry is built.
+  double geo_tol        = 1e-9;
   int    log_level      = LOG_LEVEL_INFO;  // 0=trace…5=fatal (globalConstants.hpp)
   int    gmsh_verbosity = 2;              // 0=silent,1=errors,2=warnings,3=info,5=debug
   // External solver timeout in seconds. 0 = no timeout (default).
@@ -90,10 +92,14 @@ struct PConfig {
   //           offset; no compounding drift, consistent with the DIR pre-check
   //           in validatePerLayerOffsets).
   //   "seq" = offset the PREVIOUS layer curve by this layer's thickness
-  //           (route-ii; foot-resampled per layer to avoid raw-miter artifacts).
+  //           (route-ii; angle-bisector-resampled at each input vertex).
   // XML <general>/<layer_offset_method>; default "dir".
   // Env PREVABS_LAYER_OFFSET_METHOD overrides if set.
   std::string layer_offset_method = "dir";
+
+  // XML <general>/<offset_resample_mode>; "insert" preserves raw Clipper2
+  // points, while "replace" rebuilds the run from calculated points.
+  std::string offset_resample_mode = "insert";
 
   // Skip area construction over Clipper2 "dropped" base ranges (thin-region
   // workaround; see issue-20260521-skip-dropped-areas). XML

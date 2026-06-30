@@ -556,7 +556,9 @@ int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
   if (resample) {
     prevabs::geo::resampleOpenRuns(geom.polygons, geom.clipper_input,
                                    geom.clipper_side, geom.abs_dist,
-                                   /*do_miter_resample*/ false);
+                                   /*do_miter_resample*/ false,
+        prevabs::geo::openResampleModeFromString(
+            config.offset_resample_mode));
   }
   // 2. Remap pre-trim base_seg back to original indices (after resample).
   if (geom.did_pretrim) {

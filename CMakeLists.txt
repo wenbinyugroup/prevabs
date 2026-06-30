@@ -65,6 +65,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/CurveFrameLookup.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/geo_diagnostics.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/geo_math.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geometry_tolerance.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2.cpp
@@ -81,6 +82,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/polyline.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/variable_offset.cpp
   ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
+  ${CMAKE_SOURCE_DIR}/src/globalConstants.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIO.cpp

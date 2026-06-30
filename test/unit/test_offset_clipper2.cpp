@@ -17,6 +17,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "offset_clipper2.hpp"
+#include "globalConstants.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -24,7 +25,10 @@
 
 using prevabs::geo::OffsetPolygon;
 using prevabs::geo::OffsetVertexSource;
+using prevabs::geo::JoinTypeChoice;
+using prevabs::geo::OpenResampleMode;
 using prevabs::geo::offsetWithClipper2;
+using prevabs::geo::resampleOpenRuns;
 using prevabs::geo::ReverseMatchPlan;
 using prevabs::geo::planReverseMatch;
 using prevabs::geo::planReverseMatchByNearest;
@@ -37,6 +41,17 @@ using prevabs::geo::buildTrimmedOpenPolyline;
 using prevabs::geo::remapBaseSegToOriginal;
 
 namespace {
+
+class ScopedGeometryTolerance {
+public:
+  explicit ScopedGeometryTolerance(double tolerance) : old_(GEO_TOL) {
+    setGeometryTolerance(tolerance);
+  }
+  ~ScopedGeometryTolerance() { setGeometryTolerance(old_); }
+
+private:
+  double old_;
+};
 
 double polygonAbsArea(const std::vector<SPoint2>& p) {
   if (p.size() < 3) return 0.0;
@@ -216,8 +231,7 @@ bool allOnSide(const OffsetPolygon& op,
 
 // O1 — Straight horizontal open polyline, two segments. side = +1
 // (left = +y direction). Output should be a flat polyline at y = +dist
-// with at least 3 vertices (one per base vertex plus possibly Butt-cap
-// extras at the ends).
+// with exactly 3 vertices, one for each base vertex.
 TEST_CASE("offsetWithClipper2: open 2-segment straight base, side=+1",
           "[offset_clipper2][open][side]") {
   const std::vector<SPoint2> base = {
@@ -230,11 +244,14 @@ TEST_CASE("offsetWithClipper2: open 2-segment straight base, side=+1",
   const auto& op = out[0];
 
   CHECK_FALSE(op.is_closed);
-  // Clipper2 collapses collinear vertices: a 3-vertex straight base
-  // produces a 2-vertex left side (the Butt-cap endpoints at P_0 and
-  // P_{N-1}).
-  CHECK(op.points.size() >= 2);
+  // Clipper2 collapses the raw run to two Butt-cap endpoints; the default
+  // resample restores the middle base-vertex correspondence.
+  REQUIRE(op.points.size() == 3);
   CHECK(op.points.size() == op.sources.size());
+  REQUIRE(op.resampled.size() == 3);
+  CHECK_FALSE(op.resampled[0]);
+  CHECK(op.resampled[1]);
+  CHECK_FALSE(op.resampled[2]);
 
   for (const auto& p : op.points) {
     CHECK(p.y() == Catch::Approx(+dist).margin(1e-9));
@@ -242,7 +259,66 @@ TEST_CASE("offsetWithClipper2: open 2-segment straight base, side=+1",
   CHECK(allOnSide(op, base, +1));
   CHECK(baseSegNonDecreasing(op));
   CHECK(op.points.front().x() == Catch::Approx(0.0).margin(1e-9));
+  CHECK(op.points[1].x() == Catch::Approx(1.0).margin(1e-9));
   CHECK(op.points.back().x()  == Catch::Approx(2.0).margin(1e-9));
+}
+
+
+TEST_CASE("resampleOpenRuns: insert preserves raw points, replace does not",
+          "[offset_clipper2][open][resample][mode]") {
+  CHECK(prevabs::geo::openResampleModeFromString("insert")
+        == OpenResampleMode::Insert);
+  CHECK(prevabs::geo::openResampleModeFromString("replace")
+        == OpenResampleMode::Replace);
+  CHECK(prevabs::geo::openResampleModeFromString("unknown")
+        == OpenResampleMode::Insert);
+
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, 0.0),
+  };
+  const double dist = 0.05;
+  auto raw = offsetWithClipper2(
+      base, false, +1, dist, JoinTypeChoice::Miter, 2.0,
+      /*resample_open*/ false);
+  REQUIRE(raw.size() == 1);
+  REQUIRE(raw[0].points.size() == 2);
+  REQUIRE(raw[0].resampled.size() == 2);
+  CHECK_FALSE(raw[0].resampled[0]);
+  CHECK_FALSE(raw[0].resampled[1]);
+
+  auto inserted = raw;
+  resampleOpenRuns(inserted, base, +1, dist, false,
+                   OpenResampleMode::Insert);
+  REQUIRE(inserted[0].points.size() == 3);
+  REQUIRE(inserted[0].resampled.size() == 3);
+  CHECK_FALSE(inserted[0].resampled[0]);
+  CHECK(inserted[0].resampled[1]);
+  CHECK_FALSE(inserted[0].resampled[2]);
+  CHECK(inserted[0].pre_resample_points.empty());
+  CHECK(inserted[0].points.front().x() == raw[0].points.front().x());
+  CHECK(inserted[0].points.back().x() == raw[0].points.back().x());
+  CHECK(inserted[0].sources.front().base_seg
+        == raw[0].sources.front().base_seg);
+  CHECK(inserted[0].sources.front().base_u
+        == raw[0].sources.front().base_u);
+  CHECK(inserted[0].sources.back().base_seg
+        == raw[0].sources.back().base_seg);
+  CHECK(inserted[0].sources.back().base_u
+        == raw[0].sources.back().base_u);
+
+  auto replaced = raw;
+  resampleOpenRuns(replaced, base, +1, dist, false,
+                   OpenResampleMode::Replace);
+  REQUIRE(replaced[0].points.size() == 3);
+  REQUIRE(replaced[0].resampled.size() == 3);
+  CHECK(replaced[0].resampled[0]);
+  CHECK(replaced[0].resampled[1]);
+  CHECK(replaced[0].resampled[2]);
+  REQUIRE(replaced[0].pre_resample_points.size() == raw[0].points.size());
+  CHECK(replaced[0].pre_resample_points.front().x()
+        == raw[0].points.front().x());
+  CHECK(replaced[0].pre_resample_points.back().x()
+        == raw[0].points.back().x());
 }
 
 
@@ -317,6 +393,46 @@ TEST_CASE("offsetWithClipper2: open L-shape, concave (right) side",
   CHECK(op.points.size() >= 3);
   CHECK(allOnSide(op, base, -1));
   CHECK(baseSegNonDecreasing(op));
+}
+
+
+// O4b — At an outer miter, perpendicular projection lands on an offset
+// segment before the apex. Resampling must instead follow the adjacent-segment
+// angle bisector and recover the raw miter vertex.
+TEST_CASE("offsetWithClipper2: open outer corner resamples along angle "
+          "bisector",
+          "[offset_clipper2][open][corner][resample]") {
+  ScopedGeometryTolerance tolerance(1e-8);
+  const std::vector<SPoint2> base = {
+      SPoint2(0.0, 0.0), SPoint2(1.0, 0.0), SPoint2(2.0, -1.0),
+  };
+  const double dist = 0.1;
+
+  auto out = offsetWithClipper2(base, false, +1, dist);
+  REQUIRE(out.size() == 1);
+  const auto& op = out[0];
+  REQUIRE(op.points.size() == 3);
+  REQUIRE(op.resampled.size() == 3);
+  CHECK_FALSE(op.resampled[0]);
+  CHECK_FALSE(op.resampled[1]);
+  CHECK_FALSE(op.resampled[2]);
+
+  const double expected_x = 1.0 + (std::sqrt(2.0) - 1.0) * dist;
+  CHECK(op.points[1].x() == Catch::Approx(expected_x).margin(1e-9));
+  CHECK(op.points[1].y() == Catch::Approx(dist).margin(1e-9));
+
+  auto experimental = offsetWithClipper2(
+      base, false, +1, dist, JoinTypeChoice::Miter, 2.0,
+      /*resample_open*/ true,
+      /*experimental_open_miter_resample*/ true);
+  REQUIRE(experimental.size() == 1);
+  REQUIRE(experimental[0].points.size() == op.points.size());
+  for (std::size_t i = 0; i < op.points.size(); ++i) {
+    CHECK(experimental[0].points[i].x()
+          == Catch::Approx(op.points[i].x()).margin(1e-12));
+    CHECK(experimental[0].points[i].y()
+          == Catch::Approx(op.points[i].y()).margin(1e-12));
+  }
 }
 
 

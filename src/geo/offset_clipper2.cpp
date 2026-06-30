@@ -1,6 +1,7 @@
 #include "offset_clipper2.hpp"
 
 #include "clipper2/clipper.h"
+#include "globalConstants.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -73,70 +74,104 @@ OffsetVertexSource closestOpenSegment(double qx, double qy,
   return best;
 }
 
-SPoint2 openOffsetNormal(const SPoint2& a, const SPoint2& b,
-                         int side, double dist) {
+bool unitOpenOffsetNormal(const SPoint2& a, const SPoint2& b,
+                          int side, SPoint2* normal) {
   const double dx = b.x() - a.x();
   const double dy = b.y() - a.y();
   const double len = std::sqrt(dx * dx + dy * dy);
-  if (len == 0.0) return SPoint2(0.0, 0.0);
+  if (len == 0.0) return false;
   const double s = side >= 0 ? 1.0 : -1.0;
-  return SPoint2(s * -dy / len * dist, s * dx / len * dist);
-}
-
-bool lineIntersection(const SPoint2& p, const SPoint2& r,
-                      const SPoint2& q, const SPoint2& s,
-                      SPoint2* out) {
-  const double det = r.x() * s.y() - r.y() * s.x();
-  if (std::fabs(det) < 1e-14) return false;
-  const double qpx = q.x() - p.x();
-  const double qpy = q.y() - p.y();
-  const double t = (qpx * s.y() - qpy * s.x()) / det;
-  *out = SPoint2(p.x() + t * r.x(), p.y() + t * r.y());
+  *normal = SPoint2(s * -dy / len, s * dx / len);
   return true;
 }
 
-std::vector<SPoint2> buildOpenMiterOffset(
-    const std::vector<SPoint2>& base, int side, double dist) {
-  std::vector<SPoint2> out;
+// Direction used to project one interior base vertex onto the raw offset run:
+// the normalized sum of the two adjacent segment normals on the requested
+// offset side. For a straight base the normals coincide, so the direction is
+// the ordinary segment normal.
+bool openOffsetBisector(const std::vector<SPoint2>& base, int i, int side,
+                        SPoint2* direction) {
   const int N = static_cast<int>(base.size());
-  if (N < 2 || !(dist > 0.0)) return out;
+  if (N < 3 || i <= 0 || i >= N - 1) return false;
 
-  std::vector<SPoint2> normals;
-  normals.reserve(N - 1);
-  for (int i = 0; i + 1 < N; ++i) {
-    normals.push_back(openOffsetNormal(base[i], base[i + 1], side, dist));
+  SPoint2 n0;
+  SPoint2 n1;
+  if (!unitOpenOffsetNormal(base[i - 1], base[i], side, &n0)
+      || !unitOpenOffsetNormal(base[i], base[i + 1], side, &n1)) {
+    return false;
   }
+  const double bx = n0.x() + n1.x();
+  const double by = n0.y() + n1.y();
+  const double len = std::sqrt(bx * bx + by * by);
+  if (len <= 1e-14) return false;
+  *direction = SPoint2(bx / len, by / len);
+  return true;
+}
 
-  out.reserve(N);
-  out.push_back(SPoint2(base[0].x() + normals[0].x(),
-                        base[0].y() + normals[0].y()));
-  for (int i = 1; i + 1 < N; ++i) {
-    const SPoint2 p0(base[i].x() + normals[i - 1].x(),
-                     base[i].y() + normals[i - 1].y());
-    const SPoint2 d0(base[i].x() - base[i - 1].x(),
-                     base[i].y() - base[i - 1].y());
-    const SPoint2 p1(base[i].x() + normals[i].x(),
-                     base[i].y() + normals[i].y());
-    const SPoint2 d1(base[i + 1].x() - base[i].x(),
-                     base[i + 1].y() - base[i].y());
+// Intersect the positive ray origin + t*direction with segment [a,b].
+// Returns the nearest point on the ray only when t >= 0 and segment parameter
+// u lies in [0,1].
+bool raySegmentIntersection(const SPoint2& origin,
+                            const SPoint2& direction,
+                            const SPoint2& a, const SPoint2& b,
+                            double* ray_t, double* segment_u,
+                            SPoint2* point) {
+  const double sx = b.x() - a.x();
+  const double sy = b.y() - a.y();
+  const double det = direction.x() * sy - direction.y() * sx;
+  if (std::fabs(det) < 1e-14) return false;
+
+  const double qx = a.x() - origin.x();
+  const double qy = a.y() - origin.y();
+  double t = (qx * sy - qy * sx) / det;
+  double u = (qx * direction.y() - qy * direction.x()) / det;
+  const double tol = 1e-12;
+  if (t < -tol || u < -tol || u > 1.0 + tol) return false;
+
+  if (t < 0.0) t = 0.0;
+  if (u < 0.0) u = 0.0;
+  if (u > 1.0) u = 1.0;
+  *ray_t = t;
+  *segment_u = u;
+  *point = SPoint2(origin.x() + t * direction.x(),
+                   origin.y() + t * direction.y());
+  return true;
+}
+
+bool projectAlongOpenBisector(const SPoint2& base_point,
+                              const SPoint2& direction,
+                              const std::vector<SPoint2>& run,
+                              int start_seg, int* hit_seg,
+                              double* hit_u,
+                              SPoint2* projected) {
+  const int n_seg = static_cast<int>(run.size()) - 1;
+  double best_t = std::numeric_limits<double>::infinity();
+  int best_seg = -1;
+  double best_u = 0.0;
+  SPoint2 best_point;
+  for (int s = start_seg; s < n_seg; ++s) {
+    double t = 0.0;
+    double u = 0.0;
     SPoint2 q;
-    if (lineIntersection(p0, d0, p1, d1, &q)) {
-      out.push_back(q);
-    } else {
-      out.push_back(SPoint2(base[i].x() + 0.5 * (normals[i - 1].x()
-                                                 + normals[i].x()),
-                            base[i].y() + 0.5 * (normals[i - 1].y()
-                                                 + normals[i].y())));
+    if (raySegmentIntersection(base_point, direction, run[s], run[s + 1],
+                               &t, &u, &q)
+        && t < best_t) {
+      best_t = t;
+      best_seg = s;
+      best_u = u;
+      best_point = q;
     }
   }
-  out.push_back(SPoint2(base[N - 1].x() + normals[N - 2].x(),
-                        base[N - 1].y() + normals[N - 2].y()));
-  return out;
+  if (best_seg < 0) return false;
+  *hit_seg = best_seg;
+  *hit_u = best_u;
+  *projected = best_point;
+  return true;
 }
 
 bool samePoint(const SPoint2& a, const SPoint2& b) {
-  return std::fabs(a.x() - b.x()) <= 1e-14
-      && std::fabs(a.y() - b.y()) <= 1e-14;
+  return std::fabs(a.x() - b.x()) <= GEO_TOL
+      && std::fabs(a.y() - b.y()) <= GEO_TOL;
 }
 
 // Sign of (t × d) where t is the local base tangent at the foot of
@@ -232,7 +267,8 @@ std::vector<OffsetPolygon> extractOpenRuns(
     double                          source_radius,
     double                          dist,
     bool                            do_resample,
-    bool                            do_miter_resample) {
+    bool                            do_miter_resample,
+    OpenResampleMode                resample_mode) {
   std::vector<OffsetPolygon> runs;
   const int M = static_cast<int>(path.size());
   if (M < 2 || base.size() < 2) return runs;
@@ -311,14 +347,15 @@ std::vector<OffsetPolygon> extractOpenRuns(
     }
   }
 
-  // 5. Resample at base-vertex resolution (open-only). Production rebuilds the
-  //    run as one foot-of-perpendicular point per covered base vertex (forces
-  //    M=N over the covered subset; dropped base vertices stay out and the
-  //    Stage C forward-fill records them). The logic lives in
+  // 5. Resample at base-vertex resolution (open-only). Each interior base
+  //    vertex angle bisector is intersected with the raw run. Insert mode
+  //    augments the raw run; Replace mode rebuilds it from the intersections.
+  //    Dropped base vertices stay out and Stage C records them. The logic lives in
   //    `resampleOpenRuns` so the offset / build-base-offset-map split can drive
   //    it from the map step instead of from the geometry core.
   if (do_resample) {
-    resampleOpenRuns(runs, base, side, dist, do_miter_resample);
+    resampleOpenRuns(runs, base, side, dist, do_miter_resample,
+                     resample_mode);
   }
 
   return runs;
@@ -363,51 +400,49 @@ OffsetVertexSource attributeSource(double qx, double qy,
 
 }  // namespace
 
-// Resample one open offset run to base-vertex resolution. Production
-// (`do_miter_resample=false`) rebuilds the single run as one
-// foot-of-perpendicular point per *covered* base vertex, forcing M=N over the
-// covered subset (Clipper2 collapses collinear interior vertices → M<N, which
-// downstream PSegment::build + layup-intersection insertion cannot consume).
+OpenResampleMode openResampleModeFromString(const std::string& value) {
+  return value == "replace"
+      ? OpenResampleMode::Replace : OpenResampleMode::Insert;
+}
+
+// Add base-vertex-resolution points to one open offset run. Insert mode keeps
+// every raw Clipper2 point and inserts the calculated points in run order;
+// replace mode rebuilds the run from calculated points for diagnostics and
+// comparison with the previous behavior.
 // Dropped base vertices stay out and the Stage C bridge's forward-fill records
-// them as `dropped_base_ranges`. `do_miter_resample=true` selects the
-// experimental clean-miter variant. No-op unless `runs` holds exactly one open
-// run with >= 2 points; mutates `runs[0]` in place (points/sources/resampled,
-// and stores the pre-resample raw run for debug overlays).
+// them as `dropped_base_ranges`. Each covered base vertex is projected along
+// the adjacent-segment angle bisector on `side`, so outer miter apexes are
+// retained instead of being replaced by a perpendicular foot on one offset
+// edge. No-op unless `runs` holds exactly one open run with >= 2 points;
+// mutates `runs[0]` in place (points/sources/resampled, and stores the
+// pre-resample raw run for debug overlays in Replace mode).
 //
 // Lives at namespace scope (declared in the header) so the offset /
 // build-base-offset-map split can invoke it from the map step; `extractOpenRuns`
 // also calls it (open-input geometry path) when its `do_resample` flag is set.
 void resampleOpenRuns(std::vector<OffsetPolygon>& runs,
                       const std::vector<SPoint2>& base,
-                      int side, double dist, bool do_miter_resample) {
+                      int side, double dist, bool do_miter_resample,
+                      OpenResampleMode mode) {
   if (!(runs.size() == 1 && !runs[0].is_closed
         && runs[0].points.size() >= 2)) {
     return;
   }
   auto& r = runs[0];
   const int N = static_cast<int>(base.size());
+  if (N < 2) return;
+  (void)dist;
+  (void)do_miter_resample;  // Temporarily bypass the synthetic miter branch.
 
-  // Experimental clean-miter variant (preserves convex apexes).
-  if (do_miter_resample && static_cast<int>(2 * r.points.size()) >= N) {
-    std::vector<SPoint2> miter_pts = buildOpenMiterOffset(base, side, dist);
-    if (miter_pts.size() >= 2) {
-      r.pre_resample_points = r.points;
-      r.points = std::move(miter_pts);
-      r.sources.clear();
-      r.resampled.assign(r.points.size(), true);
-      r.sources.reserve(r.points.size());
-      for (int i = 0; i < static_cast<int>(r.points.size()); ++i) {
-        OffsetVertexSource src;
-        src.base_seg = (i == 0) ? 0 : (i - 1);
-        src.base_u   = (i == 0) ? 0.0 : 1.0;
-        r.sources.push_back(src);
-      }
-    }
-    return;
-  }
+  struct CalculatedPoint {
+    SPoint2 point;
+    OffsetVertexSource source;
+    int raw_seg;
+    double raw_u;
+  };
 
-  // Production foot-of-perpendicular resample: one point per covered base
-  // vertex, projected onto the raw run polyline.
+  // Production angle-bisector resample: one point per covered base vertex,
+  // intersected with the raw run polyline along the requested offset side.
   std::vector<bool> base_covered(N, false);
   for (const auto& s : r.sources) {
     if (s.base_seg < 0) continue;
@@ -415,68 +450,127 @@ void resampleOpenRuns(std::vector<OffsetPolygon>& runs,
     if (s.base_seg + 1 >= 0 && s.base_seg + 1 < N) base_covered[s.base_seg + 1] = true;
   }
 
-  std::vector<SPoint2>            new_pts;
-  std::vector<OffsetVertexSource> new_srcs;
-  std::vector<bool>               new_resampled;
-  new_pts.reserve(N);
-  new_srcs.reserve(N);
-  new_resampled.reserve(N);
+  std::vector<CalculatedPoint> calculated;
+  calculated.reserve(N);
 
   int cur_seg = 0;
-  const int n_run_seg = static_cast<int>(r.points.size()) - 1;
   for (int i = 0; i < N; ++i) {
     if (!base_covered[i]) continue;
 
-    int    best_seg = cur_seg;
-    double best_u   = 0.0;
-    double best_d   = std::numeric_limits<double>::infinity();
-    for (int s = cur_seg; s < n_run_seg; ++s) {
-      const Projection p = projectOnSegment(
-          base[i].x(), base[i].y(),
-          r.points[s].x(),     r.points[s].y(),
-          r.points[s + 1].x(), r.points[s + 1].y());
-      if (p.dist < best_d) {
-        best_d   = p.dist;
-        best_seg = s;
-        best_u   = p.u;
+    int best_seg = cur_seg;
+    double raw_u = 0.0;
+    SPoint2 projected;
+    if (i == 0) {
+      projected = r.points.front();
+      best_seg = 0;
+    } else if (i == N - 1) {
+      projected = r.points.back();
+      best_seg = static_cast<int>(r.points.size()) - 2;
+      raw_u = 1.0;
+    } else {
+      SPoint2 direction;
+      if (!openOffsetBisector(base, i, side, &direction)
+          || !projectAlongOpenBisector(base[i], direction, r.points, cur_seg,
+                                       &best_seg, &raw_u, &projected)) {
+        continue;
       }
     }
-
-    const auto& a = r.points[best_seg];
-    const auto& b = r.points[best_seg + 1];
-    new_pts.emplace_back(
-        a.x() + best_u * (b.x() - a.x()),
-        a.y() + best_u * (b.y() - a.y()));
 
     OffsetVertexSource src;
     src.base_seg = (i == 0) ? 0 : (i - 1);
     src.base_u   = (i == 0) ? 0.0 : 1.0;
-    new_srcs.push_back(src);
-    new_resampled.push_back(true);  // synthetic foot-of-perpendicular
+    calculated.push_back({projected, src, best_seg, raw_u});
 
     cur_seg = best_seg;
   }
 
-  if (new_pts.size() >= 2) {
+  if (calculated.size() < 2) return;
+
+  if (mode == OpenResampleMode::Replace) {
     std::vector<SPoint2>            compact_pts;
     std::vector<OffsetVertexSource> compact_srcs;
     std::vector<bool>               compact_resampled;
-    compact_pts.reserve(new_pts.size());
-    compact_srcs.reserve(new_srcs.size());
-    compact_resampled.reserve(new_resampled.size());
-    for (std::size_t k = 0; k < new_pts.size(); ++k) {
-      if (!compact_pts.empty() && samePoint(compact_pts.back(), new_pts[k])) {
+    compact_pts.reserve(calculated.size());
+    compact_srcs.reserve(calculated.size());
+    compact_resampled.reserve(calculated.size());
+    for (const auto& p : calculated) {
+      if (!compact_pts.empty() && samePoint(compact_pts.back(), p.point)) {
         continue;
       }
-      compact_pts.push_back(new_pts[k]);
-      compact_srcs.push_back(new_srcs[k]);
-      compact_resampled.push_back(new_resampled[k]);
+      compact_pts.push_back(p.point);
+      compact_srcs.push_back(p.source);
+      compact_resampled.push_back(true);
     }
     r.pre_resample_points = r.points;
     r.points    = std::move(compact_pts);
     r.sources   = std::move(compact_srcs);
     r.resampled = std::move(compact_resampled);
+    return;
   }
+
+  // Raw-priority insertion: a calculated point coincident with any raw point
+  // is discarded, so the original coordinate, source, and provenance survive.
+  const std::size_t raw_count = r.points.size();
+  std::vector<std::vector<CalculatedPoint>> by_segment(raw_count - 1);
+  std::vector<SPoint2> accepted_points;
+  for (const auto& p : calculated) {
+    bool duplicate = false;
+    for (const auto& raw : r.points) {
+      if (samePoint(raw, p.point)) {
+        duplicate = true;
+        break;
+      }
+    }
+    if (!duplicate) {
+      for (const auto& accepted : accepted_points) {
+        if (samePoint(accepted, p.point)) {
+          duplicate = true;
+          break;
+        }
+      }
+    }
+    if (duplicate || p.raw_seg < 0
+        || p.raw_seg >= static_cast<int>(by_segment.size())) {
+      continue;
+    }
+    by_segment[p.raw_seg].push_back(p);
+    accepted_points.push_back(p.point);
+  }
+  for (auto& bucket : by_segment) {
+    std::sort(bucket.begin(), bucket.end(),
+              [](const CalculatedPoint& a, const CalculatedPoint& b) {
+                return a.raw_u < b.raw_u;
+              });
+  }
+
+  std::vector<SPoint2>            augmented_pts;
+  std::vector<OffsetVertexSource> augmented_srcs;
+  std::vector<bool>               augmented_resampled;
+  augmented_pts.reserve(raw_count + accepted_points.size());
+  augmented_srcs.reserve(raw_count + accepted_points.size());
+  augmented_resampled.reserve(raw_count + accepted_points.size());
+  const bool sources_aligned = r.sources.size() == raw_count;
+  const bool tags_aligned = r.resampled.size() == raw_count;
+  for (std::size_t s = 0; s + 1 < raw_count; ++s) {
+    augmented_pts.push_back(r.points[s]);
+    augmented_srcs.push_back(sources_aligned
+        ? r.sources[s] : OffsetVertexSource{-1, 0.0});
+    augmented_resampled.push_back(tags_aligned ? r.resampled[s] : false);
+    for (const auto& p : by_segment[s]) {
+      augmented_pts.push_back(p.point);
+      augmented_srcs.push_back(p.source);
+      augmented_resampled.push_back(true);
+    }
+  }
+  augmented_pts.push_back(r.points.back());
+  augmented_srcs.push_back(sources_aligned
+      ? r.sources.back() : OffsetVertexSource{-1, 0.0});
+  augmented_resampled.push_back(tags_aligned ? r.resampled.back() : false);
+
+  r.pre_resample_points.clear();
+  r.points = std::move(augmented_pts);
+  r.sources = std::move(augmented_srcs);
+  r.resampled = std::move(augmented_resampled);
 }
 
 std::vector<OffsetPolygon> offsetWithClipper2(
@@ -487,7 +581,8 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     JoinTypeChoice              join,
     double                      miter_limit,
     bool                        resample_open,
-    bool                        experimental_open_miter_resample) {
+    bool                        experimental_open_miter_resample,
+    OpenResampleMode            resample_mode) {
 
   std::vector<OffsetPolygon> result;
   if (base.size() < 2 || !(dist > 0.0)) return result;
@@ -575,7 +670,8 @@ std::vector<OffsetPolygon> offsetWithClipper2(
     std::vector<OffsetPolygon> runs =
         extractOpenRuns(path, input, side, source_radius, dist, resample_open,
                         experimental_open_miter_resample
-                            && join == JoinTypeChoice::Miter);
+                            && join == JoinTypeChoice::Miter,
+                        resample_mode);
     for (auto& r : runs) {
       result.push_back(std::move(r));
     }

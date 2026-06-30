@@ -308,6 +308,7 @@ public:
   std::vector<PDCELVertex *> &vertices()  { return _geo_repo.vertices(); }
   std::vector<Baseline *>    &baselines() { return _geo_repo.baselines(); }
   std::vector<Material *>    &materials() { return _mat_repo.materials(); }
+  std::vector<Lamina *>      &laminas()   { return _mat_repo.laminas(); }
   std::vector<LayerType *>   &layertypes(){ return _mat_repo.layertypes(); }
   std::vector<Layup *>       &layups()    { return _mat_repo.layups(); }
 

@@ -19,15 +19,15 @@ const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.141592653589793};
-// GEO_TOL is the single source of truth for geometric comparisons.
-// Its default (1e-9) matches AppConfig::geo_tol so the compile-time fallback
-// stays in sync with the user-tunable runtime value.
-// TOLERANCE, ABS_TOL, REL_TOL are kept as aliases for existing call sites;
-// prefer GEO_TOL in new code.
-const double GEO_TOL{1e-9};
-const double TOLERANCE{GEO_TOL};
-const double ABS_TOL{GEO_TOL};
-const double REL_TOL{GEO_TOL};
+// Runtime model-scale tolerance. The input reader updates it after geometry
+// and lamina definitions are available, before component geometry is built.
+// TOLERANCE, ABS_TOL, and REL_TOL are references kept for existing call sites.
+extern double GEO_TOL;
+extern double& TOLERANCE;
+extern double& ABS_TOL;
+extern double& REL_TOL;
+
+void setGeometryTolerance(double tolerance);
 
 // VERTEX_MERGE_TOL governs DCEL vertex *identity*: two vertices closer than
 // this are treated as the same point and merged into one shared vertex by

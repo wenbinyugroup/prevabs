@@ -117,7 +117,7 @@ int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
 //        buildBaseOffsetMap(base, side, dist, geom, off, pairs, ...);
 //
 // The layered-offset path can call `offsetGeometry()` alone to get raw
-// clean-miter geometry without the foot-of-perpendicular resample.
+// clean-miter geometry without the base-vertex resample.
 // ---------------------------------------------------------------------------
 
 // Raw geometry produced by `offsetGeometry()` and consumed (then resampled in
@@ -143,10 +143,9 @@ OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
 // Step 2: resample (moved here from the geometry core) + reverse-match
 // staircase. Mutates `geom.polygons` in place. Returns 1 on success, 0 on
 // degenerate geometry or a reverse-match failure.
-// `resample` (default true) applies the foot-of-perpendicular base-vertex
-// resample before the reverse-match. Pass false to keep the RAW clean-miter
-// geometry (no corner collapse) — used by the layered-offset path so the shell
-// stays consistent with the per-layer raw offset curves.
+// `resample` (default true) applies the angle-bisector base-vertex resample
+// before the reverse-match. Pass false to keep the RAW clean-miter geometry —
+// used for the total-thickness shell in the layered-offset path.
 int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
                        double dist, OffsetGeometry &geom,
                        std::vector<PDCELVertex *> &offset_vertices,

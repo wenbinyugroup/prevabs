@@ -1,10 +1,4 @@
-<cross_section name="strip" format="1">
-
-  <include>
-    <!-- <baseline>baselines</baseline> -->
-    <!-- <material>materials</material> -->
-    <!-- <layup>layups</layup> -->
-  </include>
+<cross_section name="strip">
 
   <general>
     <translate>0.0 0.0</translate>
@@ -70,21 +64,5 @@
       <layup>layup1</layup>
     </segment>
   </component>
-  <!-- <component name="bottom">
-    <segment>
-      <baseline>bl</baseline>
-      <layup direction="right">layup1</layup>
-    </segment>
-  </component> -->
-  <!-- <dehomo>
-    <displacements>0 0 0</displacements>
-    <rotations>1 0 0 0 1 0 0 0 1</rotations>
-    <strains>1 1 1 1</strains>
-  </dehomo>
-  <failure output="stress">
-    <axis1>e11</axis1>
-    <axis2>k11</axis2>
-    <divisions>10</divisions>
-    <loads>1 1 1 1</loads>
-  </failure> -->
+
 </cross_section>
