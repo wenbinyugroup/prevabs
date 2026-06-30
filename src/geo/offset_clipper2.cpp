@@ -13,19 +13,14 @@ namespace geo {
 
 namespace {
 
-// Dimensionless degeneracy guards. These reject inputs that are numerically
-// indistinguishable from zero, not real geometric features, so they do NOT
-// scale with the model's characteristic length.
-//   kUnitBisectorDegenerateEps — squared/length guard on the sum of two unit
-//     normals (range [0, 2]); near 0 the two segments are anti-parallel and the
-//     bisector direction is undefined.
-//   kRayDeterminantEps — near-zero guard on the ray/segment determinant, i.e.
-//     the ray direction and the segment are (anti-)parallel.
-//   kRayEndpointSlack — parametric slack admitting hits a hair past a ray or
-//     segment endpoint (applied to ray_t and segment_u, both in parameter space).
-constexpr double kUnitBisectorDegenerateEps = 1e-14;
-constexpr double kRayDeterminantEps = 1e-14;
-constexpr double kRayEndpointSlack = 1e-12;
+// Degeneracy / near-zero guards. The unit-bisector-length guard (sum of two
+// unit normals, range [0, 2]) and the ray/segment determinant guard reject
+// inputs numerically indistinguishable from zero (anti-parallel directions);
+// both use the machine-precision constant GEO_EPS_MACHINE — they are not
+// geometric tolerances and never scale with L_char.
+//
+// Parameter-space slack/corner tests use the C-class parameter tolerances
+// PARAM_ENDPOINT_SLACK and PARAM_CORNER_EPS (see globalConstants.hpp).
 
 // Forward declarations — extractOpenRuns calls attributeSource which is
 // defined later in this TU.
@@ -117,7 +112,7 @@ bool openOffsetBisector(const std::vector<SPoint2>& base, int i, int side,
   const double bx = n0.x() + n1.x();
   const double by = n0.y() + n1.y();
   const double len = std::sqrt(bx * bx + by * by);
-  if (len <= kUnitBisectorDegenerateEps) return false;
+  if (len <= GEO_EPS_MACHINE) return false;
   *direction = SPoint2(bx / len, by / len);
   return true;
 }
@@ -133,13 +128,13 @@ bool raySegmentIntersection(const SPoint2& origin,
   const double sx = b.x() - a.x();
   const double sy = b.y() - a.y();
   const double det = direction.x() * sy - direction.y() * sx;
-  if (std::fabs(det) < kRayDeterminantEps) return false;
+  if (std::fabs(det) < GEO_EPS_MACHINE) return false;
 
   const double qx = a.x() - origin.x();
   const double qy = a.y() - origin.y();
   double t = (qx * sy - qy * sx) / det;
   double u = (qx * direction.y() - qy * direction.x()) / det;
-  const double tol = kRayEndpointSlack;
+  const double tol = PARAM_ENDPOINT_SLACK;
   if (t < -tol || u < -tol || u > 1.0 + tol) return false;
 
   if (t < 0.0) t = 0.0;
@@ -204,7 +199,7 @@ int sideSignOfBase(double qx, double qy,
   if (base.size() < 2) return 0;
   const OffsetVertexSource src = closestOpenSegment(qx, qy, base);
   const int n_seg = static_cast<int>(base.size()) - 1;
-  const double u_eps = 1e-9;
+  const double u_eps = PARAM_CORNER_EPS;
 
   double tx, ty, fx, fy;
   if (src.base_u < u_eps && src.base_seg > 0) {

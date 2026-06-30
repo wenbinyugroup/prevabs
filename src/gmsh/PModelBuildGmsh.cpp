@@ -254,7 +254,7 @@ void PModel::createGmshVertices() {
   // sits far above the coincident gaps yet far below the smallest intentional
   // feature (the resample min-separation, ~1e-5, and any real geometry, ~1e-3).
   // Created points are recorded so coincident followers reuse the same tag.
-  const double EXPORT_MERGE_TOL = 2.0e-6;
+  const double EXPORT_MERGE_TOL = GEO_EXPORT_MERGE_TOL;
   struct CreatedPoint { double x, y, z; int tag; };
   std::vector<CreatedPoint> created;
 

@@ -9,6 +9,7 @@
 // `offset_clipper2_pdcel.cpp` and pulls in the heavier headers.
 
 #include "offset_clipper2.hpp"
+#include "globalConstants.hpp"  // GEO_COINCIDENCE_TOL (declarations only; no heavy deps)
 
 #include <algorithm>
 #include <cctype>
@@ -426,7 +427,7 @@ void collapseCoincidentOffsetSteps(ReverseMatchPlan& m) {
   // Coincidence threshold: comfortably above the Clipper2 precision=8
   // grid (1e-8) yet orders of magnitude below any real offset/edge
   // feature size, so only genuine zero-length steps are folded.
-  const double tol2 = 1e-6 * 1e-6;
+  const double tol2 = GEO_COINCIDENCE_TOL * GEO_COINCIDENCE_TOL;
 
   const int n_off = static_cast<int>(m.offset_points.size());
   std::vector<bool> drop(n_off, false);

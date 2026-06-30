@@ -643,6 +643,8 @@ Baseline *trimCurveAtLineSegment(
         delete lsi;
         continue;
       } else {
+        // u-parameter endpoint test: TOLERANCE (= GEO_TOL) is the
+        // characteristic-scale endpoint-proximity tolerance, see globalConstants.hpp.
         if (fabs(u1) < TOLERANCE) {
           vlist.push_front(v1);
           link_to_list_copy.push_front(link_i1);

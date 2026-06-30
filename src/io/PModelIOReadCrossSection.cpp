@@ -60,7 +60,7 @@ void configureModelGeometryTolerance(PModel *pmodel) {
   }
 
   const auto result = prevabs::geo::computeModelGeometryTolerance(
-      points, lamina_thicknesses);
+      points, lamina_thicknesses, REL_PREDICATE);
   if (!result.valid()) {
     throw std::runtime_error(
         "cannot determine geometry tolerance: model has no positive point "
@@ -75,7 +75,8 @@ void configureModelGeometryTolerance(PModel *pmodel) {
               << result.min_lamina_thickness
               << ", characteristic_length="
               << result.characteristic_length
-              << ", coefficient=0.001, tolerance=" << result.tolerance;
+              << ", rel_predicate=" << REL_PREDICATE
+              << ", tolerance=" << result.tolerance;
 }
 
 unsigned int parseElementShapeValue(const std::string &value) {

@@ -314,7 +314,7 @@ LayeredCurve makeArcResampledOuterCurve(
   // export-time vertex-merge tolerance (PModelBuildGmsh EXPORT_MERGE_TOL ~2e-6)
   // so an intentional short resample edge is never mistaken for a coincident
   // pair and merged away.
-  const double min_sep = std::max(1.0e-5, L_sh * 1e-5);
+  const double min_sep = std::max(GEO_RESAMPLE_MIN_SEP, L_sh * 1e-5);
   out.points.reserve(n);
   out.vertices.reserve(n);
   out.owns_vertices = true;
@@ -821,7 +821,7 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
     // degeneracy here, at the step that produced it, with a clear diagnostic.
     const int e0 = faceOuterEdgeCount(f0);
     const int e1 = faceOuterEdgeCount(f1);
-    if (e0 < 3 || e1 < 3 || c0.distance(c1) < 1e-6) {
+    if (e0 < 3 || e1 < 3 || c0.distance(c1) < GEO_COINCIDENCE_TOL) {
       PLOG(error) << "layered offset[" << segment_name
                   << "]: degenerate split at staircase step " << p << "/"
                   << (pairs.size() - 1) << " (edges f0=" << e0 << " f1=" << e1
@@ -1963,8 +1963,8 @@ void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
       dsum += d;
     }
     const double dmean = dsum / static_cast<double>(curve.size());
-    const bool within = (k == n - 1) || (dmax < total + 1e-6);
-    if (!within || dmean < prev_mean - 1e-6) nesting_ok = false;
+    const bool within = (k == n - 1) || (dmax < total + GEO_NESTING_SLACK);
+    if (!within || dmean < prev_mean - GEO_NESTING_SLACK) nesting_ok = false;
     prev_mean = dmean;
     prev = plan.ok ? plan.offset_points : curve;
   }
@@ -1978,7 +1978,7 @@ void Segment::validatePerLayerOffsets(const BuilderConfig &bcfg) {
                                      raw_last[i].y() - shell[i].y()));
     }
   }
-  const bool zero_gap = gap < 1e-6;
+  const bool zero_gap = gap < GEO_NESTING_SLACK;
   const bool topo_pass = nesting_ok && zero_gap && maps_ok;
   // Geometric-quality flag: thin collapse (worst layer M_k/N below the
   // empirical mesh-able threshold ~0.7, cf. issue-20260521-mh104) or any
