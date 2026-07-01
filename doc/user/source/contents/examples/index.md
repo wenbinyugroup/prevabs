@@ -7,6 +7,7 @@
 
 example_channel
 example_box
+example_box_nested_webs
 example_tube
 example_pipe
 example_ibeam
@@ -40,6 +41,16 @@ Channel
 
 +++
 Box beam
+:::
+
+
+:::{grid-item-card}
+:link: example-box-nested-webs
+:link-type: ref
+:img-top: ../../_example_assets/ex_box_nested_webs/box.png
+
++++
+Box with Nested Webs
 :::
 
 

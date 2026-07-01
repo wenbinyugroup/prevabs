@@ -9,6 +9,7 @@
     "ex_airfoil_r",
     "ex_box",
     "ex_box_ii_quad",
+    "ex_box_nested_webs",
     "ex_channel",
     "ex_ibeam",
     "ex_pipe",

@@ -1,0 +1,19 @@
+{
+  "slug": "example_box_nested_webs",
+  "label": "example-box-nested-webs",
+  "title": "Box with Nested Webs",
+  "card_title": "Box with Nested Webs",
+  "summary": "Box example with nested webs defined directly in the XML input.",
+  "order": 20,
+  "inputs": [
+    "box.xml"
+  ],
+  "outputs": [
+    "box.png"
+  ],
+  "doc_images": [
+    "box.png"
+  ],
+  "preview": "box.png",
+  "preview_caption": "Cross-section viewed in Gmsh."
+}
