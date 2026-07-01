@@ -425,7 +425,7 @@ void PModel::run() {
         cmd_args.push_back(std::to_string(_pp_data.load_cases.size()));
       }
 
-      runVABS(config.vabs_name, cmd_args);
+      runVABS(config.app.tools.vabs, cmd_args);
     }
   }
 
@@ -442,7 +442,7 @@ void PModel::run() {
       cmd_args.push_back("3D");
     }
     cmd_args.push_back(config.sc_option);
-    runSC(config.sc_name, cmd_args);
+    runSC(config.app.tools.swiftcomp, cmd_args);
 
   }
 

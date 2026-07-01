@@ -2,6 +2,7 @@
 
 #include "globalConstants.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,38 @@ class Material;
 class PModel;
 
 extern bool scientific_format;
+
+// ---------------------------------------------------------------------------
+// Config sub-structs — grouped, persistent settings mapped 1:1 to JSON sections.
+// ---------------------------------------------------------------------------
+
+// External program commands. Empty or a bare name => resolved via PATH by the
+// process launcher (execu.cpp); an absolute path is used verbatim.
+struct ToolPaths {
+  std::string vabs      = "VABS";
+  std::string swiftcomp = "SwiftComp";
+  std::string gmsh      = "gmsh";
+};
+
+// Default file locations applied on every run.
+struct PathsConfig {
+  // Default material database xml read on every run (full path to the .xml).
+  // This is the configurable form of the built-in <exe-dir>/MaterialDB.xml
+  // default; it does NOT replace the input's <include><material> database,
+  // which is still read independently. Empty => use the built-in default.
+  std::string material_db = "";
+};
+
+// Gmsh visualisation options, grouped into sections under the "gmsh" config
+// key: "general" (always written) plus one per analysis type
+// ("homogenization" / "recovery"). Each section maps a raw Gmsh option name to
+// its formatted right-hand side (e.g. "0", "1.5", "\"text\""). writeGmshOpt
+// emits the "general" section followed by the current mode's section; PreVABS
+// does not validate the names or values. The defaults ship in the
+// executable-dir prevabs.json (config level 2); emptying them yields a blank
+// .opt so PreVABS does not override the user's own Gmsh settings.
+using GmshOptionSections =
+    std::map<std::string, std::map<std::string, std::string>>;
 
 // ---------------------------------------------------------------------------
 // AppConfig — persistent, user-tunable settings.
@@ -26,6 +59,10 @@ struct AppConfig {
   // External solver timeout in seconds. 0 = no timeout (default).
   // Set via prevabs.json to enable; CLI is unchanged.
   int    solver_timeout_s = 0;
+
+  ToolPaths          tools;   // "tools" section
+  PathsConfig        paths;   // "paths" section
+  GmshOptionSections gmsh;    // "gmsh"  section (general / mode sections)
 };
 
 struct AdaptiveThicknessConfig {
@@ -46,6 +83,7 @@ struct AdaptiveThicknessConfig {
 struct PConfig {
   // --- Input ---
   std::string main_input = "";   // full path as given on CLI
+  std::string config_file = "";  // explicit config file from --config (optional)
 
   // --- Derived file paths (set by processConfigVariables, never user-settable) ---
   std::string file_directory    = "";
@@ -109,9 +147,8 @@ struct PConfig {
   bool skip_dropped_areas = false;
 
   // --- Derived display/option strings (set by processConfigVariables) ---
+  // The executable command names live in app.tools (config file / --config).
   std::string tool_name    = "VABS";
-  std::string vabs_name    = "VABS";
-  std::string sc_name      = "SwiftComp";
   std::string msg_analysis = "";
   std::string vabs_option  = "";
   std::string sc_option    = "";

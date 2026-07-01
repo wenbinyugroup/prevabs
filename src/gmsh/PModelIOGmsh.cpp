@@ -461,35 +461,21 @@ int PModel::writeGmshOpt(const std::string &fn_base) {
   FILE *file;
   file = fopen(fn.c_str(), "w");
 
-  // General settings
-  fprintf(file, "General.Axes = %d;\n", 3);
-  fprintf(file, "General.BackgroundGradient = %d;\n", 0);
-  fprintf(file, "General.Orthographic = %d;\n", 1);
-  fprintf(file, "General.RotationX = %d;\n", 270);
-  fprintf(file, "General.RotationY = %d;\n", 360);
-  fprintf(file, "General.RotationZ = %d;\n", 270);
-  fprintf(file, "General.ScaleX = %d;\n", 2);
-  fprintf(file, "General.ScaleY = %d;\n", 2);
-  fprintf(file, "General.ScaleZ = %d;\n", 2);
-  fprintf(file, "General.Trackball = %d;\n", 0);
-  fprintf(file, "Geometry.Points = %d;\n", 0);
-  fprintf(file, "Geometry.LineWidth = %d;\n", 1);
-
-  // Mesh settings
-  fprintf(file, "Mesh.ColorCarousel = %d;\n", 2);
-  fprintf(file, "Mesh.SurfaceEdges = %d;\n", 0);
-  // fprintf(file, "Mesh.RemeshParametrization = %d;\n", 0);
-
-  if (config.isHomo()) {
-    fprintf(file, "Mesh.SurfaceFaces = %d;\n", 1);
-  }
-  else if (config.isRecovery()) {
-    fprintf(file, "Mesh.Points = %d;\n", 0);
-    fprintf(file, "Mesh.SurfaceEdges = %d;\n", 0);
-    fprintf(file, "Mesh.SurfaceFaces = %d;\n", 0);
-    fprintf(file, "Mesh.VolumeEdges = %d;\n", 0);
-  }
-
+  // Gmsh view options from the merged config (config.app.gmsh), grouped into
+  // sections. Write the mode-independent "general" section, then the section
+  // for the current analysis mode. The defaults ship in the executable-dir
+  // prevabs.json; higher config levels merge per-key on top. If the sections
+  // are empty (user emptied/deleted the shipped defaults) nothing is written,
+  // so PreVABS does not override the user's own Gmsh option settings. PreVABS
+  // does not validate the option names or values.
+  auto writeSection = [&](const std::string &name) {
+    auto sit = config.app.gmsh.find(name);
+    if (sit == config.app.gmsh.end()) return;
+    for (const auto &kv : sit->second)
+      fprintf(file, "%s = %s;\n", kv.first.c_str(), kv.second.c_str());
+  };
+  writeSection("general");
+  writeSection(config.isHomo() ? "homogenization" : "recovery");
 
   fclose(file);
   config.file_name_opt = fn;

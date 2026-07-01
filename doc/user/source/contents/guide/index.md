@@ -63,5 +63,6 @@ layup.md
 component.md
 recover.md
 overall.md
+config.md
 ```
 

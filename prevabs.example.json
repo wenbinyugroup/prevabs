@@ -1,0 +1,32 @@
+{
+  "numerics": {
+    "tol": 1e-12,
+    "geo_tol": 1e-9
+  },
+  "output": {
+    "log_level": 2,
+    "gmsh_verbosity": 2
+  },
+  "tools": {
+    "vabs": "VABS",
+    "swiftcomp": "SwiftComp",
+    "gmsh": "gmsh"
+  },
+  "paths": {
+    "material_db": ""
+  },
+  "gmsh": {
+    "general": {
+      "General.BackgroundGradient": 0,
+      "Geometry.Points": 0,
+      "Geometry.LineWidth": 1,
+      "Mesh.ColorCarousel": 2
+    },
+    "homogenization": {
+      "Mesh.SurfaceFaces": 1
+    },
+    "recovery": {
+      "Mesh.SurfaceFaces": 0
+    }
+  }
+}

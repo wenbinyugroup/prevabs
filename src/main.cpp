@@ -97,6 +97,11 @@ void addParserArguments(CLI::App &app) {
   // Required input
   app.add_option("-i,--input", config.main_input, "Input file")->required();
 
+  // Optional explicit config file (highest-priority file layer; applied on top
+  // of the auto-discovered exe-dir / home / project config files).
+  app.add_option("--config", config.config_file,
+    "Path to a JSON config file (overrides auto-discovered config files)");
+
   // Analysis tool — mutually exclusive; default is VABS
   auto *tool_group = app.add_option_group(
     "Analysis tool", "Select the target solver format (default: VABS)");
@@ -757,13 +762,24 @@ int main(int argc, char **argv) {
     app.parse(argc, argv);
     processConfigVariables();
 
-    // Load multi-level JSON config (system → user → project).
+    // Load multi-level JSON config (exe-dir → home → project → --config).
     // This runs after path derivation so project_dir is available,
     // and before initLog() so log_level is applied correctly.
     // CLI --gmsh-verbosity/--debug already wrote into config.app, so
     // we re-apply CLI overrides after loading files.
     AppConfig cli_overrides = config.app;  // snapshot the CLI values
-    prevabs::loadAppConfig(config.app, config.file_directory);
+    std::vector<std::string> config_warnings =
+      prevabs::loadAppConfig(config.app, config.file_directory);
+
+    // Level 5: explicit --config file (highest-priority file layer).
+    if (!config.config_file.empty()) {
+      auto st = prevabs::tryLoadConfigFile(config.app, config.config_file);
+      if (st == prevabs::ConfigFileStatus::NotFound)
+        config_warnings.push_back(config.config_file + " (--config file not found)");
+      else if (st == prevabs::ConfigFileStatus::ParseError)
+        config_warnings.push_back(config.config_file + " (--config parse error)");
+    }
+
     // Re-apply CLI flags that were explicitly set (they take highest priority)
     if (app["--gmsh-verbosity"]->count())
       config.app.gmsh_verbosity = cli_overrides.gmsh_verbosity;
@@ -772,6 +788,10 @@ int main(int argc, char **argv) {
 
     initLog();
     pui::init(config.file_name_log);
+    // Warn about config files that existed but could not be used. Emitted
+    // after pui::init so they reach both the console and the log file.
+    for (const auto &w : config_warnings)
+      pui::warn("ignoring invalid config file: " + w);
     installStructuredExceptionTranslator();
     // pui::title(std::string("PreVABS ") + VERSION_STRING +
     //            " (VABS " + vabs_version + ", SwiftComp " + sc_version + ")");

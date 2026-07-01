@@ -249,3 +249,13 @@ endif()
 # Install
 # -------
 install(TARGETS ${PROJECTNAME} RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
+# Copy the shipped default config (prevabs.json, holding the default Gmsh view
+# options) next to the built executable so a local dev build behaves like a
+# release package (release.yml ships the same file). It is the exe-dir config
+# level; users may edit/empty it to change or suppress the default options.
+add_custom_command(TARGET ${PROJECTNAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_SOURCE_DIR}/share/prevabs.json"
+    "$<TARGET_FILE_DIR:${PROJECTNAME}>/prevabs.json"
+  VERBATIM)
