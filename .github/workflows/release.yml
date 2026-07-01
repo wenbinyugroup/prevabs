@@ -20,14 +20,41 @@ on:
 
 env:
   GMSH_VERSION: "4.13.1"
+  GMSH_LINUX_SHA256: >-
+    e42b27ecf81d5bb2b7c34f166a78c3c864ef2198bea1aaebd942e188f4bf6941
+
+# ---------------------------------------------------------------------------
+# Shared Linux Gmsh SDK
+# ---------------------------------------------------------------------------
+jobs:
+  prepare-linux-gmsh:
+    if: ${{ inputs.package_scope == 'full' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and verify Gmsh SDK
+        timeout-minutes: 6
+        run: |
+          archive="gmsh-${GMSH_VERSION}-Linux64-sdk.tgz"
+          curl --fail --location \
+            --retry 3 --retry-all-errors \
+            --connect-timeout 15 --max-time 300 \
+            --output "$archive" \
+            "https://gmsh.info/bin/Linux/$archive"
+          echo "${GMSH_LINUX_SHA256}  $archive" | sha256sum --check -
+          tar tzf "$archive" >/dev/null
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gmsh-linux-sdk-${{ env.GMSH_VERSION }}
+          path: gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz
+          retention-days: 1
 
 # ---------------------------------------------------------------------------
 # Windows (MSVC x64)
 # ---------------------------------------------------------------------------
-jobs:
   build-windows:
     if: ${{ inputs.package_scope == 'full' }}
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
         with:
@@ -104,6 +131,7 @@ jobs:
 # ---------------------------------------------------------------------------
   build-ubuntu:
     if: ${{ inputs.package_scope == 'full' }}
+    needs: prepare-linux-gmsh
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -119,10 +147,17 @@ jobs:
             libxcursor-dev libxfixes-dev libxinerama-dev \
             libfontconfig-dev
 
-      - name: Download Gmsh SDK
+      - name: Download prepared Gmsh SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: gmsh-linux-sdk-${{ env.GMSH_VERSION }}
+          path: .
+
+      - name: Verify and extract Gmsh SDK
         run: |
-          wget -q "https://gmsh.info/bin/Linux/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
-          tar xf "gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
+          archive="gmsh-${GMSH_VERSION}-Linux64-sdk.tgz"
+          echo "${GMSH_LINUX_SHA256}  $archive" | sha256sum --check -
+          tar xf "$archive"
           echo "Gmsh_ROOT=$PWD/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk" >> $GITHUB_ENV
 
       - name: Configure and build
@@ -165,13 +200,14 @@ jobs:
 # ---------------------------------------------------------------------------
   build-rhel:
     if: ${{ inputs.package_scope == 'full' }}
+    needs: prepare-linux-gmsh
     runs-on: ubuntu-latest
     container: rockylinux:9
     steps:
       # git must be installed before actions/checkout
       - name: Install build tools
         run: |
-          dnf install -y git cmake gcc gcc-c++ make wget \
+          dnf install -y git cmake gcc gcc-c++ make \
             mesa-libGLU-devel mesa-libGL-devel \
             libX11-devel libXrender-devel libXft-devel \
             libXcursor-devel libXfixes-devel libXinerama-devel \
@@ -181,10 +217,17 @@ jobs:
         with:
           submodules: recursive   # extern/cpp-terminal (used by pui)
 
-      - name: Download Gmsh SDK
+      - name: Download prepared Gmsh SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: gmsh-linux-sdk-${{ env.GMSH_VERSION }}
+          path: .
+
+      - name: Verify and extract Gmsh SDK
         run: |
-          wget -q "https://gmsh.info/bin/Linux/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
-          tar xf "gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz"
+          archive="gmsh-${GMSH_VERSION}-Linux64-sdk.tgz"
+          echo "${GMSH_LINUX_SHA256}  $archive" | sha256sum --check -
+          tar xf "$archive"
           echo "Gmsh_ROOT=$PWD/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk" >> $GITHUB_ENV
 
       - name: Configure and build
@@ -296,6 +339,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
+          pattern: '*package*'
           merge-multiple: true
           path: artifacts/
 
