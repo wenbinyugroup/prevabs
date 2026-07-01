@@ -461,25 +461,50 @@ int PModel::writeGmshOpt(const std::string &fn_base) {
   FILE *file;
   file = fopen(fn.c_str(), "w");
 
-  // General settings
-  fprintf(file, "General.Axes = %d;\n", 3);
-  fprintf(file, "General.BackgroundGradient = %d;\n", 0);
-  fprintf(file, "General.Orthographic = %d;\n", 1);
-  fprintf(file, "General.RotationX = %d;\n", 270);
-  fprintf(file, "General.RotationY = %d;\n", 360);
-  fprintf(file, "General.RotationZ = %d;\n", 270);
-  fprintf(file, "General.ScaleX = %d;\n", 2);
-  fprintf(file, "General.ScaleY = %d;\n", 2);
-  fprintf(file, "General.ScaleZ = %d;\n", 2);
-  fprintf(file, "General.Trackball = %d;\n", 0);
-  fprintf(file, "Geometry.Points = %d;\n", 0);
-  fprintf(file, "Geometry.LineWidth = %d;\n", 1);
+  // Base view settings. When a gmsh_opt template file is configured, its
+  // contents replace the built-in General/Mesh defaults below; the
+  // mode-specific mesh visibility further down is still appended afterwards so
+  // the view always matches the analysis. A configured-but-missing template is
+  // non-fatal (visualisation only): warn and fall back to the built-in defaults.
+  bool used_template = false;
+  const std::string &opt_template = config.app.gmsh_opt.template_file;
+  if (!opt_template.empty()) {
+    std::ifstream tf(opt_template);
+    if (tf.is_open()) {
+      std::string content((std::istreambuf_iterator<char>(tf)),
+                          std::istreambuf_iterator<char>());
+      fputs(content.c_str(), file);
+      if (!content.empty() && content.back() != '\n') fputc('\n', file);
+      used_template = true;
+      PLOG(info) << "using gmsh .opt template: " << opt_template;
+    } else {
+      PLOG(warning) << "gmsh .opt template not found, using built-in defaults: "
+                    << opt_template;
+    }
+  }
 
-  // Mesh settings
-  fprintf(file, "Mesh.ColorCarousel = %d;\n", 2);
-  fprintf(file, "Mesh.SurfaceEdges = %d;\n", 0);
-  // fprintf(file, "Mesh.RemeshParametrization = %d;\n", 0);
+  if (!used_template) {
+    // General settings
+    fprintf(file, "General.Axes = %d;\n", 3);
+    fprintf(file, "General.BackgroundGradient = %d;\n", 0);
+    fprintf(file, "General.Orthographic = %d;\n", 1);
+    fprintf(file, "General.RotationX = %d;\n", 270);
+    fprintf(file, "General.RotationY = %d;\n", 360);
+    fprintf(file, "General.RotationZ = %d;\n", 270);
+    fprintf(file, "General.ScaleX = %d;\n", 2);
+    fprintf(file, "General.ScaleY = %d;\n", 2);
+    fprintf(file, "General.ScaleZ = %d;\n", 2);
+    fprintf(file, "General.Trackball = %d;\n", 0);
+    fprintf(file, "Geometry.Points = %d;\n", 0);
+    fprintf(file, "Geometry.LineWidth = %d;\n", 1);
 
+    // Mesh settings
+    fprintf(file, "Mesh.ColorCarousel = %d;\n", 2);
+    fprintf(file, "Mesh.SurfaceEdges = %d;\n", 0);
+    // fprintf(file, "Mesh.RemeshParametrization = %d;\n", 0);
+  }
+
+  // Mode-specific mesh visibility (always appended, overrides any template).
   if (config.isHomo()) {
     fprintf(file, "Mesh.SurfaceFaces = %d;\n", 1);
   }

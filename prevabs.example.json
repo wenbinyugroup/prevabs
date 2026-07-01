@@ -1,0 +1,21 @@
+{
+  "numerics": {
+    "tol": 1e-12,
+    "geo_tol": 1e-9
+  },
+  "output": {
+    "log_level": 2,
+    "gmsh_verbosity": 2
+  },
+  "tools": {
+    "vabs": "VABS",
+    "swiftcomp": "SwiftComp",
+    "gmsh": "gmsh"
+  },
+  "paths": {
+    "material_db": ""
+  },
+  "gmsh_opt": {
+    "template_file": ""
+  }
+}

@@ -223,6 +223,49 @@ and drop the XML input file in. No script changes needed — CMakeLists.txt pick
 
 ---
 
+## Configuration Files
+
+PreVABS reads optional JSON config files that set persistent run parameters
+(distinct from the per-model XML input). Fields are merged across levels, with
+later levels overriding earlier ones field by field:
+
+1. Built-in defaults (`AppConfig` in `include/globalVariables.hpp`)
+2. `<executable-dir>/prevabs.json`
+3. `~/.prevabs.json` (user home; Windows `%USERPROFILE%`)
+4. `<input-file-dir>/.prevabs.json`
+5. `--config <path>` (explicit file, highest file layer)
+6. CLI flags (e.g. `--gmsh-verbosity`) — applied last
+
+A missing config file is silently skipped; a file that exists but fails to parse
+(or a `--config` path that does not exist) is reported via `pui::warn` and
+ignored. Loading is implemented in `include/AppConfigIO.hpp` and wired in
+`src/main.cpp`.
+
+Schema (see `prevabs.example.json`; all fields optional):
+
+```json
+{
+  "numerics": { "tol": 1e-12, "geo_tol": 1e-9 },
+  "output":   { "log_level": 2, "gmsh_verbosity": 2 },
+  "tools":    { "vabs": "VABS", "swiftcomp": "SwiftComp", "gmsh": "gmsh" },
+  "paths":    { "material_db": "" },
+  "gmsh_opt": { "template_file": "" }
+}
+```
+
+- `tools.*` — executable command name or absolute path for each solver / gmsh.
+  A bare name is resolved via `PATH`; an absolute path is used verbatim.
+- `paths.material_db` — full path to a material-database xml read on **every**
+  run. This is the configurable form of the built-in `<exe-dir>/MaterialDB.xml`
+  default; when set, a missing file is an error. It does **not** replace the
+  input's `<include><material>` database, which is still read independently.
+- `gmsh_opt.template_file` — full path to a gmsh `.opt` template used as the
+  base of the generated view options. Mode-specific mesh visibility is still
+  appended. A configured-but-missing template warns and falls back to built-in
+  defaults (visualisation only, non-fatal).
+
+---
+
 ## Code Style Guidelines
 
 - Encourage **modularity** and **reusability** in code design.

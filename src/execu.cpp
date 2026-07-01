@@ -299,5 +299,5 @@ void runGmsh(const std::string &fn_geo, const std::string &fn_msh,
   if (!fn_msh.empty()) { args.push_back(fn_msh); }
   if (!fn_opt.empty()) { args.push_back(fn_opt); }
 
-  runCmd("gmsh", args);
+  runCmd(config.app.tools.gmsh, args);
 }

@@ -598,24 +598,33 @@ void readMaterialsSection(
 ) {
   PLOG_DEBUG_AT(geo) << "reading materials...";
 
-  std::string fn_material_global = "";
+  // Default material database, read on every run independently of the input's
+  // <include><material>. Its path is configurable via paths.material_db (a full
+  // path to the .xml); when unset, fall back to the built-in
+  // <exe-dir>/MaterialDB.xml. An explicitly configured path is required (a
+  // missing file is a misconfiguration → error); the built-in default is
+  // optional (missing = warn and continue).
+  std::string fn_material_global = config.app.paths.material_db;
+  const bool material_db_configured = !fn_material_global.empty();
+  if (!material_db_configured) {
 #ifdef __linux__
-  char buffer2[PATH_MAX];
-  ssize_t count = readlink("/proc/self/exe", buffer2, sizeof(buffer2) - 1);
-  if (count != -1) {
-    buffer2[count] = '\0';
-    fn_material_global = dirname(buffer2);
-    fn_material_global = fn_material_global + "/";
-  }
+    char buffer2[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", buffer2, sizeof(buffer2) - 1);
+    if (count != -1) {
+      buffer2[count] = '\0';
+      fn_material_global = dirname(buffer2);
+      fn_material_global = fn_material_global + "/";
+    }
 #elif _WIN32
-  char buffer2[MAX_PATH];
-  GetModuleFileNameA(NULL, buffer2, sizeof(buffer2));
-  std::string s_fullpath{buffer2};
-  std::vector<std::string> vs;
-  vs = splitFilePath(s_fullpath);
-  fn_material_global = vs[0];
+    char buffer2[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer2, sizeof(buffer2));
+    std::string s_fullpath{buffer2};
+    std::vector<std::string> vs;
+    vs = splitFilePath(s_fullpath);
+    fn_material_global = vs[0];
 #endif
-  fn_material_global = fn_material_global + "MaterialDB.xml";
+    fn_material_global = fn_material_global + "MaterialDB.xml";
+  }
 
   std::string fn_material_local = "";
   if (xn_include) {
@@ -625,7 +634,8 @@ void readMaterialsSection(
     }
   }
 
-  if (!fn_material_global.empty()) readMaterialsFile(fn_material_global, pmodel);
+  if (!fn_material_global.empty())
+    readMaterialsFile(fn_material_global, pmodel, material_db_configured);
   // Local material path is explicitly provided via <include><material>; missing = error.
   if (!fn_material_local.empty()) readMaterialsFile(fn_material_local, pmodel, true);
 

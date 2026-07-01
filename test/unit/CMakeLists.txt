@@ -236,6 +236,26 @@ if(MSVC)
 endif()
 
 # ------------------------------------------------------------------
+# test_config — AppConfig JSON read/write (applyJson / toJson). Header-only
+# under test (AppConfigIO.hpp); no project libs, only include/ + vendored
+# nlohmann/json.hpp.
+# ------------------------------------------------------------------
+set(TEST_CONFIG_SOURCES
+  catch_amalgamated.cpp
+  test_app_config.cpp
+)
+
+add_executable(test_config ${TEST_CONFIG_SOURCES})
+
+target_include_directories(test_config PRIVATE
+  ${CMAKE_SOURCE_DIR}
+  ${REPO_ROOT}/include)
+
+if(MSVC)
+  target_compile_options(test_config PRIVATE /W3 /utf-8 /EHsc)
+endif()
+
+# ------------------------------------------------------------------
 # CTest registration
 # ------------------------------------------------------------------
 enable_testing()
@@ -244,3 +264,4 @@ add_test(NAME dcel_tests               COMMAND test_dcel)
 add_test(NAME pui_tests                COMMAND test_pui)
 add_test(NAME curve_frame_lookup_tests COMMAND test_curve_frame_lookup)
 add_test(NAME offset_clipper2_tests    COMMAND test_offset_clipper2)
+add_test(NAME config_tests             COMMAND test_config)
