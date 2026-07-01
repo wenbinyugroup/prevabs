@@ -70,10 +70,19 @@ inline void applyJson(AppConfig &cfg, const nlohmann::json &j) {
     if (p.contains("material_db"))
       cfg.paths.material_db = p.at("material_db").get<std::string>();
   }
-  if (j.contains("gmsh_opt")) {
-    const auto &g = j.at("gmsh_opt");
-    if (g.contains("template_file"))
-      cfg.gmsh_opt.template_file = g.at("template_file").get<std::string>();
+  // "gmsh" section: raw Gmsh .opt options grouped into sub-sections
+  // ("general" / "homogenization" / "recovery"). Each option is merged per-key
+  // onto lower config levels; the value is stored as its JSON text (numbers ->
+  // "0"/"1.5", strings -> "\"text\"") so it can be written verbatim into the
+  // .opt file. PreVABS does not validate the option names or values.
+  if (j.contains("gmsh")) {
+    const auto &g = j.at("gmsh");
+    for (auto sit = g.begin(); sit != g.end(); ++sit) {
+      if (!sit.value().is_object()) continue;   // skip non-section entries
+      auto &sec = cfg.gmsh[sit.key()];
+      for (auto it = sit.value().begin(); it != sit.value().end(); ++it)
+        sec[it.key()] = it.value().dump();
+    }
   }
 }
 
@@ -176,7 +185,7 @@ inline std::vector<std::string> loadAppConfig(
 
 // Serialize AppConfig to JSON (useful for --print-config or generating a template).
 inline nlohmann::json toJson(const AppConfig &cfg) {
-  return {
+  nlohmann::json j = {
     {"numerics", {
       {"tol",     cfg.tol},
       {"geo_tol", cfg.geo_tol}
@@ -192,11 +201,18 @@ inline nlohmann::json toJson(const AppConfig &cfg) {
     }},
     {"paths", {
       {"material_db", cfg.paths.material_db}
-    }},
-    {"gmsh_opt", {
-      {"template_file", cfg.gmsh_opt.template_file}
     }}
   };
+  // Rebuild the gmsh sections, parsing each stored value back to JSON.
+  nlohmann::json gmsh = nlohmann::json::object();
+  for (const auto &section : cfg.gmsh) {
+    nlohmann::json sec = nlohmann::json::object();
+    for (const auto &kv : section.second)
+      sec[kv.first] = nlohmann::json::parse(kv.second);
+    gmsh[section.first] = sec;
+  }
+  j["gmsh"] = gmsh;
+  return j;
 }
 
 } // namespace prevabs

@@ -104,6 +104,7 @@ jobs:
             Copy-Item "build\Release\prevabs.exe" "$pkgDir\"
             Copy-Item $gmshDll "$pkgDir\"
             Copy-Item "share\MaterialDB.xml" "$pkgDir\"
+            Copy-Item "share\prevabs.json" "$pkgDir\"
             Copy-Item $projectReadme (Join-Path $pkgDir "README.md")
             Copy-Item $projectLicense (Join-Path $pkgDir "LICENSE")
             Copy-Item $gmshLicense (Join-Path $pkgDir "LICENSE-gmsh.txt")
@@ -184,6 +185,7 @@ jobs:
           cp build/prevabs "$PKG/"
           cp -P "$Gmsh_ROOT"/lib/libgmsh.so* "$PKG/"
           cp share/MaterialDB.xml "$PKG/"
+          cp share/prevabs.json "$PKG/"
           cp README.md "$PKG/"
           cp LICENSE "$PKG/"
           cp "$Gmsh_ROOT"/share/doc/gmsh/LICENSE.txt "$PKG/LICENSE-gmsh.txt"
@@ -252,6 +254,7 @@ jobs:
           cp build/prevabs "$PKG/"
           cp -P "$Gmsh_ROOT"/lib/libgmsh.so* "$PKG/"
           cp share/MaterialDB.xml "$PKG/"
+          cp share/prevabs.json "$PKG/"
           cp README.md "$PKG/"
           cp LICENSE "$PKG/"
           cp "$Gmsh_ROOT"/share/doc/gmsh/LICENSE.txt "$PKG/LICENSE-gmsh.txt"

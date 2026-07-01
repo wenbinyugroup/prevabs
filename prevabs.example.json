@@ -15,7 +15,18 @@
   "paths": {
     "material_db": ""
   },
-  "gmsh_opt": {
-    "template_file": ""
+  "gmsh": {
+    "general": {
+      "General.BackgroundGradient": 0,
+      "Geometry.Points": 0,
+      "Geometry.LineWidth": 1,
+      "Mesh.ColorCarousel": 2
+    },
+    "homogenization": {
+      "Mesh.SurfaceFaces": 1
+    },
+    "recovery": {
+      "Mesh.SurfaceFaces": 0
+    }
   }
 }

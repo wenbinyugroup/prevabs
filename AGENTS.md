@@ -9,8 +9,9 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 - **Dependencies**:
   - Gmsh SDK (manual install, located via `$Gmsh_ROOT`)
   - git submodule `extern/cpp-terminal`
-  - [Clipper2](https://github.com/AngusJohnson/Clipper2) 1.4.0 (pulled
-    via CMake FetchContent on first configure; requires network access)
+  - [Clipper2](https://github.com/AngusJohnson/Clipper2) (pulled via CMake
+    FetchContent on first configure, pinned to a commit after the 2.0.1
+    release; requires network access)
 - **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (unit, single-header v3.x), CTest (integration)
 
 ## First Principles
@@ -46,25 +47,38 @@ After pulling new commits from the main repository, rerun
 `git submodule update --init --recursive` so `extern/cpp-terminal` matches the
 submodule commit pinned by PreVABS.
 
-Clipper2 is pulled via CMake `FetchContent` at the pinned release tag
-`Clipper2_1.4.0`. The first `cmake ..` invocation requires network
-access to GitHub. Subsequent configures reuse the cached download under
-`build_msvc/_deps/`. The Clipper2 1.4.0 hard ceiling for
-`InflatePaths(..., precision)` is **8** (see
-[local/issue-20260515-clipper2-airfoil-a0.md](local/issue-20260515-clipper2-airfoil-a0.md) §3.1);
-passing 9 throws `Clipper2Exception("Precision exceeds the permitted range")`.
+Clipper2 is pulled via CMake `FetchContent`, pinned to a commit after the
+`Clipper2_2.0.1` release (includes upstream's initialization fix for
+triangulation error #1052; see the `GIT_TAG` comment in `CMakeLists.txt`).
+The first `cmake ..` invocation requires network access to GitHub.
+Subsequent configures reuse the cached download under `build_msvc/_deps/`.
+`InflatePaths(..., precision)` is called with a hard ceiling of **8**
+(`kClipperPrecision` in `src/geo/offset_clipper2.cpp`); passing 9 throws
+`Clipper2Exception("Precision exceeds the permitted range")`. The write-up
+that originally documented this ceiling,
+`local/issue-20260515-clipper2-airfoil-a0.md`, is missing from the repo (not
+in the working tree or git history) — the rationale has not been re-verified
+against the currently pinned commit.
 
 ### Windows (MSVC)
 
-```bash
-# Full rebuild with powershell (cleans and rebuilds)
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 full
+Each PowerShell build/test script has a `.cmd` wrapper of the same name next
+to it (e.g. `tools\build-msvc.cmd`) that forwards all arguments to
+`pwsh -NoProfile -ExecutionPolicy Bypass -File <script.ps1>`. This gives a
+short, Linux-like invocation that works from any shell (cmd.exe, PowerShell,
+git-bash) without needing to change the machine's PowerShell execution
+policy. Use the `.cmd` form below; call `pwsh -File <script.ps1>` directly
+only if you need to bypass the wrapper.
 
-# Fast rebuild with pwsh (incremental)
-pwsh -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 fast
+```bash
+# Full rebuild (cleans and rebuilds)
+tools\build-msvc.cmd full
+
+# Fast rebuild (incremental)
+tools\build-msvc.cmd fast
 
 # Clean build directory
-pwsh -NoProfile -ExecutionPolicy Bypass -File tools\build-msvc.ps1 clean
+tools\build-msvc.cmd clean
 ```
 
 The executable will be in `build_msvc\Release\prevabs.exe`.
@@ -105,13 +119,13 @@ make
 
 ```powershell
 # Windows: full clean build and run (from repo root)
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 full -Run
+test\build-unit-tests.cmd full -Run
 
 # Incremental rebuild and run
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 fast -Run
+test\build-unit-tests.cmd fast -Run
 
 # Clean build directory
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\build-unit-tests.ps1 clean
+test\build-unit-tests.cmd clean
 ```
 
 The test executable is at `test\unit\build_msvc\Release\test_geo.exe`.
@@ -156,17 +170,17 @@ Test names follow `<dir>/<case>`, e.g. `t1_strip/strip`.
 
 ```powershell
 # Run all integration tests (from repo root)
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1
+test\run-integration-tests.cmd
 
 # Run a subset — "t1" matches all t1_strip/* cases
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 -Filter t1
+test\run-integration-tests.cmd -Filter t1
 
 # Run one specific case (exact match via regex anchor)
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 -Filter "t1_strip/strip$"
+test\run-integration-tests.cmd -Filter "t1_strip/strip$"
 
 # Clean generated outputs (keeps INDEX.txt and listed source files)
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean -Filter t6
+test\run-integration-tests.cmd clean
+test\run-integration-tests.cmd clean -Filter t6
 ```
 
 The `vabs` mode bypasses CTest and runs `prevabs -i <case>.xml --hm -e` directly
@@ -178,10 +192,10 @@ as `BUILD-FAIL`, `VABS-FAIL`, or `TIMEOUT`.
 
 ```powershell
 # Execute VABS for every case and summarise
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 vabs
+test\run-integration-tests.cmd vabs
 
 # Execute VABS only for t1_strip cases (Filter is a regex on "<dir>/<case>")
-pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 vabs -Filter t1
+test\run-integration-tests.cmd vabs -Filter t1
 ```
 
 Or call CTest directly (after the script has run once to configure the build directory):
@@ -200,16 +214,16 @@ as `prevabs -i <input>.xml --hm`.
 
 ```powershell
 # Run all examples (from repo root)
-pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1
+share\examples\run-examples.cmd
 
 # Run examples whose directory name matches the regex
-pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -Filter airfoil
+share\examples\run-examples.cmd -Filter airfoil
 
 # Execute VABS for every example and verify its generated result
-pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -e
+share\examples\run-examples.cmd -e
 
 # Execute VABS for one example
-pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -e -Filter "ex_box$"
+share\examples\run-examples.cmd -e -Filter "ex_box$"
 ```
 
 The report is written to `share/examples/examples-report.md`, with full
@@ -249,7 +263,7 @@ Schema (see `prevabs.example.json`; all fields optional):
   "output":   { "log_level": 2, "gmsh_verbosity": 2 },
   "tools":    { "vabs": "VABS", "swiftcomp": "SwiftComp", "gmsh": "gmsh" },
   "paths":    { "material_db": "" },
-  "gmsh_opt": { "template_file": "" }
+  "gmsh":     { "general": { "Mesh.ColorCarousel": 2 }, "homogenization": { "Mesh.SurfaceFaces": 1 } }
 }
 ```
 
@@ -259,10 +273,45 @@ Schema (see `prevabs.example.json`; all fields optional):
   run. This is the configurable form of the built-in `<exe-dir>/MaterialDB.xml`
   default; when set, a missing file is an error. It does **not** replace the
   input's `<include><material>` database, which is still read independently.
-- `gmsh_opt.template_file` — full path to a gmsh `.opt` template used as the
-  base of the generated view options. Mode-specific mesh visibility is still
-  appended. A configured-but-missing template warns and falls back to built-in
-  defaults (visualisation only, non-fatal).
+- `gmsh` — Gmsh `.opt` options grouped into sub-sections `general` /
+  `homogenization` / `recovery`, each a map of raw option name → value (numbers
+  as-is, strings quoted). `writeGmshOpt` emits `general` + the current-mode
+  section, verbatim. Options merge per-key across config levels. PreVABS does
+  not validate names/values; an invalid option is surfaced by Gmsh itself when
+  the `.opt` is loaded (only with `-v`).
+
+The **default** Gmsh view options are not hard-coded: they ship in
+`share/prevabs.json`, copied next to the executable (by the CMake post-build
+step for dev builds, and by `release.yml` for packages). Since the exe-dir
+`prevabs.json` is config level 2, they load through the normal `loadAppConfig`
+merge into `config.app.gmsh`; higher config levels override per-key. Emptying
+the `gmsh` section (or deleting the shipped `prevabs.json`) makes PreVABS write
+an empty `.opt`, so it will not override a user's own Gmsh settings.
+
+---
+
+## Documentation
+
+The Sphinx user manual lives under `doc/user/` (source in
+`doc/user/source/`, config in `doc/user/source/conf.py`). Its Python
+dependencies (`sphinx`, `myst-parser`, `pydata-sphinx-theme`, etc.) are
+pinned via the root-level `pyproject.toml` / `uv.lock`, managed with
+[uv](https://docs.astral.sh/uv/).
+
+```bash
+# From repo root: create/update .venv from pyproject.toml + uv.lock
+uv sync
+
+# Build the HTML docs (output is gitignored)
+uv run sphinx-build -b html doc/user/source doc/user/_build/html
+```
+
+Open `doc/user/_build/html/index.html` to view the result. `doc/user/requirements.txt`
+is a legacy plain-pip fallback; prefer `uv` so the resolved versions match
+`uv.lock`.
+
+`doc/dev/` is a separate Doxygen-based developer manual (`Doxyfile`), unrelated
+to the Sphinx/uv setup above.
 
 ---
 

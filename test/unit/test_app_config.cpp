@@ -33,7 +33,7 @@ TEST_CASE("AppConfig defaults are unchanged", "[config]") {
   CHECK(cfg.tools.swiftcomp == "SwiftComp");
   CHECK(cfg.tools.gmsh == "gmsh");
   CHECK(cfg.paths.material_db.empty());
-  CHECK(cfg.gmsh_opt.template_file.empty());
+  CHECK(cfg.gmsh.empty());
 }
 
 TEST_CASE("applyJson only overrides mentioned fields", "[config]") {
@@ -50,7 +50,7 @@ TEST_CASE("applyJson only overrides mentioned fields", "[config]") {
   // ... unmentioned fields keep their defaults.
   CHECK(cfg.tools.swiftcomp == "SwiftComp");
   CHECK(cfg.tools.gmsh == "gmsh");
-  CHECK(cfg.gmsh_opt.template_file.empty());
+  CHECK(cfg.gmsh.empty());
   CHECK(cfg.tol == Catch::Approx(1e-12));
 }
 
@@ -61,7 +61,10 @@ TEST_CASE("applyJson reads all new sections", "[config]") {
       {"output", {{"log_level", 1}, {"gmsh_verbosity", 3}}},
       {"tools", {{"vabs", "vabs4"}, {"swiftcomp", "sc"}, {"gmsh", "/opt/gmsh"}}},
       {"paths", {{"material_db", "/db"}}},
-      {"gmsh_opt", {{"template_file", "/view.opt"}}},
+      {"gmsh", {
+          {"general", {{"General.BackgroundGradient", 0}, {"Geometry.LineWidth", 1}}},
+          {"homogenization", {{"Mesh.SurfaceFaces", 1}}}
+      }},
   };
   applyJson(cfg, j);
 
@@ -73,7 +76,28 @@ TEST_CASE("applyJson reads all new sections", "[config]") {
   CHECK(cfg.tools.swiftcomp == "sc");
   CHECK(cfg.tools.gmsh == "/opt/gmsh");
   CHECK(cfg.paths.material_db == "/db");
-  CHECK(cfg.gmsh_opt.template_file == "/view.opt");
+  // gmsh options stored per section as JSON text, ready to write into the .opt.
+  CHECK(cfg.gmsh.at("general").at("General.BackgroundGradient") == "0");
+  CHECK(cfg.gmsh.at("general").at("Geometry.LineWidth") == "1");
+  CHECK(cfg.gmsh.at("homogenization").at("Mesh.SurfaceFaces") == "1");
+}
+
+TEST_CASE("gmsh options merge per key within a section, strings quoted",
+          "[config]") {
+  AppConfig cfg;
+  applyJson(cfg, json{{"gmsh", {{"general", {
+      {"Mesh.ColorCarousel", 2},
+      {"General.Axes", 3}
+  }}}}});
+  // Higher level overrides one key, adds another, keeps the rest.
+  applyJson(cfg, json{{"gmsh", {{"general", {
+      {"General.Axes", 0},
+      {"General.Text", "hello"}
+  }}}}});
+
+  CHECK(cfg.gmsh.at("general").at("Mesh.ColorCarousel") == "2");   // retained
+  CHECK(cfg.gmsh.at("general").at("General.Axes") == "0");         // overridden
+  CHECK(cfg.gmsh.at("general").at("General.Text") == "\"hello\""); // string quoted
 }
 
 TEST_CASE("later config overrides earlier, field by field", "[config]") {
@@ -118,7 +142,9 @@ TEST_CASE("toJson round-trips through applyJson", "[config]") {
   original.tol = 2e-11;
   original.tools.vabs = "custom_vabs";
   original.paths.material_db = "/mat/db";
-  original.gmsh_opt.template_file = "/tmpl.opt";
+  original.gmsh["general"]["General.Axes"] = "0";
+  original.gmsh["general"]["General.Text"] = "\"hi\"";
+  original.gmsh["recovery"]["Mesh.SurfaceFaces"] = "0";
 
   AppConfig restored;
   applyJson(restored, toJson(original));
@@ -128,5 +154,5 @@ TEST_CASE("toJson round-trips through applyJson", "[config]") {
   CHECK(restored.tools.swiftcomp == original.tools.swiftcomp);
   CHECK(restored.tools.gmsh == original.tools.gmsh);
   CHECK(restored.paths.material_db == original.paths.material_db);
-  CHECK(restored.gmsh_opt.template_file == original.gmsh_opt.template_file);
+  CHECK(restored.gmsh == original.gmsh);
 }

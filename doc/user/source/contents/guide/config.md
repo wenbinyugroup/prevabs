@@ -79,9 +79,48 @@ the XML input. This is simply the configurable form of the built-in
 `MaterialDB.xml` (see [](#input-other-settings)); when you set it, a
 missing file is treated as an error.
 
-**Customize the Gmsh view.** Set `gmsh_opt.template_file` to a Gmsh `.opt` file.
-Its contents become the base of the generated view options; the analysis-specific
-mesh visibility is still appended automatically.
+**Customize the Gmsh view.** Add Gmsh options under the `gmsh` section (see
+below). Since the `gmsh` section merges across config levels like every other
+field, an entry you set in your home or project config overrides the shipped
+default for that option.
+
+## Gmsh view options (the `gmsh` section)
+
+The default Gmsh view (rotation, scale, mesh colouring, edge/face visibility)
+is not hard-coded — it lives in the `gmsh` section of the `prevabs.json` that
+ships next to the executable (config level 2). Each time PreVABS writes the
+`.opt` file it emits these options.
+
+The `gmsh` section is grouped into one mode-independent block plus one block per
+analysis type. Keys are raw Gmsh option names; values are written verbatim into
+the `.opt` (numbers as-is, strings quoted). PreVABS does not check the option
+names or values — an invalid one is only reported by Gmsh itself, when the view
+is opened with `-v`.
+
+```{code-block} json
+:name: code-gmsh-section
+:caption: The gmsh section of a prevabs.json config file.
+
+{
+  "gmsh": {
+    "general":        { "General.Axes": 3, "Mesh.ColorCarousel": 2 },
+    "homogenization": { "Mesh.SurfaceFaces": 1 },
+    "recovery":       { "Mesh.Points": 0, "Mesh.SurfaceFaces": 0 }
+  }
+}
+```
+
+For each run PreVABS writes the `general` block followed by the block for the
+current analysis (`homogenization`, or `recovery` for dehomogenization /
+failure). Edit the shipped values, or add options in your own config file, to
+change the default view.
+
+**Stop PreVABS from writing any options.** If you keep your own Gmsh option
+settings and do not want PreVABS to override them, empty the `gmsh` section
+(`"gmsh": {}`) in the shipped `prevabs.json`, or delete that file. PreVABS then
+writes an empty `.opt`, leaving your Gmsh configuration untouched. (A
+higher-level config can only add or change options, not remove a shipped
+default, so suppression is done by editing the shipped file.)
 
 ## When a config file is wrong
 
@@ -91,6 +130,7 @@ mesh visibility is still appended automatically.
   the run continues with the values from the other levels.
 - An explicitly configured `paths.material_db` that does not exist stops the run
   with an error, because a missing material database would change the results.
-- An explicitly configured `gmsh_opt.template_file` that does not exist only
-  produces a warning; PreVABS falls back to the built-in view defaults, since
-  visualization does not affect analysis results.
+- Entries in the `gmsh` section are passed through to Gmsh without validation.
+  A wrong option name or value is not caught by PreVABS; Gmsh reports it when the
+  `.opt` is loaded (only when visualizing with `-v`), and does not affect the
+  analysis results.

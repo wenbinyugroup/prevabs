@@ -1,0 +1,29 @@
+{
+  "gmsh": {
+    "general": {
+      "General.Axes": 3,
+      "General.BackgroundGradient": 0,
+      "General.Orthographic": 1,
+      "General.RotationX": 270,
+      "General.RotationY": 360,
+      "General.RotationZ": 270,
+      "General.ScaleX": 2,
+      "General.ScaleY": 2,
+      "General.ScaleZ": 2,
+      "General.Trackball": 0,
+      "Geometry.Points": 0,
+      "Geometry.LineWidth": 1,
+      "Mesh.ColorCarousel": 2,
+      "Mesh.SurfaceEdges": 0
+    },
+    "homogenization": {
+      "Mesh.SurfaceFaces": 1
+    },
+    "recovery": {
+      "Mesh.Points": 0,
+      "Mesh.SurfaceEdges": 0,
+      "Mesh.SurfaceFaces": 0,
+      "Mesh.VolumeEdges": 0
+    }
+  }
+}

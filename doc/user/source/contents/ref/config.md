@@ -18,7 +18,7 @@ built-in default). Unknown sections and fields are ignored.
   "output":   { "log_level": 2, "gmsh_verbosity": 2 },
   "tools":    { "vabs": "VABS", "swiftcomp": "SwiftComp", "gmsh": "gmsh" },
   "paths":    { "material_db": "" },
-  "gmsh_opt": { "template_file": "" }
+  "gmsh":     { "general": {}, "homogenization": {}, "recovery": {} }
 }
 ```
 
@@ -75,14 +75,28 @@ Default file locations applied on every run.
 
 ---
 
-## `gmsh_opt`
+## `gmsh`
 
-Gmsh visualization defaults for the generated `.opt` file.
+Gmsh visualization options for the generated `.opt` file, grouped into
+sub-sections. Object. Default `{}`.
 
-- `template_file` - Full path to a Gmsh `.opt` template file. String. Default
-  `""` (empty). When set and readable, its contents are written as the base of
-  the generated `.opt` file, replacing the built-in `General`/`Mesh` defaults;
-  the analysis-mode-specific mesh visibility settings are still appended
-  afterwards. When empty, the built-in defaults are used. A configured file that
-  cannot be opened produces a warning and PreVABS falls back to the built-in
-  defaults (visualization only, non-fatal).
+- `general` - Options written for every analysis.
+- `homogenization` - Options written additionally for a homogenization run.
+- `recovery` - Options written additionally for a dehomogenization / failure
+  (recovery) run.
+
+Each sub-section is an object mapping a raw Gmsh option name (for example
+`"Mesh.ColorCarousel"`) to its value. For a run PreVABS writes the `general`
+block followed by the block for the current analysis. Values are written
+verbatim into the generated `.opt` — numeric values as-is, string values quoted.
+Entries merge per key across config levels (a higher level updates or adds
+individual options without discarding those from lower levels).
+
+The **default** view options ship in the `prevabs.json` located next to the
+executable (config level 2); edit or empty its `gmsh` section to change or
+suppress them. See [](../guide/config.md) for details.
+
+PreVABS does **not** validate the option names or values; it only passes them
+through. An invalid option is reported by Gmsh itself when the `.opt` file is
+loaded (which only happens when visualizing with `-v`), and does not affect the
+analysis results.

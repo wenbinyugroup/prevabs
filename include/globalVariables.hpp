@@ -2,6 +2,7 @@
 
 #include "globalConstants.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -33,11 +34,16 @@ struct PathsConfig {
   std::string material_db = "";
 };
 
-// Gmsh visualisation defaults. When template_file is non-empty its contents
-// are used as the base of the generated .opt file (see writeGmshOpt).
-struct GmshOptConfig {
-  std::string template_file = "";
-};
+// Gmsh visualisation options, grouped into sections under the "gmsh" config
+// key: "general" (always written) plus one per analysis type
+// ("homogenization" / "recovery"). Each section maps a raw Gmsh option name to
+// its formatted right-hand side (e.g. "0", "1.5", "\"text\""). writeGmshOpt
+// emits the "general" section followed by the current mode's section; PreVABS
+// does not validate the names or values. The defaults ship in the
+// executable-dir prevabs.json (config level 2); emptying them yields a blank
+// .opt so PreVABS does not override the user's own Gmsh settings.
+using GmshOptionSections =
+    std::map<std::string, std::map<std::string, std::string>>;
 
 // ---------------------------------------------------------------------------
 // AppConfig — persistent, user-tunable settings.
@@ -54,9 +60,9 @@ struct AppConfig {
   // Set via prevabs.json to enable; CLI is unchanged.
   int    solver_timeout_s = 0;
 
-  ToolPaths     tools;      // "tools"    section
-  PathsConfig   paths;      // "paths"    section
-  GmshOptConfig gmsh_opt;   // "gmsh_opt" section
+  ToolPaths          tools;   // "tools" section
+  PathsConfig        paths;   // "paths" section
+  GmshOptionSections gmsh;    // "gmsh"  section (general / mode sections)
 };
 
 struct AdaptiveThicknessConfig {
