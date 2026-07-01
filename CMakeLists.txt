@@ -140,7 +140,7 @@ add_subdirectory(extern/cpp-terminal)
 target_link_libraries(${PROJECTNAME} cpp-terminal::cpp-terminal)
 
 
-# Clipper2 (FetchContent, pinned to release tag Clipper2_2.0.1)
+# Clipper2 (FetchContent, pinned after the Clipper2_2.0.1 release)
 # -------------------------------------------------------------
 # Used by the upcoming offset backend rewrite (plan-20260514-clipper2-
 # offset-backend.md). Stage A wires the dependency only; src/geo/offset.cpp
@@ -159,7 +159,8 @@ set(CLIPPER2_USINGZ   OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
   clipper2
   GIT_REPOSITORY https://github.com/AngusJohnson/Clipper2.git
-  GIT_TAG        Clipper2_2.0.1
+  # Includes upstream's initialization fix for triangulation error code #1052.
+  GIT_TAG        6a36be1c8b28e06800f09121820fa188acf6ed13
   SOURCE_SUBDIR  CPP
 )
 FetchContent_MakeAvailable(clipper2)
