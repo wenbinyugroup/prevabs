@@ -1,0 +1,49 @@
+<cross_section name="airfoil_skin_closed_ah79k132">
+  <!-- Extracted verbatim from integration t9_airfoil/airfoil_ah79k132_skin_only
+       (segment sg_le). The full AH 79-K-132 airfoil skin as a single CLOSED
+       loop with a single isotropic ply. Closed segments fall back to legacy and
+       legacy tiling leaves sliver faces here. Source was already a single
+       self-contained segment; parameters are unchanged. -->
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>1</scale>
+    <mesh_size>0.01</mesh_size>
+    <element_shape>tri</element_shape>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">ah79k132.dat</points>
+      <leading_edge>0.000000 0.000000</leading_edge>
+      <trailing_edge>1.000000 0.000000</trailing_edge>
+    </line>
+  </baselines>
+
+  <materials>
+    <material name="al_alloy" type="isotropic">
+      <density>2.780e3</density>
+      <elastic>
+        <e>71.0e9</e>
+        <nu>3.30e-1</nu>
+      </elastic>
+    </material>
+    <lamina name="ply">
+      <material>al_alloy</material>
+      <thickness>0.01</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="ply">0</layer>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+</cross_section>

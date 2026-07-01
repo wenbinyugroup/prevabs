@@ -1,0 +1,23 @@
+{
+  "segment": "sgm_1",
+  "closed": false,
+  "route": "legacy",
+  "base_vertices": 3,
+  "offset_vertices": 2,
+  "layers": 0,
+  "face_count": 7,
+  "n_inverted": 0,
+  "n_sliver": 0,
+  "n_degenerate": 0,
+  "ok": true,
+  "path": ["buildAreas: enter (closed=N, base_verts=3)", "buildAreas: useLayeredOffset=yes", "layered: enter (n_layers=7, side=1)", "layered: shell/base vertex mismatch (base=3, shell=2) -> FALLBACK", "buildAreas: layered FELL BACK -> legacy", "legacy: built areas=1 -> AreasBuilt"],
+  "faces": [
+    {"name": "sgm_1_area_1_layer_1", "layer": -1, "material": "iso5_1", "theta3": 45, "verts": 5, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_area_1_layer_2", "layer": -1, "material": "iso5_1", "theta3": -45, "verts": 4, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_area_1_layer_3", "layer": -1, "material": "iso5_1", "theta3": 0, "verts": 4, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_area_1_layer_4", "layer": -1, "material": "iso5_1", "theta3": 90, "verts": 4, "area": 0.04, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_area_1_layer_5", "layer": -1, "material": "iso5_1", "theta3": 0, "verts": 4, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_area_1_layer_7", "layer": -1, "material": "iso5_1", "theta3": 45, "verts": 4, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_area_1_layer_6", "layer": -1, "material": "iso5_1", "theta3": -45, "verts": 4, "area": 0.02, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false}
+  ]
+}

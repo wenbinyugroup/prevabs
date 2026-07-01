@@ -1,0 +1,25 @@
+This is VABS 4.1 compiled at 15:27:06 of Aug 01 2024.
+ 
+ 
+ Homogenization for computing sectional properties
+ 
+ The inputs are echoed in cs_main.sg.ech
+ 
+ Finished reading inputs for the cross-sectional analysis.
+ You can run VABS for 337 days....
+ Something wrong with the mesh. The Jacobian of element        6594 is less than
+  zero.                                                                         
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                

@@ -1,0 +1,120 @@
+<!--
+  Minimal repro for issue-20260518-clipper2-airfoil-gmsh-sensitivity §5.1 G.2
+  =========================================================================
+
+  Scenario: open multi-vertex baseline with one near-degenerate
+  segment (dist/min_seg ≫ 1). Mimics main_cs_set1's seg_front_le
+  geometry: a baseline whose smallest segment is ~14.8× thinner
+  than the offset distance.
+
+  Geometry (yz plane): collinear straight baseline along the y-axis
+  with one tiny intermediate segment.
+
+    p0 ────────── p1 ─ p2 ──────────── p3
+   y=0          y=0.5  y=0.505       y=1.0
+
+  Segment lengths:
+    seg 0: |p1-p0| = 0.500
+    seg 1: |p2-p1| = 0.005  <-- the degenerate one
+    seg 2: |p3-p2| = 0.495
+
+  Layup total thickness = 0.080. ratio dist/min_seg = 0.080 / 0.005
+  = 16× (matches main_cs_set1's 14.8×).
+
+  Expected behaviour:
+    bc2229c (legacy 5-stage, closed-only routing): open baseline
+      → legacy `computeOffsetJunctions` produces 4 offset vertices
+      along z = ±0.08 with one near-coincident pair (offset[1] and
+      offset[2] only 0.005 apart). Downstream tolerates this.
+      → pass.
+    99915bf + (Phase 1-4): open baseline → Clipper2 backend.
+      Phase 1 + resample produces 4 offset vertices with the same
+      near-coincident pair. Either:
+      (a) The downstream DCEL build hits `updateEdgeNeighbors:
+          near-degenerate outgoing edge angles` and ultimately
+          fails with SEH access violation (main_cs_set1 mode).
+      (b) Layup intersection cannot resolve on the tiny edge and
+          produces invalid Gmsh GEO curves.
+      → fail.
+
+  Goal: minimal isolated geometry to reproduce the same downstream
+  failure mode as main_cs_set1's seg_front_le, without the rest of
+  the airfoil context.
+
+  Layup: [45:2/-45:2/0:2/90:2]s = 16 plies × 0.005 = 0.080 total.
+-->
+<cross_section name="degenerate_segment" format="1">
+  <analysis>
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>0.0 0.0</translate>
+    <scale>1</scale>
+    <rotate></rotate>
+    <mesh_size>5e-5</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <!--
+    Absolute scale ~ 1e-3 (matches main_cs_set1's seg_front_le
+    geometry: chord-axis position ~ 0.123 with offset ~ 5e-4).
+    Clipper2 precision=8 ⇒ 1e-9 quantization; at this absolute
+    scale the relative noise is ~1e-6, large enough to perturb
+    near-degenerate vertices into ill-conditioned DCEL edges.
+  -->
+  <!-- Many vertices with one near-degenerate segment in the middle,
+       mirroring main_cs_set1/seg_front_le where the bad segment hides
+       among 60+ regular ones. Single-vertex collinear bases collapse
+       cleanly in Clipper2 so the tiny segment is the only thing
+       remaining of interest. -->
+  <baselines>
+    <point name="p0">0.0000   0</point>
+    <point name="p1">0.0002   0</point>
+    <point name="p2">0.0004   0</point>
+    <point name="p3">0.00050  0</point>
+    <point name="p4">0.000505 0</point>  <!-- tiny 5e-6 segment after p3 -->
+    <point name="p5">0.0006   0</point>
+    <point name="p6">0.0008   0</point>
+    <point name="p7">0.0010   0</point>
+    <baseline name="bl" type="straight">
+      <points>p0,p1,p2,p3,p4,p5,p6,p7</points>
+    </baseline>
+  </baselines>
+
+  <materials>
+    <material name="iso5_1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_thin">
+      <material>iso5_1</material>
+      <thickness>5e-5</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1" method="ss">
+      <lamina>la_thin</lamina>
+      <code>[45:2/-45:2/0:2/90:2]s</code>
+    </layup>
+  </layups>
+
+  <component name="surface">
+    <segment name="sg_degen">
+      <baseline>bl</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>

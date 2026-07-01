@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<rect width="100%" height="100%" fill="white"/>
+<text x="70" y="28" font-family="sans-serif" font-size="18" fill="#222">segment build: sgbottom</text>
+<text x="70" y="48" font-family="sans-serif" font-size="12" fill="#555">route=legacy  closed=N  base=3  layers=0  faces=2  inverted=0  sliver=0  degenerate=0</text>
+<polygon points="70,443.917 1530,443.917 1530,434.183 70,434.183 " fill="#e8e8e8" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polygon points="70,465.817 800,465.817 1530,465.817 1530,443.917 70,443.917 " fill="#e8e8e8" fill-opacity="0.75" stroke="#666" stroke-width="0.6" />
+<polyline fill="none" stroke="#1f77b4" stroke-width="1.6" points="70,465.817 800,465.817 1530,465.817 " />
+<polyline fill="none" stroke="#ff7f0e" stroke-width="1.6" points="70,434.183 1530,434.183 " />
+<g font-family="sans-serif" font-size="12">
+<rect x="1338" y="52" width="242" height="118" fill="#fafafa" stroke="#ccc"/>
+<line x1="1350" y1="70" x2="1374" y2="70" stroke="#1f77b4" stroke-width="2"/>
+<text x="1382" y="74">base curve</text>
+<line x1="1350" y1="90" x2="1374" y2="90" stroke="#ff7f0e" stroke-width="2"/>
+<text x="1382" y="94">offset / shell</text>
+<rect x="1350" y="102" width="20" height="12" fill="#f3b0b0" stroke="#d62728" stroke-width="2"/>
+<text x="1382" y="112">inverted face</text>
+<rect x="1350" y="122" width="20" height="12" fill="#fff5b3" stroke="#ff7f0e" stroke-width="1.6"/>
+<text x="1382" y="132">sliver face</text>
+<text x="1350" y="154" fill="#444">fills cycle by layer index</text>
+</g>
+</svg>

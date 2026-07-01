@@ -1,0 +1,7 @@
+PreVABS 2.1.0
+==> prevabs start (2026-06-24 17:05:16)
+==> reading main input file: ibeam_flanges.xml
+!!  offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.11 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+!!  offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.07 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+OK  prevabs finished (2026-06-24 17:05:16)
+==> total running time: 0.0391052 sec

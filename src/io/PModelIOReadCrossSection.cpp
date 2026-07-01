@@ -8,6 +8,7 @@
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "geo.hpp"
+#include "geometry_tolerance.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
 #include "PBaseLine.hpp"
@@ -44,6 +45,39 @@
 #endif
 
 namespace {
+
+void configureModelGeometryTolerance(PModel *pmodel) {
+  std::vector<SPoint2> points;
+  points.reserve(pmodel->vertices().size());
+  for (const auto *vertex : pmodel->vertices()) {
+    points.emplace_back(vertex->y(), vertex->z());
+  }
+
+  std::vector<double> lamina_thicknesses;
+  lamina_thicknesses.reserve(pmodel->laminas().size());
+  for (auto *lamina : pmodel->laminas()) {
+    lamina_thicknesses.push_back(lamina->getThickness());
+  }
+
+  const auto result = prevabs::geo::computeModelGeometryTolerance(
+      points, lamina_thicknesses, REL_PREDICATE);
+  if (!result.valid()) {
+    throw std::runtime_error(
+        "cannot determine geometry tolerance: model has no positive point "
+        "spacing or lamina thickness");
+  }
+
+  setGeometryTolerance(result.tolerance);
+  config.app.geo_tol = result.tolerance;
+  PLOG(debug) << "model geometry tolerance: min_point_distance="
+              << result.min_point_distance
+              << ", min_lamina_thickness="
+              << result.min_lamina_thickness
+              << ", characteristic_length="
+              << result.characteristic_length
+              << ", rel_predicate=" << REL_PREDICATE
+              << ", tolerance=" << result.tolerance;
+}
 
 unsigned int parseElementShapeValue(const std::string &value) {
   const std::string s = lowerString(trim(value));
@@ -86,6 +120,26 @@ double readOptionalDoubleNode(
   return default_val;
 }
 
+std::string readOptionalStringNode(
+  const rapidxml::xml_node<> *parent, const char *name,
+  const std::string &default_val
+) {
+  rapidxml::xml_node<> *n = parent->first_node(name);
+  if (!n) return default_val;
+  const std::string s{trim(n->value())};
+  return s.empty() ? default_val : s;
+}
+
+bool readOptionalBoolAttr(
+  const rapidxml::xml_node<> *node, const char *name, bool default_val,
+  const std::string &context
+) {
+  rapidxml::xml_attribute<> *attr = node->first_attribute(name);
+  if (!attr) return default_val;
+  const std::string s{trim(attr->value())};
+  return s.empty() ? default_val : parseXmlBoolValue(s, context);
+}
+
 // ---------------------------------------------------------------------------
 // Geometry transform and mesh parameters returned from readGeneralSection
 
@@ -113,6 +167,99 @@ void readSettingsSection(const rapidxml::xml_node<> *xn_settings) {
         );
       }
     }
+  }
+}
+
+
+void readAdaptiveThicknessSection(
+  const rapidxml::xml_node<> *xn_adaptive
+) {
+  config.adaptive_thickness = AdaptiveThicknessConfig{};
+  if (!xn_adaptive) return;
+
+  auto &cfg = config.adaptive_thickness;
+  cfg.enabled = readOptionalBoolAttr(
+    xn_adaptive, "enabled", cfg.enabled,
+    "<adaptive_thickness>@enabled"
+  );
+
+  rapidxml::xml_node<> *nodeReportOnly{
+    xn_adaptive->first_node("report_only")
+  };
+  if (nodeReportOnly) {
+    const std::string s{trim(nodeReportOnly->value())};
+    if (!s.empty()) {
+      cfg.report_only = parseXmlBoolValue(
+        s, "<adaptive_thickness>/<report_only>"
+      );
+    }
+  }
+
+  cfg.mode = lowerString(readOptionalStringNode(
+    xn_adaptive, "mode", cfg.mode
+  ));
+  if (cfg.mode != "linear") {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<mode> currently supports only 'linear'"
+    );
+  }
+
+  cfg.safety = readOptionalDoubleNode(
+    xn_adaptive, "safety", cfg.safety
+  );
+  if (cfg.safety <= 0.0 || cfg.safety > 1.0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<safety> must be in (0, 1]"
+    );
+  }
+
+  cfg.transition_base_count = readOptionalIntNode(
+    xn_adaptive, "transition_base_count", cfg.transition_base_count
+  );
+  cfg.repair_base_padding = readOptionalIntNode(
+    xn_adaptive, "repair_base_padding", cfg.repair_base_padding
+  );
+  if (cfg.repair_base_padding < 0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<repair_base_padding> must be non-negative"
+    );
+  }
+  if (cfg.transition_base_count < 0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<transition_base_count> must be non-negative"
+    );
+  }
+
+  cfg.min_half_thickness = readOptionalDoubleNode(
+    xn_adaptive, "min_half_thickness", cfg.min_half_thickness
+  );
+  if (cfg.min_half_thickness < 0.0) {
+    throw std::runtime_error(
+      "<adaptive_thickness>/<min_half_thickness> must be non-negative"
+    );
+  }
+
+  rapidxml::xml_node<> *nodeTargets{
+    xn_adaptive->first_node("target_segments")
+  };
+  if (nodeTargets) {
+    const std::string s{trim(nodeTargets->value())};
+    if (!s.empty()) {
+      cfg.target_segments = splitString(s, ',');
+      for (auto &segment : cfg.target_segments) {
+        segment = trim(segment);
+      }
+    }
+  }
+
+  if (cfg.enabled) {
+    PLOG(info) << "adaptive thickness configured: mode=" << cfg.mode
+               << ", report_only=" << (cfg.report_only ? "true" : "false")
+               << ", safety=" << cfg.safety
+               << ", repair_base_padding="
+               << cfg.repair_base_padding
+               << ", transition_base_count="
+               << cfg.transition_base_count;
   }
 }
 
@@ -248,6 +395,56 @@ GeneralResult readGeneralSection(
     std::string s{trim(nodeRecombine->value())};
     if (!s.empty())
       pmodel->setRecombine(parseXmlBoolValue(s, "<general>/<recombine>"));
+  }
+
+  // Layered per-layer-offset build path (default ON; see globalVariables.hpp).
+  rapidxml::xml_node<> *nodeLayeredOffset{
+    xn_general->first_node("layered_offset")};
+  if (nodeLayeredOffset) {
+    std::string s{trim(nodeLayeredOffset->value())};
+    if (!s.empty())
+      config.layered_offset =
+          parseXmlBoolValue(s, "<general>/<layered_offset>");
+  }
+
+  // Skip area construction over Clipper2 "dropped" base ranges
+  // (default OFF; see globalVariables.hpp).
+  rapidxml::xml_node<> *nodeSkipDroppedAreas{
+    xn_general->first_node("skip_dropped_areas")};
+  if (nodeSkipDroppedAreas) {
+    std::string s{trim(nodeSkipDroppedAreas->value())};
+    if (!s.empty())
+      config.skip_dropped_areas =
+          parseXmlBoolValue(s, "<general>/<skip_dropped_areas>");
+  }
+
+  // Per-layer offset boundary generation method "dir"/"seq"
+  // (default "dir"; see globalVariables.hpp).
+  rapidxml::xml_node<> *nodeLayerOffsetMethod{
+    xn_general->first_node("layer_offset_method")};
+  if (nodeLayerOffsetMethod) {
+    std::string s{trim(nodeLayerOffsetMethod->value())};
+    for (auto &c : s)
+      c = static_cast<char>((c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c);
+    if (s == "dir" || s == "seq")
+      config.layer_offset_method = s;
+    else if (!s.empty())
+      PLOG(warning) << "<general>/<layer_offset_method>: unknown value '" << s
+                    << "', keeping '" << config.layer_offset_method << "'";
+  }
+
+  rapidxml::xml_node<> *nodeOffsetResampleMode{
+    xn_general->first_node("offset_resample_mode")};
+  if (nodeOffsetResampleMode) {
+    std::string s{trim(nodeOffsetResampleMode->value())};
+    for (auto &c : s)
+      c = static_cast<char>((c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c);
+    if (s == "insert" || s == "replace")
+      config.offset_resample_mode = s;
+    else if (!s.empty())
+      PLOG(warning) << "<general>/<offset_resample_mode>: unknown value '"
+                    << s << "', keeping '" << config.offset_resample_mode
+                    << "'";
   }
 
   rapidxml::xml_node<> *nodeRecombineAngle{
@@ -581,6 +778,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   rapidxml::xml_node<> *xn_include{p_xn_sg->first_node("include")};
 
   readSettingsSection(p_xn_sg->first_node("settings"));
+  readAdaptiveThicknessSection(p_xn_sg->first_node("adaptive_thickness"));
   readAnalysisSection(p_xn_sg, pmodel);
 
   rapidxml::xml_node<> *xn_general{p_xn_sg->first_node("general")};
@@ -592,6 +790,7 @@ int readCrossSection(const std::string &filenameCrossSection,
   readGeometrySection(p_xn_sg, xn_include, filePath, cs_type, gen, pmodel);
   readMaterialsSection(p_xn_sg, xn_include, filePath, pmodel);
   readLayupsSection(p_xn_sg, xn_include, filePath, pmodel);
+  configureModelGeometryTolerance(pmodel);
 
   std::vector<Layup *> p_layups{};
   int num_combined_layups = 0;

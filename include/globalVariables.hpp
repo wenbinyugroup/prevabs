@@ -2,8 +2,8 @@
 
 #include "globalConstants.hpp"
 
-#include <cstdio>
 #include <string>
+#include <vector>
 
 class PDCEL;
 class LayerType;
@@ -18,12 +18,25 @@ extern bool scientific_format;
 // ---------------------------------------------------------------------------
 struct AppConfig {
   double tol            = 1e-12;          // intersection parameter tolerance
-  double geo_tol        = 1e-9;           // geometric edge-length tolerance
+  // Initial geometry tolerance. Cross-section input replaces this with the
+  // model-scale value before component geometry is built.
+  double geo_tol        = 1e-9;
   int    log_level      = LOG_LEVEL_INFO;  // 0=trace…5=fatal (globalConstants.hpp)
   int    gmsh_verbosity = 2;              // 0=silent,1=errors,2=warnings,3=info,5=debug
   // External solver timeout in seconds. 0 = no timeout (default).
   // Set via prevabs.json to enable; CLI is unchanged.
   int    solver_timeout_s = 0;
+};
+
+struct AdaptiveThicknessConfig {
+  bool enabled = false;
+  bool report_only = true;
+  std::string mode = "linear";
+  double safety = 0.90;
+  int repair_base_padding = 0;
+  int transition_base_count = 2;
+  double min_half_thickness = 0.0;
+  std::vector<std::string> target_segments;
 };
 
 // ---------------------------------------------------------------------------
@@ -48,7 +61,6 @@ struct PConfig {
   std::string file_name_lss_opt = "";
   std::string file_name_log     = "";
   std::string file_name_log_dev = "";
-  std::string file_name_deb     = "";
 
   // --- Tool selection ---
   AnalysisTool tool = AnalysisTool::VABS;
@@ -67,6 +79,34 @@ struct PConfig {
 
   // --- Persistent numeric/output settings (may be overridden by config file) ---
   AppConfig app;
+
+  // --- Explicit geometry repair options (XML controlled; off by default) ---
+  AdaptiveThicknessConfig adaptive_thickness;
+
+  // Layered per-layer-offset build path. XML <general>/<layered_offset>;
+  // default ON. Env PREVABS_LAYERED_OFFSET overrides if set.
+  bool layered_offset = true;
+
+  // Method used to generate each per-layer boundary curve in the layered build:
+  //   "dir" = offset the BASE curve by the cumulative thickness (true parallel
+  //           offset; no compounding drift, consistent with the DIR pre-check
+  //           in validatePerLayerOffsets).
+  //   "seq" = offset the PREVIOUS layer curve by this layer's thickness
+  //           (route-ii; angle-bisector-resampled at each input vertex).
+  // XML <general>/<layer_offset_method>; default "dir".
+  // Env PREVABS_LAYER_OFFSET_METHOD overrides if set.
+  std::string layer_offset_method = "dir";
+
+  // XML <general>/<offset_resample_mode>; "insert" preserves raw Clipper2
+  // points, while "replace" rebuilds the run from calculated points.
+  std::string offset_resample_mode = "insert";
+
+  // Skip area construction over Clipper2 "dropped" base ranges (thin-region
+  // workaround; see issue-20260521-skip-dropped-areas). XML
+  // <general>/<skip_dropped_areas>; default OFF — the layered_offset build
+  // path no longer needs the sliver-fan avoidance. Env
+  // PREVABS_SKIP_DROPPED_AREAS overrides if set.
+  bool skip_dropped_areas = false;
 
   // --- Derived display/option strings (set by processConfigVariables) ---
   std::string tool_name    = "VABS";
@@ -97,10 +137,27 @@ extern PConfig config;
 // ---------------------------------------------------------------------------
 struct RuntimeState {
   int   gmsh_views = 0;
-  FILE* fdeb       = nullptr;
 };
 
 extern RuntimeState runtime;
+
+// Whether the layered per-layer-offset build path is active. Reads
+// config.layered_offset (XML <general>/<layered_offset>, default ON); the
+// env var PREVABS_LAYERED_OFFSET overrides if set. Defined in
+// src/cs/PBuildSegmentAreas.cpp.
+bool useLayeredOffset();
+
+// Whether to skip area construction over Clipper2 "dropped" base ranges.
+// Reads config.skip_dropped_areas (XML <general>/<skip_dropped_areas>,
+// default OFF); the env var PREVABS_SKIP_DROPPED_AREAS overrides if set.
+// Defined in src/cs/PBuildSegmentAreas.cpp.
+bool useSkipDroppedAreas();
+
+// Per-layer offset boundary generation method: returns "dir" or "seq". Reads
+// config.layer_offset_method (XML <general>/<layer_offset_method>, default
+// "dir"); the env var PREVABS_LAYER_OFFSET_METHOD overrides if set. Defined in
+// src/cs/PBuildSegmentAreas.cpp.
+std::string layerOffsetMethod();
 
 // ---------------------------------------------------------------------------
 // Sub-structs passed explicitly to subsystems (no global dependency needed)

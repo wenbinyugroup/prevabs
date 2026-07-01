@@ -29,12 +29,39 @@ set(CPPTERMINAL_ENABLE_DOCS    OFF CACHE BOOL "" FORCE)
 add_subdirectory(${REPO_ROOT}/extern/cpp-terminal cpp-terminal-build)
 
 # ------------------------------------------------------------------
+# Clipper2 (FetchContent, pinned to release tag Clipper2_1.4.0)
+# Same configuration as the top-level CMakeLists.txt. Linked by
+# test_dcel (offset.cpp now calls offsetWithClipper2 after Stage D)
+# and test_offset_clipper2. precision=8 ceiling — see
+# local/issue-20260515-clipper2-airfoil-a0.md §3.1.
+# ------------------------------------------------------------------
+include(FetchContent)
+set(CLIPPER2_TESTS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_UTILS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_USINGZ   OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  clipper2
+  GIT_REPOSITORY https://github.com/AngusJohnson/Clipper2.git
+  GIT_TAG        Clipper2_1.4.0
+  SOURCE_SUBDIR  CPP
+)
+FetchContent_MakeAvailable(clipper2)
+
+# ------------------------------------------------------------------
 # test_geo — self-contained geometry algorithm tests (no project deps)
 # ------------------------------------------------------------------
 set(TEST_GEO_SOURCES
   catch_amalgamated.cpp
+  test_adaptive_thickness.cpp
   test_geo.cpp
   test_geo_offset.cpp
+  test_geometry_tolerance.cpp
+  test_variable_offset.cpp
+  ${SRC_GEO}/adaptive_thickness.cpp
+  ${SRC_GEO}/geometry_tolerance.cpp
+  ${SRC_GEO}/variable_offset.cpp
+  ${SRC_ROOT}/globalConstants.cpp
 )
 
 add_executable(test_geo ${TEST_GEO_SOURCES})
@@ -65,6 +92,7 @@ set(TEST_DCEL_SOURCES
   test_parse_helpers.cpp
   test_execu_timeout.cpp
   ${SRC_GEO}/DCELSweepLine.cpp
+  ${SRC_GEO}/adaptive_thickness.cpp
   ${SRC_GEO}/DCELValidator.cpp
   ${SRC_GEO}/PDCEL.cpp
   ${SRC_GEO}/PDCELFace.cpp
@@ -74,16 +102,23 @@ set(TEST_DCEL_SOURCES
   ${SRC_GEO}/PGeoClasses.cpp
   ${SRC_GEO}/PGeoLine.cpp
   ${SRC_GEO}/curve.cpp
+  ${SRC_GEO}/CurveFrameLookup.cpp
+  ${SRC_GEO}/geo_diagnostics.cpp
   ${SRC_GEO}/geo_math.cpp
   ${SRC_GEO}/intersect.cpp
   ${SRC_GEO}/offset.cpp
+  ${SRC_GEO}/offset_clipper2.cpp
+  ${SRC_GEO}/offset_clipper2_bridge.cpp
+  ${SRC_GEO}/offset_clipper2_pdcel.cpp
   ${SRC_GEO}/PBST.cpp
   ${SRC_GEO}/polyline.cpp
+  ${SRC_GEO}/variable_offset.cpp
   ${SRC_ROOT}/plog.cpp
   ${SRC_ROOT}/pui.cpp
   ${SRC_ROOT}/utilities.cpp
   ${SRC_ROOT}/overloadOperator.cpp
   ${SRC_ROOT}/GeometryRepository.cpp
+  ${SRC_ROOT}/globalConstants.cpp
   ${SRC_ROOT}/MaterialRepository.cpp
   ${SRC_ROOT}/io/PModelIOReadAirfoil.cpp
   ${SRC_ROOT}/io/PModelIOReadBaseLine.cpp
@@ -104,6 +139,9 @@ set(TEST_DCEL_SOURCES
   ${SRC_ROOT}/cs/PFilling.cpp
   ${SRC_ROOT}/cs/PSegment.cpp
   ${SRC_ROOT}/cs/join.cpp
+  ${SRC_ROOT}/debug/baseOffsetMapSvg.cpp
+  ${SRC_ROOT}/debug/baseOffsetMapJson.cpp
+  ${SRC_ROOT}/debug/segmentBuildDump.cpp
   ${SRC_ROOT}/execu_utils.cpp
 )
 
@@ -117,11 +155,34 @@ target_include_directories(test_dcel PRIVATE
 target_compile_definitions(test_dcel PRIVATE
   TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
-target_link_libraries(test_dcel PRIVATE cpp-terminal::cpp-terminal)
+target_link_libraries(test_dcel PRIVATE cpp-terminal::cpp-terminal Clipper2)
 
 if(MSVC)
   target_compile_options(test_dcel PRIVATE /W3 /utf-8 /EHa)
   target_compile_options(test_geo PRIVATE /W3 /utf-8 /EHa)
+endif()
+
+# ------------------------------------------------------------------
+# test_curve_frame_lookup — standalone test for the polyline nearest-segment
+# query introduced in plan-20260514-decouple-local-frame-from-map.md (Phase A).
+# Only depends on header-only geo_types.hpp + linalg.h, so no project libs.
+# ------------------------------------------------------------------
+set(TEST_CFL_SOURCES
+  catch_amalgamated.cpp
+  test_curve_frame_lookup.cpp
+  ${SRC_GEO}/CurveFrameLookup.cpp
+)
+
+add_executable(test_curve_frame_lookup ${TEST_CFL_SOURCES})
+
+target_include_directories(test_curve_frame_lookup PRIVATE
+  ${CMAKE_SOURCE_DIR}
+  ${REPO_ROOT}/include)
+
+if(MSVC)
+  target_compile_options(test_curve_frame_lookup PRIVATE /W3 /utf-8 /EHa)
+  # M_PI etc. are not in <cmath> under MSVC without _USE_MATH_DEFINES.
+  target_compile_definitions(test_curve_frame_lookup PRIVATE _USE_MATH_DEFINES)
 endif()
 
 # ------------------------------------------------------------------
@@ -146,9 +207,40 @@ if(MSVC)
 endif()
 
 # ------------------------------------------------------------------
+# test_offset_clipper2 — standalone test for the Clipper2 offset
+# wrapper introduced in Stage B of plan-20260514-clipper2-offset-
+# backend.md. Compiles the production offset_clipper2.cpp directly
+# against Clipper2; **no PreVABS lib linked**, only headers needed
+# from include/.
+# ------------------------------------------------------------------
+set(TEST_OFFSET_CLIPPER2_SOURCES
+  catch_amalgamated.cpp
+  test_offset_clipper2.cpp
+  ${SRC_GEO}/adaptive_thickness.cpp
+  ${SRC_GEO}/variable_offset.cpp
+  ${SRC_GEO}/offset_clipper2.cpp
+  ${SRC_GEO}/offset_clipper2_bridge.cpp
+  ${SRC_ROOT}/globalConstants.cpp
+)
+
+add_executable(test_offset_clipper2 ${TEST_OFFSET_CLIPPER2_SOURCES})
+
+target_include_directories(test_offset_clipper2 PRIVATE
+  ${CMAKE_SOURCE_DIR}
+  ${REPO_ROOT}/include)
+
+target_link_libraries(test_offset_clipper2 PRIVATE Clipper2)
+
+if(MSVC)
+  target_compile_options(test_offset_clipper2 PRIVATE /W3 /utf-8 /EHa)
+endif()
+
+# ------------------------------------------------------------------
 # CTest registration
 # ------------------------------------------------------------------
 enable_testing()
-add_test(NAME geo_tests  COMMAND test_geo)
-add_test(NAME dcel_tests COMMAND test_dcel)
-add_test(NAME pui_tests  COMMAND test_pui)
+add_test(NAME geo_tests                COMMAND test_geo)
+add_test(NAME dcel_tests               COMMAND test_dcel)
+add_test(NAME pui_tests                COMMAND test_pui)
+add_test(NAME curve_frame_lookup_tests COMMAND test_curve_frame_lookup)
+add_test(NAME offset_clipper2_tests    COMMAND test_offset_clipper2)

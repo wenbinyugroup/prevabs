@@ -1,0 +1,127 @@
+<!--
+  Minimal repro: open c-spar segment, thin first layer; the layer-1
+  split corrupts the segment face.
+
+  See local/issue-20260628-clipper2-open-layer1-collinear-hook.md and
+  README.md (this folder).
+
+  This is share/examples/ex_airfoil_dspar/cs_main.xml with the trailing
+  -edge (te) and fill_aft COMPONENTS removed, i.e. only the d-spar part:
+    spar component = c-spar segment (base = airfoil arc p4 .. LE .. p3,
+    OPEN) + web segment (chord p3 .. p4).
+  Layup = thin graphite skin (2 plies) + 4-group spar laminate, inward.
+
+  Root cause: the first (skin) layer is so thin relative to the dense
+  base that its trimmed offset curve forms a near-collinear "hook" at
+  the p4/p3 open ends (the ends are reshaped by the JOIN with the web).
+  splitFaceByPolyline's angle-sort (updateEdgeNeighbors) hits delta ~=
+  5e-15 rad and mis-forms the split loops, so the first split corrupts
+  the segment face instead of bisecting it into [layer-1 band | rest].
+
+  NOTES on faithfulness:
+   - The WEB is required: without it the first split fails cleanly
+     BEFORE mutation and falls back to legacy (passes).
+   - The te BASELINES (bsl_te_*) and p7/p8 are kept even though no
+     component uses them directly: they split ln_af and so set the
+     c-spar base discretization. Removing them changes the vertex
+     layout and the crash flips between the controlled "failed to split
+     layer 1" abort and a raw SEH access violation (same root cause).
+
+  Expected (HEAD, open route-ii):
+    xx fatal exception: ... layered offset[sgm_blk_1]: failed to split
+       layer 1 into cells after the shared DCEL was already mutated ...
+  with two "updateEdgeNeighbors: near-degenerate outgoing edge angles
+  ... (delta=~5e-15 rad)" warnings just above it.
+
+  Closing the loop (base "p4:p3,p4", single closed segment) routes to
+  the legacy builder and passes, proving the geometry/thickness are
+  meshable and the defect is in the open layered-offset route.
+-->
+<cross_section name="cspar_layer1" format="1">
+
+    <include>
+        <material>material_database_us_ft</material>
+    </include>
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <translate>0.25 0</translate>
+        <scale>1.73</scale>
+        <mesh_size>0.01</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+    <baselines>
+
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="1" direction="1" header="1">sc1095.dat</points>
+            <flip>1</flip>
+            <reverse>1</reverse>
+        </line>
+
+        <point name="p3" on="ln_af" by="x2" which="top">0.6</point>
+        <point name="p4" on="ln_af" by="x2" which="bottom">0.6</point>
+
+        <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
+        <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
+
+        <!-- c-spar base: airfoil arc p4 .. LE .. p3 (OPEN) -->
+        <line name="line_spar_c">
+          <points>p4:p3</points>
+        </line>
+
+        <!-- web: chord p3 .. p4 (required to reproduce) -->
+        <line name="line_spar_web_aft" type="arc">
+            <start>p3</start>
+            <end>p4</end>
+            <curvature>0</curvature>
+            <side>right</side>
+            <direction>ccw</direction>
+        </line>
+
+        <!-- te baselines: unused by any component, kept only to split
+             ln_af so the c-spar discretization matches cs_main.xml -->
+        <line name="bsl_te_top">
+            <points>p3:p7</points>
+        </line>
+        <line name="bsl_te">
+            <points>p7:p8</points>
+        </line>
+        <line name="bsl_te_bottom">
+            <points>p8:p4</points>
+        </line>
+
+        <point name="pfte1">0.5 0</point>
+
+    </baselines>
+
+    <layups>
+
+        <layup name="lyp_skin_graphite">
+            <layer lamina="T300 15k/976_0.0053">0:2</layer>
+        </layup>
+
+        <layup name="lyp_spar">
+            <layer lamina="AS4 12k/E7K8_0.0054">-34:8</layer>
+            <layer lamina="AS4 12k/E7K8_0.0054">51:8</layer>
+            <layer lamina="AS4 12k/E7K8_0.0054">57:8</layer>
+            <layer lamina="AS4 12k/E7K8_0.0054">-48:8</layer>
+        </layup>
+
+    </layups>
+
+    <component name="spar">
+        <segments>
+            <baseline>line_spar_c</baseline>
+            <layup>lyp_skin_graphite</layup>
+            <layup>lyp_spar</layup>
+        </segments>
+        <segments>
+            <baseline>line_spar_web_aft</baseline>
+            <layup>lyp_skin_graphite</layup>
+            <layup>lyp_spar</layup>
+        </segments>
+    </component>
+
+</cross_section>

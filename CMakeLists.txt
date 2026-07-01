@@ -53,14 +53,24 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/cs/PFilling.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PModel.cpp
   ${CMAKE_SOURCE_DIR}/src/cs/PSegment.cpp
+  ${CMAKE_SOURCE_DIR}/src/debug/baseOffsetMapSvg.cpp
+  ${CMAKE_SOURCE_DIR}/src/debug/baseOffsetMapJson.cpp
+  ${CMAKE_SOURCE_DIR}/src/debug/segmentBuildDump.cpp
   ${CMAKE_SOURCE_DIR}/src/execu.cpp
   ${CMAKE_SOURCE_DIR}/src/execu_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/adaptive_thickness.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/DCELSweepLine.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/DCELValidator.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/curve.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/CurveFrameLookup.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geo_diagnostics.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/geo_math.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/geometry_tolerance.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/intersect.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2_bridge.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2_pdcel.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PBST.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PDCEL.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PDCELFace.cpp
@@ -70,7 +80,9 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoClasses.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoLine.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/polyline.cpp
+  ${CMAKE_SOURCE_DIR}/src/geo/variable_offset.cpp
   ${CMAKE_SOURCE_DIR}/src/GeometryRepository.cpp
+  ${CMAKE_SOURCE_DIR}/src/globalConstants.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelBuildGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/gmsh/PModelIOGmsh.cpp
   ${CMAKE_SOURCE_DIR}/src/io/PModelIO.cpp
@@ -126,6 +138,32 @@ set(CPPTERMINAL_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(CPPTERMINAL_ENABLE_DOCS    OFF CACHE BOOL "" FORCE)
 add_subdirectory(extern/cpp-terminal)
 target_link_libraries(${PROJECTNAME} cpp-terminal::cpp-terminal)
+
+
+# Clipper2 (FetchContent, pinned to release tag Clipper2_2.0.1)
+# -------------------------------------------------------------
+# Used by the upcoming offset backend rewrite (plan-20260514-clipper2-
+# offset-backend.md). Stage A wires the dependency only; src/geo/offset.cpp
+# still uses the legacy implementation until Stage B/C land.
+#
+# Notes:
+# - The current integration links the bare target name `Clipper2`.
+# - Precision constraints for InflatePaths are tracked separately in
+#   local/issue-20260515-clipper2-airfoil-a0.md and should be revalidated
+#   against the pinned Clipper2 release when that behavior matters.
+include(FetchContent)
+set(CLIPPER2_TESTS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_UTILS    OFF CACHE BOOL "" FORCE)
+set(CLIPPER2_USINGZ   OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  clipper2
+  GIT_REPOSITORY https://github.com/AngusJohnson/Clipper2.git
+  GIT_TAG        Clipper2_2.0.1
+  SOURCE_SUBDIR  CPP
+)
+FetchContent_MakeAvailable(clipper2)
+target_link_libraries(${PROJECTNAME} Clipper2)
 
 
 # Link Gmsh library

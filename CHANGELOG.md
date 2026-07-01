@@ -1,5 +1,29 @@
 # Change log
 
+## Version 2.1
+
+- 2.1.0 (2026/05)
+  - **Geometry — Clipper2 offset backend**: Replaced the
+    multi-vertex offset for **closed base contours** (typical airfoil
+    profiles) with the [Clipper2](https://github.com/AngusJohnson/Clipper2)
+    polygon-inflation library, bringing industrial-grade handling of
+    trailing-edge cusps, multi-self-intersections, miter overshoots,
+    and disconnected branches. Open base polylines continue to use
+    the legacy 5-stage miter-join pipeline; the 2-vertex fast path is
+    unchanged. XML input, `.sg` output, and the base/offset
+    correspondence map are all preserved for the integration test
+    suite (33 cases).
+    New warnings on closed contours expose local half-thickness
+    issues (`local half-thickness < |dist|` / `< 2*|dist|`), dropped
+    base-index ranges (`skin dropped over base indices [L..H]`), and
+    multi-branch Clipper2 output (`K disconnected polygons; kept
+    primary (area=...), dropped smaller pieces (areas=...)`).
+    See `Layup offset (geometry)` chapter for full coverage.
+  - **Tests — new thin-TE airfoil integration cases**:
+    `airfoil_ah79k132_skin_only` and `airfoil_ah79k143_skin_only`
+    promoted from `test/debug/` to `t9_airfoil` (both previously
+    failing with the legacy backend, now passing).
+
 ## Version 2.0
 
 - 2.0.0 (2026/05)

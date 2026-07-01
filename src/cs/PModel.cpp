@@ -46,15 +46,6 @@ PModel::PModel(std::string name) {
 
 void PModel::initialize() {
 
-  if (config.debug_level >= DebugLevel::phase) {
-    runtime.fdeb = fopen(config.file_name_deb.c_str(), "w");
-    if (!runtime.fdeb) {
-      std::cerr << "ERROR: Cannot open debug file: " << config.file_name_deb
-                << std::endl;
-      config.debug_level = DebugLevel::off;
-    }
-  }
-
   gmsh::initialize();
 
   // Control Gmsh's own console output (meshing progress, info lines, etc.).
@@ -72,11 +63,6 @@ void PModel::finalize() {
 
   gmsh::finalize();
   // GmshFinalize();
-
-  if (config.debug_level >= DebugLevel::phase && runtime.fdeb) {
-    fclose(runtime.fdeb);
-    runtime.fdeb = nullptr;
-  }
 
 }
 
@@ -271,6 +257,7 @@ void PModel::plotGeoDebug(bool create_gmsh_geo) {
   _gmsh_vertex_tags.clear();
   _gmsh_edge_tags.clear();
   _gmsh_face_tags.clear();
+  _gmsh_collapsed_halfedges.clear();
   _gmsh_face_embedded_vertex_tags.clear();
   _gmsh_face_embedded_edge_tags.clear();
   _gmsh_face_physical_group_tags.clear();
@@ -295,6 +282,7 @@ void plotGeoSnapshotImpl(
   model->_gmsh_vertex_tags.clear();
   model->_gmsh_edge_tags.clear();
   model->_gmsh_face_tags.clear();
+  model->_gmsh_collapsed_halfedges.clear();
   model->_gmsh_face_embedded_vertex_tags.clear();
   model->_gmsh_face_embedded_edge_tags.clear();
   model->_gmsh_face_physical_group_tags.clear();

@@ -1,0 +1,12 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  offset (multi-vertex, open): skin dropped over base indices [1..1] due to insufficient local thickness
+[warning]  offset (multi-vertex, open): only 2 offset verts produced for 3 base verts (M/N=0.67). The layup half-thickness 0.08 likely exceeds the local base curvature radius along part of the curve — Clipper2 has merged base corners during inset. Downstream mesh recovery typically fails below M/N=0.7. Consider reducing layup thickness, splitting the layup over a denser baseline, or excluding the thin region from the layup.
+[warning]  layered offset[sgm_1]: shell/base vertex count mismatch (base=3, shell=2); falling back to legacy area/layer build
+[warning]  splitEdge: repeated splits on edge lineage #5 (3 splits in current phase), edge=he#23 v#6( 0 , -1 , 0.08 ) -> v#11( 0 , -1 , 0.02 ) | loop: loop#2 | face: f#2 [sgm_1_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (4 splits in current phase), edge=he#27 v#6( 0 , -1 , 0.08 ) -> v#12( 0 , -1 , 0.03 ) | loop: loop#2 | face: f#2 [sgm_1_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (5 splits in current phase), edge=he#31 v#6( 0 , -1 , 0.08 ) -> v#13( 0 , -1 , 0.05 ) | loop: loop#2 | face: f#2 [sgm_1_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (6 splits in current phase), edge=he#35 v#6( 0 , -1 , 0.08 ) -> v#14( 0 , -1 , 0.06 ) | loop: loop#2 | face: f#2 [sgm_1_face]
+[warning]  splitEdge: repeated splits on edge lineage #6 (3 splits in current phase), edge=he#49 v#17( 0 , 1 , 0.02 ) -> v#8( 0 , 1 , 0.08 ) | loop: loop#2 | face: f#2 [sgm_1_area_1]
+[warning]  splitEdge: repeated splits on edge lineage #6 (4 splits in current phase), edge=he#53 v#18( 0 , 1 , 0.03 ) -> v#8( 0 , 1 , 0.08 ) | loop: loop#2 | face: f#2 [sgm_1_area_1]
+[warning]  splitEdge: repeated splits on edge lineage #6 (5 splits in current phase), edge=he#57 v#19( 0 , 1 , 0.05 ) -> v#8( 0 , 1 , 0.08 ) | loop: loop#2 | face: f#2 [sgm_1_area_1]
+[warning]  splitEdge: repeated splits on edge lineage #6 (6 splits in current phase), edge=he#61 v#20( 0 , 1 , 0.06 ) -> v#8( 0 , 1 , 0.08 ) | loop: loop#2 | face: f#2 [sgm_1_area_1]

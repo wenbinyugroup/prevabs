@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1380" font-family="Segoe UI, Arial, sans-serif">
+<rect width="1180" height="1380" fill="#ffffff"/>
+<text x="20" y="34" font-size="22" font-weight="bold">issue-20260628 当前失败点：最后一层 outer(shell)-stall connector 扇 → step 5 退化分裂</text>
+<text x="20" y="58" font-size="14" fill="#444">inner = curves[last] (74 pts, 内侧)  ·  outer = shell (70 pts, 外侧)  ·  staircase pairs = 75  ·  失败: splitLayerBandIntoCells(final layer)</text>
+<g transform="translate(20,72)">
+<line x1="0" y1="8" x2="34" y2="8" stroke="#1565c0" stroke-width="2"/><text x="40" y="12" font-size="13">inner = curves[last]</text>
+<line x1="220" y1="8" x2="254" y2="8" stroke="#2e7d32" stroke-width="2"/><text x="260" y="12" font-size="13">outer = shell</text>
+<line x1="420" y1="8" x2="454" y2="8" stroke="#bbbbbb" stroke-width="1.2"/><text x="460" y="12" font-size="13">正常 connector</text>
+<line x1="620" y1="8" x2="654" y2="8" stroke="#d40000" stroke-width="2"/><text x="660" y="12" font-size="13">outer-stall connector（共享同一 shell 顶点）</text>
+</g>
+<rect x="20" y="96" width="1140" height="360" fill="#fafafa" stroke="#ccc"/>
+<text x="32" y="120" font-size="16" font-weight="bold">A  最后一层整体（inner/outer + 全部 staircase connector，红=outer-stall）</text>
+<line x1="115.9" y1="382.0" x2="121.0" y2="377.0" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="133.1" y1="382.4" x2="133.2" y2="377.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="182.9" y1="383.4" x2="183.0" y2="378.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="234.4" y1="384.3" x2="232.9" y2="379.2" stroke="#d40000" stroke-width="2"/>
+<line x1="248.0" y1="384.4" x2="232.9" y2="379.2" stroke="#d40000" stroke-width="2"/>
+<line x1="248.0" y1="384.5" x2="232.9" y2="379.2" stroke="#d40000" stroke-width="2"/>
+<line x1="282.6" y1="385.0" x2="282.7" y2="379.9" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="332.5" y1="385.5" x2="332.5" y2="380.4" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="382.3" y1="385.8" x2="382.3" y2="380.7" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="419.7" y1="385.9" x2="419.7" y2="380.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="457.0" y1="385.9" x2="457.0" y2="380.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="494.4" y1="385.8" x2="494.4" y2="380.7" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="531.7" y1="385.5" x2="531.7" y2="380.4" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="569.1" y1="385.0" x2="569.0" y2="379.9" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="606.4" y1="384.3" x2="606.3" y2="379.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="643.7" y1="383.5" x2="643.6" y2="378.4" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="681.0" y1="382.3" x2="680.9" y2="377.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="718.3" y1="380.9" x2="718.1" y2="375.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="755.6" y1="379.2" x2="755.3" y2="374.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="792.8" y1="377.1" x2="792.5" y2="372.0" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="830.1" y1="374.5" x2="829.7" y2="369.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="854.9" y1="372.6" x2="854.4" y2="367.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="879.5" y1="370.4" x2="879.0" y2="365.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="904.1" y1="367.6" x2="903.4" y2="362.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="928.4" y1="364.2" x2="927.6" y2="359.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="952.6" y1="359.8" x2="951.6" y2="354.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="971.8" y1="355.2" x2="970.5" y2="350.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="986.1" y1="351.1" x2="984.6" y2="346.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1000.5" y1="346.4" x2="998.8" y2="341.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1014.7" y1="341.1" x2="1012.8" y2="336.4" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1028.5" y1="335.1" x2="1026.2" y2="330.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1042.0" y1="327.4" x2="1039.2" y2="323.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1048.2" y1="323.0" x2="1045.0" y2="319.0" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1053.2" y1="318.7" x2="1049.7" y2="315.0" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1058.4" y1="313.3" x2="1054.6" y2="309.9" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1062.4" y1="308.5" x2="1058.3" y2="305.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1063.8" y1="306.4" x2="1058.7" y2="304.8" stroke="#d40000" stroke-width="2"/>
+<line x1="1064.1" y1="305.3" x2="1058.7" y2="304.8" stroke="#d40000" stroke-width="2"/>
+<line x1="1064.1" y1="305.1" x2="1058.7" y2="304.8" stroke="#d40000" stroke-width="2"/>
+<line x1="1063.3" y1="302.3" x2="1058.7" y2="304.8" stroke="#d40000" stroke-width="2"/>
+<line x1="1063.3" y1="302.3" x2="1058.6" y2="304.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1061.7" y1="299.1" x2="1057.3" y2="301.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1057.7" y1="293.5" x2="1053.6" y2="296.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1052.3" y1="287.2" x2="1048.5" y2="290.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1046.9" y1="281.6" x2="1043.3" y2="285.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1040.2" y1="275.6" x2="1036.9" y2="279.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1026.3" y1="264.9" x2="1023.4" y2="269.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="1012.6" y1="256.1" x2="1010.0" y2="260.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="998.6" y1="248.7" x2="996.4" y2="253.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="984.6" y1="242.4" x2="982.6" y2="247.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="970.5" y1="236.9" x2="968.8" y2="241.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="951.3" y1="230.7" x2="949.9" y2="235.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="927.2" y1="224.3" x2="925.9" y2="229.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="902.8" y1="218.8" x2="901.8" y2="223.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="878.3" y1="214.2" x2="877.4" y2="219.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="853.8" y1="210.2" x2="853.0" y2="215.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="829.2" y1="206.8" x2="828.5" y2="211.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="792.1" y1="202.4" x2="791.6" y2="207.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="755.0" y1="198.8" x2="754.5" y2="203.9" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="717.8" y1="195.7" x2="717.4" y2="200.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="680.5" y1="193.1" x2="680.2" y2="198.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="643.3" y1="191.0" x2="643.0" y2="196.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="606.1" y1="189.2" x2="605.9" y2="194.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="568.8" y1="187.9" x2="568.7" y2="193.0" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="531.6" y1="187.0" x2="531.5" y2="192.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="494.3" y1="186.4" x2="494.2" y2="191.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="457.0" y1="186.1" x2="457.0" y2="191.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="419.7" y1="186.1" x2="419.7" y2="191.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="382.3" y1="186.2" x2="382.4" y2="191.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="332.5" y1="186.7" x2="332.6" y2="191.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="282.7" y1="187.4" x2="282.8" y2="192.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="232.9" y1="188.4" x2="233.0" y2="193.5" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="183.1" y1="189.7" x2="183.2" y2="194.8" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="133.3" y1="191.1" x2="133.4" y2="196.2" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="115.9" y1="191.7" x2="121.0" y2="196.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<path d="M115.9 382.0 L133.1 382.4 L182.9 383.4 L234.4 384.3 L248.0 384.4 L248.0 384.5 L282.6 385.0 L332.5 385.5 L382.3 385.8 L419.7 385.9 L457.0 385.9 L494.4 385.8 L531.7 385.5 L569.1 385.0 L606.4 384.3 L643.7 383.5 L681.0 382.3 L718.3 380.9 L755.6 379.2 L792.8 377.1 L830.1 374.5 L854.9 372.6 L879.5 370.4 L904.1 367.6 L928.4 364.2 L952.6 359.8 L971.8 355.2 L986.1 351.1 L1000.5 346.4 L1014.7 341.1 L1028.5 335.1 L1042.0 327.4 L1048.2 323.0 L1053.2 318.7 L1058.4 313.3 L1062.4 308.5 L1063.8 306.4 L1064.1 305.3 L1064.1 305.1 L1063.3 302.3 L1061.7 299.1 L1057.7 293.5 L1052.3 287.2 L1046.9 281.6 L1040.2 275.6 L1026.3 264.9 L1012.6 256.1 L998.6 248.7 L984.6 242.4 L970.5 236.9 L951.3 230.7 L927.2 224.3 L902.8 218.8 L878.3 214.2 L853.8 210.2 L829.2 206.8 L792.1 202.4 L755.0 198.8 L717.8 195.7 L680.5 193.1 L643.3 191.0 L606.1 189.2 L568.8 187.9 L531.6 187.0 L494.3 186.4 L457.0 186.1 L419.7 186.1 L382.3 186.2 L332.5 186.7 L282.7 187.4 L232.9 188.4 L183.1 189.7 L133.3 191.1 L115.9 191.7 " fill="none" stroke="#1565c0" stroke-width="2"/>
+<path d="M121.0 377.0 L133.2 377.3 L183.0 378.3 L232.9 379.2 L282.7 379.9 L332.5 380.4 L382.3 380.7 L419.7 380.8 L457.0 380.8 L494.4 380.7 L531.7 380.4 L569.0 379.9 L606.3 379.2 L643.6 378.4 L680.9 377.2 L718.1 375.8 L755.3 374.1 L792.5 372.0 L829.7 369.5 L854.4 367.5 L879.0 365.3 L903.4 362.6 L927.6 359.2 L951.6 354.8 L970.5 350.3 L984.6 346.3 L998.8 341.6 L1012.8 336.4 L1026.2 330.5 L1039.2 323.1 L1045.0 319.0 L1049.7 315.0 L1054.6 309.9 L1058.3 305.5 L1058.7 304.8 L1058.6 304.2 L1057.3 301.8 L1053.6 296.6 L1048.5 290.6 L1043.3 285.3 L1036.9 279.5 L1023.4 269.1 L1010.0 260.5 L996.4 253.3 L982.6 247.1 L968.8 241.8 L949.9 235.6 L925.9 229.2 L901.8 223.8 L877.4 219.2 L853.0 215.3 L828.5 211.8 L791.6 207.5 L754.5 203.9 L717.4 200.8 L680.2 198.2 L643.0 196.1 L605.9 194.3 L568.7 193.0 L531.5 192.1 L494.2 191.5 L457.0 191.2 L419.7 191.2 L382.4 191.3 L332.6 191.8 L282.8 192.6 L233.0 193.5 L183.2 194.8 L133.4 196.2 L121.0 196.6 " fill="none" stroke="#2e7d32" stroke-width="2"/>
+<text x="40" y="444" font-size="12" fill="#666">头部 (左端，p4) 处 shell 点稀疏 → outer 侧 stall；尾部 stall 在 inner 侧（安全）。退化只发生在头部 outer-stall。</text>
+<rect x="20" y="480" width="1140" height="470" fill="#fafafa" stroke="#ccc"/>
+<text x="32" y="504" font-size="16" font-weight="bold">B  头部放大（纵向 z 拉伸显形）：connector 从单个 shell 顶点 o3 扇出 → step4/step5 近零面积 sliver</text>
+<text x="32" y="524" font-size="12" fill="#c62828">⚠ 纵向 z 已独立拉伸以显形（角度被扭曲）；真实层厚见面板 A</text>
+<line x1="115.9" y1="771.9" x2="116.4" y2="586.3" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="352.9" y1="809.1" x2="353.4" y2="623.6" stroke="#bbbbbb" stroke-width="0.8"/>
+<line x1="597.7" y1="841.5" x2="590.3" y2="654.9" stroke="#d40000" stroke-width="2"/>
+<line x1="662.3" y1="843.6" x2="590.3" y2="654.9" stroke="#d40000" stroke-width="2"/>
+<line x1="662.3" y1="849.0" x2="590.3" y2="654.9" stroke="#d40000" stroke-width="2"/>
+<line x1="826.9" y1="865.7" x2="827.3" y2="680.1" stroke="#bbbbbb" stroke-width="0.8"/>
+<path d="M115.9 771.9 L352.9 809.1 L597.7 841.5 L662.3 843.6 L662.3 849.0 L826.9 865.7 " fill="none" stroke="#1565c0" stroke-width="2"/>
+<path d="M116.4 586.3 L353.4 623.6 L590.3 654.9 L827.3 680.1 L1064.1 698.7 " fill="none" stroke="#2e7d32" stroke-width="2"/>
+<circle cx="115.9" cy="771.9" r="3.5" fill="#1565c0"/>
+<text x="120.9" y="766.9" font-size="11" fill="#0d47a1">i1</text>
+<circle cx="352.9" cy="809.1" r="3.5" fill="#1565c0"/>
+<text x="357.9" y="804.1" font-size="11" fill="#0d47a1">i2</text>
+<circle cx="597.7" cy="841.5" r="3.5" fill="#1565c0"/>
+<text x="602.7" y="836.5" font-size="11" fill="#0d47a1">i3</text>
+<circle cx="662.3" cy="843.6" r="3.5" fill="#1565c0"/>
+<text x="667.3" y="838.6" font-size="11" fill="#0d47a1">i4</text>
+<circle cx="662.3" cy="849.0" r="3.5" fill="#1565c0"/>
+<text x="667.3" y="844.0" font-size="11" fill="#0d47a1">i5</text>
+<circle cx="826.9" cy="865.7" r="3.5" fill="#1565c0"/>
+<text x="831.9" y="860.7" font-size="11" fill="#0d47a1">i6</text>
+<circle cx="116.4" cy="586.3" r="3.5" fill="#2e7d32"/>
+<text x="121.4" y="600.3" font-size="11" fill="#1b5e20">o1</text>
+<circle cx="353.4" cy="623.6" r="3.5" fill="#2e7d32"/>
+<text x="358.4" y="637.6" font-size="11" fill="#1b5e20">o2</text>
+<circle cx="590.3" cy="654.9" r="3.5" fill="#2e7d32"/>
+<text x="595.3" y="668.9" font-size="11" fill="#1b5e20">o3</text>
+<circle cx="827.3" cy="680.1" r="3.5" fill="#2e7d32"/>
+<text x="832.3" y="694.1" font-size="11" fill="#1b5e20">o4</text>
+<circle cx="1064.1" cy="698.7" r="3.5" fill="#2e7d32"/>
+<text x="1069.1" y="712.7" font-size="11" fill="#1b5e20">o5</text>
+<polygon points="597.7,841.5 662.3,843.6 590.3,654.9" fill="#ff9800" stroke="#e65100" stroke-width="1.5" fill-opacity="0.5"/>
+<polygon points="662.3,843.6 662.3,849.0 590.3,654.9" fill="#f44336" stroke="#b71c1c" stroke-width="1.5" fill-opacity="0.5"/>
+<rect x="20" y="972" width="1140" height="388" fill="#fff8e1" stroke="#ffe082"/>
+<text x="36" y="998" font-size="16" font-weight="bold" fill="#bf360c">C  机制（step 1 埋点实测，已回退）</text>
+<text x="36" y="1028" font-size="13" font-weight="normal" fill="#333">staircase pairs 头部： (b0,o0)(b1,o1)(b2,o2)(b3,o3)(b4,o3)(b5,o3)(b6,o4)…  ← base 3/4/5 都配 offset 3 = outer(shell) 侧 stall</text>
+<text x="36" y="1054" font-size="13" font-weight="normal" fill="#333">• step 4 connector = (inner[4], outer[3])，step 5 connector = (inner[5], outer[3])  —— 两条都从同一个 shell 顶点 outer[3] 扇出。</text>
+<text x="36" y="1080" font-size="13" font-weight="normal" fill="#333">• 薄层头部，这两刀夹出的三角形是近零面积 sliver（实测 d0≈1.3e-6 / 2.9e-6）。</text>
+<text x="36" y="1106" font-size="13" font-weight="bold" fill="#b71c1c">• step 5 的 splitFaceByPolyline 返回两张面：c0 ≡ c1 = (1.57102, -0.054969)，边数同为 8 —— 退化分裂（两面重合）。</text>
+<text x="36" y="1132" font-size="13" font-weight="normal" fill="#333">• d0&lt;=d1 平局把退化 8-边 sliver 选为 remaining（回折成 8 字：v#84/379/380 各两次 + v#305/378）。</text>
+<text x="36" y="1158" font-size="13" font-weight="bold" fill="#b71c1c">• step 6 在该退化 sliver 上 split → split_faces=0 → fatal（端点掉出边界是结果，不是根因）。</text>
+<text x="36" y="1184" font-size="13" font-weight="normal" fill="#1b5e20">对照：前面各层 stall 在 inner 侧（apex 落在 inner 曲线，三角形正常可切，全部成功）。inner-stall 安全 / outer-stall 退化 = 关键不对称。</text>
+<text x="36" y="1210" font-size="13" font-weight="bold" fill="#0d47a1">修复方向：(D) 构造 connector 前对 pairs 做去退化归并——连续同 offset(或同 base)的台阶合并成一刀，避免从单顶点扇出零面积 cell；(B) split 后自检 |c0-c1|&lt;tol / 边数&lt;3 作兜底。</text>
+</svg>

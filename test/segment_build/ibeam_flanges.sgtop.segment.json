@@ -1,0 +1,18 @@
+{
+  "segment": "sgtop",
+  "closed": false,
+  "route": "legacy",
+  "base_vertices": 3,
+  "offset_vertices": 2,
+  "layers": 0,
+  "face_count": 2,
+  "n_inverted": 0,
+  "n_sliver": 0,
+  "n_degenerate": 0,
+  "ok": true,
+  "path": ["buildAreas: enter (closed=N, base_verts=3)", "buildAreas: useLayeredOffset=yes", "layered: enter (n_layers=2, side=1)", "layered: shell/base vertex mismatch (base=3, shell=2) -> FALLBACK", "buildAreas: layered FELL BACK -> legacy", "legacy: built areas=1 -> AreasBuilt"],
+  "faces": [
+    {"name": "sgtop_area_1_layer_2", "layer": -1, "material": "iso5_2", "theta3": 0, "verts": 4, "area": 0.1, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgtop_area_1_layer_1", "layer": -1, "material": "iso5_1", "theta3": 90, "verts": 5, "area": 0.12, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false}
+  ]
+}

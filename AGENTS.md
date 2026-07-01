@@ -6,7 +6,11 @@ PreVABS is a C++ preprocessing tool for VABS and SwiftComp. It builds cross-sect
 
 - **Language**: C++11
 - **Build System**: CMake (minimum 3.14)
-- **Dependencies**: Gmsh SDK, git submodule `extern/cpp-terminal`
+- **Dependencies**:
+  - Gmsh SDK (manual install, located via `$Gmsh_ROOT`)
+  - git submodule `extern/cpp-terminal`
+  - [Clipper2](https://github.com/AngusJohnson/Clipper2) 1.4.0 (pulled
+    via CMake FetchContent on first configure; requires network access)
 - **Test Framework**: [Catch2](https://github.com/catchorg/Catch2) (unit, single-header v3.x), CTest (integration)
 
 ## First Principles
@@ -41,6 +45,14 @@ git submodule update --init --recursive extern/cpp-terminal
 After pulling new commits from the main repository, rerun
 `git submodule update --init --recursive` so `extern/cpp-terminal` matches the
 submodule commit pinned by PreVABS.
+
+Clipper2 is pulled via CMake `FetchContent` at the pinned release tag
+`Clipper2_1.4.0`. The first `cmake ..` invocation requires network
+access to GitHub. Subsequent configures reuse the cached download under
+`build_msvc/_deps/`. The Clipper2 1.4.0 hard ceiling for
+`InflatePaths(..., precision)` is **8** (see
+[local/issue-20260515-clipper2-airfoil-a0.md](local/issue-20260515-clipper2-airfoil-a0.md) §3.1);
+passing 9 throws `Clipper2Exception("Precision exceeds the permitted range")`.
 
 ### Windows (MSVC)
 
@@ -157,6 +169,21 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 cle
 pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 clean -Filter t6
 ```
 
+The `vabs` mode bypasses CTest and runs `prevabs -i <case>.xml --hm -e` directly
+for every `main` case, executing VABS, then summarises pass/fail in
+`test/integration/build_msvc/vabs-report.md`. A case PASSes only when prevabs
+exits 0 **and** VABS wrote `<case>.sg.K` (prevabs returns 0 even when VABS
+fails, so the output file is the real success signal); otherwise it is reported
+as `BUILD-FAIL`, `VABS-FAIL`, or `TIMEOUT`.
+
+```powershell
+# Execute VABS for every case and summarise
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 vabs
+
+# Execute VABS only for t1_strip cases (Filter is a regex on "<dir>/<case>")
+pwsh -NoProfile -ExecutionPolicy Bypass -File test\run-integration-tests.ps1 vabs -Filter t1
+```
+
 Or call CTest directly (after the script has run once to configure the build directory):
 
 ```powershell
@@ -164,6 +191,32 @@ ctest --test-dir test\integration\build_msvc --output-on-failure
 ctest --test-dir test\integration\build_msvc -R t1        # filter by name regex
 ctest --test-dir test\integration\build_msvc -L t1_strip  # filter by label
 ```
+
+**Examples:**
+
+The examples runner discovers cases from `share/examples/*/meta.json`. It uses
+the metadata `run_command` when present; otherwise it runs the first XML input
+as `prevabs -i <input>.xml --hm`.
+
+```powershell
+# Run all examples (from repo root)
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1
+
+# Run examples whose directory name matches the regex
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -Filter airfoil
+
+# Execute VABS for every example and verify its generated result
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -e
+
+# Execute VABS for one example
+pwsh -NoProfile -ExecutionPolicy Bypass -File share\examples\run-examples.ps1 -e -Filter "ex_box$"
+```
+
+The report is written to `share/examples/examples-report.md`, with full
+per-example output under `share/examples/example-logs/`. In `-e` mode, a case
+passes only when VABS reports successful completion and freshly writes its
+mode-specific result (`.sg.K`, `.sg.ELE`, or `.sg.fi`). The script exits with
+code 1 if any case fails, times out, or has invalid metadata.
 
 Adding a new test: create the directory, add `INDEX.txt` with the `main`/`support` sections,
 and drop the XML input file in. No script changes needed — CMakeLists.txt picks it up automatically.

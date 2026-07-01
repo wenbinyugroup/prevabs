@@ -1,6 +1,7 @@
 #include "PModel.hpp"
 
 #include "PDCELFace.hpp"
+#include "PDCELUtils.hpp"
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -17,12 +18,215 @@
 // #include "gmsh/MElement.h"
 // #include "gmsh/MTriangle.h"
 
+#include <chrono>
+#include <atomic>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
+#include <thread>
 #include <vector>
 #include <utility>
+
+namespace {
+
+const double kGmshFailFastMaxRetries = 1.0;
+const double kGmshMeshingHardTimeoutSeconds = 12.0;
+const int kGmshEdgeRecoveryWarningLimit = 3;
+
+bool isGmshEdgeRecoveryMessage(const std::string &msg) {
+  return msg.find("Impossible to recover edge") != std::string::npos
+      || msg.find("Unable to recover the edge") != std::string::npos
+      || msg.find("recover the edge") != std::string::npos
+      || msg.find("error tag -1") != std::string::npos;
+}
+
+bool hasGmshEdgeRecoveryFailure(const std::vector<std::string> &log) {
+  for (const auto &msg : log) {
+    if (isGmshEdgeRecoveryMessage(msg)) return true;
+  }
+  return false;
+}
+
+int countGmshEdgeRecoveryMessages(const std::vector<std::string> &log) {
+  int count = 0;
+  for (const auto &msg : log) {
+    if (isGmshEdgeRecoveryMessage(msg)) ++count;
+  }
+  return count;
+}
+
+std::string gmshEvidenceSnippet(const std::vector<std::string> &log) {
+  std::vector<std::string> evidence;
+  for (const auto &msg : log) {
+    if (isGmshEdgeRecoveryMessage(msg)
+        || msg.find("Error") != std::string::npos) {
+      evidence.push_back(msg);
+    }
+  }
+  if (evidence.empty()) return "";
+
+  const std::size_t max_lines = 6;
+  const std::size_t first =
+      evidence.size() > max_lines ? evidence.size() - max_lines : 0;
+  std::ostringstream oss;
+  for (std::size_t i = first; i < evidence.size(); ++i) {
+    if (i != first) oss << " | ";
+    oss << evidence[i];
+  }
+  return oss.str();
+}
+
+std::string gmshMeshContext(double global_mesh_size, double elapsed_s) {
+  std::vector<std::pair<int, int>> ents;
+  try { gmsh::model::getEntities(ents, 2); } catch (...) {}
+
+  std::ostringstream oss;
+  oss << "faces=" << ents.size()
+      << ", global_mesh_size=" << global_mesh_size
+      << ", elapsed_s=" << elapsed_s;
+  return oss.str();
+}
+
+void startGmshLoggerBestEffort(bool &started) {
+  started = false;
+  try {
+    gmsh::logger::start();
+    started = true;
+  } catch (...) {}
+}
+
+void collectAndStopGmshLoggerBestEffort(
+    bool started, std::vector<std::string> &log) {
+  if (!started) return;
+  try { gmsh::logger::get(log); } catch (...) {}
+  try { gmsh::logger::stop(); } catch (...) {}
+}
+
+class GmshMeshingWatchdog {
+public:
+  GmshMeshingWatchdog(bool logger_started, double global_mesh_size)
+      : _done(false), _logger_started(logger_started),
+        _global_mesh_size(global_mesh_size), _face_count(0) {
+    std::vector<std::pair<int, int>> ents;
+    try { gmsh::model::getEntities(ents, 2); } catch (...) {}
+    _face_count = ents.size();
+    _worker = std::thread([this]() { run(); });
+  }
+
+  ~GmshMeshingWatchdog() {
+    _done.store(true);
+    if (_worker.joinable()) _worker.join();
+  }
+
+private:
+  std::atomic<bool> _done;
+  bool _logger_started;
+  double _global_mesh_size;
+  std::size_t _face_count;
+  std::thread _worker;
+
+  void failFromWatchdog(
+      const std::string &reason, double elapsed_s,
+      const std::vector<std::string> &log) {
+    const std::string evidence = gmshEvidenceSnippet(log);
+    std::ostringstream context;
+    context << "faces=" << _face_count
+            << ", global_mesh_size=" << _global_mesh_size
+            << ", elapsed_s=" << elapsed_s;
+    const std::string msg =
+        "fatal exception: gmsh mesh generation failed: " + reason
+        + " (" + context.str() + ")"
+        + (evidence.empty() ? "" : " | gmsh log: " + evidence);
+
+    PLOG(error) << msg;
+    flushPrevabsLoggers();
+    std::cerr << "xx  " << msg << std::endl;
+    std::exit(1);
+  }
+
+  void run() {
+    const auto t0 = std::chrono::steady_clock::now();
+    while (!_done.load()) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(200));
+      const auto now = std::chrono::steady_clock::now();
+      const double elapsed_s =
+          std::chrono::duration<double>(now - t0).count();
+
+      std::vector<std::string> log;
+      if (_logger_started) {
+        try { gmsh::logger::get(log); } catch (...) {}
+        if (countGmshEdgeRecoveryMessages(log)
+            >= kGmshEdgeRecoveryWarningLimit) {
+          failFromWatchdog(
+              "repeated edge recovery warnings during meshing",
+              elapsed_s, log);
+        }
+      }
+
+      if (elapsed_s >= kGmshMeshingHardTimeoutSeconds) {
+        failFromWatchdog(
+            "meshing exceeded hard time limit of "
+            + std::to_string(kGmshMeshingHardTimeoutSeconds)
+            + " seconds",
+            elapsed_s, log);
+      }
+    }
+  }
+};
+
+void generateMesh2DWithDiagnostics(double global_mesh_size) {
+  bool logger_started = false;
+  std::vector<std::string> log;
+  startGmshLoggerBestEffort(logger_started);
+
+  const auto t0 = std::chrono::steady_clock::now();
+  try {
+    gmsh::option::setNumber("General.AbortOnError", 3);
+    gmsh::option::setNumber("Mesh.MaxRetries", kGmshFailFastMaxRetries);
+  } catch (...) {}
+
+  try {
+    GmshMeshingWatchdog watchdog(logger_started, global_mesh_size);
+    gmsh::model::mesh::generate(2);
+  } catch (const std::exception &e) {
+    const auto t1 = std::chrono::steady_clock::now();
+    const double elapsed_s =
+        std::chrono::duration<double>(t1 - t0).count();
+    collectAndStopGmshLoggerBestEffort(logger_started, log);
+
+    std::string reason = e.what();
+    std::string last_error;
+    try { gmsh::logger::getLastError(last_error); } catch (...) {}
+    if (!last_error.empty() && reason.find(last_error) == std::string::npos) {
+      reason += "; last_error=" + last_error;
+    }
+
+    const std::string evidence = gmshEvidenceSnippet(log);
+    throw std::runtime_error(
+        "gmsh mesh generation failed: " + reason
+        + " (" + gmshMeshContext(global_mesh_size, elapsed_s) + ")"
+        + (evidence.empty() ? "" : " | gmsh log: " + evidence));
+  }
+
+  const auto t1 = std::chrono::steady_clock::now();
+  const double elapsed_s =
+      std::chrono::duration<double>(t1 - t0).count();
+  collectAndStopGmshLoggerBestEffort(logger_started, log);
+
+  if (hasGmshEdgeRecoveryFailure(log)) {
+    const std::string evidence = gmshEvidenceSnippet(log);
+    throw std::runtime_error(
+        "gmsh mesh generation failed: edge recovery reported failure"
+        + std::string(" (") + gmshMeshContext(global_mesh_size, elapsed_s)
+        + ")"
+        + (evidence.empty() ? "" : " | gmsh log: " + evidence));
+  }
+}
+
+}  // namespace
 
 
 
@@ -34,11 +238,43 @@ void PModel::createGmshVertices() {
 
   int _gv_tag;
 
+  // Distinct DCEL vertices that are geometrically coincident must share a
+  // single Gmsh point, otherwise Gmsh meshes each separately and any element
+  // spanning the coincident pair is degenerate (zero area -> negative Jacobian,
+  // rejected by VABS). Such coincident pairs arise where two adjacent
+  // sub-segments build their per-layer interface vertices independently on a
+  // shared end-cap (e.g. the c-spar and web both end at p3/p4), and — for open
+  // layered segments — where the final layer's arc-resampled shell point lands
+  // on top of an existing shell vertex. These independent interpolations land
+  // ~1e-8 apart (measured up to ~1e-6), at or above GEO_TOL, so the DCEL's own
+  // mid-build coincidence-merge (findCoincidentVertex) does not unify them. We cannot
+  // widen that mid-build merge (the area-build code is not robust to its
+  // vertices merging), so the sharing is realized here, at the export boundary,
+  // where the DCEL is already complete and a wider EXPORT_MERGE_TOL is safe: it
+  // sits far above the coincident gaps yet far below the smallest intentional
+  // feature (the resample min-separation, ~1e-5, and any real geometry, ~1e-3).
+  // Created points are recorded so coincident followers reuse the same tag.
+  const double EXPORT_MERGE_TOL = GEO_EXPORT_MERGE_TOL;
+  struct CreatedPoint { double x, y, z; int tag; };
+  std::vector<CreatedPoint> created;
+
+  auto tagForLocation = [&](PDCELVertex *v) -> int {
+    const double vx = v->x(), vy = v->y(), vz = v->z();
+    for (const auto &c : created) {
+      const double dx = c.x - vx, dy = c.y - vy, dz = c.z - vz;
+      if (std::sqrt(dx * dx + dy * dy + dz * dz) <= EXPORT_MERGE_TOL) {
+        return c.tag;
+      }
+    }
+    int tag = gmsh::model::geo::addPoint(vx, vy, vz, _global_mesh_size);
+    created.push_back({vx, vy, vz, tag});
+    return tag;
+  };
+
   for (auto v : _dcel->vertices()) {
 
     if (v->isFinite()) {
-      _gv_tag = gmsh::model::geo::addPoint(
-        v->x(), v->y(), v->z(), _global_mesh_size);
+      _gv_tag = tagForLocation(v);
       _gmsh_vertex_tags[v] = _gv_tag;
             PLOG_DEBUG_AT(geo) <<
         "  vertex " + v->printString()
@@ -186,39 +422,36 @@ void PModel::createGmshEdges() {
 
       if (_ge_tag == 0) {
 
-        // New Gmsh line for the pair of half edges
-        if (he->sign() > 0) {
-          int src_tag = _gmsh_vertex_tags[he->source()];
-          int tgt_tag = _gmsh_vertex_tags[he->target()];
-                    PLOG_DEBUG_AT(geo) <<
-            "  he " + he->printString()
-            + " | src_tag=" + std::to_string(src_tag)
-            + " tgt_tag=" + std::to_string(tgt_tag);
-          if (src_tag == 0 || tgt_tag == 0) {
-            PLOG(error) << "  vertex tag is 0 for he " + he->printString()
-              + " | src=" + he->source()->printString()
-              + " (tag=" + std::to_string(src_tag) + ")"
-              + " | tgt=" + he->target()->printString()
-              + " (tag=" + std::to_string(tgt_tag) + ")";
-          }
-          _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
+        // Resolve the endpoint Gmsh tags from the positively-signed half-edge.
+        PDCELHalfEdge *he_pos = (he->sign() > 0) ? he : he->twin();
+        int src_tag = _gmsh_vertex_tags[he_pos->source()];
+        int tgt_tag = _gmsh_vertex_tags[he_pos->target()];
+                  PLOG_DEBUG_AT(geo) <<
+          "  he " + he_pos->printString()
+          + " | src_tag=" + std::to_string(src_tag)
+          + " tgt_tag=" + std::to_string(tgt_tag);
+        if (src_tag == 0 || tgt_tag == 0) {
+          PLOG(error) << "  vertex tag is 0 for he " + he_pos->printString()
+            + " | src=" + he_pos->source()->printString()
+            + " (tag=" + std::to_string(src_tag) + ")"
+            + " | tgt=" + he_pos->target()->printString()
+            + " (tag=" + std::to_string(tgt_tag) + ")";
         }
-        else {
-          int src_tag = _gmsh_vertex_tags[he->twin()->source()];
-          int tgt_tag = _gmsh_vertex_tags[he->twin()->target()];
+
+        // Endpoints merged to the same Gmsh point: this is a zero-length riser
+        // (the cap-step between two coincident layer-interface vertices). Emit
+        // no Gmsh line and mark both half-edges collapsed so face-loop assembly
+        // skips them; the loop stays closed because both endpoints are the same
+        // point.
+        if (src_tag == tgt_tag) {
+          _gmsh_collapsed_halfedges.insert(he);
+          _gmsh_collapsed_halfedges.insert(he->twin());
                     PLOG_DEBUG_AT(geo) <<
-            "  he(twin) " + he->twin()->printString()
-            + " | src_tag=" + std::to_string(src_tag)
-            + " tgt_tag=" + std::to_string(tgt_tag);
-          if (src_tag == 0 || tgt_tag == 0) {
-            PLOG(error) << "  vertex tag is 0 for he(twin) " + he->twin()->printString()
-              + " | src=" + he->twin()->source()->printString()
-              + " (tag=" + std::to_string(src_tag) + ")"
-              + " | tgt=" + he->twin()->target()->printString()
-              + " (tag=" + std::to_string(tgt_tag) + ")";
-          }
-          _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
+            "  he " + he->printString() + " collapsed (coincident endpoints)";
+          continue;
         }
+
+        _ge_tag = gmsh::model::geo::addLine(src_tag, tgt_tag);
 
         // Interface
         if (_itf_output) {
@@ -269,14 +502,11 @@ void PModel::createGmshFaces() {
 
       // Add outer loop
             PLOG_DEBUG_AT(geo) << "  adding outer loop";
-      PDCELHalfEdge *he = f->outer();
-      int _iter_outer = 0;
-      do {
-        if (++_iter_outer > 65536) {
-          throw std::runtime_error(
-              "DCEL loop walk exceeded 65536 iterations"
-              " in createGmshFaces (outer loop) at " +
-              f->outer()->printString());
+      walkLoopWithLimit(f->outer(), [&](PDCELHalfEdge *he) {
+        // Skip zero-length risers collapsed by vertex dedup: no Gmsh line
+        // exists for them and the loop stays closed without them.
+        if (_gmsh_collapsed_halfedges.count(he)) {
+          return;
         }
         auto it_he = _gmsh_edge_tags.find(he);
         int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
@@ -288,9 +518,7 @@ void PModel::createGmshFaces() {
           _tag = -1 * _tag;
         }
         _ge_tags.push_back(_tag);
-        he = he->next();
-
-      } while (he != f->outer());
+      });
       _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
       _geloop_tags.push_back(_gel_tag);
 
@@ -300,14 +528,9 @@ void PModel::createGmshFaces() {
       for (auto hei : f->inners()) {
 
         _ge_tags.clear();
-        he = hei;
-        int _iter_inner = 0;
-        do {
-          if (++_iter_inner > 65536) {
-            throw std::runtime_error(
-                "DCEL loop walk exceeded 65536 iterations"
-                " in createGmshFaces (inner loop) at " +
-                hei->printString());
+        walkLoopWithLimit(hei, [&](PDCELHalfEdge *he) {
+          if (_gmsh_collapsed_halfedges.count(he)) {
+            return;
           }
           auto it_he = _gmsh_edge_tags.find(he);
           int _tag = (it_he != _gmsh_edge_tags.end()) ? it_he->second : 0;
@@ -316,9 +539,7 @@ void PModel::createGmshFaces() {
             _tag = (it_tw != _gmsh_edge_tags.end()) ? -(it_tw->second) : 0;
           }
           _ge_tags.push_back(_tag);
-          he = he->next();
-        }
-        while (he != hei);
+        });
         _gel_tag = gmsh::model::geo::addCurveLoop(_ge_tags);
         _geloop_tags.push_back(_gel_tag);
 
@@ -541,17 +762,7 @@ void PModel::buildGmsh() {
   // unsigned int mesh_algo = 6;
   // GmshSetOption("Mesh", "Algorithm", mesh_algo);
   // _gmodel->mesh(2);
-  try {
-    gmsh::model::mesh::generate(2);
-  } catch (const std::exception &e) {
-    std::vector<std::pair<int, int>> ents;
-    gmsh::model::getEntities(ents, 2);
-    throw std::runtime_error(
-      std::string("gmsh mesh generation failed: ") + e.what() +
-      " (faces=" + std::to_string(ents.size()) +
-      ", global_mesh_size=" + std::to_string(_global_mesh_size) + ")"
-    );
-  }
+  generateMesh2DWithDiagnostics(_global_mesh_size);
   // pmessage->print(1, "element type: " + std::to_string(_element_type));
   if (_element_type == 2) {
     // _gmodel->setOrderN(2, 0, 0);

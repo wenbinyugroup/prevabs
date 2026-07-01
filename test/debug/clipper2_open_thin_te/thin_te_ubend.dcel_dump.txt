@@ -1,0 +1,84 @@
+=== DCEL CRASH DUMP ===
+
+VERTICES (64):
+  v#1 (0, inf, inf) edge=he#1
+  v#2 (0, -inf, inf) edge=he#2
+  v#3 (0, -inf, -inf) edge=he#4
+  v#4 (0, inf, -inf) edge=he#6
+  v#5 (0, 0, 0.065) edge=he#9
+  v#6 (0, 1.24679, 0) edge=he#10
+  v#7 (0, 0, -0.065) edge=he#11
+  v#8 (0, 1.02372, -0.145) edge=he#12
+  v#9 (0, 0.5, 0.065) edge=he#14
+  v#10 (0, 1, 0.065) edge=he#16
+  v#11 (0, 1.1, 0) edge=he#18
+  v#12 (0, 1, -0.065) edge=he#20
+  v#13 (0, 0.5, -0.065) edge=he#22
+  v#14 (0, 1.02372, 0.145) edge=he#26
+  v#15 (0, 0, 0.145) edge=he#28
+  v#16 (0, 0, -0.145) edge=he#30
+  v#17 (0, 0.593349, 0.056875) edge=he#36
+  v#18 (0, 0.686698, 0.04875) edge=he#40
+  v#19 (0, 0.780047, 0.040625) edge=he#44
+  v#20 (0, 0.966745, 0.024375) edge=he#48
+  v#21 (0, 1.06009, 0.01625) edge=he#52
+  v#22 (0, 1.15344, 0.008125) edge=he#56
+  v#23 (0, 1.03085, 0.056875) edge=he#62
+  v#24 (0, 1.0617, 0.04875) edge=he#66
+  v#25 (0, 1.09255, 0.040625) edge=he#70
+  v#26 (0, 1.15425, 0.024375) edge=he#74
+  v#27 (0, 1.18509, 0.01625) edge=he#78
+  v#28 (0, 1.21594, 0.008125) edge=he#82
+  v#29 (0, 1.00296, 0.075) edge=he#88
+  v#30 (0, 1.00593, 0.085) edge=he#92
+  v#31 (0, 1.00889, 0.095) edge=he#96
+  v#32 (0, 1.01482, 0.115) edge=he#100
+  v#33 (0, 1.01779, 0.125) edge=he#104
+  v#34 (0, 1.02075, 0.135) edge=he#108
+  v#35 (0, 0.875, 0.075) edge=he#114
+  v#36 (0, 0.75, 0.085) edge=he#118
+  v#37 (0, 0.625, 0.095) edge=he#122
+  v#38 (0, 0.375, 0.115) edge=he#126
+  v#39 (0, 0.25, 0.125) edge=he#130
+  v#40 (0, 0.125, 0.135) edge=he#134
+  v#41 (0, 0.9625, 0.018125) edge=he#140
+  v#42 (0, 0.825, 0.03625) edge=he#144
+  v#43 (0, 0.6875, 0.054375) edge=he#148
+  v#44 (0, 0.4125, 0.090625) edge=he#152
+  v#45 (0, 0.275, 0.10875) edge=he#156
+  v#46 (0, 0.1375, 0.126875) edge=he#160
+  v#47 (0, 0.875, -0.03875) edge=he#166
+  v#48 (0, 0.75, -0.0125) edge=he#170
+  v#49 (0, 0.625, 0.01375) edge=he#174
+  v#50 (0, 0.375, 0.06625) edge=he#178
+  v#51 (0, 0.25, 0.0925) edge=he#182
+  v#52 (0, 0.125, 0.11875) edge=he#186
+  v#53 (0, 0.4375, -0.03875) edge=he#192
+  v#54 (0, 0.375, -0.0125) edge=he#196
+  v#55 (0, 0.3125, 0.01375) edge=he#200
+  v#56 (0, 0.1875, 0.06625) edge=he#204
+  v#57 (0, 0.125, 0.0925) edge=he#208
+  v#58 (0, 0.0625, 0.11875) edge=he#212
+  v#59 (0, 0, -0.075) edge=he#218
+  v#60 (0, 0, -0.085) edge=he#222
+  v#61 (0, 0, -0.095) edge=he#226
+  v#62 (0, 0, -0.115) edge=he#230
+  v#63 (0, 0, -0.125) edge=he#234
+  v#64 (0, 0, -0.135) edge=he#238
+
+HALFEDGES (144):
+  he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
+  he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
+  he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
+  he#7 scope=active src=v#4 twin=he#8 next=he#1 prev=he#5 loop=loop#1 face=f#1(background)
+  he#9 scope=active src=v#5 twin=he#10 next=he#58 prev=he#14 loop=loop#5 face=f#7(sg_ubend_area_3)
+  he#10 scope=active src=v#6 twin=he#9 next=he#13 prev=he#26 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#11 scope=active src=v#7 twin=he#12 next=he#32 prev=he#23 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#12 scope=active src=v#8 twin=he#11 next=he#217 prev=he#31 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#13 scope=active src=v#5 twin=he#14 next=he#15 prev=he#10 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#14 scope=active src=v#9 twin=he#13 next=he#9 prev=he#36 loop=loop#5 face=f#7(sg_ubend_area_3)
+  he#15 scope=active src=v#9 twin=he#16 next=he#113 prev=he#13 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#16 scope=active src=v#10 twin=he#15 next=he#35 prev=he#18 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#17 scope=active src=v#10 twin=he#18 next=he#19 prev=he#62 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#18 scope=active src=v#11 twin=he#17 next=he#16 prev=he#140 loop=loop#19 face=f#18(sg_ubend_area_9)
+  he#19 scope=active src=v#11 twin=he#20 next=he#21 prev=he#17 loop=loop#19 face=f#18(sg_ubend_area_9)

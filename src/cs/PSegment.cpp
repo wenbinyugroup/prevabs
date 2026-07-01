@@ -1,5 +1,6 @@
 #include "PSegment.hpp"
 
+#include "adaptive_thickness.hpp"
 #include "Material.hpp"
 #include "PArea.hpp"
 #include "PBaseLine.hpp"
@@ -7,12 +8,17 @@
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
+#include "debug/baseOffsetMapJson.hpp"
+#include "debug/baseOffsetMapSvg.hpp"
+#include "debug/segmentBuildDump.hpp"
 #include "geo.hpp"
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
 #include "plog.hpp"
 #include "utilities.hpp"
+#include "variable_offset.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -65,6 +71,99 @@ void deleteUnregisteredVertices(const std::vector<PDCELVertex *> &vertices) {
       delete vertex;
     }
   }
+}
+
+bool adaptiveThicknessTargetsSegment(const std::string &segment_name) {
+  if (!config.adaptive_thickness.enabled) return false;
+  if (config.adaptive_thickness.report_only) return false;
+  if (config.adaptive_thickness.mode != "linear") return false;
+
+  const auto &targets = config.adaptive_thickness.target_segments;
+  if (targets.empty()) return true;
+  return std::find(targets.begin(), targets.end(), segment_name)
+         != targets.end();
+}
+
+std::vector<SPoint2> toPoint2List(
+    const std::vector<PDCELVertex *> &vertices) {
+  std::vector<SPoint2> points;
+  points.reserve(vertices.size());
+  for (PDCELVertex *vertex : vertices) {
+    points.push_back(SPoint2(vertex->y(), vertex->z()));
+  }
+  return points;
+}
+
+std::vector<double> cumulativeArcLengths(
+    const std::vector<PDCELVertex *> &vertices) {
+  std::vector<double> arc_lengths;
+  arc_lengths.reserve(vertices.size());
+  double s = 0.0;
+  for (std::size_t i = 0; i < vertices.size(); ++i) {
+    if (i > 0) {
+      const double dy = vertices[i]->y() - vertices[i - 1]->y();
+      const double dz = vertices[i]->z() - vertices[i - 1]->z();
+      s += std::sqrt(dy * dy + dz * dz);
+    }
+    arc_lengths.push_back(s);
+  }
+  return arc_lengths;
+}
+
+bool firstDroppedRange(
+    const std::vector<int> &lo,
+    const std::vector<int> &hi,
+    int *repair_lo,
+    int *repair_hi) {
+  const std::size_t n = std::min(lo.size(), hi.size());
+  for (std::size_t i = 0; i < n; ++i) {
+    if (lo[i] >= 0 && hi[i] >= lo[i]) {
+      *repair_lo = lo[i];
+      *repair_hi = hi[i];
+      return true;
+    }
+  }
+  return false;
+}
+
+prevabs::geo::LinearAdaptiveThicknessPlan makeAdaptiveThicknessPlan(
+    const std::string &segment_name,
+    const std::vector<PDCELVertex *> &base_vertices,
+    double design_half_thickness,
+    int repair_lo,
+    int repair_hi) {
+  prevabs::geo::LinearAdaptiveThicknessInput input;
+  input.segment_name = segment_name;
+  input.base_count = static_cast<int>(base_vertices.size());
+  input.repair_lo = repair_lo;
+  input.repair_hi = repair_hi;
+  input.design_half_thickness = design_half_thickness;
+  input.safety = config.adaptive_thickness.safety;
+  input.repair_base_padding =
+      config.adaptive_thickness.repair_base_padding;
+  input.transition_base_count =
+      config.adaptive_thickness.transition_base_count;
+  input.min_half_thickness = config.adaptive_thickness.min_half_thickness;
+  input.arc_lengths = cumulativeArcLengths(base_vertices);
+  return prevabs::geo::buildLinearAdaptiveThicknessPlan(input);
+}
+
+void assignVariableOffsetResult(
+    const prevabs::geo::VariableOffsetResult &variable,
+    Baseline *offset_curve,
+    BaseOffsetMap *pairs,
+    std::vector<bool> *offset_vertex_resampled,
+    std::vector<SPoint2> *offset_pre_resample_raw_points,
+    std::vector<int> *dropped_base_ranges_lo,
+    std::vector<int> *dropped_base_ranges_hi) {
+  for (const SPoint2 &point : variable.offset) {
+    offset_curve->addPVertex(new PDCELVertex(0.0, point.x(), point.y()));
+  }
+  *pairs = variable.id_pairs;
+  offset_vertex_resampled->assign(variable.offset.size(), false);
+  offset_pre_resample_raw_points->clear();
+  dropped_base_ranges_lo->clear();
+  dropped_base_ranges_hi->clear();
 }
 
 void logClosedBaselineCuspIfAny(
@@ -228,6 +327,7 @@ Segment::Segment(Segment &&other) noexcept
       _curve_offset(std::move(other._curve_offset)),
       _layup(other._layup),
       _areas(std::move(other._areas)),
+      _layered_faces(std::move(other._layered_faces)),
       _layupside(std::move(other._layupside)),
       _level(other._level),
       _prev(other._prev),
@@ -245,6 +345,12 @@ Segment::Segment(Segment &&other) noexcept
       _head_vertex_offset(other._head_vertex_offset),
       _tail_vertex_offset(other._tail_vertex_offset),
       _base_offset_indices_pairs(std::move(other._base_offset_indices_pairs)),
+      _offset_vertex_resampled(std::move(other._offset_vertex_resampled)),
+      _dropped_base_ranges_lo(std::move(other._dropped_base_ranges_lo)),
+      _dropped_base_ranges_hi(std::move(other._dropped_base_ranges_hi)),
+      _adaptive_variable_offset(other._adaptive_variable_offset),
+      _used_adaptive_thickness(other._used_adaptive_thickness),
+      _adaptive_plan(std::move(other._adaptive_plan)),
       _state(other._state) {
   other._curve_base = nullptr;
   other._layup = nullptr;
@@ -254,6 +360,8 @@ Segment::Segment(Segment &&other) noexcept
   other._head_vertex_offset = nullptr;
   other._tail_vertex_offset = nullptr;
   other._areas.clear();
+  other._layered_faces.clear();
+  other._adaptive_variable_offset = false;
   other._state = LifecycleState::BaseReady;
 }
 
@@ -269,6 +377,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _curve_offset = std::move(other._curve_offset);
   _layup = other._layup;
   _areas = std::move(other._areas);
+  _layered_faces = std::move(other._layered_faces);
   _layupside = std::move(other._layupside);
   _level = other._level;
   _prev = other._prev;
@@ -286,6 +395,12 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   _head_vertex_offset = other._head_vertex_offset;
   _tail_vertex_offset = other._tail_vertex_offset;
   _base_offset_indices_pairs = std::move(other._base_offset_indices_pairs);
+  _offset_vertex_resampled = std::move(other._offset_vertex_resampled);
+  _dropped_base_ranges_lo = std::move(other._dropped_base_ranges_lo);
+  _dropped_base_ranges_hi = std::move(other._dropped_base_ranges_hi);
+  _adaptive_variable_offset = other._adaptive_variable_offset;
+  _used_adaptive_thickness = other._used_adaptive_thickness;
+  _adaptive_plan = std::move(other._adaptive_plan);
   _state = other._state;
 
   other._curve_base = nullptr;
@@ -296,6 +411,8 @@ Segment &Segment::operator=(Segment &&other) noexcept {
   other._head_vertex_offset = nullptr;
   other._tail_vertex_offset = nullptr;
   other._areas.clear();
+  other._layered_faces.clear();
+  other._adaptive_variable_offset = false;
   other._state = LifecycleState::BaseReady;
 
   return *this;
@@ -303,6 +420,7 @@ Segment &Segment::operator=(Segment &&other) noexcept {
 
 void Segment::releaseOwnedResources() {
   _areas.clear();
+  _layered_faces.clear();
 
   if (_curve_offset != nullptr) {
     deleteUnregisteredVertices(_curve_offset->vertices());
@@ -311,6 +429,8 @@ void Segment::releaseOwnedResources() {
   _face = nullptr;
   _head_vertex_offset = nullptr;
   _tail_vertex_offset = nullptr;
+  _adaptive_variable_offset = false;
+  _used_adaptive_thickness = false;
   _state = LifecycleState::BaseReady;
 }
 
@@ -383,7 +503,7 @@ bool Segment::validateStateInvariants(const char *caller) const {
 
   const bool offset_ready = (_curve_offset != nullptr);
   const bool shell_built = (_face != nullptr);
-  const bool areas_built = !_areas.empty();
+  const bool areas_built = !_areas.empty() || !_layered_faces.empty();
 
   bool valid = true;
   switch (_state) {
@@ -411,7 +531,8 @@ bool Segment::validateStateInvariants(const char *caller) const {
       << " [state=" << toString(_state)
       << ", has_offset=" << offset_ready
       << ", has_face=" << shell_built
-      << ", areas=" << _areas.size() << "]";
+      << ", areas=" << _areas.size()
+      << ", layered_faces=" << _layered_faces.size() << "]";
   PLOG(error) << oss.str();
   assert(valid && "Segment lifecycle invariants violated");
   return false;
@@ -559,6 +680,9 @@ void Segment::setNextBoundVertices(std::vector<PDCELVertex *> vertices) {
 }
 
 std::size_t Segment::layerCount() const {
+  if (!_layered_faces.empty()) {
+    return _layered_faces.size();
+  }
   std::size_t count = 0;
   for (const auto &area : _areas) {
     count += area->faces().size();
@@ -566,7 +690,93 @@ std::size_t Segment::layerCount() const {
   return count;
 }
 
-void Segment::offsetCurveBase() {
+bool Segment::applyAdaptiveThicknessOffset(
+    int side, bool &used_adaptive,
+    prevabs::geo::LinearAdaptiveThicknessPlan &adaptive_plan) {
+  used_adaptive = false;
+
+  // Probe with a plain constant-thickness offset to see whether any base
+  // region is too thin (skin dropped). If none, adopt the probe as the offset.
+  std::vector<PDCELVertex *> probe_offset_vertices;
+  BaseOffsetMap probe_pairs;
+  std::vector<bool> probe_offset_resampled;
+  std::vector<SPoint2> probe_pre_resample_raw_points;
+  std::vector<int> probe_dropped_lo;
+  std::vector<int> probe_dropped_hi;
+
+  offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
+         probe_offset_vertices, probe_pairs,
+         &probe_offset_resampled,
+         &probe_pre_resample_raw_points,
+         &probe_dropped_lo,
+         &probe_dropped_hi);
+
+  int repair_lo = -1;
+  int repair_hi = -1;
+  if (firstDroppedRange(
+          probe_dropped_lo, probe_dropped_hi, &repair_lo, &repair_hi)) {
+    adaptive_plan = makeAdaptiveThicknessPlan(
+        _name, _curve_base->vertices(), _layup->getTotalThickness(),
+        repair_lo, repair_hi);
+    if (!adaptive_plan.ok) {
+      PLOG(error) << "adaptive thickness: failed to build linear plan for "
+                  << "segment '" << _name << "': "
+                  << adaptive_plan.error;
+      deleteUnregisteredVertices(probe_offset_vertices);
+      return false;
+    }
+
+    prevabs::geo::VariableOffsetInput variable_input;
+    variable_input.base = toPoint2List(_curve_base->vertices());
+    variable_input.side = side;
+    variable_input.tol = config.app.geo_tol;
+    variable_input.half_thickness_by_base.reserve(
+        adaptive_plan.stations.size());
+    for (const auto &station : adaptive_plan.stations) {
+      variable_input.half_thickness_by_base.push_back(
+          station.half_thickness);
+    }
+
+    const auto variable_result =
+        prevabs::geo::offsetVariableDistance(variable_input);
+    if (!variable_result.ok) {
+      PLOG(error) << "adaptive thickness: variable offset failed for "
+                  << "segment '" << _name << "': "
+                  << variable_result.error;
+      deleteUnregisteredVertices(probe_offset_vertices);
+      return false;
+    }
+
+    deleteUnregisteredVertices(probe_offset_vertices);
+    assignVariableOffsetResult(
+        variable_result, _curve_offset.get(), &_base_offset_indices_pairs,
+        &_offset_vertex_resampled,
+        &_offset_pre_resample_raw_points,
+        &_dropped_base_ranges_lo,
+        &_dropped_base_ranges_hi);
+    used_adaptive = true;
+    _adaptive_variable_offset = true;
+    PLOG(info) << "adaptive thickness: segment '" << _name
+               << "' uses linear variable offset over repair base["
+               << adaptive_plan.range.repair_lo << ".."
+               << adaptive_plan.range.repair_hi << "], taper base["
+               << adaptive_plan.range.taper_lo << ".."
+               << adaptive_plan.range.taper_hi << "], t="
+               << adaptive_plan.range.design_half_thickness << " -> "
+               << adaptive_plan.range.repaired_half_thickness;
+  } else {
+    // No thin region: adopt the probe result as the offset directly.
+    _curve_offset->vertices() = probe_offset_vertices;
+    _base_offset_indices_pairs = probe_pairs;
+    _offset_vertex_resampled = probe_offset_resampled;
+    _offset_pre_resample_raw_points = probe_pre_resample_raw_points;
+    _dropped_base_ranges_lo = probe_dropped_lo;
+    _dropped_base_ranges_hi = probe_dropped_hi;
+  }
+  return true;
+}
+
+void Segment::offsetCurveBase(bool enable_adaptive_thickness) {
   if (!requireBaseDefinition("offsetCurveBase")) {
     logSkippingSegmentAction(
         "offsetCurveBase", _name, "base definition is incomplete");
@@ -604,6 +814,11 @@ void Segment::offsetCurveBase() {
     _curve_offset.reset();
   }
   _base_offset_indices_pairs.clear();
+  _offset_vertex_resampled.clear();
+  _offset_pre_resample_raw_points.clear();
+  _dropped_base_ranges_lo.clear();
+  _dropped_base_ranges_hi.clear();
+  _adaptive_variable_offset = false;
 
   const int side = requireValidLayupSide("offsetCurveBase");
   if (side == 0) {
@@ -612,12 +827,60 @@ void Segment::offsetCurveBase() {
     return;
   }
 
+  // Build-path trace: this is the offset phase (root of the per-segment file;
+  // the area phase appends to it later). See debug/segmentBuildDump.hpp.
+  prevabs::debug::segmentTraceBegin(_name);
+  prevabs::debug::SegmentTraceScope _trace_scope(
+      "offsetCurveBase (" + std::string(closed() ? "closed" : "open")
+      + ", side=" + std::to_string(side)
+      + ", dist=" + std::to_string(_layup->getTotalThickness()) + ")");
+
   logClosedBaselineCuspIfAny(
       _curve_base, _name, _layup->getTotalThickness());
 
   _curve_offset.reset(new Baseline());
-  offset(_curve_base->vertices(), side, _layup->getTotalThickness(),
-         _curve_offset->vertices(), _base_offset_indices_pairs);
+  bool used_adaptive_thickness = false;
+  prevabs::geo::LinearAdaptiveThicknessPlan adaptive_plan;
+  // Master switch off by default: the adaptive variable-offset path only runs
+  // when the caller opts in AND the XML config targets this open segment.
+  const bool may_use_adaptive_thickness =
+      enable_adaptive_thickness
+      && adaptiveThicknessTargetsSegment(_name) && !closed();
+
+  if (may_use_adaptive_thickness) {
+    prevabs::debug::segmentTracePush("adaptive-thickness variable offset path");
+    if (!applyAdaptiveThicknessOffset(
+            side, used_adaptive_thickness, adaptive_plan)) {
+      prevabs::debug::segmentTracePush(
+          "applyAdaptiveThicknessOffset FAILED -> no offset curve");
+      _curve_offset.reset();
+      return;
+    }
+  } else {
+    if (enable_adaptive_thickness
+        && adaptiveThicknessTargetsSegment(_name) && closed()) {
+      PLOG(warning) << "adaptive thickness: segment '" << _name
+                    << "' is closed; linear adaptive thickness currently "
+                       "supports only open segments";
+    }
+    // Two-step offset: raw geometry first, then the base-offset map (which
+    // applies the resample). See geo.hpp / offsetGeometry / buildBaseOffsetMap.
+    //
+    // Under the default layered-offset path keep the total-thickness shell RAW.
+    // Per-layer curves are independently angle-bisector-resampled in
+    // buildLayeredOffsetAreas; legacy keeps its base-vertex shell resample.
+    const bool resample_shell = !useLayeredOffset();
+    OffsetGeometry geom = offsetGeometry(
+        _curve_base->vertices(), side, _layup->getTotalThickness());
+    buildBaseOffsetMap(
+        _curve_base->vertices(), side, _layup->getTotalThickness(), geom,
+        _curve_offset->vertices(), _base_offset_indices_pairs,
+        &_offset_vertex_resampled,
+        &_offset_pre_resample_raw_points,
+        &_dropped_base_ranges_lo,
+        &_dropped_base_ranges_hi,
+        resample_shell);
+  }
   _face = nullptr;
   _areas.clear();
   _head_vertex_offset = nullptr;
@@ -631,6 +894,14 @@ void Segment::offsetCurveBase() {
   if (config.debug_level >= DebugLevel::join) PLOG(debug) << "offset line: "
     << _curve_offset->vertices().front()->printString() << " -> "
     << _curve_offset->vertices().back()->printString();
+
+  // Phase-1 (plan-20260618-per-layer-offset-within-shell.md): the
+  // base-offset-map debug dump moved to the end of `buildAreas`, where the
+  // staircase is authoritatively re-derived from geometry. offsetCurveBase
+  // no longer consumes the staircase. Stash the adaptive-thickness context
+  // the relocated dump needs.
+  _used_adaptive_thickness = used_adaptive_thickness;
+  _adaptive_plan = adaptive_plan;
 }
 
 void Segment::build(const BuilderConfig &bcfg) {

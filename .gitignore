@@ -59,6 +59,11 @@ settings.local.json
 *.o
 *.exe
 
+# Per-segment build-inspection dumps (PREVABS_SEGMENT_DUMP / _PATH)
+*.segment.json
+*.segment.svg
+*.segment.path.txt
+
 
 # Ignore specific files
 test.exe

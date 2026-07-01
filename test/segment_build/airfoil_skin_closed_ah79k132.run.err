@@ -1,0 +1,36 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  offset (multi-vertex): offset distance 0.01 is 9.30524x the shortest base segment length (0.00107466 at segment 95); offset construction may be numerically fragile — consider <normalize>1</normalize>, a larger <scale>, or a denser baseline
+[warning]  offset (multi-vertex, closed): 13 base vertex/vertices have local half-thickness < |dist| = 0.01 (first at base[0] = v#0( 0 , 0.75 , 0 )); skin will be locally dropped at those locations
+[warning]  offset (multi-vertex, closed): 6 base vertex/vertices have local half-thickness in [|dist|, 2*|dist|) = [0.01, 0.02); offset will be valid but locally thin
+[warning]  offset (multi-vertex, closed): skin dropped over base indices [47..49] due to insufficient local thickness
+[warning]  offset (multi-vertex, closed): skin dropped over base indices [88..95] due to insufficient local thickness
+[warning]  offset (multi-vertex, closed): skin dropped over base indices [0..9] due to insufficient local thickness
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#2 | current=he#17 v#9 -> v#10 | loop: loop#2 | face=nullptr
+[warning]  layered offset[sg_le]: shell/base vertex count mismatch (base=96, shell=75); falling back to legacy area/layer build
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#6 | current=he#19 v#10 -> v#11 | loop: loop#6 | face=f#2 [sg_le_face]
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#8 | current=he#21 v#11 -> v#12 | loop: loop#8 | face=f#4
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#10 | current=he#23 v#12 -> v#13 | loop: loop#10 | face=f#6
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#12 | current=he#25 v#13 -> v#14 | loop: loop#12 | face=f#8
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#14 | current=he#27 v#14 -> v#15 | loop: loop#14 | face=f#10
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#16 | current=he#29 v#15 -> v#16 | loop: loop#16 | face=f#12
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#18 | current=he#31 v#16 -> v#17 | loop: loop#18 | face=f#14
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#20 | current=he#33 v#17 -> v#18 | loop: loop#20 | face=f#16
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#22 | current=he#35 v#18 -> v#19 | loop: loop#22 | face=f#18
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#24 | current=he#37 v#19 -> v#20 | loop: loop#24 | face=f#20
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#26 | current=he#41 v#21 -> v#22 | loop: loop#26 | face=f#22
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#28 | current=he#45 v#23 -> v#24 | loop: loop#28 | face=f#24
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#30 | current=he#49 v#25 -> v#26 | loop: loop#30 | face=f#26
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#32 | current=he#53 v#27 -> v#28 | loop: loop#32 | face=f#28
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#34 | current=he#57 v#29 -> v#30 | loop: loop#34 | face=f#30
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#36 | current=he#61 v#31 -> v#32 | loop: loop#36 | face=f#32
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#38 | current=he#65 v#33 -> v#34 | loop: loop#38 | face=f#34
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#40 | current=he#69 v#35 -> v#36 | loop: loop#40 | face=f#36
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#42 | current=he#73 v#37 -> v#38 | loop: loop#42 | face=f#38
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#44 | current=he#77 v#39 -> v#40 | loop: loop#44 | face=f#40
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#46 | current=he#81 v#41 -> v#42 | loop: loop#46 | face=f#42
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#48 | current=he#85 v#43 -> v#44 | loop: loop#48 | face=f#44
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#50 | current=he#89 v#45 -> v#46 | loop: loop#50 | face=f#46
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#52 | current=he#93 v#47 -> v#48 | loop: loop#52 | face=f#48
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#54 | current=he#97 v#49 -> v#50 | loop: loop#54 | face=f#50
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#56 | current=he#101 v#51 -> v#52 | loop: loop#56 | face=f#52
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#107 v#54 -> v#55 | loop: loop#58 | current=he#105 v#53 -> v#54 | loop: loop#58 | face=f#54

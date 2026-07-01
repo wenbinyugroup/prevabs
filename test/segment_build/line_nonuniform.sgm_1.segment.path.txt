@@ -1,0 +1,7 @@
+# build path for segment 'sgm_1'
+  1. buildAreas: enter (closed=N, base_verts=2)
+  2. buildAreas: useLayeredOffset=yes
+  3. layered: enter (n_layers=3, side=1)
+  4. layered: open multi-layer route-ii (n_layers=3)
+  5. layered: tiled all layers (SUCCESS, faces=3)
+  6. buildAreas: layered OK -> AreasBuilt

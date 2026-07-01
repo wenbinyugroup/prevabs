@@ -1,0 +1,61 @@
+<cross_section name="airfoil_skin_only">
+
+  <analysis>
+    <!-- Timoshenko beam model -->
+    <model>1</model>
+  </analysis>
+
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>1</scale>
+    <mesh_size>0.005</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">ah79k143.dat</points>
+      <leading_edge>0.000000 0.000000</leading_edge>
+      <trailing_edge>1.000000 0.000000</trailing_edge>
+    </line>
+
+  </baselines>
+
+  <materials>
+    <material name="Gel_Coat" type="orthotropic">
+      <density>1235</density>
+      <elastic>
+        <e1>3.44e9</e1>
+        <e2>3.44e9</e2>
+        <e3>3.44e9</e3>
+        <g12>1.38e9</g12>
+        <g13>1.38e9</g13>
+        <g23>1.38e9</g23>
+        <nu12>0.3</nu12>
+        <nu13>0.3</nu13>
+        <nu23>0.3</nu23>
+      </elastic>
+    </material>
+    <lamina name="Gel_Coat">
+      <material>Gel_Coat</material>
+      <thickness>0.001</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="Gel_Coat">0:1</layer>
+    </layup>
+  </layups>
+
+
+  <!-- Surface layup -->
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>

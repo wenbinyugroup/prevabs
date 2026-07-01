@@ -1,0 +1,33 @@
+<cross_section name="arc_semicircle" format="1">
+  <!-- 180-degree arc (top to bottom), medium discretisation, 3 layers.
+       A wider sweep than the 90-degree cases. -->
+  <include><material>materials</material></include>
+  <general>
+    <mesh_size>0.03</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <point name="ct">0 0</point>
+    <point name="pr"> 2 0</point>
+    <point name="pl">-2 0</point>
+    <baseline name="bl" type="arc">
+      <center>ct</center>
+      <start>pr</start>
+      <end>pl</end>
+      <discrete by="angle">5</discrete>
+      <direction>ccw</direction>
+    </baseline>
+  </baselines>
+  <layups>
+    <layup name="lp" method="ss">
+      <lamina>la_010</lamina>
+      <code>[0/90/0]</code>
+    </layup>
+  </layups>
+  <component name="c">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>lp</layup>
+    </segment>
+  </component>
+</cross_section>

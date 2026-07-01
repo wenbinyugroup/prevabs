@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="1200" height="860" fill="#fbfbfd"/>
+<text x="28" y="36" font-size="17" font-weight="600" fill="#222">A. c-spar segment (yz): base / layer-1 offset (skin, post-trim) / shell / end bounds</text>
+<polyline points="88.63,320.21 101.97,320.52 156.29,321.64 210.61,322.58 264.93,323.33 319.24,323.89 373.55,324.25 414.27,324.37 454.98,324.36 495.69,324.19 536.37,323.86 577.07,323.35 617.74,322.63 658.39,321.68 699.02,320.46 739.62,318.93 780.20,317.03 820.74,314.73 861.28,311.98 888.22,309.88 915.03,307.44 941.66,304.48 968.03,300.77 994.15,295.99 1014.78,291.11 1030.12,286.70 1045.58,281.61 1060.84,275.93 1075.44,269.51 1089.66,261.46 1096.00,256.96 1101.12,252.60 1106.47,247.06 1110.47,242.21 1110.95,241.46 1110.78,240.87 1109.39,238.25 1105.40,232.60 1099.83,226.01 1094.18,220.26 1087.19,213.96 1072.44,202.53 1057.79,193.22 1042.98,185.31 1027.98,178.57 1012.87,172.76 992.29,166.08 966.18,159.09 939.85,153.23 913.31,148.21 886.69,143.89 859.98,140.15 819.69,135.39 779.32,131.47 738.82,128.15 698.31,125.32 657.77,122.95 617.24,121.04 576.71,119.60 536.16,118.60 495.55,117.97 454.93,117.67 414.28,117.63 373.60,117.81 319.33,118.32 265.04,119.13 210.77,120.20 156.48,121.54 102.19,123.13 88.63,123.59" fill="none" stroke="#9aa0a6" stroke-width="1.4" stroke-dasharray="5,4"/>
+<polyline points="65.00,343.29 101.45,344.15 155.85,345.27 210.24,346.21 264.64,346.96 319.03,347.52 373.43,347.88 414.24,348.00 455.03,347.99 495.83,347.82 536.62,347.49 577.43,346.98 618.21,346.26 659.02,345.30 699.82,344.08 740.61,342.54 781.42,340.63 822.21,338.32 863.01,335.55 890.21,333.42 917.41,330.96 944.61,327.93 971.81,324.10 999.00,319.13 1020.76,313.97 1037.09,309.29 1053.40,303.91 1069.71,297.84 1086.04,290.66 1102.36,281.43 1110.52,275.63 1117.32,269.85 1124.11,262.80 1129.55,256.21 1132.82,251.18 1134.72,245.56 1135.00,242.57 1134.72,238.65 1132.82,231.98 1129.55,225.84 1124.11,218.14 1117.32,210.08 1110.52,203.17 1102.36,195.82 1086.04,183.18 1069.71,172.80 1053.40,164.09 1037.09,156.74 1020.76,150.48 999.00,143.41 971.81,136.14 944.61,130.08 917.41,124.93 890.21,120.53 863.01,116.71 822.21,111.89 781.42,107.93 740.61,104.59 699.82,101.74 659.02,99.35 618.21,97.43 577.43,95.97 536.62,94.97 495.83,94.34 455.03,94.03 414.24,94.00 373.43,94.18 319.03,94.69 264.64,95.50 210.24,96.58 155.85,97.92 101.45,99.51 65.00,100.74" fill="none" stroke="#1a73e8" stroke-width="2"/>
+<polyline points="66.36,341.95 65.03,341.92 101.48,342.78 155.88,343.90 210.27,344.84 264.65,345.60 319.05,346.16 373.45,346.51 414.24,346.63 455.03,346.62 495.81,346.46 536.60,346.13 577.41,345.61 618.20,344.89 658.99,343.94 699.78,342.71 740.55,341.17 781.34,339.27 822.13,336.96 862.91,334.19 890.09,332.06 917.27,329.60 944.44,326.57 971.59,322.75 998.73,317.79 1020.42,312.65 1036.67,307.98 1052.95,302.62 1069.20,296.57 1085.42,289.44 1101.63,280.27 1109.68,274.55 1116.38,268.85 1123.09,261.89 1128.46,255.40 1131.58,250.58 1133.37,245.27 1133.62,242.55 1133.37,238.88 1131.55,232.49 1128.39,226.55 1123.03,218.97 1116.30,211.00 1109.58,204.16 1101.49,196.87 1085.25,184.30 1069.03,173.98 1052.80,165.32 1036.56,158.01 1020.31,151.76 998.62,144.72 971.48,137.46 944.33,131.42 917.18,126.28 890.01,121.88 862.83,118.07 822.07,113.25 781.30,109.29 740.51,105.95 699.73,103.10 658.94,100.71 618.17,98.79 577.38,97.34 536.60,96.33 495.81,95.70 455.03,95.40 414.24,95.37 373.45,95.55 319.05,96.06 264.67,96.86 210.27,97.94 155.88,99.29 101.50,100.88 65.05,102.10 66.36,102.06" fill="none" stroke="#d93025" stroke-width="2"/>
+<line x1="65.00" y1="343.29" x2="88.63" y2="320.21" stroke="#188038" stroke-width="2.4"/>
+<text x="59.00404211592581" y="363.2878607466713" font-size="13" fill="#188038" font-weight="600" text-anchor="middle">p4 (begin bound) ▼</text>
+<rect x="52.00404211592581" y="319.2878607466713" width="44" height="48" fill="none" stroke="#a142f4" stroke-width="1.6" stroke-dasharray="3,3"/>
+<text x="99.00404211592581" y="329.2878607466713" font-size="12" fill="#a142f4" font-weight="600">→ B / C</text>
+<line x1="65.00" y1="100.74" x2="88.63" y2="123.59" stroke="#188038" stroke-width="2.4"/>
+<text x="59.00404211592581" y="90.73723811471814" font-size="13" fill="#188038" font-weight="600" text-anchor="middle">p3 (end bound)</text>
+<line x1="905.00" y1="70.00" x2="933.00" y2="70.00" stroke="#1a73e8" stroke-width="2" /><text x="939" y="74" font-size="12.5" fill="#333">base (= layer-1 base)</text>
+<line x1="905.00" y1="89.00" x2="933.00" y2="89.00" stroke="#d93025" stroke-width="2" /><text x="939" y="93" font-size="12.5" fill="#333">layer-1 offset (skin, post-trim)</text>
+<line x1="905.00" y1="108.00" x2="933.00" y2="108.00" stroke="#e8841a" stroke-width="2" stroke-dasharray="6,3"/><text x="939" y="112" font-size="12.5" fill="#333">layer-1 offset (raw, pre-trim)</text>
+<line x1="905.00" y1="127.00" x2="933.00" y2="127.00" stroke="#9aa0a6" stroke-width="1.4" stroke-dasharray="5,4"/><text x="939" y="131" font-size="12.5" fill="#333">shell (segment offset)</text>
+<line x1="905.00" y1="146.00" x2="933.00" y2="146.00" stroke="#188038" stroke-width="2.4" /><text x="939" y="150" font-size="12.5" fill="#333">segment end bounds</text>
+<text x="28" y="432" font-size="16" font-weight="600" fill="#222">B. raw offset head (pre-trim)</text>
+<text x="28" y="452" font-size="12" fill="#777">makeRawOffsetCurve output; first vertex is the tip, NOT on the bound</text>
+<line x1="150.00" y1="690.00" x2="330.00" y2="520.00" stroke="#188038" stroke-width="2.4" stroke-dasharray="3,3"/>
+<text x="336" y="516" font-size="12.5" fill="#188038" font-weight="600" >begin bound</text>
+<line x1="150.00" y1="690.00" x2="440.00" y2="706.00" stroke="#1a73e8" stroke-width="2.4"/>
+<circle cx="150" cy="690" r="5" fill="#1a73e8"/><text x="142" y="710" font-size="12.5" fill="#1a73e8" font-weight="600" text-anchor="middle">base.v0 (p4)</text>
+<line x1="185.00" y1="632.00" x2="400.00" y2="650.00" stroke="#e8841a" stroke-width="2.6"/>
+<polyline points="400,650 440,656" fill="none" stroke="#e8841a" stroke-width="2.6"/>
+<circle cx="185" cy="632" r="5" fill="#e8841a"/><text x="177" y="622" font-size="12.5" fill="#e8841a" font-weight="600" text-anchor="middle">raw.v0 = tip</text>
+<circle cx="400" cy="650" r="5" fill="#e8841a"/><text x="408" y="666" font-size="12.5" fill="#e8841a" font-weight="600" >raw.v1</text>
+<text x="150" y="742" font-size="12" fill="#555">tip floats just inside the bound (no vertex anchored on it) → clean, monotone</text>
+<text x="628" y="432" font-size="16" font-weight="600" fill="#222">C. after trimLayerCurveEndsToCaps (post-trim)</text>
+<text x="628" y="452" font-size="12" fill="#777">trim PREPENDS skin.v0 on the bound, in front of the tip → near-collinear spike</text>
+<line x1="750.00" y1="690.00" x2="930.00" y2="520.00" stroke="#188038" stroke-width="2.4" stroke-dasharray="3,3"/>
+<text x="936" y="516" font-size="12.5" fill="#188038" font-weight="600" >begin bound</text>
+<line x1="750.00" y1="690.00" x2="1040.00" y2="706.00" stroke="#1a73e8" stroke-width="2.4"/>
+<circle cx="750" cy="690" r="5" fill="#1a73e8"/><text x="742" y="710" font-size="12.5" fill="#1a73e8" font-weight="600" text-anchor="middle">base.v0 (p4)</text>
+<line x1="1000.00" y1="650.00" x2="788.00" y2="640.00" stroke="#d93025" stroke-width="2.6"/>
+<line x1="788.00" y1="640.00" x2="838.00" y2="628.00" stroke="#d93025" stroke-width="2.6"/>
+<polyline points="1000,650 1040,656" fill="none" stroke="#d93025" stroke-width="2.6"/>
+<line x1="788.00" y1="640.00" x2="838.00" y2="628.00" stroke="#a142f4" stroke-width="3.4" stroke-dasharray="6,3"/>
+<line x1="788.00" y1="640.00" x2="1000.00" y2="650.00" stroke="#a142f4" stroke-width="3.4" stroke-dasharray="6,3"/>
+<circle cx="838" cy="628" r="5" fill="#d93025"/><text x="846" y="622" font-size="12.5" fill="#d93025" font-weight="600" >skin.v0 (prepended, on bound)</text>
+<circle cx="788" cy="640" r="5" fill="#d93025"/><text x="780" y="630" font-size="12.5" fill="#d93025" font-weight="600" text-anchor="middle">skin.v1 = tip</text>
+<circle cx="1000" cy="650" r="5" fill="#d93025"/><text x="1008" y="666" font-size="12.5" fill="#d93025" font-weight="600" >skin.v2</text>
+<path d="M 805 633 A 40 40 0 0 1 808 646" fill="none" stroke="#a142f4" stroke-width="1.6"/>
+<text x="700" y="604" font-size="13" fill="#a142f4" font-weight="700">δ ≈ 4.87e-15 rad</text>
+<text x="700" y="620" font-size="11.5" fill="#a142f4">skin.v1→skin.v0  ∥  skin.v1→skin.v2</text>
+<text x="700" y="742" font-size="12" fill="#555">the prepended skin.v0 makes the head double back → spike at skin.v1</text>
+<rect x="20" y="770" width="1160" height="74" rx="8" fill="#fff5f5" stroke="#d93025" stroke-width="1.3"/>
+<text x="34" y="792" font-size="12.5" fill="#5f2120">Consequence: splitFaceByPolyline embeds skin.v0; updateEdgeNeighbors sorts the vertex’s outgoing edges by angle to weave the new edge in, but at the spike</text>
+<text x="34" y="809" font-size="12.5" fill="#5f2120">δ→0 it inserts on the wrong side. The two split loops then grab only a tiny arc (77 edges each) and the full base+shell boundary (145 edges) is left UN-bisected,</text>
+<text x="34" y="826" font-size="12.5" fill="#5f2120">so the downstream face-selection + staircase run on corrupt topology → crash. Fix (A): trim should land the head ON the bound WITHOUT keeping the near-collinear tip.</text>
+</svg>

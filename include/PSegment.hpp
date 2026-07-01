@@ -12,6 +12,7 @@ class PGeoLineSegment;
 struct BuilderConfig;
 
 #include "geo_types.hpp"
+#include "adaptive_thickness.hpp"
 
 #include <iosfwd>
 #include <memory>
@@ -41,6 +42,7 @@ private:
 
   Layup *_layup;
   std::vector<std::unique_ptr<PArea>> _areas;
+  std::vector<PDCELFace *> _layered_faces;
   // Layup offset side relative to the directed base curve:
   // "left" means positive offset from base start -> end,
   // "right" means negative offset.
@@ -65,6 +67,32 @@ private:
   int _free; // Free end. 0 (head) or 1 (tail)
   PDCELVertex *_head_vertex_offset, *_tail_vertex_offset;
   BaseOffsetMap _base_offset_indices_pairs;
+  // Per-offset-vertex origin tag, parallel to `_curve_offset->vertices()`.
+  // `false` = raw Clipper2 vertex, `true` = synthesized by the open-path
+  // base-vertex resample. Debug-only; consumed by `dumpBaseOffsetMapSvg`.
+  std::vector<bool> _offset_vertex_resampled;
+  // Debug-only snapshot of the Clipper2 raw run polyline taken right
+  // before the open-path resample replaced every vertex. Empty when
+  // resample didn't fire. Plotted as a topmost scatter overlay by
+  // `dumpBaseOffsetMapSvg`.
+  std::vector<SPoint2> _offset_pre_resample_raw_points;
+  // Inclusive [lo..hi] ranges of base indices where Clipper2 produced no
+  // genuine offset correspondence (skin locally absent). Forward-filled in
+  // `_base_offset_indices_pairs` so the staircase walk stays in-bounds,
+  // but `createIntermediateAreas` skips area creation in these ranges to
+  // avoid sliver fans around the shared offset vertex.
+  // See issue-20260521-skip-dropped-areas.md.
+  std::vector<int> _dropped_base_ranges_lo;
+  std::vector<int> _dropped_base_ranges_hi;
+  bool _adaptive_variable_offset = false;
+  // Phase-1 (plan-20260618-per-layer-offset-within-shell.md): the
+  // base-offset-map debug dump moved out of `offsetCurveBase` to the end
+  // of `buildAreas`, where the staircase has been authoritatively
+  // re-derived from geometry. These carry the adaptive-thickness context
+  // that `offsetCurveBase` computed, so the relocated `--debug geo` JSON
+  // dump keeps its adaptive annotation.
+  bool _used_adaptive_thickness = false;
+  prevabs::geo::LinearAdaptiveThicknessPlan _adaptive_plan;
   LifecycleState _state{LifecycleState::BaseReady};
 
 public:
@@ -168,12 +196,24 @@ public:
   void setPDCELFace(PDCELFace *face) { _face = face; }
 
   // Build the offset curve once. Repeated calls before build() are no-ops.
-  void offsetCurveBase();
+  // `enable_adaptive_thickness` (default false) is the master switch for the
+  // adaptive variable-offset path; when off, only the plain constant-thickness
+  // offset runs regardless of the XML adaptive_thickness config.
+  void offsetCurveBase(bool enable_adaptive_thickness = false);
 
   void build(const BuilderConfig &);
   void buildAreas(const BuilderConfig &);
 
 private:
+  // Adaptive variable-offset path of offsetCurveBase(). Returns true if it
+  // produced the offset (members filled; `used_adaptive` set per outcome),
+  // false on a hard failure (plan / variable offset failed) — on false the
+  // caller aborts offsetCurveBase. See issue-20260623-offset-adaptive-
+  // thickness-extract-and-gate.md.
+  bool applyAdaptiveThicknessOffset(
+      int side, bool &used_adaptive,
+      prevabs::geo::LinearAdaptiveThicknessPlan &adaptive_plan);
+
   bool requireBaseDefinition(const char *caller) const;
   int requireValidLayupSide(const char *caller) const;
   bool requireOffsetCurve(const char *caller) const;
@@ -224,4 +264,15 @@ private:
       const std::vector<PDCELVertex *> &prev_bound_vertices,
       const std::vector<PDCELVertex *> &first_bound_vertices,
       int count, const BuilderConfig &bcfg);
+
+  // Phase-2a (plan-20260618-per-layer-offset-within-shell.md): when the
+  // PREVABS_LAYERED_OFFSET flag is on, compute the route-i per-layer offset
+  // curves + per-layer staircase maps for THIS segment and PLOG the three
+  // exit checks (nesting within the shell, curve_n == shell offset, valid
+  // maps). Pure validation — touches no DCEL — so the legacy area/layer
+  // construction still runs and the mesh is unchanged. De-risks per-layer
+  // curve generation in the production context (real layups, joins,
+  // open/closed) before the DCEL tiling lands in Phase 2b.
+  void validatePerLayerOffsets(const BuilderConfig &bcfg);
+  bool buildLayeredOffsetAreas(const BuilderConfig &bcfg);
 };

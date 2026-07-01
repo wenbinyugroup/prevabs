@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 800" width="1600" height="800">
+<rect width="100%" height="100%" fill="white"/>
+<text x="60" y="24" font-family="sans-serif" font-size="18" fill="#222">base-offset map: sg_web_1_1</text>
+<text x="60" y="44" font-family="sans-serif" font-size="12" fill="#555">base verts = 2,  offset verts = 2 (raw 2 / resampled 0),  pre-resample raw = 0,  pairs = 2,  bbox y=[-0.212505, -0.1691]  z=[-1.9, 0]</text>
+<g stroke="#888" stroke-width="0.7" opacity="0.7">
+<line x1="807.767" y1="740" x2="792.233" y2="740" />
+<line x1="807.767" y1="60" x2="792.233" y2="60" />
+</g>
+<polyline fill="none" stroke="#1f77b4" stroke-width="1.4" points="807.767,740 807.767,60 " />
+<polyline fill="none" stroke="#ff7f0e" stroke-width="1.4" points="792.233,740 792.233,60 " />
+<circle cx="807.767" cy="740" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="811.767" y="736" font-family="sans-serif" font-size="10" fill="#0b3d61">b0</text>
+<circle cx="807.767" cy="60" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="811.767" y="56" font-family="sans-serif" font-size="10" fill="#0b3d61">b1</text>
+<circle cx="792.233" cy="740" r="3" fill="#ff7f0e" stroke="#7a3d05" stroke-width="0.5" />
+<text x="796.233" y="752" font-family="sans-serif" font-size="10" fill="#7a3d05">o0</text>
+<circle cx="792.233" cy="60" r="3" fill="#ff7f0e" stroke="#7a3d05" stroke-width="0.5" />
+<text x="796.233" y="72" font-family="sans-serif" font-size="10" fill="#7a3d05">o1</text>
+<g font-family="sans-serif" font-size="12">
+<rect x="1350" y="12" width="230" height="142" fill="#fafafa" stroke="#ccc"/>
+<line x1="1360" y1="30" x2="1384" y2="30" stroke="#1f77b4" stroke-width="2"/>
+<circle cx="1372" cy="30" r="3" fill="#1f77b4" stroke="#0b3d61" stroke-width="0.5" />
+<text x="1392" y="34" font-family="sans-serif" font-size="12" fill="#0b3d61">base vertex (b_i)</text>
+<line x1="1360" y1="50" x2="1384" y2="50" stroke="#ff7f0e" stroke-width="2"/>
+<text x="1392" y="54" font-family="sans-serif" font-size="12" fill="#7a3d05">offset curve</text>
+<circle cx="1372" cy="70" r="3" fill="#ff7f0e" stroke="#7a3d05" stroke-width="0.5" />
+<text x="1392" y="74" font-family="sans-serif" font-size="12" fill="#7a3d05">offset: raw Clipper2</text>
+<rect x="1368" y="86" width="8" height="8" fill="white" stroke="#7a3d05" stroke-width="1.2" />
+<text x="1392" y="94" font-family="sans-serif" font-size="12" fill="#7a3d05">offset: base-vertex resample</text>
+<line x1="1360" y1="110" x2="1384" y2="110" stroke="#888" stroke-width="0.7"/>
+<text x="1392" y="114" font-family="sans-serif" font-size="12" fill="#444">pair (b_i, o_j)</text>
+<circle cx="1372" cy="130" r="1.8" fill="#e41a1c" stroke="#5a0606" stroke-width="0.5" />
+<text x="1392" y="134" font-family="sans-serif" font-size="12" fill="#5a0606">raw vertex (pre-resample)</text>
+</g>
+</svg>

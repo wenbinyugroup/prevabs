@@ -1,0 +1,18 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  layered offset[sg_v]: shell/base vertex count mismatch (base=3, shell=4); falling back to legacy area/layer build
+[warning]  splitEdge: repeated splits on edge lineage #5 (3 splits in current phase), edge=he#29 v#13( 0 , -1.01789 , 1.99106 ) -> v#6( 0 , -1.07155 , 1.96422 ) | loop: loop#2 | face: f#2 [sg_v_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (4 splits in current phase), edge=he#33 v#14( 0 , -1.02683 , 1.98658 ) -> v#6( 0 , -1.07155 , 1.96422 ) | loop: loop#2 | face: f#2 [sg_v_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (5 splits in current phase), edge=he#37 v#15( 0 , -1.04472 , 1.97764 ) -> v#6( 0 , -1.07155 , 1.96422 ) | loop: loop#2 | face: f#2 [sg_v_face]
+[warning]  splitEdge: repeated splits on edge lineage #5 (6 splits in current phase), edge=he#41 v#16( 0 , -1.05367 , 1.97317 ) -> v#6( 0 , -1.07155 , 1.96422 ) | loop: loop#2 | face: f#2 [sg_v_face]
+[warning]  splitEdge: repeated splits on edge lineage #12 (3 splits in current phase), edge=he#55 v#19( 0 , -0.0123607 , -0.02 ) -> v#10( 0 , -0.0494427 , -0.08 ) | loop: loop#4 | face: f#3
+[warning]  splitEdge: repeated splits on edge lineage #12 (4 splits in current phase), edge=he#59 v#20( 0 , -0.018541 , -0.03 ) -> v#10( 0 , -0.0494427 , -0.08 ) | loop: loop#4 | face: f#3
+[warning]  splitEdge: repeated splits on edge lineage #12 (5 splits in current phase), edge=he#63 v#21( 0 , -0.0309017 , -0.05 ) -> v#10( 0 , -0.0494427 , -0.08 ) | loop: loop#4 | face: f#3
+[warning]  splitEdge: repeated splits on edge lineage #12 (6 splits in current phase), edge=he#67 v#22( 0 , -0.037082 , -0.06 ) -> v#10( 0 , -0.0494427 , -0.08 ) | loop: loop#4 | face: f#3
+[warning]  splitEdge: repeated splits on edge lineage #13 (3 splits in current phase), edge=he#81 v#25( 0 , 0.0123607 , -0.02 ) -> v#11( 0 , 0.0494427 , -0.08 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #13 (4 splits in current phase), edge=he#85 v#26( 0 , 0.018541 , -0.03 ) -> v#11( 0 , 0.0494427 , -0.08 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #13 (5 splits in current phase), edge=he#89 v#27( 0 , 0.0309017 , -0.05 ) -> v#11( 0 , 0.0494427 , -0.08 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #13 (6 splits in current phase), edge=he#93 v#28( 0 , 0.037082 , -0.06 ) -> v#11( 0 , 0.0494427 , -0.08 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #6 (3 splits in current phase), edge=he#103 v#8( 0 , 1.07155 , 1.96422 ) -> v#31( 0 , 1.01789 , 1.99106 ) | loop: loop#6 | face: f#5 [sg_v_area_3]
+[warning]  splitEdge: repeated splits on edge lineage #6 (4 splits in current phase), edge=he#107 v#8( 0 , 1.07155 , 1.96422 ) -> v#32( 0 , 1.02683 , 1.98658 ) | loop: loop#6 | face: f#5 [sg_v_area_3]
+[warning]  splitEdge: repeated splits on edge lineage #6 (5 splits in current phase), edge=he#111 v#8( 0 , 1.07155 , 1.96422 ) -> v#33( 0 , 1.04472 , 1.97764 ) | loop: loop#6 | face: f#5 [sg_v_area_3]
+[warning]  splitEdge: repeated splits on edge lineage #6 (6 splits in current phase), edge=he#115 v#8( 0 , 1.07155 , 1.96422 ) -> v#34( 0 , 1.05367 , 1.97317 ) | loop: loop#6 | face: f#5 [sg_v_area_3]

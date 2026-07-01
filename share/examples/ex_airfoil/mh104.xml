@@ -37,7 +37,7 @@
     <!-- Chord length -->
     <scale>1.9</scale>
 
-    <mesh_size>0.005</mesh_size>
+    <mesh_size>0.004</mesh_size>
     <element_type>linear</element_type>
 
   </general>

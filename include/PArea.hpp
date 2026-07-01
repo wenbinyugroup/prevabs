@@ -30,7 +30,10 @@ private:
   Segment *_segment;
   PDCELHalfEdge *_base, *_opposite;
   std::list<PDCELFace *> _faces;
-  SVector3 _y1{1, 0, 0}, _y2{0, 1, 0}, _y3;
+  // Through-thickness vector for the `_mat_orient_e2 == "layup"` selector.
+  // Frame for the `baseline` selector is computed per-face in
+  // applyFrameFromBaseCurve, not on the area, so no `_y1` is kept here.
+  SVector3 _y2{0, 1, 0}, _y3;
   SVector3 _prev_bound, _next_bound;
 
   // excluding vertices on the base curve and offset curve
@@ -58,13 +61,11 @@ public:
   PDCELFace *face() { return _face; }
   PGeoLineSegment *lineSegmentBase() { return _line_segment_base; }
 
-  SVector3 localy1() { return _y1; }
   SVector3 localy2() { return _y2; }
   SVector3 localy3();
 
   void setSegment(Segment *);
   void addFace(PDCELFace *);
-  void setLocaly1(SVector3 v) { _y1 = v; };
   void setLocaly2(SVector3 v) { _y2 = v; };
   void setLocaly3(SVector3 v) { _y3 = v; };
   void setPrevBound(SVector3 &);
@@ -77,4 +78,12 @@ public:
   void setLineSegmentBase(PGeoLineSegment *ls) { _line_segment_base = ls; }
 
   void buildLayers(const BuilderConfig &);
+
+  // After buildLayers() has populated _faces, override each face's local
+  // y1/y2 (and theta1) using a nearest-segment query on the segment's base
+  // curve. Only fires when the segment's mat-orient selector for that axis
+  // is "baseline"; other selectors keep the area-level fallback set above.
+  // This is the Phase B integration point of
+  // plan-20260514-decouple-local-frame-from-map.md.
+  void applyFrameFromBaseCurve(const BuilderConfig &);
 };

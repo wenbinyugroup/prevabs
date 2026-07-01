@@ -1,0 +1,7 @@
+# build path for segment 'sgm_1'
+  1. buildAreas: enter (closed=Y, base_verts=37)
+  2. buildAreas: useLayeredOffset=yes
+  3. layered: enter (n_layers=3, side=1)
+  4. layered: closed multi-layer (no closed-loop tiling yet) -> FALLBACK
+  5. buildAreas: layered FELL BACK -> legacy
+  6. legacy: built areas=36 -> AreasBuilt

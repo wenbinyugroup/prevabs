@@ -1,0 +1,20 @@
+{
+  "segment": "sgm_1",
+  "closed": false,
+  "route": "layered",
+  "base_vertices": 2,
+  "offset_vertices": 2,
+  "layers": 4,
+  "face_count": 4,
+  "n_inverted": 0,
+  "n_sliver": 0,
+  "n_degenerate": 0,
+  "ok": true,
+  "path": ["buildAreas: enter (closed=N, base_verts=2)", "buildAreas: useLayeredOffset=yes", "layered: enter (n_layers=4, side=1)", "layered: open multi-layer route-ii (n_layers=4)", "layered: tiled all layers (SUCCESS, faces=4)", "buildAreas: layered OK -> AreasBuilt"],
+  "faces": [
+    {"name": "sgm_1_layer_1_face_1", "layer": 1, "material": "iso", "theta3": 45, "verts": 4, "area": 0.01, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_2_face_1", "layer": 2, "material": "iso", "theta3": -45, "verts": 4, "area": 0.01, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_4_face_1", "layer": 4, "material": "iso", "theta3": 90, "verts": 4, "area": 0.01, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false},
+    {"name": "sgm_1_layer_3_face_1", "layer": 3, "material": "iso", "theta3": 0, "verts": 4, "area": 0.01, "min_angle_deg": 90, "inverted": false, "sliver": false, "degenerate": false}
+  ]
+}

@@ -1,0 +1,29 @@
+<cross_section name="vbend_multibend" format="1">
+  <!-- Open multi-bend polyline (Z/staircase, 4 base points -> 3 segments of
+       the polyline within one baseline). Exercises open multi-bend tiling
+       and the per-connector layer-cell split. -->
+  <include><material>materials</material></include>
+  <general>
+    <mesh_size>0.03</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <point name="p1">-0.5  0.5</point>
+    <point name="p2"> 0.0  0.5</point>
+    <point name="p3"> 0.0 -0.5</point>
+    <point name="p4"> 0.5 -0.5</point>
+    <line name="bl"><points>p1,p2,p3,p4</points></line>
+  </baselines>
+  <layups>
+    <layup name="lp" method="ss">
+      <lamina>la_010</lamina>
+      <code>[0/90/0]</code>
+    </layup>
+  </layups>
+  <component name="c">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>lp</layup>
+    </segment>
+  </component>
+</cross_section>

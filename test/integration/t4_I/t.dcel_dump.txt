@@ -1,0 +1,65 @@
+=== DCEL CRASH DUMP ===
+
+VERTICES (14):
+  v#1 (0, inf, inf) edge=he#1
+  v#2 (0, -inf, inf) edge=he#2
+  v#3 (0, -inf, -inf) edge=he#4
+  v#4 (0, inf, -inf) edge=he#6
+  v#5 (0, -1, 0) edge=he#9
+  v#6 (0, -1, 0.07) edge=he#10
+  v#7 (0, 1, 0) edge=he#11
+  v#8 (0, 1, 0.07) edge=he#12
+  v#9 (0, 0, -1) edge=he#17
+  v#10 (0, -0.08, -1) edge=he#18
+  v#11 (0, 0, -2) edge=he#19
+  v#12 (0, -0.08, -2) edge=he#20
+  v#13 (0, 0, 0) edge=he#28
+  v#14 (0, -0.08, 0) edge=he#26
+
+HALFEDGES (32):
+  he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
+  he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
+  he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
+  he#7 scope=active src=v#4 twin=he#8 next=he#1 prev=he#5 loop=loop#1 face=f#1(background)
+  he#9 scope=active src=v#5 twin=he#10 next=he#15 prev=he#26 loop=loop#6 face=nullptr
+  he#10 scope=active src=v#6 twin=he#9 next=he#25 prev=he#16 loop=loop#2 face=f#2(sgm_1_face)
+  he#11 scope=active src=v#7 twin=he#12 next=he#16 prev=he#23 loop=loop#2 face=f#2(sgm_1_face)
+  he#12 scope=active src=v#8 twin=he#11 next=he#24 prev=he#15 loop=loop#6 face=nullptr
+  he#15 scope=active src=v#6 twin=he#16 next=he#12 prev=he#9 loop=loop#6 face=nullptr
+  he#16 scope=active src=v#8 twin=he#15 next=he#10 prev=he#11 loop=loop#2 face=f#2(sgm_1_face)
+  he#17 scope=active src=v#9 twin=he#18 next=he#32 prev=he#29 loop=loop#4 face=f#3(sgm_1_1_face)
+  he#18 scope=active src=v#10 twin=he#17 next=he#33 prev=he#36 loop=loop#5 face=f#4(sgm_1_2_face)
+  he#19 scope=active src=v#11 twin=he#20 next=he#31 prev=he#30 loop=loop#6 face=nullptr
+  he#20 scope=active src=v#12 twin=he#19 next=he#29 prev=he#32 loop=loop#4 face=f#3(sgm_1_1_face)
+  he#23 scope=active src=v#13 twin=he#24 next=he#11 prev=he#27 loop=loop#2 face=f#2(sgm_1_face)
+  he#24 scope=active src=v#7 twin=he#23 next=he#34 prev=he#12 loop=loop#6 face=nullptr
+  he#25 scope=active src=v#5 twin=he#26 next=he#27 prev=he#10 loop=loop#2 face=f#2(sgm_1_face)
+  he#27 scope=active src=v#14 twin=he#28 next=he#23 prev=he#25 loop=loop#2 face=f#2(sgm_1_face)
+  he#28 scope=active src=v#13 twin=he#27 next=he#36 prev=he#33 loop=loop#5 face=f#4(sgm_1_2_face)
+  he#26 scope=active src=v#14 twin=he#25 next=he#9 prev=he#35 loop=loop#6 face=nullptr
+  he#29 scope=active src=v#11 twin=he#30 next=he#17 prev=he#20 loop=loop#4 face=f#3(sgm_1_1_face)
+  he#30 scope=active src=v#9 twin=he#29 next=he#19 prev=he#34 loop=loop#6 face=nullptr
+  he#31 scope=active src=v#12 twin=he#32 next=he#35 prev=he#19 loop=loop#6 face=nullptr
+  he#32 scope=active src=v#10 twin=he#31 next=he#20 prev=he#17 loop=loop#4 face=f#3(sgm_1_1_face)
+  he#33 scope=active src=v#9 twin=he#34 next=he#28 prev=he#18 loop=loop#5 face=f#4(sgm_1_2_face)
+  he#34 scope=active src=v#13 twin=he#33 next=he#30 prev=he#24 loop=loop#6 face=nullptr
+  he#35 scope=active src=v#10 twin=he#36 next=he#26 prev=he#31 loop=loop#6 face=nullptr
+  he#36 scope=active src=v#14 twin=he#35 next=he#18 prev=he#28 loop=loop#5 face=f#4(sgm_1_2_face)
+  he#2 scope=background src=v#2 twin=he#1 next=he#8 prev=he#4 loop=nullptr face=nullptr
+  he#4 scope=background src=v#3 twin=he#3 next=he#2 prev=he#6 loop=nullptr face=nullptr
+  he#6 scope=background src=v#4 twin=he#5 next=he#4 prev=he#8 loop=nullptr face=nullptr
+  he#8 scope=background src=v#1 twin=he#7 next=he#6 prev=he#2 loop=nullptr face=nullptr
+
+LOOPS (5):
+  loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
+  loop#2 incident=he#25 face=f#2 kept=true adjacent=nullptr
+  loop#4 incident=he#20 face=f#3 kept=true adjacent=nullptr
+  loop#5 incident=he#18 face=f#4 kept=true adjacent=nullptr
+  loop#6 incident=he#9 face=nullptr kept=false adjacent=nullptr
+
+FACES (4):
+  f#1 name=background bounded=false outer=he#1
+  f#2 name=sgm_1_face bounded=true outer=he#25
+  f#3 name=sgm_1_1_face bounded=true outer=he#20
+  f#4 name=sgm_1_2_face bounded=true outer=he#18
+

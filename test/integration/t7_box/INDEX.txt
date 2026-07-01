@@ -1,6 +1,8 @@
 main
 - box_2cell.xml
 - box.xml
+- box_right.xml
+- box_2side_layup.xml
 
 support
 - materials.xml

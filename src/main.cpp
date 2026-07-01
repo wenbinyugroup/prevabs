@@ -4,6 +4,7 @@
 #include "execu.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
+#include "adaptive_thickness.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 #include "pui.hpp"
@@ -11,14 +12,18 @@
 
 #include "CLI11.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <ctime>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #ifdef _WIN32
@@ -241,11 +246,10 @@ void processConfigVariables() {
   config.file_directory = v_filename[0];  // ****/****/
   config.file_base_name = v_filename[1];  // ****
   config.file_extension = v_filename[2];  // .****
-  config.file_name_deb  = v_filename[0] + v_filename[1] + ".debug";
 
   config.file_name_geo = config.file_directory + config.file_base_name + ".geo_unrolled";
   config.file_name_msh = config.file_directory + config.file_base_name + ".msh";
-  config.file_name_opt = config.file_directory + config.file_base_name + ".opt";
+  config.file_name_opt = config.file_directory + config.file_base_name + ".geo_unrolled.opt";
   config.file_name_vsc = config.file_directory + config.file_base_name + ".sg";
   config.file_name_log     = config.file_directory + config.file_base_name + ".log";
   config.file_name_log_dev = config.file_directory + config.file_base_name + ".debug.log";
@@ -281,6 +285,364 @@ void emitRunCompletion(
   pui::success("prevabs finished (" + s_dt_finish + ")");
   pui::info(ss.str());
 }
+
+namespace {
+
+bool containsAny(
+    const std::string &line,
+    const std::vector<std::string> &needles) {
+  for (const auto &needle : needles) {
+    if (line.find(needle) != std::string::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<std::string> collectFailureEvidence(
+    const std::string &path,
+    std::size_t max_lines) {
+  std::vector<std::string> lines;
+  if (path.empty()) return lines;
+
+  std::ifstream in(path.c_str());
+  if (!in) return lines;
+
+  const std::vector<std::string> needles{
+      "Unable to recover the edge",
+      "recover the edge",
+      "fatal exception",
+      "unhandled exception",
+      "offset (multi-vertex",
+      "only ",
+      "skin dropped",
+      "dropped range",
+      "dropped ranges",
+      "Stage E pre-trim",
+      "splitFace",
+      "splitEdge",
+      "repeated",
+      "gmsh"};
+
+  std::string line;
+  while (std::getline(in, line)) {
+    if (!containsAny(line, needles)) continue;
+    lines.push_back(line);
+    if (lines.size() >= max_lines) break;
+  }
+  return lines;
+}
+
+bool fileExists(const std::string &path) {
+  if (path.empty()) return false;
+  std::ifstream in(path.c_str());
+  return static_cast<bool>(in);
+}
+
+struct AdaptiveThicknessSuggestion {
+  bool found = false;
+  std::string segment_name;
+  int pretrim_lo = -1;
+  int pretrim_hi = -1;
+  int dropped_lo = -1;
+  int dropped_hi = -1;
+  int first_thin_base = -1;
+  double offset_distance = 0.0;
+  double design_half_thickness = 0.0;
+  int offset_vertices = -1;
+  int base_vertices = -1;
+  double ratio = 0.0;
+};
+
+std::string joinStrings(
+    const std::vector<std::string> &values,
+    const std::string &sep) {
+  std::ostringstream ss;
+  for (std::size_t i = 0; i < values.size(); ++i) {
+    if (i > 0) ss << sep;
+    ss << values[i];
+  }
+  return ss.str();
+}
+
+bool parseFirstMatch(
+    const std::string &line,
+    const std::regex &pattern,
+    std::smatch &match) {
+  return std::regex_search(line, match, pattern);
+}
+
+AdaptiveThicknessSuggestion collectAdaptiveThicknessSuggestion(
+    const std::string &path) {
+  AdaptiveThicknessSuggestion suggestion;
+  if (path.empty()) return suggestion;
+
+  std::ifstream in(path.c_str());
+  if (!in) return suggestion;
+
+  const std::regex segment_re(
+      "offsetting the base curve of segment: ([^ ]+)");
+  const std::regex thin_re(
+      "local half-thickness < \\|dist\\| = ([0-9eE+\\.-]+).*"
+      "first at base\\[([0-9]+)\\]");
+  const std::regex pretrim_re(
+      "Stage E pre-trim removed base\\[([0-9]+)\\.\\.([0-9]+)\\]");
+  const std::regex dropped_re(
+      "skin dropped over base indices \\[([0-9]+)\\.\\.([0-9]+)\\]");
+  const std::regex ratio_re(
+      "only ([0-9]+) offset verts produced for ([0-9]+) base verts "
+      "\\(M/N=([0-9eE+\\.-]+)\\).*layup half-thickness "
+      "([0-9eE+\\.-]+)");
+
+  std::string active_segment;
+  std::string line;
+  while (std::getline(in, line)) {
+    std::smatch match;
+    if (parseFirstMatch(line, segment_re, match)) {
+      active_segment = match[1].str();
+      continue;
+    }
+    if (parseFirstMatch(line, thin_re, match)) {
+      suggestion.found = true;
+      suggestion.segment_name = active_segment;
+      suggestion.offset_distance = std::stod(match[1].str());
+      suggestion.first_thin_base = std::stoi(match[2].str());
+      continue;
+    }
+    if (parseFirstMatch(line, pretrim_re, match)) {
+      suggestion.found = true;
+      suggestion.segment_name = active_segment;
+      suggestion.pretrim_lo = std::stoi(match[1].str());
+      suggestion.pretrim_hi = std::stoi(match[2].str());
+      continue;
+    }
+    if (parseFirstMatch(line, dropped_re, match)) {
+      suggestion.found = true;
+      suggestion.segment_name = active_segment;
+      suggestion.dropped_lo = std::stoi(match[1].str());
+      suggestion.dropped_hi = std::stoi(match[2].str());
+      continue;
+    }
+    if (parseFirstMatch(line, ratio_re, match)) {
+      suggestion.found = true;
+      suggestion.segment_name = active_segment;
+      suggestion.offset_vertices = std::stoi(match[1].str());
+      suggestion.base_vertices = std::stoi(match[2].str());
+      suggestion.ratio = std::stod(match[3].str());
+      suggestion.design_half_thickness = std::stod(match[4].str());
+      continue;
+    }
+  }
+  return suggestion;
+}
+
+void writeAdaptiveThicknessSuggestion(std::ostream &out) {
+  const auto suggestion =
+      collectAdaptiveThicknessSuggestion(config.file_name_log_dev);
+  if (!suggestion.found && !config.adaptive_thickness.enabled) return;
+
+  const int repair_lo =
+      (suggestion.dropped_lo >= 0) ? suggestion.dropped_lo
+                                  : suggestion.pretrim_lo;
+  const int repair_hi =
+      (suggestion.dropped_hi >= 0) ? suggestion.dropped_hi
+                                  : suggestion.pretrim_hi;
+  const double safety = config.adaptive_thickness.enabled
+      ? config.adaptive_thickness.safety : 0.90;
+  const int transition_base_count = config.adaptive_thickness.enabled
+      ? config.adaptive_thickness.transition_base_count : 2;
+  const int repair_base_padding = config.adaptive_thickness.enabled
+      ? config.adaptive_thickness.repair_base_padding : 0;
+  const double design_half_thickness =
+      (suggestion.design_half_thickness > 0.0)
+      ? suggestion.design_half_thickness : suggestion.offset_distance;
+
+  prevabs::geo::LinearAdaptiveThicknessInput plan_input;
+  plan_input.segment_name = suggestion.segment_name;
+  plan_input.base_count = suggestion.base_vertices;
+  plan_input.repair_lo = repair_lo;
+  plan_input.repair_hi = repair_hi;
+  plan_input.design_half_thickness = design_half_thickness;
+  plan_input.safety = safety;
+  plan_input.repair_base_padding = repair_base_padding;
+  plan_input.transition_base_count = transition_base_count;
+  plan_input.min_half_thickness =
+      config.adaptive_thickness.min_half_thickness;
+  const auto plan =
+      prevabs::geo::buildLinearAdaptiveThicknessPlan(plan_input);
+
+  out << "## Adaptive thickness suggestion\n\n";
+  if (config.adaptive_thickness.enabled) {
+    if (config.adaptive_thickness.report_only) {
+      out << "Adaptive thickness is configured in report-only mode, so the "
+             "model was not modified.\n\n";
+    } else {
+      out << "Adaptive thickness is configured for matching open segments. "
+             "This report was written because the build still failed.\n\n";
+    }
+    out << "- Configured mode: `" << config.adaptive_thickness.mode << "`\n";
+    out << "- Configured report_only: "
+        << (config.adaptive_thickness.report_only ? "true" : "false")
+        << "\n";
+    out << "- Configured safety: " << config.adaptive_thickness.safety
+        << "\n";
+    out << "- Configured repair_base_padding: "
+        << config.adaptive_thickness.repair_base_padding << "\n";
+    out << "- Configured transition_base_count: "
+        << config.adaptive_thickness.transition_base_count << "\n";
+    out << "- Configured min_half_thickness: "
+        << config.adaptive_thickness.min_half_thickness << "\n";
+    if (!config.adaptive_thickness.target_segments.empty()) {
+      out << "- Configured target_segments: `"
+          << joinStrings(config.adaptive_thickness.target_segments, ", ")
+          << "`\n";
+    }
+    if (!suggestion.found) {
+      out << "\nNo offset-thickness diagnostic was found in the debug log, "
+             "so no repair range could be suggested.\n\n";
+      return;
+    }
+  } else {
+    out << "This is a dry-run suggestion only. The model was not modified.\n\n";
+    out << "- Suggested mode: `linear`\n";
+  }
+  if (!suggestion.segment_name.empty()) {
+    out << "- Segment: `" << suggestion.segment_name << "`\n";
+  }
+  if (!plan.ok) {
+    out << "- Adaptive thickness plan: unavailable (" << plan.error
+        << ")\n";
+  } else {
+    out << "- Repair range: base[" << plan.range.repair_lo << ".."
+        << plan.range.repair_hi << "]\n";
+    out << "- Suggested taper range: base[" << plan.range.taper_lo << ".."
+        << plan.range.taper_hi << "]\n";
+  }
+  if (suggestion.pretrim_lo >= 0 && suggestion.pretrim_hi >= 0) {
+    out << "- Stage E pre-trim range: base[" << suggestion.pretrim_lo
+        << ".." << suggestion.pretrim_hi << "]\n";
+  }
+  if (suggestion.first_thin_base >= 0) {
+    out << "- First thin base index: base[" << suggestion.first_thin_base
+        << "]\n";
+  }
+  if (suggestion.design_half_thickness > 0.0) {
+    out << "- Design half-thickness: " << suggestion.design_half_thickness
+        << "\n";
+  }
+  if (suggestion.offset_distance > 0.0) {
+    out << "- Current offset distance: " << suggestion.offset_distance
+        << "\n";
+  }
+  if (plan.ok && plan.range.repaired_half_thickness > 0.0) {
+    out << "- Initial trial local half-thickness `t'`: "
+        << plan.range.repaired_half_thickness
+        << " (safety = " << safety << ")\n";
+  }
+  if (suggestion.offset_vertices >= 0 && suggestion.base_vertices > 0) {
+    out << "- Offset/base vertex ratio: " << suggestion.offset_vertices
+        << "/" << suggestion.base_vertices << " = "
+        << suggestion.ratio << "\n";
+  }
+  out << "\n";
+  out << "Use this as the audit trail for the opt-in adaptive thickness "
+         "repair. A stricter automatic value still requires logging the "
+         "minimum local available half-thickness in the failed range.\n\n";
+}
+
+std::string classifyFailure(const std::string &fatal_msg) {
+  if (fatal_msg.find("Unable to recover the edge") != std::string::npos ||
+      fatal_msg.find("Impossible to recover edge") != std::string::npos ||
+      fatal_msg.find("edge recovery reported failure") != std::string::npos ||
+      fatal_msg.find("recover the edge") != std::string::npos) {
+    return "Gmsh could not recover one generated mesh edge. This usually "
+           "means the generated laminate face is too thin, self-intersecting, "
+           "or topologically inconsistent near a local offset/join region.";
+  }
+  if (fatal_msg.find("SEH exception") != std::string::npos) {
+    return "PreVABS hit a low-level runtime exception while building the "
+           "cross-section geometry.";
+  }
+  return "PreVABS stopped while building the cross-section. See the fatal "
+         "message and nearby diagnostic log lines below.";
+}
+
+std::string writeFailureReport(const std::string &fatal_msg) {
+  if (config.file_directory.empty() || config.file_base_name.empty()) {
+    return "";
+  }
+
+  const std::string report_path =
+      config.file_directory + config.file_base_name + ".failure.md";
+  const std::string dump_path =
+      config.file_directory + config.file_base_name + ".dcel_dump.txt";
+  const std::string progress = formatProgressContext();
+
+  std::ofstream out(report_path.c_str(), std::ios::out | std::ios::trunc);
+  if (!out) return "";
+
+  out << "# PreVABS build failure report\n\n";
+  out << "- Input: `" << config.main_input << "`\n";
+  out << "- Case: `" << config.file_base_name << "`\n";
+  out << "- Time: " << getCurrentDateTimeString() << "\n";
+  out << "- Failure: " << fatal_msg << "\n";
+  if (!progress.empty()) {
+    out << "- Catch context: " << progress << "\n";
+  }
+  out << "\n";
+
+  out << "## What failed\n\n";
+  out << classifyFailure(fatal_msg) << "\n\n";
+
+  out << "## Diagnostic evidence\n\n";
+  bool wrote_evidence = false;
+  const std::vector<std::pair<std::string, std::string> > logs{
+      std::make_pair("user log", config.file_name_log),
+      std::make_pair("debug log", config.file_name_log_dev)};
+  for (const auto &log : logs) {
+    const auto lines = collectFailureEvidence(log.second, 10);
+    if (lines.empty()) continue;
+    wrote_evidence = true;
+    out << "From `" << log.second << "`:\n\n";
+    for (const auto &line : lines) {
+      out << "- " << line << "\n";
+    }
+    out << "\n";
+  }
+  if (!wrote_evidence) {
+    out << "No matching diagnostic lines were found in the logs. Check the "
+           "full log files listed below.\n\n";
+  }
+
+  writeAdaptiveThicknessSuggestion(out);
+
+  out << "## Related files\n\n";
+  out << "- Log: `" << config.file_name_log << "`\n";
+  out << "- Debug log: `" << config.file_name_log_dev << "`\n";
+  if (fileExists(dump_path)) {
+    out << "- DCEL dump: `" << dump_path << "`\n";
+  }
+  out << "\n";
+
+  out << "## User action\n\n";
+  out << "The build was stopped instead of silently dropping local faces or "
+         "elements. Inspect the reported segment/offset region and adjust the "
+         "cross-section geometry or layup so the local laminate faces remain "
+         "meshable and connected.\n";
+
+  return report_path;
+}
+
+void writeFailureReportBestEffort(const std::string &fatal_msg) {
+  try {
+    const std::string report_path = writeFailureReport(fatal_msg);
+    if (!report_path.empty()) {
+      pui::warn("failure report written: " + report_path);
+    }
+  } catch (...) {}
+}
+
+} // namespace
 
 #ifdef _WIN32
 namespace {
@@ -487,6 +849,7 @@ int main(int argc, char **argv) {
         pmodel_uptr->dcel()->dumpToFile(dump_path);
       } catch (...) {}
     }
+    writeFailureReportBestEffort(fatal_msg);
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }
@@ -494,9 +857,10 @@ int main(int argc, char **argv) {
     return 1;
   }
   catch (...) {
-    pui::error("unhandled exception");
+    const std::string fatal_msg = "unhandled exception";
+    pui::error(fatal_msg);
     logFatalWithProgress(
-        spdlog::level::critical, "unhandled exception");
+        spdlog::level::critical, fatal_msg);
     if (pmodel_uptr && pmodel_uptr->dcel()) {
       try {
         auto dump_path = config.file_directory + config.file_base_name
@@ -504,6 +868,7 @@ int main(int argc, char **argv) {
         pmodel_uptr->dcel()->dumpToFile(dump_path);
       } catch (...) {}
     }
+    writeFailureReportBestEffort(fatal_msg);
     if (initialized) {
       try { pmodel_uptr->finalize(); } catch (...) {}
     }

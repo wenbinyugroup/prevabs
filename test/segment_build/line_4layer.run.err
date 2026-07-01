@@ -1,0 +1,3 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  splitEdge: repeated splits on edge lineage #5 (3 splits in current phase), edge=he#27 v#6( 0 , -1 , 0.02 ) -> v#11( 0 , -1 , 0.01 ) | loop: loop#6 | face: f#5
+[warning]  splitEdge: repeated splits on edge lineage #6 (3 splits in current phase), edge=he#33 v#12( 0 , 1 , 0.01 ) -> v#8( 0 , 1 , 0.02 ) | loop: loop#6 | face: f#5

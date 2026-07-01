@@ -1,0 +1,56 @@
+<cross_section name="airfoil_skin_only">
+
+  <analysis>
+    <!-- Timoshenko beam model -->
+    <model>1</model>
+  </analysis>
+
+
+  <general>
+    <translate>-0.25 0</translate>
+    <scale>1</scale>
+    <mesh_size>0.01</mesh_size>
+    <element_shape>tri</element_shape>
+    <element_type>linear</element_type>
+  </general>
+
+  <baselines>
+
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">ah88k130.dat</points>
+      <leading_edge>0.000000 0.000000</leading_edge>
+      <trailing_edge>1.000000 0.000000</trailing_edge>
+    </line>
+
+  </baselines>
+
+  <materials>
+    <material name="al_alloy" type="isotropic">
+      <density>2.780e3</density>
+      <elastic>
+        <e>71.0e9</e>
+        <nu>3.30e-1</nu>
+      </elastic>
+    </material>
+    <lamina name="ply">
+      <material>al_alloy</material>
+      <thickness>0.01</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="ply">0</layer>
+    </layup>
+  </layups>
+
+
+  <!-- Surface layup -->
+  <component name="surface">
+    <segment name="sg_le">
+      <baseline>ln_af</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>

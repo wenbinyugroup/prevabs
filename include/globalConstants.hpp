@@ -19,15 +19,103 @@ const std::string sc_version = "2.1";
 
 const double INF{std::numeric_limits<double>::infinity()};
 const double PI{3.141592653589793};
-// GEO_TOL is the single source of truth for geometric comparisons.
-// Its default (1e-9) matches AppConfig::geo_tol so the compile-time fallback
-// stays in sync with the user-tunable runtime value.
-// TOLERANCE, ABS_TOL, REL_TOL are kept as aliases for existing call sites;
-// prefer GEO_TOL in new code.
-const double GEO_TOL{1e-9};
-const double TOLERANCE{GEO_TOL};
-const double ABS_TOL{GEO_TOL};
-const double REL_TOL{GEO_TOL};
+
+// ===========================================================================
+// Tolerance architecture (see dev-docs/geometry-tolerances.md)
+//
+//   C — Dimensionless RELATIVE tolerances (this block). The fundamental,
+//       user-configurable layer: "how many parts of the characteristic
+//       length". A small ladder of rungs.
+//   A/B — Absolute LENGTH tolerances, DERIVED as  L_char * rel  (next block).
+//   D — A single machine-precision guard (GEO_EPS_MACHINE), conceptually
+//       distinct from geometric tolerance, never scaled by L_char.
+//
+// L_char = min(min positive point spacing, min positive lamina thickness),
+// computed from the post-transform model by the cross-section reader.
+// ===========================================================================
+
+// C: dimensionless relative ladder (ascending rungs spanning ~1e-3..1e-1 of
+// L_char). Defaults are chosen so the B noise floors govern at test-suite
+// scales (zero change there) while the relative terms scale up large models.
+extern double REL_PREDICATE;     // 1e-3  strict predicates; u-endpoint tests
+extern double REL_MERGE_FINE;    // 2e-3  coincidence / nesting
+extern double REL_EXPORT_MERGE;  // 4e-3  export-time vertex merge
+extern double REL_RESAMPLE;      // 2e-2  resample minimum separation
+extern double REL_MERGE_COARSE;  // 1e-1  area-build vertex merge
+
+// C (parameter-space): dimensionless thresholds compared DIRECTLY against a
+// normalized curve/ray parameter (u, t in [0,1]); NOT multiplied by L_char.
+// They guard parameter-space FP noise — "is the parameter essentially at an
+// endpoint / corner?" — so they stay tight and fixed (not feature-scale).
+extern double PARAM_ENDPOINT_SLACK;  // 1e-12  ray_t / segment_u endpoint slack
+extern double PARAM_CORNER_EPS;      // 1e-9   projection-foot at-corner test
+
+// D: machine-precision guard. Rejects determinants / denominators that are
+// numerically indistinguishable from zero (det/len of O(1) quantities, ~45x
+// DBL_EPSILON). NOT a geometric tolerance; never scaled by L_char.
+extern double GEO_EPS_MACHINE;   // 1e-14
+
+// A: runtime model-scale length tolerances, derived from the C ladder. The
+// input reader updates them after geometry and lamina definitions are
+// available, before component geometry is built:
+//   GEO_TOL       = L_char * REL_PREDICATE     strict length-predicate
+//                   tolerance (same-point / on-segment / vertex-coincidence).
+//   GEO_MERGE_TOL = L_char * REL_MERGE_COARSE  loose de-duplication tolerance
+//                   for two independently-computed copies of the same point
+//                   (Clipper2 grid noise, divergent parametric interpolations);
+//                   100x looser than GEO_TOL, yet far below any real feature.
+// TOLERANCE, ABS_TOL, and REL_TOL are references kept for existing call sites.
+// Note: several call sites compare a dimensionless segment parameter u in [0,1]
+// against TOLERANCE (e.g. `fabs(u) < TOLERANCE` to detect an intersection at a
+// segment endpoint). This is intentional: for a characteristic-scale segment,
+// u * length ~ GEO_TOL corresponds to a physical endpoint-proximity of ~GEO_TOL,
+// so reusing the scale-tied length tolerance keeps the endpoint test tied to the
+// model scale. A fixed dimensionless value would NOT scale with the model.
+extern double GEO_TOL;
+extern double GEO_MERGE_TOL;
+extern double& TOLERANCE;
+extern double& ABS_TOL;
+extern double& REL_TOL;
+
+void setGeometryTolerance(double tolerance);
+
+// ---------------------------------------------------------------------------
+// Merge / resample / coincidence length ladder.
+//
+// These tolerances fold or separate vertices during the layered-offset build
+// and at mesh export. They form an ordered ladder that MUST be preserved:
+//
+//   Clipper2 grid (~1e-8) < GEO_COINCIDENCE_TOL < GEO_EXPORT_MERGE_TOL
+//                         < GEO_RESAMPLE_MIN_SEP < smallest real feature
+//
+// Each rung is  max(absolute noise floor, L_char * rel)  — see
+// setGeometryTolerance. The floor (Clipper2 precision-8 grid ~1e-8 and FP
+// interpolation gaps ~1e-6 are ABSOLUTE artifacts, independent of L_char)
+// governs at the airfoil-scale cross-sections in the test suite, so behaviour
+// there is unchanged; the relative term scales the ladder up for large-feature
+// models. See local/issue-20260630-geo-tolerance-consolidation.md.
+// ---------------------------------------------------------------------------
+
+// Fold two consecutive layered-offset staircase steps whose offset points are
+// within this distance (a coincident "zero-length" vertical step). Also used
+// as the coincident-centroid threshold in the post-split degeneracy self-check.
+// = max(1e-6 floor, L_char * REL_MERGE_FINE).
+extern double GEO_COINCIDENCE_TOL;
+
+// Export-time DCEL->Gmsh vertex sharing: distinct DCEL vertices closer than
+// this collapse onto one Gmsh point, avoiding zero-area (degenerate) elements.
+// = max(2e-6 floor, L_char * REL_EXPORT_MERGE).
+extern double GEO_EXPORT_MERGE_TOL;
+
+// Floor on the strictly-increasing minimum arc spacing between consecutive
+// resampled outer (shell) vertices, keeping the layered staircase 1:1. The
+// scaled term (L_sh * 1e-5) may exceed this floor.
+// = max(1e-5 floor, L_char * REL_RESAMPLE).
+extern double GEO_RESAMPLE_MIN_SEP;
+
+// Slack on layered-offset nesting / zero-gap validation distance comparisons.
+// = max(1e-6 floor, L_char * REL_MERGE_FINE).
+extern double GEO_NESTING_SLACK;
 
 // Log severity levels (match spdlog mapping in plog.cpp)
 constexpr int LOG_LEVEL_TRACE   = 0;

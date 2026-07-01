@@ -1,0 +1,35 @@
+<cross_section name="airfoil_skin" format="1">
+  <!-- Single curved skin segment carved from the upper surface of a real
+       airfoil (MH104). The airfoil baseline is discretised by the airfoil
+       reader; one <line> between two surface points yields a single
+       multi-vertex curved laminate segment. -->
+  <include><material>materials</material></include>
+  <general>
+    <mesh_size>0.01</mesh_size>
+    <element_type>linear</element_type>
+  </general>
+  <baselines>
+    <line name="ln_af" type="airfoil">
+      <points data="file" format="1" header="1">mh104.dat</points>
+      <leading_edge name="ple"/>
+      <trailing_edge name="pte"/>
+    </line>
+
+    <point name="a1" on="ln_af" by="x2" which="top">0.114739930</point>
+    <point name="a2" on="ln_af" by="x2" which="top">0.536615950</point>
+
+    <line name="bl"><points>a2:a1</points></line>
+  </baselines>
+  <layups>
+    <layup name="lp" method="ss">
+      <lamina>la_005</lamina>
+      <code>[0/90/0]</code>
+    </layup>
+  </layups>
+  <component name="c">
+    <segment>
+      <baseline>bl</baseline>
+      <layup>lp</layup>
+    </segment>
+  </component>
+</cross_section>

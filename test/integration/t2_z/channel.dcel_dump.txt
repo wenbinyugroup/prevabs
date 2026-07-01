@@ -1,0 +1,24 @@
+=== DCEL CRASH DUMP ===
+
+VERTICES (4):
+  v#1 (0, inf, inf) edge=he#1
+  v#2 (0, -inf, inf) edge=he#2
+  v#3 (0, -inf, -inf) edge=he#4
+  v#4 (0, inf, -inf) edge=he#6
+
+HALFEDGES (8):
+  he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
+  he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
+  he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
+  he#7 scope=active src=v#4 twin=he#8 next=he#1 prev=he#5 loop=loop#1 face=f#1(background)
+  he#2 scope=background src=v#2 twin=he#1 next=he#8 prev=he#4 loop=nullptr face=nullptr
+  he#4 scope=background src=v#3 twin=he#3 next=he#2 prev=he#6 loop=nullptr face=nullptr
+  he#6 scope=background src=v#4 twin=he#5 next=he#4 prev=he#8 loop=nullptr face=nullptr
+  he#8 scope=background src=v#1 twin=he#7 next=he#6 prev=he#2 loop=nullptr face=nullptr
+
+LOOPS (1):
+  loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
+
+FACES (1):
+  f#1 name=background bounded=false outer=he#1
+

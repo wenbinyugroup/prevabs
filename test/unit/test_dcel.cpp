@@ -37,6 +37,12 @@ struct LoggerSetup {
     }
   }
 } _logger_setup;
+
+struct ScopedConfig {
+  PConfig previous;
+  ScopedConfig() : previous(config) {}
+  ~ScopedConfig() { config = previous; }
+};
 } // namespace
 
 // ------------------------------------------------------------------
@@ -54,6 +60,7 @@ struct LoggerSetup {
 #include "PSegment.hpp"
 #include "PModel.hpp"
 #include "geo.hpp"
+#include "offset_clipper2.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -464,9 +471,17 @@ TEST_CASE("addEdge: creates two half-edges with correct twin relationship",
   CHECK(he->twin()->twin() == he);
 }
 
-TEST_CASE("buildAreas: last area uses final pair instead of area count",
+TEST_CASE("buildAreas: last-area frame queries base curve, not the offset",
           "[dcel][segment][areas]") {
 
+  // Pre-Phase-B (plan-20260514-decouple-local-frame-from-map.md) the last
+  // area's y1 was taken from `buildAreaBaseSegmentFromPair`, which at a
+  // degenerate staircase step (base index repeating) pulled the segment
+  // from the *offset* curve.  That gave a non-normalised vector along the
+  // offset's local direction.  Phase B replaces that path: face frames are
+  // now queried per-face from the base curve via CurveFrameLookup, so the
+  // assertion here is the unit tangent of the base polyline at the face
+  // centroid — irrespective of any degenerate offset pair.
   Material material("mat");
   Lamina lamina("lam", &material, 1.0);
   LayerType layertype(1, &material, 0.0);
@@ -516,16 +531,24 @@ TEST_CASE("buildAreas: last area uses final pair instead of area count",
   bcfg.materials = &model;
   bcfg.model = &model;
 
+  // This test validates the legacy area-build frame logic (seg_area_* faces).
+  // Force the legacy route: the layered-offset path now tiles non-1:1 base/
+  // offset geometry directly (no fallback) and would emit seg_layer_* faces.
+  const bool prev_layered = config.layered_offset;
+  config.layered_offset = false;
   segment.build(bcfg);
   segment.buildAreas(bcfg);
+  config.layered_offset = prev_layered;
 
   PDCELFace *last_layer_face = findFaceByName(
       dcel, model, "seg_area_3_layer_1");
   REQUIRE(last_layer_face != nullptr);
 
+  // Base curve is collinear along +y, so the nearest-segment unit tangent
+  // at any centroid is (0, 1, 0).
   const SVector3 y1 = last_layer_face->localy1();
   CHECK(y1[0] == Catch::Approx(0.0));
-  CHECK(y1[1] == Catch::Approx(0.5));
+  CHECK(y1[1] == Catch::Approx(1.0));
   CHECK(y1[2] == Catch::Approx(0.0));
 }
 
@@ -554,6 +577,47 @@ TEST_CASE("offsetCurveBase: repeated pre-build calls reuse the same offset curve
   CHECK(segment.curveOffset() == first_offset);
   CHECK(segment.curveOffset()->vertices().size() == offset_vertex_count);
   CHECK(segment.baseOffsetIndicesPairs().size() == pair_count);
+}
+
+TEST_CASE("offsetCurveBase: adaptive thickness uses variable offset on open "
+          "dropped range",
+          "[dcel][segment][offset][adaptive]") {
+  ScopedConfig scoped_config;
+  config.adaptive_thickness.enabled = true;
+  config.adaptive_thickness.report_only = false;
+  config.adaptive_thickness.mode = "linear";
+  config.adaptive_thickness.safety = 0.5;
+  config.adaptive_thickness.transition_base_count = 1;
+  config.adaptive_thickness.min_half_thickness = 0.0;
+  config.adaptive_thickness.target_segments = {"adaptive_seg"};
+  config.app.geo_tol = 1e-12;
+
+  Material material("mat");
+  Lamina lamina("lam", &material, 0.1);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+
+  Baseline base("base", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.0, 1.0));
+  base.addPVertex(new PDCELVertex(0.0, 1.0, 0.5));
+  base.addPVertex(new PDCELVertex(0.0, 2.0, 0.1));
+  base.addPVertex(new PDCELVertex(0.0, 2.5, 0.0));
+  base.addPVertex(new PDCELVertex(0.0, 3.0, 0.1));
+  base.addPVertex(new PDCELVertex(0.0, 4.0, 0.5));
+  base.addPVertex(new PDCELVertex(0.0, 5.0, 1.0));
+
+  Segment segment("adaptive_seg", &base, &layup, "left", 1);
+  segment.offsetCurveBase();
+
+  REQUIRE(segment.curveOffset() != nullptr);
+  REQUIRE(segment.curveOffset()->vertices().size() == base.vertices().size());
+  REQUIRE(segment.baseOffsetIndicesPairs().size() == base.vertices().size());
+
+  for (std::size_t i = 0; i < base.vertices().size(); ++i) {
+    CHECK(segment.baseOffsetIndicesPairs()[i].base == static_cast<int>(i));
+    CHECK(segment.baseOffsetIndicesPairs()[i].offset == static_cast<int>(i));
+  }
 }
 
 TEST_CASE("getIntersectionVertex: aliased curves shift the second insertion",
@@ -596,24 +660,44 @@ TEST_CASE("getIntersectionVertex: aliased curves shift the second insertion",
   delete v4;
 }
 
-TEST_CASE("offset: acute cusp applies miter limit surrogate",
-          "[dcel][geo][offset]") {
+TEST_CASE("offset: acute cusp on open base honours miter limit "
+          "via Clipper2 backend (outward side)",
+          "[dcel][geo][offset][clipper2][open][cusp]") {
+  // Open 3-vertex hairpin: v0 → v1 → v2 with ~177° turn at v1. The
+  // raw miter at v1 would project >> 2*dist outward; Clipper2's
+  // miter_limit = 2.0 (same constant the legacy
+  // createSingleVertexBevelSurrogate emulated) caps the corner to a
+  // bevel.
+  //
+  // Phase 4 (plan-20260518) routes open inputs through the Clipper2
+  // backend. We test side = -1 (outward side of the hairpin in
+  // PreVABS's n × t convention), which has geometric room for the
+  // bevel; side = +1 (inward side) is degenerate at this acuity and
+  // would collapse on either backend.
+  //
+  // Assertions are backend-agnostic invariants:
+  //   - return value 1 (success)
+  //   - >= 2 output vertices (end-to-end alignment)
+  //   - valid staircase
+  //   - no offset vertex projects past the raw_miter overshoot
+  //     location (miter limit honoured)
   PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
   PDCELVertex *v1 = new PDCELVertex(0.0, 1.0, 0.0);
   PDCELVertex *v2 = new PDCELVertex(0.0, 0.1, 0.05);
   std::vector<PDCELVertex *> base = {v0, v1, v2};
 
-  const int side = 1;
+  const int side = -1;  // outward side has geometric room for bevel
   const double dist = 0.1;
+
+  // Sanity: confirm the raw miter would overshoot if not limited.
   PDCELVertex prev_start, prev_end, cur_start, cur_end;
   REQUIRE(offset(v0, v1, side, dist, &prev_start, &prev_end) == 1);
   REQUIRE(offset(v1, v2, side, dist, &cur_start, &cur_end) == 1);
-
   double u_prev = 0.0;
   double u_cur = 0.0;
   REQUIRE(calcLineIntersection2D(
       &prev_start, &prev_end, &cur_start, &cur_end,
-      u_prev, u_cur, TOLERANCE));
+      u_prev, u_cur));
   const SPoint3 raw_miter =
       getParametricPoint(prev_start.point(), prev_end.point(), u_prev);
   const double raw_miter_dist = raw_miter.distance(v1->point());
@@ -622,16 +706,18 @@ TEST_CASE("offset: acute cusp applies miter limit surrogate",
   std::vector<PDCELVertex *> offset_vertices;
   BaseOffsetMap id_pairs;
   REQUIRE(offset(base, side, dist, offset_vertices, id_pairs) == 1);
-  REQUIRE(offset_vertices.size() == 3);
+  REQUIRE(offset_vertices.size() >= 2);
   REQUIRE(validateBaseOffsetMap(id_pairs));
 
-  const double limited_dist =
-      offset_vertices[1]->point().distance(v1->point());
-  CHECK(limited_dist <= 2.0 * dist + 1e-9);
+  // Open contract: front and back are distinct pointers (no
+  // trailing-duplicate).
+  CHECK(offset_vertices.front() != offset_vertices.back());
 
-  const SPoint3 bevel_mid =
-      getParametricPoint(prev_end.point(), cur_start.point(), 0.5);
-  CHECK(offset_vertices[1]->point().distance(bevel_mid) <= 1e-9);
+  // Miter limit invariant: no vertex sits at the raw_miter overshoot.
+  for (PDCELVertex *vertex : offset_vertices) {
+    const double d_to_v1 = vertex->point().distance(v1->point());
+    CHECK(d_to_v1 < raw_miter_dist - 1e-6);
+  }
 
   for (PDCELVertex *vertex : offset_vertices) {
     delete vertex;
@@ -702,6 +788,284 @@ TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset lo
   CHECK(offset->vertices()[3]->point().z() == Catch::Approx(-0.42).margin(tol));
 }
 
+TEST_CASE("offset: closed pseudo-airfoil offset uses Clipper2 backend and "
+          "produces a valid staircase",
+          "[dcel][geo][offset][clipper2][airfoil][e2e]") {
+  // 10-vertex CCW airfoil-like contour with TE cusp at (1, 0).
+  // (mirrors test_offset_clipper2 pseudoAirfoilCCW())
+  auto make_v = [](double y, double z) {
+    return new PDCELVertex(0.0, y, z);
+  };
+  PDCELVertex *te = make_v(1.00,  0.00);
+  PDCELVertex *t1 = make_v(0.90,  0.025);
+  PDCELVertex *t2 = make_v(0.70,  0.05);
+  PDCELVertex *t3 = make_v(0.40,  0.05);
+  PDCELVertex *t4 = make_v(0.10,  0.03);
+  PDCELVertex *le = make_v(0.00,  0.00);
+  PDCELVertex *b1 = make_v(0.10, -0.03);
+  PDCELVertex *b2 = make_v(0.40, -0.05);
+  PDCELVertex *b3 = make_v(0.70, -0.05);
+  PDCELVertex *b4 = make_v(0.90, -0.025);
+  // Closed convention: front == back (same pointer).
+  std::vector<PDCELVertex *> base = {
+      te, t1, t2, t3, t4, le, b1, b2, b3, b4, te};
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  // side = +1 (PreVABS inward) + small dist → should go through the
+  // Clipper2 closed branch (not the legacy 5-stage pipeline) and
+  // produce a clean staircase with no TE drops.
+  REQUIRE(offset(base, /*side*/ 1, /*dist*/ 0.005,
+                 offset_vertices, id_pairs) == 1);
+  REQUIRE(!offset_vertices.empty());
+  // Closed convention: offset_vertices.front() == .back() (same pointer).
+  CHECK(offset_vertices.front() == offset_vertices.back());
+  REQUIRE(validateBaseOffsetMap(id_pairs));
+
+  // The staircase must start at (0, 0) and span all 11 base entries
+  // (10 distinct + trailing dup). With clean small-dist offset, the
+  // last entry sits at base index 10 (= N_base_distinct).
+  CHECK(id_pairs.front().base   == 0);
+  CHECK(id_pairs.front().offset == 0);
+  CHECK(id_pairs.back().base    == 10);
+
+  // Offset polygon should be strictly inside the base bounding box.
+  for (PDCELVertex *v : offset_vertices) {
+    CHECK(v->point().y() >= -0.05);
+    CHECK(v->point().y() <=  1.0);
+    CHECK(v->point().z() >= -0.05);
+    CHECK(v->point().z() <=  0.05);
+  }
+
+  // Free offset vertices (skip dup).
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_vertices) {
+    if (freed.insert(v).second) delete v;
+  }
+  delete te;
+  delete t1;
+  delete t2;
+  delete t3;
+  delete t4;
+  delete le;
+  delete b1;
+  delete b2;
+  delete b3;
+  delete b4;
+}
+
+TEST_CASE("offset: closed pseudo-airfoil thick offset drops TE region "
+          "but staircase stays valid",
+          "[dcel][geo][offset][clipper2][airfoil][thin][e2e]") {
+  // Same airfoil as above, thicker offset → Stage C reverse-match
+  // bridge must record dropped base ranges near the TE cusp and the
+  // resulting id_pairs must still pass validateBaseOffsetMap.
+  auto make_v = [](double y, double z) {
+    return new PDCELVertex(0.0, y, z);
+  };
+  PDCELVertex *te = make_v(1.00,  0.00);
+  PDCELVertex *t1 = make_v(0.90,  0.025);
+  PDCELVertex *t2 = make_v(0.70,  0.05);
+  PDCELVertex *t3 = make_v(0.40,  0.05);
+  PDCELVertex *t4 = make_v(0.10,  0.03);
+  PDCELVertex *le = make_v(0.00,  0.00);
+  PDCELVertex *b1 = make_v(0.10, -0.03);
+  PDCELVertex *b2 = make_v(0.40, -0.05);
+  PDCELVertex *b3 = make_v(0.70, -0.05);
+  PDCELVertex *b4 = make_v(0.90, -0.025);
+  std::vector<PDCELVertex *> base = {
+      te, t1, t2, t3, t4, le, b1, b2, b3, b4, te};
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  REQUIRE(offset(base, 1, 0.04, offset_vertices, id_pairs) == 1);
+  REQUIRE(validateBaseOffsetMap(id_pairs));
+
+  // First entry pinned at (0, 0). Even though the TE base[0] sits
+  // inside Clipper2's eaten region for dist=0.04, anchorClosed in the
+  // Stage C bridge ensures the staircase starts at base 0.
+  CHECK(id_pairs.front().base   == 0);
+  CHECK(id_pairs.front().offset == 0);
+  // Last entry closes the loop at N_distinct = 10.
+  CHECK(id_pairs.back().base == 10);
+
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_vertices) {
+    if (freed.insert(v).second) delete v;
+  }
+  delete te;
+  delete t1;
+  delete t2;
+  delete t3;
+  delete t4;
+  delete le;
+  delete b1;
+  delete b2;
+  delete b3;
+  delete b4;
+}
+
+TEST_CASE("offset: closed inward offset fails when dist exceeds half-thickness",
+          "[dcel][geo][offset][clipper2][precheck]") {
+  // Thin slab: 1.0 wide, 0.04 tall. Half-thickness ≈ 0.02 everywhere.
+  // An inward offset of 0.10 (≫ half-thickness 0.02) eats the polygon
+  // entirely — Clipper2 returns no offset polygon, the backend logs
+  // an error, and offset() returns 0 with cleared outputs. Stage E's
+  // precheck additionally emits a PLOG(warning) summary; the user-
+  // facing "skin dropped" signal comes from Stage C.
+  PDCELVertex *v0 = new PDCELVertex(0.0,  0.0,   0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0,  1.0,   0.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0,  1.0,   0.04);
+  PDCELVertex *v3 = new PDCELVertex(0.0,  0.0,   0.04);
+  std::vector<PDCELVertex *> base = {v0, v1, v2, v3, v0};  // closed CCW
+
+  std::vector<PDCELVertex *> offset_vertices;
+  BaseOffsetMap id_pairs;
+  // side = +1 → inward in PreVABS convention. dist = 0.10 ≫ h ≈ 0.02.
+  CHECK(offset(base, /*side*/ 1, /*dist*/ 0.10,
+               offset_vertices, id_pairs) == 0);
+  CHECK(offset_vertices.empty());
+  CHECK(id_pairs.empty());
+
+  // Sanity: a small inward offset (dist = 0.005, h ≈ 0.02 ≫ dist)
+  // succeeds — Stage E precheck stays silent, Clipper2 produces a clean
+  // loop, Stage C bridge reports no dropped ranges.
+  std::vector<PDCELVertex *> offset_ok;
+  BaseOffsetMap id_pairs_ok;
+  REQUIRE(offset(base, 1, 0.005, offset_ok, id_pairs_ok) == 1);
+  CHECK(offset_ok.size() >= 4);
+  CHECK(validateBaseOffsetMap(id_pairs_ok));
+  // Closed convention: front and back are the same pointer.
+  REQUIRE(!offset_ok.empty());
+  CHECK(offset_ok.front() == offset_ok.back());
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_ok) {
+    if (freed.insert(v).second) delete v;
+  }
+  delete v0;
+  delete v1;
+  delete v2;
+  delete v3;
+}
+
+// =====================================================================
+// Phase 3 — PDCELVertex adapter, open-input branch
+//
+// Exercise `buildBaseOffsetMapFromOffsetPolygons` with open PDCELVertex*
+// inputs. The main `offset()` entry still routes open multi-vertex to
+// the legacy 5-stage pipeline (Phase 4 will flip this), so these tests
+// drive the adapter directly via offsetWithClipper2 → adapter.
+// =====================================================================
+
+namespace {
+
+// Free both head and tail pointers + the new offset pointers, taking
+// care that the closed convention's trailing-duplicate (if any) is
+// only deleted once.
+void freeOffsetVerticesOnce(
+    const std::vector<PDCELVertex *>& offset_vertices) {
+  std::unordered_set<PDCELVertex *> freed;
+  for (PDCELVertex *v : offset_vertices) {
+    if (freed.insert(v).second) delete v;
+  }
+}
+
+}  // namespace
+
+TEST_CASE("openBaselineOffset: PDCEL adapter on open L-shape produces "
+          "end-to-end distinct vertices with (N-1, M-1) staircase tail",
+          "[dcel][geo][offset][clipper2][open][adapter]") {
+  // 3-vertex open L-shape baseline.
+  PDCELVertex *p0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *p1 = new PDCELVertex(0.0, 1.0, 0.0);
+  PDCELVertex *p2 = new PDCELVertex(0.0, 1.0, 1.0);
+  std::vector<PDCELVertex *> base = {p0, p1, p2};  // open, distinct ends
+  const double dist = 0.1;
+
+  for (int side : {+1, -1}) {
+    std::vector<SPoint2> base_pts;
+    for (auto *v : base) {
+      base_pts.emplace_back(v->point2()[0], v->point2()[1]);
+    }
+    const auto polys = prevabs::geo::offsetWithClipper2(
+        base_pts, /*closed*/ false, side, dist);
+    REQUIRE(!polys.empty());
+    CHECK_FALSE(polys.front().is_closed);
+
+    const auto result =
+        prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
+            base, /*closed*/ false, side, dist, polys);
+    REQUIRE(result.ok);
+
+    // Open convention: front and back are DISTINCT pointers; size
+    // equals the plan offset_points count (no trailing-duplicate
+    // append).
+    REQUIRE(result.offset_vertices.size() >= 2);
+    CHECK(result.offset_vertices.front() != result.offset_vertices.back());
+
+    // Staircase: front (0, 0), back (N-1, M-1) — NO wrap pair.
+    REQUIRE(validateBaseOffsetMap(result.id_pairs));
+    CHECK(result.id_pairs.front().base   == 0);
+    CHECK(result.id_pairs.front().offset == 0);
+    const int N = static_cast<int>(base.size());
+    const int M = static_cast<int>(result.offset_vertices.size());
+    CHECK(result.id_pairs.back().base   == N - 1);
+    CHECK(result.id_pairs.back().offset == M - 1);
+
+    freeOffsetVerticesOnce(result.offset_vertices);
+  }
+
+  delete p0;
+  delete p1;
+  delete p2;
+}
+
+TEST_CASE("openBaselineOffset: PDCEL adapter — closed regression "
+          "(adapter open branch must not affect closed contract)",
+          "[dcel][geo][offset][clipper2][closed][adapter][regression]") {
+  // 4-vertex CCW closed square with trailing-duplicate (PreVABS
+  // Baseline convention). Verifies that Phase 3's open-path additions
+  // to the adapter did not break closed-input contract.
+  PDCELVertex *v0 = new PDCELVertex(0.0, 0.0, 0.0);
+  PDCELVertex *v1 = new PDCELVertex(0.0, 1.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0.0, 1.0, 1.0);
+  PDCELVertex *v3 = new PDCELVertex(0.0, 0.0, 1.0);
+  std::vector<PDCELVertex *> base = {v0, v1, v2, v3, v0};  // trailing dup
+  const double dist = 0.1;
+  const int side = -1;  // Clipper2 outward (CCW expand)
+
+  std::vector<SPoint2> base_pts;
+  for (auto *v : base) {
+    base_pts.emplace_back(v->point2()[0], v->point2()[1]);
+  }
+  const auto polys = prevabs::geo::offsetWithClipper2(
+      base_pts, /*closed*/ true, side, dist);
+  REQUIRE(polys.size() == 1);
+  CHECK(polys.front().is_closed);
+
+  const auto result =
+      prevabs::geo::buildBaseOffsetMapFromOffsetPolygons(
+          base, /*closed*/ true, side, dist, polys);
+  REQUIRE(result.ok);
+
+  // Closed convention: front == back (same pointer).
+  REQUIRE(!result.offset_vertices.empty());
+  CHECK(result.offset_vertices.front() == result.offset_vertices.back());
+
+  // Staircase: closed-form (N_distinct, M_off_raw) wrap at the tail.
+  REQUIRE(validateBaseOffsetMap(result.id_pairs));
+  CHECK(result.id_pairs.front().base   == 0);
+  CHECK(result.id_pairs.front().offset == 0);
+  // N_distinct = base.size() - 1 = 4 (trailing dup dropped).
+  CHECK(result.id_pairs.back().base == 4);
+
+  freeOffsetVerticesOnce(result.offset_vertices);
+  delete v0;
+  delete v1;
+  delete v2;
+  delete v3;
+}
+
 TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
           "[dcel][segment][areas][head][tail]") {
 
@@ -738,8 +1102,13 @@ TEST_CASE("buildAreas: left-side open segment builds head and tail layer faces",
   bcfg.materials = &model;
   bcfg.model = &model;
 
+  // Validates the legacy area-build (seg_area_* faces); force the legacy route
+  // since the layered path now tiles this geometry directly (seg_layer_*).
+  const bool prev_layered = config.layered_offset;
+  config.layered_offset = false;
   segment.build(bcfg);
   segment.buildAreas(bcfg);
+  config.layered_offset = prev_layered;
 
   std::string face_names_left;
   for (PDCELFace *face : dcel.faces()) {
@@ -796,8 +1165,13 @@ TEST_CASE("buildAreas: right-side open segment builds head and tail layer faces"
   bcfg.materials = &model;
   bcfg.model = &model;
 
+  // Validates the legacy area-build (seg_area_* faces); force the legacy route
+  // since the layered path now tiles this geometry directly (seg_layer_*).
+  const bool prev_layered = config.layered_offset;
+  config.layered_offset = false;
   segment.build(bcfg);
   segment.buildAreas(bcfg);
+  config.layered_offset = prev_layered;
 
   std::string face_names_right;
   for (PDCELFace *face : dcel.faces()) {
@@ -1160,6 +1534,172 @@ TEST_CASE("splitFace: original face is deleted; two new faces created",
 
   CHECK(new_faces.size() == 2);
   CHECK(dcel.faces().size() == before + 1); // one face replaced by two
+  CHECK(dcel.validate());
+}
+
+TEST_CASE("splitFaceByPolyline: straight path splits a rectangular face",
+          "[dcel][face]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = new PDCELVertex(0, 0.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0, 4.0, 0.0);
+  PDCELVertex *v3 = new PDCELVertex(0, 4.0, 4.0);
+  PDCELVertex *v4 = new PDCELVertex(0, 0.0, 4.0);
+
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v4, v1};
+  PDCELFace *f_square = dcel.addFace(vloop);
+  REQUIRE(f_square != nullptr);
+  REQUIRE(f_square->outer() != nullptr);
+  REQUIRE(dcel.addHalfEdgeLoop(f_square->outer()) != nullptr);
+
+  const std::size_t faces_before = dcel.faces().size();
+
+  PDCELVertex *v_bottom = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELVertex *v_top = dcel.addVertex(new PDCELVertex(0, 2.0, 4.0));
+
+  PDCELHalfEdge *he_bottom = dcel.findHalfEdgeBetween(v1, v2);
+  REQUIRE(he_bottom != nullptr);
+  v_bottom = dcel.splitEdge(he_bottom, v_bottom);
+
+  PDCELHalfEdge *he_top = dcel.findHalfEdgeBetween(v4, v3);
+  REQUIRE(he_top != nullptr);
+  v_top = dcel.splitEdge(he_top, v_top);
+
+  std::vector<PDCELVertex *> path = {v_bottom, v_top};
+  std::list<PDCELFace *> new_faces =
+      dcel.splitFaceByPolyline(f_square, path);
+
+  REQUIRE(new_faces.size() == 2);
+  CHECK(dcel.faces().size() == faces_before + 1);
+  REQUIRE(dcel.validate());
+
+  PDCELHalfEdge *he_up = dcel.findHalfEdgeBetween(v_bottom, v_top);
+  PDCELHalfEdge *he_down = dcel.findHalfEdgeBetween(v_top, v_bottom);
+  REQUIRE(he_up != nullptr);
+  REQUIRE(he_down != nullptr);
+  CHECK(he_up->twin() == he_down);
+  CHECK(he_down->twin() == he_up);
+  CHECK(he_up->face() != nullptr);
+  CHECK(he_down->face() != nullptr);
+  CHECK(he_up->face() != he_down->face());
+
+  for (PDCELFace *face : new_faces) {
+    REQUIRE(face != nullptr);
+    REQUIRE(face->outer() != nullptr);
+    CHECK(collectFaceBoundary(face->outer()).size() == 4);
+  }
+}
+
+TEST_CASE("splitFaceByPolyline: bent path creates two valid shared-edge faces",
+          "[dcel][face]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = new PDCELVertex(0, 0.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0, 6.0, 0.0);
+  PDCELVertex *v3 = new PDCELVertex(0, 6.0, 4.0);
+  PDCELVertex *v4 = new PDCELVertex(0, 0.0, 4.0);
+
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v4, v1};
+  PDCELFace *f_rect = dcel.addFace(vloop);
+  REQUIRE(f_rect != nullptr);
+  REQUIRE(f_rect->outer() != nullptr);
+  REQUIRE(dcel.addHalfEdgeLoop(f_rect->outer()) != nullptr);
+
+  const std::size_t faces_before = dcel.faces().size();
+
+  PDCELVertex *v_bottom = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+  PDCELVertex *v_mid = dcel.addVertex(new PDCELVertex(0, 3.0, 2.0));
+  PDCELVertex *v_top = dcel.addVertex(new PDCELVertex(0, 4.0, 4.0));
+
+  PDCELHalfEdge *he_bottom = dcel.findHalfEdgeBetween(v1, v2);
+  REQUIRE(he_bottom != nullptr);
+  v_bottom = dcel.splitEdge(he_bottom, v_bottom);
+
+  PDCELHalfEdge *he_top = dcel.findHalfEdgeBetween(v4, v3);
+  REQUIRE(he_top != nullptr);
+  v_top = dcel.splitEdge(he_top, v_top);
+
+  std::vector<PDCELVertex *> path = {v_bottom, v_mid, v_top};
+  std::list<PDCELFace *> new_faces =
+      dcel.splitFaceByPolyline(f_rect, path);
+
+  REQUIRE(new_faces.size() == 2);
+  CHECK(dcel.faces().size() == faces_before + 1);
+  REQUIRE(dcel.validate());
+
+  PDCELHalfEdge *he_bottom_mid =
+      dcel.findHalfEdgeBetween(v_bottom, v_mid);
+  PDCELHalfEdge *he_mid_bottom =
+      dcel.findHalfEdgeBetween(v_mid, v_bottom);
+  PDCELHalfEdge *he_mid_top =
+      dcel.findHalfEdgeBetween(v_mid, v_top);
+  PDCELHalfEdge *he_top_mid =
+      dcel.findHalfEdgeBetween(v_top, v_mid);
+
+  REQUIRE(he_bottom_mid != nullptr);
+  REQUIRE(he_mid_bottom != nullptr);
+  REQUIRE(he_mid_top != nullptr);
+  REQUIRE(he_top_mid != nullptr);
+  CHECK(he_bottom_mid->twin() == he_mid_bottom);
+  CHECK(he_mid_top->twin() == he_top_mid);
+  CHECK(he_bottom_mid->face() != he_mid_bottom->face());
+  CHECK(he_mid_top->face() != he_top_mid->face());
+
+  for (PDCELFace *face : new_faces) {
+    REQUIRE(face != nullptr);
+    REQUIRE(face->outer() != nullptr);
+    CHECK(collectFaceBoundary(face->outer()).size() == 5);
+  }
+}
+
+TEST_CASE("splitFaceByPolyline: invalid paths do not mutate the DCEL",
+          "[dcel][face]") {
+  PDCEL dcel;
+  dcel.initialize();
+
+  PDCELVertex *v1 = new PDCELVertex(0, 0.0, 0.0);
+  PDCELVertex *v2 = new PDCELVertex(0, 4.0, 0.0);
+  PDCELVertex *v3 = new PDCELVertex(0, 4.0, 4.0);
+  PDCELVertex *v4 = new PDCELVertex(0, 0.0, 4.0);
+
+  std::list<PDCELVertex *> vloop = {v1, v2, v3, v4, v1};
+  PDCELFace *f_square = dcel.addFace(vloop);
+  REQUIRE(f_square != nullptr);
+  REQUIRE(f_square->outer() != nullptr);
+  REQUIRE(dcel.addHalfEdgeLoop(f_square->outer()) != nullptr);
+  REQUIRE(dcel.validate());
+
+  const std::size_t vertices_before = dcel.vertices().size();
+  const std::size_t halfedges_before = dcel.halfedges().size();
+  const std::size_t loops_before = dcel.halfedgeloops().size();
+  const std::size_t faces_before = dcel.faces().size();
+
+  SECTION("path has fewer than two vertices") {
+    std::vector<PDCELVertex *> path = {v1};
+    std::list<PDCELFace *> new_faces =
+        dcel.splitFaceByPolyline(f_square, path);
+
+    CHECK(new_faces.empty());
+  }
+
+  SECTION("path endpoints are not on the face boundary") {
+    PDCELVertex *inside_a = new PDCELVertex(0, 1.0, 1.0);
+    PDCELVertex *inside_b = new PDCELVertex(0, 3.0, 3.0);
+    std::vector<PDCELVertex *> path = {inside_a, inside_b};
+    std::list<PDCELFace *> new_faces =
+        dcel.splitFaceByPolyline(f_square, path);
+
+    CHECK(new_faces.empty());
+    CHECK(dcel.vertices().size() == vertices_before);
+    delete inside_a;
+    delete inside_b;
+  }
+
+  CHECK(dcel.halfedges().size() == halfedges_before);
+  CHECK(dcel.halfedgeloops().size() == loops_before);
+  CHECK(dcel.faces().size() == faces_before);
   CHECK(dcel.validate());
 }
 

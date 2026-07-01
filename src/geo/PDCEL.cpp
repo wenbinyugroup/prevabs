@@ -54,6 +54,89 @@ void warnIfAnglesTooClose(
   }
 }
 
+bool samePoint2D(PDCELVertex *a, PDCELVertex *b) {
+  if (a == nullptr || b == nullptr) return false;
+  return a->point2().distance(b->point2()) <= GEO_TOL;
+}
+
+double distPointToSegment2D(
+    const SPoint2 &p, const SPoint2 &a, const SPoint2 &b) {
+  const double vx = b.x() - a.x();
+  const double vy = b.y() - a.y();
+  const double wx = p.x() - a.x();
+  const double wy = p.y() - a.y();
+  const double len2 = vx * vx + vy * vy;
+  if (len2 <= GEO_TOL * GEO_TOL) {
+    return p.distance(a);
+  }
+
+  double t = (wx * vx + wy * vy) / len2;
+  t = std::max(0.0, std::min(1.0, t));
+  const SPoint2 foot(a.x() + t * vx, a.y() + t * vy);
+  return p.distance(foot);
+}
+
+bool pointOnSegment2D(PDCELVertex *p, PDCELVertex *a, PDCELVertex *b) {
+  if (p == nullptr || a == nullptr || b == nullptr) return false;
+  return distPointToSegment2D(p->point2(), a->point2(), b->point2())
+      <= GEO_TOL;
+}
+
+PDCELHalfEdge *findOuterHalfEdgeWithVertex(
+    PDCELFace *face, PDCELVertex *vertex) {
+  if (face == nullptr || vertex == nullptr || face->outer() == nullptr) {
+    return nullptr;
+  }
+
+  PDCELHalfEdge *start = face->outer();
+  PDCELHalfEdge *he = start;
+  int iter = 0;
+  do {
+    if (++iter > kDCELLoopHardCap) {
+      PLOG(error) << "findOuterHalfEdgeWithVertex: loop walk exceeded "
+                  << kDCELLoopHardCap;
+      return nullptr;
+    }
+    if (he->source() == vertex || samePoint2D(he->source(), vertex)) {
+      return he;
+    }
+    he = he->next();
+  } while (he != nullptr && he != start);
+
+  return nullptr;
+}
+
+PDCELHalfEdge *findOuterHalfEdgeContainingPoint(
+    PDCELFace *face, PDCELVertex *vertex) {
+  if (face == nullptr || vertex == nullptr || face->outer() == nullptr) {
+    return nullptr;
+  }
+
+  PDCELHalfEdge *start = face->outer();
+  PDCELHalfEdge *he = start;
+  int iter = 0;
+  do {
+    if (++iter > kDCELLoopHardCap) {
+      PLOG(error) << "findOuterHalfEdgeContainingPoint: loop walk exceeded "
+                  << kDCELLoopHardCap;
+      return nullptr;
+    }
+    if (he->source() == vertex || samePoint2D(he->source(), vertex)) {
+      return he;
+    }
+    if (pointOnSegment2D(vertex, he->source(), he->target())) {
+      return he;
+    }
+    he = he->next();
+  } while (he != nullptr && he != start);
+
+  return nullptr;
+}
+
+bool pointIsOnOuterBoundary(PDCELFace *face, PDCELVertex *vertex) {
+  return findOuterHalfEdgeContainingPoint(face, vertex) != nullptr;
+}
+
 } // namespace
 
 PDCEL::~PDCEL() {
@@ -938,7 +1021,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
     }
     lsi = hei->toLineSegment();
 
-    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls, TOLERANCE);
+    not_parallel = calcLineIntersection2D(lsi, ls, u_lsi, u_ls);
     if (!not_parallel) {
       if (!isCollinear(lsi, ls)) {
         hei = hei->next();
@@ -1237,6 +1320,139 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PDCELVertex *v1,
   std::list<PDCELFace *> new_faces;
   new_faces.push_back(f12);
   new_faces.push_back(f21);
+
+  return new_faces;
+}
+
+std::list<PDCELFace *> PDCEL::splitFaceByPolyline(
+    PDCELFace *f, const std::vector<PDCELVertex *> &path) {
+  if (f == nullptr) {
+    PLOG(error) << "splitFaceByPolyline: null face";
+    return {};
+  }
+  if (path.size() < 2) {
+    PLOG(error) << "splitFaceByPolyline: path has fewer than two vertices";
+    return {};
+  }
+  if (f->outer() == nullptr) {
+    PLOG(error) << "splitFaceByPolyline: face has no outer boundary";
+    return {};
+  }
+  if (f->outer()->loop() == nullptr) {
+    PLOG(error) << "splitFaceByPolyline: face outer boundary has no loop";
+    return {};
+  }
+
+  for (PDCELVertex *vertex : path) {
+    if (vertex == nullptr) {
+      PLOG(error) << "splitFaceByPolyline: path contains null vertex";
+      return {};
+    }
+  }
+  for (std::size_t i = 1; i < path.size(); ++i) {
+    if (samePoint2D(path[i - 1], path[i])) {
+      PLOG(error) << "splitFaceByPolyline: path contains zero-length segment";
+      return {};
+    }
+  }
+
+  PDCELHalfEdge *start_edge =
+      findOuterHalfEdgeContainingPoint(f, path.front());
+  PDCELHalfEdge *end_edge =
+      findOuterHalfEdgeContainingPoint(f, path.back());
+  // The checks below are recoverable geometric rejections, not errors: this
+  // particular polyline cannot split this face, and that fact is reported to
+  // the caller via the empty-list return. Callers decide the severity (e.g.
+  // the layered-offset build treats it as a clean fall-back to the legacy
+  // path), so log the reason at debug level only — see PDCEL.hpp.
+  if (start_edge == nullptr || end_edge == nullptr) {
+    PLOG(debug) << "splitFaceByPolyline: path endpoints must lie on the "
+                << "face outer boundary";
+    return {};
+  }
+
+  for (std::size_t i = 1; i + 1 < path.size(); ++i) {
+    if (pointIsOnOuterBoundary(f, path[i])) {
+      PLOG(debug) << "splitFaceByPolyline: interior path vertex lies on the "
+                  << "face outer boundary";
+      return {};
+    }
+  }
+
+  for (std::size_t i = 1; i < path.size(); ++i) {
+    if (findHalfEdgeBetween(path[i - 1], path[i]) != nullptr ||
+        findHalfEdgeBetween(path[i], path[i - 1]) != nullptr) {
+      PLOG(debug) << "splitFaceByPolyline: path segment already exists";
+      return {};
+    }
+  }
+
+  std::vector<PDCELVertex *> cpath = path;
+
+  if (findOuterHalfEdgeWithVertex(f, cpath.front()) == nullptr) {
+    PDCELHalfEdge *edge =
+        findOuterHalfEdgeContainingPoint(f, cpath.front());
+    if (edge == nullptr) {
+      PLOG(error) << "splitFaceByPolyline: start vertex is not on boundary";
+      return {};
+    }
+    cpath.front() = splitEdge(edge, cpath.front());
+  } else {
+    PDCELHalfEdge *edge = findOuterHalfEdgeWithVertex(f, cpath.front());
+    cpath.front() = edge->source();
+  }
+
+  if (findOuterHalfEdgeWithVertex(f, cpath.back()) == nullptr) {
+    PDCELHalfEdge *edge =
+        findOuterHalfEdgeContainingPoint(f, cpath.back());
+    if (edge == nullptr) {
+      PLOG(error) << "splitFaceByPolyline: end vertex is not on boundary";
+      return {};
+    }
+    cpath.back() = splitEdge(edge, cpath.back());
+  } else {
+    PDCELHalfEdge *edge = findOuterHalfEdgeWithVertex(f, cpath.back());
+    cpath.back() = edge->source();
+  }
+
+  for (std::size_t i = 1; i + 1 < cpath.size(); ++i) {
+    cpath[i] = addVertex(cpath[i]);
+  }
+
+  std::vector<PDCELHalfEdge *> path_edges;
+  path_edges.reserve(cpath.size() - 1);
+  for (std::size_t i = 1; i < cpath.size(); ++i) {
+    PDCELHalfEdge *edge = addEdge(cpath[i - 1], cpath[i]);
+    if (edge == nullptr) {
+      PLOG(error) << "splitFaceByPolyline: addEdge failed";
+      return {};
+    }
+    path_edges.push_back(edge);
+  }
+
+  PDCELHalfEdgeLoop *old_loop = f->outer()->loop();
+  PDCELHalfEdgeLoop *hel_forward = addHalfEdgeLoop(path_edges.front());
+  PDCELHalfEdgeLoop *hel_reverse =
+      addHalfEdgeLoop(path_edges.back()->twin());
+  if (hel_forward == nullptr || hel_reverse == nullptr) {
+    PLOG(error) << "splitFaceByPolyline: failed to build new loops";
+    return {};
+  }
+
+  PDCELFace *f_forward = addFace(hel_forward);
+  PDCELFace *f_reverse = addFace(hel_reverse);
+
+  _faces.remove(f);
+  delete f;
+
+  _halfedge_loops.remove(old_loop);
+  _loop_keep.erase(old_loop);
+  _loop_adjacent.erase(old_loop);
+  delete old_loop;
+
+  std::list<PDCELFace *> new_faces;
+  new_faces.push_back(f_forward);
+  new_faces.push_back(f_reverse);
 
   return new_faces;
 }

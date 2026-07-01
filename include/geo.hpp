@@ -13,6 +13,7 @@
 #include "utilities.hpp"
 
 #include "geo_types.hpp"
+#include "offset_clipper2.hpp"
 
 // #include "gmsh/STensor3.h"
 
@@ -40,36 +41,40 @@ bool isClose(
   const double&, const double&,
   double, double);
 
+// Note: these line-intersection helpers no longer take a tolerance argument.
+// Parallelism is detected internally via h2d's angle threshold, so the former
+// `tol` parameter was unused; it has been removed to avoid implying that a
+// geometric (length) tolerance participates in the intersection test.
 bool calcLineIntersection2D(
   const double &, const double &, const double &, const double &,
   const double &, const double &, const double &, const double &,
-  double &, double &, const double &
+  double &, double &
   );
 
 // template <typename P2>
 bool calcLineIntersection2D(
   const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &, const PGeoPoint2 &,
-  double &, double &, const double &
+  double &, double &
 );
 
 // template <typename P3>
 bool calcLineIntersection2D(
   const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &, const PGeoPoint3 &,
-  double &, double &, const int &, const double &
+  double &, double &, const int &
 );
 
 bool calcLineIntersection2D(
   SPoint2, SPoint2, SPoint2, SPoint2,
-  double &, double &, const double &);
+  double &, double &);
 bool calcLineIntersection2D(
   SPoint3, SPoint3, SPoint3, SPoint3,
-  double &, double &, int &, const double &);
+  double &, double &, int &);
 bool calcLineIntersection2D(
   PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
-  double &, double &, const double &);
+  double &, double &);
 bool calcLineIntersection2D(
   PGeoLineSegment *, PGeoLineSegment *,
-  double &, double &, const double &);
+  double &, double &);
 
 void offsetLineSegment(SPoint3 &, SPoint3 &, SVector3 &, double &);
 PGeoLineSegment *offsetLineSegment(PGeoLineSegment *, int, double);
@@ -98,7 +103,62 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  * @param offset Resulting line (list of vertices).
  */
 int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
-           std::vector<PDCELVertex *> &offset, BaseOffsetMap &id_pairs);
+           std::vector<PDCELVertex *> &offset, BaseOffsetMap &id_pairs,
+           std::vector<bool> *offset_resampled = nullptr,
+           std::vector<SPoint2> *pre_resample_raw_points = nullptr,
+           std::vector<int> *dropped_base_ranges_lo = nullptr,
+           std::vector<int> *dropped_base_ranges_hi = nullptr,
+           bool enable_pretrim = false);
+
+// ---------------------------------------------------------------------------
+// Two-step offset: separate the raw geometry from the staircase base-offset
+// map. `offsetGeometry()` produces the RAW Clipper2 offset polygons (NO
+// resample, NO staircase); `buildBaseOffsetMap()` then applies the
+// base-vertex resample and the reverse-match staircase. `offset()` above is
+// the convenience composition (fast 2-vertex path, else the two steps).
+//
+// Flow:  geom = offsetGeometry(base, side, dist[, enable_pretrim]);
+//        buildBaseOffsetMap(base, side, dist, geom, off, pairs, ...);
+//
+// The layered-offset path can call `offsetGeometry()` alone to get raw
+// clean-miter geometry without the base-vertex resample.
+// ---------------------------------------------------------------------------
+
+// Raw geometry produced by `offsetGeometry()` and consumed (then resampled in
+// place) by `buildBaseOffsetMap()`.
+struct OffsetGeometry {
+  std::vector<prevabs::geo::OffsetPolygon> polygons;     // raw (no resample)
+  std::vector<SPoint2>                     clipper_input; // base fed to Clipper2
+  bool                  base_is_closed = false;
+  int                   clipper_side   = 0;
+  double                abs_dist       = 0.0;
+  bool                  did_pretrim    = false;
+  prevabs::geo::ThinRun thin_run{};
+  bool                  two_vertex     = false;  // 2-vertex single-segment fast path
+  bool                  ok             = false;  // false on degenerate / empty
+};
+
+// Step 1: raw offset geometry (multi-vertex; resample OFF). For < 2 vertices
+// returns ok=false. The 2-vertex fast path lives in `offset()` only.
+OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
+                              int side, double dist,
+                              bool enable_pretrim = false);
+
+// Step 2: resample (moved here from the geometry core) + reverse-match
+// staircase. Mutates `geom.polygons` in place. Returns 1 on success, 0 on
+// degenerate geometry or a reverse-match failure.
+// `resample` (default true) applies the angle-bisector base-vertex resample
+// before the reverse-match. Pass false to keep the RAW clean-miter geometry —
+// used for the total-thickness shell in the layered-offset path.
+int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
+                       double dist, OffsetGeometry &geom,
+                       std::vector<PDCELVertex *> &offset_vertices,
+                       BaseOffsetMap &id_pairs,
+                       std::vector<bool> *offset_resampled = nullptr,
+                       std::vector<SPoint2> *pre_resample_raw_points = nullptr,
+                       std::vector<int> *dropped_base_ranges_lo = nullptr,
+                       std::vector<int> *dropped_base_ranges_hi = nullptr,
+                       bool resample = true);
 
 // Validates the BaseOffsetMap staircase invariant.
 bool validateBaseOffsetMap(

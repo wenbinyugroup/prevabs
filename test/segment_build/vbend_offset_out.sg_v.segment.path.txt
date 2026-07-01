@@ -1,0 +1,7 @@
+# build path for segment 'sg_v'
+  1. buildAreas: enter (closed=N, base_verts=3)
+  2. buildAreas: useLayeredOffset=yes
+  3. layered: enter (n_layers=7, side=-1)
+  4. layered: shell/base vertex mismatch (base=3, shell=4) -> FALLBACK
+  5. buildAreas: layered FELL BACK -> legacy
+  6. legacy: built areas=3 -> AreasBuilt

@@ -1,0 +1,301 @@
+<!--
+  PreVABS main input file - overview template.
+
+  Top-level element is <cross_section> (legacy alias <sg> is also accepted).
+  Required blocks: <general>, geometry (via <baselines> and/or <include>),
+  layups, and at least one <component>. All other blocks are optional.
+
+  Each top-level data block (<baselines>, <materials>, <layups>) may be
+  embedded inline OR referenced via <include>. The two forms may be mixed.
+-->
+<cross_section name="{SECTION_NAME}" format="1">
+
+    <!-- Optional: include separately stored data files (paths relative to
+         this file; .xml extension may be omitted). Multiple <layup> entries
+         are allowed (their contents are merged). -->
+    <include>
+        <baseline>{BASELINE_FILE_BASENAME}</baseline>
+        <material>{MATERIAL_FILE_BASENAME}</material>
+        <layup>{LAYUP_FILE_BASENAME}</layup>
+    </include>
+
+    <!-- Optional: low-level geometry tolerance (separate from <general>/<tolerance>). -->
+    <settings>
+        <tolerance>1e-12</tolerance>
+    </settings>
+
+    <!-- Optional: analysis model selection and configuration. -->
+    <analysis>
+        <model_dim>1</model_dim>             <!-- 1 = beam (default) -->
+        <model>1</model>                     <!-- 0 = classical, 1 = refined (Timoshenko) -->
+        <damping>0</damping>                 <!-- integer flag, default 0 -->
+        <thermal>0</thermal>                 <!-- integer flag, default 0 -->
+        <trapeze>0</trapeze>                 <!-- integer flag, default 0 -->
+        <vlasov>0</vlasov>                   <!-- integer flag, default 0 -->
+        <initial_twist>0.0</initial_twist>
+        <initial_curvature_2>0.0</initial_curvature_2>
+        <initial_curvature_3>0.0</initial_curvature_3>
+        <oblique_y1>1.0</oblique_y1>
+        <oblique_y2>0.0</oblique_y2>
+        <physics>0</physics>                 <!-- forwarded to backend -->
+    </analysis>
+
+    <!-- Required: global geometry transforms and mesh controls.
+         Transform order applied to the cross-section: translate, then scale,
+         then rotate. -->
+    <general>
+        <translate>{E2} {E3}</translate>     <!-- origin moved to (-E2, -E3) -->
+        <scale>1.0</scale>
+        <rotate>0.0</rotate>                 <!-- degrees, ccw from +x2 -->
+        <mesh_size>{GLOBAL_MESH_SIZE}</mesh_size>  <!-- default: min layer thickness -->
+        <element_type>quadratic</element_type>     <!-- linear|1 or quadratic|2 -->
+        <element_shape>3</element_shape>           <!-- 3|tri|triangle (default) or 4|quad|quadrilateral -->
+        <tolerance>1e-12</tolerance>
+        <omega>1.0</omega>
+
+        <!-- Optional Gmsh quad-mesh controls (only meaningful when
+             element_shape selects quadrilaterals). -->
+        <transfinite_auto>0</transfinite_auto>
+        <transfinite_corner_angle>0.785398</transfinite_corner_angle>   <!-- radians -->
+        <transfinite_recombine>0</transfinite_recombine>
+        <recombine>0</recombine>
+        <recombine_angle>45</recombine_angle>                            <!-- degrees -->
+
+        <!-- Optional interface tracking between adjacent layers. -->
+        <track_interface>0</track_interface>
+        <interface_theta1_diff_threshold>0</interface_theta1_diff_threshold>  <!-- degrees -->
+        <interface_theta3_diff_threshold>0</interface_theta3_diff_threshold>  <!-- degrees -->
+    </general>
+
+    <!-- Required: define points and base lines used by components.
+         <line> is preferred; <baseline> is accepted as a legacy alias. -->
+    <baselines>
+
+        <!-- ==== Points ==== -->
+        <!-- Direct coordinate: two numbers "z2 z3". -->
+        <point name="p1">0.0 0.0</point>
+
+        <!-- Point on a host line by horizontal coordinate. -->
+        <point name="p_mid" on="line_name" by="x2">0.3</point>
+        <!-- For airfoil hosts, disambiguate the surface: -->
+        <point name="p_top"    on="ln_af" by="x2" which="top">0.3</point>
+        <point name="p_bottom" on="ln_af" by="x2" which="bottom">0.3</point>
+
+        <!-- Midpoint constraint between two named points. -->
+        <point name="p_mid2" constraint="middle">p1 p2</point>
+
+        <!-- Optional: include points from a .dat file (deprecated alias
+             <basepoints>; prefer <line type="airfoil"> for airfoils). -->
+        <basepoints>
+            <include scale="1.0">point_list_file_basename</include>
+        </basepoints>
+
+        <!-- ==== Lines: straight (default) ==== -->
+        <!-- Polyline by point list (commas explicit, colons range). -->
+        <line name="ln_str_1" type="straight">
+            <points>a,b,c,z</points>
+        </line>
+        <line name="ln_str_2" type="straight">
+            <points>a:z</points>
+        </line>
+        <!-- Straight line by one point and an inclination angle (degrees,
+             ccw from +x2). 'loc' selects whether the named point is the
+             line's midpoint ("inner", default) or starting endpoint ("end"). -->
+        <line name="ln_str_3" type="straight">
+            <point loc="inner">a</point>
+            <angle>30</angle>
+        </line>
+
+        <!-- ==== Lines: arc ==== -->
+        <line name="ln_arc_1" type="arc">
+            <center>c</center>
+            <start>s</start>
+            <end>e</end>
+            <direction>ccw</direction>            <!-- cw or ccw (default ccw) -->
+            <discrete by="angle">9</discrete>     <!-- by="angle" (deg/segment) or by="number" -->
+        </line>
+        <line name="ln_arc_2" type="arc">
+            <center>c</center>
+            <start>s</start>
+            <angle>90</angle>
+            <discrete by="number">10</discrete>
+        </line>
+        <line name="ln_arc_3" type="arc">
+            <start>s</start>
+            <end>e</end>
+            <radius>0.5</radius>                  <!-- or <curvature>2.0</curvature> -->
+            <side>right</side>                    <!-- left or right (default right) -->
+            <direction>ccw</direction>
+        </line>
+
+        <!-- ==== Lines: circle ==== -->
+        <line name="ln_circ_1" type="circle">
+            <center>c</center>
+            <radius>0.5</radius>
+            <discrete by="number">36</discrete>
+        </line>
+        <line name="ln_circ_2" type="circle">
+            <center>c</center>
+            <point>p_on_circle</point>
+            <direction>cw</direction>
+        </line>
+
+        <!-- ==== Lines: airfoil ==== -->
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="1" header="1" direction="1">mh104.dat</points>
+            <!-- format: 1|selig (single block) or 2|lednicer (upper/blank/lower; default) -->
+            <!-- Optional edge overrides (raw airfoil coords). -->
+            <leading_edge name="ln_af_le">0.0 0.0</leading_edge>
+            <trailing_edge name="ln_af_te">1.0 0.0</trailing_edge>
+            <normalize>0</normalize>     <!-- 1 to map raw x-range to [0,1] before splitting -->
+            <flip axis="2" loc="0.5">0</flip>
+            <reverse>0</reverse>
+        </line>
+
+        <!-- ==== Lines: join existing lines ==== -->
+        <line name="ln_joined" type="straight" method="join">
+            <line>ln_str_1</line>
+            <line>ln_str_2</line>
+        </line>
+
+    </baselines>
+
+    <!-- Optional: materials and laminae (or define them in the included
+         material file). Local definitions override the global MaterialDB.
+         Allowed material types: isotropic, transversely isotropic,
+         orthotropic (alias 'engineering'), anisotropic. -->
+    <materials>
+        <material name="iso1" type="isotropic">
+            <density>1.0</density>
+            <elastic>
+                <e>{E}</e>
+                <nu>{NU}</nu>
+            </elastic>
+            <!-- Optional, for failure analysis: <strength>, <failure_criterion>. -->
+        </material>
+
+        <material name="orth1" type="orthotropic">
+            <density>1.0</density>
+            <elastic>
+                <e1>{E1}</e1>   <e2>{E2}</e2>   <e3>{E3}</e3>
+                <g12>{G12}</g12> <g13>{G13}</g13> <g23>{G23}</g23>
+                <nu12>{NU12}</nu12> <nu13>{NU13}</nu13> <nu23>{NU23}</nu23>
+            </elastic>
+        </material>
+
+        <!-- Lamina = material + thickness. -->
+        <lamina name="la_orth1_10">
+            <material>orth1</material>
+            <thickness>1.0</thickness>
+        </lamina>
+    </materials>
+
+    <!-- Required: layups. method = "layer list" (alias "ll", default) or
+         "stack sequence" (alias "ss"). -->
+    <layups>
+        <layup name="layup_el" method="layer list">
+            <!-- Each layer: 'angle:stack'. A single value is read as angle;
+                 stack defaults to 1. Either 'lamina' or 'layup' attribute,
+                 not both. -->
+            <layer lamina="la_orth1_10">45:2</layer>
+            <layer lamina="la_orth1_10">90</layer>
+            <layer lamina="la_orth1_10">0:3</layer>
+            <layer layup="sublayup_name"/>   <!-- referenced sublayup -->
+        </layup>
+
+        <layup name="layup_ss" method="stack sequence">
+            <lamina>la_orth1_10</lamina>
+            <code>[(45/-45):2/0:4/90]2s</code>
+        </layup>
+    </layups>
+
+    <!-- Required: at least one <component>. type = "laminate" (default) or
+         "fill". 'depend' lists dependent component names (comma-separated). -->
+
+    <!-- Laminate component: DEFINITION 1 (one segment per <segment>). -->
+    <component name="cmp_surface" type="laminate">
+        <segment name="sgm_1">
+            <baseline>ln_str_1</baseline>
+            <layup direction="right">layup_el</layup>   <!-- left (default) or right -->
+        </segment>
+        <segment name="sgm_2">
+            <baseline>ln_str_2</baseline>
+            <layup direction="left">layup_ss</layup>
+        </segment>
+        <!-- Optional: override default 'V2' joint to 'V1' (style 1 or 2). -->
+        <joint style="2">sgm_1,sgm_2</joint>
+    </component>
+
+    <!-- Laminate component: DEFINITION 2 (multiple layups along one base
+         line, optionally restricted by normalized parametric [begin, end]). -->
+    <component name="cmp_skin" type="laminate">
+        <segments>
+            <baseline>ln_af</baseline>
+            <layup_side>left</layup_side>               <!-- left (default) or right -->
+            <layup>layup_el</layup>
+            <layup begin="0.1">layup_ss</layup>
+            <layup end="0.7">layup_el</layup>
+            <layup begin="0.2" end="0.9">layup_ss</layup>
+        </segments>
+    </component>
+
+    <!-- Fill component: fills a region bounded by other components and/or
+         extra base lines. -->
+    <component name="cmp_fill" type="fill" depend="cmp_surface,cmp_skin">
+        <material>iso1</material>                       <!-- required -->
+        <location>p_inside</location>                   <!-- optional seed point -->
+        <baseline fillside="right">ln_str_3</baseline>  <!-- optional extra boundary -->
+        <theta1>0</theta1>                              <!-- rotation about x1 (deg) -->
+        <theta3>0</theta3>                              <!-- rotation about y3 (deg) -->
+        <!-- Optional local mesh refinement at named points (and lines
+             connecting them sequentially when more than one point is given). -->
+        <mesh_size at="p_inside">0.1</mesh_size>
+    </component>
+
+    <!-- Optional: global beam results for recovery / dehomogenization.
+         measure attribute: "stress" (or 0, default) or "strain" (or 1).
+         <loads>: 4 numbers (F1,M1,M2,M3) for classical model;
+                  6 numbers (F1,F2,F3,M1,M2,M3) for Timoshenko.
+         <distributed>: Timoshenko + VABS only. -->
+    <global measure="stress">
+        <displacements>0 0 0</displacements>
+        <rotations>1 0 0  0 1 0  0 0 1</rotations>
+
+        <!-- Single load case (legacy form): -->
+        <loads>0 0 0 0 0 0</loads>
+        <distributed>
+            <forces>0 0 0</forces>
+            <forces_d1>0 0 0</forces_d1>
+            <forces_d2>0 0 0</forces_d2>
+            <forces_d3>0 0 0</forces_d3>
+            <moments>0 0 0</moments>
+            <moments_d1>0 0 0</moments_d1>
+            <moments_d2>0 0 0</moments_d2>
+            <moments_d3>0 0 0</moments_d3>
+        </distributed>
+
+        <!-- Multiple load cases (replace <loads> above with one or more
+             <case> blocks; each <case> accepts the same children as the
+             single-case form). -->
+        <case>
+            <loads>1 0 0 0 0 0</loads>
+        </case>
+        <case>
+            <loads>0 1 0 0 0 0</loads>
+        </case>
+
+        <!-- Or list load cases row-by-row in a CSV file (4 or 6 columns
+             depending on the beam model). -->
+        <include format="csv" header="1">load_cases.csv</include>
+
+        <!-- For SwiftComp failure-envelope analysis (CLI flag fe), each
+             <case> lists the two axes spanning the envelope plane:
+        <case>
+            <axis1>f1</axis1>
+            <axis2>m1</axis2>
+            <divisions>20</divisions>
+        </case>
+        -->
+    </global>
+
+</cross_section>

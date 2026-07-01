@@ -1,0 +1,8 @@
+[warning]  unable to open file: C:\Users\tian50\work\dev\prevabs\build_msvc\Release\MaterialDB.xml
+[warning]  offset (multi-vertex): offset distance 0.010431 is 3.75414x the shortest base segment length (0.00277853 at segment 33); offset construction may be numerically fragile — consider <normalize>1</normalize>, a larger <scale>, or a denser baseline
+[warning]  offset (multi-vertex, closed): 4 base vertex/vertices have local half-thickness < |dist| = 0.010431 (first at base[1] = v#0( 0 , 1.41777 , 0.000323893 )); skin will be locally dropped at those locations
+[warning]  offset (multi-vertex, closed): 2 base vertex/vertices have local half-thickness in [|dist|, 2*|dist|) = [0.010431, 0.020862); offset will be valid but locally thin
+[warning]  offset (multi-vertex, closed): skin dropped over base indices [63..65] due to insufficient local thickness
+[warning]  offset (multi-vertex, closed): skin dropped over base indices [0..3] due to insufficient local thickness
+[warning]  layered offset[sg_le]: shell/base vertex count mismatch (base=66, shell=60); falling back to legacy area/layer build
+[warning]  walkLoopWithLimit: unusually long loop walk (>= 128 steps) | start=he#77 v#39 -> v#40 | loop: loop#6 | current=he#75 v#38 -> v#39 | loop: loop#6 | face=f#2 [sg_le_face]
