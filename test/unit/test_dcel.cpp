@@ -1370,6 +1370,46 @@ TEST_CASE("removeEdge: target vertex is merged into source", "[dcel][edge]") {
   CHECK(dcel.vertices().front() == v1);
 }
 
+TEST_CASE("removeEdge: self-loop is excised without deleting the shared vertex",
+          "[dcel][edge][selfloop]") {
+  // Regression for the a18sm degenerate-offset crash: a zero-length self-loop
+  // (source == target == same vertex object) reached fixDCELGeometry, which
+  // called removeEdge on it. removeEdge's contract path ran removeVertex on the
+  // shared vertex, orphaning the real ring edges still incident on it. Those
+  // half-edges then referenced a freed vertex that never received a Gmsh tag ->
+  // "Unknown control point 0 in GEO curve N". A self-loop must be excised while
+  // its vertex (and other incident edges) survive.
+  PDCEL dcel;
+  PDCELVertex *v1 = dcel.addVertex(new PDCELVertex(0, 0.0, 0.0));
+  PDCELVertex *v2 = dcel.addVertex(new PDCELVertex(0, 1.0, 0.0));
+  PDCELVertex *v3 = dcel.addVertex(new PDCELVertex(0, 2.0, 0.0));
+
+  // Real ring edges give v2 genuine incident half-edges.
+  dcel.addEdge(v1, v2);
+  dcel.addEdge(v2, v3);
+  // Degenerate self-loop at v2 (both half-edges have source == target == v2).
+  PDCELHalfEdge *self_loop = dcel.addEdge(v2, v2);
+  REQUIRE(self_loop->source() == self_loop->target());
+  REQUIRE(dcel.halfedges().size() == 6);  // 2 real edges + 1 self-loop
+  REQUIRE(dcel.vertices().size() == 3);
+
+  dcel.removeEdge(self_loop);
+
+  // The self-loop's two half-edges are gone; the two real edges remain.
+  CHECK(dcel.halfedges().size() == 4);
+  // The shared vertex must NOT be deleted.
+  CHECK(dcel.vertices().size() == 3);
+  CHECK(std::find(dcel.vertices().begin(), dcel.vertices().end(), v2)
+        != dcel.vertices().end());
+  // Both real edges still connect through v2.
+  CHECK(dcel.findHalfEdgeBetween(v1, v2) != nullptr);
+  CHECK(dcel.findHalfEdgeBetween(v2, v3) != nullptr);
+  // v2's incident edge points at a surviving half-edge (no dangling ref).
+  REQUIRE(v2->edge() != nullptr);
+  CHECK(v2->edge() != self_loop);
+  CHECK(v2->edge()->source() == v2);
+}
+
 
 // ==================================================================
 // 5. splitEdge

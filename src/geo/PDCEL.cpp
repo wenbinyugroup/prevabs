@@ -768,29 +768,48 @@ void PDCEL::removeEdge(PDCELHalfEdge *he) {
     }
   }
 
-  // Merge source and target vertices
+  // Merge source and target vertices — only for a genuine edge whose endpoints
+  // are two distinct vertices. A self-loop (vs == vt) is spurious zero-length
+  // topology, not a contractible edge: its single vertex still carries the
+  // other real edges, so it must be kept. Contracting it would run
+  // removeVertex on the shared vertex and leave those edges dangling (the
+  // cause of the "Unknown control point 0" Gmsh crash on degenerate offsets).
   PDCELVertex *vs = he->source();
   PDCELVertex *vt = he->target();
-  PDCELHalfEdge *vs_replacement = nullptr;
-  if (vt->edge() != nullptr && vt->edge() != he2) {
-    vs_replacement = vt->edge();
-  }
-  PDCELHalfEdge *_he_tmp = vt->edge();
-  if (_he_tmp != nullptr) {
-    do {
-      _he_tmp->setSource(vs);
-      _he_tmp = _he_tmp->twin();
-      _he_tmp = _he_tmp->next();
-    } while (_he_tmp != nullptr && _he_tmp != vt->edge());
-  }
+  if (vs != vt) {
+    PDCELHalfEdge *vs_replacement = nullptr;
+    if (vt->edge() != nullptr && vt->edge() != he2) {
+      vs_replacement = vt->edge();
+    }
+    PDCELHalfEdge *_he_tmp = vt->edge();
+    if (_he_tmp != nullptr) {
+      do {
+        _he_tmp->setSource(vs);
+        _he_tmp = _he_tmp->twin();
+        _he_tmp = _he_tmp->next();
+      } while (_he_tmp != nullptr && _he_tmp != vt->edge());
+    }
 
-  // All edges formerly incident on vt have been redirected to vs.
-  // Clear vt's incident edge so removeVertex's precondition passes.
-  if (vs->edge() == he || vs->edge() == he2) {
-    vs->setIncidentEdge(vs_replacement);
+    // All edges formerly incident on vt have been redirected to vs.
+    // Clear vt's incident edge so removeVertex's precondition passes.
+    if (vs->edge() == he || vs->edge() == he2) {
+      vs->setIncidentEdge(vs_replacement);
+    }
+    vt->setIncidentEdge(nullptr);
+    removeVertex(vt);
+  } else {
+    // Self-loop: keep the shared vertex and point its incident edge at a
+    // surviving half-edge. If none remains it becomes a genuine orphan
+    // (edge() == nullptr) and is cleaned up by the orphan-vertex pass.
+    PDCELHalfEdge *survivor = nullptr;
+    for (PDCELHalfEdge *cand : _halfedges) {
+      if (cand != he && cand != he2 && cand->source() == vs) {
+        survivor = cand;
+        break;
+      }
+    }
+    vs->setIncidentEdge(survivor);
   }
-  vt->setIncidentEdge(nullptr);
-  removeVertex(vt);
 
   _halfedges.remove(he);
   _halfedges.remove(he2);
