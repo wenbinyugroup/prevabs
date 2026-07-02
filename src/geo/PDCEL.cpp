@@ -1474,6 +1474,177 @@ std::list<PDCELFace *> PDCEL::splitFace(PDCELFace *f, PGeoLineSegment *ls) {
   return splitFace(f, ls->v1(), ls->v2());
 }
 
+PDCELFace *PDCEL::bridgeFaceLoops(PDCELFace *f, PDCELVertex *v_outer,
+                                  PDCELVertex *v_inner) {
+  if (f == nullptr || f->outer() == nullptr
+      || f->outer()->loop() == nullptr) {
+    PLOG(error) << "bridgeFaceLoops: face has no outer boundary loop";
+    return nullptr;
+  }
+  PDCELHalfEdgeLoop *outer_loop = f->outer()->loop();
+
+  // The half-edges of f incident on each endpoint. For a bounded annulus the
+  // outer- and inner-boundary half-edges both carry incidentFace == f, but they
+  // belong to different loops — that difference is exactly what makes this a
+  // bridge (merge) rather than a split.
+  PDCELHalfEdge *he_outer = findHalfEdgeInFace(v_outer, f);
+  if (he_outer == nullptr || he_outer->loop() != outer_loop) {
+    PLOG(error) << "bridgeFaceLoops: v_outer is not on the face outer loop";
+    return nullptr;
+  }
+  PDCELHalfEdge *he_inner = findHalfEdgeInFace(v_inner, f);
+  if (he_inner == nullptr) {
+    PLOG(error) << "bridgeFaceLoops: v_inner is not on the face boundary";
+    return nullptr;
+  }
+  PDCELHalfEdgeLoop *inner_loop = he_inner->loop();
+  if (inner_loop == nullptr || inner_loop == outer_loop) {
+    PLOG(error) << "bridgeFaceLoops: v_inner is not on a distinct inner loop";
+    return nullptr;
+  }
+
+  // Insert the bridge edge. addEdge() → updateEdgeNeighbors() splices both new
+  // half-edges into the angular order at their endpoints, which stitches the
+  // outer and inner boundary cycles into a single next/prev cycle.
+  PDCELHalfEdge *he = addEdge(v_outer, v_inner);
+
+  // Rebuild one merged loop over the stitched cycle and retire the two stale
+  // loop objects (their half-edges now belong to `merged`; do NOT reset them).
+  PDCELHalfEdgeLoop *merged = addHalfEdgeLoop(he);
+  const bool kept = isLoopKept(outer_loop);
+  for (PDCELHalfEdgeLoop *stale : {outer_loop, inner_loop}) {
+    _halfedge_loops.remove(stale);
+    _loop_keep.erase(stale);
+    _loop_adjacent.erase(stale);
+    delete stale;
+  }
+
+  // The face is now simply connected: single outer loop, bridged hole dropped.
+  f->setOuterComponent(merged->incidentEdge());
+  std::vector<PDCELHalfEdge *> &inners = f->inners();
+  inners.erase(
+      std::remove_if(inners.begin(), inners.end(),
+                     [merged](PDCELHalfEdge *ih) {
+                       return ih == nullptr || ih->loop() == merged;
+                     }),
+      inners.end());
+
+  // The two new bridge half-edges had no incident face yet; adopt f across the
+  // whole merged loop so every boundary half-edge points back to f.
+  walkLoopWithLimit(merged->incidentEdge(),
+                    [f](PDCELHalfEdge *hei) { hei->setIncidentFace(f); });
+  merged->setFace(f);
+  setLoopKept(merged, kept);
+
+  return f;
+}
+
+namespace {
+
+// Crossing-number point-in-polygon on the (y, z) cross-section plane. `pts` is
+// a simple closed polygon given by distinct vertices (no trailing duplicate).
+bool pointInsideRing(double y, double z,
+                     const std::vector<PDCELVertex *> &pts) {
+  bool inside = false;
+  const std::size_t n = pts.size();
+  for (std::size_t k = 0, j = n - 1; k < n; j = k++) {
+    const double yk = pts[k]->y(), zk = pts[k]->z();
+    const double yj = pts[j]->y(), zj = pts[j]->z();
+    if (((zk > z) != (zj > z))
+        && (y < (yj - yk) * (z - zk) / (zj - zk) + yk)) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+}  // namespace
+
+std::list<PDCELFace *> PDCEL::splitFaceByClosedCurve(
+    PDCELFace *f, const std::vector<PDCELVertex *> &ring) {
+  if (f == nullptr || f->outer() == nullptr
+      || f->outer()->loop() == nullptr) {
+    PLOG(error) << "splitFaceByClosedCurve: face has no outer boundary loop";
+    return {};
+  }
+
+  // Normalise to distinct ring vertices (drop a trailing duplicate closer).
+  std::vector<PDCELVertex *> pts = ring;
+  if (pts.size() >= 2 && pts.front() == pts.back()) {
+    pts.pop_back();
+  }
+  if (pts.size() < 3) {
+    PLOG(error) << "splitFaceByClosedCurve: ring needs >= 3 distinct vertices";
+    return {};
+  }
+
+  // Add the ring as an isolated closed cycle inside f. Its vertices are new
+  // interior points, so this does not touch f's existing boundary.
+  const std::size_t n = pts.size();
+  for (std::size_t k = 0; k < n; ++k) {
+    addEdge(pts[k], pts[(k + 1) % n]);
+  }
+
+  // The ring's two half-edge loops, labelled geometrically: CCW (+1) bounds the
+  // inner region; CW (-1) is the hole facing the outer region.
+  PDCELHalfEdge *he_ring = findHalfEdgeBetween(pts[0], pts[1]);
+  if (he_ring == nullptr) {
+    PLOG(error) << "splitFaceByClosedCurve: failed to build ring edges";
+    return {};
+  }
+  PDCELHalfEdgeLoop *la = addHalfEdgeLoop(he_ring);
+  PDCELHalfEdgeLoop *lb = addHalfEdgeLoop(he_ring->twin());
+  PDCELHalfEdgeLoop *ring_ccw = (la->direction() > 0) ? la : lb;
+  PDCELHalfEdgeLoop *ring_cw = (la->direction() > 0) ? lb : la;
+
+  const bool kept = isLoopKept(f->outer()->loop());
+
+  // Inner region: a new face bounded by the CCW ring loop.
+  PDCELFace *f_inner = addFace(ring_ccw);
+  ring_ccw->setFace(f_inner);
+  setLoopKept(ring_ccw, kept);
+
+  // Outer region reuses f: add the CW ring loop as a new hole and adopt f
+  // across it (its half-edges had no incident face yet).
+  f->addInnerComponent(ring_cw->incidentEdge());
+  ring_cw->setFace(f);
+  setLoopKept(ring_cw, kept);
+  walkLoopWithLimit(ring_cw->incidentEdge(),
+                    [f](PDCELHalfEdge *hei) { hei->setIncidentFace(f); });
+
+  // Move each of f's pre-existing holes that lies inside the ring into the
+  // inner face (for a concentric carve this is the central offset hole).
+  std::vector<PDCELHalfEdge *> &f_inners = f->inners();
+  std::vector<PDCELHalfEdge *> stay;
+  stay.reserve(f_inners.size());
+  for (PDCELHalfEdge *ih : f_inners) {
+    if (ih == nullptr || ih->loop() == ring_cw) {
+      stay.push_back(ih);  // the hole we just added stays on f
+      continue;
+    }
+    PDCELVertex *rep = ih->source();
+    if (rep != nullptr && pointInsideRing(rep->y(), rep->z(), pts)) {
+      PDCELHalfEdgeLoop *hole_loop = ih->loop();
+      f_inner->addInnerComponent(ih);
+      if (hole_loop != nullptr) {
+        hole_loop->setFace(f_inner);
+        setLoopKept(hole_loop, isLoopKept(hole_loop));
+      }
+      walkLoopWithLimit(ih, [f_inner](PDCELHalfEdge *hei) {
+        hei->setIncidentFace(f_inner);
+      });
+    } else {
+      stay.push_back(ih);
+    }
+  }
+  f_inners = stay;
+
+  std::list<PDCELFace *> result;
+  result.push_back(f);        // outer region (reused)
+  result.push_back(f_inner);  // inner region (new)
+  return result;
+}
+
 // ===================================================================
 //
 // Private helper functions

@@ -2,7 +2,7 @@
 
 - Input: `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.xml`
 - Case: `missing_general`
-- Time: 2026-06-30 17:08:56
+- Time: 2026-07-02 10:10:39
 - Failure: fatal exception: homogenization failed: Missing required XML element <general>
 - Catch context: initialize model
 
@@ -18,7 +18,7 @@ From `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_gener
 
 From `C:/Users/tian50/work/dev/prevabs/test/integration/t5_logging/missing_general.debug.log`:
 
-- [error]     fatal exception: homogenization failed: Missing required XML element <general>  main.cpp:logFatalWithProgress:718
+- [error]     fatal exception: homogenization failed: Missing required XML element <general>  main.cpp:logFatalWithProgress:723
 
 ## Related files
 

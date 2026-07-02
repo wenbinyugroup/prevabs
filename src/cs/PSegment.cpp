@@ -4,8 +4,10 @@
 #include "Material.hpp"
 #include "PArea.hpp"
 #include "PBaseLine.hpp"
+#include "PDCEL.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
+#include "PDCELUtils.hpp"
 #include "PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "debug/baseOffsetMapJson.hpp"
@@ -953,6 +955,14 @@ void Segment::build(const BuilderConfig &bcfg) {
                              _curve_offset->vertices()[i + 1]);
   }
 
+  // Closed segment: build a true annulus (base ring + offset ring stay as two
+  // separate closed loops). No slit connecting them — the material region is
+  // the face between the outer and inner loops. See buildClosedShell.
+  if (closed()) {
+    buildClosedShell(bcfg);
+    return;
+  }
+
   // Create half edge loop and face
     if (bcfg.debug_level >= DebugLevel::join) PLOG(debug) << "creating the half edge loop and face";
   PDCELHalfEdgeLoop *hel;
@@ -996,4 +1006,84 @@ void Segment::build(const BuilderConfig &bcfg) {
       "base_verts=" + std::to_string(_curve_base->vertices().size())
       + ", offset_verts=" + std::to_string(_curve_offset->vertices().size())
       + ", loop_steps=" + std::to_string(loop_steps));
+}
+
+void Segment::buildClosedShell(const BuilderConfig &bcfg) {
+  PDCEL *dcel = bcfg.dcel;
+  const std::vector<PDCELVertex *> &base_v = _curve_base->vertices();
+  const std::vector<PDCELVertex *> &off_v = _curve_offset->vertices();
+
+  // Signed area of a closed ring in the (y, z) plane (drops a trailing
+  // duplicate closer). The magnitude decides which ring encloses the other;
+  // the sign is not relied on — direction() classifies the built loops.
+  auto ringArea = [](const std::vector<PDCELVertex *> &v) {
+    const std::size_t n =
+        (v.size() >= 2 && v.front() == v.back()) ? v.size() - 1 : v.size();
+    double a = 0.0;
+    for (std::size_t k = 0; k < n; ++k) {
+      const PDCELVertex *p = v[k];
+      const PDCELVertex *q = v[(k + 1) % n];
+      a += p->y() * q->z() - q->y() * p->z();
+    }
+    return 0.5 * a;
+  };
+
+  // The larger ring is the annulus outer boundary; the smaller is the hole.
+  // This holds whether the layup sits inside the base (offset smaller) or
+  // outside it (offset larger) — so base is NOT assumed to be the outer ring.
+  const bool base_is_outer =
+      std::fabs(ringArea(base_v)) >= std::fabs(ringArea(off_v));
+  const std::vector<PDCELVertex *> &outer_v = base_is_outer ? base_v : off_v;
+  const std::vector<PDCELVertex *> &inner_v = base_is_outer ? off_v : base_v;
+
+  // For each ring build both half-edge loops and keep the one carrying the
+  // material on its interior (left) side: the outer boundary walked CCW
+  // (direction +1), the inner hole walked CW (direction -1). direction()
+  // classifies geometrically, so no winding assumption is needed. The dropped
+  // loop (exterior of the outer ring / central void of the inner ring) is
+  // released back to the temp-loop pass, exactly like the open shell's twins.
+  auto pickLoop = [&](const std::vector<PDCELVertex *> &v, int want_dir,
+                      PDCELHalfEdgeLoop *&keep) -> bool {
+    PDCELHalfEdge *he = dcel->findHalfEdgeBetween(v[0], v[1]);
+    if (he == nullptr) return false;
+    PDCELHalfEdgeLoop *la = dcel->addHalfEdgeLoop(he);
+    PDCELHalfEdgeLoop *lb = dcel->addHalfEdgeLoop(he->twin());
+    if (la == nullptr || lb == nullptr) return false;
+    PDCELHalfEdgeLoop *good = (la->direction() == want_dir) ? la : lb;
+    PDCELHalfEdgeLoop *drop = (good == la) ? lb : la;
+    dcel->removeHalfEdgeLoop(drop);
+    keep = good;
+    return true;
+  };
+
+  PDCELHalfEdgeLoop *outer_loop = nullptr;
+  PDCELHalfEdgeLoop *inner_loop = nullptr;
+  if (!pickLoop(outer_v, 1, outer_loop)
+      || !pickLoop(inner_v, -1, inner_loop)) {
+    logMissingHalfEdgeBetween(
+        "buildClosedShell", _name, outer_v[0], outer_v[1], bcfg);
+    return;
+  }
+
+  // Outer loop → the material face; inner loop → its hole. Both loops are kept
+  // so the post-build temp-loop pass preserves the annulus.
+  _face = dcel->addFace(outer_loop);
+  bcfg.model->setFaceName(_face, _name + "_face");
+  outer_loop->setFace(_face);
+  dcel->setLoopKept(outer_loop, true);
+
+  _face->addInnerComponent(inner_loop->incidentEdge());
+  inner_loop->setFace(_face);
+  dcel->setLoopKept(inner_loop, true);
+  PDCELFace *f = _face;
+  walkLoopWithLimit(inner_loop->incidentEdge(),
+                    [f](PDCELHalfEdge *he) { he->setIncidentFace(f); });
+
+  _state = LifecycleState::ShellBuilt;
+  validateStateInvariants("buildClosedShell");
+
+  PLOG(info) << "built closed annulus segment " << _name << ": "
+             << base_v.size() << " base verts, " << off_v.size()
+             << " offset verts (outer=" << (base_is_outer ? "base" : "offset")
+             << ")";
 }

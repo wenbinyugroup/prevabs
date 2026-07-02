@@ -788,6 +788,82 @@ TEST_CASE("offsetCurveBase: closed box baseline keeps a non-degenerate offset lo
   CHECK(offset->vertices()[3]->point().z() == Catch::Approx(-0.42).margin(tol));
 }
 
+TEST_CASE("build: closed box segment builds an annulus shell "
+          "(base outer, offset hole)",
+          "[dcel][segment][closed][annulus]") {
+  Material material("mat");
+  Lamina lamina("lam", &material, 0.04);
+  LayerType layertype(1, &material, 0.0);
+  Layup layup("layup");
+  layup.addLayer(&lamina, 0.0, 1, &layertype);
+  layup.addLayer(&lamina, 90.0, 1, &layertype);
+
+  Baseline base("box", "line");
+  base.addPVertex(new PDCELVertex(0.0, 0.5, 0.5));
+  base.addPVertex(new PDCELVertex(0.0, -0.5, 0.5));
+  base.addPVertex(new PDCELVertex(0.0, -0.5, -0.5));
+  base.addPVertex(new PDCELVertex(0.0, 0.5, -0.5));
+  base.addPVertex(base.vertices().front());  // closed: front == back
+
+  Segment segment("seg", &base, &layup, "left", 1);
+  segment.offsetCurveBase();
+  REQUIRE(segment.curveOffset() != nullptr);
+  segment.setHeadVertexOffset(segment.curveOffset()->vertices().front());
+  segment.setTailVertexOffset(segment.curveOffset()->vertices().back());
+
+  PDCEL dcel;
+  dcel.initialize();
+  PModel model;
+  BuilderConfig bcfg{};
+  bcfg.debug_level = DebugLevel::off;
+  bcfg.tool = AnalysisTool::VABS;
+  bcfg.tol = 1e-12;
+  bcfg.geo_tol = 1e-9;
+  bcfg.dcel = &dcel;
+  bcfg.materials = &model;
+  bcfg.model = &model;
+
+  segment.build(bcfg);
+
+  // The shell is a true annulus: one outer loop + exactly one inner hole.
+  PDCELFace *f = segment.face();
+  REQUIRE(f != nullptr);
+  REQUIRE(f->outer() != nullptr);
+  CHECK(model.faceData(f).name == "seg_face");
+  REQUIRE(f->inners().size() == 1);
+  REQUIRE(f->inners()[0] != nullptr);
+
+  // Base (±0.5, area 1.0) is the larger ring → outer boundary; offset (±0.42)
+  // is the hole. Both are 4-vertex square loops.
+  CHECK(collectFaceBoundary(f->outer()).size() == 4);
+  CHECK(collectFaceBoundary(f->inners()[0]).size() == 4);
+
+  // Outer-loop vertices sit on the base square (|y| == |z| == 0.5); the hole
+  // vertices sit on the offset square (0.42).
+  for (PDCELHalfEdge *he : collectFaceBoundary(f->outer())) {
+    CHECK(std::fabs(he->source()->y()) == Catch::Approx(0.5).margin(1e-9));
+    CHECK(std::fabs(he->source()->z()) == Catch::Approx(0.5).margin(1e-9));
+  }
+  for (PDCELHalfEdge *he : collectFaceBoundary(f->inners()[0])) {
+    CHECK(std::fabs(he->source()->y()) == Catch::Approx(0.42).margin(1e-9));
+    CHECK(std::fabs(he->source()->z()) == Catch::Approx(0.42).margin(1e-9));
+  }
+
+  // Every half-edge of the annulus boundary belongs to the shell face.
+  for (PDCELHalfEdge *he : collectFaceBoundary(f->outer())) {
+    CHECK(he->face() == f);
+  }
+  for (PDCELHalfEdge *he : collectFaceBoundary(f->inners()[0])) {
+    CHECK(he->face() == f);
+  }
+  // NB: dcel.validate() is intentionally NOT asserted here. Like the open
+  // shell, buildClosedShell leaves the ring exteriors (the base ring's outward
+  // twins and the offset ring's central-void twins) without an incident face;
+  // the post-build removeTempLoops/createTempLoops pass re-loops them and the
+  // void only gains a face if a fill component claims it. validate() flags
+  // those as orphaned, which is the expected pre-temp-loop shell state.
+}
+
 TEST_CASE("offset: closed pseudo-airfoil offset uses Clipper2 backend and "
           "produces a valid staircase",
           "[dcel][geo][offset][clipper2][airfoil][e2e]") {
@@ -1701,6 +1777,230 @@ TEST_CASE("splitFaceByPolyline: invalid paths do not mutate the DCEL",
   CHECK(dcel.halfedgeloops().size() == loops_before);
   CHECK(dcel.faces().size() == faces_before);
   CHECK(dcel.validate());
+}
+
+
+// ==================================================================
+// 7b. Annulus primitives — bridgeFaceLoops / splitFaceByClosedCurve
+// ==================================================================
+
+// Build a square annulus in `dcel`:
+//   - outer CCW square [0,4]^2  → the material face `f` (outer loop kept),
+//   - inner CW square  [1,3]^2  → registered as f's single hole,
+//   - the central void [1,3]^2  → its own face `void_face`.
+// Exposes the corner vertices used by the bridge / carve tests.
+struct AnnulusFixture {
+  PDCEL dcel;
+  PDCELFace *f = nullptr;
+  PDCELFace *void_face = nullptr;
+  PDCELVertex *o[4] = {};  // outer corners CCW: (0,0)(4,0)(4,4)(0,4)
+  PDCELVertex *i[4] = {};  // inner corners CCW: (1,1)(3,1)(3,3)(1,3)
+
+  AnnulusFixture() {
+    dcel.initialize();
+
+    // Outer CCW square → face f.
+    o[0] = new PDCELVertex(0, 0.0, 0.0);
+    o[1] = new PDCELVertex(0, 4.0, 0.0);
+    o[2] = new PDCELVertex(0, 4.0, 4.0);
+    o[3] = new PDCELVertex(0, 0.0, 4.0);
+    std::list<PDCELVertex *> outer = {o[0], o[1], o[2], o[3], o[0]};
+    f = dcel.addFace(outer);
+    REQUIRE(f != nullptr);
+    PDCELHalfEdgeLoop *hel_out = dcel.addHalfEdgeLoop(f->outer());
+    REQUIRE(hel_out != nullptr);
+    hel_out->setFace(f);
+    dcel.setLoopKept(hel_out, true);
+
+    // Inner square edges, added CCW (i0→i1→i2→i3→i0).
+    i[0] = dcel.addVertex(new PDCELVertex(0, 1.0, 1.0));
+    i[1] = dcel.addVertex(new PDCELVertex(0, 3.0, 1.0));
+    i[2] = dcel.addVertex(new PDCELVertex(0, 3.0, 3.0));
+    i[3] = dcel.addVertex(new PDCELVertex(0, 1.0, 3.0));
+    dcel.addEdge(i[0], i[1]);
+    dcel.addEdge(i[1], i[2]);
+    dcel.addEdge(i[2], i[3]);
+    dcel.addEdge(i[3], i[0]);
+
+    // The inner ring has two loops; direction() labels them geometrically.
+    // CCW (+1) bounds the central void; CW (-1) is the hole facing the annulus.
+    PDCELHalfEdge *he_i = dcel.findHalfEdgeBetween(i[0], i[1]);
+    REQUIRE(he_i != nullptr);
+    PDCELHalfEdgeLoop *la = dcel.addHalfEdgeLoop(he_i);
+    PDCELHalfEdgeLoop *lb = dcel.addHalfEdgeLoop(he_i->twin());
+    PDCELHalfEdgeLoop *hole = (la->direction() < 0) ? la : lb;
+    PDCELHalfEdgeLoop *void_outer = (la->direction() < 0) ? lb : la;
+
+    // Central void is its own face; its outer loop owns those half-edges.
+    void_face = dcel.addFace(void_outer);
+    void_outer->setFace(void_face);
+
+    // Register the CW loop as f's hole and adopt f across it.
+    f->addInnerComponent(hole->incidentEdge());
+    hole->setFace(f);
+    for (PDCELHalfEdge *he : collectFaceBoundary(hole->incidentEdge())) {
+      he->setIncidentFace(f);
+    }
+  }
+};
+
+TEST_CASE("bridgeFaceLoops: annulus merges into a simply-connected face",
+          "[dcel][face][annulus]") {
+  AnnulusFixture fx;
+  REQUIRE(fx.dcel.validate());
+  REQUIRE(fx.f->inners().size() == 1);
+
+  const std::size_t faces_before = fx.dcel.faces().size();
+  const std::size_t loops_before = fx.dcel.halfedgeloops().size();
+
+  PDCELFace *res = fx.dcel.bridgeFaceLoops(fx.f, fx.o[0], fx.i[0]);
+
+  REQUIRE(res == fx.f);
+  // No face created; the outer loop and the bridged hole loop fuse into one.
+  CHECK(fx.dcel.faces().size() == faces_before);
+  CHECK(fx.dcel.halfedgeloops().size() == loops_before - 1);
+  CHECK(fx.f->inners().empty());
+  CHECK(fx.dcel.validate());
+
+  // The bridge edge exists both ways and both half-edges are on f.
+  PDCELHalfEdge *he_oi = fx.dcel.findHalfEdgeBetween(fx.o[0], fx.i[0]);
+  PDCELHalfEdge *he_io = fx.dcel.findHalfEdgeBetween(fx.i[0], fx.o[0]);
+  REQUIRE(he_oi != nullptr);
+  REQUIRE(he_io != nullptr);
+  CHECK(he_oi->twin() == he_io);
+  CHECK(he_oi->face() == fx.f);
+  CHECK(he_io->face() == fx.f);
+
+  // Merged boundary: 4 outer + 4 hole + 2 bridge half-edges = 10 steps.
+  CHECK(collectFaceBoundary(fx.f->outer()).size() == 10);
+
+  // The central void face is untouched.
+  CHECK(fx.void_face->outer() != nullptr);
+  CHECK(collectFaceBoundary(fx.void_face->outer()).size() == 4);
+}
+
+TEST_CASE("bridgeFaceLoops: bridged disk splits normally with splitFaceByPolyline",
+          "[dcel][face][annulus]") {
+  AnnulusFixture fx;
+  REQUIRE(fx.dcel.bridgeFaceLoops(fx.f, fx.o[0], fx.i[0]) == fx.f);
+  REQUIRE(fx.dcel.validate());
+
+  const std::size_t faces_before = fx.dcel.faces().size();
+
+  // A second radial connector — both endpoints now lie on the single merged
+  // outer loop — splits the slit disk into two faces (the first tiled cell).
+  std::vector<PDCELVertex *> connector = {fx.o[2], fx.i[2]};
+  std::list<PDCELFace *> cells = fx.dcel.splitFaceByPolyline(fx.f, connector);
+
+  REQUIRE(cells.size() == 2);
+  CHECK(fx.dcel.faces().size() == faces_before + 1);
+  CHECK(fx.dcel.validate());
+}
+
+TEST_CASE("bridgeFaceLoops: rejects endpoints not on distinct loops",
+          "[dcel][face][annulus][failure]") {
+  AnnulusFixture fx;
+  const std::size_t edges_before = fx.dcel.halfedges().size();
+
+  // Both endpoints on the outer loop → not a bridge.
+  CHECK(fx.dcel.bridgeFaceLoops(fx.f, fx.o[0], fx.o[2]) == nullptr);
+  // Both endpoints on the inner loop → not a bridge.
+  CHECK(fx.dcel.bridgeFaceLoops(fx.f, fx.i[0], fx.i[2]) == nullptr);
+
+  CHECK(fx.dcel.halfedges().size() == edges_before);
+  CHECK(fx.dcel.validate());
+}
+
+TEST_CASE("splitFaceByClosedCurve: carves an annulus into two nested annuli",
+          "[dcel][face][annulus]") {
+  AnnulusFixture fx;
+  REQUIRE(fx.dcel.validate());
+  REQUIRE(fx.f->inners().size() == 1);
+
+  const std::size_t faces_before = fx.dcel.faces().size();
+
+  // Concentric ring between the outer square [0,4] and the central void [1,3].
+  std::vector<PDCELVertex *> ring = {
+      new PDCELVertex(0, 0.5, 0.5),
+      new PDCELVertex(0, 3.5, 0.5),
+      new PDCELVertex(0, 3.5, 3.5),
+      new PDCELVertex(0, 0.5, 3.5)};
+
+  std::list<PDCELFace *> parts = fx.dcel.splitFaceByClosedCurve(fx.f, ring);
+
+  REQUIRE(parts.size() == 2);
+  PDCELFace *f_outer = parts.front();
+  PDCELFace *f_inner = parts.back();
+
+  // Outer region reuses f; a new face is created for the inner region.
+  CHECK(f_outer == fx.f);
+  CHECK(fx.dcel.faces().size() == faces_before + 1);
+
+  // Both regions are annuli: one hole each. The central void hole moved from
+  // f to the inner region; f now holds the ring's outward loop as its hole.
+  CHECK(f_outer->inners().size() == 1);
+  CHECK(f_inner->inners().size() == 1);
+
+  // Outer region boundary is still the [0,4] square (4 half-edges); inner
+  // region outer boundary is the carved ring (4 half-edges).
+  CHECK(collectFaceBoundary(f_outer->outer()).size() == 4);
+  CHECK(collectFaceBoundary(f_inner->outer()).size() == 4);
+
+  CHECK(fx.dcel.validate());
+}
+
+TEST_CASE("splitFaceByClosedCurve: recurses to carve successive layers",
+          "[dcel][face][annulus]") {
+  AnnulusFixture fx;
+
+  std::vector<PDCELVertex *> ring1 = {
+      new PDCELVertex(0, 0.5, 0.5), new PDCELVertex(0, 3.5, 0.5),
+      new PDCELVertex(0, 3.5, 3.5), new PDCELVertex(0, 0.5, 3.5)};
+  std::list<PDCELFace *> parts1 = fx.dcel.splitFaceByClosedCurve(fx.f, ring1);
+  REQUIRE(parts1.size() == 2);
+  PDCELFace *remaining = parts1.back();
+  REQUIRE(fx.dcel.validate());
+
+  // Carve a second concentric ring inside the remaining annulus.
+  std::vector<PDCELVertex *> ring2 = {
+      new PDCELVertex(0, 0.8, 0.8), new PDCELVertex(0, 3.2, 0.8),
+      new PDCELVertex(0, 3.2, 3.2), new PDCELVertex(0, 0.8, 3.2)};
+  std::list<PDCELFace *> parts2 =
+      fx.dcel.splitFaceByClosedCurve(remaining, ring2);
+  REQUIRE(parts2.size() == 2);
+
+  CHECK(parts2.front()->inners().size() == 1);
+  CHECK(parts2.back()->inners().size() == 1);
+  CHECK(fx.dcel.validate());
+}
+
+TEST_CASE("splitFaceByClosedCurve: first connector then bridges + tiles a band",
+          "[dcel][face][annulus]") {
+  // End-to-end shape of the closed layered tiler: carve a band, then tile it
+  // with a bridge (first connector) + an ordinary split (second connector).
+  AnnulusFixture fx;
+
+  std::vector<PDCELVertex *> ring = {
+      new PDCELVertex(0, 0.5, 0.5), new PDCELVertex(0, 3.5, 0.5),
+      new PDCELVertex(0, 3.5, 3.5), new PDCELVertex(0, 0.5, 3.5)};
+  std::list<PDCELFace *> parts = fx.dcel.splitFaceByClosedCurve(fx.f, ring);
+  REQUIRE(parts.size() == 2);
+  PDCELFace *band = parts.front();  // between [0,4] and the ring
+  REQUIRE(fx.dcel.validate());
+
+  // The ring vertices are new + distinct, so addEdge keeps them canonical and
+  // the pointers in `ring` remain valid DCEL vertices.
+  // First connector: outer corner (0,0) → ring corner (0.5,0.5) bridges the
+  // band annulus into a slit disk.
+  REQUIRE(fx.dcel.bridgeFaceLoops(band, fx.o[0], ring[0]) == band);
+  REQUIRE(fx.dcel.validate());
+
+  // Second connector: outer corner (4,4) → ring corner (3.5,3.5) splits the
+  // slit disk into a cell + remainder.
+  std::vector<PDCELVertex *> connector = {fx.o[2], ring[2]};
+  std::list<PDCELFace *> cells = fx.dcel.splitFaceByPolyline(band, connector);
+  REQUIRE(cells.size() == 2);
+  CHECK(fx.dcel.validate());
 }
 
 

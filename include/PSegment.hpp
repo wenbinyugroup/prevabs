@@ -214,6 +214,14 @@ private:
       int side, bool &used_adaptive,
       prevabs::geo::LinearAdaptiveThicknessPlan &adaptive_plan);
 
+  // Build the shell of a CLOSED segment as a true annulus: the base ring and
+  // the offset ring stay separate closed loops, and `_face` is the material
+  // region between them (outer boundary = the larger ring, inner hole = the
+  // smaller ring). Which of base/offset is outer vs inner is decided from the
+  // ring areas, so it works whether the layup sits inside or outside the base.
+  // Called from build() when closed(); sets `_face` on success.
+  void buildClosedShell(const BuilderConfig &bcfg);
+
   bool requireBaseDefinition(const char *caller) const;
   int requireValidLayupSide(const char *caller) const;
   bool requireOffsetCurve(const char *caller) const;

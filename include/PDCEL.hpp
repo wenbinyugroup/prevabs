@@ -236,4 +236,37 @@ public:
   
   /// Split a bounded face (convex) by a line or line segment
   std::list<PDCELFace *> splitFace(PDCELFace *f, PGeoLineSegment *ls);
+
+  /// Bridge the outer boundary of a bounded face to one of its inner (hole)
+  /// boundaries by inserting a single edge v_outer -> v_inner. The two boundary
+  /// cycles merge into one, so the face becomes simply connected (an annulus
+  /// turns into a slit disk) and the bridged inner loop is dropped from the
+  /// hole list. The face is reused (not deleted) and returned. Returns nullptr
+  /// without mutating the DCEL when the preconditions are not met: f bounded
+  /// with an outer loop, v_outer on that outer loop, v_inner on a distinct
+  /// inner loop of f.
+  ///
+  /// This is the closed-annulus analogue of the first radial cut: the very
+  /// first staircase connector of a closed layer band lands one endpoint on the
+  /// band's outer curve and the other on its inner curve, so it must bridge the
+  /// two loops rather than split one. Subsequent connectors then split the
+  /// resulting disk with the ordinary splitFaceByPolyline.
+  PDCELFace *bridgeFaceLoops(PDCELFace *f, PDCELVertex *v_outer,
+                             PDCELVertex *v_inner);
+
+  /// Split a bounded face by a closed curve lying strictly inside it (carve a
+  /// concentric ring). `ring` is a closed polygon (front == back) that does not
+  /// touch the face boundary. The face is divided into two: the original face
+  /// `f` is reused as the OUTER region (its outer loop kept, the ring added as a
+  /// new hole) and a new INNER face is returned bounded by the ring; any of
+  /// f's pre-existing holes that fall inside the ring are moved to the inner
+  /// face. Returns {f_outer, f_inner} (f_outer == f). Returns an empty list
+  /// without mutating the DCEL when the ring is degenerate or not a simple
+  /// closed curve.
+  ///
+  /// Reuses the same outer/inner classification as everywhere else: the ring's
+  /// two half-edge loops are labelled by PDCELHalfEdgeLoop::direction(), so the
+  /// caller need not pre-decide which side is the hole.
+  std::list<PDCELFace *> splitFaceByClosedCurve(
+      PDCELFace *f, const std::vector<PDCELVertex *> &ring);
 };

@@ -163,6 +163,35 @@ double signedArea2D(const std::vector<SPoint2>& pts) {
   return 0.5 * a;
 }
 
+// Align a CLOSED layer ring to a reference ring so their seams correspond.
+// Clipper2 does not preserve either the winding or the starting (seam) vertex
+// of an offset polygon, but the closed staircase (rebuildBaseOffsetMapFrom
+// Geometry) pins index 0 of both curves as the seam and walks in step — so a
+// misaligned seam or opposite winding yields a garbage staircase. Match the
+// reference winding (by signed-area sign) then rotate the ring so its vertex 0
+// is the one nearest the reference seam. Aligning every ring to the base seam
+// keeps consecutive rings mutually aligned.
+void alignClosedRingToReference(LayeredCurve& c,
+                                const std::vector<SPoint2>& ref) {
+  if (c.points.size() < 3 || ref.size() < 3) return;
+  if (signedArea2D(c.points) * signedArea2D(ref) < 0.0) {
+    std::reverse(c.points.begin(), c.points.end());
+    std::reverse(c.vertices.begin(), c.vertices.end());
+  }
+  const SPoint2& seam = ref.front();
+  std::size_t best = 0;
+  double best_d2 = std::numeric_limits<double>::infinity();
+  for (std::size_t i = 0; i < c.points.size(); ++i) {
+    const double dx = c.points[i].x() - seam.x();
+    const double dy = c.points[i].y() - seam.y();
+    const double d2 = dx * dx + dy * dy;
+    if (d2 < best_d2) { best_d2 = d2; best = i; }
+  }
+  if (best == 0) return;
+  std::rotate(c.points.begin(), c.points.begin() + best, c.points.end());
+  std::rotate(c.vertices.begin(), c.vertices.begin() + best, c.vertices.end());
+}
+
 const prevabs::geo::OffsetPolygon* pickLayeredPrimary(
     const std::vector<prevabs::geo::OffsetPolygon>& polys, bool closed) {
   const prevabs::geo::OffsetPolygon* best = nullptr;
@@ -720,6 +749,21 @@ bool layeredFaceContainsVertex(
         "fallback here would corrupt the cross-section mesh)");
 }
 
+// A closed (annular) segment has NO legacy fallback: the legacy area/layer
+// builder relies on the slit (removed in this plan) to turn the annulus into a
+// disk, so `return false` here would hand it an un-sliceable ring and crash.
+// Every pre-mutation bail-out that would `return false` for an OPEN segment must
+// therefore fail fast for a CLOSED one. This mirrors failLayeredAfterMutation's
+// hard abort, but for the pre-mutation closed case — the DCEL is still pristine,
+// so the reason is the missing legacy path, not a corrupted mesh.
+[[noreturn]] void failClosedLayered(
+    const std::string& segment_name, const std::string& reason) {
+  throw std::runtime_error(
+      "layered offset[" + segment_name + "]: " + reason
+      + "; a closed segment has no legacy area/layer fallback (it needs the "
+        "removed slit), so this is a hard failure");
+}
+
 std::vector<PDCELFace *> splitLayerBandIntoCells(
     PDCELFace *band_face, const LayeredCurve& inner,
     const LayeredCurve& outer, bool is_closed, int side, double dist,
@@ -756,19 +800,64 @@ std::vector<PDCELFace *> splitLayerBandIntoCells(
       (precomputed_map != nullptr) ? *precomputed_map : local_map;
   prevabs::debug::SegmentTraceScope _trace_scope(
       "splitLayerBandIntoCells (pairs=" + std::to_string(pairs.size()) + ")");
-  if (band_face == nullptr || !plan_ok || pairs.size() < 2) return cells;
-  // Two staircase entries are just the head/tail end caps with no interior
-  // connector between them: the whole band is a single cell.
-  if (pairs.size() == 2) {
-    cells.push_back(band_face);
+  if (band_face == nullptr || !plan_ok || pairs.size() < 2) {
+    PLOG(error) << "layered offset[" << segment_name
+                << "]: splitLayerBandIntoCells early-out (band="
+                << (band_face != nullptr) << ", plan_ok=" << plan_ok
+                << ", pairs=" << pairs.size() << ", n_in="
+                << inner.vertices.size() << ", n_out=" << outer.vertices.size()
+                << ", closed=" << is_closed << ")";
     return cells;
   }
 
   const int n_in = static_cast<int>(inner.vertices.size());
   const int n_out = static_cast<int>(outer.vertices.size());
   PDCELFace *remaining = band_face;
-  // Interior staircase steps only — skip the first/last entries, which are the
-  // band's two end caps (already edges of band_face).
+
+  // A CLOSED band is an annulus, not a capped disk: its outer loop is the
+  // `inner` curve (base side) and its hole is the `outer` curve (toward the
+  // centre). There are no end caps — every staircase pair is a real radial
+  // connector and the staircase wraps (pairs.front()/back() are the same seam).
+  // The FIRST connector (pairs[0]) therefore lands one end on the outer loop
+  // and one on the hole, so it must BRIDGE the two loops into a slit disk
+  // (bridgeFaceLoops); the remaining connectors then split that disk exactly
+  // like the open path, and the leftover after the last split is the wrap cell.
+  if (is_closed) {
+    const int b0 = pairs[0].base;
+    const int o0 = pairs[0].offset;
+    if (b0 < 0 || b0 >= n_in || o0 < 0 || o0 >= n_out) {
+      PLOG(error) << "layered offset[" << segment_name
+                  << "]: closed seam connector out of range (base=" << b0
+                  << "/" << n_in << ", offset=" << o0 << "/" << n_out << ")";
+      return {};
+    }
+    remaining = dcel->bridgeFaceLoops(
+        band_face, inner.vertices[b0], outer.vertices[o0]);
+    if (remaining == nullptr) {
+      PLOG(error) << "layered offset[" << segment_name
+                  << "]: failed to bridge closed layer band at the seam";
+      prevabs::debug::segmentTracePush("closed band bridge FAILED @seam");
+      return {};
+    }
+    // A two-entry closed staircase (seam + wrap) has a single distinct
+    // connector: the bridge alone makes the whole annulus one cell.
+    if (pairs.size() == 2) {
+      cells.push_back(remaining);
+      return cells;
+    }
+  } else {
+    // Two staircase entries are just the head/tail end caps with no interior
+    // connector between them: the whole band is a single cell.
+    if (pairs.size() == 2) {
+      cells.push_back(band_face);
+      return cells;
+    }
+  }
+
+  // Interior staircase steps. For the OPEN band these skip the first/last
+  // entries (its two end caps, already edges of band_face); for the CLOSED band
+  // pairs[0] was consumed by the bridge above and pairs.back() is the wrap, so
+  // the same [1, size-2] range splits off every cell but the final wrap cell.
   for (std::size_t p = 1; p + 1 < pairs.size(); ++p) {
     const int bi = pairs[p].base;
     const int oj = pairs[p].offset;
@@ -1530,20 +1619,32 @@ void Segment::buildLastArea(
 // Hence every `return false` below sits in the pre-mutation prologue or the
 // per-layer loop's pre-split checks; everything after the first split aborts.
 bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
-  // Missing inputs: nothing to build from -> let the legacy builder try.
+  // Missing inputs: nothing to build from. A closed segment cannot fall back
+  // (no slit -> legacy crash), so fail fast; an open one lets legacy try.
   if (_layup == nullptr || _curve_base == nullptr || _curve_offset == nullptr
       || _face == nullptr) {
+    if (closed()) {
+      failClosedLayered(_name,
+          "missing required inputs (layup/base/offset/face)");
+    }
     return false;
   }
   prevabs::debug::SegmentTraceScope _trace_scope("buildLayeredOffsetAreas");
 
   std::vector<Layer> layers = _layup->getLayers();
   const int n_layers = static_cast<int>(layers.size());
-  if (n_layers <= 0) return false;  // no layers -> fallback
+  if (n_layers <= 0) {  // no layers
+    if (closed()) failClosedLayered(_name, "layup has no layers");
+    return false;  // open -> fallback
+  }
   for (int k = 0; k < n_layers; ++k) {
     // A layer without a lamina has no material/thickness to offset or assign;
-    // we cannot tile it, so hand the whole segment to the legacy builder.
+    // we cannot tile it. Closed fails fast; open hands off to the legacy builder.
     if (layers[k].getLamina() == nullptr) {
+      if (closed()) {
+        failClosedLayered(_name,
+            "layer " + std::to_string(k + 1) + " has no lamina");
+      }
       PLOG(warning) << "layered offset[" << _name << "]: layer "
                     << (k + 1) << " has no lamina; falling back";
       return false;
@@ -1555,6 +1656,9 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   // 0 means it could not be determined -> fallback.
   const int side = requireValidLayupSide("buildLayeredOffsetAreas");
   if (side == 0) {
+    if (is_closed) {
+      failClosedLayered(_name, "could not determine layup side");
+    }
     prevabs::debug::segmentTracePush("layered: invalid layup side -> FALLBACK");
     return false;
   }
@@ -1577,6 +1681,11 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   // (>= 2 vertices); an empty/degenerate offset still falls back, safely,
   // before any DCEL mutation.
   if (n < 2 || shell_curve.vertices.size() < 2) {
+    if (is_closed) {
+      failClosedLayered(_name,
+          "degenerate base/shell curve (base=" + std::to_string(n)
+          + ", shell=" + std::to_string(shell_curve.vertices.size()) + ")");
+    }
     PLOG(warning) << "layered offset[" << _name
                   << "]: degenerate base/shell curve (base=" << n
                   << ", shell=" << shell_curve.vertices.size()
@@ -1615,20 +1724,39 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     return true;
   }
 
-  // Closed multi-layer is not yet implemented: tiling a closed loop needs
-  // closed-loop DCEL handling (no open endpoints to anchor the per-layer
-  // bands). Until that exists, fall back. Still pre-mutation, so safe.
+  // Closed-only: pick the intermediate-layer offset direction from GEOMETRY,
+  // not the winding-dependent `-side` flag. The layer rings must march from the
+  // base ring toward the offset shell. Compare enclosed areas: if the shell ring
+  // is smaller than the base, the layers SHRINK inward; if larger, they GROW
+  // outward. `-side` alone does not encode this (it flips with baseline winding
+  // and layup direction — e.g. a cw tube offsets the wrong way, landing the
+  // layer rings outside the shell). Probe the actual Clipper2 result once with
+  // the first layer thickness and flip the side if it moved the wrong way.
+  int layer_clipper_side = clipper_side;
+  const double area_base_ring = std::fabs(signedArea2D(base_curve.points));
+  const double area_shell_ring = std::fabs(signedArea2D(shell_curve.points));
+  const bool base_is_outer = area_base_ring >= area_shell_ring;
   if (is_closed) {
-    PLOG(warning) << "layered offset[" << _name
-                  << "]: closed multi-layer offset needs closed-loop DCEL "
-                     "tiling; falling back to legacy area/layer build";
+    const bool want_shrink = base_is_outer;  // shell inside base -> shrink
+    const double probe_thk =
+        layers[0].getLamina()->getThickness() * layers[0].getStack();
+    LayeredCurve probe = makeLayerOffsetCurve(
+        base_curve.points, is_closed, clipper_side, std::max(probe_thk, 1e-9));
+    if (probe.points.size() >= 3) {
+      const bool got_shrink =
+          std::fabs(signedArea2D(probe.points)) < area_base_ring;
+      if (got_shrink != want_shrink) layer_clipper_side = -clipper_side;
+    }
+    deleteUnregisteredLayeredCurve(probe);
     prevabs::debug::segmentTracePush(
-        "layered: closed multi-layer (no closed-loop tiling yet) -> FALLBACK");
-    return false;
+        std::string("layered closed: base_is_outer=")
+        + (base_is_outer ? "yes" : "no") + ", layer_clipper_side="
+        + std::to_string(layer_clipper_side));
   }
+
   prevabs::debug::segmentTracePush(
-      "layered: open multi-layer route-ii (n_layers=" + std::to_string(n_layers)
-      + ")");
+      std::string("layered: ") + (is_closed ? "closed" : "open")
+      + " multi-layer route-ii (n_layers=" + std::to_string(n_layers) + ")");
   // Per-layer flow (note-build-laminate-segment.md §2.1): generate each layer
   // curve by offsetting the previous one, orient it like the base, then in the
   // split loop trim/extend its ends to the segment bounds, embed it, and tile
@@ -1666,9 +1794,10 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     // curves are resampled along their base-vertex angle bisectors; closed
     // curves remain raw because resampleOpenRuns handles open runs only.
     LayeredCurve c = use_dir
-        ? makeLayerOffsetCurve(base_curve.points, is_closed, clipper_side,
+        ? makeLayerOffsetCurve(base_curve.points, is_closed, layer_clipper_side,
                                cumu_thk)
-        : makeLayerOffsetCurve(curves[k].points, is_closed, clipper_side, tk);
+        : makeLayerOffsetCurve(curves[k].points, is_closed, layer_clipper_side,
+                               tk);
     // No 1:1 vertex requirement: splitLayerBandIntoCells builds a staircase
     // correspondence between consecutive layer curves, so a layer curve with
     // fewer vertices than its inner curve (Clipper2 merged some — normal for a
@@ -1677,6 +1806,17 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
     // bound a band; release every curve we own and fall back. Still
     // pre-mutation (no split yet), so safe.
     if (c.vertices.size() < 2) {
+      // Release every curve we own before bailing (still pre-mutation: no split
+      // has run yet, so the shared DCEL is pristine either way).
+      deleteUnregisteredLayeredCurve(c);
+      for (auto& owned : curves) {
+        deleteUnregisteredLayeredCurve(owned);
+      }
+      if (is_closed) {
+        failClosedLayered(_name,
+            "layer " + std::to_string(k + 1) + " raw offset is degenerate ("
+            + std::to_string(c.vertices.size()) + " verts)");
+      }
       PLOG(warning) << "layered offset[" << _name << "]: layer "
                     << (k + 1) << " raw offset is degenerate ("
                     << c.vertices.size()
@@ -1685,31 +1825,134 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
           "layered: layer " + std::to_string(k + 1) + " offset verts="
           + std::to_string(c.vertices.size())
           + " (degenerate) -> FALLBACK");
-      deleteUnregisteredLayeredCurve(c);
-      for (auto& owned : curves) {
-        deleteUnregisteredLayeredCurve(owned);
-      }
       return false;
     }
     // Keep every layer curve oriented like the base. makeLayerOffsetCurve can
     // return the offset polygon walked in the opposite direction; left
     // reversed, the NEXT offset (clipper_side is direction-relative) would go
     // to the wrong geometric side, and the begin/end cap correspondence with
-    // the base/shell would connect opposite ends. Reverse when the endpoints
-    // pair better with the base run flipped.
-    const double d_aligned =
-        c.points.front().distance(base_curve.points.front())
-        + c.points.back().distance(base_curve.points.back());
-    const double d_flipped =
-        c.points.front().distance(base_curve.points.back())
-        + c.points.back().distance(base_curve.points.front());
-    if (d_flipped < d_aligned) {
-      std::reverse(c.vertices.begin(), c.vertices.end());
-      std::reverse(c.points.begin(), c.points.end());
+    // the base/shell would connect opposite ends.
+    if (is_closed) {
+      // A closed ring also comes back with an arbitrary seam vertex; match the
+      // base winding AND rotate the seam onto the base seam so the closed
+      // staircase pairs index-for-index. (The open front/back heuristic below
+      // cannot disentangle a combined winding+seam mismatch.)
+      alignClosedRingToReference(c, base_curve.points);
+    } else {
+      // Open: reverse when the endpoints pair better with the base run flipped.
+      const double d_aligned =
+          c.points.front().distance(base_curve.points.front())
+          + c.points.back().distance(base_curve.points.back());
+      const double d_flipped =
+          c.points.front().distance(base_curve.points.back())
+          + c.points.back().distance(base_curve.points.front());
+      if (d_flipped < d_aligned) {
+        std::reverse(c.vertices.begin(), c.vertices.end());
+        std::reverse(c.points.begin(), c.points.end());
+      }
     }
     curves.push_back(std::move(c));
   }
   curves.push_back(shell_curve);
+  // The total-thickness shell also comes from Clipper2 with its own seam; align
+  // it to the base too so the FINAL layer's staircase (curves[last] vs shell)
+  // pairs correctly, same as the intermediate rings.
+  if (is_closed) {
+    alignClosedRingToReference(curves.back(), base_curve.points);
+  }
+
+  // Closed multi-layer: the shell is a true annulus. Tile it from the OUTER
+  // boundary inward, carving each concentric boundary ring out of the remaining
+  // annulus (splitFaceByClosedCurve) and tiling the resulting band into radial
+  // cells (splitLayerBandIntoCells, whose first connector bridges the band's two
+  // loops). No caps, no artificial straight bounds. Closed is fail-fast — a
+  // carved DCEL cannot be handed to legacy.
+  //
+  // Which ring is outer is not fixed: `curves` runs base -> offset, but the
+  // material may grow inward (base is the outer ring) OR outward (the offset
+  // grew larger, so base is the inner hole — e.g. a ccw circle with a right
+  // layup). Build an explicit OUTER->INNER ring order and the material layer
+  // each carved band maps to, so the same peel-from-outside loop serves both
+  // nestings. splitFaceByClosedCurve always reuses the outer region as
+  // parts.front(), so parts.front() is the outermost remaining band regardless.
+  if (is_closed) {
+    std::vector<const LayeredCurve *> radial;  // outer -> inner, size n_layers+1
+    std::vector<int> band_layer;               // carved band -> material layer
+    radial.reserve(n_layers + 1);
+    band_layer.reserve(n_layers);
+    if (base_is_outer) {
+      // curves already outer(base) -> inner(offset); band k is layer k.
+      for (int i = 0; i <= n_layers; ++i) radial.push_back(&curves[i]);
+      for (int i = 0; i < n_layers; ++i) band_layer.push_back(i);
+    } else {
+      // offset is outer; reverse so radial runs outer(offset) -> inner(base).
+      // The outermost band then carries the LAST material layer.
+      for (int i = n_layers; i >= 0; --i) radial.push_back(&curves[i]);
+      for (int i = 0; i < n_layers; ++i) band_layer.push_back(n_layers - 1 - i);
+    }
+
+    int closed_face_count = 0;
+    PDCELFace *remaining = _face;
+    for (int k = 0; k < n_layers; ++k) {
+      const int li = band_layer[k];
+      const double tk_k = layers[li].getLamina()->getThickness()
+                          * layers[li].getStack();
+      // Band bounded by radial[k] (outer loop) and radial[k+1] (inner hole).
+      const LayeredCurve &band_outer = *radial[k];
+      const LayeredCurve &band_inner = *radial[k + 1];
+
+      PDCELFace *layer_band;
+      if (k < n_layers - 1) {
+        // Carve the inner boundary ring; the reused outer region is the band.
+        std::list<PDCELFace *> parts =
+            bcfg.dcel->splitFaceByClosedCurve(remaining, band_inner.vertices);
+        if (parts.size() != 2) {
+          failLayeredAfterMutation(
+              _name, "failed to carve closed layer boundary "
+                         + std::to_string(k + 1));
+        }
+        layer_band = parts.front();  // between radial[k], radial[k+1]
+        remaining = parts.back();    // the rest, carved next round
+      } else {
+        // Innermost band is the leftover annulus — no carve needed.
+        layer_band = remaining;
+      }
+
+      std::vector<PDCELFace *> cells = splitLayerBandIntoCells(
+          layer_band, band_outer, band_inner, is_closed, side, tk_k,
+          bcfg.dcel, _name);
+      if (cells.empty()) {
+        failLayeredAfterMutation(
+            _name, "failed to tile closed layer " + std::to_string(li + 1));
+      }
+      for (std::size_t i = 0; i < cells.size(); ++i) {
+        const std::string face_name =
+            _name + "_layer_" + std::to_string(li + 1)
+                  + "_face_" + std::to_string(i + 1);
+        if (!assignLayeredFaceProperties(
+                cells[i], face_name, layers[li], band_outer, band_inner,
+                _curve_base, is_closed, _mat_orient_e1, _mat_orient_e2, bcfg)) {
+          failLayeredAfterMutation(
+              _name, "failed to assign closed layer " + std::to_string(li + 1)
+                         + " face properties");
+        }
+        ++closed_face_count;
+        _layered_faces.push_back(cells[i]);
+      }
+      if (k == n_layers - 1) _face = cells.back();
+    }
+
+    for (auto &owned : curves) {
+      deleteUnregisteredLayeredCurve(owned);
+    }
+    _state = LifecycleState::AreasBuilt;
+    prevabs::debug::segmentTracePush(
+        "layered: tiled all closed layers (SUCCESS, faces="
+        + std::to_string(closed_face_count) + ")");
+    PLOG(info) << "built closed layered offset segment " << _name
+               << ": layers=" << n_layers << ", faces=" << closed_face_count;
+    return true;
+  }
 
   int face_count = 0;
   PDCELFace *remaining_face = _face;

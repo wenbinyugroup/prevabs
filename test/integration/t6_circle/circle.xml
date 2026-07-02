@@ -1,4 +1,4 @@
-<cross_section name="circle" format="1">
+<cross_section name="circle">
     <include>
         <!-- <baseline>baselines</baseline> -->
         <material>materials</material>

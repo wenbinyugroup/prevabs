@@ -1,5 +1,4 @@
-<!-- <cross_section name="box"> -->
-<cross_section name="box" format="1">
+<cross_section name="box">
   <include>
     <!-- <baseline>baselines</baseline> -->
     <!-- <material>db_material</material> -->
@@ -49,7 +48,7 @@
     <point name="rt">0.5  0.5</point>
     <point name="rb">0.5 -0.5</point>
 
-    <baseline name="bsl_all" type="straight">
+    <baseline name="bsl_all">
       <!-- <points>rt,p1,lt,lb,rb,p8,rt</points> -->
       <!-- <points>rt,p2,lt,p3,p4,lb,p5,p6,rb,p7,rt</points> -->
       <points>rt,lt,lb,rb,rt</points>

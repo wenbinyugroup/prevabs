@@ -16,28 +16,6 @@ static bool areCoincidentVertices(PDCELVertex *v1, PDCELVertex *v2)
       && v1->point().distance(v2->point()) <= GEO_TOL;
 }
 
-// Closed segment annulus slit: the offset curve is a closed ring whose seam
-// (vertices[0]) is fixed by the base-offset staircase, not by proximity to
-// the base seam. When the base seam is a sharp/thin cusp (e.g. an airfoil
-// trailing edge) Clipper2 pinches the inner tip, so the staircase seam lands
-// on the far side of the blunt inner edge; attaching the slit there skips the
-// nearest inner vertex and leaves a thin sliver at the cusp. Pick the offset
-// vertex geometrically nearest the base seam instead so the outer and inner
-// cusp tips connect directly. For a smooth closed curve the nearest vertex IS
-// vertices[0], so this is a no-op there.
-static PDCELVertex *nearestOffsetVertex(
-    PDCELVertex *base_seam, const std::vector<PDCELVertex *> &offset_vertices)
-{
-  PDCELVertex *nearest = nullptr;
-  double best = std::numeric_limits<double>::infinity();
-  for (auto *v : offset_vertices) {
-    if (v == nullptr) continue;
-    const double d = base_seam->point().distance(v->point());
-    if (d < best) { best = d; nearest = v; }
-  }
-  return nearest;
-}
-
 static JointStyle resolveJointStyle(
     Segment *seg, Segment *seg_p, JointStyle default_style,
     const std::vector<std::vector<std::string>> &joint_segments,
@@ -104,12 +82,13 @@ void PComponent::buildLaminate(const BuilderConfig &bcfg) {
     // }
 
     if (seg->closed()) {
+      // Closed segment: base and offset stay as two separate closed rings. The
+      // annulus shell (outer + inner loops) is built in Segment::build(); no
+      // seam/slit edge is added here (the old slit turned the annulus into a
+      // pinched disk and seeded seam slivers). Setting head/tail offset only
+      // satisfies the "offset endpoints resolved" gate before build().
       seg->setHeadVertexOffset(seg->curveOffset()->vertices().front());
       seg->setTailVertexOffset(seg->curveOffset()->vertices().back());
-      PDCELVertex *base_seam = seg->curveBase()->vertices()[0];
-      PDCELVertex *slit_offset =
-          nearestOffsetVertex(base_seam, seg->curveOffset()->vertices());
-      bcfg.dcel->addEdge(base_seam, slit_offset);
       continue;
     }
 

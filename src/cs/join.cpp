@@ -240,8 +240,22 @@ static std::vector<PDCELHalfEdgeLoop *> collectCandidateLoops(
       add_loop_once(face->outer()->loop());
 
       PDCELHalfEdge *he_twin = face->outer()->twin();
-      if (he_twin == nullptr) continue;
-      add_loop_once(he_twin->loop());
+      if (he_twin != nullptr) {
+        add_loop_once(he_twin->loop());
+      }
+
+      // A CLOSED annulus shell keeps its inner contour as a hole (inner loop),
+      // not as part of the outer boundary. A web inside a box must clip against
+      // that inner contour, so expose each inner loop (and its twin) too. With
+      // the old slit the inner contour was reachable via the outer loop; the
+      // annulus shell requires listing the holes explicitly.
+      for (PDCELHalfEdge *inner_he : face->inners()) {
+        if (inner_he == nullptr) continue;
+        add_loop_once(inner_he->loop());
+        if (inner_he->twin() != nullptr) {
+          add_loop_once(inner_he->twin()->loop());
+        }
+      }
     }
   }
 

@@ -1,0 +1,115 @@
+=== DCEL CRASH DUMP ===
+
+VERTICES (25):
+  v#1 (0, inf, inf) edge=he#1
+  v#2 (0, -inf, inf) edge=he#2
+  v#3 (0, -inf, -inf) edge=he#4
+  v#4 (0, inf, -inf) edge=he#6
+  v#5 (0, 0.5, 0.5) edge=he#60
+  v#6 (0, -0.5, 0.5) edge=he#42
+  v#7 (0, -0.5, -0.5) edge=he#12
+  v#8 (0, 0.5, -0.5) edge=he#53
+  v#9 (0, 0.42, 0.42) edge=he#17
+  v#10 (0, -0.42, 0.42) edge=he#18
+  v#11 (0, -0.42, -0.42) edge=he#20
+  v#12 (0, 0.42, -0.42) edge=he#22
+  v#13 (0, 0, 0) edge=he#25
+  v#14 (0, -0.0393923, 0.00694593) edge=he#26
+  v#15 (0, -0.0881635, -0.5) edge=he#34
+  v#16 (0, -0.128781, -0.5) edge=he#32
+  v#17 (0, 0.0881635, 0.5) edge=he#57
+  v#18 (0, 0.0475464, 0.5) edge=he#40
+  v#19 (0, 0.0393923, -0.00694593) edge=he#52
+  v#20 (0, -0.0475464, -0.5) edge=he#54
+  v#21 (0, 0.128781, 0.5) edge=he#58
+  v#22 (0, 0.46, 0.46) edge=he#65
+  v#23 (0, -0.46, 0.46) edge=he#66
+  v#24 (0, -0.46, -0.46) edge=he#68
+  v#25 (0, 0.46, -0.46) edge=he#70
+
+HALFEDGES (60):
+  he#1 scope=active src=v#1 twin=he#2 next=he#3 prev=he#7 loop=loop#1 face=f#1(background)
+  he#3 scope=active src=v#2 twin=he#4 next=he#5 prev=he#1 loop=loop#1 face=f#1(background)
+  he#5 scope=active src=v#3 twin=he#6 next=he#7 prev=he#3 loop=loop#1 face=f#1(background)
+  he#7 scope=active src=v#4 twin=he#8 next=he#1 prev=he#5 loop=loop#1 face=f#1(background)
+  he#11 scope=active src=v#6 twin=he#12 next=he#31 prev=he#41 loop=loop#16 face=f#2(sgm_1_face)
+  he#12 scope=active src=v#7 twin=he#11 next=he#42 prev=he#32 loop=loop#17 face=nullptr
+  he#15 scope=active src=v#8 twin=he#16 next=he#60 prev=he#54 loop=loop#18 face=f#2(sgm_1_face)
+  he#16 scope=active src=v#5 twin=he#15 next=he#53 prev=he#59 loop=loop#17 face=nullptr
+  he#17 scope=active src=v#9 twin=he#18 next=he#19 prev=he#23 loop=loop#19 face=nullptr
+  he#18 scope=active src=v#10 twin=he#17 next=he#24 prev=he#20 loop=loop#5 face=f#7()
+  he#19 scope=active src=v#10 twin=he#20 next=he#21 prev=he#17 loop=loop#19 face=nullptr
+  he#20 scope=active src=v#11 twin=he#19 next=he#18 prev=he#22 loop=loop#5 face=f#7()
+  he#21 scope=active src=v#11 twin=he#22 next=he#23 prev=he#19 loop=loop#19 face=nullptr
+  he#22 scope=active src=v#12 twin=he#21 next=he#20 prev=he#24 loop=loop#5 face=f#7()
+  he#23 scope=active src=v#12 twin=he#24 next=he#17 prev=he#21 loop=loop#19 face=nullptr
+  he#24 scope=active src=v#9 twin=he#23 next=he#22 prev=he#18 loop=loop#5 face=f#7()
+  he#25 scope=active src=v#13 twin=he#26 next=he#46 prev=he#43 loop=loop#8 face=f#3(sgm_1_1_face)
+  he#26 scope=active src=v#14 twin=he#25 next=he#47 prev=he#50 loop=loop#9 face=f#4(sgm_1_2_face)
+  he#31 scope=active src=v#7 twin=he#32 next=he#45 prev=he#11 loop=loop#16 face=f#2(sgm_1_face)
+  he#33 scope=active src=v#16 twin=he#34 next=he#43 prev=he#46 loop=loop#8 face=f#3(sgm_1_1_face)
+  he#34 scope=active src=v#15 twin=he#33 next=he#32 prev=he#55 loop=loop#17 face=nullptr
+  he#32 scope=active src=v#16 twin=he#31 next=he#12 prev=he#34 loop=loop#17 face=nullptr
+  he#39 scope=active src=v#17 twin=he#40 next=he#50 prev=he#47 loop=loop#9 face=f#4(sgm_1_2_face)
+  he#41 scope=active src=v#18 twin=he#42 next=he#11 prev=he#49 loop=loop#16 face=f#2(sgm_1_face)
+  he#42 scope=active src=v#6 twin=he#41 next=he#40 prev=he#12 loop=loop#17 face=nullptr
+  he#40 scope=active src=v#18 twin=he#39 next=he#57 prev=he#42 loop=loop#17 face=nullptr
+  he#43 scope=active src=v#15 twin=he#44 next=he#25 prev=he#33 loop=loop#8 face=f#3(sgm_1_1_face)
+  he#44 scope=active src=v#13 twin=he#43 next=he#56 prev=he#52 loop=loop#14 face=f#5(sgm_1_1_face)
+  he#45 scope=active src=v#16 twin=he#46 next=he#49 prev=he#31 loop=loop#16 face=nullptr
+  he#46 scope=active src=v#14 twin=he#45 next=he#33 prev=he#25 loop=loop#8 face=f#3(sgm_1_1_face)
+  he#47 scope=active src=v#13 twin=he#48 next=he#39 prev=he#26 loop=loop#9 face=f#4(sgm_1_2_face)
+  he#48 scope=active src=v#17 twin=he#47 next=he#51 prev=he#58 loop=loop#15 face=f#6(sgm_1_2_face)
+  he#49 scope=active src=v#14 twin=he#50 next=he#41 prev=he#45 loop=loop#16 face=nullptr
+  he#50 scope=active src=v#18 twin=he#49 next=he#26 prev=he#39 loop=loop#9 face=f#4(sgm_1_2_face)
+  he#51 scope=active src=v#13 twin=he#52 next=he#63 prev=he#48 loop=loop#15 face=f#6(sgm_1_2_face)
+  he#52 scope=active src=v#19 twin=he#51 next=he#44 prev=he#61 loop=loop#14 face=f#5(sgm_1_1_face)
+  he#53 scope=active src=v#8 twin=he#54 next=he#55 prev=he#16 loop=loop#17 face=nullptr
+  he#55 scope=active src=v#20 twin=he#56 next=he#34 prev=he#53 loop=loop#17 face=nullptr
+  he#56 scope=active src=v#15 twin=he#55 next=he#61 prev=he#44 loop=loop#14 face=f#5(sgm_1_1_face)
+  he#54 scope=active src=v#20 twin=he#53 next=he#15 prev=he#62 loop=loop#18 face=f#2(sgm_1_face)
+  he#57 scope=active src=v#17 twin=he#58 next=he#59 prev=he#40 loop=loop#17 face=nullptr
+  he#59 scope=active src=v#21 twin=he#60 next=he#16 prev=he#57 loop=loop#17 face=nullptr
+  he#60 scope=active src=v#5 twin=he#59 next=he#64 prev=he#15 loop=loop#18 face=f#2(sgm_1_face)
+  he#58 scope=active src=v#21 twin=he#57 next=he#48 prev=he#63 loop=loop#15 face=f#6(sgm_1_2_face)
+  he#61 scope=active src=v#20 twin=he#62 next=he#52 prev=he#56 loop=loop#14 face=f#5(sgm_1_1_face)
+  he#62 scope=active src=v#19 twin=he#61 next=he#54 prev=he#64 loop=loop#18 face=nullptr
+  he#63 scope=active src=v#19 twin=he#64 next=he#58 prev=he#51 loop=loop#15 face=f#6(sgm_1_2_face)
+  he#64 scope=active src=v#21 twin=he#63 next=he#62 prev=he#60 loop=loop#18 face=nullptr
+  he#65 scope=active src=v#22 twin=he#66 next=he#67 prev=he#71 loop=loop#20 face=f#7()
+  he#66 scope=active src=v#23 twin=he#65 next=he#72 prev=he#68 loop=loop#21 face=f#2(sgm_1_face)
+  he#67 scope=active src=v#23 twin=he#68 next=he#69 prev=he#65 loop=loop#20 face=f#7()
+  he#68 scope=active src=v#24 twin=he#67 next=he#66 prev=he#70 loop=loop#21 face=f#2(sgm_1_face)
+  he#69 scope=active src=v#24 twin=he#70 next=he#71 prev=he#67 loop=loop#20 face=f#7()
+  he#70 scope=active src=v#25 twin=he#69 next=he#68 prev=he#72 loop=loop#21 face=f#2(sgm_1_face)
+  he#71 scope=active src=v#25 twin=he#72 next=he#65 prev=he#69 loop=loop#20 face=f#7()
+  he#72 scope=active src=v#22 twin=he#71 next=he#70 prev=he#66 loop=loop#21 face=f#2(sgm_1_face)
+  he#2 scope=background src=v#2 twin=he#1 next=he#8 prev=he#4 loop=nullptr face=nullptr
+  he#4 scope=background src=v#3 twin=he#3 next=he#2 prev=he#6 loop=nullptr face=nullptr
+  he#6 scope=background src=v#4 twin=he#5 next=he#4 prev=he#8 loop=nullptr face=nullptr
+  he#8 scope=background src=v#1 twin=he#7 next=he#6 prev=he#2 loop=nullptr face=nullptr
+
+LOOPS (13):
+  loop#1 incident=he#5 face=f#1 kept=true adjacent=nullptr
+  loop#2 incident=he#31 face=f#2 kept=true adjacent=nullptr
+  loop#5 incident=he#20 face=f#7 kept=true adjacent=nullptr
+  loop#8 incident=he#33 face=f#3 kept=true adjacent=nullptr
+  loop#9 incident=he#26 face=f#4 kept=true adjacent=nullptr
+  loop#14 incident=he#56 face=f#5 kept=true adjacent=nullptr
+  loop#15 incident=he#51 face=f#6 kept=true adjacent=nullptr
+  loop#16 incident=he#31 face=nullptr kept=false adjacent=nullptr
+  loop#17 incident=he#12 face=nullptr kept=false adjacent=nullptr
+  loop#18 incident=he#54 face=nullptr kept=false adjacent=nullptr
+  loop#19 incident=he#21 face=nullptr kept=false adjacent=nullptr
+  loop#20 incident=he#69 face=f#7 kept=false adjacent=nullptr
+  loop#21 incident=he#68 face=f#2 kept=false adjacent=nullptr
+
+FACES (7):
+  f#1 name=background bounded=false outer=he#1
+  f#2 name=sgm_1_face bounded=true outer=he#31 inner=he#68
+  f#3 name=sgm_1_1_face bounded=true outer=he#33
+  f#4 name=sgm_1_2_face bounded=true outer=he#26
+  f#5 name=sgm_1_1_face bounded=true outer=he#56
+  f#6 name=sgm_1_2_face bounded=true outer=he#51
+  f#7 name= bounded=true outer=he#69 inner=he#20
+
