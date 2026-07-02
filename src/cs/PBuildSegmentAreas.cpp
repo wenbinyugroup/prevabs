@@ -192,6 +192,53 @@ void alignClosedRingToReference(LayeredCurve& c,
   std::rotate(c.vertices.begin(), c.vertices.begin() + best, c.vertices.end());
 }
 
+// Remove consecutive near-coincident vertices from a CLOSED layer ring,
+// including the wrap-around pair (last vs first). Clipper2 works on an integer
+// grid (~1e-8 resolution) and, offsetting a sharp corner inward, can emit two
+// vertices spaced only ~1e-8 apart — a zero-length ring edge. The closed
+// staircase (rebuildBaseOffsetMapFromGeometry) then pairs a connector onto each
+// of those coincident vertices, so consecutive connectors are geometrically
+// identical and splitFaceByPolyline produces a zero-area sliver → the degenerate
+// -split self-check aborts the whole closed tile (issue-20260702). The open path
+// never hits this because makeArcResampledOuterCurve re-spaces the final outer
+// curve with a strict min separation; closed intermediate rings had no such
+// pass. Dropping vertices below GEO_COINCIDENCE_TOL only removes edges that are
+// already degenerate, so it changes no real geometry. If the ring owns its
+// vertices, unregistered dropped ones are deleted (still pre-DCEL-embedding).
+void dedupClosedRing(LayeredCurve& c) {
+  const std::size_t n = c.points.size();
+  if (n < 2) return;
+  std::vector<PDCELVertex*> kept_v;
+  std::vector<SPoint2> kept_p;
+  kept_v.reserve(n);
+  kept_p.reserve(n);
+  std::vector<PDCELVertex*> dropped;
+  for (std::size_t i = 0; i < n; ++i) {
+    // Compare against the previously kept point; also fold the last vertex into
+    // the first (wrap) so the seam edge cannot be zero-length either.
+    const bool coincident_prev =
+        !kept_p.empty()
+        && c.points[i].distance(kept_p.back()) < GEO_COINCIDENCE_TOL;
+    const bool coincident_wrap =
+        (i == n - 1) && !kept_p.empty()
+        && c.points[i].distance(kept_p.front()) < GEO_COINCIDENCE_TOL;
+    if (coincident_prev || coincident_wrap) {
+      dropped.push_back(c.vertices[i]);
+      continue;
+    }
+    kept_v.push_back(c.vertices[i]);
+    kept_p.push_back(c.points[i]);
+  }
+  if (kept_v.size() == c.vertices.size()) return;  // nothing coincident
+  if (c.owns_vertices) {
+    for (auto* v : dropped) {
+      if (v != nullptr && !v->isRegistered()) delete v;
+    }
+  }
+  c.vertices = std::move(kept_v);
+  c.points = std::move(kept_p);
+}
+
 const prevabs::geo::OffsetPolygon* pickLayeredPrimary(
     const std::vector<prevabs::geo::OffsetPolygon>& polys, bool closed) {
   const prevabs::geo::OffsetPolygon* best = nullptr;
@@ -1838,6 +1885,9 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
       // staircase pairs index-for-index. (The open front/back heuristic below
       // cannot disentangle a combined winding+seam mismatch.)
       alignClosedRingToReference(c, base_curve.points);
+      // Drop Clipper2 grid-noise duplicate vertices (~1e-8 apart) so the closed
+      // staircase cannot pair a zero-area connector onto them (issue-20260702).
+      dedupClosedRing(c);
     } else {
       // Open: reverse when the endpoints pair better with the base run flipped.
       const double d_aligned =
@@ -1859,6 +1909,7 @@ bool Segment::buildLayeredOffsetAreas(const BuilderConfig &bcfg) {
   // pairs correctly, same as the intermediate rings.
   if (is_closed) {
     alignClosedRingToReference(curves.back(), base_curve.points);
+    dedupClosedRing(curves.back());
   }
 
   // Closed multi-layer: the shell is a true annulus. Tile it from the OUTER
