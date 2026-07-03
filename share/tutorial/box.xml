@@ -1,14 +1,97 @@
 <cross_section name="box">
-  <include>
-    <baseline>baselines</baseline>
-    <layup>layups</layup>
-  </include>
+
   <analysis>
     <model>1</model>
   </analysis>
+
   <general>
-    <mesh_size>0.02</mesh_size>
+    <mesh_size>0.04</mesh_size>
+    <element_shape>quad</element_shape>
+    <element_type>linear</element_type>
   </general>
+
+  <baselines>
+    <point name="p0">0 0</point>
+    <point name="p1">2 1</point>
+    <point name="p2">-2 1</point>
+    <point name="p3">-2 -1</point>
+    <point name="p4">2 -1</point>
+    <point name="p5">1 0</point>
+    <point name="p6">-1 0</point>
+
+    <line name="line1">
+      <points>p1,p2,p3,p4,p1</points>
+    </line>
+    <line name="line2">
+      <point>p5</point>
+      <angle>100</angle>
+    </line>
+    <line name="line3">
+      <point>p6</point>
+      <angle>80</angle>
+    </line>
+  </baselines>
+
+  <materials>
+    <material name="m0" type="isotropic">
+      <density>1.0</density>
+      <elastic>
+        <e>25.0e3</e>
+        <nu>0.3</nu>
+      </elastic>
+    </material>
+    <material name="m1" type="orthotropic">
+      <density>1.86E+03</density>
+      <elastic>
+        <e1>3.70E+10</e1>
+        <e2>9.00E+09</e2>
+        <e3>9.00E+09</e3>
+        <g12>4.00E+09</g12>
+        <g13>4.00E+09</g13>
+        <g23>4.00E+09</g23>
+        <nu12>0.28</nu12>
+        <nu13>0.28</nu13>
+        <nu23>0.28</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_m1_002">
+      <material>m1</material>
+      <thickness>0.02</thickness>
+    </lamina>
+    <material name="m2" type="orthotropic">
+      <density>1.83E+03</density>
+      <elastic>
+        <e1>1.03E+10</e1>
+        <e2>1.03E+10</e2>
+        <e3>1.03E+10</e3>
+        <g12>8.00E+09</g12>
+        <g13>8.00E+09</g13>
+        <g23>8.00E+09</g23>
+        <nu12>0.30</nu12>
+        <nu13>0.30</nu13>
+        <nu23>0.30</nu23>
+      </elastic>
+    </material>
+    <lamina name="la_m2_005">
+      <material>m2</material>
+      <thickness>0.05</thickness>
+    </lamina>
+  </materials>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_m1_002">45</layer>
+      <layer lamina="la_m1_002">-45</layer>
+      <layer lamina="la_m2_005">0</layer>
+      <layer lamina="la_m1_002">0:2</layer>
+    </layup>
+    <layup name="layup2">
+      <layer lamina="la_m2_005"></layer>
+      <layer lamina="la_m1_002">0:3</layer>
+      <layer lamina="la_m2_005"></layer>
+    </layup>
+  </layups>
+
   <component name="walls">
     <segment>
       <baseline>line1</baseline>
@@ -31,4 +114,5 @@
     <location>p0</location>
     <material>m0</material>
   </component>
+
 </cross_section>

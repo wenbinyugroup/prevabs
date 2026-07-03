@@ -3,11 +3,11 @@
 Tutorial
 ========
 
-This tutorial provides a walkthrough for how to prepare input files for
-PreVABS given a cross section design.
+This tutorial demonstrates how to prepare a PreVABS input file from a
+cross-section design.
 
-The design of a cross section
------------------------------
+Cross-section design
+--------------------
 
 .. figure:: /figures/tutorial_box_0.png
   :name: fig_tutorial_box
@@ -16,26 +16,23 @@ The design of a cross section
 
   A box-beam cross section.
 
-The box-beam cross section shown in :numref:`Fig. %s <fig_tutorial_box>`
-will be used in this tutorial. All four walls and two webs are made from
-composite laminates. The two webs are symmetric about a middle vertical
-line. They are inclined such that the upper portion of both webs are
-closer to each other than the lower portion. The central space enclosed
-by the top and bottom walls and two webs is filled with an isotropic
-material.
+This tutorial uses the box-beam cross section shown in
+:numref:`Fig. %s <fig_tutorial_box>`. Its four walls and two webs are
+composite laminates. The webs are symmetric about the vertical centerline
+and incline toward one another at the top. An isotropic material fills the
+region enclosed by the top and bottom walls and the two webs.
 
-The overall shape is described using four parameters, with the following
-values:
+Four parameters define the overall shape:
 
-- The width :math:`w = 4` m;
-- The height :math:`h = 2` m;
-- The distance :math:`d = 1` m;
-- The angle :math:`a = 100^\circ`.
+- Width: :math:`w = 4` m
+- Height: :math:`h = 2` m
+- Distance: :math:`d = 1` m
+- Web angle: :math:`a = 100^\circ`
 
-The materials used in this cross section are listed in
+The material properties are listed in
 :numref:`Table %s <tutorial_materials_iso>` and
-:numref:`Table %s <tutorial_materials_ortho>`.
-The layups used in this cross section are listed in
+:numref:`Table %s <tutorial_materials_ortho>`. The laminate layups are
+listed in
 :numref:`Table %s <tutorial_layups>`.
 
 .. csv-table:: Isotropic material properties
@@ -66,37 +63,30 @@ The layups used in this cross section are listed in
 
   "Component", "Name", "Material", "Ply thickness", "Orientation", "Number of plies"
   , , , "m", "degree",
-  "Walls", "layup_1", "m1", 0.02,  45, 1
+  "Walls", "layup1", "m1", 0.02,  45, 1
          ,          , "m1", 0.02, -45, 1
          ,          , "m2", 0.05,   0, 1
          ,          , "m1", 0.02,   0, 2
-  "Webs", "layup_2", "m2", 0.05, 0, 1
+  "Webs", "layup2", "m2", 0.05, 0, 1
         ,          , "m1", 0.02, 0, 3
         ,          , "m2", 0.05, 0, 1
 
 
 
-Steps of preparing input files
-------------------------------
+Preparing the input file
+------------------------
 
-In PreVABS, a cross section is composed of components, each of which
-can either be a laminate or a fill. The laminate type component is
-composed of segments with different layups. For a realistic cross section,
-there may be several different ways to decompose it, which may need
-different information in the input files to build the model.
+In PreVABS, a cross section consists of laminate and fill components. A
+laminate component contains one or more segments, each with an assigned
+layup. A cross section can often be decomposed into components in several
+ways, and the chosen decomposition determines the information required to
+build the model.
 
-Hence,
-the first step is to decide a way of decomposition of the cross section.
-
-For this example, the first step is trivial. The cross section can be
-decomposed into three components: the walls, the webs, and the fill.
-
-At the same time, the order of creating components should also be decided.
-This is done by figuring out the dependence relationships between
-components. For this example, the exact shape of each web depends on
-the shape of the walls, and the shape of the fill depends on both the
-webs and the walls. Then the order of creation should be: first creating
-the walls, then the webs, and at last the fill, as shown in
+This example contains four components: one component for the walls, one
+for each of the two webs, and one for the fill. Their creation order follows
+their dependencies. The walls define the boundaries that trim the webs, and
+the walls and webs together enclose the fill region. PreVABS must therefore
+create the walls first, the webs second, and the fill last, as shown in
 :numref:`Fig. %s <fig_tutorial_box_order>`.
 
 .. figure:: /figures/tutorial_box_order.png
@@ -104,36 +94,24 @@ the walls, then the webs, and at last the fill, as shown in
   :width: 6in
   :align: center
 
-  Order of components creation.
+  Order of component creation.
 
-The next step is to prepare various input files based on all design
-parameters listed above. In this example, all files are in the XML format.
-A brief summary of these input files is listed below.
+The design is defined in a self-contained XML file named ``box.xml``. Its
+``<cross_section>`` element contains the analysis and meshing settings,
+points and baselines, materials and laminae, layups, and components. Keeping
+this small example in one file makes the relationships among these
+definitions explicit. Larger models can store definitions in separate files;
+see :ref:`input-other-settings`.
 
-- A baseline file (*baselines.xml*), storing definitions of geometric
-  elements.
-- A material file (*MaterialDB.xml*), storing definitions of materials
-  and laminae.
-- A layup file (*layups.xml*), storing definitions of layups.
-- A main cross section file (*box.xml*), storing definitions of components
-  and other configurations of modeling and analysis.
-
-For this tutorial, all files can have arbitrary file names and be placed at any working directory, except the material database, which must be named as *MaterialDB.xml* and placed at the same location as where the PreVABS executable is.
-
-Another option is to use a local file in the working directory with an arbitrary name storing the material properties.
-The requirement of using this local file is to explicitly provide the material file name in the main input file.
-Please check Section: :ref:`other-input-settings`.
-
-Prepare geometric elements
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Define the geometry
+^^^^^^^^^^^^^^^^^^^
 
 As shown in :numref:`Fig. %s <fig_tutorial_box_points>`, seven points
-are used to define the shape of the cross section. Points p1 to p4 define
-the walls, p5 and p6 define the webs, and p0 indicates the space which
-should be filled with some material. The origin of the coordinate system
-is placed at the centroid of the rectangular. Based on the design parameters
-:math:`w`, :math:`h` and :math:`d`, coordinates of all points are found
-and listed in :numref:`Table %s <table_tutorial_box_points>`.
+define the cross-section geometry. Points p1 through p4 define the outer
+walls, p5 and p6 locate the webs, and p0 identifies the region to fill. The
+coordinate-system origin is at the center of the rectangle. The coordinates,
+derived from :math:`w`, :math:`h`, and :math:`d`, are listed in
+:numref:`Table %s <table_tutorial_box_points>`.
 
 .. figure:: /figures/tutorial_box_points.png
   :name: fig_tutorial_box_points
@@ -156,18 +134,16 @@ and listed in :numref:`Table %s <table_tutorial_box_points>`.
   "p5", "(1, 0)"
   "p6", "(-1, 0)"
 
-Base lines are created based on key points defined above. As shown in
-:numref:`Fig. %s <fig_tutorial_box_lines>`, three lines are created.
-Line 1 is defined by connecting the four points (p1 -> p2 -> p3 -> p4 -> p1).
-Line 2 and 3 are defined by a single point with an incline angle. For
-line 2, it is the point p5 with an angle of 100 degrees. For line 3, it is
-the point p6 with an angle of 80 degrees.
+The points define the three baselines shown in
+:numref:`Fig. %s <fig_tutorial_box_lines>`. Line 1 forms a closed path through
+p1 -> p2 -> p3 -> p4 -> p1. Line 2 passes through p5 at an angle of 100
+degrees, while line 3 passes through p6 at an angle of 80 degrees.
 
-The direction of each base line is important. It is related with how the
-laminate is created for each segment, and how the local coordinate system
-is defined for each element.
+Baseline direction is significant: it determines the side on which each
+laminate is created and contributes to the definition of each element's local
+coordinate system.
 
-The completed input file for geometry is shown in
+The completed geometry section of ``box.xml`` is shown in
 :numref:`Listing %s <code_tutorial_box_baselines>`.
 
 .. figure:: /figures/tutorial_box_lines.png
@@ -175,55 +151,54 @@ The completed input file for geometry is shown in
   :width: 6in
   :align: center
 
-  Base lines defining the shape of the cross section.
+  Baselines defining the shape of the cross section.
 
 .. code-block:: xml
   :linenos:
   :name: code_tutorial_box_baselines
-  :caption: Input file for geometric elements (*baseline.xml*).
+  :caption: Geometric elements in ``box.xml``.
 
   <baselines>
-    <point name="p0">0  0</point>
-    <point name="p1">2  1</point>
-    <point name="p2">-2  1</point>
-    <point name="p3">-2  -1</point>
-    <point name="p4">2  -1</point>
-    <point name="p5">1  0</point>
-    <point name="p6">-1  0</point>
-    <line name="line1" type="straight">
+    <point name="p0">0 0</point>
+    <point name="p1">2 1</point>
+    <point name="p2">-2 1</point>
+    <point name="p3">-2 -1</point>
+    <point name="p4">2 -1</point>
+    <point name="p5">1 0</point>
+    <point name="p6">-1 0</point>
+
+    <line name="line1">
       <points>p1,p2,p3,p4,p1</points>
     </line>
-    <line name="line2" type="straight">
+    <line name="line2">
       <point>p5</point>
       <angle>100</angle>
     </line>
-    <line name="line3" type="straight">
+    <line name="line3">
       <point>p6</point>
       <angle>80</angle>
     </line>
   </baselines>
 
-Prepare materials and layups
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Define the materials and layups
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Material data are stored in the material database. As stated above, this
-file must be named as *MaterialDB.xml* and placed at the directory where
-the PreVABS executable is. The format of this file is shown in
-:numref:`Listing %s <code_tutorial_box_materials>`. Arrangement of data
-under the ``<elastic>`` element are different for different material
-types, which can be isotropic, orthotropic, or anisotropic.
+The ``<materials>`` section of ``box.xml`` contains both material and lamina
+definitions, as shown in
+:numref:`Listing %s <code_tutorial_box_materials>`. The contents of each
+``<elastic>`` element depend on whether the material is isotropic,
+orthotropic, or anisotropic.
 
-Another part of the file is the lamina data. A lamina is a unique combination
-of material and ply thickness. For this example, according to the layup
-table (::numref:`Table %s <tutorial_layups>`) given above, there are two
-laminae. One has material m1 and thickness 0.02, and another one has
-material m2 and thickness 0.05. It is the lamina, instead of the material,
-that will be used to define each layer of the layup.
+A lamina combines a material with a ply thickness. The layups in
+:numref:`Table %s <tutorial_layups>` require two laminae: ``la_m1_002`` uses
+material m1 with a thickness of 0.02 m, and ``la_m2_005`` uses material m2
+with a thickness of 0.05 m. Layup layers reference these laminae rather than
+the materials directly.
 
 .. code-block:: xml
   :linenos:
   :name: code_tutorial_box_materials
-  :caption: Input file for materials (*MaterialDB.xml*).
+  :caption: Materials and laminae in ``box.xml``.
 
   <materials>
     <material name="m0" type="isotropic">
@@ -233,7 +208,6 @@ that will be used to define each layer of the layup.
         <nu>0.3</nu>
       </elastic>
     </material>
-    <!-- =========================================================== -->
     <material name="m1" type="orthotropic">
       <density>1.86E+03</density>
       <elastic>
@@ -252,7 +226,6 @@ that will be used to define each layer of the layup.
       <material>m1</material>
       <thickness>0.02</thickness>
     </lamina>
-    <!-- =========================================================== -->
     <material name="m2" type="orthotropic">
       <density>1.83E+03</density>
       <elastic>
@@ -273,19 +246,17 @@ that will be used to define each layer of the layup.
     </lamina>
   </materials>
 
-Layup information is stored in a separate file. Based on the layup table,
-the input file can be prepared with the format shown in
-:numref:`Listing %s <code_tutorial_box_layups>`. The order of the layers
-defines the laying sequence from the base line. The number in the ``<layer>``
-element stands for the orientation. If there is a colon, then the number
-behind it stands for the number of plies in this layer. If there is no
-number at all, then by default this layer has only one ply with orientation
-of 0 degree.
+The ``<layups>`` section follows the material definitions, as shown in
+:numref:`Listing %s <code_tutorial_box_layups>`. Layer order defines the
+stacking sequence outward from the baseline. The text inside each ``<layer>``
+element specifies the ply angle in degrees. A value after a colon specifies
+the number of plies; for example, ``0:3`` represents three 0-degree plies.
+An empty element represents one 0-degree ply.
 
 .. code-block:: xml
   :linenos:
   :name: code_tutorial_box_layups
-  :caption: Input file for layups (*layups.xml*).
+  :caption: Layups in ``box.xml``.
 
   <layups>
     <layup name="layup1">
@@ -301,26 +272,22 @@ of 0 degree.
     </layup>
   </layups>
 
-Create components
-^^^^^^^^^^^^^^^^^
+Define the components
+^^^^^^^^^^^^^^^^^^^^^
 
-There are two types of components in PreVABS, laminate and fill. For
-this example, based on the decomposition we did at the begining of this
-section, there are three laminate-type components and one fill-type
-component. Besides, the sequence of creating components is important
-as stated at the beginning of this section. This is defined by declaring
-which components are needed before creating the current one.
+PreVABS supports laminate and fill components. This example has three
+laminate components (the walls and two webs) and one fill component.
+Dependencies specify which components must exist before another component
+can be created.
 
-Each laminate-type component is composed of one or more segments. Each
-segment is a unique combination of a base line and a layup. The layup
-can be created on either side of the base line. This is controlled by
-an attribute ``direction``, which can be either left or right. This can
-be understood as the left- or right-hand side when walking along the
-base line, as shown in :numref:`Fig. %s <fig_tutorial_box_segments>`.
+Each laminate component contains one or more segments. A segment combines a
+baseline with a layup. The ``direction`` attribute places the layup on the
+``left`` or ``right`` side of the baseline, as viewed while moving in the
+baseline direction. The default is ``left``. This convention is illustrated
+in :numref:`Fig. %s <fig_tutorial_box_segments>`.
 
-As for the ordering, the walls should be completed first, since its
-inner boundary is needed to trim the base lines of both webs. Hence,
-each web component depends on the walls component, as shown in
+The walls must be created first because their inner boundary trims both web
+baselines. Each web therefore depends on the wall component, as shown in
 :numref:`Listing %s <code_tutorial_box_laminate>`.
 
 .. figure:: /figures/tutorial_box_segments.png
@@ -354,10 +321,10 @@ each web component depends on the walls component, as shown in
     </segment>
   </component>
 
-The fill-type component is defined by a point and a material. Here, the
-point p0 is used to indicate that the material should be filled in the
-space in the middle enclosed by the walls and both webs. At the same
-time, the dependent components are also decided, as shown in
+The fill component is defined by a point and a material. Point p0 identifies
+the enclosed central region, and material m0 fills that region. Because the
+walls and both webs bound the region, the fill depends on all three laminate
+components, as shown in
 :numref:`Listing %s <code_tutorial_box_fill>`.
 
 .. figure:: /figures/tutorial_box_fill.png
@@ -377,26 +344,20 @@ time, the dependent components are also decided, as shown in
     <material>m0</material>
   </component>
 
-Set other configurations and complete the main input file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Set the analysis and meshing options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Besides the definitions of components, the main input file of the cross
-section contains several other required or optional settings.
+In addition to the geometry, materials, layups, and components, the input
+file contains analysis and meshing settings.
 
-The first part is the ``<include>`` settings, which is required. This
-contains names of the base lines and layups files.
+The optional ``<analysis>`` section configures the VABS cross-sectional
+analysis. In this example, ``<model>1</model>`` selects the Timoshenko beam
+model and produces a 6-by-6 stiffness matrix.
 
-The second part is the ``<analysis>`` settings, which is optional.
-This contains configurations used by VABS for the cross-sectional analysis.
-For this example, the ``<model>`` setting is set to 1, which means that
-the Timoshenko beam model will be used and the 6x6 stiffness matrix will
-be calculated.
+The optional ``<general>`` section configures the geometry and mesh. This
+example uses a target mesh size of 0.04 and linear quadrilateral elements.
 
-The last part is the ``<general>`` settings, which is optional. This
-part contains global configurations for the shape and meshing of the
-cross section. Here, the global mesh size is set to 0.02.
-
-The completed main input file for the cross section is shown in
+The complete cross-section input file is shown in
 :numref:`Listing %s <code_tutorial_box_main>`.
 
 .. code-block:: xml
@@ -405,16 +366,99 @@ The completed main input file for the cross section is shown in
   :caption: Input file for the cross section
 
   <cross_section name="box">
-    <include>
-      <baseline>baselines</baseline>
-      <layup>layups</layup>
-    </include>
+
     <analysis>
       <model>1</model>
     </analysis>
+
     <general>
-      <mesh_size>0.02</mesh_size>
+      <mesh_size>0.04</mesh_size>
+      <element_shape>quad</element_shape>
+      <element_type>linear</element_type>
     </general>
+
+    <baselines>
+      <point name="p0">0 0</point>
+      <point name="p1">2 1</point>
+      <point name="p2">-2 1</point>
+      <point name="p3">-2 -1</point>
+      <point name="p4">2 -1</point>
+      <point name="p5">1 0</point>
+      <point name="p6">-1 0</point>
+
+      <line name="line1">
+        <points>p1,p2,p3,p4,p1</points>
+      </line>
+      <line name="line2">
+        <point>p5</point>
+        <angle>100</angle>
+      </line>
+      <line name="line3">
+        <point>p6</point>
+        <angle>80</angle>
+      </line>
+    </baselines>
+
+    <materials>
+      <material name="m0" type="isotropic">
+        <density>1.0</density>
+        <elastic>
+          <e>25.0e3</e>
+          <nu>0.3</nu>
+        </elastic>
+      </material>
+      <material name="m1" type="orthotropic">
+        <density>1.86E+03</density>
+        <elastic>
+          <e1>3.70E+10</e1>
+          <e2>9.00E+09</e2>
+          <e3>9.00E+09</e3>
+          <g12>4.00E+09</g12>
+          <g13>4.00E+09</g13>
+          <g23>4.00E+09</g23>
+          <nu12>0.28</nu12>
+          <nu13>0.28</nu13>
+          <nu23>0.28</nu23>
+        </elastic>
+      </material>
+      <lamina name="la_m1_002">
+        <material>m1</material>
+        <thickness>0.02</thickness>
+      </lamina>
+      <material name="m2" type="orthotropic">
+        <density>1.83E+03</density>
+        <elastic>
+          <e1>1.03E+10</e1>
+          <e2>1.03E+10</e2>
+          <e3>1.03E+10</e3>
+          <g12>8.00E+09</g12>
+          <g13>8.00E+09</g13>
+          <g23>8.00E+09</g23>
+          <nu12>0.30</nu12>
+          <nu13>0.30</nu13>
+          <nu23>0.30</nu23>
+        </elastic>
+      </material>
+      <lamina name="la_m2_005">
+        <material>m2</material>
+        <thickness>0.05</thickness>
+      </lamina>
+    </materials>
+
+    <layups>
+      <layup name="layup1">
+        <layer lamina="la_m1_002">45</layer>
+        <layer lamina="la_m1_002">-45</layer>
+        <layer lamina="la_m2_005">0</layer>
+        <layer lamina="la_m1_002">0:2</layer>
+      </layup>
+      <layup name="layup2">
+        <layer lamina="la_m2_005"></layer>
+        <layer lamina="la_m1_002">0:3</layer>
+        <layer lamina="la_m2_005"></layer>
+      </layup>
+    </layups>
+
     <component name="walls">
       <segment>
         <baseline>line1</baseline>
@@ -437,25 +481,25 @@ The completed main input file for the cross section is shown in
       <location>p0</location>
       <material>m0</material>
     </component>
+
   </cross_section>
 
 
-Execution and results
----------------------
+Run PreVABS and review the results
+----------------------------------
 
-Once all input files are prepared, the cross section can be created and
-homogenized using the following command:
+Run the following command to build and homogenize the cross section:
 
 ::
 
   prevabs -i box.xml --hm -v -e
 
-If everything works successfully, Gmsh will be called and the cross section
-will be plotted as shown in :numref:`Fig. %s <fig_tutorial_box_plot>`
-(the display of element edges is turned off in the figure for clarity),
-and VABS homogenization analysis will be carried out and effective beam
-properties can be found in the file ``box.sg.K``. The effective Timoshenko
-stiffness matrix is listed in :numref:`Table %s <tutorial_stiffness>`.
+PreVABS calls Gmsh to generate and display the cross-section mesh, then calls
+VABS to perform the homogenization analysis. The resulting cross section is
+shown in :numref:`Fig. %s <fig_tutorial_box_plot>`; element edges are hidden
+for clarity. VABS writes the effective beam properties to ``box.sg.K``. The
+effective Timoshenko stiffness matrix from that file is reproduced in
+:numref:`Table %s <tutorial_stiffness>`.
 
 
 .. figure:: /figures/tutorial_box.png
@@ -470,9 +514,9 @@ stiffness matrix is listed in :numref:`Table %s <tutorial_stiffness>`.
   :delim: space
   :align: center
 
-   3.991E+10   -1.662E+05   -4.037E+01    4.204E+07   -4.358E+03    2.867E+01
-  -1.662E+05    6.743E+09    3.945E+04   -2.918E+08   -1.577E+07   -4.150E+03
-  -4.037E+01    3.945E+04    6.165E+09    8.220E+03   -2.897E+03   -8.700E+06
-   4.204E+07   -2.918E+08    8.220E+03    1.972E+10    2.721E+05    3.303E+02
-  -4.358E+03   -1.577E+07   -2.897E+03    2.721E+05    2.173E+10   -3.025E+04
-   2.867E+01   -4.150E+03   -8.700E+06    3.303E+02   -3.025E+04    6.728E+10
+   3.991E+10   -1.563E+05    1.321E+00    4.222E+07   -5.830E+03    4.373E+01
+  -1.563E+05    6.747E+09   -1.726E+02   -2.919E+08   -1.586E+07    4.747E+01
+   1.321E+00   -1.726E+02    6.172E+09   -1.159E+03   -1.404E+01   -8.872E+06
+   4.222E+07   -2.919E+08   -1.159E+03    1.973E+10    2.742E+05   -3.599E+01
+  -5.830E+03   -1.586E+07   -1.404E+01    2.742E+05    2.173E+10    6.369E+01
+   4.373E+01    4.747E+01   -8.872E+06   -3.599E+01    6.369E+01    6.728E+10

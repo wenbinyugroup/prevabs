@@ -2,6 +2,7 @@
     <include>
         <material>materials</material>
     </include>
+
     <general>
         <translate>0.0 0.0</translate>
         <scale>1.0</scale>
@@ -13,23 +14,23 @@
     <baselines>
 
         <point name="tl">-1 0</point>
-        <point name="tc">0 0</point>
         <point name="tr">1 0</point>
         <point name="br">1.5 -3</point>
-        <point name="bc">0 -3</point>
         <point name="bl">-1.5 -3</point>
-        <point name="web">0.04 -2</point>
+        
+        <line name="bl_top">
+            <points>tl,tr</points>
+        </line>
+        <line name="bl_bottom">
+            <points>bl,br</points>
+        </line>
 
-        <baseline name="bl_top" type="straight">
-            <points>tl,tc,tr</points>
-        </baseline>
-        <baseline name="bl_bottom" type="straight">
-            <points>bl,bc,br</points>
-        </baseline>
-        <baseline name="bl_web" type="straight">
+        <point name="web">0.04 -2</point>
+        <line name="bl_web">
             <point>web</point>
             <angle>90</angle>
-        </baseline>
+        </line>
+
     </baselines>
 
     <layups>
@@ -49,19 +50,22 @@
     <component name="top">
         <segment name="sgtop">
             <baseline>bl_top</baseline>
-            <layup>layup_1</layup>
+            <layup direction="right">layup_1</layup>
         </segment>
     </component>
+
     <component name="bottom">
         <segment name="sgbottom">
             <baseline>bl_bottom</baseline>
             <layup>layup_2</layup>
         </segment>
     </component>
+
     <component name="web" depend="top,bottom">
         <segment>
             <baseline>bl_web</baseline>
-            <layup direction="left">layup_web</layup>
+            <layup>layup_web</layup>
         </segment>
     </component>
+
 </cross_section>
