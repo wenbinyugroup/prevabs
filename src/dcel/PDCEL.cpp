@@ -610,9 +610,6 @@ PDCELHalfEdge *PDCEL::addEdge(PDCELVertex *v1, PDCELVertex *v2) {
   he12->setLineageId(lineage_id);
   he21->setLineageId(lineage_id);
 
-  ls->setHalfEdge(he12);
-  ls->setHalfEdge(he21);
-
   he12->setTwin(he21);
   he21->setTwin(he12);
 
@@ -639,9 +636,6 @@ PDCELHalfEdge *PDCEL::addEdge(PGeoLineSegment *ls) {
   if (ls->v2()->edge() == nullptr) {
     ls->v2()->setIncidentEdge(he21);
   }
-
-  ls->setHalfEdge(he12);
-  ls->setHalfEdge(he21);
 
   he12->setLineSegment(ls);
   he21->setLineSegment(ls);

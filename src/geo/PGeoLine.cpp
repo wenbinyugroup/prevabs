@@ -46,22 +46,16 @@ std::ostream &operator<<(std::ostream &out, PGeoLineSegment *ls) {
 PGeoLineSegment::PGeoLineSegment(PDCELVertex *v1, PDCELVertex *v2) {
   _v1 = v1;
   _v2 = v2;
-  _he12 = nullptr;
-  _he21 = nullptr;
 }
 
 PGeoLineSegment::PGeoLineSegment(PDCELVertex *v1, SVector3 d) {
   _v1 = v1;
   _v2 = new PDCELVertex(v1->point() + d.point());
-  _he12 = nullptr;
-  _he21 = nullptr;
 }
 
 PGeoLineSegment::PGeoLineSegment(PGeoLineSegment *ls) {
   _v1 = ls->v1();
   _v2 = ls->v2();
-  _he12 = ls->he12();
-  _he21 = ls->he21();
 }
 
 std::string PGeoLineSegment::printString() {
@@ -136,23 +130,6 @@ double PGeoLineSegment::getParametricLocation(PDCELVertex *v) {
   }
 
   return u;
-}
-
-PDCELHalfEdge *PGeoLineSegment::getHalfEdgeWithSource(PDCELVertex *source) {
-  if (source == _v1) {
-    return _he12;
-  } else if (source == _v2) {
-    return _he21;
-  }
-  return nullptr;
-}
-
-void PGeoLineSegment::setHalfEdge(PDCELHalfEdge *he) {
-  if (he->source() == _v1) {
-    _he12 = he;
-  } else if (he->source() == _v2) {
-    _he21 = he;
-  }
 }
 
 // ===================================================================

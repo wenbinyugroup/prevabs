@@ -1,7 +1,6 @@
 #pragma once
 
 #include "declarations.hpp"
-#include "dcel/PDCELHalfEdge.hpp"
 #include "dcel/PDCELVertex.hpp"
 
 #include "geo_types.hpp"
@@ -30,12 +29,10 @@ class PGeoLineSegment {
 private:
   dcel::PDCELVertex *_v1;
   dcel::PDCELVertex *_v2;
-  dcel::PDCELHalfEdge *_he12;
-  dcel::PDCELHalfEdge *_he21;
 
 public:
   PGeoLineSegment()
-      : _v1(nullptr), _v2(nullptr), _he12(nullptr), _he21(nullptr) {}
+      : _v1(nullptr), _v2(nullptr) {}
   PGeoLineSegment(dcel::PDCELVertex *, dcel::PDCELVertex *);
   PGeoLineSegment(dcel::PDCELVertex *, SVector3);
   PGeoLineSegment(PGeoLineSegment *);
@@ -47,8 +44,6 @@ public:
 
   dcel::PDCELVertex *v1() { return _v1; }
   dcel::PDCELVertex *v2() { return _v2; }
-  dcel::PDCELHalfEdge *he12() { return _he12; }
-  dcel::PDCELHalfEdge *he21() { return _he21; }
   dcel::PDCELVertex *vin(); // The left bottom vertex
   dcel::PDCELVertex *vout(); // The right top vertex
 
@@ -60,10 +55,6 @@ public:
   dcel::PDCELVertex *getParametricVertex1(double);
   dcel::PDCELVertex *getParametricVertex(double);
   double getParametricLocation(dcel::PDCELVertex *);
-
-  dcel::PDCELHalfEdge *getHalfEdgeWithSource(dcel::PDCELVertex *);
-
-  void setHalfEdge(dcel::PDCELHalfEdge *);
 };
 
 class PGeoArc {
