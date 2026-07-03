@@ -16,8 +16,8 @@ std::string PDCELHalfEdgeLoop::label() const {
   return ss.str();
 }
 
-void PDCELHalfEdgeLoop::log() {
-  if (config.debug_level < DebugLevel::geo) {
+void PDCELHalfEdgeLoop::log(bool verbose) {
+  if (!verbose) {
     return;
   }
   PLOG(debug) << label() << " direction: "

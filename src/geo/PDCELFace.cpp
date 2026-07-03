@@ -67,8 +67,8 @@ std::string PDCELFace::displayLabel() const {
   return label() + " [" + _log_name + "]";
 }
 
-void PDCELFace::print() {
-  if (config.debug_level < DebugLevel::geo) {
+void PDCELFace::print(bool verbose) {
+  if (!verbose) {
     return;
   }
   PLOG(debug) << label() << (_is_bounded ? " bounded" : " unbounded");

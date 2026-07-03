@@ -5,7 +5,6 @@
 class Baseline;
 class Message;
 class PGeoLineSegment;
-struct BuilderConfig;
 
 namespace dcel {
 class PDCELVertex;
@@ -32,7 +31,7 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel,
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
-#include "globalVariables.hpp"
+#include "DCELConfig.hpp"
 
 #include "PDCELUtils.hpp"
 
@@ -62,6 +61,11 @@ private:
   std::list<PDCELHalfEdgeLoop *> _halfedge_loops;
 
   std::set<PDCELVertex *, CompareVertexByPoint> _vertex_tree;
+
+  /// Injected numeric configuration (coincidence tolerance, verbose dump gate).
+  /// Replaces the DCEL core's former direct reads of the domain globals
+  /// GEO_TOL / config.debug_level. The owner sets it before geometry is built.
+  Config _config;
 
   /// Segments created internally by addEdge(v1, v2) — owned by PDCEL.
   std::list<std::unique_ptr<PGeoLineSegment>> _owned_segments;
@@ -125,7 +129,15 @@ public:
 
   const std::list<PDCELHalfEdgeLoop *> &halfedgeloops() const { return _halfedge_loops; }
 
-  void fixGeometry(const BuilderConfig &);
+  /// Injected configuration. The owner sets geo_tol from the model-scale
+  /// tolerance before geometry is built (default 1e-9); verbose_dump gates
+  /// print_dcel. Replaces the former global GEO_TOL / config.debug_level.
+  void setConfig(const Config &c) { _config = c; }
+  double geoTol() const { return _config.geo_tol; }
+  void setGeoTol(double t) { _config.geo_tol = t; }
+  void setVerboseDump(bool v) { _config.verbose_dump = v; }
+
+  void fixGeometry(double geo_tol);
 
   // =================================================================
   // VERTEX

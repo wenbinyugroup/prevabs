@@ -27,7 +27,7 @@ public:
   PDCELHalfEdgeLoop()
       : _incident_edge(nullptr), _face(nullptr), _direction(0) {};
 
-  void log();
+  void log(bool verbose = false);
   void print();
   std::string label() const;
 

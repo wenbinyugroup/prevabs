@@ -695,7 +695,7 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
     std::cout << "\nhels:\n";
     if (config.debug_level >= DebugLevel::join) PLOG(debug) << "found half edge loops";
     for (auto hel : hels) {
-      hel->log();
+      hel->log(config.debug_level >= DebugLevel::geo);
     }
   }
 

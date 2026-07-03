@@ -2,7 +2,7 @@
 
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
-#include "globalConstants.hpp"
+#include "DCELConfig.hpp"
 
 #include "geo_types.hpp"
 
@@ -51,7 +51,7 @@ public:
   PDCELFace(PDCELHalfEdge *);
   PDCELFace(PDCELHalfEdge *, bool);
 
-  void print();
+  void print(bool verbose = false);
   std::string label() const;
   std::string displayLabel() const;
 
@@ -66,7 +66,7 @@ public:
 
   SVector3 localy1() { return _y1; }
   SVector3 localy2() { return _y2; }
-  double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / PI; }
+  double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / kPi; }
 
   bool isBounded() { return _is_bounded; }
   unsigned int id() const { return _id; }

@@ -114,7 +114,7 @@ bool validateDCEL(const PDCEL &dcel) {
   return ok;
 }
 
-void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
+void fixDCELGeometry(PDCEL &dcel, double geo_tol) {
     PLOG(info) << "fixing geometry";
 
   std::unordered_set<PDCELHalfEdge *> small_edges;
@@ -124,7 +124,7 @@ void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
     }
 
     double sqlen = calcDistanceSquared(he->source(), he->target());
-    if (sqlen <= bcfg.geo_tol * bcfg.geo_tol) {
+    if (sqlen <= geo_tol * geo_tol) {
       small_edges.insert(he);
     }
   }

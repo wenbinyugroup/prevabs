@@ -5,7 +5,7 @@
 #include "PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo.hpp"
-#include "globalConstants.hpp"
+#include "DCELConfig.hpp"
 
 #include <cmath>
 #include <map>
@@ -69,8 +69,8 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel, PDCELVertex *v) {
   PGeoLineSegment *ls_tmp = new PGeoLineSegment(v, vt);
 
   PGeoLineSegment *ls_below = nullptr;
-  double u1 = INF, u2, u1_tmp;
-  double best_dist_sq = INF;
+  double u1 = kInf, u2, u1_tmp;
+  double best_dist_sq = kInf;
 
   for (std::list<PGeoLineSegment *>::const_iterator it = ls_list.begin();
        it != ls_list.end(); ++it) {

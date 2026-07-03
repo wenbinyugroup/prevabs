@@ -205,6 +205,11 @@ void PModel::summary() {
 void PModel::build() {
   PLogContext build_context("build geometry");
   _dcel = new PDCEL();
+  // Inject the model-scale geometry tolerance (finalized by the cross-section
+  // reader before build) and the verbose-dump gate, replacing the DCEL's
+  // former direct reads of the global GEO_TOL / config.debug_level.
+  _dcel->setGeoTol(GEO_TOL);
+  _dcel->setVerboseDump(config.debug_level >= DebugLevel::geo);
   _dcel->initialize();
 
   BuilderConfig bcfg{
@@ -223,7 +228,7 @@ void PModel::build() {
 
   // _dcel->vertextree()->printInOrder();
 
-  _dcel->fixGeometry(bcfg);
+  _dcel->fixGeometry(bcfg.geo_tol);
 }
 
 

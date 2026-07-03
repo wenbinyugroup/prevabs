@@ -8,8 +8,7 @@
 #include "DCELSweepLine.hpp"
 #include "DCELValidator.hpp"
 #include "geo.hpp"
-#include "globalConstants.hpp"
-#include "globalVariables.hpp"
+#include "DCELConfig.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 
@@ -37,7 +36,7 @@ static const double kNearDegenerateAngleWarningRad = 1e-3;
 
 double smallestAngleDelta(double a1, double a2) {
   const double delta = std::fabs(a1 - a2);
-  return std::min(delta, 2.0 * PI - delta);
+  return std::min(delta, 2.0 * kPi - delta);
 }
 
 void warnIfAnglesTooClose(
@@ -56,19 +55,19 @@ void warnIfAnglesTooClose(
   }
 }
 
-bool samePoint2D(PDCELVertex *a, PDCELVertex *b) {
+bool samePoint2D(PDCELVertex *a, PDCELVertex *b, double geo_tol) {
   if (a == nullptr || b == nullptr) return false;
-  return a->point2().distance(b->point2()) <= GEO_TOL;
+  return a->point2().distance(b->point2()) <= geo_tol;
 }
 
 double distPointToSegment2D(
-    const SPoint2 &p, const SPoint2 &a, const SPoint2 &b) {
+    const SPoint2 &p, const SPoint2 &a, const SPoint2 &b, double geo_tol) {
   const double vx = b.x() - a.x();
   const double vy = b.y() - a.y();
   const double wx = p.x() - a.x();
   const double wy = p.y() - a.y();
   const double len2 = vx * vx + vy * vy;
-  if (len2 <= GEO_TOL * GEO_TOL) {
+  if (len2 <= geo_tol * geo_tol) {
     return p.distance(a);
   }
 
@@ -78,14 +77,15 @@ double distPointToSegment2D(
   return p.distance(foot);
 }
 
-bool pointOnSegment2D(PDCELVertex *p, PDCELVertex *a, PDCELVertex *b) {
+bool pointOnSegment2D(PDCELVertex *p, PDCELVertex *a, PDCELVertex *b,
+                      double geo_tol) {
   if (p == nullptr || a == nullptr || b == nullptr) return false;
-  return distPointToSegment2D(p->point2(), a->point2(), b->point2())
-      <= GEO_TOL;
+  return distPointToSegment2D(p->point2(), a->point2(), b->point2(), geo_tol)
+      <= geo_tol;
 }
 
 PDCELHalfEdge *findOuterHalfEdgeWithVertex(
-    PDCELFace *face, PDCELVertex *vertex) {
+    PDCELFace *face, PDCELVertex *vertex, double geo_tol) {
   if (face == nullptr || vertex == nullptr || face->outer() == nullptr) {
     return nullptr;
   }
@@ -99,7 +99,7 @@ PDCELHalfEdge *findOuterHalfEdgeWithVertex(
                   << kDCELLoopHardCap;
       return nullptr;
     }
-    if (he->source() == vertex || samePoint2D(he->source(), vertex)) {
+    if (he->source() == vertex || samePoint2D(he->source(), vertex, geo_tol)) {
       return he;
     }
     he = he->next();
@@ -109,7 +109,7 @@ PDCELHalfEdge *findOuterHalfEdgeWithVertex(
 }
 
 PDCELHalfEdge *findOuterHalfEdgeContainingPoint(
-    PDCELFace *face, PDCELVertex *vertex) {
+    PDCELFace *face, PDCELVertex *vertex, double geo_tol) {
   if (face == nullptr || vertex == nullptr || face->outer() == nullptr) {
     return nullptr;
   }
@@ -123,10 +123,10 @@ PDCELHalfEdge *findOuterHalfEdgeContainingPoint(
                   << kDCELLoopHardCap;
       return nullptr;
     }
-    if (he->source() == vertex || samePoint2D(he->source(), vertex)) {
+    if (he->source() == vertex || samePoint2D(he->source(), vertex, geo_tol)) {
       return he;
     }
-    if (pointOnSegment2D(vertex, he->source(), he->target())) {
+    if (pointOnSegment2D(vertex, he->source(), he->target(), geo_tol)) {
       return he;
     }
     he = he->next();
@@ -135,8 +135,9 @@ PDCELHalfEdge *findOuterHalfEdgeContainingPoint(
   return nullptr;
 }
 
-bool pointIsOnOuterBoundary(PDCELFace *face, PDCELVertex *vertex) {
-  return findOuterHalfEdgeContainingPoint(face, vertex) != nullptr;
+bool pointIsOnOuterBoundary(PDCELFace *face, PDCELVertex *vertex,
+                            double geo_tol) {
+  return findOuterHalfEdgeContainingPoint(face, vertex, geo_tol) != nullptr;
 }
 
 } // namespace
@@ -156,10 +157,10 @@ PDCEL::~PDCEL() {
 
 void PDCEL::initialize() {
   // Create the infinity large bounding box
-  PDCELVertex *v_tr = addVertex(new PDCELVertex(0, INF, INF, false));
-  PDCELVertex *v_tl = addVertex(new PDCELVertex(0, -INF, INF, false));
-  PDCELVertex *v_bl = addVertex(new PDCELVertex(0, -INF, -INF, false));
-  PDCELVertex *v_br = addVertex(new PDCELVertex(0, INF, -INF, false));
+  PDCELVertex *v_tr = addVertex(new PDCELVertex(0, kInf, kInf, false));
+  PDCELVertex *v_tl = addVertex(new PDCELVertex(0, -kInf, kInf, false));
+  PDCELVertex *v_bl = addVertex(new PDCELVertex(0, -kInf, -kInf, false));
+  PDCELVertex *v_br = addVertex(new PDCELVertex(0, kInf, -kInf, false));
 
   PGeoLineSegment *ls_top = new PGeoLineSegment(v_tr, v_tl);
   PGeoLineSegment *ls_left = new PGeoLineSegment(v_tl, v_bl);
@@ -205,7 +206,7 @@ void PDCEL::initialize() {
 }
 
 void PDCEL::print_dcel() {
-  if (config.debug_level < DebugLevel::geo) {
+  if (!_config.verbose_dump) {
     return;
   }
   PLOG(debug) << "DCEL Summary";
@@ -222,12 +223,12 @@ void PDCEL::print_dcel() {
 
   PLOG(debug) << _halfedge_loops.size() << " half edge loops:";
   for (auto l : _halfedge_loops) {
-    l->log();
+    l->log(true);
   }
 
   PLOG(debug) << _faces.size() << " faces:";
   for (auto f : _faces) {
-    f->print();
+    f->print(true);
   }
 }
 
@@ -341,8 +342,8 @@ bool PDCEL::validate() {
   return validateDCEL(*this);
 }
 
-void PDCEL::fixGeometry(const BuilderConfig &bcfg) {
-  fixDCELGeometry(*this, bcfg);
+void PDCEL::fixGeometry(double geo_tol) {
+  fixDCELGeometry(*this, geo_tol);
 }
 
 // ===================================================================
@@ -357,14 +358,14 @@ bool CompareVertexByPoint::operator()(PDCELVertex *a, PDCELVertex *b) const {
 
 PDCELVertex *PDCEL::findCoincidentVertex(PDCELVertex *v) const {
   const SPoint3 p = v->point();
-  // Lower-bound probe: first set entry with x >= p.x() - GEO_TOL.
-  // Using -INF for y and z ensures we start at the very first vertex in that
+  // Lower-bound probe: first set entry with x >= p.x() - geo_tol.
+  // Using -kInf for y and z ensures we start at the very first vertex in that
   // x-band regardless of y/z ordering.
-  PDCELVertex lo(p.x() - GEO_TOL, -INF, -INF);
+  PDCELVertex lo(p.x() - _config.geo_tol, -kInf, -kInf);
   for (auto it = _vertex_tree.lower_bound(&lo);
-       it != _vertex_tree.end() && (*it)->x() <= p.x() + GEO_TOL;
+       it != _vertex_tree.end() && (*it)->x() <= p.x() + _config.geo_tol;
        ++it) {
-    if ((*it)->point().distance(p) <= GEO_TOL)
+    if ((*it)->point().distance(p) <= _config.geo_tol)
       return *it;
   }
   return nullptr;
@@ -1060,9 +1061,9 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
       }
     } else {
       if (u_lsi >= 0 && u_lsi < 1) {
-        if (u_lsi < TOLERANCE) {
+        if (u_lsi < _config.geo_tol) {
           v_tmp = lsi->v1();
-        } else if (1 - u_lsi < TOLERANCE) {
+        } else if (1 - u_lsi < _config.geo_tol) {
           v_tmp = lsi->v2();
         } else {
           v_tmp = lsi->getParametricVertex(u_lsi);
@@ -1090,7 +1091,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
   if (vlist1.size() == 1) {
     v1 = vlist1.front();
   } else if (vlist1.size() > 1) {
-    double d2{INF}, d2_tmp;
+    double d2{kInf}, d2_tmp;
     if (vlist2.empty()) {
       // Only one intersection side found; take the first candidate.
       v1 = vlist1.front();
@@ -1108,7 +1109,7 @@ void PDCEL::findCurvesIntersection(PDCELHalfEdgeLoop *hel,
   if (vlist2.size() == 1) {
     v2 = vlist2.front();
   } else if (vlist2.size() > 1) {
-    double d2{INF}, d2_tmp;
+    double d2{kInf}, d2_tmp;
     for (auto v : vlist2) {
       d2_tmp = calcDistanceSquared(v, v1);
       if (d2_tmp < d2) {
@@ -1371,16 +1372,16 @@ std::list<PDCELFace *> PDCEL::splitFaceByPolyline(
     }
   }
   for (std::size_t i = 1; i < path.size(); ++i) {
-    if (samePoint2D(path[i - 1], path[i])) {
+    if (samePoint2D(path[i - 1], path[i], _config.geo_tol)) {
       PLOG(error) << "splitFaceByPolyline: path contains zero-length segment";
       return {};
     }
   }
 
   PDCELHalfEdge *start_edge =
-      findOuterHalfEdgeContainingPoint(f, path.front());
+      findOuterHalfEdgeContainingPoint(f, path.front(), _config.geo_tol);
   PDCELHalfEdge *end_edge =
-      findOuterHalfEdgeContainingPoint(f, path.back());
+      findOuterHalfEdgeContainingPoint(f, path.back(), _config.geo_tol);
   // The checks below are recoverable geometric rejections, not errors: this
   // particular polyline cannot split this face, and that fact is reported to
   // the caller via the empty-list return. Callers decide the severity (e.g.
@@ -1393,7 +1394,7 @@ std::list<PDCELFace *> PDCEL::splitFaceByPolyline(
   }
 
   for (std::size_t i = 1; i + 1 < path.size(); ++i) {
-    if (pointIsOnOuterBoundary(f, path[i])) {
+    if (pointIsOnOuterBoundary(f, path[i], _config.geo_tol)) {
       PLOG(debug) << "splitFaceByPolyline: interior path vertex lies on the "
                   << "face outer boundary";
       return {};
@@ -1410,29 +1411,29 @@ std::list<PDCELFace *> PDCEL::splitFaceByPolyline(
 
   std::vector<PDCELVertex *> cpath = path;
 
-  if (findOuterHalfEdgeWithVertex(f, cpath.front()) == nullptr) {
+  if (findOuterHalfEdgeWithVertex(f, cpath.front(), _config.geo_tol) == nullptr) {
     PDCELHalfEdge *edge =
-        findOuterHalfEdgeContainingPoint(f, cpath.front());
+        findOuterHalfEdgeContainingPoint(f, cpath.front(), _config.geo_tol);
     if (edge == nullptr) {
       PLOG(error) << "splitFaceByPolyline: start vertex is not on boundary";
       return {};
     }
     cpath.front() = splitEdge(edge, cpath.front());
   } else {
-    PDCELHalfEdge *edge = findOuterHalfEdgeWithVertex(f, cpath.front());
+    PDCELHalfEdge *edge = findOuterHalfEdgeWithVertex(f, cpath.front(), _config.geo_tol);
     cpath.front() = edge->source();
   }
 
-  if (findOuterHalfEdgeWithVertex(f, cpath.back()) == nullptr) {
+  if (findOuterHalfEdgeWithVertex(f, cpath.back(), _config.geo_tol) == nullptr) {
     PDCELHalfEdge *edge =
-        findOuterHalfEdgeContainingPoint(f, cpath.back());
+        findOuterHalfEdgeContainingPoint(f, cpath.back(), _config.geo_tol);
     if (edge == nullptr) {
       PLOG(error) << "splitFaceByPolyline: end vertex is not on boundary";
       return {};
     }
     cpath.back() = splitEdge(edge, cpath.back());
   } else {
-    PDCELHalfEdge *edge = findOuterHalfEdgeWithVertex(f, cpath.back());
+    PDCELHalfEdge *edge = findOuterHalfEdgeWithVertex(f, cpath.back(), _config.geo_tol);
     cpath.back() = edge->source();
   }
 

@@ -2,7 +2,7 @@
 
 #include "PDCELHalfEdge.hpp"
 #include "PDCELUtils.hpp"
-#include "globalConstants.hpp"
+#include "DCELConfig.hpp"
 #include "utilities.hpp"
 
 #include "geo_types.hpp"
@@ -130,8 +130,8 @@ void PDCELVertex::rotate(double a) {
 }
 
 bool PDCELVertex::isFinite() {
-  return (_point[0] > -INF && _point[0] < INF && _point[1] > -INF &&
-          _point[1] < INF && _point[2] > -INF && _point[2] < INF);
+  return (_point[0] > -kInf && _point[0] < kInf && _point[1] > -kInf &&
+          _point[1] < kInf && _point[2] > -kInf && _point[2] < kInf);
 }
 
 PDCELHalfEdge *PDCELVertex::getEdgeTo(PDCELVertex *v) {
