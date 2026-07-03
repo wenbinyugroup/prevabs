@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace prevabs {
 namespace debug {
 

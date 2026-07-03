@@ -15,7 +15,7 @@ bool isClose(
 
 int getTurningSide(SVector3, SVector3);
 
-double calcDistanceSquared(PDCELVertex *, PDCELVertex *);
+double calcDistanceSquared(dcel::PDCELVertex *, dcel::PDCELVertex *);
 
 SVector3 getVectorFromAngle(double angle, AnglePlane plane);
 
@@ -30,5 +30,5 @@ SVector3 calcAngleBisectVector(const SPoint3 &, const SPoint3 &,
 SVector3 calcAngleBisectVector(const SVector3 &, const SVector3 &,
                                const std::string &, const std::string &);
 
-int calcBoundVertices(std::vector<PDCELVertex *> &, const SVector3 &,
+int calcBoundVertices(std::vector<dcel::PDCELVertex *> &, const SVector3 &,
                       const SVector3 &, Layup *);

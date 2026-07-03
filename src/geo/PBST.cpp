@@ -6,6 +6,8 @@
 #include <list>
 #include <string>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 template <class T>
 std::ostream &operator<<(std::ostream &out, PBSTNode<T> *node) {
   out << node->data();

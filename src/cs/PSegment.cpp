@@ -33,6 +33,8 @@
 #include <utility>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 int Segment::count_tmp = 0;
 
 namespace {

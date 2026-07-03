@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include <vector>
 
+namespace dcel {
+
 bool validateDCEL(const PDCEL &dcel) {
   bool ok = true;
   const std::size_t limit = dcel.halfedges().size() + 1;
@@ -150,3 +152,5 @@ void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
              << (dcel.halfedges().size() / 2) << " edges / "
              << dcel.faces().size() << " faces";
 }
+
+}  // namespace dcel

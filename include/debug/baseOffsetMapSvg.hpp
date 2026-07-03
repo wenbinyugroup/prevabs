@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 
 // Write an SVG visualizing (base curve, offset curve, staircase pairs).
 // Coordinate convention: PreVABS cross-section plane is y-z. The SVG uses
@@ -44,8 +44,8 @@ class PDCELVertex;
 //        resample wholesale-replaced. Empty / null → layer skipped.
 void dumpBaseOffsetMapSvg(const std::string& path,
                           const std::string& title,
-                          const std::vector<PDCELVertex*>& base,
-                          const std::vector<PDCELVertex*>& offset,
+                          const std::vector<dcel::PDCELVertex*>& base,
+                          const std::vector<dcel::PDCELVertex*>& offset,
                           const BaseOffsetMap& pairs,
                           const std::vector<bool>* offset_resampled = nullptr,
                           const std::vector<SPoint2>* pre_resample_raw_points = nullptr);

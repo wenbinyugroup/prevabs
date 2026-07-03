@@ -25,6 +25,8 @@
 #include <sstream>
 #include <string>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 // Convention used throughout this file:
 //   e == 0  →  head (beginning) end of the curve
 //   e == 1  →  tail (end) end of the curve

@@ -13,7 +13,7 @@ int joinCurves(Baseline *, std::list<Baseline *>);
 
 int adjustCurveEnd(Baseline *bl, PGeoLineSegment *ls, CurveEnd end);
 
-int mergeSortedVertexLists(const std::vector<PDCELVertex *> &,
-                           const std::vector<PDCELVertex *> &,
+int mergeSortedVertexLists(const std::vector<dcel::PDCELVertex *> &,
+                           const std::vector<dcel::PDCELVertex *> &,
                            std::vector<int> &, std::vector<int> &,
-                           std::vector<PDCELVertex *> &);
+                           std::vector<dcel::PDCELVertex *> &);

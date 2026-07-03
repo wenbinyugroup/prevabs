@@ -28,6 +28,8 @@
 
 #include <typeinfo>
 
+namespace dcel {
+
 namespace {
 
 static const int kRepeatedSplitWarningThreshold = 3;
@@ -933,7 +935,7 @@ PDCELHalfEdgeLoop *PDCEL::findNearestLoop(PDCELHalfEdgeLoop *loop) {
 
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
-  PDCELHalfEdge *he = ::findHalfEdgeBelowVertex(*this,
+  PDCELHalfEdge *he = findHalfEdgeBelowVertex(*this,
                                                 loop->bottomLeftVertex());
   if (he != nullptr) {
     loop_near = he->loop();
@@ -1008,7 +1010,7 @@ PDCELHalfEdgeLoop *PDCEL::findEnclosingLoop(PDCELVertex *v) {
 
   PDCELHalfEdgeLoop *loop_near = _halfedge_loops.front();
 
-  PDCELHalfEdge *he = ::findHalfEdgeBelowVertex(*this, v);
+  PDCELHalfEdge *he = findHalfEdgeBelowVertex(*this, v);
   if (he != nullptr) {
     loop_near = he->loop();
 
@@ -1753,4 +1755,6 @@ void PDCEL::updateEdgeNeighbors(PDCELHalfEdge *he) {
     he12left->twin()->setNext(he);
   }
 }
+
+}  // namespace dcel
 

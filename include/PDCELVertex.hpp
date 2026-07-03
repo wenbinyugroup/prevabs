@@ -11,6 +11,8 @@
 #include <iostream>
 #include <string>
 
+namespace dcel {
+
 class PDCEL;
 class PDCELHalfEdge;
 
@@ -86,3 +88,5 @@ public:
 };
 
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2);
+
+}  // namespace dcel

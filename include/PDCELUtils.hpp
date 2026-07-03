@@ -12,6 +12,8 @@
 
 // Hard cap for DCEL half-edge loop traversals.  Large enough for any normal
 // cross-section mesh; tight enough to terminate quickly on a broken cycle.
+namespace dcel {
+
 static const int kDCELLoopHardCap = 65536;
 
 static const int kDCELWarnLoopSteps = 128;
@@ -63,3 +65,5 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
     he = he->next();
   } while (he != start);
 }
+
+}  // namespace dcel

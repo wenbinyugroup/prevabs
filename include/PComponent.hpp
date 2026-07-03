@@ -16,8 +16,8 @@
 
 class Baseline;
 class Material;
-class PDCELFace;
-class PDCELVertex;
+namespace dcel { class PDCELFace; }
+namespace dcel { class PDCELVertex; }
 class PModel;
 class Segment;
 
@@ -43,7 +43,7 @@ enum class FillSide {
 class PComponent {
 private:
   struct LaminateState {
-    PDCELVertex *ref_vertex = nullptr;
+    dcel::PDCELVertex *ref_vertex = nullptr;
     std::vector<Segment *> segments;
     JointStyle style = JointStyle::step;
     bool cycle = false;
@@ -56,11 +56,11 @@ private:
   struct FillingState {
     Material *material = nullptr;
     LayerType *layertype = nullptr;
-    PDCELVertex *location = nullptr;
+    dcel::PDCELVertex *location = nullptr;
     std::list<std::list<Baseline *>> baseline_groups;
     FillSide side = FillSide::left;
     Baseline *ref_baseline = nullptr;
-    PDCELFace *face = nullptr;
+    dcel::PDCELFace *face = nullptr;
     double theta1 = 0.0;
     double theta3 = 0.0;
   };
@@ -70,22 +70,22 @@ private:
   ComponentType _type;
   std::list<PComponent *> _dependencies;
   double _mesh_size = -1;
-  std::vector<PDCELVertex *> _embedded_vertices;
+  std::vector<dcel::PDCELVertex *> _embedded_vertices;
 
   LaminateState _laminate;
   FillingState _filling;
 
   // Helper functions
   // void findFreeEndVertices(Segment *seg, const int &end,
-  //                          std::vector<PDCELVertex *> &vts);
-  // void calcBoundingVertices(Segment *s, PDCELVertex *v);
-  // void calcBoundingVertices(Segment *s1, PDCELVertex *v, Segment *s2);
+  //                          std::vector<dcel::PDCELVertex *> &vts);
+  // void calcBoundingVertices(Segment *s, dcel::PDCELVertex *v);
+  // void calcBoundingVertices(Segment *s1, dcel::PDCELVertex *v, Segment *s2);
 
   void createSegmentFreeEnd(Segment *s, int e, const BuilderConfig &);
   void joinSegments(Segment *s, int e, const BuilderConfig &);
   void joinSegments(
       Segment *s1, Segment *s2, int e1, int e2,
-      PDCELVertex *v, JointStyle style, const BuilderConfig &);
+      dcel::PDCELVertex *v, JointStyle style, const BuilderConfig &);
   void buildLaminate(const BuilderConfig &);
   void buildFilling(const BuilderConfig &);
 
@@ -105,20 +105,20 @@ public:
   bool isCyclic() { return _laminate.cycle; }
   std::list<PComponent *> &dependents() { return _dependencies; }
   double getMeshSize() const { return _mesh_size; }
-  std::vector<PDCELVertex *> getEmbeddedVertices() { return _embedded_vertices; }
+  std::vector<dcel::PDCELVertex *> getEmbeddedVertices() { return _embedded_vertices; }
 
-  PDCELVertex *refVertex() { return _laminate.ref_vertex; }
+  dcel::PDCELVertex *refVertex() { return _laminate.ref_vertex; }
 
   std::string getMatOrient1() { return _laminate.mat_orient_e1; }
   std::string getMatOrient2() { return _laminate.mat_orient_e2; }
 
   Material *material() { return _filling.material; }
   LayerType *filllayertype() { return _filling.layertype; }
-  PDCELVertex *location() { return _filling.location; }
+  dcel::PDCELVertex *location() { return _filling.location; }
   std::list<std::list<Baseline *>> baselines() { return _filling.baseline_groups; }
   FillSide fillside() { return _filling.side; }
   Baseline *refbaseline() { return _filling.ref_baseline; }
-  PDCELFace *fillface() { return _filling.face; }
+  dcel::PDCELFace *fillface() { return _filling.face; }
   double fillTheta1() { return _filling.theta1; }
   double fillTheta3() { return _filling.theta3; }
 
@@ -130,22 +130,22 @@ public:
   void setCycle(bool cycle) { _laminate.cycle = cycle; }
   void addDependent(PComponent *);
   void setMeshSize(double ms) { _mesh_size = ms; }
-  void addEmbeddedVertex(PDCELVertex *v) { _embedded_vertices.push_back(v); }
+  void addEmbeddedVertex(dcel::PDCELVertex *v) { _embedded_vertices.push_back(v); }
 
-  void setRefVertex(PDCELVertex *v) { _laminate.ref_vertex = v; }
+  void setRefVertex(dcel::PDCELVertex *v) { _laminate.ref_vertex = v; }
 
   void setMatOrient1(std::string orient) { _laminate.mat_orient_e1 = orient; }
   void setMatOrient2(std::string orient) { _laminate.mat_orient_e2 = orient; }
 
   void setFillMaterial(Material *m) { _filling.material = m; }
   void setFillLayertype(LayerType *l) { _filling.layertype = l; }
-  void setFillLocation(PDCELVertex *v) { _filling.location = v; }
+  void setFillLocation(dcel::PDCELVertex *v) { _filling.location = v; }
   void addFillBaselineGroup(std::list<Baseline *> bg) {
     _filling.baseline_groups.push_back(bg);
   }
   void setFillSide(FillSide s) { _filling.side = s; }
   void setFillRefBaseline(Baseline *b) { _filling.ref_baseline = b; }
-  void setFillFace(PDCELFace *f) { _filling.face = f; }
+  void setFillFace(dcel::PDCELFace *f) { _filling.face = f; }
   void setFillTheta1(double a) { _filling.theta1 = a; }
   void setFillTheta3(double a) { _filling.theta3 = a; }
 

@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 bool validateBaseOffsetMap(
     const BaseOffsetMap &map, std::string *error_message) {
   for (std::size_t i = 0; i < map.size(); ++i) {

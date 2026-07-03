@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 void readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
                    double scale) {
   std::string line;

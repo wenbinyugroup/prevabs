@@ -6,30 +6,30 @@
 #include <string>
 #include <vector>
 
-double calcPolylineLength(const std::vector<PDCELVertex *> &);
+double calcPolylineLength(const std::vector<dcel::PDCELVertex *> &);
 
-PDCELVertex *findPolylinePointAtParam(
-  const std::vector<PDCELVertex *> &,
+dcel::PDCELVertex *findPolylinePointAtParam(
+  const std::vector<dcel::PDCELVertex *> &,
   const double &, bool &, int &, const double &
 );
 
-PDCELVertex *findPolylinePointByCoordinate(
-  const std::vector<PDCELVertex *> &, const std::string ,
+dcel::PDCELVertex *findPolylinePointByCoordinate(
+  const std::vector<dcel::PDCELVertex *> &, const std::string ,
   const double ,   double ,double &,
   const int count = 1, const PolylineAxis axis = PolylineAxis::X2
 );
 
-PDCELVertex *findPolylinePointByCoordinate(
-  const std::vector<PDCELVertex *> &, const std::string,
+dcel::PDCELVertex *findPolylinePointByCoordinate(
+  const std::vector<dcel::PDCELVertex *> &, const std::string,
   const double , double ,
   const int count = 1, const PolylineAxis axis = PolylineAxis::X2
 );
 
 double findPolylineParamByCoordinate(
-  const std::vector<PDCELVertex *> &,
+  const std::vector<dcel::PDCELVertex *> &,
   const double ,   double ,
   const int count = 1, const PolylineAxis axis = PolylineAxis::X2
 );
 
-int trimCurveAtVertex(std::vector<PDCELVertex *> &c, PDCELVertex *v,
+int trimCurveAtVertex(std::vector<dcel::PDCELVertex *> &c, dcel::PDCELVertex *v,
                       CurveEnd remove);

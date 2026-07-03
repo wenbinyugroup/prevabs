@@ -13,9 +13,12 @@
 #include <string>
 #include <vector>
 
+class PArea;  // global domain type
+
+namespace dcel {
+
 class PDCELHalfEdge;
 class PDCELVertex;
-class PArea;
 
 /** @ingroup geo
  * A DCEL face class.
@@ -87,3 +90,5 @@ public:
   void setId(unsigned int id) { _id = id; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
 };
+
+}  // namespace dcel

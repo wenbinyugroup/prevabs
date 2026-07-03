@@ -8,6 +8,8 @@
 #include <list>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 // std::ostream &operator<<(std::ostream &out, PGeoLine *line) {
 //   std::list<PDCELVertex *>::iterator it;
 //   for (it = line->_vertices.begin(); it != line->_vertices.end(); ++it) {

@@ -8,6 +8,8 @@
 #include <limits>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace {
 
 static bool areCoincidentVertices(PDCELVertex *v1, PDCELVertex *v2)

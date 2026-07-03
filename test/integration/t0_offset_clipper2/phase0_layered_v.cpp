@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 // SPoint2 / BaseOffsetPair live in the global namespace (geo_types.hpp).
 using prevabs::geo::OffsetPolygon;
 using prevabs::geo::offsetWithClipper2;

@@ -4,7 +4,7 @@
 // dependencies in the include chain.
 class Baseline;
 class Material;
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 class PGeoArc;
 class PModel;
 

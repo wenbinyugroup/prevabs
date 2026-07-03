@@ -19,6 +19,8 @@
 #include <iostream>
 #include <string>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace {
 
 std::string makeSnapshotFileName(const std::string &snapshot_tag) {

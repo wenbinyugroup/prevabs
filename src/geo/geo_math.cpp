@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cstdlib>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 bool isClose(
   const double& p1x, const double& p1y,
   const double& p2x, const double& p2y,

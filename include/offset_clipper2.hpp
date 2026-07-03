@@ -8,11 +8,11 @@
 // downstream reverse-matching bridge (Stage C) can build a
 // BaseOffsetMap.
 //
-// **No PDCELVertex / BaseOffsetMap awareness.** This module is
+// **No dcel::PDCELVertex / BaseOffsetMap awareness.** This module is
 // deliberately decoupled from the rest of PreVABS so the same
 // `offsetWithClipper2` can be reused by the long-term end-state
 // nested-offset orchestrator (see plan-20260515 §8) without rewrite.
-// Callers convert their PDCELVertex sequence to SPoint2 in yz before
+// Callers convert their dcel::PDCELVertex sequence to SPoint2 in yz before
 // calling, and consume `OffsetPolygon` afterwards.
 
 #include "geo_types.hpp"
@@ -70,25 +70,25 @@ struct OffsetPolygon {
 
 /// One row of a reverse-matched base/offset correspondence, expressed
 /// in SPoint2 coordinates (yz plane). This is the SPoint2-only output
-/// of `planReverseMatch` — the PDCELVertex-aware wrapper
+/// of `planReverseMatch` — the dcel::PDCELVertex-aware wrapper
 /// `buildBaseOffsetMapFromOffsetPolygons` (declared below) consumes it
-/// and produces PDCELVertex* outputs.
+/// and produces dcel::PDCELVertex* outputs.
 ///
 /// Designed as the data carrier between Stage B (Clipper2 geometry)
 /// and Stage D (offset() main-body replacement). Per plan-20260515
 /// §8.4 the SPoint2 layer is forward-compatible with the future
-/// end-state nested-offset orchestrator; the PDCELVertex wrapper is
+/// end-state nested-offset orchestrator; the dcel::PDCELVertex wrapper is
 /// the deletable adapter.
 struct ReverseMatchPlan {
   /// Offset polygon vertices in walk order, in SPoint2 (yz).
   /// For a closed input, `offset_points[0]` is the rotated "anchor"
-  /// (it does NOT carry a trailing duplicate — the PDCELVertex
+  /// (it does NOT carry a trailing duplicate — the dcel::PDCELVertex
   /// wrapper appends the dup pointer when materializing).
   std::vector<SPoint2> offset_points;
 
   /// Per-vertex origin tag, parallel to `offset_points` (see
   /// `OffsetPolygon::resampled` for the convention). Carried through
-  /// the bridge so the PDCELVertex adapter can hand it to debug
+  /// the bridge so the dcel::PDCELVertex adapter can hand it to debug
   /// visualizers.
   std::vector<bool>    offset_resampled;
 
@@ -137,7 +137,7 @@ struct ReverseMatchPlan {
 };
 
 /// Pure-logic reverse-match bridge. Operates entirely on SPoint2 +
-/// index arithmetic; **no PDCELVertex** so it is unit-testable
+/// index arithmetic; **no dcel::PDCELVertex** so it is unit-testable
 /// outside the PreVABS DCEL ecosystem and reusable by the future
 /// end-state nested-offset orchestrator (plan-20260515 §8.4).
 ///
@@ -534,16 +534,16 @@ void resampleOpenRuns(std::vector<OffsetPolygon>& runs,
 
 
 // Forward declaration so callers and tests that do not need the full
-// PDCEL header chain can still include this header.
-class PDCELVertex;
+// dcel::PDCEL header chain can still include this header.
+namespace dcel { class PDCELVertex; }
 
 namespace prevabs {
 namespace geo {
 
-/// PDCELVertex-aware reverse-match result. Stage D wires this into
+/// dcel::PDCELVertex-aware reverse-match result. Stage D wires this into
 /// the legacy `offset()` signature in src/geo/offset.cpp.
 struct ReverseMatchResult {
-  /// Newly allocated PDCELVertex* (caller takes ownership).
+  /// Newly allocated dcel::PDCELVertex* (caller takes ownership).
   /// Convention:
   ///   - closed input  → `offset_vertices.front() == .back()` (same
   ///                     pointer), matching the PreVABS Baseline
@@ -553,7 +553,7 @@ struct ReverseMatchResult {
   ///                     distinct pointers, end-to-end 1:1 aligned
   ///                     with `base.front()` and `base.back()`.
   ///                     Size = M_off_raw.
-  std::vector<PDCELVertex*> offset_vertices;
+  std::vector<dcel::PDCELVertex*> offset_vertices;
   /// Per-vertex origin tag, parallel to `offset_vertices`. See
   /// `OffsetPolygon::resampled` for the convention. For closed inputs
   /// the trailing-duplicate slot copies the flag of the first vertex.
@@ -574,12 +574,12 @@ struct ReverseMatchResult {
 
 /// Stage C adapter (per plan-20260514 §5). Thin wrapper around
 /// `planReverseMatch` that:
-///   - extracts SPoint2 from PDCELVertex* (dropping the trailing
+///   - extracts SPoint2 from dcel::PDCELVertex* (dropping the trailing
 ///     duplicate vertex if the caller passes a closed Baseline with
 ///     `base.front() == base.back()`; for open inputs the input
 ///     vector is consumed unchanged).
 ///   - calls `planReverseMatch`,
-///   - allocates new PDCELVertex objects for each offset point.
+///   - allocates new dcel::PDCELVertex objects for each offset point.
 ///     For closed inputs, also appends the trailing-duplicate pointer
 ///     so `offset_vertices.front() == .back()`. Open inputs return
 ///     end-to-end distinct pointers with size == plan.offset_points
@@ -589,7 +589,7 @@ struct ReverseMatchResult {
 /// when the end-state nested-offset orchestrator replaces
 /// `BaseOffsetMap`.
 ReverseMatchResult buildBaseOffsetMapFromOffsetPolygons(
-    const std::vector<PDCELVertex*>&   base,
+    const std::vector<dcel::PDCELVertex*>&   base,
     bool                               base_is_closed,
     int                                side,
     double                             dist,

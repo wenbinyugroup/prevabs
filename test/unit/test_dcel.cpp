@@ -66,6 +66,8 @@ struct ScopedConfig {
 #include <cmath>
 #include <list>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 
 // ==================================================================
 // Helpers

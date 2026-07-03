@@ -22,6 +22,8 @@
 #include <cstddef>
 #include <cmath>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace {
 
 std::string makeAutoSingleSegmentName(std::size_t index) {

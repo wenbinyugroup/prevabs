@@ -23,6 +23,8 @@
 #include <cmath>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 using prevabs::geo::OffsetPolygon;
 using prevabs::geo::OffsetVertexSource;
 using prevabs::geo::JoinTypeChoice;

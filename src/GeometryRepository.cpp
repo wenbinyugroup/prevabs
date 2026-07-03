@@ -3,6 +3,8 @@
 #include "PBaseLine.hpp"
 #include "PDCELVertex.hpp"
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 void GeometryRepository::addVertex(PDCELVertex* v) {
   _vertices.push_back(v);
   _vertex_map[v->name()] = v;

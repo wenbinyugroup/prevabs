@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 Baseline::Baseline(Baseline *bl) {
   blname = bl->getName();
   bltype = bl->getType();

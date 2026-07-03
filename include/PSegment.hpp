@@ -6,8 +6,8 @@ class Baseline;
 class LayerType;
 class Layup;
 class PArea;
-class PDCELVertex;
-class PDCELFace;
+namespace dcel { class PDCELVertex; }
+namespace dcel { class PDCELFace; }
 class PGeoLineSegment;
 struct BuilderConfig;
 
@@ -42,7 +42,7 @@ private:
 
   Layup *_layup;
   std::vector<std::unique_ptr<PArea>> _areas;
-  std::vector<PDCELFace *> _layered_faces;
+  std::vector<dcel::PDCELFace *> _layered_faces;
   // Layup offset side relative to the directed base curve:
   // "left" means positive offset from base start -> end,
   // "right" means negative offset.
@@ -61,11 +61,11 @@ private:
   std::string _mat_orient_e2{"baseline"};
 
   // excluding vertices on the base curve and offset curve
-  std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
+  std::vector<dcel::PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
   std::vector<int> _prev_bound_indices, _next_bound_indices;
-  PDCELFace *_face;
+  dcel::PDCELFace *_face;
   int _free; // Free end. 0 (head) or 1 (tail)
-  PDCELVertex *_head_vertex_offset, *_tail_vertex_offset;
+  dcel::PDCELVertex *_head_vertex_offset, *_tail_vertex_offset;
   BaseOffsetMap _base_offset_indices_pairs;
   // Per-offset-vertex origin tag, parallel to `_curve_offset->vertices()`.
   // `false` = raw Clipper2 vertex, `true` = synthesized by the open-path
@@ -134,11 +134,11 @@ public:
   std::string getMatOrient1() { return _mat_orient_e1; }
   std::string getMatOrient2() { return _mat_orient_e2; }
 
-  PDCELVertex *getBeginVertex();
-  PDCELVertex *getEndVertex();
+  dcel::PDCELVertex *getBeginVertex();
+  dcel::PDCELVertex *getEndVertex();
 
-  PDCELVertex *headVertexOffset() { return _head_vertex_offset; }
-  PDCELVertex *tailVertexOffset() { return _tail_vertex_offset; }
+  dcel::PDCELVertex *headVertexOffset() { return _head_vertex_offset; }
+  dcel::PDCELVertex *tailVertexOffset() { return _tail_vertex_offset; }
 
   SVector3 getBeginTangent();
   SVector3 getEndTangent();
@@ -147,17 +147,17 @@ public:
   Segment *nextSegment() { return _next; }
   SVector3 prevBound() { return _prev_bound; }
   SVector3 nextBound() { return _next_bound; }
-  std::vector<PDCELVertex *> &prevBoundVertices() {
+  std::vector<dcel::PDCELVertex *> &prevBoundVertices() {
     return _prev_bound_vertices;
   }
-  std::vector<PDCELVertex *> &nextBoundVertices() {
+  std::vector<dcel::PDCELVertex *> &nextBoundVertices() {
     return _next_bound_vertices;
   }
   std::vector<int> &prevBoundIndices() { return _prev_bound_indices; }
   std::vector<int> &nextBoundIndices() { return _next_bound_indices; }
   BaseOffsetMap &baseOffsetIndicesPairs() { return _base_offset_indices_pairs; }
 
-  PDCELFace *face() { return _face; }
+  dcel::PDCELFace *face() { return _face; }
   std::size_t areaCount() const { return _areas.size(); }
   std::size_t layerCount() const;
 
@@ -173,8 +173,8 @@ public:
 
   void addArea(PArea *);
 
-  void setHeadVertexOffset(PDCELVertex *v) { _head_vertex_offset = v; }
-  void setTailVertexOffset(PDCELVertex *v) { _tail_vertex_offset = v; }
+  void setHeadVertexOffset(dcel::PDCELVertex *v) { _head_vertex_offset = v; }
+  void setTailVertexOffset(dcel::PDCELVertex *v) { _tail_vertex_offset = v; }
 
   void setLevel(int level) { _level = level; }
   void setFreeEnd(int fe) { _free = fe; }
@@ -184,8 +184,8 @@ public:
   void setNextBound(SVector3 &bound) { _next_bound = bound; }
   void setPrevBound(double x1, double x2, double x3) { _prev_bound = SVector3(x1, x2, x3); }
   void setNextBound(double x1, double x2, double x3) { _next_bound = SVector3(x1, x2, x3); }
-  void setPrevBoundVertices(std::vector<PDCELVertex *>);
-  void setNextBoundVertices(std::vector<PDCELVertex *>);
+  void setPrevBoundVertices(std::vector<dcel::PDCELVertex *>);
+  void setNextBoundVertices(std::vector<dcel::PDCELVertex *>);
   void setPrevBoundIndices(std::vector<int> indices) {
     _prev_bound_indices = indices;
   }
@@ -193,7 +193,7 @@ public:
     _next_bound_indices = indices;
   }
 
-  void setPDCELFace(PDCELFace *face) { _face = face; }
+  void setPDCELFace(dcel::PDCELFace *face) { _face = face; }
 
   // Build the offset curve once. Repeated calls before build() are no-ops.
   // `enable_adaptive_thickness` (default false) is the master switch for the
@@ -234,43 +234,43 @@ private:
 
   // Split the bound edge [vb, vo] parametrically by layup into layer vertices.
   // Splits DCEL edges in place. Returns the new intermediate vertices.
-  std::vector<PDCELVertex *> splitBoundByLayup(
-      PDCELVertex *vb, PDCELVertex *vo, const BuilderConfig &bcfg);
+  std::vector<dcel::PDCELVertex *> splitBoundByLayup(
+      dcel::PDCELVertex *vb, dcel::PDCELVertex *vo, const BuilderConfig &bcfg);
 
   // Search face boundary edges from v_prev for the intersection with ls_offset.
   // go_prev controls traversal direction (true = prev(), false = next()).
   // stop_vertex is the offset-bound endpoint that terminates this local
   // traversal (head uses offset.front(), tail uses offset.back()).
   // May split an edge. Returns the intersection vertex, or nullptr if not found.
-  PDCELVertex *findLayerIntersectionOnFace(
-      PDCELVertex *v_prev, PDCELFace *face,
-      PGeoLineSegment *ls_offset, bool go_prev, PDCELVertex *stop_vertex,
+  dcel::PDCELVertex *findLayerIntersectionOnFace(
+      dcel::PDCELVertex *v_prev, dcel::PDCELFace *face,
+      PGeoLineSegment *ls_offset, bool go_prev, dcel::PDCELVertex *stop_vertex,
       const BuilderConfig &bcfg);
 
   // Build layer vertices on an open bound by intersecting offset line segments
   // with the face boundary. v_start is the seed vertex; go_prev controls
   // traversal direction; stop_vertex selects the current offset-side boundary
   // endpoint. Returns the new layer vertices.
-  std::vector<PDCELVertex *> buildOpenBoundLayerVertices(
-      PDCELVertex *v_start, PGeoLineSegment *ls_base,
-      bool go_prev, PDCELVertex *stop_vertex, const BuilderConfig &bcfg);
+  std::vector<dcel::PDCELVertex *> buildOpenBoundLayerVertices(
+      dcel::PDCELVertex *v_start, PGeoLineSegment *ls_base,
+      bool go_prev, dcel::PDCELVertex *stop_vertex, const BuilderConfig &bcfg);
 
   // Section 1: compute beginning-bound layer vertices.
   // For closed segments, also fills first_bound_vertices.
-  std::vector<PDCELVertex *> buildBeginningBound(
-      std::vector<PDCELVertex *> &first_bound_vertices,
+  std::vector<dcel::PDCELVertex *> buildBeginningBound(
+      std::vector<dcel::PDCELVertex *> &first_bound_vertices,
       const BuilderConfig &bcfg);
 
   // Section 2: create all intermediate areas and update prev_bound_vertices
   // and count.
   void createIntermediateAreas(
-      std::vector<PDCELVertex *> &prev_bound_vertices,
+      std::vector<dcel::PDCELVertex *> &prev_bound_vertices,
       int &count, const BuilderConfig &bcfg);
 
   // Section 3: create and append the last (or only) area.
   void buildLastArea(
-      const std::vector<PDCELVertex *> &prev_bound_vertices,
-      const std::vector<PDCELVertex *> &first_bound_vertices,
+      const std::vector<dcel::PDCELVertex *> &prev_bound_vertices,
+      const std::vector<dcel::PDCELVertex *> &first_bound_vertices,
       int count, const BuilderConfig &bcfg);
 
   // Phase-2a (plan-20260618-per-layer-offset-within-shell.md): when the

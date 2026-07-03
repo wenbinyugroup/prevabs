@@ -23,6 +23,8 @@
 #include <utility>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 int CrossSection::used_material_index = 0;
 int CrossSection::used_layertype_index = 0;
 

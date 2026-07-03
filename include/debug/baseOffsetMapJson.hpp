@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 namespace prevabs {
 namespace geo {
 struct LinearAdaptiveThicknessPlan;
@@ -39,8 +39,8 @@ struct LinearAdaptiveThicknessPlan;
 void dumpBaseOffsetMapJson(
     const std::string& path,
     const std::string& title,
-    const std::vector<PDCELVertex*>& base,
-    const std::vector<PDCELVertex*>& offset,
+    const std::vector<dcel::PDCELVertex*>& base,
+    const std::vector<dcel::PDCELVertex*>& offset,
     const BaseOffsetMap& pairs,
     bool   closed,
     int    side,

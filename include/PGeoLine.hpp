@@ -11,33 +11,33 @@
 
 // class PGeoLine {
 // private:
-//   std::list<PDCELVertex *> _vertices;
+//   std::list<dcel::PDCELVertex *> _vertices;
 
 // public:
 //   PGeoLine() {}
 
 //   friend std::ostream &operator<<(std::ostream &, PGeoLine *);
 
-//   std::list<PDCELVertex *> &vertices() { return _vertices; }
+//   std::list<dcel::PDCELVertex *> &vertices() { return _vertices; }
 //   bool isClosed() { return (_vertices.front() == _vertices.back()); }
 
-//   void setVertices(std::list<PDCELVertex *>);
-//   void addVertex(PDCELVertex *);
+//   void setVertices(std::list<dcel::PDCELVertex *>);
+//   void addVertex(dcel::PDCELVertex *);
 //   void closeLine();
 // };
 
 class PGeoLineSegment {
 private:
-  PDCELVertex *_v1;
-  PDCELVertex *_v2;
-  PDCELHalfEdge *_he12;
-  PDCELHalfEdge *_he21;
+  dcel::PDCELVertex *_v1;
+  dcel::PDCELVertex *_v2;
+  dcel::PDCELHalfEdge *_he12;
+  dcel::PDCELHalfEdge *_he21;
 
 public:
   PGeoLineSegment()
       : _v1(nullptr), _v2(nullptr), _he12(nullptr), _he21(nullptr) {}
-  PGeoLineSegment(PDCELVertex *, PDCELVertex *);
-  PGeoLineSegment(PDCELVertex *, SVector3);
+  PGeoLineSegment(dcel::PDCELVertex *, dcel::PDCELVertex *);
+  PGeoLineSegment(dcel::PDCELVertex *, SVector3);
   PGeoLineSegment(PGeoLineSegment *);
 
   friend std::ostream &operator<<(std::ostream &, PGeoLineSegment *);
@@ -45,30 +45,30 @@ public:
   std::string printString();
   void print2();
 
-  PDCELVertex *v1() { return _v1; }
-  PDCELVertex *v2() { return _v2; }
-  PDCELHalfEdge *he12() { return _he12; }
-  PDCELHalfEdge *he21() { return _he21; }
-  PDCELVertex *vin(); // The left bottom vertex
-  PDCELVertex *vout(); // The right top vertex
+  dcel::PDCELVertex *v1() { return _v1; }
+  dcel::PDCELVertex *v2() { return _v2; }
+  dcel::PDCELHalfEdge *he12() { return _he12; }
+  dcel::PDCELHalfEdge *he21() { return _he21; }
+  dcel::PDCELVertex *vin(); // The left bottom vertex
+  dcel::PDCELVertex *vout(); // The right top vertex
 
-  void setV1(PDCELVertex *v) { _v1 = v; }
-  void setV2(PDCELVertex *v) { _v2 = v; }
+  void setV1(dcel::PDCELVertex *v) { _v1 = v; }
+  void setV2(dcel::PDCELVertex *v) { _v2 = v; }
 
   SVector3 toVector();
 
-  PDCELVertex *getParametricVertex1(double);
-  PDCELVertex *getParametricVertex(double);
-  double getParametricLocation(PDCELVertex *);
+  dcel::PDCELVertex *getParametricVertex1(double);
+  dcel::PDCELVertex *getParametricVertex(double);
+  double getParametricLocation(dcel::PDCELVertex *);
 
-  PDCELHalfEdge *getHalfEdgeWithSource(PDCELVertex *);
+  dcel::PDCELHalfEdge *getHalfEdgeWithSource(dcel::PDCELVertex *);
 
-  void setHalfEdge(PDCELHalfEdge *);
+  void setHalfEdge(dcel::PDCELHalfEdge *);
 };
 
 class PGeoArc {
 private:
-  PDCELVertex *_center, *_start, *_end;
+  dcel::PDCELVertex *_center, *_start, *_end;
   double _radius2; // radius square
   double _angle;   // angle in degree
   int _direction;
@@ -76,14 +76,14 @@ private:
 
 public:
   PGeoArc() {}
-  PGeoArc(PDCELVertex *, PDCELVertex *, int); // Circle
-  PGeoArc(PDCELVertex *, PDCELVertex *, PDCELVertex *, int);
-  PGeoArc(PDCELVertex *, PDCELVertex *, double, int);
-  PGeoArc(PDCELVertex *, PDCELVertex *, PDCELVertex *, double, int);
+  PGeoArc(dcel::PDCELVertex *, dcel::PDCELVertex *, int); // Circle
+  PGeoArc(dcel::PDCELVertex *, dcel::PDCELVertex *, dcel::PDCELVertex *, int);
+  PGeoArc(dcel::PDCELVertex *, dcel::PDCELVertex *, double, int);
+  PGeoArc(dcel::PDCELVertex *, dcel::PDCELVertex *, dcel::PDCELVertex *, double, int);
 
-  PDCELVertex *center() const { return _center; }
-  PDCELVertex *start() const { return _start; }
-  PDCELVertex *end() const { return _end; }
+  dcel::PDCELVertex *center() const { return _center; }
+  dcel::PDCELVertex *start() const { return _start; }
+  dcel::PDCELVertex *end() const { return _end; }
   double radiusSquare() const { return _radius2; }
   double angle() const { return _angle; }
   int direction() const { return _direction; }

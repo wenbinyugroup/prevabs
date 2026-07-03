@@ -30,6 +30,8 @@
 #include <vector>
 #include <utility>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace {
 
 const double kGmshFailFastMaxRetries = 1.0;

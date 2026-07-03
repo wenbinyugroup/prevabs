@@ -21,7 +21,7 @@
 class LayerType;
 class Material;
 class PArea;
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 
 #include "geo_types.hpp"  // SVector3
 
@@ -41,5 +41,5 @@ struct PDCELFaceData {
   SVector3        y1{1, 0, 0};
   SVector3        y2{0, 1, 0};
   double          mesh_size = -1.0;
-  std::vector<PDCELVertex *> embedded_vertices;
+  std::vector<dcel::PDCELVertex *> embedded_vertices;
 };

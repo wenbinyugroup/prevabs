@@ -7,6 +7,8 @@
 
 #include <string>
 
+namespace dcel {
+
 class PDCELHalfEdge;
 class PDCELFace;
 class PDCELVertex;
@@ -48,3 +50,5 @@ public:
   /// Update _incident_edge to track the half-edge with the bottom-left source.
   void updateIncidentEdge(PDCELHalfEdge *);
 };
+
+}  // namespace dcel

@@ -25,6 +25,8 @@
 #include <limits>
 #include <stdexcept>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 using namespace rapidxml;
 
 void printInfo(int indent, std::string s_message) {

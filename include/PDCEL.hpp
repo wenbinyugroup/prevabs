@@ -4,22 +4,28 @@
 // dependencies in the include chain.
 class Baseline;
 class Message;
+class PGeoLineSegment;
+struct BuilderConfig;
+
+namespace dcel {
 class PDCELVertex;
 class PDCELHalfEdge;
 class PDCELHalfEdgeLoop;
 class PDCELFace;
-class PGeoLineSegment;
-struct BuilderConfig;
+class PDCEL;
+}  // namespace dcel
 
 #include <list>
 #include <string>
 #include <vector>
 
+namespace dcel {
 std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
-    const class PDCEL &dcel, PDCELVertex *v,
+    const PDCEL &dcel, PDCELVertex *v,
     std::vector<PGeoLineSegment *> &temp_segs);
-PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
+PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel,
                                        PDCELVertex *v);
+}  // namespace dcel
 
 #include "declarations.hpp"
 #include "PDCELFace.hpp"
@@ -39,6 +45,8 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
 /// x, y, z), matching the sort order required by the sweep-line algorithm.
 /// The body of operator() is defined in PDCEL.cpp to avoid requiring the full
 /// PDCELVertex definition in this header (circular include guard issue).
+namespace dcel {
+
 struct CompareVertexByPoint {
   bool operator()(PDCELVertex *a, PDCELVertex *b) const;
 };
@@ -270,3 +278,5 @@ public:
   std::list<PDCELFace *> splitFaceByClosedCurve(
       PDCELFace *f, const std::vector<PDCELVertex *> &ring);
 };
+
+}  // namespace dcel

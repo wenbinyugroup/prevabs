@@ -54,6 +54,8 @@ void plotGeoSnapshotImpl(PModel *, const std::string &, bool) {}
 #include "plog.hpp"
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 namespace {
 struct LoggerSetup {
   LoggerSetup() {

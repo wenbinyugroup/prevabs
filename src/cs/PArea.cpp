@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace {
 
 // Average of the source vertices along the face's outer boundary loop,

@@ -12,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace dcel {
+
 std::string PDCELHalfEdge::label() const {
   std::stringstream ss;
   ss << "he#" << _id;
@@ -140,3 +142,5 @@ void PDCELHalfEdge::setLoop(PDCELHalfEdgeLoop *hel) {
   _loop = hel;
   if (hel) hel->updateIncidentEdge(this);
 }
+
+}  // namespace dcel

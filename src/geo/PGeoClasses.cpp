@@ -11,6 +11,8 @@
 #include <cmath>
 #include <iostream>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 PGeoPoint2::PGeoPoint2(const PGeoPoint3 &p, const int &plane) {
   if (plane == 0) {
     _c1 = p[1];

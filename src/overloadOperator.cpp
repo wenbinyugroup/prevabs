@@ -18,6 +18,8 @@
 #include <iostream>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 // template <typename T>
 std::ostream &operator<<(std::ostream &out, const std::vector<double> &v) {
   for (auto n : v) {

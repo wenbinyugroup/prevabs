@@ -36,6 +36,8 @@
 #include <utility>
 #include <vector>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 // Whether the layered per-layer-offset build path is active. Primary knob is
 // the XML config `config.layered_offset` (<general>/<layered_offset>, default
 // ON). The env var PREVABS_LAYERED_OFFSET still overrides if set (quick CLI

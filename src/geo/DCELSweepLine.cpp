@@ -10,6 +10,8 @@
 #include <cmath>
 #include <map>
 
+namespace dcel {
+
 std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
     const PDCEL &dcel, PDCELVertex *v,
     std::vector<PGeoLineSegment *> &temp_segs) {
@@ -116,3 +118,5 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel, PDCELVertex *v) {
 
   return he_below;
 }
+
+}  // namespace dcel

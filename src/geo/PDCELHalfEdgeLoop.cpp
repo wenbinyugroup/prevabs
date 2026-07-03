@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace dcel {
+
 std::string PDCELHalfEdgeLoop::label() const {
   std::stringstream ss;
   ss << "loop#" << _id;
@@ -112,3 +114,5 @@ void PDCELHalfEdgeLoop::updateIncidentEdge(PDCELHalfEdge *he) {
     _incident_edge = he;
   }
 }
+
+}  // namespace dcel

@@ -12,6 +12,8 @@
   do { std::ostringstream _h2oss; _h2oss << a; PLOG_DEBUG_AT(geo) << _h2oss.str(); } while(0)
 #include "homog2d.hpp"
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 
 namespace {
 

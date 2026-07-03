@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 class CrossSection;
 class Message;
 
@@ -24,8 +24,8 @@ private:
   std::string blname;
   std::string bltype;
   int blnumbasepoints;
-  std::vector<PDCELVertex *> _pvertices;
-  PDCELVertex *_ref_vertex = nullptr;
+  std::vector<dcel::PDCELVertex *> _pvertices;
+  dcel::PDCELVertex *_ref_vertex = nullptr;
 
 public:
 
@@ -66,12 +66,12 @@ public:
   /**
    * Get the list of vertices of the line.
    */
-  std::vector<PDCELVertex *> &vertices() { return _pvertices; }
+  std::vector<dcel::PDCELVertex *> &vertices() { return _pvertices; }
 
   /**
    * Get the reference vertex of the line.
    */
-  PDCELVertex *refVertex() { return _ref_vertex; }
+  dcel::PDCELVertex *refVertex() { return _ref_vertex; }
 
   /**
    * Is the line closed or open.
@@ -103,17 +103,17 @@ public:
   /**
    * Append new vertex to the line.
    */
-  void addPVertex(PDCELVertex *);
+  void addPVertex(dcel::PDCELVertex *);
 
   /**
    * Insert new vertex into the line.
    */
-  void insertPVertex(const int &, PDCELVertex *);
+  void insertPVertex(const int &, dcel::PDCELVertex *);
 
   /**
    * Set the reference vertex.
    */
-  void setRefVertex(PDCELVertex *rv) { _ref_vertex = rv; }
+  void setRefVertex(dcel::PDCELVertex *rv) { _ref_vertex = rv; }
 
   /**
    * Join another curve to this one.

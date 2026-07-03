@@ -21,6 +21,8 @@
 #include <sstream>
 #include <iostream>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 PComponent *readXMLElementComponent(
   const rapidxml::xml_node<> *xn_component,
   std::vector<std::vector<std::string>> &dependents_all,

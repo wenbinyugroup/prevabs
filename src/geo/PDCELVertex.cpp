@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iostream>
 
+namespace dcel {
+
 std::string PDCELVertex::label() const {
   std::stringstream ss;
   ss << "v#" << _id;
@@ -161,3 +163,5 @@ void PDCELVertex::setIncidentEdge(PDCELHalfEdge *he) { _incident_edge = he; }
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2) {
   return v1->point() < v2->point();
 }
+
+}  // namespace dcel

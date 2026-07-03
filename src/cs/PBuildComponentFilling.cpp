@@ -13,6 +13,8 @@
 #include <list>
 #include <sstream>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 namespace {
 
 static PDCELHalfEdgeLoop *findOutermostLoop(

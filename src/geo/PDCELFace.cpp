@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+namespace dcel {
+
 void syncPDCELFaceLogName(PDCELFace *f, const std::string &name) {
   if (f != nullptr) {
     f->setLogName(name);
@@ -188,3 +190,5 @@ SVector3 PDCELFace::calcy2FromTheta1(double theta1, bool deg) {
   }
   return SVector3(0, cos(theta1), sin(theta1));
 }
+
+}  // namespace dcel

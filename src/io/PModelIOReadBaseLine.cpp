@@ -35,6 +35,8 @@
 #elif _WIN32
 #include <tchar.h>
 #include <windows.h>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 #endif
 
 int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,

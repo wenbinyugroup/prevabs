@@ -193,9 +193,9 @@ Baseline *findLineByName(const std::string &, const rapidxml::xml_node<> *,
  * Read the point definitions from a file.
  */
 void readPointsFromFile(const std::string &, PModel *, double);
-PDCELVertex *readXMLElementPoint(const rapidxml::xml_node<> *,
+dcel::PDCELVertex *readXMLElementPoint(const rapidxml::xml_node<> *,
                                  const rapidxml::xml_node<> *, PModel *);
-PDCELVertex *findPointByName(const std::string &,
+dcel::PDCELVertex *findPointByName(const std::string &,
                              const rapidxml::xml_node<> *, PModel *);
 
 /** @ingroup io
@@ -282,7 +282,7 @@ void writeNumbers(FILE *file, const char *fmt, const std::vector<T> &nums) {
   fprintf(file, "\n");
 }
 
-int writeFace(FILE *, PDCELFace *);
+int writeFace(FILE *, dcel::PDCELFace *);
 
 /** @ingroup io
  * Write the node block to a file.
