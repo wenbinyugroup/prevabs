@@ -10,7 +10,7 @@ class PModel;
 
 #include "declarations.hpp"
 #include "PComponent.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
 #include "globalConstants.hpp"

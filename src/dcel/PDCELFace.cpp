@@ -1,10 +1,10 @@
-#include "PDCELFace.hpp"
+#include "dcel/PDCELFace.hpp"
 
 #include "Material.hpp"
 #include "PArea.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 #include "utilities.hpp"
 

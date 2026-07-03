@@ -1,6 +1,6 @@
 #include "PComponent.hpp"
 
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "globalConstants.hpp"
 #include "plog.hpp"
 #include "utilities.hpp"

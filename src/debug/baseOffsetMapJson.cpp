@@ -3,7 +3,7 @@
 #include "debug/baseOffsetMapJson.hpp"
 
 #include "adaptive_thickness.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 
 #include <cmath>

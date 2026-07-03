@@ -4,7 +4,7 @@
 #include "CrossSection.hpp"
 #include "globalConstants.hpp"
 #include "Material.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "utilities.hpp"
 #include "geo_types.hpp"
 

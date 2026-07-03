@@ -2,7 +2,7 @@
 
 #include "Material.hpp"
 #include "PFilling.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PSegment.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"

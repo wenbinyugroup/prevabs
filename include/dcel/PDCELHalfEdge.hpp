@@ -1,8 +1,8 @@
 #pragma once
 
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 
 #include "geo_types.hpp"

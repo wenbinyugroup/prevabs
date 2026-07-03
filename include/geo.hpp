@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Material.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PBaseLine.hpp"
 #include "curve.hpp"

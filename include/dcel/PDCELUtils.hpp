@@ -3,7 +3,7 @@
 // Prevents infinite loops when a half-edge cycle is broken and next()
 // never returns to the start half-edge.
 
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 #include "plog.hpp"
 #include <algorithm>
 #include <sstream>

@@ -1,9 +1,9 @@
-#include "DCELValidator.hpp"
+#include "dcel/DCELValidator.hpp"
 
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "geo.hpp"
 #include "plog.hpp"
 

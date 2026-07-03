@@ -1,8 +1,8 @@
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "DCELConfig.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/DCELConfig.hpp"
 #include "utilities.hpp"
 
 #include "geo_types.hpp"

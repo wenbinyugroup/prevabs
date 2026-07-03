@@ -2,7 +2,7 @@
 
 #include "debug/baseOffsetMapSvg.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 
 #include <algorithm>

@@ -1,6 +1,6 @@
 #include "PComponent.hpp"
 
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
 #include "curve.hpp"

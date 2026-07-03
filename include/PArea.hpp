@@ -10,9 +10,9 @@ class PGeoLineSegment;
 class Segment;
 
 #include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"

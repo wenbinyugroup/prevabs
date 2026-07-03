@@ -1,7 +1,7 @@
 #include "PGeoClasses.hpp"
 
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "utilities.hpp"

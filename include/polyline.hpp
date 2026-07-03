@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "geo_common.hpp"
 
 #include <string>

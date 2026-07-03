@@ -59,8 +59,8 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/execu.cpp
   ${CMAKE_SOURCE_DIR}/src/execu_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/adaptive_thickness.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/DCELSweepLine.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/DCELValidator.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/DCELSweepLine.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/DCELValidator.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/curve.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/CurveFrameLookup.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/geo_diagnostics.cpp
@@ -72,11 +72,11 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2_bridge.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/offset_clipper2_pdcel.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PBST.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/PDCEL.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/PDCELFace.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/PDCELHalfEdge.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/PDCELHalfEdgeLoop.cpp
-  ${CMAKE_SOURCE_DIR}/src/geo/PDCELVertex.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/PDCEL.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/PDCELFace.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/PDCELHalfEdge.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/PDCELHalfEdgeLoop.cpp
+  ${CMAKE_SOURCE_DIR}/src/dcel/PDCELVertex.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoClasses.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/PGeoLine.cpp
   ${CMAKE_SOURCE_DIR}/src/geo/polyline.cpp

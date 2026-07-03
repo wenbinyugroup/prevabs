@@ -4,7 +4,7 @@
 #include "Material.hpp"
 #include "PBaseLine.hpp"
 #include "PComponent.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "PSegment.hpp"

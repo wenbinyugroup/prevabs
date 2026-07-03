@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PBaseLine.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo_common.hpp"
 

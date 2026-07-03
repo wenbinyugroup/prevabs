@@ -3,7 +3,7 @@
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
 #include "overloadOperator.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
 #include "geo_types.hpp"

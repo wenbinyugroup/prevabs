@@ -1,10 +1,10 @@
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 
 #include "overloadOperator.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo_types.hpp"
 #include <cmath>

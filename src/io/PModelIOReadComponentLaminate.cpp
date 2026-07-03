@@ -1,6 +1,6 @@
 #include "PModelIO.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PBaseLine.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"

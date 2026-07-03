@@ -1,7 +1,7 @@
 #include "PComponent.hpp"
 
 #include "Material.hpp"
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "PGeoClasses.hpp"
 #include "PSegment.hpp"
 #include "geo.hpp"

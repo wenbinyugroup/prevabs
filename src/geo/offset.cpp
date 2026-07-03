@@ -1,8 +1,8 @@
 #include "geo.hpp"
 
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"

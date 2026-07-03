@@ -1,11 +1,11 @@
-#include "DCELSweepLine.hpp"
+#include "dcel/DCELSweepLine.hpp"
 
-#include "PDCEL.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo.hpp"
-#include "DCELConfig.hpp"
+#include "dcel/DCELConfig.hpp"
 
 #include <cmath>
 #include <map>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PDCELVertex.hpp"
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 
 class PEdge {
 private:

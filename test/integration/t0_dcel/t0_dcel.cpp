@@ -20,11 +20,11 @@
 // closure the unit DCEL tests already accept. No Gmsh required.
 // ---------------------------------------------------------------------------
 
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 

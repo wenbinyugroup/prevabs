@@ -1,7 +1,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "PBaseLine.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "globalVariables.hpp"

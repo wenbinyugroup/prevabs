@@ -1,7 +1,7 @@
 #pragma once
 
 #include "declarations.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 
 #include <iostream>
 #include <list>

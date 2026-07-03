@@ -2,8 +2,8 @@
 
 #include "Material.hpp"
 #include "PBaseLine.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PDataClasses.hpp"
 #include "PModel.hpp"
 #include "declarations.hpp"

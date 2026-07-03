@@ -1,7 +1,7 @@
 #include "utilities.hpp"
 
 #include "PComponent.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"

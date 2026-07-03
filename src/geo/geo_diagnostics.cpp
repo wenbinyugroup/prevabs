@@ -1,6 +1,6 @@
 #include "geo_diagnostics.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "globalConstants.hpp"
 #include "overloadOperator.hpp"

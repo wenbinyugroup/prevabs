@@ -1,8 +1,8 @@
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 
 #include <iostream>

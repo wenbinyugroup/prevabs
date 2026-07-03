@@ -19,7 +19,7 @@ class PMesh;
 #include "declarations.hpp"
 #include "globalVariables.hpp"
 #include "Material.hpp"
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "PDCELFaceData.hpp"
 #include "PDCELVertexData.hpp"
 #include "PSegment.hpp"

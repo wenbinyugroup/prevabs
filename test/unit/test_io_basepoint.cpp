@@ -1,6 +1,6 @@
 #include "catch_amalgamated.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "globalVariables.hpp"

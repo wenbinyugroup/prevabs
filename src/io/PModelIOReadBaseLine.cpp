@@ -1,6 +1,6 @@
 #include "PModelIO.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"

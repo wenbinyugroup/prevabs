@@ -1,7 +1,7 @@
 #include "PModelIO.hpp"
 
 #include "PBaseLine.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "globalVariables.hpp"
 #include "plog.hpp"

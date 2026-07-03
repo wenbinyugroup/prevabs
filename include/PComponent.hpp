@@ -2,8 +2,8 @@
 
 #include "declarations.hpp"
 #include "Material.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PSegment.hpp"
 #include "PBaseLine.hpp"

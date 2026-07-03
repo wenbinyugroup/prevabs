@@ -9,7 +9,7 @@
 
 #include "offset_clipper2.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "debug/segmentBuildDump.hpp"
 #include "plog.hpp"
 

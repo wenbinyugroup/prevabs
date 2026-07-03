@@ -3,7 +3,7 @@
 // Domain fields (_link_to, _p_on_line) have been moved to PDCELVertexData,
 // owned by PModel.  PDCELVertex now holds only topology + identity.
 
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 
 #include "geo_types.hpp"
 
