@@ -3,16 +3,16 @@
 // Forward declarations first — before any includes — to break circular
 // dependencies in the include chain.
 class Message;
-class PDCELVertex;
-class PDCELHalfEdge;
-class PDCELFace;
+namespace dcel { class PDCELVertex; }
+namespace dcel { class PDCELHalfEdge; }
+namespace dcel { class PDCELFace; }
 class PGeoLineSegment;
 class Segment;
 
 #include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PSegment.hpp"
 #include "utilities.hpp"
@@ -28,8 +28,8 @@ class Segment;
 class PArea {
 private:
   Segment *_segment;
-  PDCELHalfEdge *_base, *_opposite;
-  std::list<PDCELFace *> _faces;
+  dcel::PDCELHalfEdge *_base, *_opposite;
+  std::list<dcel::PDCELFace *> _faces;
   // Through-thickness vector for the `_mat_orient_e2 == "layup"` selector.
   // Frame for the `baseline` selector is computed per-face in
   // applyFrameFromBaseCurve, not on the area, so no `_y1` is kept here.
@@ -37,8 +37,8 @@ private:
   SVector3 _prev_bound, _next_bound;
 
   // excluding vertices on the base curve and offset curve
-  std::vector<PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
-  PDCELFace *_face;
+  std::vector<dcel::PDCELVertex *> _prev_bound_vertices, _next_bound_vertices;
+  dcel::PDCELFace *_face;
   PGeoLineSegment *_line_segment_base;
 
 public:
@@ -49,32 +49,32 @@ public:
   void print();
 
   Segment *segment() { return _segment; }
-  std::list<PDCELFace *> &faces() { return _faces; }
+  std::list<dcel::PDCELFace *> &faces() { return _faces; }
   SVector3 &prevBound() { return _prev_bound; }
   SVector3 &nextBound() { return _next_bound; }
-  std::vector<PDCELVertex *> &prevBoundVertices() {
+  std::vector<dcel::PDCELVertex *> &prevBoundVertices() {
     return _prev_bound_vertices;
   }
-  std::vector<PDCELVertex *> &nextBoundVertices() {
+  std::vector<dcel::PDCELVertex *> &nextBoundVertices() {
     return _next_bound_vertices;
   }
-  PDCELFace *face() { return _face; }
+  dcel::PDCELFace *face() { return _face; }
   PGeoLineSegment *lineSegmentBase() { return _line_segment_base; }
 
   SVector3 localy2() { return _y2; }
   SVector3 localy3();
 
   void setSegment(Segment *);
-  void addFace(PDCELFace *);
+  void addFace(dcel::PDCELFace *);
   void setLocaly2(SVector3 v) { _y2 = v; };
   void setLocaly3(SVector3 v) { _y3 = v; };
   void setPrevBound(SVector3 &);
   void setNextBound(SVector3 &);
-  void setPrevBoundVertices(std::vector<PDCELVertex *>);
-  void setNextBoundVertices(std::vector<PDCELVertex *>);
-  void addPrevBoundVertex(PDCELVertex *);
-  void addNextBoundVertex(PDCELVertex *);
-  void setFace(PDCELFace *f) { _face = f; }
+  void setPrevBoundVertices(std::vector<dcel::PDCELVertex *>);
+  void setNextBoundVertices(std::vector<dcel::PDCELVertex *>);
+  void addPrevBoundVertex(dcel::PDCELVertex *);
+  void addNextBoundVertex(dcel::PDCELVertex *);
+  void setFace(dcel::PDCELFace *f) { _face = f; }
   void setLineSegmentBase(PGeoLineSegment *ls) { _line_segment_base = ls; }
 
   void buildLayers(const BuilderConfig &);

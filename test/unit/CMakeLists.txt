@@ -17,6 +17,7 @@ configure_file(
   @ONLY
 )
 set(SRC_GEO  ${REPO_ROOT}/src/geo)
+set(SRC_DCEL ${REPO_ROOT}/src/dcel)
 set(SRC_ROOT ${REPO_ROOT}/src)
 
 # ------------------------------------------------------------------
@@ -91,14 +92,14 @@ set(TEST_DCEL_SOURCES
   test_io_basepoint.cpp
   test_parse_helpers.cpp
   test_execu_timeout.cpp
-  ${SRC_GEO}/DCELSweepLine.cpp
+  ${SRC_DCEL}/DCELSweepLine.cpp
   ${SRC_GEO}/adaptive_thickness.cpp
-  ${SRC_GEO}/DCELValidator.cpp
-  ${SRC_GEO}/PDCEL.cpp
-  ${SRC_GEO}/PDCELFace.cpp
-  ${SRC_GEO}/PDCELHalfEdge.cpp
-  ${SRC_GEO}/PDCELHalfEdgeLoop.cpp
-  ${SRC_GEO}/PDCELVertex.cpp
+  ${SRC_DCEL}/DCELValidator.cpp
+  ${SRC_DCEL}/PDCEL.cpp
+  ${SRC_DCEL}/PDCELFace.cpp
+  ${SRC_DCEL}/PDCELHalfEdge.cpp
+  ${SRC_DCEL}/PDCELHalfEdgeLoop.cpp
+  ${SRC_DCEL}/PDCELVertex.cpp
   ${SRC_GEO}/PGeoClasses.cpp
   ${SRC_GEO}/PGeoLine.cpp
   ${SRC_GEO}/curve.cpp

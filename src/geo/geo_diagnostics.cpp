@@ -1,6 +1,6 @@
 #include "geo_diagnostics.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "globalConstants.hpp"
 #include "overloadOperator.hpp"
@@ -12,6 +12,8 @@
 #include <cmath>
 #include <sstream>
 #include <string>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace prevabs {
 namespace geo {

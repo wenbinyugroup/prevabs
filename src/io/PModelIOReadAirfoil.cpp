@@ -1,7 +1,7 @@
 #include "PModelIO.hpp"
 
 #include "PBaseLine.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "globalVariables.hpp"
 #include "plog.hpp"
@@ -17,6 +17,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

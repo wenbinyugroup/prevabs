@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-class PDCEL;
+namespace dcel { class PDCEL; }
 class LayerType;
 class Material;
 class PModel;
@@ -218,13 +218,13 @@ struct BuilderConfig {
   AnalysisTool tool;
   double       tol;
   double       geo_tol;
-  PDCEL*           dcel      = nullptr;
+  dcel::PDCEL*           dcel      = nullptr;
   IMaterialLookup* materials = nullptr;
   PModel*          model     = nullptr;
 
   BuilderConfig() = default;
   BuilderConfig(DebugLevel d, AnalysisTool t, double to, double gt,
-                PDCEL* dcel_ptr, PModel* m)
+                dcel::PDCEL* dcel_ptr, PModel* m)
       : debug_level(d), tool(t), tol(to), geo_tol(gt),
         dcel(dcel_ptr), model(m) {}
 };

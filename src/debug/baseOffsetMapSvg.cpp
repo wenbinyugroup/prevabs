@@ -2,7 +2,7 @@
 
 #include "debug/baseOffsetMapSvg.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 
 #include <algorithm>
@@ -12,6 +12,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

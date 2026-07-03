@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
+
 Baseline *joinCurves(std::list<Baseline *> curves) {
   if (curves.empty()) {
     std::cout << markError << " joinCurves: no curves were provided"

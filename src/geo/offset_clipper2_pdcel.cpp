@@ -9,13 +9,15 @@
 
 #include "offset_clipper2.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "debug/segmentBuildDump.hpp"
 #include "plog.hpp"
 
 #include <sstream>
 #include <string>
 #include <utility>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace prevabs {
 namespace geo {

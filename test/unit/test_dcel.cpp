@@ -48,12 +48,12 @@ struct ScopedConfig {
 // ------------------------------------------------------------------
 // DCEL headers
 // ------------------------------------------------------------------
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PBaseLine.hpp"
 #include "PComponent.hpp"
 #include "Material.hpp"
@@ -65,6 +65,8 @@ struct ScopedConfig {
 #include <algorithm>
 #include <cmath>
 #include <list>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 
 // ==================================================================

@@ -1,6 +1,6 @@
 #include "PComponent.hpp"
 
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
 #include "curve.hpp"
@@ -12,6 +12,8 @@
 #include <cmath>
 #include <list>
 #include <sstream>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

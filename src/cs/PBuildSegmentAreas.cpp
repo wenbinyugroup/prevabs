@@ -2,10 +2,10 @@
 
 #include "CurveFrameLookup.hpp"
 #include "Material.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "debug/baseOffsetMapJson.hpp"
@@ -35,6 +35,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 // Whether the layered per-layer-offset build path is active. Primary knob is
 // the XML config `config.layered_offset` (<general>/<layered_offset>, default

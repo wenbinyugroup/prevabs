@@ -1,7 +1,7 @@
 #include "utilities.hpp"
 
 #include "PComponent.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
@@ -24,6 +24,8 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 using namespace rapidxml;
 

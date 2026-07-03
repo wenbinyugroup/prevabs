@@ -1,11 +1,8 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "Material.hpp"
-#include "PArea.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
-#include "globalConstants.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
+#include "dcel/DCELConfig.hpp"
 
 #include "geo_types.hpp"
 
@@ -13,9 +10,19 @@
 #include <string>
 #include <vector>
 
+// Domain types below are used only as pointers in this header, so they are
+// forward-declared rather than included. Material.hpp / PArea.hpp both pull in
+// declarations.hpp (the whole-domain god-header); forward-declaring here keeps
+// the DCEL face header off the domain include graph. Migrating these fields
+// into PDCELFaceData is Phase 2 — for now the pointers still live on the face.
+class Material;
+class LayerType;
+class PArea;
+
+namespace dcel {
+
 class PDCELHalfEdge;
 class PDCELVertex;
-class PArea;
 
 /** @ingroup geo
  * A DCEL face class.
@@ -44,7 +51,7 @@ public:
   PDCELFace(PDCELHalfEdge *);
   PDCELFace(PDCELHalfEdge *, bool);
 
-  void print();
+  void print(bool verbose = false);
   std::string label() const;
   std::string displayLabel() const;
 
@@ -59,7 +66,7 @@ public:
 
   SVector3 localy1() { return _y1; }
   SVector3 localy2() { return _y2; }
-  double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / PI; }
+  double theta1deg() { return atan2(_y2[2], _y2[1]) * 180.0 / kPi; }
 
   bool isBounded() { return _is_bounded; }
   unsigned int id() const { return _id; }
@@ -87,3 +94,5 @@ public:
   void setId(unsigned int id) { _id = id; }
   void setLayerType(LayerType *layertype) { _layertype = layertype; }
 };
+
+}  // namespace dcel

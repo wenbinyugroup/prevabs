@@ -1,7 +1,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "PBaseLine.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "globalVariables.hpp"
@@ -17,6 +17,8 @@
 #include <mutex>
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

@@ -3,9 +3,9 @@
 #include "CrossSection.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PMeshClasses.hpp"
 #include "PModel.hpp"
 #include "geo.hpp"
@@ -37,6 +37,8 @@
 #elif _WIN32
 #include <tchar.h>
 #include <windows.h>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 #endif
 
 int readInputMain(const std::string &filenameCrossSection,

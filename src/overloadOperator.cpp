@@ -2,7 +2,7 @@
 
 #include "Material.hpp"
 #include "PFilling.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PSegment.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
@@ -17,6 +17,8 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 // template <typename T>
 std::ostream &operator<<(std::ostream &out, const std::vector<double> &v) {

@@ -1,7 +1,7 @@
 #include "PGeoClasses.hpp"
 
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
 #include "utilities.hpp"
@@ -10,6 +10,8 @@
 
 #include <cmath>
 #include <iostream>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 PGeoPoint2::PGeoPoint2(const PGeoPoint3 &p, const int &plane) {
   if (plane == 0) {

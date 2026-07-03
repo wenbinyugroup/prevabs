@@ -4,11 +4,11 @@
 #include "PGeoLine.hpp"
 
 #include "PBST.hpp"
-#include "PDCEL.hpp"
-#include "PDCELVertex.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELFace.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELFace.hpp"
 
 #include "Material.hpp"
 #include "PBaseLine.hpp"
@@ -43,11 +43,11 @@ class PGeoPoint3;
 class PGeoLineSegment;
 class PGeoArc;
 
-class PDCEL;
-class PDCELVertex;
-class PDCELHalfEdge;
-class PDCELHalfEdgeLoop;
-class PDCELFace;
+namespace dcel { class PDCEL; }
+namespace dcel { class PDCELVertex; }
+namespace dcel { class PDCELHalfEdge; }
+namespace dcel { class PDCELHalfEdgeLoop; }
+namespace dcel { class PDCELFace; }
 class PAVLTreeVertex;
 
 class PMesh;

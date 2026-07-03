@@ -1,16 +1,18 @@
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 
 #include "overloadOperator.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo_types.hpp"
 #include <cmath>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+
+namespace dcel {
 
 std::string PDCELHalfEdge::label() const {
   std::stringstream ss;
@@ -140,3 +142,5 @@ void PDCELHalfEdge::setLoop(PDCELHalfEdgeLoop *hel) {
   _loop = hel;
   if (hel) hel->updateIncidentEdge(this);
 }
+
+}  // namespace dcel

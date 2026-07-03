@@ -1,12 +1,14 @@
 #include "PComponent.hpp"
 
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "globalConstants.hpp"
 #include "plog.hpp"
 #include "utilities.hpp"
 
 #include <limits>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

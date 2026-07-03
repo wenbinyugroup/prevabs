@@ -1,6 +1,6 @@
 #include "PModelIO.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PBaseLine.hpp"
 #include "globalConstants.hpp"
@@ -17,6 +17,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 void readPointsFromFile(const std::string &filenameBasepoints, PModel *pmodel,
                    double scale) {

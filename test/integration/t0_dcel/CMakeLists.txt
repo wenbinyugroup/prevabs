@@ -16,6 +16,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 set(SRC_GEO  "${REPO_ROOT}/src/geo")
+set(SRC_DCEL "${REPO_ROOT}/src/dcel")
 set(SRC_ROOT "${REPO_ROOT}/src")
 
 # version.h (needed transitively by utilities.cpp closure)
@@ -50,13 +51,13 @@ FetchContent_MakeAvailable(clipper2)
 
 add_executable(t0_dcel
   t0_dcel.cpp
-  ${SRC_GEO}/DCELSweepLine.cpp
-  ${SRC_GEO}/DCELValidator.cpp
-  ${SRC_GEO}/PDCEL.cpp
-  ${SRC_GEO}/PDCELFace.cpp
-  ${SRC_GEO}/PDCELHalfEdge.cpp
-  ${SRC_GEO}/PDCELHalfEdgeLoop.cpp
-  ${SRC_GEO}/PDCELVertex.cpp
+  ${SRC_DCEL}/DCELSweepLine.cpp
+  ${SRC_DCEL}/DCELValidator.cpp
+  ${SRC_DCEL}/PDCEL.cpp
+  ${SRC_DCEL}/PDCELFace.cpp
+  ${SRC_DCEL}/PDCELHalfEdge.cpp
+  ${SRC_DCEL}/PDCELHalfEdgeLoop.cpp
+  ${SRC_DCEL}/PDCELVertex.cpp
   ${SRC_GEO}/PGeoClasses.cpp
   ${SRC_GEO}/PGeoLine.cpp
   ${SRC_GEO}/adaptive_thickness.cpp

@@ -4,32 +4,36 @@
 // dependencies in the include chain.
 class Baseline;
 class Message;
+class PGeoLineSegment;
+
+namespace dcel {
 class PDCELVertex;
 class PDCELHalfEdge;
 class PDCELHalfEdgeLoop;
 class PDCELFace;
-class PGeoLineSegment;
-struct BuilderConfig;
+class PDCEL;
+}  // namespace dcel
 
 #include <list>
 #include <string>
 #include <vector>
 
+namespace dcel {
 std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
-    const class PDCEL &dcel, PDCELVertex *v,
+    const PDCEL &dcel, PDCELVertex *v,
     std::vector<PGeoLineSegment *> &temp_segs);
-PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
+PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel,
                                        PDCELVertex *v);
+}  // namespace dcel
 
-#include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
-#include "globalVariables.hpp"
+#include "dcel/DCELConfig.hpp"
 
-#include "PDCELUtils.hpp"
+#include "dcel/PDCELUtils.hpp"
 
 #include <memory>
 #include <set>
@@ -39,6 +43,8 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const class PDCEL &dcel,
 /// x, y, z), matching the sort order required by the sweep-line algorithm.
 /// The body of operator() is defined in PDCEL.cpp to avoid requiring the full
 /// PDCELVertex definition in this header (circular include guard issue).
+namespace dcel {
+
 struct CompareVertexByPoint {
   bool operator()(PDCELVertex *a, PDCELVertex *b) const;
 };
@@ -55,6 +61,11 @@ private:
   std::list<PDCELHalfEdgeLoop *> _halfedge_loops;
 
   std::set<PDCELVertex *, CompareVertexByPoint> _vertex_tree;
+
+  /// Injected numeric configuration (coincidence tolerance, verbose dump gate).
+  /// Replaces the DCEL core's former direct reads of the domain globals
+  /// GEO_TOL / config.debug_level. The owner sets it before geometry is built.
+  Config _config;
 
   /// Segments created internally by addEdge(v1, v2) — owned by PDCEL.
   std::list<std::unique_ptr<PGeoLineSegment>> _owned_segments;
@@ -118,7 +129,15 @@ public:
 
   const std::list<PDCELHalfEdgeLoop *> &halfedgeloops() const { return _halfedge_loops; }
 
-  void fixGeometry(const BuilderConfig &);
+  /// Injected configuration. The owner sets geo_tol from the model-scale
+  /// tolerance before geometry is built (default 1e-9); verbose_dump gates
+  /// print_dcel. Replaces the former global GEO_TOL / config.debug_level.
+  void setConfig(const Config &c) { _config = c; }
+  double geoTol() const { return _config.geo_tol; }
+  void setGeoTol(double t) { _config.geo_tol = t; }
+  void setVerboseDump(bool v) { _config.verbose_dump = v; }
+
+  void fixGeometry(double geo_tol);
 
   // =================================================================
   // VERTEX
@@ -270,3 +289,5 @@ public:
   std::list<PDCELFace *> splitFaceByClosedCurve(
       PDCELFace *f, const std::vector<PDCELVertex *> &ring);
 };
+
+}  // namespace dcel

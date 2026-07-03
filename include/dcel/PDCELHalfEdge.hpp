@@ -1,19 +1,21 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 
 #include "geo_types.hpp"
 
 #include <string>
 
+class PGeoLineSegment;  // global geometry type (kept global for phase 0; see C3)
+
+namespace dcel {
+
 class PDCELFace;
 class PDCELHalfEdgeLoop;
 class PDCELVertex;
-class PGeoLineSegment;
 
 /** @ingroup geo
  * A DCEL half edge class.
@@ -89,3 +91,5 @@ public:
   void clearLineSegment() { _line_segment = nullptr; }
 
 };
+
+}  // namespace dcel

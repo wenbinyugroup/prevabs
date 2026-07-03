@@ -1,7 +1,7 @@
 #include "PModel.hpp"
 
-#include "PDCELFace.hpp"
-#include "PDCELUtils.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELUtils.hpp"
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 #include "plog.hpp"
@@ -29,6 +29,8 @@
 #include <thread>
 #include <vector>
 #include <utility>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

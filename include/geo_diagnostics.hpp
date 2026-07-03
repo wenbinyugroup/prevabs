@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <vector>
 
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 
 namespace prevabs {
 namespace geo {
@@ -26,18 +26,18 @@ namespace geo {
 // when the inward ray never re-enters the polygon (plenty of room locally).
 // Closed inputs use all distinct vertices; open inputs return INF for the two
 // endpoints (half-thickness undefined there).
-double signedHalfThickness(const std::vector<PDCELVertex *> &base,
+double signedHalfThickness(const std::vector<dcel::PDCELVertex *> &base,
                            int i, int side, bool base_is_closed);
 
 // Informational warning: |dist| large relative to the shortest base segment
 // (offset construction may be numerically fragile). No-op for < 2 vertices.
 void checkOffsetDistanceVsShortestEdge(
-    const std::vector<PDCELVertex *> &base, double dist);
+    const std::vector<dcel::PDCELVertex *> &base, double dist);
 
 // Informational warning: base vertices whose local half-thickness is below
 // |dist| (skin will be locally dropped) or in [|dist|, 2|dist|) (locally
 // thin). Open inputs skip the two endpoints.
-void warnLocalThinRegions(const std::vector<PDCELVertex *> &base,
+void warnLocalThinRegions(const std::vector<dcel::PDCELVertex *> &base,
                           int side, double dist, bool base_is_closed);
 
 // User-facing warning: too few offset vertices relative to base (Clipper2

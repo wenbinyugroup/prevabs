@@ -3,11 +3,11 @@
 #include "CurveFrameLookup.hpp"
 #include "Material.hpp"
 #include "PBaseLine.hpp"
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
@@ -24,6 +24,8 @@
 #include <list>
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

@@ -1,14 +1,16 @@
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "globalConstants.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/DCELConfig.hpp"
 #include "utilities.hpp"
 
 #include "geo_types.hpp"
 
 #include <sstream>
 #include <iostream>
+
+namespace dcel {
 
 std::string PDCELVertex::label() const {
   std::stringstream ss;
@@ -128,8 +130,8 @@ void PDCELVertex::rotate(double a) {
 }
 
 bool PDCELVertex::isFinite() {
-  return (_point[0] > -INF && _point[0] < INF && _point[1] > -INF &&
-          _point[1] < INF && _point[2] > -INF && _point[2] < INF);
+  return (_point[0] > -kInf && _point[0] < kInf && _point[1] > -kInf &&
+          _point[1] < kInf && _point[2] > -kInf && _point[2] < kInf);
 }
 
 PDCELHalfEdge *PDCELVertex::getEdgeTo(PDCELVertex *v) {
@@ -161,3 +163,5 @@ void PDCELVertex::setIncidentEdge(PDCELHalfEdge *he) { _incident_edge = he; }
 bool compareVertices(PDCELVertex *v1, PDCELVertex *v2) {
   return v1->point() < v2->point();
 }
+
+}  // namespace dcel

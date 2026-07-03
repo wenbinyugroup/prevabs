@@ -1,8 +1,8 @@
 #include "geo.hpp"
 
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "globalConstants.hpp"
 #include "globalVariables.hpp"
@@ -23,6 +23,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 bool validateBaseOffsetMap(
     const BaseOffsetMap &map, std::string *error_message) {

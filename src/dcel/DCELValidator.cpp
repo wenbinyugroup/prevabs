@@ -1,9 +1,9 @@
-#include "DCELValidator.hpp"
+#include "dcel/DCELValidator.hpp"
 
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "geo.hpp"
 #include "plog.hpp"
 
@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+namespace dcel {
 
 bool validateDCEL(const PDCEL &dcel) {
   bool ok = true;
@@ -112,7 +114,7 @@ bool validateDCEL(const PDCEL &dcel) {
   return ok;
 }
 
-void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
+void fixDCELGeometry(PDCEL &dcel, double geo_tol) {
     PLOG(info) << "fixing geometry";
 
   std::unordered_set<PDCELHalfEdge *> small_edges;
@@ -122,7 +124,7 @@ void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
     }
 
     double sqlen = calcDistanceSquared(he->source(), he->target());
-    if (sqlen <= bcfg.geo_tol * bcfg.geo_tol) {
+    if (sqlen <= geo_tol * geo_tol) {
       small_edges.insert(he);
     }
   }
@@ -150,3 +152,5 @@ void fixDCELGeometry(PDCEL &dcel, const BuilderConfig &bcfg) {
              << (dcel.halfedges().size() / 2) << " edges / "
              << dcel.faces().size() << " faces";
 }
+
+}  // namespace dcel

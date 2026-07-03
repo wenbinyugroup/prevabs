@@ -4,7 +4,7 @@
 #include "Material.hpp"
 #include "PBaseLine.hpp"
 #include "PComponent.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PModelIO.hpp"
 #include "PSegment.hpp"
@@ -13,6 +13,8 @@
 
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace {
 

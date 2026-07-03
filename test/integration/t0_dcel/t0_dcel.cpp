@@ -20,11 +20,11 @@
 // closure the unit DCEL tests already accept. No Gmsh required.
 // ---------------------------------------------------------------------------
 
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "globalVariables.hpp"
 #include "utilities.hpp"
 
@@ -54,6 +54,8 @@ void plotGeoSnapshotImpl(PModel *, const std::string &, bool) {}
 #include "plog.hpp"
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 namespace {
 struct LoggerSetup {
   LoggerSetup() {

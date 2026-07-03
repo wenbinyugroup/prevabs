@@ -1,10 +1,10 @@
-#include "PDCELFace.hpp"
+#include "dcel/PDCELFace.hpp"
 
 #include "Material.hpp"
 #include "PArea.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 #include "utilities.hpp"
 
@@ -12,6 +12,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+namespace dcel {
 
 void syncPDCELFaceLogName(PDCELFace *f, const std::string &name) {
   if (f != nullptr) {
@@ -65,8 +67,8 @@ std::string PDCELFace::displayLabel() const {
   return label() + " [" + _log_name + "]";
 }
 
-void PDCELFace::print() {
-  if (config.debug_level < DebugLevel::geo) {
+void PDCELFace::print(bool verbose) {
+  if (!verbose) {
     return;
   }
   PLOG(debug) << label() << (_is_bounded ? " bounded" : " unbounded");
@@ -188,3 +190,5 @@ SVector3 PDCELFace::calcy2FromTheta1(double theta1, bool deg) {
   }
   return SVector3(0, cos(theta1), sin(theta1));
 }
+
+}  // namespace dcel

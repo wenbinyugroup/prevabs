@@ -4,10 +4,10 @@
 
 #include "Material.hpp"
 #include "PBaseLine.hpp"
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "PSegment.hpp"
 #include "globalVariables.hpp"
@@ -22,6 +22,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 namespace prevabs {
 namespace debug {

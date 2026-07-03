@@ -1,6 +1,6 @@
 #include "PModelIO.hpp"
 
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PBaseLine.hpp"
 #include "Material.hpp"
 #include "PComponent.hpp"
@@ -20,6 +20,8 @@
 #include <stack>
 #include <sstream>
 #include <iostream>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 
 int readXMLElementComponentFilling(

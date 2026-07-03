@@ -4,13 +4,13 @@
 // dependencies in the include chain.
 class Baseline;
 class Material;
-class PDCELVertex;
+namespace dcel { class PDCELVertex; }
 class PGeoArc;
 class PModel;
 
 #include "declarations.hpp"
 #include "PComponent.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PModel.hpp"
 #include "globalConstants.hpp"

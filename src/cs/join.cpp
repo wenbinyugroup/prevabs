@@ -1,7 +1,7 @@
 #include "PComponent.hpp"
 
 #include "Material.hpp"
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "PGeoClasses.hpp"
 #include "PSegment.hpp"
 #include "geo.hpp"
@@ -24,6 +24,8 @@
 #include <memory>
 #include <sstream>
 #include <string>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 // Convention used throughout this file:
 //   e == 0  →  head (beginning) end of the curve
@@ -693,7 +695,7 @@ void PComponent::joinSegments(Segment *s, int e, const BuilderConfig &bcfg) {
     std::cout << "\nhels:\n";
     if (config.debug_level >= DebugLevel::join) PLOG(debug) << "found half edge loops";
     for (auto hel : hels) {
-      hel->log();
+      hel->log(config.debug_level >= DebugLevel::geo);
     }
   }
 

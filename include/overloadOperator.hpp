@@ -2,7 +2,7 @@
 
 #include "Material.hpp"
 #include "PFilling.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PSegment.hpp"
 #include "PBaseLine.hpp"
 
@@ -15,7 +15,7 @@ std::ostream &operator<<(std::ostream &, const std::vector<double> &);
 
 // ===================================================================
 //                                                     Overloading I/O
-// std::ostream &operator<<(std::ostream &, PDCELVertex *);
+// std::ostream &operator<<(std::ostream &, dcel::PDCELVertex *);
 std::ostream &operator<<(std::ostream &, const SPoint2 &);
 std::ostream &operator<<(std::ostream &, const SPoint3 &);
 std::ostream &operator<<(std::ostream &, const SVector3 &);

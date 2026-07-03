@@ -1,9 +1,9 @@
 #include "CrossSection.hpp"
 
 #include "PComponent.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "geo.hpp"
 #include "globalConstants.hpp"
@@ -22,6 +22,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 int CrossSection::used_material_index = 0;
 int CrossSection::used_layertype_index = 0;

@@ -4,11 +4,11 @@
 #include "Material.hpp"
 #include "PArea.hpp"
 #include "PBaseLine.hpp"
-#include "PDCEL.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PModel.hpp"
 #include "debug/baseOffsetMapJson.hpp"
 #include "debug/baseOffsetMapSvg.hpp"
@@ -32,6 +32,8 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+
+using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
 
 int Segment::count_tmp = 0;
 

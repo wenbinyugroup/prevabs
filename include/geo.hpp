@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Material.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "PBaseLine.hpp"
 #include "curve.hpp"
@@ -70,7 +70,7 @@ bool calcLineIntersection2D(
   SPoint3, SPoint3, SPoint3, SPoint3,
   double &, double &, int &);
 bool calcLineIntersection2D(
-  PDCELVertex *, PDCELVertex *, PDCELVertex *, PDCELVertex *,
+  dcel::PDCELVertex *, dcel::PDCELVertex *, dcel::PDCELVertex *, dcel::PDCELVertex *,
   double &, double &);
 bool calcLineIntersection2D(
   PGeoLineSegment *, PGeoLineSegment *,
@@ -87,12 +87,12 @@ Baseline *offsetCurve(Baseline *, int, double);
   \param curve1 List of points representing the second curve
   \param intersect The intersection point
  */
-// int intersect(std::vector<PDCELVertex *> &curve1,
-//               std::vector<PDCELVertex *> &curve2, PDCELVertex *intersect,
+// int intersect(std::vector<dcel::PDCELVertex *> &curve1,
+//               std::vector<dcel::PDCELVertex *> &curve2, dcel::PDCELVertex *intersect,
 //               const int &keep1, const int &keep2);
 
-int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
-           PDCELVertex *v1_off, PDCELVertex *v2_off);
+int offset(dcel::PDCELVertex *v1_base, dcel::PDCELVertex *v2_base, int side, double dist,
+           dcel::PDCELVertex *v1_off, dcel::PDCELVertex *v2_off);
 
 /** @ingroup geo
  * Offset a list of vertices by a distance.
@@ -102,8 +102,8 @@ int offset(PDCELVertex *v1_base, PDCELVertex *v2_base, int side, double dist,
  * @param dist Offset distance.
  * @param offset Resulting line (list of vertices).
  */
-int offset(const std::vector<PDCELVertex *> &base, int side, double dist,
-           std::vector<PDCELVertex *> &offset, BaseOffsetMap &id_pairs,
+int offset(const std::vector<dcel::PDCELVertex *> &base, int side, double dist,
+           std::vector<dcel::PDCELVertex *> &offset, BaseOffsetMap &id_pairs,
            std::vector<bool> *offset_resampled = nullptr,
            std::vector<SPoint2> *pre_resample_raw_points = nullptr,
            std::vector<int> *dropped_base_ranges_lo = nullptr,
@@ -140,7 +140,7 @@ struct OffsetGeometry {
 
 // Step 1: raw offset geometry (multi-vertex; resample OFF). For < 2 vertices
 // returns ok=false. The 2-vertex fast path lives in `offset()` only.
-OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
+OffsetGeometry offsetGeometry(const std::vector<dcel::PDCELVertex *> &base,
                               int side, double dist,
                               bool enable_pretrim = false);
 
@@ -150,9 +150,9 @@ OffsetGeometry offsetGeometry(const std::vector<PDCELVertex *> &base,
 // `resample` (default true) applies the angle-bisector base-vertex resample
 // before the reverse-match. Pass false to keep the RAW clean-miter geometry —
 // used for the total-thickness shell in the layered-offset path.
-int buildBaseOffsetMap(const std::vector<PDCELVertex *> &base, int side,
+int buildBaseOffsetMap(const std::vector<dcel::PDCELVertex *> &base, int side,
                        double dist, OffsetGeometry &geom,
-                       std::vector<PDCELVertex *> &offset_vertices,
+                       std::vector<dcel::PDCELVertex *> &offset_vertices,
                        BaseOffsetMap &id_pairs,
                        std::vector<bool> *offset_resampled = nullptr,
                        std::vector<SPoint2> *pre_resample_raw_points = nullptr,
@@ -165,11 +165,11 @@ bool validateBaseOffsetMap(
   const BaseOffsetMap &map,
   std::string *error_message = nullptr);
 
-// int offset2(const std::vector<PDCELVertex *> &base, int side, double dist,
-//            std::vector<PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
+// int offset2(const std::vector<dcel::PDCELVertex *> &base, int side, double dist,
+//            std::vector<dcel::PDCELVertex *> &offset, std::vector<int> &link_offset_indices);
 
 int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
-              PDCELVertex *&intersect);
+              dcel::PDCELVertex *&intersect);
 
 /**
  * @brief Finds the intersection of curves within a given tolerance.
@@ -178,18 +178,18 @@ int intersect(PGeoLineSegment *subject, PGeoLineSegment *tool,
  * and finds the intersection points with the provided vertices. It logs the 
  * process and updates the intersection parameters (u1, u2) and the index (ls_i).
  *
- * @param vertices  A vector of pointers to PDCELVertex objects representing the vertices.
- * @param hel       A pointer to a PDCELHalfEdgeLoop object representing the half-edge loop.
+ * @param vertices  A vector of pointers to dcel::PDCELVertex objects representing the vertices.
+ * @param hel       A pointer to a dcel::PDCELHalfEdgeLoop object representing the half-edge loop.
  * @param end       An integer indicating the end condition (0 for beginning, 1 for end).
  * @param ls_i      A reference to an integer that will be updated with the index of the line segment.
  * @param u1        A reference to a double that will be updated with the parametric location of the intersection on the curve.
  * @param u2        A reference to a double that will be updated with the parametric location of the intersection on the half-edge.
  * @param tol       A constant reference to a double representing the tolerance for intersection calculations.
  * @param pmessage  A pointer to a Message object used for logging.
- * @return          A pointer to the PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
+ * @return          A pointer to the dcel::PDCELHalfEdge where the intersection was found, or nullptr if no intersection was found.
  */
-PDCELHalfEdge *findCurveLoopIntersection(
-  const std::vector<PDCELVertex *> &, PDCELHalfEdgeLoop *,
+dcel::PDCELHalfEdge *findCurveLoopIntersection(
+  const std::vector<dcel::PDCELVertex *> &, dcel::PDCELHalfEdgeLoop *,
   int, int &, double &, double &, const double &);
 
 Baseline *trimCurveAtLineSegment(
@@ -197,7 +197,7 @@ Baseline *trimCurveAtLineSegment(
   double &, int &, int &, std::vector<int> &);
 
 int findAllIntersections(
-  const std::vector<PDCELVertex *> &c1, const std::vector<PDCELVertex *> &c2,
+  const std::vector<dcel::PDCELVertex *> &c1, const std::vector<dcel::PDCELVertex *> &c2,
   std::vector<int> &i1s, std::vector<int> &i2s,
   std::vector<double> &u1s, std::vector<double> &u2s
 );
@@ -209,7 +209,7 @@ int findAllIntersections(
  * to find the intersection location that is closest to the specified end (beginning or ending side).
  * It updates the line segment index (ls_i) and the parametric location (u) accordingly.
  *
- * @param c           A reference to a vector of pointers to PDCELVertex objects representing the curve.
+ * @param c           A reference to a vector of pointers to dcel::PDCELVertex objects representing the curve.
  * @param ii          A constant reference to a vector of integers representing the intersection indices.
  * @param uu          A reference to a vector of doubles representing the parametric locations of intersections.
  * @param which_end   A constant reference to an integer indicating the end to consider (0 for beginning, 1 for end).
@@ -220,14 +220,14 @@ int findAllIntersections(
  * @return            A double representing the parametric location of the closest intersection.
  */
 double getIntersectionLocation(
-  const std::vector<PDCELVertex *> &c,
+  const std::vector<dcel::PDCELVertex *> &c,
   const std::vector<int> &ii, std::vector<double> &uu,
   const int &which_end, const int &inner_only,
   int &ls_i, int &j
 );
 
-PDCELVertex *getIntersectionVertex(
-  std::vector<PDCELVertex *> &c1, std::vector<PDCELVertex *> &c2,
+dcel::PDCELVertex *getIntersectionVertex(
+  std::vector<dcel::PDCELVertex *> &c1, std::vector<dcel::PDCELVertex *> &c2,
   int &i1, int &i2, const double &u1, const double &u2,
   int &is_new_1, int &is_new_2,
   const double &tol

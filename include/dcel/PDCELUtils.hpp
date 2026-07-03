@@ -3,7 +3,7 @@
 // Prevents infinite loops when a half-edge cycle is broken and next()
 // never returns to the start half-edge.
 
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 #include "plog.hpp"
 #include <algorithm>
 #include <sstream>
@@ -12,6 +12,8 @@
 
 // Hard cap for DCEL half-edge loop traversals.  Large enough for any normal
 // cross-section mesh; tight enough to terminate quickly on a broken cycle.
+namespace dcel {
+
 static const int kDCELLoopHardCap = 65536;
 
 static const int kDCELWarnLoopSteps = 128;
@@ -63,3 +65,5 @@ void walkLoopWithLimit(PDCELHalfEdge *start, Op op,
     he = he->next();
   } while (he != start);
 }
+
+}  // namespace dcel

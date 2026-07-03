@@ -9,17 +9,17 @@ class LayerType;
 class Layup;
 class Material;
 class Message;
-class PDCEL;
-class PDCELFace;
-class PDCELHalfEdge;
-class PDCELVertex;
+namespace dcel { class PDCEL; }
+namespace dcel { class PDCELFace; }
+namespace dcel { class PDCELHalfEdge; }
+namespace dcel { class PDCELVertex; }
 class PElementNodeData;
 class PMesh;
 
 #include "declarations.hpp"
 #include "globalVariables.hpp"
 #include "Material.hpp"
-#include "PDCEL.hpp"
+#include "dcel/PDCEL.hpp"
 #include "PDCELFaceData.hpp"
 #include "PDCELVertexData.hpp"
 #include "PSegment.hpp"
@@ -37,7 +37,7 @@ class PMesh;
 #include <vector>
 #include <utility>
 
-void syncPDCELFaceLogName(PDCELFace *f, const std::string &name);
+namespace dcel { void syncPDCELFaceLogName(PDCELFace *f, const std::string &name); }
 class PModel;
 void plotGeoSnapshotImpl(
     PModel *model, const std::string &snapshot_tag, bool create_gmsh_geo);
@@ -154,7 +154,7 @@ private:
       PModel *model, const std::string &snapshot_tag, bool create_gmsh_geo);
   std::string _name;
   // GModel *_gmodel, *_gmodel_debug;
-  PDCEL *_dcel;
+  dcel::PDCEL *_dcel;
 
   double _global_mesh_size;
   unsigned int _element_type; // 1: linear, 2: quadratic
@@ -199,21 +199,21 @@ private:
   CrossSection *_cross_section;
 
   // Domain property maps — keyed by DCEL object pointer; owned by PModel.
-  std::unordered_map<PDCELFace*,   PDCELFaceData>   _face_data;
-  std::unordered_map<PDCELVertex*, PDCELVertexData> _vertex_data;
+  std::unordered_map<dcel::PDCELFace*,   PDCELFaceData>   _face_data;
+  std::unordered_map<dcel::PDCELVertex*, PDCELVertexData> _vertex_data;
 
   // Gmsh entity maps — Gmsh integer tags for DCEL objects, owned by the Gmsh bridge.
   // Keyed by pointer; cleared between debug geometry plots.
-  std::unordered_map<PDCELVertex*, int> _gmsh_vertex_tags;
-  std::unordered_map<PDCELHalfEdge*, int> _gmsh_edge_tags;
-  std::unordered_map<PDCELFace*, int> _gmsh_face_tags;
+  std::unordered_map<dcel::PDCELVertex*, int> _gmsh_vertex_tags;
+  std::unordered_map<dcel::PDCELHalfEdge*, int> _gmsh_edge_tags;
+  std::unordered_map<dcel::PDCELFace*, int> _gmsh_face_tags;
   // Half-edges whose two endpoints map to the same Gmsh point (a zero-length
   // riser collapsed by vertex dedup in createGmshVertices). No Gmsh line is
   // created for them and they are skipped when assembling curve loops.
-  std::unordered_set<PDCELHalfEdge*> _gmsh_collapsed_halfedges;
-  std::unordered_map<PDCELFace*, std::vector<int>> _gmsh_face_embedded_vertex_tags;
-  std::unordered_map<PDCELFace*, std::vector<int>> _gmsh_face_embedded_edge_tags;
-  std::unordered_map<PDCELFace*, int> _gmsh_face_physical_group_tags;
+  std::unordered_set<dcel::PDCELHalfEdge*> _gmsh_collapsed_halfedges;
+  std::unordered_map<dcel::PDCELFace*, std::vector<int>> _gmsh_face_embedded_vertex_tags;
+  std::unordered_map<dcel::PDCELFace*, std::vector<int>> _gmsh_face_embedded_edge_tags;
+  std::unordered_map<dcel::PDCELFace*, int> _gmsh_face_physical_group_tags;
 
   int debug_plot_count = 0;
 
@@ -227,10 +227,10 @@ private:
   std::vector<std::pair<int, int>> _itf_material_pairs;
   std::vector<std::pair<double, double>> _itf_theta1_pairs;
   std::vector<std::pair<double, double>> _itf_theta3_pairs;
-  std::vector<std::vector<PDCELVertex *>> _itf_vertices;
-  std::vector<std::vector<PDCELHalfEdge *>> _itf_halfedges;
+  std::vector<std::vector<dcel::PDCELVertex *>> _itf_vertices;
+  std::vector<std::vector<dcel::PDCELHalfEdge *>> _itf_halfedges;
   // Joint half-edges: set during interface recording to prevent double-counting.
-  std::unordered_set<PDCELHalfEdge *> _joint_halfedges;
+  std::unordered_set<dcel::PDCELHalfEdge *> _joint_halfedges;
 
 public:
   std::vector<std::vector<int>> node_elements;
@@ -254,18 +254,18 @@ public:
   // Getters
 
   // GModel *gmodel() { return _gmodel; }
-  PDCEL *dcel() { return _dcel; }
+  dcel::PDCEL *dcel() { return _dcel; }
 
   // Face property map accessor.  Returns a reference to the PDCELFaceData
   // for face f, default-constructing an entry if f is not yet present.
-  PDCELFaceData&   faceData(PDCELFace* f)     { return _face_data[f]; }
-  void setFaceName(PDCELFace* f, const std::string &name) {
+  PDCELFaceData&   faceData(dcel::PDCELFace* f)     { return _face_data[f]; }
+  void setFaceName(dcel::PDCELFace* f, const std::string &name) {
     _face_data[f].name = name;
-    syncPDCELFaceLogName(f, name);
+    dcel::syncPDCELFaceLogName(f, name);
   }
   // Vertex property map accessor.  Returns a reference to the PDCELVertexData
   // for vertex v, default-constructing an entry if v is not yet present.
-  PDCELVertexData& vertexData(PDCELVertex* v)  { return _vertex_data[v]; }
+  PDCELVertexData& vertexData(dcel::PDCELVertex* v)  { return _vertex_data[v]; }
 
   double globalMeshSize() { return _global_mesh_size; }
   unsigned int elementType() { return _element_type; }
@@ -305,7 +305,7 @@ public:
     );
 
   // Delegating to sub-repositories
-  std::vector<PDCELVertex *> &vertices()  { return _geo_repo.vertices(); }
+  std::vector<dcel::PDCELVertex *> &vertices()  { return _geo_repo.vertices(); }
   std::vector<Baseline *>    &baselines() { return _geo_repo.baselines(); }
   std::vector<Material *>    &materials() { return _mat_repo.materials(); }
   std::vector<Lamina *>      &laminas()   { return _mat_repo.laminas(); }
@@ -318,7 +318,7 @@ public:
   PMesh *getMesh()   { return _mesh_data.mesh; }
   std::vector<std::vector<int>> getNodeElements() { return _mesh_data.node_elements; }
 
-  PDCELVertex *getPointByName(std::string name)
+  dcel::PDCELVertex *getPointByName(std::string name)
     { return _geo_repo.getPointByName(name); }
   Baseline *getBaselineByName(std::string name)
     { return _geo_repo.getBaselineByName(name); }
@@ -338,7 +338,7 @@ public:
     { return _mat_repo.getLayupByName(name); }
 
   /// Look up the Gmsh edge tag for a half-edge (returns 0 if not found).
-  int getGmshEdgeTag(PDCELHalfEdge* he) const {
+  int getGmshEdgeTag(dcel::PDCELHalfEdge* he) const {
     auto it = _gmsh_edge_tags.find(he);
     return (it != _gmsh_edge_tags.end()) ? it->second : 0;
   }
@@ -346,8 +346,8 @@ public:
   std::vector<std::pair<int, int>> getInterfaceMaterialPairs() { return _itf_material_pairs; }
   std::vector<std::pair<double, double>> getInterfaceTheta1Pairs() { return _itf_theta1_pairs; }
   std::vector<std::pair<double, double>> getInterfaceTheta3Pairs() { return _itf_theta3_pairs; }
-  std::vector<std::vector<PDCELVertex *>> getInterfaceVertices() { return _itf_vertices; }
-  std::vector<std::vector<PDCELHalfEdge *>> getInterfaceHalfEdges() { return _itf_halfedges; }
+  std::vector<std::vector<dcel::PDCELVertex *>> getInterfaceVertices() { return _itf_vertices; }
+  std::vector<std::vector<dcel::PDCELHalfEdge *>> getInterfaceHalfEdges() { return _itf_halfedges; }
 
   /// Turn and collect integer type parameters for Gmsh writing SG input file
   /*!
@@ -431,7 +431,7 @@ public:
   // =================================================================
   // Adders
 
-  void addVertex(PDCELVertex *v)  { _geo_repo.addVertex(v); }
+  void addVertex(dcel::PDCELVertex *v)  { _geo_repo.addVertex(v); }
   void addBaseline(Baseline *l)   { _geo_repo.addBaseline(l); }
   void addMaterial(Material *m)   { _mat_repo.addMaterial(m); }
   void addLamina(Lamina *l)       { _mat_repo.addLamina(l); }
@@ -509,7 +509,7 @@ public:
   void createGmshEmbeddedEntities();
   void createGmshPhyscialGroups();
   void createGmshGeo();
-  void recordInterface(PDCELHalfEdge *);
+  void recordInterface(dcel::PDCELHalfEdge *);
 
   void buildGmsh();
 

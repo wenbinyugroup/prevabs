@@ -1,11 +1,12 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 
 #include <string>
+
+namespace dcel {
 
 class PDCELHalfEdge;
 class PDCELFace;
@@ -26,7 +27,7 @@ public:
   PDCELHalfEdgeLoop()
       : _incident_edge(nullptr), _face(nullptr), _direction(0) {};
 
-  void log();
+  void log(bool verbose = false);
   void print();
   std::string label() const;
 
@@ -48,3 +49,5 @@ public:
   /// Update _incident_edge to track the half-edge with the bottom-left source.
   void updateIncidentEdge(PDCELHalfEdge *);
 };
+
+}  // namespace dcel

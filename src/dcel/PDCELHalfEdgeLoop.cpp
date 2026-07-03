@@ -1,12 +1,14 @@
-#include "PDCELHalfEdgeLoop.hpp"
-#include "PDCELFace.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELUtils.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdgeLoop.hpp"
+#include "dcel/PDCELFace.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELUtils.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "plog.hpp"
 
 #include <iostream>
 #include <sstream>
+
+namespace dcel {
 
 std::string PDCELHalfEdgeLoop::label() const {
   std::stringstream ss;
@@ -14,8 +16,8 @@ std::string PDCELHalfEdgeLoop::label() const {
   return ss.str();
 }
 
-void PDCELHalfEdgeLoop::log() {
-  if (config.debug_level < DebugLevel::geo) {
+void PDCELHalfEdgeLoop::log(bool verbose) {
+  if (!verbose) {
     return;
   }
   PLOG(debug) << label() << " direction: "
@@ -112,3 +114,5 @@ void PDCELHalfEdgeLoop::updateIncidentEdge(PDCELHalfEdge *he) {
     _incident_edge = he;
   }
 }
+
+}  // namespace dcel

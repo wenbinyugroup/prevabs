@@ -1,12 +1,12 @@
 #pragma once
 
-#include "PDCELVertex.hpp"
-#include "PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
 
 class PEdge {
 private:
-  PDCELVertex *_incident_vertex;
-  PDCELHalfEdge *_incident_halfedge;
+  dcel::PDCELVertex *_incident_vertex;
+  dcel::PDCELHalfEdge *_incident_halfedge;
 public:
   PEdge() {}
   

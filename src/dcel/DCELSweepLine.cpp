@@ -1,14 +1,16 @@
-#include "DCELSweepLine.hpp"
+#include "dcel/DCELSweepLine.hpp"
 
-#include "PDCEL.hpp"
-#include "PDCELHalfEdge.hpp"
-#include "PDCELVertex.hpp"
+#include "dcel/PDCEL.hpp"
+#include "dcel/PDCELHalfEdge.hpp"
+#include "dcel/PDCELVertex.hpp"
 #include "PGeoClasses.hpp"
 #include "geo.hpp"
-#include "globalConstants.hpp"
+#include "dcel/DCELConfig.hpp"
 
 #include <cmath>
 #include <map>
+
+namespace dcel {
 
 std::list<PGeoLineSegment *> findLineSegmentsAtSweepLine(
     const PDCEL &dcel, PDCELVertex *v,
@@ -67,8 +69,8 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel, PDCELVertex *v) {
   PGeoLineSegment *ls_tmp = new PGeoLineSegment(v, vt);
 
   PGeoLineSegment *ls_below = nullptr;
-  double u1 = INF, u2, u1_tmp;
-  double best_dist_sq = INF;
+  double u1 = kInf, u2, u1_tmp;
+  double best_dist_sq = kInf;
 
   for (std::list<PGeoLineSegment *>::const_iterator it = ls_list.begin();
        it != ls_list.end(); ++it) {
@@ -116,3 +118,5 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel, PDCELVertex *v) {
 
   return he_below;
 }
+
+}  // namespace dcel
