@@ -27,7 +27,6 @@ PDCELHalfEdge *findHalfEdgeBelowVertex(const PDCEL &dcel,
                                        PDCELVertex *v);
 }  // namespace dcel
 
-#include "declarations.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELHalfEdgeLoop.hpp"

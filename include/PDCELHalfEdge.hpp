@@ -1,6 +1,5 @@
 #pragma once
 
-#include "declarations.hpp"
 #include "PDCELFace.hpp"
 #include "PDCELHalfEdgeLoop.hpp"
 #include "PDCELVertex.hpp"

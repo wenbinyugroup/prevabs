@@ -1,8 +1,5 @@
 #pragma once
 
-#include "declarations.hpp"
-#include "Material.hpp"
-#include "PArea.hpp"
 #include "PDCELHalfEdge.hpp"
 #include "PDCELVertex.hpp"
 #include "globalConstants.hpp"
@@ -13,7 +10,14 @@
 #include <string>
 #include <vector>
 
-class PArea;  // global domain type
+// Domain types below are used only as pointers in this header, so they are
+// forward-declared rather than included. Material.hpp / PArea.hpp both pull in
+// declarations.hpp (the whole-domain god-header); forward-declaring here keeps
+// the DCEL face header off the domain include graph. Migrating these fields
+// into PDCELFaceData is Phase 2 — for now the pointers still live on the face.
+class Material;
+class LayerType;
+class PArea;
 
 namespace dcel {
 
