@@ -91,8 +91,10 @@ PComponent *readXMLElementComponent(
   if (xn_component->first_attribute("depend")) {
     depend_names =
         splitString(xn_component->first_attribute("depend")->value(), ',');
+    // Trim surrounding whitespace so names from depend="cmp1, cmp2" match
+    // component names exactly (splitString does not trim).
     for (std::string n : depend_names) {
-      tmp_dependents_one.push_back(n);
+      tmp_dependents_one.push_back(trim(n));
     }
   }
   dependents_all.push_back(tmp_dependents_one);

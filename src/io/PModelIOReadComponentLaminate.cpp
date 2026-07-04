@@ -787,8 +787,12 @@ int readXMLElementComponentLaminate(
         (js_value == static_cast<int>(JointStyle::smooth))
             ? JointStyle::smooth
             : JointStyle::step;
-    std::vector<std::string> sns;
-    sns = splitString(p_xn_joint->value(), ',');
+    std::vector<std::string> sns = splitString(p_xn_joint->value(), ',');
+    // Trim surrounding whitespace so names like " sg_v_1" from a value written
+    // as " sg_v_1,sg_v_2 " match the segments' name attributes exactly;
+    // otherwise resolveJointStyle never matches and the joint silently falls
+    // back to the default step style.
+    for (auto &sn : sns) sn = trim(sn);
     p_component->addJointSegments(sns);
     p_component->addJointStyle(js);
   }

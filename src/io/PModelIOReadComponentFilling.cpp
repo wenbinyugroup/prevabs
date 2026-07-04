@@ -104,6 +104,9 @@ int readXMLElementComponentFilling(
 
     std::vector<std::string> bl_names =
         splitString(p_xn_baseline->value(), ',');
+    // Trim surrounding whitespace so names from a value written as "bl1, bl2"
+    // match baseline names exactly (splitString does not trim).
+    for (auto &name : bl_names) name = trim(name);
     for (auto name : bl_names) {
       Baseline *bl = pmodel->getBaselineByNameCopy(name);
       if (!bl) {
@@ -136,6 +139,9 @@ int readXMLElementComponentFilling(
     std::vector<std::string> point_names;
     point_names =
         splitString(requireAttr(p_xn_meshsize, "at", "<mesh_size>")->value(), ',');
+    // Trim surrounding whitespace so names from at="p1, p2" match point names
+    // exactly (splitString does not trim).
+    for (auto &n : point_names) n = trim(n);
     for (auto n : point_names) {
       PDCELVertex *pv = pmodel->getPointByName(n);
       if (!pv) {

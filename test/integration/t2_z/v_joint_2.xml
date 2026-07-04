@@ -65,7 +65,7 @@
       <baseline>bl2</baseline>
       <layup>layup2</layup>
     </segment>
-    <joint style="1"> sg_v_1,sg_v_2 </joint>
+    <joint style="2"> sg_v_1,sg_v_2 </joint>
   </component>
 
 </cross_section>

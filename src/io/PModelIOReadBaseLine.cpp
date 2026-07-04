@@ -194,6 +194,10 @@ void readLineTypeStraight(Baseline *line, const xml_node<> *p_xn_line, const xml
       // Then for each substring, split it by colon ':'
       std::vector<std::string> vBeginEnd;
       vBeginEnd = splitString(s, ':');
+      // Trim surrounding whitespace so labels from a value written as
+      // "p1, p2" or "p1 : p2" match point names exactly (splitString does
+      // not trim).
+      for (auto &token : vBeginEnd) token = trim(token);
 
       if (vBeginEnd.size() > 2) {
         throw std::runtime_error(

@@ -1,5 +1,6 @@
 main
 - v.xml
+- v_joint_2.xml
 - v_offset_out.xml
 - channel.xml
 - z.xml
