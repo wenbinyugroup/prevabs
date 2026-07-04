@@ -94,6 +94,107 @@ void resolveCoordParam(
   u = findPolylineParamByCoordinate(vertices, coord, tol, count, axis);
 }
 
+// Which side of the directed base line a layup is laid on. `both` is expanded
+// by the reader into a left/right segment pair; `left`/`right` map directly to
+// the segment-level layup side string.
+enum class LayupDir { Left, Right, Both };
+
+// Parse a <layup direction="..."> value. Case-insensitive; empty/absent
+// defaults to Left. Throws std::runtime_error for unrecognized values.
+LayupDir parseDirection(const std::string &raw) {
+  const std::string s = trim(lowerString(raw));
+  if (s.empty() || s == "left") return LayupDir::Left;
+  if (s == "right") return LayupDir::Right;
+  if (s == "both") return LayupDir::Both;
+  throw std::runtime_error(
+    "<layup direction='" + raw + "'>: unrecognized direction; "
+    "use 'left', 'right', or 'both'"
+  );
+}
+
+// Parse a <baseline position="..."> value: the through-thickness anchor
+// fraction of the base line within the layup (0 = begin, 0.5 = middle,
+// 1 = end). Keywords map to fractions; any other value is parsed as a number
+// and clamped to [0,1]. Empty/absent defaults to 0.
+double parsePosition(const std::string &raw) {
+  const std::string s = trim(lowerString(raw));
+  if (s.empty() || s == "begin") return 0.0;
+  if (s == "middle" || s == "center") return 0.5;
+  if (s == "end") return 1.0;
+  double f = parseRequiredDouble(s, "<baseline position=...>");
+  if (f < 0.0) {
+    PLOG(warning) << "<baseline position='" << raw
+                  << "'>: value below 0; clamping to 0";
+    f = 0.0;
+  }
+  if (f > 1.0) {
+    PLOG(warning) << "<baseline position='" << raw
+                  << "'>: value above 1; clamping to 1";
+    f = 1.0;
+  }
+  return f;
+}
+
+// Move a whole base curve by `dist` toward `side`, returning a new Baseline of
+// fresh vertices. Reuses the production offset (Clipper2). Preserves the
+// closed-ring convention (front()==back() shared pointer) so the downstream
+// shell offset still detects a closed base.
+Baseline *offsetBaselineForPosition(Baseline *base, int side, double dist,
+                                    const std::string &new_name) {
+  const std::vector<PDCELVertex *> &bv = base->vertices();
+  const bool was_closed = bv.size() >= 2 && bv.front() == bv.back();
+
+  std::vector<PDCELVertex *> out;
+  BaseOffsetMap pairs;
+  offset(bv, side, dist, out, pairs);
+
+  Baseline *res = new Baseline(new_name, base->getType());
+  for (PDCELVertex *v : out) res->addPVertex(v);
+
+  // The offset returns distinct endpoint vertices even when the input ring
+  // closed on a single shared vertex. Collapse coincident endpoints back to
+  // one pointer so front()==back() closed detection fires downstream.
+  std::vector<PDCELVertex *> &rv = res->vertices();
+  if (was_closed && rv.size() >= 2 && rv.front() != rv.back()) {
+    const double tol = config.app.geo_tol;
+    PDCELVertex *f = rv.front();
+    PDCELVertex *b = rv.back();
+    if (std::abs(f->x() - b->x()) < tol && std::abs(f->y() - b->y()) < tol) {
+      rv.back() = f;
+      delete b;
+    }
+  }
+  return res;
+}
+
+// Apply <baseline position>: for a non-zero anchor fraction, pre-offset the
+// base by f*total toward the side OPPOSITE the layup direction, so the layup
+// then lays up normally from the offset ("near surface") base. `dir_side` is
+// +1 for direction=left, -1 for right. Returns `base` unchanged for begin.
+Baseline *applyLayupPosition(Baseline *base, int dir_side, double f,
+                             double total, const std::string &name) {
+  if (f <= 1e-12) return base;
+  return offsetBaselineForPosition(base, -dir_side, f * total, name + "_pos");
+}
+
+// Build the mirrored layup for direction="both": reverse(src) ++ src, so the
+// user's stack reads base-outward on each side of the mid-plane. Realized as a
+// single segment with position=middle, its total thickness is 2x the source.
+// Both the layer and ply collections are mirrored (a layup always carries both;
+// combineLayups and material output read each). addLayer(Layer)/addPly(Ply) are
+// plain appends (no merge), preserving LayerType pointers and keeping the
+// base-plane interface as a distinct layer boundary.
+Layup *makeMirroredLayup(Layup *src, const std::string &new_name) {
+  std::vector<Layer> layers = src->getLayers();
+  std::vector<Ply> plies = src->getPlies();
+  Layup *dst = new Layup(new_name);
+  for (auto it = layers.rbegin(); it != layers.rend(); ++it) dst->addLayer(*it);
+  for (const Layer &l : layers) dst->addLayer(l);
+  for (auto it = plies.rbegin(); it != plies.rend(); ++it) dst->addPly(*it);
+  for (const Ply &p : plies) dst->addPly(p);
+  return dst;
+}
+
 }  // namespace
 
 int readXMLElementComponentLaminate(
@@ -126,8 +227,6 @@ int readXMLElementComponentLaminate(
   // a single layup in <segment>
   for (auto nodeSegment = xn_component->first_node("segment"); nodeSegment;
         nodeSegment = nodeSegment->next_sibling("segment")) {
-    Segment *p_segment;
-
     std::string segmentName;
     xml_attribute<> *p_xa_name{nodeSegment->first_attribute("name")};
     if (p_xa_name) {
@@ -147,14 +246,16 @@ int readXMLElementComponentLaminate(
         i_freeend = 1;
       }
     }
-    std::string baselineName{requireNode(nodeSegment, "baseline", "<segment>")->value()};
+    xml_node<> *nodeBaseline{requireNode(nodeSegment, "baseline", "<segment>")};
+    std::string baselineName{nodeBaseline->value()};
+    xml_attribute<> *attrPosition{nodeBaseline->first_attribute("position")};
+    const double layup_position =
+        parsePosition(attrPosition ? attrPosition->value() : "");
     xml_node<> *nodeLayup{requireNode(nodeSegment, "layup", "<segment>")};
     std::string layupName{nodeLayup->value()};
     xml_attribute<> *attrDirection{nodeLayup->first_attribute("direction")};
-    std::string layupSide{"left"};
-    if (attrDirection) {
-      layupSide = lowerString(attrDirection->value());
-    }
+    const std::string direction_raw = attrDirection ? attrDirection->value() : "";
+    const LayupDir layup_dir = parseDirection(direction_raw);
 
     Baseline *p_baseline = pmodel->getBaselineByNameCopy(baselineName);
     if (p_baseline == nullptr) {
@@ -172,127 +273,175 @@ int readXMLElementComponentLaminate(
       );
     }
     p_layups.push_back(p_layup);
-    // If there is only one segment and trim both ends, then split
-    if (depend_names.size() > 0 && nseg == 1 && i_freeend == -1) {
 
-      std::string split_by;
-      PDCELVertex *v_split;
+    // Create the Segment(s) for one layup side of this <segment>. Normally one
+    // segment; two (_1/_2) when a dependent forces a split. `name_suffix`
+    // (e.g. "_L") is applied before any split suffix. Through-thickness position
+    // is already baked into `baseline_copy` by the caller (applyLayupPosition).
+    auto emitSegment = [&](const std::string &side, Baseline *baseline_copy,
+                           Layup *layup, const std::string &name_suffix) {
+      const std::string seg_name = segmentName + name_suffix;
 
-      // Default
-      split_by = "id";
-      std::size_t nvertex = p_baseline->vertices().size();
-      if (nvertex % 2 == 0) {
-        v_split = p_baseline->vertices()[nvertex / 2];
-      }
-      else {
-        v_split = p_baseline->vertices()[(nvertex - 1) / 2];
-      }
+      // If there is only one segment and trim both ends, then split
+      if (depend_names.size() > 0 && nseg == 1 && i_freeend == -1) {
 
-      // Specified
-      xml_node<> *p_xn_split{nodeSegment->first_node("split")};
-      if (p_xn_split) {
-        xml_attribute<> *p_xa_by{p_xn_split->first_attribute("by")};
-        if (p_xa_by) {
-          split_by = p_xa_by->value();
+        std::string split_by;
+        PDCELVertex *v_split;
+
+        // Default
+        split_by = "id";
+        std::size_t nvertex = baseline_copy->vertices().size();
+        if (nvertex % 2 == 0) {
+          v_split = baseline_copy->vertices()[nvertex / 2];
+        }
+        else {
+          v_split = baseline_copy->vertices()[(nvertex - 1) / 2];
         }
 
-        if (split_by == "name") {
-          v_split = pmodel->getPointByName(p_xn_split->value());
-          if (!v_split) {
+        // Specified
+        xml_node<> *p_xn_split{nodeSegment->first_node("split")};
+        if (p_xn_split) {
+          xml_attribute<> *p_xa_by{p_xn_split->first_attribute("by")};
+          if (p_xa_by) {
+            split_by = p_xa_by->value();
+          }
+
+          if (split_by == "name") {
+            v_split = pmodel->getPointByName(p_xn_split->value());
+            if (!v_split) {
+              throw std::runtime_error(
+                "cannot find split point '" + std::string(p_xn_split->value())
+                + "' in segment '" + seg_name + "'"
+              );
+            }
+          }
+          else if (split_by == "id") {
+            v_split = baseline_copy->vertices()[
+              parseRequiredInt(p_xn_split->value(),
+                "<split by='id'> in segment '" + seg_name + "'") - 1];
+          }
+          else {
             throw std::runtime_error(
-              "cannot find split point '" + std::string(p_xn_split->value())
-              + "' in segment '" + segmentName + "'"
+              "<split by='" + split_by + "'> in segment '" + seg_name
+              + "': unrecognized 'by' value; use 'name' or 'id'"
             );
           }
         }
-        else if (split_by == "id") {
-          v_split = p_baseline->vertices()[
-            parseRequiredInt(p_xn_split->value(),
-              "<split by='id'> in segment '" + segmentName + "'") - 1];
-        }
-        else {
-          throw std::runtime_error(
-            "<split by='" + split_by + "'> in segment '" + segmentName
-            + "': unrecognized 'by' value; use 'name' or 'id'"
-          );
-        }
-      }
 
-      // Split segment into two
-      Segment *p_sgm_1, *p_sgm_2;
-      std::string name_1, name_2;
-      name_1 = segmentName + "_1";
-      name_2 = segmentName + "_2";
-      Baseline *p_bsl_1 = new Baseline(p_baseline->getName()+"_1", p_baseline->getType());
-      Baseline *p_bsl_2 = new Baseline(p_baseline->getName()+"_2", p_baseline->getType());
-      int bsl_i = 1;
-      for (auto v : p_baseline->vertices()) {
-        if (bsl_i == 1) {
-          p_bsl_1->vertices().push_back(v);
-        }
-        if (v == v_split) {
-          bsl_i = 2;
-        }
-        if (bsl_i == 2) {
-          p_bsl_2->vertices().push_back(v);
-        }
-      }
-
-      pmodel->addBaseline(p_bsl_1);
-      pmodel->addBaseline(p_bsl_2);
-
-      p_sgm_1 = new Segment(name_1, p_bsl_1, p_layup, layupSide, 0);
-      if (i_freeend == 0 || i_freeend == -1) {
-        p_sgm_1->setFreeEnd(i_freeend);
-      }
-      p_sgm_1->setMatOrient1(p_component->getMatOrient1());
-      p_sgm_1->setMatOrient2(p_component->getMatOrient2());
-      p_component->addSegment(p_sgm_1);
-
-      p_sgm_2 = new Segment(name_2, p_bsl_2, p_layup, layupSide, 0);
-      if (i_freeend == 1 || i_freeend == -1) {
-        p_sgm_2->setFreeEnd(i_freeend);
-      }
-      p_sgm_2->setMatOrient1(p_component->getMatOrient1());
-      p_sgm_2->setMatOrient2(p_component->getMatOrient2());
-      p_component->addSegment(p_sgm_2);
-
-    }
-
-
-    else {
-      p_segment =
-          new Segment(segmentName, p_baseline, p_layup, layupSide, 0);
-      p_segment->setFreeEnd(i_freeend);
-      p_segment->setMatOrient1(p_component->getMatOrient1());
-      p_segment->setMatOrient2(p_component->getMatOrient2());
-
-      // Read trim config
-      for (auto p_xn_trim = nodeSegment->first_node("trim"); p_xn_trim;
-            p_xn_trim = p_xn_trim->next_sibling("trim")) {
-
-        std::string loc;
-        double x2, x3;
-
-        xml_node<> *p_xn_location{p_xn_trim->first_node("location")};
-        if (p_xn_location) {
-          loc = p_xn_location->value();
-        }
-
-        xml_node<> *p_xn_direction{p_xn_trim->first_node("direction")};
-        if (p_xn_direction) {
-          std::stringstream ss{p_xn_direction->value()};
-          ss >> x2 >> x3;
-          if (loc == "head") {
-            p_segment->setPrevBound(0, x2, x3);
+        // Split segment into two
+        Segment *p_sgm_1, *p_sgm_2;
+        std::string name_1, name_2;
+        name_1 = seg_name + "_1";
+        name_2 = seg_name + "_2";
+        Baseline *p_bsl_1 = new Baseline(baseline_copy->getName()+"_1", baseline_copy->getType());
+        Baseline *p_bsl_2 = new Baseline(baseline_copy->getName()+"_2", baseline_copy->getType());
+        int bsl_i = 1;
+        for (auto v : baseline_copy->vertices()) {
+          if (bsl_i == 1) {
+            p_bsl_1->vertices().push_back(v);
           }
-          else if (loc == "tail") {
-            p_segment->setNextBound(0, x2, x3);
+          if (v == v_split) {
+            bsl_i = 2;
+          }
+          if (bsl_i == 2) {
+            p_bsl_2->vertices().push_back(v);
           }
         }
+
+        pmodel->addBaseline(p_bsl_1);
+        pmodel->addBaseline(p_bsl_2);
+
+        p_sgm_1 = new Segment(name_1, p_bsl_1, layup, side, 0);
+        if (i_freeend == 0 || i_freeend == -1) {
+          p_sgm_1->setFreeEnd(i_freeend);
+        }
+        p_sgm_1->setMatOrient1(p_component->getMatOrient1());
+        p_sgm_1->setMatOrient2(p_component->getMatOrient2());
+        p_component->addSegment(p_sgm_1);
+
+        p_sgm_2 = new Segment(name_2, p_bsl_2, layup, side, 0);
+        if (i_freeend == 1 || i_freeend == -1) {
+          p_sgm_2->setFreeEnd(i_freeend);
+        }
+        p_sgm_2->setMatOrient1(p_component->getMatOrient1());
+        p_sgm_2->setMatOrient2(p_component->getMatOrient2());
+        p_component->addSegment(p_sgm_2);
+
       }
 
-      p_component->addSegment(p_segment);
+
+      else {
+        Segment *p_segment =
+            new Segment(seg_name, baseline_copy, layup, side, 0);
+        p_segment->setFreeEnd(i_freeend);
+        p_segment->setMatOrient1(p_component->getMatOrient1());
+        p_segment->setMatOrient2(p_component->getMatOrient2());
+
+        // Read trim config
+        for (auto p_xn_trim = nodeSegment->first_node("trim"); p_xn_trim;
+              p_xn_trim = p_xn_trim->next_sibling("trim")) {
+
+          std::string loc;
+          double x2, x3;
+
+          xml_node<> *p_xn_location{p_xn_trim->first_node("location")};
+          if (p_xn_location) {
+            loc = p_xn_location->value();
+          }
+
+          xml_node<> *p_xn_direction{p_xn_trim->first_node("direction")};
+          if (p_xn_direction) {
+            std::stringstream ss{p_xn_direction->value()};
+            ss >> x2 >> x3;
+            if (loc == "head") {
+              p_segment->setPrevBound(0, x2, x3);
+            }
+            else if (loc == "tail") {
+              p_segment->setNextBound(0, x2, x3);
+            }
+          }
+        }
+
+        p_component->addSegment(p_segment);
+      }
+    };
+
+    // Dispatch on direction. left/right create one segment; <baseline position>
+    // is applied by pre-offsetting the base curve toward the side opposite the
+    // layup direction (applyLayupPosition), after which the segment is a plain
+    // begin segment. both is realized as a single segment elsewhere.
+    const double total_thickness = p_layup->getTotalThickness();
+    switch (layup_dir) {
+      case LayupDir::Left:
+        emitSegment("left",
+                    applyLayupPosition(p_baseline, +1, layup_position,
+                                       total_thickness, baselineName),
+                    p_layup, "");
+        break;
+      case LayupDir::Right:
+        emitSegment("right",
+                    applyLayupPosition(p_baseline, -1, layup_position,
+                                       total_thickness, baselineName),
+                    p_layup, "");
+        break;
+      case LayupDir::Both: {
+        // both = one segment: mirrored layup (reverse(L)++L) at position=middle,
+        // so the base plane bisects the 2x-thick stack with the user's layup
+        // base-outward on each side. position on <baseline> is ignored here.
+        if (layup_position > 1e-12) {
+          PLOG(warning) << "segment '" << segmentName << "': <baseline position>"
+                        << " is ignored for direction='both' (base is the"
+                        << " mid-plane)";
+        }
+        Layup *mirrored = makeMirroredLayup(p_layup, layupName + "_both");
+        pmodel->addLayup(mirrored);
+        registerLayupUsage(mirrored, cs);
+        emitSegment("left",
+                    applyLayupPosition(p_baseline, +1, 0.5,
+                                       mirrored->getTotalThickness(), baselineName),
+                    mirrored, "");
+        break;
+      }
     }
 
   }
@@ -306,19 +455,21 @@ int readXMLElementComponentLaminate(
     const std::string segment_name_base = makeAutoSegmentsBaseName(
       p_xn_segments, unnamed_segments_block_counter
     );
-    std::string s_bsl_name{requireNode(p_xn_segments, "baseline", "<segments>")->value()};
+    xml_node<> *p_xn_bsl{requireNode(p_xn_segments, "baseline", "<segments>")};
+    std::string s_bsl_name{p_xn_bsl->value()};
     Baseline *p_bsl = pmodel->getBaselineByName(s_bsl_name);
     if (p_bsl == nullptr) {
       throw std::runtime_error(
         "cannot find baseline '" + s_bsl_name + "' in <segments>"
       );
     }
+    xml_attribute<> *p_xa_pos{p_xn_bsl->first_attribute("position")};
+    const double layup_position =
+        parsePosition(p_xa_pos ? p_xa_pos->value() : "");
 
-    std::string s_layup_side{"left"};
     xml_node<> *p_xn_side{p_xn_segments->first_node("layup_side")};
-    if (p_xn_side) {
-      s_layup_side = lowerString(p_xn_side->value());
-    }
+    const std::string side_raw = p_xn_side ? p_xn_side->value() : "";
+    const LayupDir layup_dir = parseDirection(side_raw);
 
     // Read layups
     std::vector<double> v_u_sorted;
@@ -569,20 +720,60 @@ int readXMLElementComponentLaminate(
       v_p_bsl.push_back(tmp_p_bsl);
     }
 
-    // Create segments
+    // Create the Segment for one interval of this <segments> block. Mirrors
+    // emitSegment in the <segment> loop. Through-thickness position is baked
+    // into `bsl` by the caller (applyLayupPosition).
+    auto emitSegmentsInterval = [&](const std::string &side,
+                                    const std::string &sgm_name, Baseline *bsl,
+                                    Layup *layup, const std::string &name_suffix) {
+      Segment *p_sgm = new Segment(sgm_name + name_suffix, bsl, layup, side, 0);
+      p_sgm->setFreeEnd(-1);
+      p_sgm->setMatOrient1(p_component->getMatOrient1());
+      p_sgm->setMatOrient2(p_component->getMatOrient2());
+      p_component->addSegment(p_sgm);
+    };
+
+    // Create segments. left/right create one segment per interval; <baseline
+    // position> pre-offsets each interval base toward the side opposite the
+    // layup direction. both is realized as a single segment elsewhere.
     for (std::size_t i = 0; i < n_sgms; ++i) {
       const std::string s_sgm_name = makeGeneratedSegmentName(
         segment_name_base, i, n_sgms
       );
-      int i_freeend = -1;
-      Segment *p_sgm = new Segment(
-        s_sgm_name, v_p_bsl[i], v_p_layup_combined[i], s_layup_side, 0
-      );
-      p_sgm->setFreeEnd(i_freeend);
-      p_sgm->setMatOrient1(p_component->getMatOrient1());
-      p_sgm->setMatOrient2(p_component->getMatOrient2());
-
-      p_component->addSegment(p_sgm);
+      const double total_thickness = v_p_layup_combined[i]->getTotalThickness();
+      switch (layup_dir) {
+        case LayupDir::Left:
+          emitSegmentsInterval(
+            "left", s_sgm_name,
+            applyLayupPosition(v_p_bsl[i], +1, layup_position,
+                               total_thickness, v_p_bsl[i]->getName()),
+            v_p_layup_combined[i], ""
+          );
+          break;
+        case LayupDir::Right:
+          emitSegmentsInterval(
+            "right", s_sgm_name,
+            applyLayupPosition(v_p_bsl[i], -1, layup_position,
+                               total_thickness, v_p_bsl[i]->getName()),
+            v_p_layup_combined[i], ""
+          );
+          break;
+        case LayupDir::Both: {
+          // both = one segment per interval: mirrored layup at position=middle.
+          Layup *interval_layup = v_p_layup_combined[i];
+          Layup *mirrored =
+              makeMirroredLayup(interval_layup, s_sgm_name + "_both");
+          pmodel->addLayup(mirrored);
+          registerLayupUsage(mirrored, cs);
+          emitSegmentsInterval(
+            "left", s_sgm_name,
+            applyLayupPosition(v_p_bsl[i], +1, 0.5,
+                               mirrored->getTotalThickness(), v_p_bsl[i]->getName()),
+            mirrored, ""
+          );
+          break;
+        }
+      }
     }
 
   }
