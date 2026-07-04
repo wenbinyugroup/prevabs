@@ -21,5 +21,4 @@
 component-laminate
 component-fill
 component-dependency
-offset
 ```
