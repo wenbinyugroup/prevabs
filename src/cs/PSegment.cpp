@@ -461,10 +461,15 @@ int Segment::requireValidLayupSide(const char *caller) const {
     return -1;
   }
 
+  // A segment's side is always 'left' or 'right'. The XML-level sugar
+  // (direction="both", <baseline position=...>) is fully resolved in the
+  // reader into plain left/right begin segments, so it never reaches here as a
+  // side value; a different value indicates an internal invariant violation.
   const std::string message =
       std::string("Segment::") + caller
-      + " requires layup side 'left' or 'right' but got '"
-      + _layupside + "' for segment '" + _name + "'";
+      + " requires internal layup side 'left' or 'right' but got '"
+      + _layupside + "' for segment '" + _name
+      + "' (direction='both' / <baseline position> are resolved in the reader)";
   PLOG(error) << message;
   assert(false && "Invalid segment layup side");
   return 0;

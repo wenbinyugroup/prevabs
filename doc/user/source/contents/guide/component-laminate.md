@@ -21,6 +21,20 @@ The base line provides a reference for the position and direction of the layup.
 Layers can be laid to the left or right of the base line.
 The direction is defined as one's left or right, assuming one is walking along the direction of the base line.
 
+By default the base line is the inner face of the layup (the first layer sits on
+the base line). The optional `position` attribute on `<baseline>` moves the base
+line to any through-thickness location of the layup: `begin` (default, inner
+face), `middle` (mid-plane — half of the layup on each side of the base line),
+`end` (outer face), or any fraction in `[0, 1]`. Whatever the position, the total
+thickness and the layer sequence (from the base line outward) are unchanged; only
+where the base line sits within the stack changes.
+
+Setting `direction="both"` lays the layup up on **both** sides of the base line:
+the base line becomes the mid-plane, the user's layup reads from the base line
+outward on each side, and the total thickness is doubled. It is realized as a
+single segment equivalent to `position="middle"` with the layup mirrored about
+the base line (so `position` is ignored when `direction="both"`).
+
 ```{figure} /figures/segment.png
 :name: fig-segment
 :width: 6in
@@ -140,9 +154,16 @@ Segments plot.
   - `name` - Name of the segment.
 
 - `<baseline>` - Name of the base line defining this segment.
+
+  - `position` - Through-thickness location of the base line within the layup.
+    Choose one from 'begin' (default), 'middle'/'center', 'end', or any number in
+    `[0, 1]`. Ignored when `direction="both"`.
+
 - `<layup>` - Name of the layup defining this segment.
 
-  - `direction` - Direction of layup. Choose one from 'left' and 'right'. Default is 'left'.
+  - `direction` - Direction of layup. Choose one from 'left', 'right' and 'both'.
+    Default is 'left'. 'both' lays the layup on both sides of the base line
+    (total thickness doubled; base line at the mid-plane).
 
 - `<joint>` - Names of two segments delimited by a comma (',') that will be joined.
 
@@ -152,8 +173,13 @@ Segments plot.
 *DEFINITION 2*
 
 - `<segments>` - Root element of the definition.
-- `<baseline>` - Name of the base line definint these segments.
-- `<layup_side>` - Direction of the following layups. Choose one from 'left' and 'right'. Default is 'left'.
+- `<baseline>` - Name of the base line defining these segments.
+
+  - `position` - Through-thickness location of the base line within the layups.
+    Choose one from 'begin' (default), 'middle'/'center', 'end', or any number in
+    `[0, 1]`. Applied to every interval. Ignored when `<layup_side>` is 'both'.
+
+- `<layup_side>` - Direction of the following layups. Choose one from 'left', 'right' and 'both'. Default is 'left'.
 - `<layup>` - Name of the layup.
 
   - `begin` - Normalized parametric beginning location of the layup on the base line. Default is '0.0'.

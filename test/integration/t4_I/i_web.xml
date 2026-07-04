@@ -20,18 +20,21 @@
         <point name="br">1.5 -3</point>
         <point name="bc">0 -3</point>
         <point name="bl">-1.5 -3</point>
-        <point name="web">0.04 -2</point>
-
+        
         <baseline name="bl_top" type="straight">
             <points>tl,tc,tr</points>
         </baseline>
         <baseline name="bl_bottom" type="straight">
             <points>bl,bc,br</points>
         </baseline>
+
+        <!-- <point name="web">0.04 -2</point> -->
+        <point name="web">0 -2</point>
         <baseline name="bl_web" type="straight">
             <point>web</point>
             <angle>90</angle>
         </baseline>
+
     </baselines>
 
     <layups>
@@ -62,8 +65,8 @@
     </component>
     <component name="web" depend="top,bottom">
         <segment>
-            <baseline>bl_web</baseline>
-            <layup direction="left">layup_web</layup>
+            <baseline position="middle">bl_web</baseline>
+            <layup>layup_web</layup>
         </segment>
     </component>
 </cross_section>

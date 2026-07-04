@@ -1,7 +1,4 @@
 <cross_section name="box">
-  <include>
-    <material>materials</material>
-  </include>
   <analysis>
     <model>1</model>
   </analysis>
@@ -62,8 +59,8 @@
 
   <component name="main">
     <segment>
-      <baseline>bsl_all</baseline>
-      <layup direction="middle">layup1</layup>
+      <baseline position="middle">bsl_all</baseline>
+      <layup>layup1</layup>
     </segment>
   </component>
 
