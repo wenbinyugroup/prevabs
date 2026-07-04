@@ -111,7 +111,7 @@ set(SOURCES
 
 if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
-  add_compile_options(/utf-8)
+  add_compile_options(/utf-8 /MP)
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
@@ -122,6 +122,14 @@ if(MSVC)
 else()
   target_compile_options(${PROJECTNAME} PRIVATE -w)
 endif()
+
+# Precompiled header: only STABLE, heavy, external headers so the PCH itself
+# almost never rebuilds (keeps incremental builds cheap) while sparing every TU
+# from re-parsing spdlog (~27k lines) / rapidxml / heavy STL on full builds.
+target_precompile_headers(${PROJECTNAME} PRIVATE
+  <spdlog/spdlog.h>
+  "${CMAKE_SOURCE_DIR}/include/rapidxml/rapidxml.hpp"
+  <vector> <string> <map> <memory> <sstream> <fstream> <cmath>)
 
 # target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_SOURCE_DIR}/include )
 target_include_directories( ${PROJECTNAME} PUBLIC ${CMAKE_BINARY_DIR}/generated )
