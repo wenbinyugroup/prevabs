@@ -17,7 +17,9 @@
       "Mesh.SurfaceEdges": 0
     },
     "homogenization": {
-      "Mesh.SurfaceFaces": 1
+      "Mesh.SurfaceFaces": 1,
+      "View[0].Visible": 0,
+      "View[1].Visible": 0
     },
     "recovery": {
       "Mesh.Points": 0,

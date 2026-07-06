@@ -10,8 +10,9 @@
     <translate>0.0 0.0</translate>
     <scale>1.0</scale>
     <rotate>0.0</rotate>
-    <mesh_size>0.01</mesh_size>
+    <mesh_size>0.02</mesh_size>
     <element_type>linear</element_type>
+    <element_shape>quad</element_shape>
   </general>
 
   <baselines>
