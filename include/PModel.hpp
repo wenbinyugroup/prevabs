@@ -454,6 +454,12 @@ public:
   int writeGmshMsh(const std::string &);
   int writeGmshOpt(const std::string &);
 
+  /// Append a per-element theta1 (deg) "ElementData" view to a .msh file.
+  /*!
+    \param fn_msh Full path of the .msh file to append the view to
+   */
+  void writeGmshTheta1View(const std::string &fn_msh);
+
   /// Write the Gmsh file (.geo, .msh, and .opt)
   /*!
     \param fn File name without the extension

@@ -8,6 +8,7 @@
 
 #include "GmshApi.hpp"
 
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
@@ -351,6 +352,18 @@ int PModel::writeGmshGeo(const std::string &fn) {
     // fn = fn_base + ".geo";
     // _gmodel->writeGEO(fn);
     gmsh::write(fn);
+
+    // Make the .geo_unrolled self-loading: opening it in Gmsh (e.g. by
+    // double-click) also merges the mesh (.msh) and the view/option file
+    // (.opt) that share the same base name, so all three load together with a
+    // single click. The base names are relative, which Gmsh resolves against
+    // the script's own directory. The mesh is merged before the options so the
+    // post-processing views the .msh creates already exist when the .opt
+    // configures them.
+    std::ofstream ofs_geo(fn, std::ios::app);
+    ofs_geo << "\nMerge \"" << config.file_base_name << ".msh\";\n";
+    ofs_geo << "Merge \"" << config.file_base_name << ".opt\";\n";
+    ofs_geo.close();
   }
 
   else if (config.isRecovery()) {
@@ -391,6 +404,9 @@ int PModel::writeGmshMsh(const std::string &fn_base) {
         PLOG(info) << "writing gmsh .msh file: " + fn_msh;
     // _gmodel->writeMSH(fn_msh, 2.2);
     gmsh::write(fn_msh);
+
+    // Append the per-element theta1 orientation as an ElementData view.
+    writeGmshTheta1View(fn_msh);
 
   }
 
@@ -440,6 +456,73 @@ int PModel::writeGmshMsh(const std::string &fn_base) {
 
 
   return 0;
+}
+
+
+
+
+void PModel::writeGmshTheta1View(const std::string &fn_msh) {
+
+  // Collect per-element data for two Gmsh "ElementData" post-processing views:
+  //   * theta1 (degrees), a scalar shown as a contour plot;
+  //   * y2, the local coordinate system's second axis as a vector, computed
+  //     from theta1 as (0, cos theta1, sin theta1), shown as arrows.
+  // theta1 is a per-face property (the local ply orientation written to the
+  // VABS SG file, see writeSG); every element in a face inherits its face's
+  // value. Exposing both lets the user see the orientation field directly in
+  // the .msh output.
+  std::vector<std::size_t> elem_tags;
+  std::vector<double> theta1_vals;   // 1 scalar per element
+  std::vector<double> y2_vals;       // 3 components per element
+
+  for (auto f : _dcel->faces()) {
+    auto it_ft = _gmsh_face_tags.find(f);
+    if (it_ft == _gmsh_face_tags.end()) continue;
+
+    std::vector<int> elem_types;
+    std::vector<std::vector<std::size_t>> etype_tags, etype_node_tags;
+    getElements(elem_types, etype_tags, etype_node_tags, 2, it_ft->second);
+
+    double theta1 = f->theta1();
+    double theta1_rad = deg2rad(theta1);
+    double y2y = std::cos(theta1_rad);
+    double y2z = std::sin(theta1_rad);
+    for (const auto &tags : etype_tags) {
+      for (auto t : tags) {
+        elem_tags.push_back(t);
+        theta1_vals.push_back(theta1);
+        y2_vals.push_back(0.0);
+        y2_vals.push_back(y2y);
+        y2_vals.push_back(y2z);
+      }
+    }
+  }
+
+  if (elem_tags.empty()) return;
+
+    PLOG(info) << "writing gmsh theta1 element data: " << elem_tags.size()
+               << " elements";
+
+  std::string model_name;
+  gmsh::model::getCurrent(model_name);
+
+  int theta1_view = gmsh::view::add("theta1 (deg)");
+  gmsh::view::addHomogeneousModelData(
+    theta1_view, 0, model_name, "ElementData", elem_tags, theta1_vals);
+
+  int y2_view = gmsh::view::add("y2 direction");
+  gmsh::view::addHomogeneousModelData(
+    y2_view, 0, model_name, "ElementData", elem_tags, y2_vals);
+
+  // Append only the views' $ElementData blocks to the existing .msh. Without
+  // PostProcessing.SaveMesh=0, gmsh::view::write re-dumps the whole mesh,
+  // producing a second $Nodes/$Elements copy that makes readers skip
+  // "duplicate" elements.
+  gmsh::option::setNumber("PostProcessing.SaveMesh", 0);
+  gmsh::view::write(theta1_view, fn_msh, true);  // append (view only)
+  gmsh::view::write(y2_view, fn_msh, true);      // append (view only)
+
+  return;
 }
 
 
