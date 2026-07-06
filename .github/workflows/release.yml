@@ -506,6 +506,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${{ inputs.tag }}"
+          # Title drops a leading "v" (tag v2.2 -> title "PreVABS 2.2")
+          TITLE_VERSION="${TAG#v}"
           PRERELEASE_FLAG=""
           if [ "${{ inputs.prerelease }}" = "true" ]; then
             PRERELEASE_FLAG="--prerelease"
@@ -515,7 +517,7 @@ jobs:
               --clobber
           else
             gh release create "$TAG" \
-              --title "PreVABS $TAG" \
+              --title "PreVABS $TITLE_VERSION" \
               --notes-file release_notes.md \
               $PRERELEASE_FLAG \
               artifacts/*.zip \
@@ -614,6 +616,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${{ inputs.tag }}"
+          # Title drops a leading "v" (tag v2.2 -> title "PreVABS 2.2")
+          TITLE_VERSION="${TAG#v}"
           PRERELEASE_FLAG=""
           if [ "${{ inputs.prerelease }}" = "true" ]; then
             PRERELEASE_FLAG="--prerelease"
@@ -622,7 +626,7 @@ jobs:
             gh release upload "$TAG" artifacts/*.zip --clobber
           else
             gh release create "$TAG" \
-              --title "PreVABS $TAG" \
+              --title "PreVABS $TITLE_VERSION" \
               --notes-file release_notes.md \
               $PRERELEASE_FLAG \
               artifacts/*.zip

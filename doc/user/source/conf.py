@@ -39,13 +39,11 @@ def loadPrevabsVersion():
     cmake_path = repo_root / 'CMakeLists.txt'
     cmake_content = cmake_path.read_text(encoding='utf-8')
 
-    version_match = re.search(
-        r'set\s*\(\s*PREVABS_VERSION\s+"([^"]+)"\s*\)',
-        cmake_content
-    )
-    if version_match:
-        return version_match.group(1)
-
+    # Assemble from the MAJOR/MINOR/PATCH components, which are the source of
+    # truth. The composite `PREVABS_VERSION` is defined in CMake as
+    # "${PREVABS_VERSION_MAJOR}.${...}" and is only expanded by CMake at
+    # configure time, so a static read of it here would yield the literal
+    # "${...}" placeholders rather than the numbers.
     components = {}
     for name in ('MAJOR', 'MINOR', 'PATCH'):
         component_match = re.search(
