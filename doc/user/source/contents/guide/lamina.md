@@ -17,10 +17,15 @@ The input syntax is:
 
 **Specification**
 
-- `<lamina>` - Root element for the definition of each lamina.
+`<lamina>`
+: Root element for the definition of each lamina.
 
-   - `name` - Name of the lamina.
+  `name`
+  : Name of the lamina.
 
-- `<material>` - Name of the material of the lamina.
-- `<thickness>` - Thickness of the lamina.
+`<material>`
+: Name of the material of the lamina.
+
+`<thickness>`
+: Thickness of the lamina.
 

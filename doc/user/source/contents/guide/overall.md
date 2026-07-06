@@ -27,9 +27,14 @@ If there are materials and laminae with the same names, data in the local materi
 
 **Specification**
 
-- `<baseline>` - Name of the included base line file.
-- `<material>` - Name of the included local material file.
-- `<layup>` - Name of the included layup file. Multiple `<layup>` elements can be listed to merge several layup files.
+`<baseline>`
+: Name of the included base line file.
+
+`<material>`
+: Name of the included local material file.
+
+`<layup>`
+: Name of the included layup file. Multiple `<layup>` elements can be listed to merge several layup files.
 
 ---
 
@@ -50,13 +55,69 @@ The second part contains settings for the analysis in VABS.
 
 **Specification**
 
-- `<model_dim>` - Dimension of the structural model. `1` (default) for beam.
-- `<model>` - Beam model. Choose one from `0` (classical) and `1` (refined / Timoshenko).
-- `<damping>`, `<thermal>`, `<trapeze>`, `<vlasov>` - Optional integer flags passed through to the solver. Default `0`.
-- `<initial_twist>`, `<initial_curvature_2>`, `<initial_curvature_3>` - Optional initial twist / curvature components. Setting any of them to a non-zero value enables the curvature flag.
-- `<oblique_y1>`, `<oblique_y2>` - Optional direction-cosine components
-  enabling the oblique flag when they differ from `(1, 0)`.
-- `<physics>` - Optional physics setting forwarded to the analysis backend.
+`<model_dim>`
+: Dimension of the structural model. `1` (default) for beam.
+
+`<model>`
+: Beam model. Choose one from:
+
+  `0`
+  : Classical model (aka Euler-Bernoulli model).
+
+  `1`
+  : Classical model and Timoshenko model.
+
+`<damping>`
+: Compute damping matrix. Choose between:
+
+  `0`
+  : Not compute the damping matrix for the section.
+
+  `1`
+  : Will compute the damping matrix.
+
+`<thermal>`
+: Carries out thermal analysis. Choose between:
+
+  `0`
+  : Carry out a pure mechanical analysis.
+
+  `3`
+  : Carry out a one-way coupled thermoelastic analysis.
+
+`<trapeze>`
+: Model trapeze effect. Choose between:
+
+  `0`
+  : Not model trapeze effect.
+
+  `1`
+  : Model trapeze effect.
+
+`<vlasov>`
+: Obtain Vlasov model. Choose between:
+
+  `0`
+  : Not obtain Vlasov model.
+
+  `1`
+  : Obtain Vlasov model.
+
+  ```{note}
+  This flag can be 1 only if `timoshenko_flag` is 1.
+  VABS will first construct the Timoshenko model, which determines the location of the shear center.
+  If the shear center is not at the origin of the beam coordinate system, VABS will move the origin of beam coordinate system to the shear center and repeat the calculation to obtain the Vlasov model.
+  ```
+
+`<initial_twist>`, `<initial_curvature_2>`, `<initial_curvature_3>`
+: Optional initial twist / curvature components.
+  Setting any of them to a non-zero value enables the curvature flag.
+
+`<oblique_y1>`, `<oblique_y2>`
+: Optional direction-cosine components enabling the oblique flag when they differ from `(1, 0)`.
+
+`<physics>`
+: Optional physics setting forwarded to the analysis backend.
 
 
 ---
@@ -100,24 +161,51 @@ In addition, the mesh element shape can be switched between triangles and quadri
 
 **Specification**
 
-- `<translate>` - Horizontal and vertical translation of the cross-section. The origin will be moved to (-e2, -e3).
-- `<scale>` - Scaling factor of the cross-section.
-- `<rotate>` - Rotation angle of the cross-section.
-- `<mesh_size>` - Global mesh size.
-- `<element_type>` - Order of elements. `linear` (or `1`) or `quadratic` (or `2`, default).
-- `<element_shape>` - Shape of mesh elements. `3`, `tri`, or `triangle` (default) for triangles; `4`, `quad`, or `quadrilateral` for quadrilaterals.
-- `<tolerance>` - Tolerance used in geometric computation. Optional. Default value is 1e-12.
-- `<omega>` - Optional global scaling factor passed to the solver. Default `1.0`.
+`<translate>`
+: Horizontal and vertical translation of the cross-section. The origin will be moved to (-e2, -e3).
+
+`<scale>`
+: Scaling factor of the cross-section.
+
+`<rotate>`
+: Rotation angle of the cross-section.
+
+`<mesh_size>`
+: Global mesh size.
+
+`<element_type>`
+: Order of elements. `linear` (or `1`) or `quadratic` (or `2`, default).
+
+`<element_shape>`
+: Shape of mesh elements. `3`, `tri`, or `triangle` (default) for triangles; `4`, `quad`, or `quadrilateral` for quadrilaterals.
+
+`<tolerance>`
+: Tolerance used in geometric computation. Optional. Default value is 1e-12.
+
+`<omega>`
+: Optional global scaling factor passed to the solver. Default `1.0`.
 
 When `<element_shape>` selects quadrilaterals, the following Gmsh-driven controls become available:
 
-- `<transfinite_auto>` - `1`/`true` to enable Gmsh's automatic transfinite meshing of structured regions.
-- `<transfinite_corner_angle>` - Angle threshold (radians) used by the transfinite-auto algorithm to decide which corners to fix.
-- `<transfinite_recombine>` - `1`/`true` to recombine triangles into quads after transfinite meshing.
-- `<recombine>` - `1`/`true` to enable Gmsh's general recombine pass.
-- `<recombine_angle>` - Angle threshold (degrees) used by the recombine algorithm.
+`<transfinite_auto>`
+: `1`/`true` to enable Gmsh's automatic transfinite meshing of structured regions.
+
+`<transfinite_corner_angle>`
+: Angle threshold (radians) used by the transfinite-auto algorithm to decide which corners to fix.
+
+`<transfinite_recombine>`
+: `1`/`true` to recombine triangles into quads after transfinite meshing.
+
+`<recombine>`
+: `1`/`true` to enable Gmsh's general recombine pass.
+
+`<recombine_angle>`
+: Angle threshold (degrees) used by the recombine algorithm.
 
 Interface tracking between layers is also configurable here:
 
-- `<track_interface>` - Integer flag to write per-interface marker output.
-- `<interface_theta1_diff_threshold>`, `<interface_theta3_diff_threshold>` - Angle thresholds (degrees) used to decide whether two adjacent layers share an interface for tracking.
+`<track_interface>`
+: Integer flag to write per-interface marker output.
+
+`<interface_theta1_diff_threshold>`, `<interface_theta3_diff_threshold>`
+: Angle thresholds (degrees) used to decide whether two adjacent layers share an interface for tracking.

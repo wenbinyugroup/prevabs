@@ -18,40 +18,65 @@ lower) formats are supported.
 
 **Specification**
 
-- `<points>`: Path to the airfoil data file (relative to the main XML file).
-  - Attributes
-    - `data`: Source of the data. Currently only `file` is supported.
-    - `format`: Airfoil file format. `1` / `selig` / `s*` for Selig, `2` / `lednicer` / `l*` for Lednicer. Default is `2`.
-    - `header`: Number of header rows in the data file to skip. Default is `0`.
-    - `direction`: `1`/`ccw`/`forward` or `-1`/`cw`/`reverse`. Default is `1`.
-- `<leading_edge>`: Optional. Override the airfoil leading-edge point used for
-  surface splitting.
-  - Attribute
-    - `name`: Optional name for the leading-edge vertex. When omitted, the
-      default name is `<linename>_le`.
-  - Value
-    - Optional `x y` coordinates in the raw airfoil-data coordinate system.
-      When omitted, PreVABS keeps the auto-detected geometry and only renames
-      the vertex.
-- `<trailing_edge>`: Optional. Override the airfoil trailing-edge point used
-  for surface splitting.
-  - Attribute
-    - `name`: Optional name for the trailing-edge vertex. When omitted, the
-      default name is `<linename>_te`.
-  - Value
-    - Optional `x y` coordinates in the raw airfoil-data coordinate system.
-- `<normalize>`: Optional boolean. If true, normalize the raw airfoil data
+`<points>`
+: Path to the airfoil data file (relative to the main XML file).
+
+  `data`
+  : Source of the data. Currently only `file` is supported.
+
+  `format`
+  : Airfoil file format. `1` / `selig` / `s*` for Selig, `2` / `lednicer` / `l*` for Lednicer. Default is `2`.
+
+  `header`
+  : Number of header rows in the data file to skip. Default is `0`.
+
+  `direction`
+  : `1`/`ccw`/`forward` or `-1`/`cw`/`reverse`. Default is `1`.
+
+`<leading_edge>`
+: Optional. Override the airfoil leading-edge point used for surface splitting.
+
+  `name`
+  : Optional name for the leading-edge vertex. When omitted, the
+    default name is `<linename>_le`.
+
+  Value
+  : Optional `x y` coordinates in the raw airfoil-data coordinate system.
+    When omitted, PreVABS keeps the auto-detected geometry and only renames
+    the vertex.
+
+`<trailing_edge>`
+: Optional. Override the airfoil trailing-edge point used for surface splitting.
+
+  `name`
+  : Optional name for the trailing-edge vertex. When omitted, the
+    default name is `<linename>_te`.
+
+  Value
+  : Optional `x y` coordinates in the raw airfoil-data coordinate system.
+
+`<normalize>`
+: Optional boolean. If true, normalize the raw airfoil data
   along the x-direction before edge detection and splitting.
-  - The transform is
-    - `x' = (x - x_min) / (x_max - x_min)`
-    - `y' = y / (x_max - x_min)`
-  - User-specified `<leading_edge>` / `<trailing_edge>` coordinates are
-    transformed by the same rule automatically.
-- `<flip>`: Optional. Mirror the airfoil after construction. The element value
+
+  `x'`
+  : `(x - x_min) / (x_max - x_min)`
+
+  `y'`
+  : `y / (x_max - x_min)`
+
+  User-specified coordinates
+  : `<leading_edge>` / `<trailing_edge>` coordinates are transformed by the
+    same rule automatically.
+
+`<flip>`
+: Optional. Mirror the airfoil after construction. The element value
   is a boolean (`1`/`0`/`true`/`false`); attributes `axis` (`2`/`x2`/`y` or
   `3`/`x3`/`z`, default `2`) and `loc` (mirror location, default `0.5`)
   control the reflection.
-- `<reverse>`: Optional. If true, reverse the order of vertices on the line
+
+`<reverse>`
+: Optional. If true, reverse the order of vertices on the line
   after all other transforms.
 
 If `name` is not provided, the leading-edge and trailing-edge vertices are

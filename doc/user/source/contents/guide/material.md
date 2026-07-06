@@ -31,16 +31,28 @@ A template of this file is shown below:
 
 **Specification**
 
-- `<material>` - Root element for each material.
+`<material>`
+: Root element for each material.
 
-  - `name` - Name of the material.
-  - `type` - Material symmetry class. Choose one from `isotropic`,
+  `name`
+  : Name of the material.
+
+  `type`
+  : Material symmetry class. Choose one from `isotropic`,
     `transversely isotropic`, `orthotropic` (alias `engineering`), and
     `anisotropic`.
-  - `<density>` - Density of the material. Default is 1.0.
-  - `<elastic>` - Elastic properties of the material. Specifications are different for different types.
-  - `<strength>` - Strength properties of the material. Specifications are different for different types and different failure criterion.
-  - `<failure_criterion>` - Failure criterion of the material. Options are different for different types.
+
+  `<density>`
+  : Density of the material. Default is 1.0.
+
+  `<elastic>`
+  : Elastic properties of the material. Specifications are different for different types.
+
+  `<strength>`
+  : Strength properties of the material. Specifications are different for different types and different failure criterion.
+
+  `<failure_criterion>`
+  : Failure criterion of the material. Options are different for different types.
 
 ```{note} Note
 `type="lamina"` is no longer accepted as a material symmetry type.

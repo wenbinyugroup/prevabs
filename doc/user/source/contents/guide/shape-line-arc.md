@@ -48,16 +48,32 @@ Example inputs:
 
 **Specification**
 
-- `<center>`: Name of the center point.
-- `<start>`: Name of the starting point.
-- `<end>`: Name of the ending point.
-- `<direction>`: Direction of the circular arc. Choose from 'cw' (clockwise) and 'ccw' (counter-clockwise). Default is 'ccw'.
-- `<angle>`: Central angle of the arc.
-- `<radius>` / `<curvature>`: Used together with `<start>` and `<end>` to size the arc; provide one or the other.
-- `<side>`: `left` or `right` of the chord (`start`→`end`). Default is `right`.
-- `<discrete>`: Number of discretization. If `by="angle"`, then new points are created every specified degrees of angle. If `by="number"`, then specified number of new points are created and evenly distributed on the arc.
-  - Attributes
-    - `by`: Choose one from `angle` and `number`. Default is `angle`.
+`<center>`
+: Name of the center point.
+
+`<start>`
+: Name of the starting point.
+
+`<end>`
+: Name of the ending point.
+
+`<direction>`
+: Direction of the circular arc. Choose from 'cw' (clockwise) and 'ccw' (counter-clockwise). Default is 'ccw'.
+
+`<angle>`
+: Central angle of the arc.
+
+`<radius>` / `<curvature>`
+: Used together with `<start>` and `<end>` to size the arc; provide one or the other.
+
+`<side>`
+: `left` or `right` of the chord (`start`→`end`). Default is `right`.
+
+`<discrete>`
+: Number of discretization. If `by="angle"`, then new points are created every specified degrees of angle. If `by="number"`, then specified number of new points are created and evenly distributed on the arc.
+
+  `by`
+  : Choose one from `angle` and `number`. Default is `angle`.
 
 
 
@@ -94,9 +110,18 @@ A sample input file demonstrating the two methods:
 
 **Specification**
 
-- `<center>`: Name of the center point.
-- `<radius>`: Radius of the circle.
-- `<point>`: Name of a point on the circle.
-- `<direction>`: Direction of the circle. Choose from `cw` (clockwise) and `ccw` (counter-clockwise). Default is `ccw`.
-- `<discrete>`: Number of discretization (same semantics as for arcs).
+`<center>`
+: Name of the center point.
+
+`<radius>`
+: Radius of the circle.
+
+`<point>`
+: Name of a point on the circle.
+
+`<direction>`
+: Direction of the circle. Choose from `cw` (clockwise) and `ccw` (counter-clockwise). Default is `ccw`.
+
+`<discrete>`
+: Number of discretization (same semantics as for arcs).
 

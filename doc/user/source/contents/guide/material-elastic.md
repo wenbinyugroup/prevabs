@@ -22,7 +22,8 @@ Four types are supported.
 
 **Specification**
 
-- 2 constants: `e` and `nu`.
+Constants
+: `e` and `nu` (2 constants).
 
 
 ## Transversely isotropic
@@ -58,10 +59,12 @@ explicitly:
 
 **Specification**
 
-- 4 required constants: `e1`, `e2`, `g12`, `nu12`.
+Required constants
+: `e1`, `e2`, `g12`, `nu12` (4 constants).
   Internally converted to an orthotropic material.
-  Optional overrides for `e3`, `nu13`, `nu23`, `g13`, `g23` are accepted; defaults
-  are listed above.
+
+Optional overrides
+: `e3`, `nu13`, `nu23`, `g13`, `g23`. Defaults are listed above.
 
 ---
 
@@ -92,7 +95,8 @@ explicitly:
 
 **Specification**
 
-- 9 constants: `e1`, `e2`, `e3`, `g12`, `g13`, `g23`, `nu12`, `nu13`, `nu23`.
+Constants
+: `e1`, `e2`, `e3`, `g12`, `g13`, `g23`, `nu12`, `nu13`, `nu23` (9 constants).
 
 ---
 
@@ -134,7 +138,8 @@ explicitly:
 
 **Specification**
 
-- 21 constants: `c11`, `c12`, `c13`, `c14`, `c15`, `c16`, `c22`, `c23`, `c24`, `c25`, `c26`, `c33`, `c34`, `c35`, `c36`, `c44`, `c45`, `c46`, `c55`, `c56`, `c66`. These constants are defined as:
+Constants
+: `c11`, `c12`, `c13`, `c14`, `c15`, `c16`, `c22`, `c23`, `c24`, `c25`, `c26`, `c33`, `c34`, `c35`, `c36`, `c44`, `c45`, `c46`, `c55`, `c56`, `c66` (21 constants). These constants are defined as:
 
 $$
 \begin{Bmatrix}

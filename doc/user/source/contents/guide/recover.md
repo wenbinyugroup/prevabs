@@ -54,24 +54,49 @@ A template for this part of data is:
 
 **Specification**
 
-- `<global>` - Global analysis results. Required.
-  - Attributes
-    - `measure` - Type of the sectional loads, `stress` (or `0`, default)
-      for generalized stresses and `strain` (or `1`) for generalized
-      strains.
-- `<displacements>` - Three components ($u_1$, $u_2$, $u_3$) of the global displacements. Optional. Default values are {0, 0, 0}.
-- `<rotations>` - Nine components ($c_{11}$, $c_{12}$, $c_{13}$, $c_{21}$, $c_{22}$, $c_{23}$, $c_{31}$, $c_{32}$, $c_{33}$) of the global rotations (direction cosine matrix). Optional. Default values are {1, 0, 0, 0, 1, 0, 0, 0, 1}.
-- `<loads>` - The sectional loading components. For the Euler-Bernoulli model (`<model>0</model>`), four numbers ($F_1$, $M_1$, $M_2$, $M_3$) are needed. For the Timoshenko model (`<model>1</model>`), six numbers ($F_1$, $F_2$, $F_3$, $M_1$, $M_2$, $M_3$) are needed.
-- `<distributed>` - Distributed sectional loads per unit span (Timoshenko model only, VABS). Optional. Default values are zero distributed loads.
+`<global>`
+: Global analysis results. Required.
 
-  - `<forces>` - Distributed sectional forces ($f_1$, $f_2$, $f_3$).
-  - `<forces_d1>` - First derivative of distributed sectional forces ($f'_1$, $f'_2$, $f'_3$).
-  - `<forces_d2>` - Second derivative of distributed sectional forces ($f''_1$, $f''_2$, $f''_3$).
-  - `<forces_d3>` - Third derivative of distributed sectional forces ($f'''_1$, $f'''_2$, $f'''_3$).
-  - `<moments>` - Distributed sectional moments ($m_1$, $m_2$, $m_3$).
-  - `<moments_d1>` - First derivative of distributed sectional moments ($m'_1$, $m'_2$, $m'_3$).
-  - `<moments_d2>` - Second derivative of distributed sectional moments ($m''_1$, $m''_2$, $m''_3$).
-  - `<moments_d3>` - Third derivative of distributed sectional moments ($m'''_1$, $m'''_2$, $m'''_3$).
+  `measure`
+  : Type of the sectional loads, `stress` (or `0`, default)
+    for generalized stresses and `strain` (or `1`) for generalized
+    strains.
+
+`<displacements>`
+: Three components ($u_1$, $u_2$, $u_3$) of the global displacements. Optional. Default values are {0, 0, 0}.
+
+`<rotations>`
+: Nine components ($c_{11}$, $c_{12}$, $c_{13}$, $c_{21}$, $c_{22}$, $c_{23}$, $c_{31}$, $c_{32}$, $c_{33}$) of the global rotations (direction cosine matrix). Optional. Default values are {1, 0, 0, 0, 1, 0, 0, 0, 1}.
+
+`<loads>`
+: The sectional loading components. For the Euler-Bernoulli model (`<model>0</model>`), four numbers ($F_1$, $M_1$, $M_2$, $M_3$) are needed. For the Timoshenko model (`<model>1</model>`), six numbers ($F_1$, $F_2$, $F_3$, $M_1$, $M_2$, $M_3$) are needed.
+
+`<distributed>`
+: Distributed sectional loads per unit span (Timoshenko model only, VABS). Optional. Default values are zero distributed loads.
+
+  `<forces>`
+  : Distributed sectional forces ($f_1$, $f_2$, $f_3$).
+
+  `<forces_d1>`
+  : First derivative of distributed sectional forces ($f'_1$, $f'_2$, $f'_3$).
+
+  `<forces_d2>`
+  : Second derivative of distributed sectional forces ($f''_1$, $f''_2$, $f''_3$).
+
+  `<forces_d3>`
+  : Third derivative of distributed sectional forces ($f'''_1$, $f'''_2$, $f'''_3$).
+
+  `<moments>`
+  : Distributed sectional moments ($m_1$, $m_2$, $m_3$).
+
+  `<moments_d1>`
+  : First derivative of distributed sectional moments ($m'_1$, $m'_2$, $m'_3$).
+
+  `<moments_d2>`
+  : Second derivative of distributed sectional moments ($m''_1$, $m''_2$, $m''_3$).
+
+  `<moments_d3>`
+  : Third derivative of distributed sectional moments ($m'''_1$, $m'''_2$, $m'''_3$).
 
 
 ## Multiple load cases

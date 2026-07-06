@@ -149,38 +149,56 @@ Segments plot.
 
 *DEFINITION 1*
 
-- `<segment>` - Root element of the definition of the segment.
+`<segment>`
+: Root element of the definition of the segment.
 
-  - `name` - Name of the segment.
+  `name`
+  : Name of the segment.
 
-- `<baseline>` - Name of the base line defining this segment.
+`<baseline>`
+: Name of the base line defining this segment.
 
-  - `position` - Through-thickness location of the base line within the layup.
+  `position`
+  : Through-thickness location of the base line within the layup.
     Choose one from 'begin' (default), 'middle'/'center', 'end', or any number in
     `[0, 1]`. Ignored when `direction="both"`.
 
-- `<layup>` - Name of the layup defining this segment.
+`<layup>`
+: Name of the layup defining this segment.
 
-  - `direction` - Direction of layup. Choose one from 'left', 'right' and 'both'.
+  `direction`
+  : Direction of layup. Choose one from 'left', 'right' and 'both'.
     Default is 'left'. 'both' lays the layup on both sides of the base line
     (total thickness doubled; base line at the mid-plane).
 
-- `<joint>` - Names of two segments delimited by a comma (',') that will be joined.
+`<joint>`
+: Names of two segments delimited by a comma (',') that will be joined.
 
-  - `style` - Style of the joint. Choose one from '1' and '2'. Default is '1'.
+  `style`
+  : Style of the joint. Choose one from '1' and '2'. Default is '1'.
 
 
 *DEFINITION 2*
 
-- `<segments>` - Root element of the definition.
-- `<baseline>` - Name of the base line defining these segments.
+`<segments>`
+: Root element of the definition.
 
-  - `position` - Through-thickness location of the base line within the layups.
+`<baseline>`
+: Name of the base line defining these segments.
+
+  `position`
+  : Through-thickness location of the base line within the layups.
     Choose one from 'begin' (default), 'middle'/'center', 'end', or any number in
     `[0, 1]`. Applied to every interval. Ignored when `<layup_side>` is 'both'.
 
-- `<layup_side>` - Direction of the following layups. Choose one from 'left', 'right' and 'both'. Default is 'left'.
-- `<layup>` - Name of the layup.
+`<layup_side>`
+: Direction of the following layups. Choose one from 'left', 'right' and 'both'. Default is 'left'.
 
-  - `begin` - Normalized parametric beginning location of the layup on the base line. Default is '0.0'.
-  - `end` - Normalized parametric ending location of the layup on the base line. Default is '1.0'.
+`<layup>`
+: Name of the layup.
+
+  `begin`
+  : Normalized parametric beginning location of the layup on the base line. Default is '0.0'.
+
+  `end`
+  : Normalized parametric ending location of the layup on the base line. Default is '1.0'.

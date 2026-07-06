@@ -18,13 +18,19 @@ Inside the `line` element, the `straight` and `arc` types have several different
 
 **Specification**
 
-- `<line>` (or `<baseline>`): Definition of a base line (explained below).
-  - Attributes
-    - `name`: Name of the base line. Required.
-    - `type`: Type of the base line. Optional. Choose one from `straight` (default), `arc`, `circle`, `airfoil`.
-    - `method`: `direct` (default) or `join`. With `method="join"`, the
-      element value lists names of existing lines (one per child element) to
-      be concatenated into a new line.
+`<line>` (or `<baseline>`)
+: Definition of a base line (explained below).
+
+  `name`
+  : Name of the base line. Required.
+
+  `type`
+  : Type of the base line. Optional. Choose one from `straight` (default), `arc`, `circle`, `airfoil`.
+
+  `method`
+  : `direct` (default) or `join`. With `method="join"`, the
+    element value lists names of existing lines (one per child element) to
+    be concatenated into a new line.
 
 ```{toctree}
 :maxdepth: 2

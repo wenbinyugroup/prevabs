@@ -33,10 +33,14 @@ A template of this file is:
 
 **Specification**
 
-- `<layup>` - Root element for the definition of each layup.
+`<layup>`
+: Root element for the definition of each layup.
 
-  - `name` - Name of the layup.
-  - `method` - Method of defining the layup. Choose one from 'layer list' (or 'll') and 'stack sequence' (or 'ss'). Default is 'layer list'.
+  `name`
+  : Name of the layup.
+
+  `method`
+  : Method of defining the layup. Choose one from 'layer list' (or 'll') and 'stack sequence' (or 'ss'). Default is 'layer list'.
 
 
 ```{toctree}

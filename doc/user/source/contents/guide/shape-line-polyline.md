@@ -62,9 +62,14 @@ Use `type="straight"` for splines.
 
 **Specification**
 
-- `<points>`: Names of points defining the base line, separated by commas (explicit list), or colons (range). Blanks are not allowed between points names.
-- `<point>`: Name of a point.
-- `<angle>`: Incline angle of the line. The positive angle (degree) is defined from the positive z₂ axis, counter-clockwise.
+`<points>`
+: Names of points defining the base line, separated by commas (explicit list), or colons (range). Blanks are not allowed between points names.
+
+`<point>`
+: Name of a point.
+
+`<angle>`
+: Incline angle of the line. The positive angle (degree) is defined from the positive z₂ axis, counter-clockwise.
 
 The `<point>`+`<angle>` form accepts an optional `loc` attribute on the `<point>` to control whether the user-provided point is the line's midpoint (`loc="inner"`, default) or its starting endpoint (`loc="end"`).
 

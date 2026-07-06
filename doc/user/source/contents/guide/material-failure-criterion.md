@@ -44,13 +44,23 @@ More details can be found in the VABS users manual.
 
 **Specification**
 
-- `<failure_criterion>` - Name or ID of the failure criterion used.
+`<failure_criterion>`
+: Name or ID of the failure criterion used.
 
-  - `1` or `max principal stress`
-  - `2` or `max principal strain`
-  - `3` or `max shear stress` or `tresca`
-  - `4` or `max shear strain`
-  - `5` or `mises`
+  `1`
+  : `max principal stress`
+
+  `2`
+  : `max principal strain`
+
+  `3`
+  : `max shear stress` or `tresca`
+
+  `4`
+  : `max shear strain`
+
+  `5`
+  : `mises`
 
 
 ---
@@ -103,11 +113,21 @@ More details can be found in the VABS users manual.
 
 **Specification**
 
-- `<failure_criterion>` - Name or ID of the failure criterion used.
+`<failure_criterion>`
+: Name or ID of the failure criterion used.
 
-  - `1` or `max stress`
-  - `2` or `max strain`
-  - `3` or `tsai-hill`
-  - `4` or `tsai-wu`
-  - `5` or `hashin`
+  `1`
+  : `max stress`
+
+  `2`
+  : `max strain`
+
+  `3`
+  : `tsai-hill`
+
+  `4`
+  : `tsai-wu`
+
+  `5`
+  : `hashin`
 

@@ -111,15 +111,26 @@ Local mesh plot.
 
 **Specification**
 
-- `<material>` - Name of the material to be filled. Required.
-- `<location>` - Name of the point located in the fill region. Optional.
-- `<baseline>` - Name of the base line defining part or complete boundary. Optional.
+`<material>`
+: Name of the material to be filled. Required.
 
-  - `fillside` - Side of the fill with respect to the base line. Optional.
+`<location>`
+: Name of the point located in the fill region. Optional.
 
-- `<theta1>` - Rotating angle in degree about the x₁ axis. Optional. Default is 0 degree.
-- `<theta3>` - Rotating angle in degree about the y₃ axis. Optional. Default is 0 degree.
+`<baseline>`
+: Name of the base line defining part or complete boundary. Optional.
 
-- `<mesh_size>` - Local mesh size. Optional.
+  `fillside`
+  : Side of the fill with respect to the base line. Optional.
 
-  - `at` - A list of names of points where the local mesh size will be assgined. Required.
+`<theta1>`
+: Rotating angle in degree about the x₁ axis. Optional. Default is 0 degree.
+
+`<theta3>`
+: Rotating angle in degree about the y₃ axis. Optional. Default is 0 degree.
+
+`<mesh_size>`
+: Local mesh size. Optional.
+
+  `at`
+  : A list of names of points where the local mesh size will be assgined. Required.

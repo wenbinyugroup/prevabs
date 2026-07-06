@@ -36,18 +36,38 @@ In the current version each top-level block (`<baselines>`, `<materials>`, `<lay
 
 **Specification**
 
-- `<cross_section>` (or `<sg>`)
-  - `name` - Name of the cross-section. Required.
-  - `format` - Format of the input file (legacy attribute). Optional.
+`<cross_section>` (or `<sg>`)
+: Root element of the cross-section definition.
 
-- `<include>` - File names of separately stored data (baselines, materials, layups).
-- `<analysis>` - Configurations of cross-sectional analysis.
-- `<general>` - Overall settings of the cross-section. Required.
-- `<baselines>` - Definitions of geometry (points and lines).
-- `<materials>` - Definitions of materials and laminae (when defined inline).
-- `<layups>` - Definitions of layups.
-- `<component>` - Definitions of cross-sectional components. At least one is required.
-- `<global>` - Global beam analysis results used for recovery / failure analysis.
+  `name`
+  : Name of the cross-section. Required.
+
+  `format`
+  : Format of the input file (legacy attribute). Optional.
+
+`<include>`
+: File names of separately stored data (baselines, materials, layups).
+
+`<analysis>`
+: Configurations of cross-sectional analysis.
+
+`<general>`
+: Overall settings of the cross-section. Required.
+
+`<baselines>`
+: Definitions of geometry (points and lines).
+
+`<materials>`
+: Definitions of materials and laminae (when defined inline).
+
+`<layups>`
+: Definitions of layups.
+
+`<component>`
+: Definitions of cross-sectional components. At least one is required.
+
+`<global>`
+: Global beam analysis results used for recovery / failure analysis.
 
 
 

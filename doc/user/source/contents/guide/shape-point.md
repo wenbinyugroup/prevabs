@@ -35,13 +35,23 @@ Using the XML format, points can be defined in the following ways:
 
 **Specification**
 
-- `<point>`: Coordinates of the point. For the first method, two numbers are needed and separated by blanks. For the second method, only one number is needed.
-  - Attributes
-    - `name`: Name of the point. Required.
-    - `on`: Name of the line confining the point. Optional.
-    - `by`: Axis along which the coordinate is specified. Required if the point is defined on a line. Currently `x2` (alias `y`) is the only implemented axis.
-    - `which`: When `on` references an airfoil-type line, choose `top` or `bottom` to disambiguate the upper / lower surface. Default is `top`.
-    - `constraint`: `middle` to place the point at the midpoint of two named reference points listed as the element value. Default is `none`.
+`<point>`
+: Coordinates of the point. For the first method, two numbers are needed and separated by blanks. For the second method, only one number is needed.
+
+  `name`
+  : Name of the point. Required.
+
+  `on`
+  : Name of the line confining the point. Optional.
+
+  `by`
+  : Axis along which the coordinate is specified. Required if the point is defined on a line. Currently `x2` (alias `y`) is the only implemented axis.
+
+  `which`
+  : When `on` references an airfoil-type line, choose `top` or `bottom` to disambiguate the upper / lower surface. Default is `top`.
+
+  `constraint`
+  : `middle` to place the point at the midpoint of two named reference points listed as the element value. Default is `none`.
 
 
 
@@ -81,8 +91,11 @@ Prefer placing `<point>` elements directly inside `<baselines>`, or use the buil
 
 **Specification**
 
-- Three columns are separated by spaces.
-- `label` can be the combination of any letters, numbers and underscores "_".
+Columns
+: Three columns are separated by spaces.
+
+`label`
+: Can be the combination of any letters, numbers and underscores "_".
 
 ```{note} Note
 Normal points' names can be less meaningful, even identical.

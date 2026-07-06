@@ -18,8 +18,11 @@ A template is shown below.
 
 **Specification**
 
-- `<lamina>` - Name of the lamina used.
-- `<code>` - Stacking sequency code. Explained below.
+`<lamina>`
+: Name of the lamina used.
+
+`<code>`
+: Stacking sequency code. Explained below.
 
 **Rules of writing the stacking sequence code**
 
