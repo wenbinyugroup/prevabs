@@ -35,9 +35,9 @@
 #elif _WIN32
 #include <tchar.h>
 #include <windows.h>
+#endif
 
 using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
-#endif
 
 int readBaselines(const xml_node<> *nodeBaselines, PModel *pmodel,
                   const std::string &filePath, double /*dx*/, double /*dy*/, double /*dz*/, double /*s*/, double /*r*/) {

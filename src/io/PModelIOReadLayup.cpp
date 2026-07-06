@@ -41,9 +41,9 @@
 #elif _WIN32
 #include <tchar.h>
 #include <windows.h>
+#endif
 
 using namespace dcel;  // phase 0: DCEL types moved to namespace dcel
-#endif
 
 int readLayups(const xml_node<> *nodeLayups, PModel *pmodel) {
 
