@@ -31,7 +31,15 @@ jobs:
     if: ${{ inputs.package_scope == 'full' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Cache Gmsh SDK
+        id: cache-gmsh
+        uses: actions/cache@v4
+        with:
+          path: gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk.tgz
+          key: gmsh-linux-sdk-${{ env.GMSH_VERSION }}
+
       - name: Download and verify Gmsh SDK
+        if: steps.cache-gmsh.outputs.cache-hit != 'true'
         timeout-minutes: 6
         run: |
           archive="gmsh-${GMSH_VERSION}-Linux64-sdk.tgz"
@@ -60,12 +68,24 @@ jobs:
         with:
           submodules: recursive   # extern/cpp-terminal (used by pui)
 
+      - name: Cache Gmsh SDK
+        id: cache-gmsh
+        uses: actions/cache@v4
+        with:
+          path: gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk
+          key: gmsh-windows-sdk-${{ env.GMSH_VERSION }}
+
       - name: Download Gmsh SDK
+        if: steps.cache-gmsh.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           $sdkUrl = "https://gmsh.info/bin/Windows/gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk.zip"
           Invoke-WebRequest -Uri $sdkUrl -OutFile gmsh-sdk.zip
           Expand-Archive gmsh-sdk.zip -DestinationPath .
+
+      - name: Set Gmsh_ROOT
+        shell: pwsh
+        run: |
           "Gmsh_ROOT=$PWD\gmsh-${{ env.GMSH_VERSION }}-Windows64-sdk" |
             Out-File -FilePath $env:GITHUB_ENV -Append
 
@@ -73,7 +93,7 @@ jobs:
         shell: pwsh
         run: |
           cmake -B build -G "Visual Studio 17 2022" -A x64
-          cmake --build build --config Release
+          cmake --build build --config Release --parallel
 
       - name: Integration tests
         shell: pwsh
@@ -161,10 +181,21 @@ jobs:
           tar xf "$archive"
           echo "Gmsh_ROOT=$PWD/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk" >> $GITHUB_ENV
 
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: release-ubuntu
+          max-size: 500M
+
       - name: Configure and build
+        env:
+          # Let ccache cache across the CMake precompiled header.
+          CCACHE_SLOPPINESS: pch_defines,time_macros
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,\$ORIGIN"
           cmake --build build -j$(nproc)
 
@@ -232,10 +263,21 @@ jobs:
           tar xf "$archive"
           echo "Gmsh_ROOT=$PWD/gmsh-${{ env.GMSH_VERSION }}-Linux64-sdk" >> $GITHUB_ENV
 
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: release-rhel
+          max-size: 500M
+
       - name: Configure and build
+        env:
+          # Let ccache cache across the CMake precompiled header.
+          CCACHE_SLOPPINESS: pch_defines,time_macros
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,\$ORIGIN"
           cmake --build build -j$(nproc)
 
