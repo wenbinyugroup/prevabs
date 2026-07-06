@@ -37,7 +37,7 @@ Usage:
 - Unzip the package
 - Run `prevabs.exe` from the package root, or add that directory to `PATH`
 
-#### Full package (`prevabs-<ver>-windows-x64-full.zip`)
+#### Gmsh-app package (`prevabs-<ver>-windows-x64-with-gmsh-app.zip`)
 
 Includes everything in the runtime package, plus:
 

@@ -4,26 +4,19 @@
 
 - 2.1.0 (2026/07)
   - **New**
-    - **Offset**: Adopted the [Clipper2](https://github.com/AngusJohnson/Clipper2) polygon-offset library (pulled via CMake FetchContent) as the offset backend for closed multi-vertex curves (legacy pipeline retained for open curves); added layered per-ply offset, adaptive-thickness handling, and closed-annulus inner-loop support.
-    - **Layup**: Redesigned laminate placement into two orthogonal fields — `position` on `<baseline>` (`begin`/`middle`/`end` or any `[0,1]` fraction) and `direction` on `<layup>` (`left`/`right`/`both`, where `both` builds a single mirrored segment). Replaces the previous overloaded `middle`/`both` direction values.
-    - **Airfoil**: Allowed user-defined leading-/trailing-edge points and coordinate normalization in `<line type="airfoil">` (`<leading_edge>`, `<trailing_edge>`, `<normalize>`) for non-standard airfoil data.
-    - **Meshing**: Exposed mesh-shape controls under `<general>` — `element_shape` (triangle/quadrilateral), `transfinite_auto`, `transfinite_corner_angle`, `transfinite_recombine`, `recombine`, `recombine_angle`. `element_type` still controls element order (linear/quadratic).
-    - **Configuration**: Added a multi-level JSON config system (`<exe-dir>/prevabs.json`, `~/.prevabs.json`, `<input-dir>/.prevabs.json`, and `--config <path>`), merged field-by-field. Configurable solver/gmsh executable paths, default material-database path, tolerances, and Gmsh view options (defaults now ship in `share/prevabs.json` next to the executable).
+    - **Offset**: Adopted the [Clipper2](https://github.com/AngusJohnson/Clipper2) polygon-offset library (pulled via CMake FetchContent) as the offset backend for multi-vertex curves.
+    - **Layup**: Redesigned laminate placement into two orthogonal fields — `position` on `<baseline>` and `direction` on `<layup>`.
+    - **Airfoil**: Allowed user-defined leading-/trailing-edge points and coordinate normalization for non-standard airfoil data.
+    - **Meshing**: Exposed mesh-shape controls under `<general>`.
+    - **Configuration**: Added a multi-level JSON config system, merged field-by-field. Configurable solver/gmsh executable paths, default material-database path, tolerances, and Gmsh view options.
     - **Gmsh output**: The written `.geo` is now self-loading — opening it in Gmsh also merges the matching `.msh` and `.opt`. Added per-element `theta1` (ply orientation, degrees) and `y2` local-axis-direction post-processing views to the `.msh`.
     - **UI**: Introduced a dedicated user-interface module (`pui`, backed by the `cpp-terminal` submodule) separating user-facing console output from developer logs; added tiered `--debug` phases.
-    - **Examples**: Added a `meta.json`-driven examples runner with auto-generated documentation.
-    - **Release**: Added a multi-platform release workflow (Windows / Ubuntu / RHEL).
   - **Fix**
     - **Airfoil offset**: Fixed numerous offset failures — thin trailing edge, leading-edge cusps, single-surface thickness scaling, and dropped-gap faces.
-    - **DCEL**: Added structural validation and fail-fast handling of DCEL/Gmsh build failures with crash dumps.
-    - **IO**: Replaced raw `atoi`/`atof` with validated numeric parsing; added a top-level pipeline exception handler; hardened dehomogenization/failure-analysis XML reading.
   - **Optimization**
     - **Tolerances**: Consolidated the geometric tolerance system into a single configurable, model-scale-aware scheme.
     - **DCEL**: Rewrote and reorganized the module; split model repositories; moved domain fields onto vertex/half-edge/face.
     - **Logging**: Standardized debug banners, stable DCEL ids, per-stage summaries, and warning thresholds.
-    - **Build**: Improved MSVC build speed; vendored `cpp-terminal` as a git submodule.
-    - **Docs**: Migrated the Sphinx user manual to a `uv`-managed environment.
-    - **Testing**: Expanded Catch2 unit tests (offset, Clipper2, config, DCEL) and integration tests (airfoil, curved web, layup side).
 
 
 ## Version 2.0

@@ -117,7 +117,7 @@ jobs:
           $projectReadme = "README.md"
           $projectLicense = "LICENSE"
           $runtimePkg = "prevabs-${tag}-windows-x64"
-          $fullPkg = "prevabs-${tag}-windows-x64-full"
+          $gmshAppPkg = "prevabs-${tag}-windows-x64-with-gmsh-app"
 
           function Initialize-Package([string]$pkgDir) {
             New-Item -ItemType Directory -Force -Path $pkgDir | Out-Null
@@ -134,13 +134,13 @@ jobs:
           Initialize-Package $runtimePkg
           Compress-Archive -Path $runtimePkg -DestinationPath "${runtimePkg}.zip"
 
-          Initialize-Package $fullPkg
-          New-Item -ItemType Directory -Force -Path "$fullPkg\gmsh" | Out-Null
-          Copy-Item "$env:Gmsh_ROOT\bin\gmsh.exe" "$fullPkg\gmsh\"
+          Initialize-Package $gmshAppPkg
+          New-Item -ItemType Directory -Force -Path "$gmshAppPkg\gmsh" | Out-Null
+          Copy-Item "$env:Gmsh_ROOT\bin\gmsh.exe" "$gmshAppPkg\gmsh\"
           if (Test-Path "$env:Gmsh_ROOT\bin\onelab.py") {
-            Copy-Item "$env:Gmsh_ROOT\bin\onelab.py" "$fullPkg\gmsh\"
+            Copy-Item "$env:Gmsh_ROOT\bin\onelab.py" "$gmshAppPkg\gmsh\"
           }
-          Compress-Archive -Path $fullPkg -DestinationPath "${fullPkg}.zip"
+          Compress-Archive -Path $gmshAppPkg -DestinationPath "${gmshAppPkg}.zip"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -458,6 +458,46 @@ jobs:
           with open("release_notes.md", "w", encoding="utf-8") as f:
               if notes:
                   f.write(notes + "\n")
+          EOF
+          cat release_notes.md
+
+      - name: Append download index to release notes
+        env:
+          TAG: ${{ inputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'EOF'
+          import os
+
+          tag = os.environ["TAG"].strip()
+          repo = os.environ["REPO"].strip()
+          base = f"https://github.com/{repo}/releases/download/{tag}"
+
+          rows = [
+              (f"prevabs-{tag}-windows-x64.zip",
+               "Windows x64 runtime — `prevabs.exe`, Gmsh runtime DLL, "
+               "`MaterialDB.xml`, `prevabs.json`, `README.md`, project + Gmsh "
+               "licenses."),
+              (f"prevabs-{tag}-windows-x64-with-gmsh-app.zip",
+               "The runtime package **plus** a bundled `gmsh/` (standalone "
+               "`gmsh.exe`) for mesh preview."),
+              (f"prevabs-{tag}-linux-ubuntu-x64.tar.gz",
+               "Ubuntu / Debian x64 — `prevabs`, `libgmsh.so*`, `MaterialDB.xml`, "
+               "`prevabs.json`, `README.md`, project + Gmsh licenses."),
+              (f"prevabs-{tag}-linux-rhel9-x64.tar.gz",
+               "RHEL / Rocky Linux 9 x64 — same layout as the Ubuntu package."),
+              (f"prevabs-{tag}-examples.zip",
+               "Example cross-sections from `share/examples` — inputs, expected "
+               "outputs, and docs."),
+          ]
+
+          lines = ["", "## Downloads", "",
+                   "| Package | Contents |", "| --- | --- |"]
+          for name, desc in rows:
+              lines.append(f"| [`{name}`]({base}/{name}) | {desc} |")
+
+          with open("release_notes.md", "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
           EOF
           cat release_notes.md
 
