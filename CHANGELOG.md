@@ -2,29 +2,34 @@
 
 ## Version 2.1
 
-- 2.1.0 (2026/05)
-  - **Geometry — Clipper2 offset backend**: Replaced the
-    multi-vertex offset for **closed base contours** (typical airfoil
-    profiles) with the [Clipper2](https://github.com/AngusJohnson/Clipper2)
-    polygon-inflation library, bringing industrial-grade handling of
-    trailing-edge cusps, multi-self-intersections, miter overshoots,
-    and disconnected branches. Open base polylines continue to use
-    the legacy 5-stage miter-join pipeline; the 2-vertex fast path is
-    unchanged. XML input, `.sg` output, and the base/offset
-    correspondence map are all preserved for the integration test
-    suite (33 cases).
-    New warnings on closed contours expose local half-thickness
-    issues (`local half-thickness < |dist|` / `< 2*|dist|`), dropped
-    base-index ranges (`skin dropped over base indices [L..H]`), and
-    multi-branch Clipper2 output (`K disconnected polygons; kept
-    primary (area=...), dropped smaller pieces (areas=...)`).
-    See `Layup offset (geometry)` chapter for full coverage.
-  - **Tests — new thin-TE airfoil integration cases**:
-    `airfoil_ah79k132_skin_only` and `airfoil_ah79k143_skin_only`
-    promoted from `test/debug/` to `t9_airfoil` (both previously
-    failing with the legacy backend, now passing).
+- 2.1.0 (2026/07)
+  - **New**
+    - **Offset**: Adopted the [Clipper2](https://github.com/AngusJohnson/Clipper2) polygon-offset library (pulled via CMake FetchContent) as the offset backend for closed multi-vertex curves (legacy pipeline retained for open curves); added layered per-ply offset, adaptive-thickness handling, and closed-annulus inner-loop support.
+    - **Layup**: Redesigned laminate placement into two orthogonal fields — `position` on `<baseline>` (`begin`/`middle`/`end` or any `[0,1]` fraction) and `direction` on `<layup>` (`left`/`right`/`both`, where `both` builds a single mirrored segment). Replaces the previous overloaded `middle`/`both` direction values.
+    - **Airfoil**: Allowed user-defined leading-/trailing-edge points and coordinate normalization in `<line type="airfoil">` (`<leading_edge>`, `<trailing_edge>`, `<normalize>`) for non-standard airfoil data.
+    - **Meshing**: Exposed mesh-shape controls under `<general>` — `element_shape` (triangle/quadrilateral), `transfinite_auto`, `transfinite_corner_angle`, `transfinite_recombine`, `recombine`, `recombine_angle`. `element_type` still controls element order (linear/quadratic).
+    - **Configuration**: Added a multi-level JSON config system (`<exe-dir>/prevabs.json`, `~/.prevabs.json`, `<input-dir>/.prevabs.json`, and `--config <path>`), merged field-by-field. Configurable solver/gmsh executable paths, default material-database path, tolerances, and Gmsh view options (defaults now ship in `share/prevabs.json` next to the executable).
+    - **Gmsh output**: The written `.geo` is now self-loading — opening it in Gmsh also merges the matching `.msh` and `.opt`. Added per-element `theta1` (ply orientation, degrees) and `y2` local-axis-direction post-processing views to the `.msh`.
+    - **UI**: Introduced a dedicated user-interface module (`pui`, backed by the `cpp-terminal` submodule) separating user-facing console output from developer logs; added tiered `--debug` phases.
+    - **Examples**: Added a `meta.json`-driven examples runner with auto-generated documentation.
+    - **Release**: Added a multi-platform release workflow (Windows / Ubuntu / RHEL).
+  - **Fix**
+    - **Airfoil offset**: Fixed numerous offset failures — thin trailing edge, leading-edge cusps, single-surface thickness scaling, and dropped-gap faces.
+    - **DCEL**: Added structural validation and fail-fast handling of DCEL/Gmsh build failures with crash dumps.
+    - **IO**: Replaced raw `atoi`/`atof` with validated numeric parsing; added a top-level pipeline exception handler; hardened dehomogenization/failure-analysis XML reading.
+  - **Optimization**
+    - **Tolerances**: Consolidated the geometric tolerance system into a single configurable, model-scale-aware scheme.
+    - **DCEL**: Rewrote and reorganized the module; split model repositories; moved domain fields onto vertex/half-edge/face.
+    - **Logging**: Standardized debug banners, stable DCEL ids, per-stage summaries, and warning thresholds.
+    - **Build**: Improved MSVC build speed; vendored `cpp-terminal` as a git submodule.
+    - **Docs**: Migrated the Sphinx user manual to a `uv`-managed environment.
+    - **Testing**: Expanded Catch2 unit tests (offset, Clipper2, config, DCEL) and integration tests (airfoil, curved web, layup side).
+
 
 ## Version 2.0
+
+- 2.0.1 (2026/05)
+  - Improved developer debug logging: tiered `--debug` levels, standardized banners, stable DCEL element ids, DCEL crash dumps, per-stage summaries, and warning thresholds.
 
 - 2.0.0 (2026/05)
   - **Logging**: Replaced Boost dependency with spdlog; migrated all messages to structured `plog` system; split user-facing and developer log streams; added write guard for log initialization.

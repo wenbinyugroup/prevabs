@@ -92,7 +92,7 @@ ships next to the executable (config level 2). Each time PreVABS writes the
 `.opt` file it emits these options.
 
 The `gmsh` section is grouped into one mode-independent block plus one block per
-analysis type. Keys are raw Gmsh option names; values are written verbatim into
+analysis type. Keys are raw Gmsh option names (https://gmsh.info/doc/texinfo/gmsh.html#Gmsh-options); values are written verbatim into
 the `.opt` (numbers as-is, strings quoted). PreVABS does not check the option
 names or values — an invalid one is only reported by Gmsh itself, when the view
 is opened with `-v`.
