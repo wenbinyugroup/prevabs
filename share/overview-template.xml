@@ -24,6 +24,18 @@
         <tolerance>1e-12</tolerance>
     </settings>
 
+    <!-- Optional: explicit geometry-repair (adaptive thickness). Disabled by
+         default; the whole block may be omitted. -->
+    <adaptive_thickness enabled="0">
+        <report_only>1</report_only>                 <!-- 1 = report only, do not modify (default) -->
+        <mode>linear</mode>                          <!-- only 'linear' supported -->
+        <safety>0.9</safety>                         <!-- in (0, 1] -->
+        <transition_base_count>2</transition_base_count>  <!-- non-negative -->
+        <repair_base_padding>0</repair_base_padding>      <!-- non-negative -->
+        <min_half_thickness>0.0</min_half_thickness>      <!-- non-negative -->
+        <target_segments>sgm_1,sgm_2</target_segments>    <!-- comma-separated; empty = all -->
+    </adaptive_thickness>
+
     <!-- Optional: analysis model selection and configuration. -->
     <analysis>
         <model_dim>1</model_dim>             <!-- 1 = beam (default) -->
@@ -60,6 +72,12 @@
         <transfinite_recombine>0</transfinite_recombine>
         <recombine>0</recombine>
         <recombine_angle>45</recombine_angle>                            <!-- degrees -->
+
+        <!-- Optional layered per-layer-offset build controls. -->
+        <layered_offset>1</layered_offset>              <!-- 1 = layered per-layer offset (default) -->
+        <skip_dropped_areas>0</skip_dropped_areas>      <!-- 1 = skip Clipper2 "dropped" base ranges -->
+        <layer_offset_method>dir</layer_offset_method>  <!-- 'dir' (default) or 'seq' -->
+        <offset_resample_mode>insert</offset_resample_mode>  <!-- 'insert' (default) or 'replace' -->
 
         <!-- Optional interface tracking between adjacent layers. -->
         <track_interface>0</track_interface>
@@ -181,6 +199,12 @@
                 <g12>{G12}</g12> <g13>{G13}</g13> <g23>{G23}</g23>
                 <nu12>{NU12}</nu12> <nu13>{NU13}</nu13> <nu23>{NU23}</nu23>
             </elastic>
+            <!-- Optional thermal properties (needed for thermal analysis).
+                 isotropic uses a single <a>; other types use <a11>/<a22>/<a33>. -->
+            <cte>
+                <a11>1e-6</a11> <a22>2e-5</a22> <a33>2e-5</a33>
+            </cte>
+            <specific_heat>0.0</specific_heat>
         </material>
 
         <!-- Lamina = material + thickness. -->
@@ -210,17 +234,33 @@
     </layups>
 
     <!-- Required: at least one <component>. type = "laminate" (default) or
-         "fill". 'depend' lists dependent component names (comma-separated). -->
+         "fill". 'depend' lists dependent component names (comma-separated).
+         Optional attributes: 'style' (joint style 1 or 2) and 'cycle'/'cyclic'
+         (close the component into a loop). -->
 
     <!-- Laminate component: DEFINITION 1 (one segment per <segment>). -->
     <component name="cmp_surface" type="laminate">
+        <!-- Optional per-component material orientation override. -->
+        <material_orientation>
+            <e1>1 0</e1>
+            <e2>0 1</e2>
+        </material_orientation>
         <segment name="sgm_1">
-            <baseline>ln_str_1</baseline>
-            <layup direction="right">layup_el</layup>   <!-- left (default) or right -->
+            <!-- 'position' anchors the base line through the layup thickness:
+                 begin(0, default)/middle/end or a number in [0,1]. -->
+            <baseline position="begin">ln_str_1</baseline>
+            <layup direction="right">layup_el</layup>   <!-- left (default), right, or both -->
         </segment>
-        <segment name="sgm_2">
+        <segment name="sgm_2" free="tail">          <!-- free end: head/begin or tail/end -->
             <baseline>ln_str_2</baseline>
             <layup direction="left">layup_ss</layup>
+            <!-- Optional split point for a dependent component (single segment):
+                 <split by="id">3</split> or <split by="name">p_mid</split>. -->
+            <!-- Optional trim at an end toward a direction "x2 x3": -->
+            <trim>
+                <location>tail</location>            <!-- head or tail -->
+                <direction>1 0</direction>
+            </trim>
         </segment>
         <!-- Optional: override default 'V2' joint to 'V1' (style 1 or 2). -->
         <joint style="2">sgm_1,sgm_2</joint>
@@ -230,12 +270,15 @@
          line, optionally restricted by normalized parametric [begin, end]). -->
     <component name="cmp_skin" type="laminate">
         <segments>
-            <baseline>ln_af</baseline>
-            <layup_side>left</layup_side>               <!-- left (default) or right -->
+            <baseline position="begin">ln_af</baseline>  <!-- optional 'position' as above -->
+            <layup_side>left</layup_side>               <!-- left (default), right, or both -->
             <layup>layup_el</layup>
             <layup begin="0.1">layup_ss</layup>
             <layup end="0.7">layup_el</layup>
             <layup begin="0.2" end="0.9">layup_ss</layup>
+            <!-- begin/end may instead be given as x2/x3 coordinates on the base
+                 line (resolved to the nearest parameter): -->
+            <layup begin_x2="0.3" end_x2="0.6">layup_el</layup>
         </segments>
     </component>
 

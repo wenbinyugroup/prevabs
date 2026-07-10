@@ -28,6 +28,7 @@
     <xs:all>
       <xs:element name="include"   type="IncludeType"   minOccurs="0"/>
       <xs:element name="settings"  type="SettingsType"  minOccurs="0"/>
+      <xs:element name="adaptive_thickness" type="AdaptiveThicknessType" minOccurs="0"/>
       <xs:element name="analysis"  type="AnalysisType"  minOccurs="0"/>
       <xs:element name="general"   type="GeneralType"/>
       <xs:element name="baselines" type="BaselinesType" minOccurs="0"/>
@@ -73,6 +74,28 @@
     <xs:all>
       <xs:element name="tolerance" type="xs:string" minOccurs="0"/>
     </xs:all>
+  </xs:complexType>
+
+
+  <!-- ============================================================ -->
+  <!-- <adaptive_thickness> (explicit geometry-repair options)      -->
+  <!-- ============================================================ -->
+
+  <!-- Off by default; the whole block is optional. 'mode' currently
+       supports only "linear". 'safety' must be in (0, 1]; the base-count
+       fields must be non-negative. 'target_segments' is a comma-separated
+       list of segment names. -->
+  <xs:complexType name="AdaptiveThicknessType">
+    <xs:all>
+      <xs:element name="report_only"           type="BooleanLike" minOccurs="0"/>
+      <xs:element name="mode"                   type="xs:string"   minOccurs="0"/>
+      <xs:element name="safety"                 type="xs:string"   minOccurs="0"/>
+      <xs:element name="transition_base_count"  type="xs:string"   minOccurs="0"/>
+      <xs:element name="repair_base_padding"    type="xs:string"   minOccurs="0"/>
+      <xs:element name="min_half_thickness"     type="xs:string"   minOccurs="0"/>
+      <xs:element name="target_segments"        type="xs:string"   minOccurs="0"/>
+    </xs:all>
+    <xs:attribute name="enabled" type="BooleanLike"/>
   </xs:complexType>
 
 
@@ -137,6 +160,20 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="LayerOffsetMethodEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="dir"/>
+      <xs:enumeration value="seq"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="OffsetResampleModeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="insert"/>
+      <xs:enumeration value="replace"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="GeneralType">
     <xs:all>
       <xs:element name="translate"     type="xs:string"        minOccurs="0"/>
@@ -153,6 +190,12 @@
       <xs:element name="transfinite_recombine"     type="BooleanLike" minOccurs="0"/>
       <xs:element name="recombine"                 type="BooleanLike" minOccurs="0"/>
       <xs:element name="recombine_angle"           type="xs:string"   minOccurs="0"/>
+
+      <!-- Layered per-layer-offset build controls -->
+      <xs:element name="layered_offset"       type="BooleanLike"             minOccurs="0"/>
+      <xs:element name="skip_dropped_areas"   type="BooleanLike"             minOccurs="0"/>
+      <xs:element name="layer_offset_method"  type="LayerOffsetMethodEnum"   minOccurs="0"/>
+      <xs:element name="offset_resample_mode" type="OffsetResampleModeEnum"  minOccurs="0"/>
 
       <xs:element name="track_interface"                  type="xs:string" minOccurs="0"/>
       <xs:element name="interface_theta1_diff_threshold"  type="xs:string" minOccurs="0"/>
@@ -360,12 +403,26 @@
     <xs:all>
       <xs:element name="density"               type="xs:string" minOccurs="0"/>
       <xs:element name="elastic"               type="ElasticType"/>
+      <xs:element name="cte"                   type="CteType"      minOccurs="0"/>
+      <xs:element name="specific_heat"         type="xs:string" minOccurs="0"/>
       <xs:element name="failure_criterion"     type="xs:string" minOccurs="0"/>
       <xs:element name="characteristic_length" type="xs:string" minOccurs="0"/>
       <xs:element name="strength"              type="StrengthType" minOccurs="0"/>
     </xs:all>
     <xs:attribute name="name" type="xs:string"          use="required"/>
     <xs:attribute name="type" type="MaterialTypeEnum"   use="required"/>
+  </xs:complexType>
+
+  <!-- Coefficients of thermal expansion. isotropic uses a single <a>;
+       transversely isotropic / orthotropic / engineering use <a11> <a22>
+       <a33>. -->
+  <xs:complexType name="CteType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="a"   type="xs:string"/>
+      <xs:element name="a11" type="xs:string"/>
+      <xs:element name="a22" type="xs:string"/>
+      <xs:element name="a33" type="xs:string"/>
+    </xs:choice>
   </xs:complexType>
 
   <!-- Elastic constants. The union of all type-specific constants is
@@ -459,8 +516,6 @@
       <xs:enumeration value="ll"/>
       <xs:enumeration value="stack sequence"/>
       <xs:enumeration value="ss"/>
-      <!-- 'explicit list' appears in older docs; accepted by some readers -->
-      <xs:enumeration value="explicit list"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -510,8 +565,28 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- Layup side of a directed base line. 'both' lays the layup on both
+       sides (mirrored stack about the base plane). -->
+  <xs:simpleType name="LayupDirEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="right"/>
+      <xs:enumeration value="both"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="ComponentType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- Optional per-component material orientation override. -->
+      <xs:element name="material_orientation">
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="e1" type="xs:string" minOccurs="0"/>
+            <xs:element name="e2" type="xs:string" minOccurs="0"/>
+          </xs:all>
+        </xs:complexType>
+      </xs:element>
+
       <!-- Laminate-component children (DEFINITION 1) -->
       <xs:element name="segment" type="SegmentType"/>
       <xs:element name="joint">
@@ -554,36 +629,107 @@
 
     <xs:attribute name="name"   type="xs:string"          use="required"/>
     <xs:attribute name="type"   type="ComponentTypeEnum"/>
+    <xs:attribute name="style"  type="JointStyleEnum"/>
+    <!-- 'cycle' / 'cyclic' are accepted interchangeably. -->
+    <xs:attribute name="cycle"  type="BooleanLike"/>
+    <xs:attribute name="cyclic" type="BooleanLike"/>
     <xs:attribute name="depend" type="xs:string"/>
   </xs:complexType>
 
+  <!-- 'free' marks which end of a single-segment component is a free (trimmed)
+       end. Value is head/begin (start) or tail/end (finish). -->
+  <xs:simpleType name="FreeEndEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="head"/>
+      <xs:enumeration value="begin"/>
+      <xs:enumeration value="tail"/>
+      <xs:enumeration value="end"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- <split by="..."> point at which a single segment is split for a
+       dependent component. 'by'="id" (1-based vertex index, default) or
+       "name" (named point). -->
+  <xs:simpleType name="SplitByEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="id"/>
+      <xs:enumeration value="name"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="SegmentType">
-    <xs:all>
-      <xs:element name="baseline" type="xs:string"/>
-      <xs:element name="layup">
+    <xs:sequence>
+      <!-- 'position' is the through-thickness anchor fraction of the base line
+           within the layup: begin(0)/middle|center(0.5)/end(1) or a number in
+           [0,1]. -->
+      <xs:element name="baseline">
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attribute name="direction" type="SideEnum"/>
+              <xs:attribute name="position" type="xs:string"/>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
       </xs:element>
-    </xs:all>
-    <xs:attribute name="name" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="SegmentsType">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="baseline"   type="xs:string"/>
-      <xs:element name="layup_side" type="SideEnum"/>
       <xs:element name="layup">
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
+              <xs:attribute name="direction" type="LayupDirEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <!-- Optional split point (dependent-component single-segment case). -->
+      <xs:element name="split" minOccurs="0">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="by" type="SplitByEnum"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <!-- Optional trim(s): cut the segment at head/tail toward a direction. -->
+      <xs:element name="trim" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="location"  type="xs:string" minOccurs="0"/> <!-- head | tail -->
+            <xs:element name="direction" type="xs:string" minOccurs="0"/> <!-- "x2 x3" -->
+          </xs:all>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="free" type="FreeEndEnum"/>
+  </xs:complexType>
+
+  <xs:complexType name="SegmentsType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- 'position': through-thickness anchor fraction (see <segment>). -->
+      <xs:element name="baseline">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="position" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="layup_side" type="LayupDirEnum"/>
+      <xs:element name="layup">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <!-- Normalized parametric range along the base line. -->
               <xs:attribute name="begin"     type="xs:string"/>
               <xs:attribute name="end"       type="xs:string"/>
-              <xs:attribute name="direction" type="SideEnum"/>
+              <!-- x2/x3 coordinate overrides of begin/end (resolved to the
+                   nearest parameter on the base line). -->
+              <xs:attribute name="begin_x2"  type="xs:string"/>
+              <xs:attribute name="begin_x3"  type="xs:string"/>
+              <xs:attribute name="end_x2"    type="xs:string"/>
+              <xs:attribute name="end_x3"    type="xs:string"/>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
