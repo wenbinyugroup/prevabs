@@ -1,0 +1,5 @@
+{
+  "base": "ex_tube",
+  "input": "tube.xml",
+  "args": ["-i", "tube.xml", "--hm", "-v", "--nopopup", "-e"]
+}

@@ -1,0 +1,5 @@
+{
+  "base": "ex_airfoil_dspar",
+  "input": "cs_main.xml",
+  "args": ["-i", "cs_main.xml", "--hm", "-v", "--nopopup", "-e"]
+}

@@ -1,0 +1,5 @@
+{
+  "base": "ex_pipe",
+  "input": "pipe.xml",
+  "args": ["-i", "pipe.xml", "--hm", "-v", "--nopopup", "-e"]
+}

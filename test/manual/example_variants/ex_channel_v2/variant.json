@@ -1,0 +1,5 @@
+{
+  "base": "ex_channel",
+  "input": "channel.xml",
+  "args": ["-i", "channel.xml", "--hm", "-v", "--nopopup", "-e"]
+}

@@ -1,0 +1,5 @@
+{
+  "base": "ex_box_nested_webs",
+  "input": "box.xml",
+  "args": ["-i", "box.xml", "--hm", "-v", "--nopopup", "-e"]
+}

@@ -1,0 +1,5 @@
+{
+  "base": "ex_airfoil_multi-cells",
+  "input": "mh104_9webs.xml",
+  "args": ["-i", "mh104_9webs.xml", "--hm", "-v", "--nopopup", "-e"]
+}

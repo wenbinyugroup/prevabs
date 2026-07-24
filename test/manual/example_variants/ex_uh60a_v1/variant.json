@@ -1,0 +1,5 @@
+{
+  "base": "ex_uh60a",
+  "input": "uh60a_section.xml",
+  "args": ["-i", "uh60a_section.xml", "--hm", "-v", "--nopopup", "-e"]
+}

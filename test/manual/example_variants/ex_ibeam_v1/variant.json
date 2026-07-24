@@ -1,0 +1,5 @@
+{
+  "base": "ex_ibeam",
+  "input": "i_web.xml",
+  "args": ["-i", "i_web.xml", "--hm", "-v", "--nopopup", "-e"]
+}

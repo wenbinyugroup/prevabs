@@ -1,0 +1,5 @@
+{
+  "base": "ex_airfoil_r",
+  "input": "mh104.xml",
+  "args": ["-i", "mh104.xml", "--hm", "-v", "--nopopup", "-e"]
+}

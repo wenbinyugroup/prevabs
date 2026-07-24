@@ -1,0 +1,5 @@
+{
+  "base": "ex_box_ii_quad",
+  "input": "box_II.xml",
+  "args": ["-i", "box_II.xml", "--hm", "-v", "--nopopup", "-e"]
+}
