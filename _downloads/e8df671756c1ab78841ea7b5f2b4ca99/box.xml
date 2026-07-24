@@ -1,0 +1,141 @@
+
+<cross_section name="box">
+
+  <analysis>
+    <model>1</model>
+  </analysis>
+  <general>
+    <!-- <translate>1 2</translate>
+    <scale></scale>
+    <rotate>30</rotate> -->
+    <mesh_size>0.01</mesh_size>
+    <element_type>2</element_type>
+  </general>
+
+  <materials>
+    <material name="mtr_lamina" type="transversely isotropic">
+      <density>10</density>
+      <elastic>
+        <e1>4</e1>
+        <e2>5</e2>
+        <g12>6</g12>
+        <nu12>0.4</nu12>
+      </elastic>
+    </material>
+    <lamina name="la_mtr_lamina_0.01">
+      <material>mtr_lamina</material>
+      <thickness>0.02</thickness>
+    </lamina>
+  </materials>
+
+  <baselines>
+
+    <point name="o">0  0</point>
+
+    <point name="lb">-0.809 -0.5</point>
+    <point name="lt">-0.809  0.5</point>
+    <point name="rt"> 0.809  0.5</point>
+    <point name="rb"> 0.809 -0.5</point>
+
+    <baseline name="bsl_all">
+      <!-- <points>rt,p1,lt,lb,rb,p8,rt</points> -->
+      <!-- <points>rt,p2,lt,p3,p4,lb,p5,p6,rb,p7,rt</points> -->
+      <points>rt,lt,lb,rb,rt</points>
+    </baseline>
+
+    <point name="pweb1">-0.191  0</point>
+    <line name="lweb1">
+      <point>pweb1</point>
+      <angle>90</angle>
+    </line>
+
+    <point name="pweb2">0.309  -0.118</point>
+    <line name="lweb2">
+      <point>pweb2</point>
+      <angle>0</angle>
+    </line>
+
+    <point name="pweb3">0.191  0.191</point>
+    <line name="lweb3">
+      <point>pweb3</point>
+      <angle>90</angle>
+    </line>
+
+    <point name="pweb4">0.5  0.118</point>
+    <line name="lweb4">
+      <point>pweb4</point>
+      <angle>0</angle>
+    </line>
+
+    <point name="pweb5">0.427  0.309</point>
+    <line name="lweb5">
+      <point>pweb5</point>
+      <angle>90</angle>
+    </line>
+
+    <point name="pweb6">0.618  0.264</point>
+    <line name="lweb6">
+      <point>pweb6</point>
+      <angle>0</angle>
+    </line>
+
+  </baselines>
+
+  <layups>
+    <layup name="layup1">
+      <layer lamina="la_mtr_lamina_0.01">0</layer>
+      <layer lamina="la_mtr_lamina_0.01">90</layer>
+    </layup>
+  </layups>
+
+
+  <component name="main">
+    <segment>
+      <baseline>bsl_all</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web1" depend="main">
+    <segment>
+      <baseline>lweb1</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web2" depend="main,web1">
+    <segment>
+      <baseline>lweb2</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web3" depend="main,web1,web2">
+    <segment>
+      <baseline>lweb3</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web4" depend="main,web1,web2,web3">
+    <segment>
+      <baseline>lweb4</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web5" depend="main,web1,web2,web3,web4">
+    <segment>
+      <baseline>lweb5</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+  <component name="web6" depend="main,web1,web2,web3,web4,web5">
+    <segment>
+      <baseline>lweb6</baseline>
+      <layup>layup1</layup>
+    </segment>
+  </component>
+
+</cross_section>

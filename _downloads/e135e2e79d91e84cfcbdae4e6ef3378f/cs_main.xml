@@ -1,0 +1,113 @@
+<cross_section name="cspar_section" format="1">
+    <include>
+        <material>material_database_us_ft</material>
+    </include>
+    <analysis>
+        <model>1</model>
+    </analysis>
+    <general>
+        <translate>0.25 0</translate>
+        <scale>1.73</scale>
+        <mesh_size>0.004</mesh_size>
+        <element_type>linear</element_type>
+    </general>
+
+
+    <baselines>
+
+        <line name="ln_af" type="airfoil">
+            <points data="file" format="1" direction="1" header="1">sc1095.dat</points>
+            <flip>1</flip>
+            <reverse>1</reverse>
+        </line>
+
+        <point name="p1" on="ln_af" by="x2" which="top">0.8</point>
+        <point name="p2" on="ln_af" by="x2" which="bottom">0.8</point>
+        <point name="p3" on="ln_af" by="x2" which="top">0.6</point>
+        <point name="p4" on="ln_af" by="x2" which="bottom">0.6</point>
+
+        <point name="p5" on="ln_af" by="x2" which="top">0.98</point>
+        <point name="p6" on="ln_af" by="x2" which="bottom">0.98</point>
+
+        <point name="p7" on="ln_af" by="x2" which="top">0.2</point>
+        <point name="p8" on="ln_af" by="x2" which="bottom">0.2</point>
+
+        <!-- Main spar -->
+        <line name="line_spar_c">
+            <points>p4:p3</points>
+        </line>
+
+        <!-- Back part and trailing edge -->
+        <baseline name="bsl_te_top">
+            <points>p3:p7</points>
+        </baseline>
+        <baseline name="bsl_te">
+            <points>p7:p8</points>
+        </baseline>
+        <baseline name="bsl_te_bottom">
+            <points>p8:p4</points>
+        </baseline>
+
+        <!-- Filling -->
+        <point name="pf1">0.1 0</point>
+        <point name="pf2">0.9 0</point>
+
+    </baselines>
+
+
+    <layups>
+
+        <layup name="lyp_skin_graphite">
+            <layer lamina="T300 15k/976_0.0053">0:2</layer>
+        </layup>
+
+        <layup name="lyp_spar_1">
+            <layer lamina="AS4 12k/E7K8_0.0054">45:8</layer>
+        </layup>
+
+        <layup name="lyp_spar_2">
+            <layer lamina="AS4 12k/E7K8_0.0054">0:8</layer>
+        </layup>
+
+        <layup name="lyp_spar_3">
+            <layer lamina="AS4 12k/E7K8_0.0054">-45:8</layer>
+        </layup>
+
+        <layup name="lyp_spar_4">
+            <layer lamina="AS4 12k/E7K8_0.0054">90:8</layer>
+        </layup>
+
+    </layups>
+
+
+    <component name="spar">
+        <segments>
+            <baseline>line_spar_c</baseline>
+            <layup>lyp_skin_graphite</layup>
+            <layup>lyp_spar_1</layup>
+            <layup begin="0.1" end="0.9">lyp_spar_2</layup>
+            <layup begin="0.2" end="0.8">lyp_spar_3</layup>
+            <layup begin="0.3" end="0.7">lyp_spar_4</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_te_top</baseline>
+            <layup>lyp_skin_graphite</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_te</baseline>
+            <layup>lyp_skin_graphite</layup>
+        </segments>
+        <segments>
+            <baseline>bsl_te_bottom</baseline>
+            <layup>lyp_skin_graphite</layup>
+        </segments>
+    </component>
+
+    <component name="fill_aft" type="fill" depend="spar">
+        <location>pf1</location>
+        <material>Plascore PN2-3/16OX3.0</material>
+        <mesh_size at="pf1,pf2">0.04</mesh_size>
+    </component>
+
+
+</cross_section>
